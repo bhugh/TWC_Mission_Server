@@ -1,0 +1,4270 @@
+//http://forum.1cpublishing.eu/showthread.php?t=26112
+//Various emergency & service cars script by naryv posted an sukhoi.ru today.
+//Hacked extensively by bhugh
+
+//Code:
+
+//$reference parts/core/Strategy.dll
+//$reference parts/core/gamePlay.dll
+//$reference System.Core.dll
+using System;
+//using System.Core;
+using System.Collections;
+using maddox.game;
+using maddox.game.world;
+using maddox.GP;
+using part;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.ComponentModel;
+using System.Threading;
+using System.Diagnostics;
+
+public class Mission : AMission
+{
+    
+    public bool DEBUG=true;
+    public int VEHICLE_LIFE_SEC = 120;
+    public double CAR_POS_RADIUS = 80; //distance vehicles will be positioned from the center point of the Birthplace, Airfield, etc where cars are positioned
+    public int TICKS_PER_MINUTE=1986; //empirically, based on a timeout test.  This is approximate & varies slightly.
+    
+    //for landing or crash, they start SPAWN_START_DISTANCE_M away from the plane in the direction of the nearest BirthPlace or Airport point.  They end SPAWN_END_DISTANCE_M away from the a/c.  (Distances are approx., various randomness & functions added on top of these values.)  
+    public int SPAWN_START_DISTANCE_M = 100; //how far away they start from the     a/c when approaching after landing
+    public int SPAWN_END_DISTANCE_M = 20;  //how close they approach you upon (eg) landing
+    
+    //For spawn-in, the vehicles start this close to the a/c and proceed to
+    // the birthplace or airport point.
+    public int SPAWN_START_DISTANCE_REVERSE_M = 12; //how close they start when spawning in onPlaceEnter
+     
+        
+    private List<AiActor> actorPlaceEnterList;
+    private List<AiAircraft> aircraftDamagedList;
+    maddox.game.ABattle Battle;
+
+    public Mission () {
+     HashSet<int> evenNumbers = new HashSet<int>(); 
+     actorPlaceEnterList = new List<AiActor>();
+     aircraftDamagedList = new List<AiAircraft>();
+    
+    }
+    //Listen to events of every mission
+    public override void Init(maddox.game.ABattle battle, int missionNumber)
+    {
+        base.Init(battle, missionNumber);
+        Battle=battle;
+        MissionNumberListener = -1; //Listen to events of every mission
+        //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this mission/cs file work!
+        //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
+        
+        if (DEBUG) GamePlay.gpLogServer(null, ".Net framework: " +  Environment.Version, new object[] { });
+        
+    }
+
+
+    public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+        //MissionNumberListener = -1;
+    }
+    
+    Random rnd = new Random();
+        
+
+    [Flags]
+    internal enum ServiceType // ??? ????????????? ???????
+    //note that all these types don't work; the actual type is determined by
+    //createemrgcarmission depending on a/c type, army, and a few other things.
+    //So it's not really determined by the settings in the curTechCar.CarType field 
+    {
+        NONE = 0,
+        EMERGENCY = 1,
+        FIRE = 2,
+        FUEL = 4,
+        AMMO = 8,
+        BOMBS = 16,
+        PRISONERCAPTURE = 32,
+        SPAWNIN = 64
+    }
+    
+    
+    //Like AiActor or AiBirthplace but only has .Name() & .Loc()
+    internal class BasePos 
+    {
+      internal string _Name;
+      internal Point3d _Pos;
+      
+      public BasePos (string name, Point3d pos)
+      {
+        this._Name=name;
+        this._Pos=pos;
+      }
+      
+      public string Name(string name=null) {
+      
+        if (name==null) return this._Name;
+        else {
+            this._Name=name;
+            return null;
+        }    
+      
+      }
+    
+     public Point3d Pos(Point3d pos) {
+           this._Pos=pos;
+           return this._Pos;               
+      }
+      
+      public Point3d Pos() {
+        return this._Pos;       
+      }
+    
+    }
+      
+    internal class TechCars
+    { 
+        internal AiGroundGroup TechCar { get; set; }        
+        internal BasePos BaseAirport { get; set; }
+        internal IRecalcPathParams cur_rp { get; set; }
+        internal int RouteFlag = 0;
+        internal int cartype = 0;
+        internal int servPlaneNum = -1;
+        internal int MAX_CARS = 100;
+        internal ServiceType CarType { get { return (ServiceType)cartype; } set { cartype = (int)value; } }        
+
+        public TechCars(AiGroundGroup car, BasePos airoport, IRecalcPathParams rp)
+        {
+            this.TechCar = car;            
+            this.BaseAirport = airoport;
+            this.cur_rp = rp;
+        }       
+
+    }
+
+    internal class PlanesQueue {
+        internal AiAircraft aircraft { get; set; }
+        internal BasePos baseAirport { get; set; } 
+        internal int state = 0;        
+        internal ServiceType State { get { return (ServiceType)state; } set { state = (int)value; } }
+        internal int Lifetime = 0;
+        internal float health = 1;
+        public PlanesQueue(AiAircraft aircraft, BasePos baseAirport, int state)
+        {
+            this.aircraft = aircraft;
+            this.baseAirport = baseAirport  as BasePos;
+            this.state = state;            
+        }        
+    }
+
+    internal List<TechCars> CurTechCars = new List<TechCars>();
+    internal List<PlanesQueue> CurPlanesQueue = new List<PlanesQueue>();
+    TechCars TmpCar = null;
+    bool MissionLoading = false;
+    int MissionLoadingAircraftNumber = -1;
+
+    internal double PseudoRnd(double MinValue, double MaxValue)
+    {
+        return rnd.NextDouble() * (MaxValue - MinValue) + MinValue;
+    }
+
+
+
+      public override void OnActorTaskCompleted(int missionNumber, string shortName, AiActor actor)
+    {
+        base.OnActorTaskCompleted(missionNumber, shortName, actor);
+        if (DEBUG) GamePlay.gpLogServer(null, "OnActorTaskComplete", new object[] { });
+
+        AiActor ai_actor = actor as AiActor;        
+        if (ai_actor != null)
+        {
+            if (ai_actor is AiGroundGroup)
+                for (int i = 0; i < CurTechCars.Count; i++) // ???? ????????????? ??????? ??????? ?? ?????????????? ????????, ????????? ?? ????????????
+                {
+                    if (CurTechCars[i].TechCar == ai_actor as AiGroundGroup) {
+                        //if (CurTechCars[i].RouteFlag == 1)
+                        TechCars car = CurTechCars[i] as TechCars; 
+                        if (DEBUG) GamePlay.gpLogServer(null, "OnActorTaskComplete - ending plane service for " + i.ToString() + " in 120 sec.", new object[] { });
+                        //this is basically to ensure that AI objects don't just hang around indefinitely when their tasks are done.
+                        //In normal behavior, they may complete several tasks in the course of moving abou the airport, so we don't just want
+                        //to destroy them immediately when task is done
+                        Timeout(VEHICLE_LIFE_SEC, () =>
+                        {
+                            if (DEBUG) GamePlay.gpLogServer(null, "OnActorTaskComplete - ending plane service for " + i.ToString() + " now", new object[] { });
+                            EndPlaneService(car, ai_actor as AiGroundGroup);
+                            
+                        });
+                    }   
+                           
+
+                       //we're just destroying them @ this point
+                       // else
+                       //     CheckNotServicedPlanes(i);
+                };
+        }  
+    }
+    
+
+    internal void CheckNotServicedPlanes(int techCarIndex)
+    {
+        for (int j = 0; j < CurPlanesQueue.Count; j++)  
+        {
+            if (CurTechCars[techCarIndex].TechCar.IsAlive() && (CurPlanesQueue[j].baseAirport == CurTechCars[techCarIndex].BaseAirport) && ((CurTechCars[techCarIndex].CarType & CurPlanesQueue[j].State) != 0) && (CurTechCars[techCarIndex].servPlaneNum == -1))
+            {
+                if (SetEmrgCarRoute(j, techCarIndex))   // ?????????? ??????? ??????????? ????????? ???????
+                {
+                    return;
+                }
+            }
+        }  
+    }
+
+    //Removes the ground vehicle from the CurTechCars list & also destroys the AI object
+    //We call it with the List item (not the index) because the index can change between call & execution, esp. if call via a timeout, which is common
+    //We also include the TechCar field, (an AiGroundGroup) because sometimes the List item can be destroyed but the actual Ai Airgroup is still floating around undead
+    //
+    internal void EndPlaneService(TechCars tC, AiGroundGroup ground=null)
+    { 
+      try 
+      {
+         if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning now", new object[] { });
+         if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning " + tC.servPlaneNum.ToString(), new object[] { });
+         if (tC != null) { 
+                if (DEBUG) GamePlay.gpLogServer(null, " Number of objects: " + tC.TechCar.GetItems().Length, new object[] { });
+                //if (CurTechCars[techCarIndex].cur_rp == null) return;        
+                tC.cur_rp = null; // ?????????? ???????
+                
+                //Just destroy the ground items at this point.
+                if (tC.TechCar.GetItems() != null && tC.TechCar.GetItems().Length > 0)
+                {
+                   if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 1 ", new object[] { });                         
+                    foreach (AiActor actor in tC.TechCar.GetItems()) 
+                    {
+                      if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 2 " , new object[] { }); 
+                      (actor as AiGroundActor).Destroy();
+                    }
+                } 
+                  
+                CurTechCars.Remove(tC);
+        }      
+        
+        if (ground != null) {
+               if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 3 ", new object[] { });                         
+               foreach (AiActor actor in ground.GetItems()) 
+               {
+                      if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 4 " , new object[] { }); 
+                      (actor as AiGroundActor).Destroy();
+               }
+                
+        }            
+                /*
+                                 
+                if (CurTechCars[techCarIndex].servPlaneNum >= 0)
+                {
+                    
+                    CurPlanesQueue[CurTechCars[techCarIndex].servPlaneNum].State &= ~CurTechCars[techCarIndex].CarType; // ??????? ??? ???????????? ? ?????????????? ????????, ???? ?? ????
+                    
+                    CurTechCars[techCarIndex].servPlaneNum = -1; // ?????????? ????? ?????????????? ????????
+                    Timeout(5f, () =>
+                    {
+                        if (!MoveFromRWay(techCarIndex))// ????????? ?? ????? ?? ?? ???????, ? ??????? ? ??? ???? ???.
+                        {
+                            CurTechCars[techCarIndex].RouteFlag = 0;
+                            CheckNotServicedPlanes(techCarIndex);   // ? ???????, ??? ?? ??? ????????????? ?????????
+                        }
+                    });
+    
+                }
+                else Timeout(5f, () =>
+                {
+                        CurTechCars[techCarIndex].RouteFlag = 0;
+                        CheckNotServicedPlanes(techCarIndex);   // ? ???????, ??? ?? ??? ????????????? ?????????                
+                });
+                */
+        }
+        catch (Exception e) {System.Console.WriteLine (e.ToString());}     
+    }
+    
+    
+    internal bool MoveFromRWay(int carNum)
+    {
+        bool result = false;        
+        if (DEBUG) GamePlay.gpLogServer(null, "Removing aircraft from runway at " + CurTechCars[carNum].BaseAirport.Name(), new object[] { });
+        if ((GamePlay.gpLandType(CurTechCars[carNum].TechCar.Pos().x, CurTechCars[carNum].TechCar.Pos().y) & LandTypes.ROAD) == 0)
+            return result;
+        
+        Point3d TmpPos = CurTechCars[carNum].TechCar.Pos();
+        while (((GamePlay.gpLandType(TmpPos.x, TmpPos.y) & LandTypes.ROAD) != 0))
+            {
+                TmpPos.x +=  10f;
+                TmpPos.y +=  10f;
+            };
+        Point2d EmgCarStart, EmgCarFinish;
+        EmgCarStart.x = CurTechCars[carNum].TechCar.Pos().x; EmgCarStart.y = CurTechCars[carNum].TechCar.Pos().y;
+        EmgCarFinish.x = TmpPos.x; EmgCarFinish.y = TmpPos.y;        
+        CurTechCars[carNum].servPlaneNum = -1;
+        CurTechCars[carNum].RouteFlag = 0;
+        CurTechCars[carNum].cur_rp = null;
+        CurTechCars[carNum].cur_rp = GamePlay.gpFindPath(EmgCarStart, 10f, EmgCarFinish, 10f, PathType.GROUND, CurTechCars[carNum].TechCar.Army());
+
+        result = true;        
+        return result;
+    }
+
+
+    public  bool SetEmrgCarRoute(int aircraftNumber,int carNum)
+    { 
+        bool result = false;
+        if (DEBUG) GamePlay.gpLogServer(null, "Setting a Car Route "+aircraftNumber.ToString() + " " + carNum.ToString() + " at " + CurTechCars[carNum].BaseAirport.Name() , new object[] { });
+        if (CurTechCars[carNum].TechCar != null)
+        {
+            CurTechCars[carNum].servPlaneNum = aircraftNumber; // ????????????? ????? ?????????????? ????????
+            if (CurTechCars[carNum].cur_rp == null)
+                {
+                    Point2d EmgCarStart, EmgCarFinish, LandedPos;
+                    LandedPos.x = CurPlanesQueue[aircraftNumber].aircraft.Pos().x; LandedPos.y = CurPlanesQueue[aircraftNumber].aircraft.Pos().y;
+                    int Sign = ((carNum % 2) == 0) ? 2 : -2;
+                    EmgCarStart.x = CurTechCars[carNum].TechCar.Pos().x; EmgCarStart.y = CurTechCars[carNum].TechCar.Pos().y;
+                    
+        //Drive the car from where it is to the point located in the direction of the aircraft position but 20 meters short of it.
+        double disx, disy;            
+        disx=Math.Abs(EmgCarStart.x - LandedPos.x) - 20;
+        if (disx<10) disx=20;
+        disy=Math.Abs(EmgCarStart.y - EmgCarStart.y) - 20;
+        if (disy<10) disy=20;
+
+        EmgCarFinish.x = EmgCarStart.x - disx * ((EmgCarStart.x - LandedPos.x) / Math.Abs(EmgCarStart.x - LandedPos.x)); EmgCarFinish.y = EmgCarStart.x - disy * ((EmgCarStart.y - LandedPos.y) / Math.Abs(EmgCarStart.y - LandedPos.y));                    
+                    
+                    //EmgCarFinish.x = LandedPos.x - PseudoRnd(0f, 1f) * ((LandedPos.x - EmgCarStart.x) / (Math.Abs(LandedPos.x - EmgCarStart.x))) - Sign;
+                    //EmgCarFinish.y = LandedPos.y - PseudoRnd(0f, 1f) * ((LandedPos.y - EmgCarStart.y) / (Math.Abs(LandedPos.y - EmgCarStart.y))) - Sign;
+                    
+                    //For spawn-in, we want the cars to start in close to the a/c & drive away
+                  /*  if ( ((int)CurTechCars[carNum].CarType & (int)ServiceType.SPAWNIN) !=0  ) {
+                     Point2d tempStart = EmgCarStart;
+                     EmgCarStart=EmgCarFinish;
+                     EmgCarFinish=tempStart;
+                    }
+                  */   
+                    
+                    CurTechCars[carNum].cur_rp = GamePlay.gpFindPath(EmgCarStart, 15f, EmgCarFinish, 15f, PathType.GROUND, CurTechCars[carNum].TechCar.Army());
+                    if (DEBUG) GamePlay.gpLogServer(null, "Setting a Car Route "+aircraftNumber.ToString() + " " + carNum.ToString() + " " + EmgCarStart.ToString() + " to " + EmgCarFinish.ToString() + " at " + CurTechCars[carNum].BaseAirport.Name() , new object[] { });
+                    result = true;
+                }    
+        }
+        return result; 
+    }
+
+
+    public override void OnMissionLoaded(int missionNumber)
+    {        
+    base.OnMissionLoaded(missionNumber);        
+        if (missionNumber > 0) //whenever a new mission loads, this slurps up any matching groundcars into the curTechCars list so they can be manipulated etc 
+        //if (missionNumber==MissionNumber ) // important check!
+        {
+            if (DEBUG) GamePlay.gpLogServer(null, "Starting vehicle sub-mission loaded", new object[] { });            
+            List<string> CarTypes = new List<string>();
+            CarTypes.Add(":0_Chief_Emrg_");
+            CarTypes.Add(":0_Chief_Fire_");
+            CarTypes.Add(":0_Chief_Fuel_"); 
+            CarTypes.Add(":0_Chief_Ammo_");
+            CarTypes.Add(":0_Chief_Bomb_");
+            CarTypes.Add(":0_Chief_Prisoner_");
+            
+            AiGroundGroup MyCar = null;
+            
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < CarTypes.Count; j++)
+                {
+                    MyCar = GamePlay.gpActorByName(missionNumber.ToString() + CarTypes[j] + i.ToString()) as AiGroundGroup;
+                    
+                    //if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group for " +missionNumber.ToString() + CarTypes[j] + i.ToString(), new object[] { });
+                    if (MyCar != null)
+                    {
+                        TmpCar = new TechCars(MyCar, FindNearestAirport(MyCar), null);
+                        if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group at " + FindNearestAirport(MyCar).Name() + " " + MissionLoadingAircraftNumber.ToString(), new object[] { });
+                        TmpCar.CarType = (ServiceType)(1 << j);
+                        TmpCar.cur_rp = null;
+                        TmpCar.servPlaneNum=MissionLoadingAircraftNumber;
+                        if (!CurTechCars.Contains(TmpCar))
+                             CurTechCars.Add(TmpCar);
+                             
+                        //if (CurTechCars.count < MAX_CARS)   CurTechCars.Add(TmpCar);
+                        //These things are unruly, so we're setting a max life on them.
+                        Timeout(2*VEHICLE_LIFE_SEC, () =>
+                        {
+                            (MyCar as AiGroundActor).Destroy();
+                        });
+                        
+                        
+     
+                        MissionLoading = false;
+                    };
+                }             
+            }               
+        }
+    }
+      
+    
+    public override void OnTickGame() {
+      base.OnTickGame();
+      //try {
+              if ( (Time.tickCounter()) == 0) {
+                //  if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles started ", new object[] { });
+              
+              }
+              
+          if (Time.tickCounter() % 64 == 0)
+          {   
+              //if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles continues . . . ", new object[] { });
+              for (int i = 0; i < CurPlanesQueue.Count; i++)
+              { 
+                  CurPlanesQueue[i].Lifetime++;
+                  if (DEBUG) GamePlay.gpLogServer(null, "Lifetime:  " + CurPlanesQueue[i].Lifetime, new object[] { });
+                  if ((CurPlanesQueue[i].State == ServiceType.NONE) || (CurPlanesQueue[i].aircraft == null)  || (CurPlanesQueue[i].Lifetime > (int)((double)VEHICLE_LIFE_SEC*TICKS_PER_MINUTE/64/60))) 
+                  {
+                      foreach ( TechCars car in CurTechCars ) //don't use a for count/index loop here as we are destroying some of the objects mid-loop . . . arghh 
+                      {
+                          
+                          if (car.servPlaneNum == i) {
+                              if (DEBUG) GamePlay.gpLogServer(null, "Removing ground car for plane " + car.servPlaneNum + " " + car.CarType + " in 5 seconds", new object[] { }); 
+                              //EndPlaneService(j);
+                              Timeout ( 5f, () => { EndPlaneService(car, car.TechCar); });
+                              
+                          }    
+                      }        
+                      CurPlanesQueue.RemoveAt(i); 
+                  }                  
+              };
+
+              foreach ( TechCars car in CurTechCars )  // (int i = 0; i < CurTechCars.Count; i++)       //again ix-nay on the loop-for-ay . . . .
+              {
+                  if (DEBUG) GamePlay.gpLogServer(null, "Ground car at " + car.BaseAirport.Name(), new object[] { }); 
+                  //TechCars car = CurTechCars[i];
+                  if ((car.TechCar != null && car.cur_rp != null) && (car.cur_rp.State == RecalcPathState.SUCCESS) )
+                  {
+                      if (car.TechCar.IsAlive()) // && (car.RouteFlag == 0)) // && (car.servPlaneNum != -1))
+                      {
+                          car.RouteFlag = 1;
+                          car.cur_rp.Path[0].P.x = car.TechCar.Pos().x; car.cur_rp.Path[0].P.y = car.TechCar.Pos().y;
+                          car.TechCar.SetWay(car.cur_rp.Path);
+                          //if (car.servPlaneNum != -1) car.RouteFlag = 0;
+                      }
+                      
+                      //The code below avoids the current plane, right?  But, I'm worried about these ground vehicles hitting **all the other planes** that might be about this particular airport . . . . maybe some fixup needed
+                      double Dist = Math.Sqrt((car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) + (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y));
+                      if (car.servPlaneNum != -1)
+                      {
+                          if (Dist < ((CurPlanesQueue[car.servPlaneNum].aircraft.Type() == AircraftType.Bomber) ? 20f : 10f))
+                              //EndPlaneService(i);
+                              EndPlaneService(car, car.TechCar);
+                      }
+                      else if (Dist < 15f)
+                      {                          
+                          //EndPlaneService(i);
+                          EndPlaneService(car, car.TechCar);
+                      }
+                  }        
+                  if ((car.cur_rp == null) && (car.RouteFlag == 0) && (car.servPlaneNum != -1))
+                  {
+                          //EndPlaneService(car, car.TechCar);                      
+                  };
+                  if (car.servPlaneNum == -1 || car.TechCar == null) 
+                      //EndPlaneService(i);  //Once it is no longer serving a plane, we just zap it.
+                      EndPlaneService(car, car.TechCar);
+              };
+          }
+        
+      //} catch (Exception e) {System.Console.WriteLine (e.ToString());}
+    }
+    
+
+
+   
+    internal BasePos FindNearestAirport(AiActor actor)
+    {
+        if (actor==null) return null;
+        Point3d pd = actor.Pos();
+        if (DEBUG) GamePlay.gpLogServer(null, "Checking airport " + actor.Name(), new object[] { });
+        return FindNearestAirport(pd) as BasePos;
+
+    }
+
+    internal BasePos FindNearestAirport(Point3d pd)
+    {
+        
+        AiActor aMin = null;
+        AiBirthPlace aMinB = null;
+        double d2Min = 0;
+        BasePos ret=null;  
+        Point3d retpd;      
+        
+        //If we find a birthplace (ie, spawnpoint) closer than 2km we return that
+        //otherwise we'll search all airports for something closer
+        //And . . AiBirthPlace & AiAirport & AiActor are ALMOST the same thing but then again not quite so we have to dance a bit. 
+  
+        aMinB=FindNearestBirthplace(pd);
+        //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) found " + aMinB.Name() + " " + aMinB.Pos().distance(ref pd).ToString("F0"), new object[] { });
+        //if (1==0 && aMinB!= null) {
+        if (aMinB!= null) {
+         
+         d2Min=aMinB.Pos().distance(ref pd);
+         //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) found " + aMinB.Name() + " " + aMinB.Pos().distance(ref pd).ToString("F0") 
+         //+ " "  + aMinB.Pos().ToString(), new object[] { });
+         
+         if (d2Min<2000) {
+            retpd=aMinB.Pos();
+            if (retpd.z==0) retpd.z = pd.z; //BirthPlaces usu. have elevation 0 which makes the ai route finder die horribly 
+            ret= new BasePos (aMinB.Name(), retpd);
+            return ret;
+         }   
+        }          
+        
+        if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) NOfound " + d2Min.ToString("F0"), new object[] { });
+                
+        int n = GamePlay.gpAirports().Length;
+        for (int i = 0; i < n; i++)
+        {
+            AiActor a = (AiActor)GamePlay.gpAirports()[i];
+            
+            
+
+            if (!a.IsAlive())
+                continue;
+            
+            //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport " + a.Name(), new object[] { });
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            double d2 = pd.distanceSquared(ref pp);                           
+            if ((aMin == null) || (d2 < d2Min)  )
+            {
+                aMin = a;
+                d2Min = d2;              
+            }
+        }
+        if (d2Min > 2250000.0)
+            aMin = null;
+        
+        //return aMin as AiActor;
+        
+        if (aMin != null) ret= new BasePos (aMin.Name(), aMin.Pos());
+        return ret;
+    }
+    
+    public AiBirthPlace GetBirthPlaceByName(string birthPlaceName)
+    {
+        foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+        {
+            if (DEBUG) GamePlay.gpLogServer(null, "Checking airport " + bp.Name(), new object[] { });
+            if (bp.Name() == birthPlaceName)
+                return bp;
+        }
+
+        return null;
+    }
+
+
+    public AiBirthPlace FindNearestBirthplace(AiActor actor)
+    {
+        //AiBirthPlace nearestBirthplace = null;
+        //AiBirthPlace[] birthPlaces = GamePlay.gpBirthPlaces();
+
+        Point3d pos = actor.Pos();
+
+        return FindNearestBirthplace(pos);
+    }
+    
+    public AiBirthPlace FindNearestBirthplace (Point3d pos)
+    {
+        AiBirthPlace nearestBirthplace = null;
+        AiBirthPlace[] birthPlaces = GamePlay.gpBirthPlaces();
+
+        if (birthPlaces != null)
+        {
+            foreach (AiBirthPlace airport in birthPlaces)
+            {
+                if (nearestBirthplace != null)
+                {
+                    //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport " + airport.Name() + " " 
+                    //  + airport.Pos().distance(ref pos).ToString("F0"), new object[] { });
+                    if (nearestBirthplace.Pos().distance(ref pos) > airport.Pos().distance(ref pos))
+                        nearestBirthplace = airport;
+                }
+                else nearestBirthplace = airport;
+            }
+        }
+        //AiActor ret=new AiActor();
+        //ret.Pos( nearestBirthplace.Pos());
+        //ret.Name(nearestBirthplace.Name()); 
+        if (DEBUG) GamePlay.gpLogServer(null, "Checking airport FOUND" + nearestBirthplace.Name() + " " 
+                      + nearestBirthplace.Pos().distance(ref pos).ToString("F0"), new object[] { });
+        return nearestBirthplace;
+    }    
+    
+
+
+    internal ISectionFile CreateEmrgCarMission(Point3d startPos, double fRadius, int portArmy, int planeArmy, AircraftType type, float health, Point3d aircraftPos, bool reverse=false, ServiceType planeState=ServiceType.NONE )
+    //Note that planeState isn't actually used below . . . health is, plus
+    //a/c type, army, etc.
+    {   ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value, value1, value2;
+        string ChiefName1 = "0_Chief_" + (health < 1f ? "Fire_" : "Fuel_");
+        string ChiefName2 = "0_Chief_" + (health < 1f ? "Emrg_" : "Ammo_");
+        string ChiefName3 = "0_Chief_" + (health < 1f ? "Bomb_" : "Bomb_");
+
+        //startPos=aircraftPos; //bhugh special, we're just going to spawn them in very near the actual a/c
+        if (DEBUG) GamePlay.gpLogServer(null, "Ground car group created at " + startPos.ToString () + " for " + aircraftPos.ToString () + " " + FindNearestAirport(aircraftPos).Name(), new object[] { });
+        if (portArmy == planeArmy) //???? ????????
+        {
+            switch (portArmy)
+            {
+                case 1:
+                    if (health < 1f)
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma"; //???????
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_1 $core/icons/tank.mma";//??????
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Austin_K2_ATV";
+                        value = "";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Fire_pump_UK2_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+                        sect = "Vehicle.custom_chief_emrg_1";
+                        key = "Car.Austin_K2_Ambulance";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Chiefs";
+                        key = "0_Chief_Fire_0";
+                        value = "Vehicle.custom_chief_emrg_0 gb /skin0 materialsSummer_RAF";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Emrg_1";
+                        value = "Vehicle.custom_chief_emrg_1 gb /skin0 materialsSummer_RAF";
+                        f.add(sect, key, value);
+                    }
+                    else
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma";
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_1 $core/icons/tank.mma";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_0"; // ??????????
+                        key = "Car.Albion_AM463";
+                        value = "";
+                        f.add(sect, key, value);
+                        if (type == AircraftType.Bomber)  // ??? ???????? ?????? ??????? ? ????? ????????
+                        {
+                            key = "Car.Fordson_N";
+                            value = "";
+                            f.add(sect, key, value);
+                            key = "TrailerUnit.Towed_Bowser_UK1_Transport";
+                            value = "1";
+                            f.add(sect, key, value);
+                        }
+
+                        sect = "Vehicle.custom_chief_emrg_1"; // ??????
+                        value = "";
+                        key = "Car.Bedford_MW_open";
+                        f.add(sect, key, value);
+
+
+                        if (type == AircraftType.Bomber)  // ??? ???????? ????? ????????
+                        {
+                            sect = "CustomChiefs";
+                            key = "";
+                            value = "Vehicle.custom_chief_emrg_2 $core/icons/tank.mma";
+                            f.add(sect, key, value);
+                            sect = "Vehicle.custom_chief_emrg_2";
+                            value = "";
+                            key = "Car.Fordson_N";
+                            value = "";
+                            f.add(sect, key, value);
+                            key = "TrailerUnit.BombLoadingCart_UK1_Transport";
+                            value = "1";
+                            f.add(sect, key, value);
+                            key = "TrailerUnit.BombLoadingCart_UK1_Transport";
+                            f.add(sect, key, value);
+                        };
+
+                        sect = "Chiefs";
+                        key = "0_Chief_Fuel_0";
+                        value = "Vehicle.custom_chief_emrg_0 gb /skin0 materialsSummer_RAF";
+                        f.add(sect, key, value);
+
+                        key = "0_Chief_Ammo_1";
+                        value = "Vehicle.custom_chief_emrg_1 gb /skin0 materialsSummer_RAF/tow00_00 1_Static";
+                        f.add(sect, key, value);
+
+                        if (type == AircraftType.Bomber)
+                        {
+                            key = "0_Chief_Bomb_2";
+                            value = "Vehicle.custom_chief_emrg_2 gb /tow01_00 2_Static/tow01_01 3_Static/tow01_02 4_Static/tow01_03 5_Static/tow02_00 6_Static/tow02_01 7_Static";
+                            f.add(sect, key, value);
+                        }
+                        sect = "Stationary";
+                        key = "1_Static";
+                        value = "Stationary.Morris_CS8-Bedford_MW_CargoAmmo3 gb 0.00 0.00 0.00";
+                        f.add(sect, key, value);
+                        if (type == AircraftType.Bomber) // ????? ??????
+                        {
+                            key = "2_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_250lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "3_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_250lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "4_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_250lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "5_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_250lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "6_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_500lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "7_Static";
+                            value = "Stationary.Weapons_.Bomb_B_GP_500lb_MkIV gb 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                        };
+                    };
+                    break;
+                case 2:
+                    sect = "CustomChiefs";          //???????
+                    key = "";
+                    value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma";
+                    f.add(sect, key, value);
+                    value = "Vehicle.custom_chief_emrg_1 $core/icons/tank.mma";//??????
+                    f.add(sect, key, value);
+                    if (health < 1f)
+                    {
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Renault_UE";
+                        value = "";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Foam_Extinguisher_GER1_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_1";
+                        if (PseudoRnd(0f, 1f) < 0.5f)
+                        {
+                            key = "Car.Opel_Blitz_med-tent";
+                        }
+                        else { key = "Car.Opel_Blitz_cargo_med"; };
+                        value = "";
+                        f.add(sect, key, value);
+                        sect = "Chiefs";
+                        key = "0_Chief_Fire_0";// "0_Chief_emrg";
+                        value = "Vehicle.custom_chief_emrg_0 de ";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Emrg_1";// "0_Chief_emrg";
+                        value = "Vehicle.custom_chief_emrg_1 de ";
+                        f.add(sect, key, value);
+                    }
+                    else
+                    {
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Opel_Blitz_fuel";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_1";
+                        key = "Car.Renault_UE";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Oil_Cart_GER1_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+                        key = "Car.Renault_UE";
+                        value = "";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Anlasswagen_(starter)_GER1_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+
+                        if (type == AircraftType.Bomber) // ????? ??????
+                        {
+                            sect = "CustomChiefs";
+                            key = "";
+                            value = "Vehicle.custom_chief_emrg_2 $core/icons/tank.mma";
+                            f.add(sect, key, value);
+                            sect = "Vehicle.custom_chief_emrg_2";
+                            key = "Car.Renault_UE";
+                            value = "";
+                            f.add(sect, key, value);
+                            key = "TrailerUnit.HydraulicBombLoader_GER1_Transport";
+                            value = "1";
+                            f.add(sect, key, value);
+                            key = "Car.Renault_UE";
+                            value = "";
+                            f.add(sect, key, value);
+                            key = "TrailerUnit.BombSled_GER1_Transport";
+                            value = "1";
+                            f.add(sect, key, value);
+                        }
+
+                        sect = "Chiefs";
+                        key = "0_Chief_Fuel_0";
+                        value = "Vehicle.custom_chief_emrg_0 de";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Ammo_1";
+                        value = "Vehicle.custom_chief_emrg_1 de";
+                        f.add(sect, key, value);
+                        if (type == AircraftType.Bomber)
+                        {
+                            key = "0_Chief_Bomb_2";
+                            value = "Vehicle.custom_chief_emrg_2 de /tow01_00 1_Static/tow03_00 2_Static";
+                            f.add(sect, key, value);
+                            sect = "Stationary";
+                            key = "1_Static";
+                            value = "Stationary.Weapons_.Bomb_B_SC-250_Type2_J de 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                            key = "2_Static";
+                            value = "Stationary.Weapons_.Bomb_B_SC-1000_C de 0.00 0.00 0.00";
+                            f.add(sect, key, value);
+                        };
+                    };
+                    break;
+                default:
+                    break;
+
+            }
+        }
+        else
+        {
+            switch (portArmy)
+            {
+                case 1:
+                    if (health < 1f)
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma"; //???????
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_1 $core/icons/tank.mma";//??????
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_2 $core/icons/tank.mma";//????????
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Austin_K2_ATV";
+                        value = "";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Fire_pump_UK2_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_1";
+                        key = "Car.Austin_K2_Ambulance";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_2";
+                        key = "Car.Beaverette_III";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Chiefs";
+                        key = "0_Chief_Fire_0";
+                        value = "Vehicle.custom_chief_emrg_0 gb /skin0 materialsSummer_RAF";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Emrg_1";
+                        value = "Vehicle.custom_chief_emrg_1 gb /skin0 materialsSummer_RAF";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Prisoner_2";
+                        value = "Vehicle.custom_chief_emrg_2 gb ";
+                        f.add(sect, key, value);
+                        ChiefName3 = "0_Chief_Prisoner_";
+
+                    }
+                    else
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma"; //???????
+                        f.add(sect, key, value);
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Beaverette_III";
+                        value = "";
+                        f.add(sect, key, value);
+                        sect = "Chiefs";
+                        key = "0_Chief_Prisoner_0";
+                        value = "Vehicle.custom_chief_emrg_0 gb ";
+                        f.add(sect, key, value);
+                        ChiefName1 = "0_Chief_Prisoner_";
+                    };
+                    break;
+                case 2:
+                    if (health < 1f)
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma"; //???????
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_1 $core/icons/tank.mma";//??????
+                        f.add(sect, key, value);
+                        value = "Vehicle.custom_chief_emrg_2 $core/icons/tank.mma";//????????
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.Renault_UE";
+                        value = "";
+                        f.add(sect, key, value);
+                        key = "TrailerUnit.Foam_Extinguisher_GER1_Transport";
+                        value = "1";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_1";
+                        key = "Car.Opel_Blitz_cargo_med";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Vehicle.custom_chief_emrg_2";
+                        key = "Car.SdKfz_231_6Rad";
+                        value = "";
+                        f.add(sect, key, value);
+
+                        sect = "Chiefs";
+                        key = "0_Chief_Fire_0";
+                        value = "Vehicle.custom_chief_emrg_0 de";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Emrg_1";
+                        value = "Vehicle.custom_chief_emrg_1 de";
+                        f.add(sect, key, value);
+                        key = "0_Chief_Prisoner_2";
+                        value = "Vehicle.custom_chief_emrg_2 de /marker0 1940-42_var1";
+                        f.add(sect, key, value);
+                        ChiefName3 = "0_Chief_Prisoner_";
+
+                    }
+                    else
+                    {
+                        sect = "CustomChiefs";
+                        key = "";
+                        value = "Vehicle.custom_chief_emrg_0 $core/icons/tank.mma"; //???????
+                        f.add(sect, key, value);
+                        sect = "Vehicle.custom_chief_emrg_0";
+                        key = "Car.SdKfz_231_6Rad";
+                        value = "";
+                        f.add(sect, key, value);
+                        sect = "Chiefs";
+                        key = "0_Chief_Prisoner_0";
+                        value = "Vehicle.custom_chief_emrg_0 de /marker0 1940-42_var1";
+                        f.add(sect, key, value);
+                        ChiefName1 = "0_Chief_Prisoner_";
+                    };
+                    break;
+                default:
+                    break;
+            };
+        }
+
+        //Instead of starting way out of sight, we're going to start
+        //in the direction of the startPos, but at distance dis, which
+        //is closer in to the a/c
+        Point3d closerStartPos=startPos;
+        if (!reverse) {      
+          double dis=SPAWN_START_DISTANCE_M;
+          closerStartPos.x = aircraftPos.x+ dis * ((startPos.x - aircraftPos.x) / Math.Abs(startPos.x - aircraftPos.x)); closerStartPos.y = aircraftPos.y + dis * ((startPos.y - aircraftPos.y) / Math.Abs(startPos.y - aircraftPos.y));                     
+        }
+        Point3d TmpStartPos = closerStartPos;
+        TmpStartPos.x += PseudoRnd(-30f, 30f) + fRadius; TmpStartPos.y += PseudoRnd(-30f, 30f) + fRadius; 
+        Point3d BirthPos = EmrgVehicleStartPos(TmpStartPos, startPos);        
+        double disx, disy;
+        
+        sect = ChiefName1+"0" + "_Road";
+        key = "";
+        value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";
+        Console.WriteLine(value1);
+        //BirthPos.x -= 50f * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)); BirthPos.y -= 50f * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y));
+
+        double edis=SPAWN_END_DISTANCE_M; //how far away from the plane we stop, when driving in towards it.
+        if (reverse) edis= SPAWN_START_DISTANCE_REVERSE_M; //IN CASE OF reverse we call this the 'start' distance because we are starting rather then ending here.  (Thus the name, 'reverse').  This tells where the vehicles start, when starting close & then driving out away from the a/c.  
+        disx=Math.Abs(BirthPos.x - aircraftPos.x) - (edis-2);
+        if (disx<(edis-2)) disx=(edis-2);
+        disy=Math.Abs(BirthPos.y - aircraftPos.y) - edis;
+        if (disy<edis) disy=edis;
+
+        BirthPos.x -= disx * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)); BirthPos.y -= disy * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y));
+        value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";;
+        Console.WriteLine(value2);
+        
+        if (reverse ) {
+          f.add(sect, key, value2);
+          f.add(sect, key, value1);
+        }else {
+          f.add(sect, key, value1);
+          f.add(sect, key, value2);
+        }  
+
+        TmpStartPos = closerStartPos;
+        TmpStartPos.x += PseudoRnd(-30f, 30f) - fRadius; TmpStartPos.y += PseudoRnd(-30f, 30f) + fRadius;
+        BirthPos = EmrgVehicleStartPos(TmpStartPos, startPos);
+        //BirthPos = TmpStartPos;
+        sect = ChiefName2+"1" + "_Road";
+        key = "";
+        value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";        
+        Console.WriteLine(value1);
+        
+        disx=Math.Abs(BirthPos.x - aircraftPos.x) - (edis+1);
+        if (disx<10) disx=(edis+1);
+        disy=Math.Abs(BirthPos.y - aircraftPos.y) - (edis-2);
+        if (disy<(edis-2)) disy=(edis-2);
+
+        BirthPos.x -= disx * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)); BirthPos.y -= disy * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y));
+
+        value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)  + "  0 92 5 ";;
+        Console.WriteLine(value2);
+        
+        if (reverse ) {
+          f.add(sect, key, value2);
+          f.add(sect, key, value1);
+        }else {
+          f.add(sect, key, value1);
+          f.add(sect, key, value2);
+        }  
+
+
+        TmpStartPos = closerStartPos;
+        TmpStartPos.x += PseudoRnd(-30f, 30f) + fRadius; TmpStartPos.y += PseudoRnd(-30f, 30f) - fRadius;
+        BirthPos = EmrgVehicleStartPos(TmpStartPos, startPos);
+        
+        sect = ChiefName3 + "2" + "_Road";
+        key = "";
+        value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";
+        Console.WriteLine(value1);
+        
+        disx=Math.Abs(BirthPos.x - aircraftPos.x) - (edis-1);
+        if (disx<(edis-1)) disx=(edis-1);
+        disy=Math.Abs(BirthPos.y - aircraftPos.y) - (edis+2);
+        if (disy<(edis+2)) disy=(edis+2);
+
+        BirthPos.x -= disx * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)); BirthPos.y -= disy * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y));
+        value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";;
+        Console.WriteLine(value2);
+         if (reverse ) {
+          f.add(sect, key, value2);
+          f.add(sect, key, value1);
+        }else {
+          f.add(sect, key, value1);
+          f.add(sect, key, value2);
+        }  
+        
+        return f;
+    }
+
+
+    internal Point3d EmrgVehicleStartPos(Point3d startPos, Point3d endPos)
+    {
+        Point3d TmpPos = startPos;
+
+        while (((GamePlay.gpLandType(TmpPos.x, TmpPos.y) & LandTypes.WATER) != 0) ) 
+        {
+            TmpPos.x -= (TmpPos.x - endPos.x) / 10f;
+            TmpPos.y -= (TmpPos.y - endPos.y) / 10f;
+        };
+
+        return TmpPos;
+    }
+
+    internal void CheckEmrgCarOnAirport(int aircraftNumber)
+    {
+        // ????????? ???? ?? ??????? ? ?????????         
+        //MissionLoading=false; //kludgy fix, this seems to be in place to avoid mission load loops or something, but it doesn't work
+        AiGroundGroup MyCar = null;   
+         /****for unknown reasons, the section below just doesn't work, so 
+          *we are not using it          
+         if (DEBUG) GamePlay.gpLogServer(null, "Checking if cars on an airport " + CurPlanesQueue[aircraftNumber].baseAirport.Name(), new object[] { });     
+        for (int i = 0; i < CurTechCars.Count; i++)
+          {
+              if (CurTechCars[i].TechCar != null )
+              {                                                             
+                  if (DEBUG) GamePlay.gpLogServer(null, "Checking cars on an airport 1 " + ( ( ~ServiceType.SPAWNIN & CurTechCars[i].CarType) == (ServiceType.SPAWNIN & CurPlanesQueue[aircraftNumber].State)).ToString() + " " +  CurPlanesQueue[aircraftNumber].State.ToString() + " " + CurTechCars[i].CarType.ToString(), new object[] { });
+                  
+                  if (CurTechCars[i].TechCar.IsAlive() && CurTechCars[i].BaseAirport == CurPlanesQueue[aircraftNumber].baseAirport && (( CurTechCars[i].CarType & CurPlanesQueue[aircraftNumber].State) != 0 )) //can reuse cars if car type matches ANY of the plane states
+                  {
+                    //MissionLoading = false;
+                    
+                    
+                    if ((CurTechCars[i].cur_rp == null) && (CurTechCars[i].RouteFlag == 0) && (CurTechCars[i].servPlaneNum == -1)) // ???? ????? ??? ???? - ???????? ????????
+                        MyCar = CurTechCars[i].TechCar;
+                        if (DEBUG) GamePlay.gpLogServer(null, "Re-using an old car group & setting new route at " + CurPlanesQueue[aircraftNumber].baseAirport.Name(), new object[] { });
+                        SetEmrgCarRoute(aircraftNumber, i);                               
+                    }
+              }
+          };             
+        if ((MyCar == null) && !MissionLoading)
+        */
+        {           
+            if (DEBUG) GamePlay.gpLogServer(null, "Creating a new car group at " + CurPlanesQueue[aircraftNumber].baseAirport.Name()  + " for " + aircraftNumber, new object[] { }); 
+            MissionLoading = true;
+            MissionLoadingAircraftNumber=aircraftNumber;
+            int ArmyPos = 0;
+            if (GamePlay.gpFrontExist())
+            {
+                ArmyPos = GamePlay.gpFrontArmy(CurPlanesQueue[aircraftNumber].baseAirport.Pos().x, CurPlanesQueue[aircraftNumber].baseAirport.Pos().y);
+            }
+            else { ArmyPos = CurPlanesQueue[aircraftNumber].aircraft.Army(); };            
+            // ??????? ?????? ? ?????????
+            //In case of spawn-in, we reverse the direction making it away from the plane.  
+            
+            if (DEBUG) GamePlay.gpLogServer(null, "Creating a new car group at " + ((int)CurPlanesQueue[aircraftNumber].State).ToString()+" " + ((int)ServiceType.SPAWNIN).ToString()+ " " + ( ((int)CurPlanesQueue[aircraftNumber].State & (int)ServiceType.SPAWNIN) ==0  ).ToString(), new object[] { });
+                                                 
+            bool reverse=true;
+            if ( ((int)CurPlanesQueue[aircraftNumber].State & (int)ServiceType.SPAWNIN) ==0  ) reverse=false;
+                        
+              GamePlay.gpPostMissionLoad(CreateEmrgCarMission(CurPlanesQueue[aircraftNumber].baseAirport.Pos(), CAR_POS_RADIUS, ArmyPos, CurPlanesQueue[aircraftNumber].aircraft.Army(), CurPlanesQueue[aircraftNumber].aircraft.Type(),CurPlanesQueue[aircraftNumber].health, CurPlanesQueue[aircraftNumber].aircraft.Pos(), reverse, CurPlanesQueue[aircraftNumber].State));
+             
+            
+        }        
+        return ;
+    }
+
+    public override void OnAircraftLanded (int missionNumber, string shortName, AiAircraft aircraft) 
+    {
+    base.OnAircraftLanded(missionNumber, shortName, aircraft);  
+    /*public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    { 
+        base.OnAircraftLanded(missionNumber, shortName, aircraft); */
+        
+        StartVehiclesForAircraft (aircraft );
+    } 
+
+
+    public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+       base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+     /*{
+     
+        Timeout(5, () =>
+        {
+            aircraft.Destroy();
+        });
+    }*/
+    
+    
+    StartVehiclesForAircraft (aircraft );
+    
+    } 
+
+//TODO: For bombers, this will re-spawn vehicles whenever they change places
+
+public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex) 
+  {
+        base.OnPlaceEnter(player, actor, placeIndex);
+    
+        AiAircraft aircraft= actor as AiAircraft;
+        
+        if (DEBUG) GamePlay.gpLogServer(null, "Place Enter: " + 
+          player.Name() + " " + 
+          actor.Name() + " " + 
+          placeIndex.ToString() + " " , new object[] { });
+          
+        //do this only once per actor (avoids many multiple vehicle spawn-ins whwenever bomber players move between positions, triggering this OnplaceEnter repeatedly)
+        if (!actorPlaceEnterList.Contains(actor)) StartVehiclesForAircraft (aircraft, true ); //this is spawn-in, so we reverse vehicle direction
+        
+        actorPlaceEnterList.Add(actor);
+        
+    }  
+    
+
+    public override void OnCarter(AiActor actor, int placeIndex)
+    {
+        base.OnCarter(actor, placeIndex);
+    
+        AiAircraft aircraft= actor as AiAircraft;
+        
+        if (DEBUG) GamePlay.gpLogServer(null, "OnCarter: " +            
+          actor.Name() + " " + 
+          placeIndex.ToString() + " " , new object[] { });
+        
+    }
+
+    public override void OnPersonMoved(AiPerson person, AiActor fromCart, int fromPlaceIndex)
+    {
+        base.OnPersonMoved(person, fromCart, fromPlaceIndex);
+    
+        AiAircraft aircraft= fromCart as AiAircraft;
+        
+        if (DEBUG) GamePlay.gpLogServer(null, "OnPersonMoved: " +            
+          fromCart.Name() + " " +
+          person.Name() + " " + 
+          fromPlaceIndex.ToString() + " " , new object[] { });
+        
+    }
+       
+    
+    /*public override void OnAircraftTookOff(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        #region stats
+        base.OnAircraftTookOff(missionNumber, shortName, aircraft);
+        try
+        {
+        //AiAircraft aircraft= actor as AiAircraft;
+        
+        if (DEBUG) GamePlay.gpLogServer(null, "Starting vehicle/took off", new object[] { });
+        }
+        catch (Exception e) {System.Console.WriteLine (e.ToString());}
+        }
+        #endregion
+        //add your code here
+    } */
+    
+    
+    public override void OnAircraftDamaged(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, NamedDamageTypes damageType)
+    {
+        
+        base.OnAircraftDamaged(missionNumber, shortName, aircraft, initiator, damageType);
+        try
+        {
+            //just keep a list of all damaged aircraft
+            aircraftDamagedList.Add(aircraft);                             
+
+        }
+        catch (Exception e) {System.Console.WriteLine (e.ToString());}
+        
+        //add your code here
+    }
+
+    public override void OnAircraftCutLimb(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, LimbNames limbName)    
+    {
+        
+        base.OnAircraftCutLimb(missionNumber, shortName, aircraft, initiator, limbName);
+        try
+        {
+            //just keep a list of all damaged aircraft
+            aircraftDamagedList.Add(aircraft);
+        }
+        catch (Exception e) {System.Console.WriteLine (e.ToString());}
+            
+    }         
+    
+    public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
+    {
+        #region stb
+        base.OnActorDead(missionNumber, shortName, actor, damages);
+        try
+        {   
+           if (actor as AiAircraft != null )
+              StartVehiclesForAircraft (actor as AiAircraft ); 
+        }
+        catch (Exception e) {System.Console.WriteLine (e.ToString());}
+        #endregion
+        //add your code here
+    }
+  
+
+     public void StartVehiclesForAircraft (AiAircraft aircraft, bool spawnIn=false ) {
+             
+        if (aircraft==null ||  !isAiControlledPlane2(aircraft) ) return;
+        BasePos NearestAirport = FindNearestAirport(aircraft);          
+
+        if (DEBUG) GamePlay.gpLogServer(null, "Starting vehicles at " + NearestAirport.Name(), new object[] { });
+        
+        if (NearestAirport != null)
+        {
+            
+            PlanesQueue CurPlane = new PlanesQueue(aircraft, NearestAirport, 0);
+            int ArmyPos = 0;
+            CurPlane.health = (float)aircraft.getParameter(part.ParameterTypes.M_Health, -1);
+            
+            if (aircraftDamagedList.Contains(aircraft)) CurPlane.health /=2;
+            //CurPlane.health=0; //testing
+            
+            ArrayList a = new ArrayList();
+            a = Battle.GetDamageInitiators(aircraft as AiActor);
+            if (a.Count>0) CurPlane.health=0.5F;//The plane has been hit . . .
+            if (DEBUG) GamePlay.gpLogServer(null, "Times a/c damaged: " + a.Count , new object[] { });
+            if (DEBUG) {
+              foreach (AiDamageInitiator ds in a) {
+               GamePlay.gpLogServer(null, "di = " + ds.Player.Name() , new object[] { });
+              }
+            }  
+             
+            
+            float cdam = (float)aircraft.getParameter(part.ParameterTypes.M_CabinDamage, 1);
+            float ndam = (float)aircraft.getParameter(part.ParameterTypes.M_NamedDamage, 1);
+           
+            //note that MANY of the CurPlane.States set below do not do anything
+            //because the actual type of ai vehicle spawned is determined
+            //in the createemrgcarmission method via various criteria including
+            //army, health, type of plane etc but not really using the states
+            //set here AT ALL. FYI. 
+            if (DEBUG) GamePlay.gpLogServer(null, "Health = " + CurPlane.health.ToString() + " " + cdam.ToString() + " " + ndam.ToString(), new object[] { });  
+            
+            if (spawnIn) CurPlane.State |= ServiceType.SPAWNIN;
+            if (GamePlay.gpFrontExist())
+            {
+                ArmyPos = GamePlay.gpFrontArmy(NearestAirport.Pos().x, NearestAirport.Pos().y);
+            }
+            else { ArmyPos = aircraft.Army(); };
+            //if (true || CurPlane.health < 1f) //testing
+            if (CurPlane.health < 1f)  
+            {
+                CurPlane.State |= ServiceType.EMERGENCY;
+                CurPlane.State |= ServiceType.FIRE;
+            }
+            else if (aircraft.Army() == ArmyPos)
+            {
+                CurPlane.State |= ServiceType.FUEL;
+                CurPlane.State |= ServiceType.AMMO;
+                if (aircraft.Type() == AircraftType.Bomber) CurPlane.State |= ServiceType.BOMBS;
+                CurPlane.State |= ServiceType.BOMBS;
+            };
+            //if (true || !(aircraft.Army() == ArmyPos)) CurPlane.State |= ServiceType.PRISONERCAPTURE; //testing
+            if (!(aircraft.Army() == ArmyPos)) CurPlane.State |= ServiceType.PRISONERCAPTURE;
+            if (!CurPlanesQueue.Contains(CurPlane))
+            {
+                if (DEBUG) GamePlay.gpLogServer(null, "Starting vehicles at " + NearestAirport.Name()+ " Type: " + CurPlane.State, new object[] { });
+                CurPlanesQueue.Add(CurPlane);
+                CheckEmrgCarOnAirport(CurPlanesQueue.Count - 1);                
+            }
+            else
+            {
+                for (int i = 0; i < CurPlanesQueue.Count; i++)
+                    if (CurPlanesQueue[i] == CurPlane)
+                    { 
+                        CheckEmrgCarOnAirport(i);                        
+                        break;
+                    }
+            }
+            CurPlane = null;
+        };
+
+     }
+    
+    
+     //Returns whether aircraft is an Ai plane (no humans in any seats)
+     private bool isAiControlledPlane2(AiAircraft aircraft)  
+     { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
+        if (aircraft == null) return false;
+        //check if a player is in any of the "places"
+        for (int i = 0; i < aircraft.Places(); i++)
+        {
+           if (aircraft.Player(i) != null) return false;
+        }
+        return true;
+     }
+     
+        
+     private string Left(string Original, int Count)
+     {      
+        if (Original == null || Original == string.Empty || Original.Length <
+        Count) {
+          return Original;
+        } else {
+          // Return a sub-string of the original string, starting at index 0.
+          return Original.Substring(0, Count);
+        }
+     }       
+
+
+}
+
+    public class HashSet<t> : ICollection<t>, ISerializable, IDeserializationCallback, ISet<t> { 
+ 
+        // store lower 31 bits of hash code 
+        private const int Lower31BitMask = 0x7FFFFFFF;
+        // factor used to increase hashset capacity
+        private const int GrowthFactor = 2;
+        // cutoff point, above which we won't do stackallocs. This corresponds to 100 integers. 
+        private const int StackAllocThreshold = 100;
+        // when constructing a hashset from an existing collection, it may contain duplicates, 
+        // so this is used as the max acceptable excess ratio of capacity to count. Note that 
+        // this is only used on the ctor and not to automatically shrink if the hashset has, e.g,
+        // a lot of adds followed by removes. Users must explicitly shrink by calling TrimExcess. 
+        // This is set to 3 because capacity is acceptable as 2x rounded up to nearest prime.
+        private const int ShrinkThreshold = 3;
+ 
+        // constants for serialization 
+        private const String CapacityName = "Capacity";
+        private const String ElementsName = "Elements"; 
+        private const String ComparerName = "Comparer"; 
+        private const String VersionName = "Version";
+  
+        private int[] m_buckets;
+        private Slot[] m_slots;
+        private int m_count;
+        private int m_lastIndex; 
+        private int m_freeList;
+        private IEqualityComparer<t> m_comparer; 
+        private int m_version; 
+ 
+        // temporary variable needed during deserialization 
+        private SerializationInfo m_siInfo;
+ 
+        #region Constructors
+  
+        public HashSet()
+            : this(EqualityComparer<t>.Default) { } 
+  
+        public HashSet(IEqualityComparer<t> comparer) {
+            if (comparer == null) { 
+                comparer = EqualityComparer<t>.Default;
+            }
+ 
+            this.m_comparer = comparer; 
+            m_lastIndex = 0;
+            m_count = 0; 
+            m_freeList = -1; 
+            m_version = 0;
+        } 
+ 
+        public HashSet(IEnumerable<t> collection)
+            : this(collection, EqualityComparer<t>.Default) { }
+  
+        /// <summary>
+        /// Implementation Notes: 
+        /// Since resizes are relatively expensive (require rehashing), this attempts to minimize 
+        /// the need to resize by setting the initial capacity based on size of collection.
+        /// </summary> 
+        /// <param name="collection">
+        /// <param name="comparer">
+        public HashSet(IEnumerable<t> collection, IEqualityComparer<t> comparer)
+            : this(comparer) { 
+            if (collection == null) {
+                throw new ArgumentNullException("collection"); 
+            } 
+ 
+            // to avoid excess resizes, first set size based on collection's count. Collection 
+            // may contain duplicates, so call TrimExcess if resulting hashset is larger than
+            // threshold
+            int suggestedCapacity = 0;
+            ICollection<t> coll = collection as ICollection<t>; 
+            if (coll != null) {
+                suggestedCapacity = coll.Count; 
+            } 
+            Initialize(suggestedCapacity);
+  
+            this.UnionWith(collection);
+            if ((m_count == 0 && m_slots.Length > HashHelpers.GetMinPrime()) ||
+                (m_count > 0 && m_slots.Length / m_count > ShrinkThreshold)) {
+                TrimExcess(); 
+            }
+        } 
+  
+        protected HashSet(SerializationInfo info, StreamingContext context) {
+            // We can't do anything with the keys and values until the entire graph has been 
+            // deserialized and we have a reasonable estimate that GetHashCode is not going to
+            // fail.  For the time being, we'll just cache this.  The graph is not valid until
+            // OnDeserialization has been called.
+            m_siInfo = info; 
+        }
+  
+        #endregion 
+ 
+        #region ICollection<t> methods 
+ 
+        /// <summary>
+        /// Add item to this hashset. This is the explicit implementation of the ICollection<t>
+        /// interface. The other Add method returns bool indicating whether item was added. 
+        /// </t></summary>
+        /// <param name="item">item to add 
+        void ICollection<t>.Add(T item) { 
+            AddIfNotPresent(item);
+        } 
+ 
+        /// <summary>
+        /// Remove all items from this set. This clears the elements but not the underlying
+        /// buckets and slots array. Follow this call by TrimExcess to release these. 
+        /// </summary>
+        public void Clear() { 
+            if (m_lastIndex > 0) { 
+                Debug.Assert(m_buckets != null, "m_buckets was null but m_lastIndex > 0");
+  
+                // clear the elements so that the gc can reclaim the references.
+                // clear only up to m_lastIndex for m_slots
+                Array.Clear(m_slots, 0, m_lastIndex);
+                Array.Clear(m_buckets, 0, m_buckets.Length); 
+                m_lastIndex = 0;
+                m_count = 0; 
+                m_freeList = -1; 
+            }
+            m_version++; 
+        }
+ 
+        /// <summary>
+        /// Checks if this hashset contains the item 
+        /// </summary>
+        /// <param name="item">item to check for containment 
+        /// <returns>true if item contained; false if not</returns> 
+        public bool Contains(T item) {
+            if (m_buckets != null) { 
+                int hashCode = InternalGetHashCode(item);
+                // see note at "HashSet" level describing why "- 1" appears in for loop
+                for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) {
+                    if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, item)) { 
+                        return true;
+                    } 
+                } 
+            }
+            // either m_buckets is null or wasn't found 
+            return false;
+        }
+ 
+        /// <summary> 
+        /// Copy items in this hashset to array, starting at arrayIndex
+        /// </summary> 
+        /// <param name="array">array to add items to 
+        /// <param name="arrayIndex">index to start at
+        public void CopyTo(T[] array, int arrayIndex) { 
+            CopyTo(array, arrayIndex, m_count);
+        }
+ 
+        /// <summary> 
+        /// Remove item from this hashset
+        /// </summary> 
+        /// <param name="item">item to remove 
+        /// <returns>true if removed; false if not (i.e. if the item wasn't in the HashSet)</returns>
+        public bool Remove(T item) { 
+            if (m_buckets != null) {
+                int hashCode = InternalGetHashCode(item);
+                int bucket = hashCode % m_buckets.Length;
+                int last = -1; 
+                for (int i = m_buckets[bucket] - 1; i >= 0; last = i, i = m_slots[i].next) {
+                    if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, item)) { 
+                        if (last < 0) { 
+                            // first iteration; update buckets
+                            m_buckets[bucket] = m_slots[i].next + 1; 
+                        }
+                        else {
+                            // subsequent iterations; update 'next' pointers
+                            m_slots[last].next = m_slots[i].next; 
+                        }
+                        m_slots[i].hashCode = -1; 
+                        m_slots[i].value = default(T); 
+                        m_slots[i].next = m_freeList;
+  
+                        m_count--;
+                        m_version++;
+                        if (m_count == 0) {
+                            m_lastIndex = 0; 
+                            m_freeList = -1;
+                        } 
+                        else { 
+                            m_freeList = i;
+                        } 
+                        return true;
+                    }
+                }
+            } 
+            // either m_buckets is null or wasn't found
+            return false; 
+        } 
+ 
+        /// <summary> 
+        /// Number of elements in this hashset
+        /// </summary>
+        public int Count {
+            get { return m_count; } 
+        }
+  
+        /// <summary> 
+        /// Whether this is readonly
+        /// </summary> 
+        bool ICollection<t>.IsReadOnly {
+            get { return false; }
+        }
+  
+        #endregion
+  
+        #region IEnumerable methods 
+ 
+        public Enumerator GetEnumerator() { 
+            return new Enumerator(this);
+        }
+ 
+        IEnumerator<t> IEnumerable<t>.GetEnumerator() { 
+            return new Enumerator(this);
+        } 
+  
+        IEnumerator IEnumerable.GetEnumerator() {
+            return new Enumerator(this); 
+        }
+ 
+        #endregion
+  
+        #region ISerializable methods
+  
+        [SecurityPermissionAttribute(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)] 
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
+            if (info == null) { 
+                throw new ArgumentNullException("info");
+            }
+ 
+            // need to serialize version to avoid problems with serializing while enumerating 
+            info.AddValue(VersionName, m_version);
+            info.AddValue(ComparerName, m_comparer, typeof(IEqualityComparer<t>)); 
+            info.AddValue(CapacityName, m_buckets == null ? 0 : m_buckets.Length); 
+            if (m_buckets != null) {
+                T[] array = new T[m_count]; 
+                CopyTo(array);
+                info.AddValue(ElementsName, array, typeof(T[]));
+            }
+        } 
+ 
+        #endregion 
+  
+        #region IDeserializationCallback methods
+  
+        public virtual void OnDeserialization(Object sender) {
+ 
+            if (m_siInfo == null) {
+                // It might be necessary to call OnDeserialization from a container if the 
+                // container object also implements OnDeserialization. However, remoting will
+                // call OnDeserialization again. We can return immediately if this function is 
+                // called twice. Note we set m_siInfo to null at the end of this method. 
+                return;
+            } 
+ 
+            int capacity = m_siInfo.GetInt32(CapacityName);
+            m_comparer = (IEqualityComparer<t>)m_siInfo.GetValue(ComparerName, typeof(IEqualityComparer<t>));
+            m_freeList = -1; 
+ 
+            if (capacity != 0) { 
+                m_buckets = new int[capacity]; 
+                m_slots = new Slot[capacity];
+  
+                T[] array = (T[])m_siInfo.GetValue(ElementsName, typeof(T[]));
+ 
+                if (array == null) {
+                    throw new SerializationException(SR.GetString(SR.Serialization_MissingKeys)); 
+                }
+  
+                // there are no resizes here because we already set capacity above 
+                for (int i = 0; i < array.Length; i++) {
+                    AddIfNotPresent(array[i]); 
+                }
+            }
+            else {
+                m_buckets = null; 
+            }
+  
+            m_version = m_siInfo.GetInt32(VersionName); 
+            m_siInfo = null;
+        } 
+ 
+        #endregion
+ 
+        #region HashSet methods 
+ 
+        /// <summary> 
+        /// Add item to this HashSet. Returns bool indicating whether item was added (won't be 
+        /// added if already present)
+        /// </summary> 
+        /// <param name="item">
+        /// <returns>true if added, false if already present</returns>
+        public bool Add(T item) {
+            return AddIfNotPresent(item); 
+        }
+  
+        /// <summary> 
+        /// Take the union of this HashSet with other. Modifies this set.
+        /// 
+        /// Implementation note: GetSuggestedCapacity (to increase capacity in advance avoiding
+        /// multiple resizes ended up not being useful in practice; quickly gets to the
+        /// point where it's a wasteful check.
+        /// </summary> 
+        /// <param name="other">enumerable with items to add
+        public void UnionWith(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            foreach (T item in other) {
+                AddIfNotPresent(item);
+            } 
+        }
+  
+        /// <summary> 
+        /// Takes the intersection of this set with other. Modifies this set.
+        /// 
+        /// Implementation Notes:
+        /// We get better perf if other is a hashset using same equality comparer, because we
+        /// get constant contains check in other. Resulting cost is O(n1) to iterate over this.
+        /// 
+        /// If we can't go above route, iterate over the other and mark intersection by checking
+        /// contains in this. Then loop over and delete any unmarked elements. Total cost is n2+n1. 
+        /// 
+        /// Attempts to return early based on counts alone, using the property that the
+        /// intersection of anything with the empty set is the empty set. 
+        /// </summary>
+        /// <param name="other">enumerable with items to add 
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: IntersectWithEnumerable(IEnumerable`1<T>):Void" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical] 
+        public void IntersectWith(IEnumerable<t> other) { 
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+ 
+            // intersection of anything with empty set is empty set, so return if count is 0
+            if (m_count == 0) { 
+                return;
+            } 
+  
+            // if other is empty, intersection is empty set; remove all elements and we're done
+            // can only figure this out if implements ICollection<t>. (IEnumerable<t> has no count) 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) {
+                if (otherAsCollection.Count == 0) {
+                    Clear(); 
+                    return;
+                } 
+  
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset using same equality comparer; so check 
+                // that other is a hashset using the same equality comparer.
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    IntersectWithHashSetWithSameEC(otherAsSet);
+                    return; 
+                }
+            } 
+  
+            IntersectWithEnumerable(other);
+        } 
+ 
+        /// <summary>
+        /// Remove items in other from this set. Modifies this set.
+        /// </summary> 
+        /// <param name="other">enumerable with items to remove
+        public void ExceptWith(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+            // this is already the enpty set; return
+            if (m_count == 0) {
+                return;
+            } 
+ 
+            // special case if other is this; a set minus itself is the empty set 
+            if (other == this) { 
+                Clear();
+                return; 
+            }
+ 
+            // remove every element in other from this
+            foreach (T element in other) { 
+                Remove(element);
+            } 
+        } 
+ 
+        /// <summary> 
+        /// Takes symmetric difference (XOR) with other and this set. Modifies this set.
+        /// </summary>
+        /// <param name="other">enumerable with items to XOR
+        // <securitykernel critical="True" ring="1"> 
+        // <referencescritical name="Method: SymmetricExceptWithEnumerable(IEnumerable`1<T>):Void" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical] 
+        public void SymmetricExceptWith(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            }
+ 
+            // if set is empty, then symmetric difference is other 
+            if (m_count == 0) {
+                UnionWith(other); 
+                return; 
+            }
+  
+            // special case this; the symmetric difference of a set with itself is the empty set
+            if (other == this) {
+                Clear();
+                return; 
+            }
+  
+            HashSet<t> otherAsSet = other as HashSet<t>; 
+            // If other is a HashSet, it has unique elements according to its equality comparer,
+            // but if they're using different equality comparers, then assumption of uniqueness 
+            // will fail. So first check if other is a hashset using the same equality comparer;
+            // symmetric except is a lot faster and avoids bit array allocations if we can assume
+            // uniqueness
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                SymmetricExceptWithUniqueHashSet(otherAsSet);
+            } 
+            else { 
+                SymmetricExceptWithEnumerable(other);
+            } 
+        }
+ 
+        /// <summary>
+        /// Checks if this is a subset of other. 
+        ///
+        /// Implementation Notes: 
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it's a subset of anything, including the empty set
+        /// 2. If other has unique elements according to this equality comparer, and this has more 
+        /// elements than other, then it can't be a subset.
+        ///
+        /// Furthermore, if other is a hashset using the same equality comparer, we can use a
+        /// faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a subset of other; false if not</returns> 
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical]
+        public bool IsSubsetOf(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+  
+            // The empty set is a subset of any set
+            if (m_count == 0) { 
+                return true;
+            }
+ 
+            HashSet<t> otherAsSet = other as HashSet<t>; 
+            // faster if other has unique elements according to this equality comparer; so check
+            // that other is a hashset using the same equality comparer. 
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                // if this has more elements then it can't be a subset
+                if (m_count > otherAsSet.Count) { 
+                    return false;
+                }
+ 
+                // already checked that we're using same equality comparer. simply check that 
+                // each element in this is contained in other.
+                return IsSubsetOfHashSetWithSameEC(otherAsSet); 
+            } 
+            else {
+                ElementCount result = CheckUniqueAndUnfoundElements(other, false); 
+                return (result.uniqueCount == m_count && result.unfoundCount >= 0);
+            }
+        }
+  
+        /// <summary>
+        /// Checks if this is a proper subset of other (i.e. strictly contained in) 
+        /// 
+        /// Implementation Notes:
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it's a proper subset of a set that contains at least
+        /// one element, but it's not a proper subset of the empty set.
+        /// 2. If other has unique elements according to this equality comparer, and this has >=
+        /// the number of elements in other, then this can't be a proper subset. 
+        ///
+        /// Furthermore, if other is a hashset using the same equality comparer, we can use a 
+        /// faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a proper subset of other; false if not</returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical]
+        public bool IsProperSubsetOf(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) {
+                // the empty set is a proper subset of anything but the empty set 
+                if (m_count == 0) {
+                    return otherAsCollection.Count > 0; 
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset (and we're using same equality comparer) 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    if (m_count >= otherAsSet.Count) {
+                        return false;
+                    } 
+                    // this has strictly less than number of items in other, so the following
+                    // check suffices for proper subset. 
+                    return IsSubsetOfHashSetWithSameEC(otherAsSet); 
+                }
+            } 
+ 
+            ElementCount result = CheckUniqueAndUnfoundElements(other, false);
+            return (result.uniqueCount == m_count && result.unfoundCount > 0);
+  
+        }
+  
+        /// <summary> 
+        /// Checks if this is a superset of other
+        /// 
+        /// Implementation Notes:
+        /// The following properties are used up-front to avoid element-wise checks:
+        /// 1. If other has no elements (it's the empty set), then this is a superset, even if this
+        /// is also the empty set. 
+        /// 2. If other has unique elements according to this equality comparer, and this has less
+        /// than the number of elements in other, then this can't be a superset 
+        /// 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a superset of other; false if not</returns>
+        public bool IsSupersetOf(IEnumerable<t> other) {
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+  
+            // try to fall out early based on counts 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) { 
+                // if other is the empty set then this is a superset
+                if (otherAsCollection.Count == 0) {
+                    return true;
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // try to compare based on counts alone if other is a hashset with 
+                // same equality comparer 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    if (otherAsSet.Count > m_count) { 
+                        return false;
+                    }
+                }
+            } 
+ 
+            return ContainsAllElements(other); 
+        } 
+ 
+        /// <summary> 
+        /// Checks if this is a proper superset of other (i.e. other strictly contained in this)
+        ///
+        /// Implementation Notes:
+        /// This is slightly more complicated than above because we have to keep track if there 
+        /// was at least one element not contained in other.
+        /// 
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it can't be a proper superset of any set, even if
+        /// other is the empty set. 
+        /// 2. If other is an empty set and this contains at least 1 element, then this is a proper
+        /// superset.
+        /// 3. If other has unique elements according to this equality comparer, and other's count
+        /// is greater than or equal to this count, then this can't be a proper superset 
+        ///
+        /// Furthermore, if other has unique elements according to this equality comparer, we can 
+        /// use a faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a proper superset of other; false if not</returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical]
+        public bool IsProperSupersetOf(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            // the empty set isn't a proper superset of any set.
+            if (m_count == 0) {
+                return false; 
+            }
+  
+            ICollection<t> otherAsCollection = other as ICollection<t>; 
+            if (otherAsCollection != null) {
+                // if other is the empty set then this is a superset 
+                if (otherAsCollection.Count == 0) {
+                    // note that this has at least one element, based on above check
+                    return true;
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset with the same equality comparer 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                    if (otherAsSet.Count >= m_count) {
+                        return false; 
+                    }
+                    // now perform element check
+                    return ContainsAllElements(otherAsSet);
+                } 
+            }
+            // couldn't fall out in the above cases; do it the long way 
+            ElementCount result = CheckUniqueAndUnfoundElements(other, true); 
+            return (result.uniqueCount < m_count && result.unfoundCount == 0);
+  
+        }
+ 
+        /// <summary>
+        /// Checks if this set overlaps other (i.e. they share at least one item) 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if these have at least one common element; false if disjoint</returns> 
+        public bool Overlaps(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            }
+            if (m_count == 0) {
+                return false; 
+            }
+  
+            foreach (T element in other) { 
+                if (Contains(element)) {
+                    return true; 
+                }
+            }
+            return false;
+        } 
+ 
+        /// <summary> 
+        /// Checks if this and other contain the same elements. This is set equality: 
+        /// duplicates and order are ignored
+        /// </summary> 
+        /// <param name="other">
+        /// <returns></returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical] 
+        public bool SetEquals(IEnumerable<t> other) { 
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+ 
+            HashSet<t> otherAsSet = other as HashSet<t>;
+            // faster if other is a hashset and we're using same equality comparer 
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                // attempt to return early: since both contain unique elements, if they have 
+                // different counts, then they can't be equal 
+                if (m_count != otherAsSet.Count) {
+                    return false; 
+                }
+ 
+                // already confirmed that the sets have the same number of distinct elements, so if
+                // one is a superset of the other then they must be equal 
+                return ContainsAllElements(otherAsSet);
+            } 
+            else { 
+                ICollection<t> otherAsCollection = other as ICollection<t>;
+                if (otherAsCollection != null) { 
+                    // if this count is 0 but other contains at least one element, they can't be equal
+                    if (m_count == 0 && otherAsCollection.Count > 0) {
+                        return false;
+                    } 
+                }
+                ElementCount result = CheckUniqueAndUnfoundElements(other, true); 
+                return (result.uniqueCount == m_count && result.unfoundCount == 0); 
+            }
+        } 
+ 
+        public void CopyTo(T[] array) { CopyTo(array, 0, m_count); }
+ 
+        public void CopyTo(T[] array, int arrayIndex, int count) { 
+            if (array == null) {
+                throw new ArgumentNullException("array"); 
+            } 
+ 
+            // check array index valid index into array 
+            if (arrayIndex < 0) {
+                throw new ArgumentOutOfRangeException("arrayIndex", SR.GetString(SR.ArgumentOutOfRange_NeedNonNegNum));
+            }
+  
+            // also throw if count less than 0
+            if (count < 0) { 
+                throw new ArgumentOutOfRangeException("count", SR.GetString(SR.ArgumentOutOfRange_NeedNonNegNum)); 
+            }
+  
+            // will array, starting at arrayIndex, be able to hold elements? Note: not
+            // checking arrayIndex >= array.Length (consistency with list of allowing
+            // count of 0; subsequent check takes care of the rest)
+            if (arrayIndex > array.Length || count > array.Length - arrayIndex) { 
+                throw new ArgumentException(SR.GetString(SR.Arg_ArrayPlusOffTooSmall));
+            } 
+  
+            int numCopied = 0;
+            for (int i = 0; i < m_lastIndex && numCopied < count; i++) { 
+                if (m_slots[i].hashCode >= 0) {
+                    array[arrayIndex + numCopied] = m_slots[i].value;
+                    numCopied++;
+                } 
+            }
+        } 
+  
+        /// <summary>
+        /// Remove elements that match specified predicate. Returns the number of elements removed 
+        /// </summary>
+        /// <param name="match">
+        /// <returns></returns>
+        public int RemoveWhere(Predicate<t> match) { 
+            if (match == null) {
+                throw new ArgumentNullException("match"); 
+            } 
+ 
+            int numRemoved = 0; 
+            for (int i = 0; i < m_lastIndex; i++) {
+                if (m_slots[i].hashCode >= 0) {
+                    // cache value in case delegate removes it
+                    T value = m_slots[i].value; 
+                    if (match(value)) {
+                        // check again that remove actually removed it 
+                        if (Remove(value)) { 
+                            numRemoved++;
+                        } 
+                    }
+                }
+            }
+            return numRemoved; 
+        }
+  
+        /// <summary> 
+        /// Gets the IEqualityComparer that is used to determine equality of keys for
+        /// the HashSet. 
+        /// </summary>
+        public IEqualityComparer<t> Comparer {
+            get {
+                return m_comparer; 
+            }
+        } 
+  
+        /// <summary>
+        /// Sets the capacity of this list to the size of the list (rounded up to nearest prime), 
+        /// unless count is 0, in which case we release references.
+        ///
+        /// This method can be used to minimize a list's memory overhead once it is known that no
+        /// new elements will be added to the list. To completely clear a list and release all 
+        /// memory referenced by the list, execute the following statements:
+        /// 
+        /// list.Clear(); 
+        /// list.TrimExcess();
+        /// </summary> 
+        public void TrimExcess() {
+            Debug.Assert(m_count >= 0, "m_count is negative");
+ 
+            if (m_count == 0) { 
+                // if count is zero, clear references
+                m_buckets = null; 
+                m_slots = null; 
+                m_version++;
+            } 
+            else {
+                Debug.Assert(m_buckets != null, "m_buckets was null but m_count > 0");
+ 
+                // similar to IncreaseCapacity but moves down elements in case add/remove/etc 
+                // caused fragmentation
+                int newSize = HashHelpers.GetPrime(m_count); 
+                Slot[] newSlots = new Slot[newSize]; 
+                int[] newBuckets = new int[newSize];
+  
+                // move down slots and rehash at the same time. newIndex keeps track of current
+                // position in newSlots array
+                int newIndex = 0;
+                for (int i = 0; i < m_lastIndex; i++) { 
+                    if (m_slots[i].hashCode >= 0) {
+                        newSlots[newIndex] = m_slots[i]; 
+  
+                        // rehash
+                        int bucket = newSlots[newIndex].hashCode % newSize; 
+                        newSlots[newIndex].next = newBuckets[bucket] - 1;
+                        newBuckets[bucket] = newIndex + 1;
+ 
+                        newIndex++; 
+                    }
+                } 
+  
+                Debug.Assert(newSlots.Length <= m_slots.Length, "capacity increased after TrimExcess");
+  
+                m_lastIndex = newIndex;
+                m_slots = newSlots;
+                m_buckets = newBuckets;
+                m_freeList = -1; 
+            }
+        } 
+  
+        /// <summary>
+        /// Used for deep equality of HashSet testing 
+        /// </summary>
+        /// <returns></returns>
+        public static IEqualityComparer<hashset<t>> CreateSetComparer() {
+            return new HashSetEqualityComparer<t>(); 
+        }
+  
+        #endregion 
+ 
+        #region Helper methods 
+ 
+        /// <summary>
+        /// Initializes buckets and slots arrays. Uses suggested capacity by finding next prime
+        /// greater than or equal to capacity. 
+        /// </summary>
+        /// <param name="capacity"> 
+        private void Initialize(int capacity) { 
+            Debug.Assert(m_buckets == null, "Initialize was called but m_buckets was non-null");
+  
+            int size = HashHelpers.GetPrime(capacity);
+ 
+            m_buckets = new int[size];
+            m_slots = new Slot[size]; 
+        }
+  
+        /// <summary> 
+        /// Expand to new capacity. New capacity is next prime greater than or equal to suggested
+        /// size. This is called when the underlying array is filled. This performs no 
+        /// defragmentation, allowing faster execution; note that this is reasonable since
+        /// AddIfNotPresent attempts to insert new elements in re-opened spots.
+        /// </summary>
+        /// <param name="sizeSuggestion"> 
+        private void IncreaseCapacity() {
+            Debug.Assert(m_buckets != null, "IncreaseCapacity called on a set with no elements"); 
+  
+            // Handle overflow conditions. Try to expand capacity by GrowthFactor. If that causes
+            // overflow, use size suggestion of m_count and see if HashHelpers returns a value 
+            // greater than that. If not, capacity can't be increased so throw capacity overflow
+            // exception.
+            int sizeSuggestion = unchecked(m_count * GrowthFactor);
+            if (sizeSuggestion < 0) { 
+                sizeSuggestion = m_count;
+            } 
+            int newSize = HashHelpers.GetPrime(sizeSuggestion); 
+            if (newSize <= m_count) {
+                throw new ArgumentException(SR.GetString(SR.Arg_HSCapacityOverflow)); 
+            }
+ 
+            // Able to increase capacity; copy elements to larger array and rehash
+            Slot[] newSlots = new Slot[newSize]; 
+            if (m_slots != null) {
+                Array.Copy(m_slots, 0, newSlots, 0, m_lastIndex); 
+            } 
+ 
+            int[] newBuckets = new int[newSize]; 
+            for (int i = 0; i < m_lastIndex; i++) {
+                int bucket = newSlots[i].hashCode % newSize;
+                newSlots[i].next = newBuckets[bucket] - 1;
+                newBuckets[bucket] = i + 1; 
+            }
+            m_slots = newSlots; 
+            m_buckets = newBuckets; 
+ 
+        } 
+ 
+        /// <summary>
+        /// Adds value to HashSet if not contained already
+        /// Returns true if added and false if already present 
+        /// </summary>
+        /// <param name="value">value to find 
+        /// <returns></returns> 
+        private bool AddIfNotPresent(T value) {
+            if (m_buckets == null) { 
+                Initialize(0);
+            }
+ 
+            int hashCode = InternalGetHashCode(value); 
+            int bucket = hashCode % m_buckets.Length;
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) { 
+                if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, value)) { 
+                    return false;
+                } 
+            }
+            int index;
+            if (m_freeList >= 0) {
+                index = m_freeList; 
+                m_freeList = m_slots[index].next;
+            } 
+            else { 
+                if (m_lastIndex == m_slots.Length) {
+                    IncreaseCapacity(); 
+                    // this will change during resize
+                    bucket = hashCode % m_buckets.Length;
+                }
+                index = m_lastIndex; 
+                m_lastIndex++;
+            } 
+            m_slots[index].hashCode = hashCode; 
+            m_slots[index].value = value;
+            m_slots[index].next = m_buckets[bucket] - 1; 
+            m_buckets[bucket] = index + 1;
+            m_count++;
+            m_version++;
+            return true; 
+        }
+  
+        /// <summary> 
+        /// Checks if this contains of other's elements. Iterates over other's elements and
+        /// returns false as soon as it finds an element in other that's not in this. 
+        /// Used by SupersetOf, ProperSupersetOf, and SetEquals.
+        /// </summary>
+        /// <param name="other">
+        /// <returns></returns> 
+        private bool ContainsAllElements(IEnumerable<t> other) {
+            foreach (T element in other) { 
+                if (!Contains(element)) { 
+                    return false;
+                } 
+            }
+            return true;
+        }
+  
+        /// <summary>
+        /// Implementation Notes: 
+        /// If other is a hashset and is using same equality comparer, then checking subset is 
+        /// faster. Simply check that each element in this is in other.
+        /// 
+        /// Note: if other doesn't use same equality comparer, then Contains check is invalid,
+        /// which is why callers must take are of this.
+        ///
+        /// If callers are concerned about whether this is a proper subset, they take care of that. 
+        ///
+        /// </summary> 
+        /// <param name="other"> 
+        /// <returns></returns>
+        private bool IsSubsetOfHashSetWithSameEC(HashSet<t> other) { 
+ 
+            foreach (T item in this) {
+                if (!other.Contains(item)) {
+                    return false; 
+                }
+            } 
+            return true; 
+        }
+  
+        /// <summary>
+        /// If other is a hashset that uses same equality comparer, intersect is much faster
+        /// because we can use other's Contains
+        /// </summary> 
+        /// <param name="other">
+        private void IntersectWithHashSetWithSameEC(HashSet<t> other) { 
+            for (int i = 0; i < m_lastIndex; i++) { 
+                if (m_slots[i].hashCode >= 0) {
+                    T item = m_slots[i].value; 
+                    if (!other.Contains(item)) {
+                        Remove(item);
+                    }
+                } 
+            }
+        } 
+  
+        /// <summary>
+        /// Iterate over other. If contained in this, mark an element in bit array corresponding to 
+        /// its position in m_slots. If anything is unmarked (in bit array), remove it.
+        ///
+        /// This attempts to allocate on the stack, if below StackAllocThreshold.
+        /// </summary> 
+        /// <param name="other">
+        // <securitykernel critical="True" ring="0"> 
+        // <usesunsafecode name="Local bitArrayPtr of type: Int32*"> 
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1">
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1"> 
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1">
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></securitykernel>
+        [System.Security.SecurityCritical]
+        private unsafe void IntersectWithEnumerable(IEnumerable<t> other) { 
+            Debug.Assert(m_buckets != null, "m_buckets shouldn't be null; callers should check first");
+  
+            // keep track of current last index; don't want to move past the end of our bit array 
+            // (could happen if another thread is modifying the collection)
+            int originalLastIndex = m_lastIndex; 
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+ 
+            BitHelper bitHelper;
+            if (intArrayLength <= StackAllocThreshold) { 
+                int* bitArrayPtr = stackalloc int[intArrayLength];
+                bitHelper = new BitHelper(bitArrayPtr, intArrayLength); 
+            } 
+            else {
+                int[] bitArray = new int[intArrayLength]; 
+                bitHelper = new BitHelper(bitArray, intArrayLength);
+            }
+ 
+            // mark if contains: find index of in slots array and mark corresponding element in bit array 
+            foreach (T item in other) {
+                int index = InternalIndexOf(item); 
+                if (index >= 0) { 
+                    bitHelper.MarkBit(index);
+                } 
+            }
+ 
+            // if anything unmarked, remove it. Perf can be optimized here if BitHelper had a
+            // FindFirstUnmarked method. 
+            for (int i = 0; i < originalLastIndex; i++) {
+                if (m_slots[i].hashCode >= 0 && !bitHelper.IsMarked(i)) { 
+                    Remove(m_slots[i].value); 
+                }
+            } 
+        }
+ 
+        /// <summary>
+        /// Used internally by set operations which have to rely on bit array marking. This is like 
+        /// Contains but returns index in slots array.
+        /// </summary> 
+        /// <param name="item"> 
+        /// <returns></returns>
+        private int InternalIndexOf(T item) { 
+            Debug.Assert(m_buckets != null, "m_buckets was null; callers should check first");
+ 
+            int hashCode = InternalGetHashCode(item);
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) { 
+                if ((m_slots[i].hashCode) == hashCode && m_comparer.Equals(m_slots[i].value, item)) {
+                    return i; 
+                } 
+            }
+            // wasn't found 
+            return -1;
+        }
+ 
+        /// <summary> 
+        /// if other is a set, we can assume it doesn't have duplicate elements, so use this
+        /// technique: if can't remove, then it wasn't present in this set, so add. 
+        /// 
+        /// As with other methods, callers take care of ensuring that other is a hashset using the
+        /// same equality comparer. 
+        /// </summary>
+        /// <param name="other">
+        private void SymmetricExceptWithUniqueHashSet(HashSet<t> other) {
+            foreach (T item in other) { 
+                if (!Remove(item)) {
+                    AddIfNotPresent(item); 
+                } 
+            }
+        } 
+ 
+        /// <summary>
+        /// Implementation notes:
+        /// 
+        /// Used for symmetric except when other isn't a HashSet. This is more tedious because
+        /// other may contain duplicates. HashSet technique could fail in these situations: 
+        /// 1. Other has a duplicate that's not in this: HashSet technique would add then 
+        /// remove it.
+        /// 2. Other has a duplicate that's in this: HashSet technique would remove then add it 
+        /// back.
+        /// In general, its presence would be toggled each time it appears in other.
+        ///
+        /// This technique uses bit marking to indicate whether to add/remove the item. If already 
+        /// present in collection, it will get marked for deletion. If added from other, it will
+        /// get marked as something not to remove. 
+        /// 
+        /// </summary>
+        /// <param name="other"> 
+        // <securitykernel critical="True" ring="0">
+        // <usesunsafecode name="Local itemsToRemovePtr of type: Int32*">
+        // <usesunsafecode name="Local itemsAddedFromOtherPtr of type: Int32*">
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1"> 
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1">
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1"> 
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></usesunsafecode></securitykernel> 
+        [System.Security.SecurityCritical]
+        private unsafe void SymmetricExceptWithEnumerable(IEnumerable<t> other) { 
+            int originalLastIndex = m_lastIndex;
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+ 
+            BitHelper itemsToRemove; 
+            BitHelper itemsAddedFromOther;
+            if (intArrayLength <= StackAllocThreshold / 2) { 
+                int* itemsToRemovePtr = stackalloc int[intArrayLength]; 
+                itemsToRemove = new BitHelper(itemsToRemovePtr, intArrayLength);
+  
+                int* itemsAddedFromOtherPtr = stackalloc int[intArrayLength];
+                itemsAddedFromOther = new BitHelper(itemsAddedFromOtherPtr, intArrayLength);
+            }
+            else { 
+                int[] itemsToRemoveArray = new int[intArrayLength];
+                itemsToRemove = new BitHelper(itemsToRemoveArray, intArrayLength); 
+  
+                int[] itemsAddedFromOtherArray = new int[intArrayLength];
+                itemsAddedFromOther = new BitHelper(itemsAddedFromOtherArray, intArrayLength); 
+            }
+ 
+            foreach (T item in other) {
+                int location = 0; 
+                bool added = AddOrGetLocation(item, out location);
+                if (added) { 
+                    // wasn't already present in collection; flag it as something not to remove 
+                    // *NOTE* if location is out of range, we should ignore. BitHelper will
+                    // detect that it's out of bounds and not try to mark it. But it's 
+                    // expected that location could be out of bounds because adding the item
+                    // will increase m_lastIndex as soon as all the free spots are filled.
+                    itemsAddedFromOther.MarkBit(location);
+                } 
+                else {
+                    // already there...if not added from other, mark for remove. 
+                    // *NOTE* Even though BitHelper will check that location is in range, we want 
+                    // to check here. There's no point in checking items beyond originalLastIndex
+                    // because they could not have been in the original collection 
+                    if (location < originalLastIndex && !itemsAddedFromOther.IsMarked(location)) {
+                        itemsToRemove.MarkBit(location);
+                    }
+                } 
+            }
+  
+            // if anything marked, remove it 
+            for (int i = 0; i < originalLastIndex; i++) {
+                if (itemsToRemove.IsMarked(i)) { 
+                    Remove(m_slots[i].value);
+                }
+            }
+        } 
+ 
+        /// <summary> 
+        /// Add if not already in hashset. Returns an out param indicating index where added. This 
+        /// is used by SymmetricExcept because it needs to know the following things:
+        /// - whether the item was already present in the collection or added from other 
+        /// - where it's located (if already present, it will get marked for removal, otherwise
+        /// marked for keeping)
+        /// </summary>
+        /// <param name="value"> 
+        /// <param name="location">
+        /// <returns></returns> 
+        private bool AddOrGetLocation(T value, out int location) { 
+            Debug.Assert(m_buckets != null, "m_buckets is null, callers should have checked");
+  
+            int hashCode = InternalGetHashCode(value);
+            int bucket = hashCode % m_buckets.Length;
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) {
+                if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, value)) { 
+                    location = i;
+                    return false; //already present 
+                } 
+            }
+            int index; 
+            if (m_freeList >= 0) {
+                index = m_freeList;
+                m_freeList = m_slots[index].next;
+            } 
+            else {
+                if (m_lastIndex == m_slots.Length) { 
+                    IncreaseCapacity(); 
+                    // this will change during resize
+                    bucket = hashCode % m_buckets.Length; 
+                }
+                index = m_lastIndex;
+                m_lastIndex++;
+            } 
+            m_slots[index].hashCode = hashCode;
+            m_slots[index].value = value; 
+            m_slots[index].next = m_buckets[bucket] - 1; 
+            m_buckets[bucket] = index + 1;
+            m_count++; 
+            m_version++;
+            location = index;
+            return true;
+        } 
+ 
+        /// <summary> 
+        /// Determines counts that can be used to determine equality, subset, and superset. This 
+        /// is only used when other is an IEnumerable and not a HashSet. If other is a HashSet
+        /// these properties can be checked faster without use of marking because we can assume 
+        /// other has no duplicates.
+        ///
+        /// The following count checks are performed by callers:
+        /// 1. Equals: checks if unfoundCount = 0 and uniqueFoundCount = m_count; i.e. everything 
+        /// in other is in this and everything in this is in other
+        /// 2. Subset: checks if unfoundCount >= 0 and uniqueFoundCount = m_count; i.e. other may 
+        /// have elements not in this and everything in this is in other 
+        /// 3. Proper subset: checks if unfoundCount > 0 and uniqueFoundCount = m_count; i.e
+        /// other must have at least one element not in this and everything in this is in other 
+        /// 4. Proper superset: checks if unfound count = 0 and uniqueFoundCount strictly less
+        /// than m_count; i.e. everything in other was in this and this had at least one element
+        /// not contained in other.
+        /// 
+        /// An earlier implementation used delegates to perform these checks rather than returning
+        /// an ElementCount struct; however this was changed due to the perf overhead of delegates. 
+        /// </summary> 
+        /// <param name="other">
+        /// <param name="returnIfUnfound">Allows us to finish faster for equals and proper superset 
+        /// because unfoundCount must be 0.
+        /// <returns></returns>
+        // <securitykernel critical="True" ring="0">
+        // <usesunsafecode name="Local bitArrayPtr of type: Int32*"> 
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1">
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1"> 
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1"> 
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></securitykernel>
+        [System.Security.SecurityCritical] 
+        private unsafe ElementCount CheckUniqueAndUnfoundElements(IEnumerable<t> other, bool returnIfUnfound) {
+            ElementCount result;
+ 
+            // need special case in case this has no elements. 
+            if (m_count == 0) {
+                int numElementsInOther = 0; 
+                foreach (T item in other) { 
+                    numElementsInOther++;
+                    // break right away, all we want to know is whether other has 0 or 1 elements 
+                    break;
+                }
+                result.uniqueCount = 0;
+                result.unfoundCount = numElementsInOther; 
+                return result;
+            } 
+  
+ 
+            Debug.Assert((m_buckets != null) && (m_count > 0), "m_buckets was null but count greater than 0"); 
+ 
+            int originalLastIndex = m_lastIndex;
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+  
+            BitHelper bitHelper;
+            if (intArrayLength <= StackAllocThreshold) { 
+                int* bitArrayPtr = stackalloc int[intArrayLength]; 
+                bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
+            } 
+            else {
+                int[] bitArray = new int[intArrayLength];
+                bitHelper = new BitHelper(bitArray, intArrayLength);
+            } 
+ 
+            // count of items in other not found in this 
+            int unfoundCount = 0; 
+            // count of unique items in other found in this
+            int uniqueFoundCount = 0; 
+ 
+            foreach (T item in other) {
+                int index = InternalIndexOf(item);
+                if (index >= 0) { 
+                    if (!bitHelper.IsMarked(index)) {
+                        // item hasn't been seen yet 
+                        bitHelper.MarkBit(index); 
+                        uniqueFoundCount++;
+                    } 
+                }
+                else {
+                    unfoundCount++;
+                    if (returnIfUnfound) { 
+                        break;
+                    } 
+                } 
+            }
+  
+            result.uniqueCount = uniqueFoundCount;
+            result.unfoundCount = unfoundCount;
+            return result;
+        } 
+ 
+        /// <summary> 
+        /// Copies this to an array. Used for DebugView 
+        /// </summary>
+        /// <returns></returns> 
+        internal T[] ToArray() {
+            T[] newArray = new T[Count];
+            CopyTo(newArray);
+            return newArray; 
+        }
+  
+        /// <summary> 
+        /// Internal method used for HashSetEqualityComparer. Compares set1 and set2 according
+        /// to specified comparer. 
+        ///
+        /// Because items are hashed according to a specific equality comparer, we have to resort
+        /// to n^2 search if they're using different equality comparers.
+        /// </summary> 
+        /// <param name="set1">
+        /// <param name="set2"> 
+        /// <param name="comparer"> 
+        /// <returns></returns>
+        internal static bool HashSetEquals(HashSet<t> set1, HashSet<t> set2, IEqualityComparer<t> comparer) { 
+            // handle null cases first
+            if (set1 == null) {
+                return (set2 == null);
+            } 
+            else if (set2 == null) {
+                // set1 != null 
+                return false; 
+            }
+  
+            // all comparers are the same; this is faster
+            if (AreEqualityComparersEqual(set1, set2)) {
+                if (set1.Count != set2.Count) {
+                    return false; 
+                }
+                // suffices to check subset 
+                foreach (T item in set2) { 
+                    if (!set1.Contains(item)) {
+                        return false; 
+                    }
+                }
+                return true;
+            } 
+            else {  // n^2 search because items are hashed according to their respective ECs
+                foreach (T set2Item in set2) { 
+                    bool found = false; 
+                    foreach (T set1Item in set1) {
+                        if (comparer.Equals(set2Item, set1Item)) { 
+                            found = true;
+                            break;
+                        }
+                    } 
+                    if (!found) {
+                        return false; 
+                    } 
+                }
+                return true; 
+            }
+        }
+ 
+        /// <summary> 
+        /// Checks if equality comparers are equal. This is used for algorithms that can
+        /// speed up if it knows the other item has unique elements. I.e. if they're using 
+        /// different equality comparers, then uniqueness assumption between sets break. 
+        /// </summary>
+        /// <param name="set1"> 
+        /// <param name="set2">
+        /// <returns></returns>
+        private static bool AreEqualityComparersEqual(HashSet<t> set1, HashSet<t> set2) {
+            return set1.Comparer.Equals(set2.Comparer); 
+        }
+  
+        /// <summary> 
+        /// Workaround Comparers that throw ArgumentNullException for GetHashCode(null).
+        /// </summary> 
+        /// <param name="item">
+        /// <returns>hash code</returns>
+        private int InternalGetHashCode(T item) {
+            if (item == null) { 
+                return 0;
+            } 
+            return m_comparer.GetHashCode(item) & Lower31BitMask; 
+        }
+  
+        #endregion
+ 
+        // used for set checking operations (using enumerables) that rely on counting
+        internal struct ElementCount { 
+            internal int uniqueCount;
+            internal int unfoundCount; 
+        } 
+ 
+        internal struct Slot { 
+            internal int hashCode;      // Lower 31 bits of hash code, -1 if unused
+            internal T value;
+            internal int next;          // Index of next entry, -1 if last
+        } 
+ 
+        [Serializable()] 
+        [System.Security.Permissions.HostProtection(MayLeakOnAbort = true)] 
+        public struct Enumerator : IEnumerator<t>, System.Collections.IEnumerator {
+            private HashSet<t> set; 
+            private int index;
+            private int version;
+            private T current;
+  
+            internal Enumerator(HashSet<t> set) {
+                this.set = set; 
+                index = 0; 
+                version = set.m_version;
+                current = default(T); 
+            }
+ 
+            public void Dispose() {
+            } 
+ 
+            public bool MoveNext() { 
+                if (version != set.m_version) { 
+                    throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumFailedVersion));
+                } 
+ 
+                while (index < set.m_lastIndex) {
+                    if (set.m_slots[index].hashCode >= 0) {
+                        current = set.m_slots[index].value; 
+                        index++;
+                        return true; 
+                    } 
+                    index++;
+                } 
+                index = set.m_lastIndex + 1;
+                current = default(T);
+                return false;
+            } 
+ 
+            public T Current { 
+                get { 
+                    return current;
+                } 
+            }
+ 
+            Object System.Collections.IEnumerator.Current {
+                get { 
+                    if (index == 0 || index == set.m_lastIndex + 1) {
+                        throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumOpCantHappen)); 
+                    } 
+                    return Current;
+                } 
+            }
+ 
+            void System.Collections.IEnumerator.Reset() {
+                if (version != set.m_version) { 
+                    throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumFailedVersion));
+                } 
+  
+                index = 0;
+                current = default(T); 
+            }
+        }
+    }
+  
+}
+ 
+// File provided for Reference Use Only by Microsoft Corporation (c) 2007.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using System; 
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.Serialization; 
+using System.Security.Permissions;
+using System.Text; 
+using System.Diagnostics.CodeAnalysis; 
+ 
+namespace System.Collections.Generic { 
+ 
+    /// <summary>
+    /// Implementation notes:
+    /// This uses an array-based implementation similar to Dictionary<t>, using a buckets array 
+    /// to map hash values to the Slots array. Items in the Slots array that hash to the same value
+    /// are chained together through the "next" indices. 
+    /// 
+    /// The capacity is always prime; so during resizing, the capacity is chosen as the next prime
+    /// greater than double the last capacity. 
+    ///
+    /// The underlying data structures are lazily initialized. Because of the observation that,
+    /// in practice, hashtables tend to contain only a few elements, the initial capacity is
+    /// set very small (3 elements) unless the ctor with a collection is used. 
+    ///
+    /// The +/- 1 modifications in methods that add, check for containment, etc allow us to 
+    /// distinguish a hash code of 0 from an uninitialized bucket. This saves us from having to 
+    /// reset each bucket to -1 when resizing. See Contains, for example.
+    /// 
+    /// Set methods such as UnionWith, IntersectWith, ExceptWith, and SymmetricExceptWith modify
+    /// this set.
+    ///
+    /// Some operations can perform faster if we can assume "other" contains unique elements 
+    /// according to this equality comparer. The only times this is efficient to check is if
+    /// other is a hashset. Note that checking that it's a hashset alone doesn't suffice; we 
+    /// also have to check that the hashset is using the same equality comparer. If other 
+    /// has a different equality comparer, it will have unique elements according to its own
+    /// equality comparer, but not necessarily according to ours. Therefore, to go these 
+    /// optimized routes we check that other is a hashset using the same equality comparer.
+    ///
+    /// A HashSet with no elements has the properties of the empty set. (See IsSubset, etc. for
+    /// special empty set checks.) 
+    ///
+    /// A couple of methods have a special case if other is this (e.g. SymmetricExceptWith). 
+    /// If we didn't have these checks, we could be iterating over the set and modifying at 
+    /// the same time.
+    /// </t></summary> 
+    /// <typeparam name="T"></typeparam>
+    [Serializable()]
+    [DebuggerTypeProxy(typeof(System.Collections.Generic.HashSetDebugView<>))]
+    [DebuggerDisplay("Count = {Count}")] 
+    [System.Security.Permissions.HostProtection(MayLeakOnAbort = true)]
+    [SuppressMessage("Microsoft.Naming","CA1710:IdentifiersShouldHaveCorrectSuffix", Justification="By design")] 
+    public class HashSet<t> : ICollection<t>, ISerializable, IDeserializationCallback, ISet<t> { 
+ 
+        // store lower 31 bits of hash code 
+        private const int Lower31BitMask = 0x7FFFFFFF;
+        // factor used to increase hashset capacity
+        private const int GrowthFactor = 2;
+        // cutoff point, above which we won't do stackallocs. This corresponds to 100 integers. 
+        private const int StackAllocThreshold = 100;
+        // when constructing a hashset from an existing collection, it may contain duplicates, 
+        // so this is used as the max acceptable excess ratio of capacity to count. Note that 
+        // this is only used on the ctor and not to automatically shrink if the hashset has, e.g,
+        // a lot of adds followed by removes. Users must explicitly shrink by calling TrimExcess. 
+        // This is set to 3 because capacity is acceptable as 2x rounded up to nearest prime.
+        private const int ShrinkThreshold = 3;
+ 
+        // constants for serialization 
+        private const String CapacityName = "Capacity";
+        private const String ElementsName = "Elements"; 
+        private const String ComparerName = "Comparer"; 
+        private const String VersionName = "Version";
+  
+        private int[] m_buckets;
+        private Slot[] m_slots;
+        private int m_count;
+        private int m_lastIndex; 
+        private int m_freeList;
+        private IEqualityComparer<t> m_comparer; 
+        private int m_version; 
+ 
+        // temporary variable needed during deserialization 
+        private SerializationInfo m_siInfo;
+ 
+        #region Constructors
+  
+        public HashSet()
+            : this(EqualityComparer<t>.Default) { } 
+  
+        public HashSet(IEqualityComparer<t> comparer) {
+            if (comparer == null) { 
+                comparer = EqualityComparer<t>.Default;
+            }
+ 
+            this.m_comparer = comparer; 
+            m_lastIndex = 0;
+            m_count = 0; 
+            m_freeList = -1; 
+            m_version = 0;
+        } 
+ 
+        public HashSet(IEnumerable<t> collection)
+            : this(collection, EqualityComparer<t>.Default) { }
+  
+        /// <summary>
+        /// Implementation Notes: 
+        /// Since resizes are relatively expensive (require rehashing), this attempts to minimize 
+        /// the need to resize by setting the initial capacity based on size of collection.
+        /// </summary> 
+        /// <param name="collection">
+        /// <param name="comparer">
+        public HashSet(IEnumerable<t> collection, IEqualityComparer<t> comparer)
+            : this(comparer) { 
+            if (collection == null) {
+                throw new ArgumentNullException("collection"); 
+            } 
+ 
+            // to avoid excess resizes, first set size based on collection's count. Collection 
+            // may contain duplicates, so call TrimExcess if resulting hashset is larger than
+            // threshold
+            int suggestedCapacity = 0;
+            ICollection<t> coll = collection as ICollection<t>; 
+            if (coll != null) {
+                suggestedCapacity = coll.Count; 
+            } 
+            Initialize(suggestedCapacity);
+  
+            this.UnionWith(collection);
+            if ((m_count == 0 && m_slots.Length > HashHelpers.GetMinPrime()) ||
+                (m_count > 0 && m_slots.Length / m_count > ShrinkThreshold)) {
+                TrimExcess(); 
+            }
+        } 
+  
+        protected HashSet(SerializationInfo info, StreamingContext context) {
+            // We can't do anything with the keys and values until the entire graph has been 
+            // deserialized and we have a reasonable estimate that GetHashCode is not going to
+            // fail.  For the time being, we'll just cache this.  The graph is not valid until
+            // OnDeserialization has been called.
+            m_siInfo = info; 
+        }
+  
+        #endregion 
+ 
+        #region ICollection<t> methods 
+ 
+        /// <summary>
+        /// Add item to this hashset. This is the explicit implementation of the ICollection<t>
+        /// interface. The other Add method returns bool indicating whether item was added. 
+        /// </t></summary>
+        /// <param name="item">item to add 
+        void ICollection<t>.Add(T item) { 
+            AddIfNotPresent(item);
+        } 
+ 
+        /// <summary>
+        /// Remove all items from this set. This clears the elements but not the underlying
+        /// buckets and slots array. Follow this call by TrimExcess to release these. 
+        /// </summary>
+        public void Clear() { 
+            if (m_lastIndex > 0) { 
+                Debug.Assert(m_buckets != null, "m_buckets was null but m_lastIndex > 0");
+  
+                // clear the elements so that the gc can reclaim the references.
+                // clear only up to m_lastIndex for m_slots
+                Array.Clear(m_slots, 0, m_lastIndex);
+                Array.Clear(m_buckets, 0, m_buckets.Length); 
+                m_lastIndex = 0;
+                m_count = 0; 
+                m_freeList = -1; 
+            }
+            m_version++; 
+        }
+ 
+        /// <summary>
+        /// Checks if this hashset contains the item 
+        /// </summary>
+        /// <param name="item">item to check for containment 
+        /// <returns>true if item contained; false if not</returns> 
+        public bool Contains(T item) {
+            if (m_buckets != null) { 
+                int hashCode = InternalGetHashCode(item);
+                // see note at "HashSet" level describing why "- 1" appears in for loop
+                for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) {
+                    if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, item)) { 
+                        return true;
+                    } 
+                } 
+            }
+            // either m_buckets is null or wasn't found 
+            return false;
+        }
+ 
+        /// <summary> 
+        /// Copy items in this hashset to array, starting at arrayIndex
+        /// </summary> 
+        /// <param name="array">array to add items to 
+        /// <param name="arrayIndex">index to start at
+        public void CopyTo(T[] array, int arrayIndex) { 
+            CopyTo(array, arrayIndex, m_count);
+        }
+ 
+        /// <summary> 
+        /// Remove item from this hashset
+        /// </summary> 
+        /// <param name="item">item to remove 
+        /// <returns>true if removed; false if not (i.e. if the item wasn't in the HashSet)</returns>
+        public bool Remove(T item) { 
+            if (m_buckets != null) {
+                int hashCode = InternalGetHashCode(item);
+                int bucket = hashCode % m_buckets.Length;
+                int last = -1; 
+                for (int i = m_buckets[bucket] - 1; i >= 0; last = i, i = m_slots[i].next) {
+                    if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, item)) { 
+                        if (last < 0) { 
+                            // first iteration; update buckets
+                            m_buckets[bucket] = m_slots[i].next + 1; 
+                        }
+                        else {
+                            // subsequent iterations; update 'next' pointers
+                            m_slots[last].next = m_slots[i].next; 
+                        }
+                        m_slots[i].hashCode = -1; 
+                        m_slots[i].value = default(T); 
+                        m_slots[i].next = m_freeList;
+  
+                        m_count--;
+                        m_version++;
+                        if (m_count == 0) {
+                            m_lastIndex = 0; 
+                            m_freeList = -1;
+                        } 
+                        else { 
+                            m_freeList = i;
+                        } 
+                        return true;
+                    }
+                }
+            } 
+            // either m_buckets is null or wasn't found
+            return false; 
+        } 
+ 
+        /// <summary> 
+        /// Number of elements in this hashset
+        /// </summary>
+        public int Count {
+            get { return m_count; } 
+        }
+  
+        /// <summary> 
+        /// Whether this is readonly
+        /// </summary> 
+        bool ICollection<t>.IsReadOnly {
+            get { return false; }
+        }
+  
+        #endregion
+  
+        #region IEnumerable methods 
+ 
+        public Enumerator GetEnumerator() { 
+            return new Enumerator(this);
+        }
+ 
+        IEnumerator<t> IEnumerable<t>.GetEnumerator() { 
+            return new Enumerator(this);
+        } 
+  
+        IEnumerator IEnumerable.GetEnumerator() {
+            return new Enumerator(this); 
+        }
+ 
+        #endregion
+  
+        #region ISerializable methods
+  
+        [SecurityPermissionAttribute(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)] 
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
+            if (info == null) { 
+                throw new ArgumentNullException("info");
+            }
+ 
+            // need to serialize version to avoid problems with serializing while enumerating 
+            info.AddValue(VersionName, m_version);
+            info.AddValue(ComparerName, m_comparer, typeof(IEqualityComparer<t>)); 
+            info.AddValue(CapacityName, m_buckets == null ? 0 : m_buckets.Length); 
+            if (m_buckets != null) {
+                T[] array = new T[m_count]; 
+                CopyTo(array);
+                info.AddValue(ElementsName, array, typeof(T[]));
+            }
+        } 
+ 
+        #endregion 
+  
+        #region IDeserializationCallback methods
+  
+        public virtual void OnDeserialization(Object sender) {
+ 
+            if (m_siInfo == null) {
+                // It might be necessary to call OnDeserialization from a container if the 
+                // container object also implements OnDeserialization. However, remoting will
+                // call OnDeserialization again. We can return immediately if this function is 
+                // called twice. Note we set m_siInfo to null at the end of this method. 
+                return;
+            } 
+ 
+            int capacity = m_siInfo.GetInt32(CapacityName);
+            m_comparer = (IEqualityComparer<t>)m_siInfo.GetValue(ComparerName, typeof(IEqualityComparer<t>));
+            m_freeList = -1; 
+ 
+            if (capacity != 0) { 
+                m_buckets = new int[capacity]; 
+                m_slots = new Slot[capacity];
+  
+                T[] array = (T[])m_siInfo.GetValue(ElementsName, typeof(T[]));
+ 
+                if (array == null) {
+                    throw new SerializationException(SR.GetString(SR.Serialization_MissingKeys)); 
+                }
+  
+                // there are no resizes here because we already set capacity above 
+                for (int i = 0; i < array.Length; i++) {
+                    AddIfNotPresent(array[i]); 
+                }
+            }
+            else {
+                m_buckets = null; 
+            }
+  
+            m_version = m_siInfo.GetInt32(VersionName); 
+            m_siInfo = null;
+        } 
+ 
+        #endregion
+ 
+        #region HashSet methods 
+ 
+        /// <summary> 
+        /// Add item to this HashSet. Returns bool indicating whether item was added (won't be 
+        /// added if already present)
+        /// </summary> 
+        /// <param name="item">
+        /// <returns>true if added, false if already present</returns>
+        public bool Add(T item) {
+            return AddIfNotPresent(item); 
+        }
+  
+        /// <summary> 
+        /// Take the union of this HashSet with other. Modifies this set.
+        /// 
+        /// Implementation note: GetSuggestedCapacity (to increase capacity in advance avoiding
+        /// multiple resizes ended up not being useful in practice; quickly gets to the
+        /// point where it's a wasteful check.
+        /// </summary> 
+        /// <param name="other">enumerable with items to add
+        public void UnionWith(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            foreach (T item in other) {
+                AddIfNotPresent(item);
+            } 
+        }
+  
+        /// <summary> 
+        /// Takes the intersection of this set with other. Modifies this set.
+        /// 
+        /// Implementation Notes:
+        /// We get better perf if other is a hashset using same equality comparer, because we
+        /// get constant contains check in other. Resulting cost is O(n1) to iterate over this.
+        /// 
+        /// If we can't go above route, iterate over the other and mark intersection by checking
+        /// contains in this. Then loop over and delete any unmarked elements. Total cost is n2+n1. 
+        /// 
+        /// Attempts to return early based on counts alone, using the property that the
+        /// intersection of anything with the empty set is the empty set. 
+        /// </summary>
+        /// <param name="other">enumerable with items to add 
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: IntersectWithEnumerable(IEnumerable`1<T>):Void" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical] 
+        public void IntersectWith(IEnumerable<t> other) { 
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+ 
+            // intersection of anything with empty set is empty set, so return if count is 0
+            if (m_count == 0) { 
+                return;
+            } 
+  
+            // if other is empty, intersection is empty set; remove all elements and we're done
+            // can only figure this out if implements ICollection<t>. (IEnumerable<t> has no count) 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) {
+                if (otherAsCollection.Count == 0) {
+                    Clear(); 
+                    return;
+                } 
+  
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset using same equality comparer; so check 
+                // that other is a hashset using the same equality comparer.
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    IntersectWithHashSetWithSameEC(otherAsSet);
+                    return; 
+                }
+            } 
+  
+            IntersectWithEnumerable(other);
+        } 
+ 
+        /// <summary>
+        /// Remove items in other from this set. Modifies this set.
+        /// </summary> 
+        /// <param name="other">enumerable with items to remove
+        public void ExceptWith(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+            // this is already the enpty set; return
+            if (m_count == 0) {
+                return;
+            } 
+ 
+            // special case if other is this; a set minus itself is the empty set 
+            if (other == this) { 
+                Clear();
+                return; 
+            }
+ 
+            // remove every element in other from this
+            foreach (T element in other) { 
+                Remove(element);
+            } 
+        } 
+ 
+        /// <summary> 
+        /// Takes symmetric difference (XOR) with other and this set. Modifies this set.
+        /// </summary>
+        /// <param name="other">enumerable with items to XOR
+        // <securitykernel critical="True" ring="1"> 
+        // <referencescritical name="Method: SymmetricExceptWithEnumerable(IEnumerable`1<T>):Void" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical] 
+        public void SymmetricExceptWith(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            }
+ 
+            // if set is empty, then symmetric difference is other 
+            if (m_count == 0) {
+                UnionWith(other); 
+                return; 
+            }
+  
+            // special case this; the symmetric difference of a set with itself is the empty set
+            if (other == this) {
+                Clear();
+                return; 
+            }
+  
+            HashSet<t> otherAsSet = other as HashSet<t>; 
+            // If other is a HashSet, it has unique elements according to its equality comparer,
+            // but if they're using different equality comparers, then assumption of uniqueness 
+            // will fail. So first check if other is a hashset using the same equality comparer;
+            // symmetric except is a lot faster and avoids bit array allocations if we can assume
+            // uniqueness
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                SymmetricExceptWithUniqueHashSet(otherAsSet);
+            } 
+            else { 
+                SymmetricExceptWithEnumerable(other);
+            } 
+        }
+ 
+        /// <summary>
+        /// Checks if this is a subset of other. 
+        ///
+        /// Implementation Notes: 
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it's a subset of anything, including the empty set
+        /// 2. If other has unique elements according to this equality comparer, and this has more 
+        /// elements than other, then it can't be a subset.
+        ///
+        /// Furthermore, if other is a hashset using the same equality comparer, we can use a
+        /// faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a subset of other; false if not</returns> 
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical]
+        public bool IsSubsetOf(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+  
+            // The empty set is a subset of any set
+            if (m_count == 0) { 
+                return true;
+            }
+ 
+            HashSet<t> otherAsSet = other as HashSet<t>; 
+            // faster if other has unique elements according to this equality comparer; so check
+            // that other is a hashset using the same equality comparer. 
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                // if this has more elements then it can't be a subset
+                if (m_count > otherAsSet.Count) { 
+                    return false;
+                }
+ 
+                // already checked that we're using same equality comparer. simply check that 
+                // each element in this is contained in other.
+                return IsSubsetOfHashSetWithSameEC(otherAsSet); 
+            } 
+            else {
+                ElementCount result = CheckUniqueAndUnfoundElements(other, false); 
+                return (result.uniqueCount == m_count && result.unfoundCount >= 0);
+            }
+        }
+  
+        /// <summary>
+        /// Checks if this is a proper subset of other (i.e. strictly contained in) 
+        /// 
+        /// Implementation Notes:
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it's a proper subset of a set that contains at least
+        /// one element, but it's not a proper subset of the empty set.
+        /// 2. If other has unique elements according to this equality comparer, and this has >=
+        /// the number of elements in other, then this can't be a proper subset. 
+        ///
+        /// Furthermore, if other is a hashset using the same equality comparer, we can use a 
+        /// faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a proper subset of other; false if not</returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical]
+        public bool IsProperSubsetOf(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) {
+                // the empty set is a proper subset of anything but the empty set 
+                if (m_count == 0) {
+                    return otherAsCollection.Count > 0; 
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset (and we're using same equality comparer) 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    if (m_count >= otherAsSet.Count) {
+                        return false;
+                    } 
+                    // this has strictly less than number of items in other, so the following
+                    // check suffices for proper subset. 
+                    return IsSubsetOfHashSetWithSameEC(otherAsSet); 
+                }
+            } 
+ 
+            ElementCount result = CheckUniqueAndUnfoundElements(other, false);
+            return (result.uniqueCount == m_count && result.unfoundCount > 0);
+  
+        }
+  
+        /// <summary> 
+        /// Checks if this is a superset of other
+        /// 
+        /// Implementation Notes:
+        /// The following properties are used up-front to avoid element-wise checks:
+        /// 1. If other has no elements (it's the empty set), then this is a superset, even if this
+        /// is also the empty set. 
+        /// 2. If other has unique elements according to this equality comparer, and this has less
+        /// than the number of elements in other, then this can't be a superset 
+        /// 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a superset of other; false if not</returns>
+        public bool IsSupersetOf(IEnumerable<t> other) {
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+  
+            // try to fall out early based on counts 
+            ICollection<t> otherAsCollection = other as ICollection<t>;
+            if (otherAsCollection != null) { 
+                // if other is the empty set then this is a superset
+                if (otherAsCollection.Count == 0) {
+                    return true;
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // try to compare based on counts alone if other is a hashset with 
+                // same equality comparer 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                    if (otherAsSet.Count > m_count) { 
+                        return false;
+                    }
+                }
+            } 
+ 
+            return ContainsAllElements(other); 
+        } 
+ 
+        /// <summary> 
+        /// Checks if this is a proper superset of other (i.e. other strictly contained in this)
+        ///
+        /// Implementation Notes:
+        /// This is slightly more complicated than above because we have to keep track if there 
+        /// was at least one element not contained in other.
+        /// 
+        /// The following properties are used up-front to avoid element-wise checks: 
+        /// 1. If this is the empty set, then it can't be a proper superset of any set, even if
+        /// other is the empty set. 
+        /// 2. If other is an empty set and this contains at least 1 element, then this is a proper
+        /// superset.
+        /// 3. If other has unique elements according to this equality comparer, and other's count
+        /// is greater than or equal to this count, then this can't be a proper superset 
+        ///
+        /// Furthermore, if other has unique elements according to this equality comparer, we can 
+        /// use a faster element-wise check. 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if this is a proper superset of other; false if not</returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1">
+        // </referencescritical></securitykernel> 
+        [System.Security.SecurityCritical]
+        public bool IsProperSupersetOf(IEnumerable<t> other) { 
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            } 
+ 
+            // the empty set isn't a proper superset of any set.
+            if (m_count == 0) {
+                return false; 
+            }
+  
+            ICollection<t> otherAsCollection = other as ICollection<t>; 
+            if (otherAsCollection != null) {
+                // if other is the empty set then this is a superset 
+                if (otherAsCollection.Count == 0) {
+                    // note that this has at least one element, based on above check
+                    return true;
+                } 
+                HashSet<t> otherAsSet = other as HashSet<t>;
+                // faster if other is a hashset with the same equality comparer 
+                if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) { 
+                    if (otherAsSet.Count >= m_count) {
+                        return false; 
+                    }
+                    // now perform element check
+                    return ContainsAllElements(otherAsSet);
+                } 
+            }
+            // couldn't fall out in the above cases; do it the long way 
+            ElementCount result = CheckUniqueAndUnfoundElements(other, true); 
+            return (result.uniqueCount < m_count && result.unfoundCount == 0);
+  
+        }
+ 
+        /// <summary>
+        /// Checks if this set overlaps other (i.e. they share at least one item) 
+        /// </summary>
+        /// <param name="other"> 
+        /// <returns>true if these have at least one common element; false if disjoint</returns> 
+        public bool Overlaps(IEnumerable<t> other) {
+            if (other == null) { 
+                throw new ArgumentNullException("other");
+            }
+            if (m_count == 0) {
+                return false; 
+            }
+  
+            foreach (T element in other) { 
+                if (Contains(element)) {
+                    return true; 
+                }
+            }
+            return false;
+        } 
+ 
+        /// <summary> 
+        /// Checks if this and other contain the same elements. This is set equality: 
+        /// duplicates and order are ignored
+        /// </summary> 
+        /// <param name="other">
+        /// <returns></returns>
+        // <securitykernel critical="True" ring="1">
+        // <referencescritical name="Method: CheckUniqueAndUnfoundElements(IEnumerable`1<T>, Boolean):ElementCount" ring="1"> 
+        // </referencescritical></securitykernel>
+        [System.Security.SecurityCritical] 
+        public bool SetEquals(IEnumerable<t> other) { 
+            if (other == null) {
+                throw new ArgumentNullException("other"); 
+            }
+ 
+            HashSet<t> otherAsSet = other as HashSet<t>;
+            // faster if other is a hashset and we're using same equality comparer 
+            if (otherAsSet != null && AreEqualityComparersEqual(this, otherAsSet)) {
+                // attempt to return early: since both contain unique elements, if they have 
+                // different counts, then they can't be equal 
+                if (m_count != otherAsSet.Count) {
+                    return false; 
+                }
+ 
+                // already confirmed that the sets have the same number of distinct elements, so if
+                // one is a superset of the other then they must be equal 
+                return ContainsAllElements(otherAsSet);
+            } 
+            else { 
+                ICollection<t> otherAsCollection = other as ICollection<t>;
+                if (otherAsCollection != null) { 
+                    // if this count is 0 but other contains at least one element, they can't be equal
+                    if (m_count == 0 && otherAsCollection.Count > 0) {
+                        return false;
+                    } 
+                }
+                ElementCount result = CheckUniqueAndUnfoundElements(other, true); 
+                return (result.uniqueCount == m_count && result.unfoundCount == 0); 
+            }
+        } 
+ 
+        public void CopyTo(T[] array) { CopyTo(array, 0, m_count); }
+ 
+        public void CopyTo(T[] array, int arrayIndex, int count) { 
+            if (array == null) {
+                throw new ArgumentNullException("array"); 
+            } 
+ 
+            // check array index valid index into array 
+            if (arrayIndex < 0) {
+                throw new ArgumentOutOfRangeException("arrayIndex", SR.GetString(SR.ArgumentOutOfRange_NeedNonNegNum));
+            }
+  
+            // also throw if count less than 0
+            if (count < 0) { 
+                throw new ArgumentOutOfRangeException("count", SR.GetString(SR.ArgumentOutOfRange_NeedNonNegNum)); 
+            }
+  
+            // will array, starting at arrayIndex, be able to hold elements? Note: not
+            // checking arrayIndex >= array.Length (consistency with list of allowing
+            // count of 0; subsequent check takes care of the rest)
+            if (arrayIndex > array.Length || count > array.Length - arrayIndex) { 
+                throw new ArgumentException(SR.GetString(SR.Arg_ArrayPlusOffTooSmall));
+            } 
+  
+            int numCopied = 0;
+            for (int i = 0; i < m_lastIndex && numCopied < count; i++) { 
+                if (m_slots[i].hashCode >= 0) {
+                    array[arrayIndex + numCopied] = m_slots[i].value;
+                    numCopied++;
+                } 
+            }
+        } 
+  
+        /// <summary>
+        /// Remove elements that match specified predicate. Returns the number of elements removed 
+        /// </summary>
+        /// <param name="match">
+        /// <returns></returns>
+        public int RemoveWhere(Predicate<t> match) { 
+            if (match == null) {
+                throw new ArgumentNullException("match"); 
+            } 
+ 
+            int numRemoved = 0; 
+            for (int i = 0; i < m_lastIndex; i++) {
+                if (m_slots[i].hashCode >= 0) {
+                    // cache value in case delegate removes it
+                    T value = m_slots[i].value; 
+                    if (match(value)) {
+                        // check again that remove actually removed it 
+                        if (Remove(value)) { 
+                            numRemoved++;
+                        } 
+                    }
+                }
+            }
+            return numRemoved; 
+        }
+  
+        /// <summary> 
+        /// Gets the IEqualityComparer that is used to determine equality of keys for
+        /// the HashSet. 
+        /// </summary>
+        public IEqualityComparer<t> Comparer {
+            get {
+                return m_comparer; 
+            }
+        } 
+  
+        /// <summary>
+        /// Sets the capacity of this list to the size of the list (rounded up to nearest prime), 
+        /// unless count is 0, in which case we release references.
+        ///
+        /// This method can be used to minimize a list's memory overhead once it is known that no
+        /// new elements will be added to the list. To completely clear a list and release all 
+        /// memory referenced by the list, execute the following statements:
+        /// 
+        /// list.Clear(); 
+        /// list.TrimExcess();
+        /// </summary> 
+        public void TrimExcess() {
+            Debug.Assert(m_count >= 0, "m_count is negative");
+ 
+            if (m_count == 0) { 
+                // if count is zero, clear references
+                m_buckets = null; 
+                m_slots = null; 
+                m_version++;
+            } 
+            else {
+                Debug.Assert(m_buckets != null, "m_buckets was null but m_count > 0");
+ 
+                // similar to IncreaseCapacity but moves down elements in case add/remove/etc 
+                // caused fragmentation
+                int newSize = HashHelpers.GetPrime(m_count); 
+                Slot[] newSlots = new Slot[newSize]; 
+                int[] newBuckets = new int[newSize];
+  
+                // move down slots and rehash at the same time. newIndex keeps track of current
+                // position in newSlots array
+                int newIndex = 0;
+                for (int i = 0; i < m_lastIndex; i++) { 
+                    if (m_slots[i].hashCode >= 0) {
+                        newSlots[newIndex] = m_slots[i]; 
+  
+                        // rehash
+                        int bucket = newSlots[newIndex].hashCode % newSize; 
+                        newSlots[newIndex].next = newBuckets[bucket] - 1;
+                        newBuckets[bucket] = newIndex + 1;
+ 
+                        newIndex++; 
+                    }
+                } 
+  
+                Debug.Assert(newSlots.Length <= m_slots.Length, "capacity increased after TrimExcess");
+  
+                m_lastIndex = newIndex;
+                m_slots = newSlots;
+                m_buckets = newBuckets;
+                m_freeList = -1; 
+            }
+        } 
+  
+        /// <summary>
+        /// Used for deep equality of HashSet testing 
+        /// </summary>
+        /// <returns></returns>
+        public static IEqualityComparer<hashset<t>> CreateSetComparer() {
+            return new HashSetEqualityComparer<t>(); 
+        }
+  
+        #endregion 
+ 
+        #region Helper methods 
+ 
+        /// <summary>
+        /// Initializes buckets and slots arrays. Uses suggested capacity by finding next prime
+        /// greater than or equal to capacity. 
+        /// </summary>
+        /// <param name="capacity"> 
+        private void Initialize(int capacity) { 
+            Debug.Assert(m_buckets == null, "Initialize was called but m_buckets was non-null");
+  
+            int size = HashHelpers.GetPrime(capacity);
+ 
+            m_buckets = new int[size];
+            m_slots = new Slot[size]; 
+        }
+  
+        /// <summary> 
+        /// Expand to new capacity. New capacity is next prime greater than or equal to suggested
+        /// size. This is called when the underlying array is filled. This performs no 
+        /// defragmentation, allowing faster execution; note that this is reasonable since
+        /// AddIfNotPresent attempts to insert new elements in re-opened spots.
+        /// </summary>
+        /// <param name="sizeSuggestion"> 
+        private void IncreaseCapacity() {
+            Debug.Assert(m_buckets != null, "IncreaseCapacity called on a set with no elements"); 
+  
+            // Handle overflow conditions. Try to expand capacity by GrowthFactor. If that causes
+            // overflow, use size suggestion of m_count and see if HashHelpers returns a value 
+            // greater than that. If not, capacity can't be increased so throw capacity overflow
+            // exception.
+            int sizeSuggestion = unchecked(m_count * GrowthFactor);
+            if (sizeSuggestion < 0) { 
+                sizeSuggestion = m_count;
+            } 
+            int newSize = HashHelpers.GetPrime(sizeSuggestion); 
+            if (newSize <= m_count) {
+                throw new ArgumentException(SR.GetString(SR.Arg_HSCapacityOverflow)); 
+            }
+ 
+            // Able to increase capacity; copy elements to larger array and rehash
+            Slot[] newSlots = new Slot[newSize]; 
+            if (m_slots != null) {
+                Array.Copy(m_slots, 0, newSlots, 0, m_lastIndex); 
+            } 
+ 
+            int[] newBuckets = new int[newSize]; 
+            for (int i = 0; i < m_lastIndex; i++) {
+                int bucket = newSlots[i].hashCode % newSize;
+                newSlots[i].next = newBuckets[bucket] - 1;
+                newBuckets[bucket] = i + 1; 
+            }
+            m_slots = newSlots; 
+            m_buckets = newBuckets; 
+ 
+        } 
+ 
+        /// <summary>
+        /// Adds value to HashSet if not contained already
+        /// Returns true if added and false if already present 
+        /// </summary>
+        /// <param name="value">value to find 
+        /// <returns></returns> 
+        private bool AddIfNotPresent(T value) {
+            if (m_buckets == null) { 
+                Initialize(0);
+            }
+ 
+            int hashCode = InternalGetHashCode(value); 
+            int bucket = hashCode % m_buckets.Length;
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) { 
+                if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, value)) { 
+                    return false;
+                } 
+            }
+            int index;
+            if (m_freeList >= 0) {
+                index = m_freeList; 
+                m_freeList = m_slots[index].next;
+            } 
+            else { 
+                if (m_lastIndex == m_slots.Length) {
+                    IncreaseCapacity(); 
+                    // this will change during resize
+                    bucket = hashCode % m_buckets.Length;
+                }
+                index = m_lastIndex; 
+                m_lastIndex++;
+            } 
+            m_slots[index].hashCode = hashCode; 
+            m_slots[index].value = value;
+            m_slots[index].next = m_buckets[bucket] - 1; 
+            m_buckets[bucket] = index + 1;
+            m_count++;
+            m_version++;
+            return true; 
+        }
+  
+        /// <summary> 
+        /// Checks if this contains of other's elements. Iterates over other's elements and
+        /// returns false as soon as it finds an element in other that's not in this. 
+        /// Used by SupersetOf, ProperSupersetOf, and SetEquals.
+        /// </summary>
+        /// <param name="other">
+        /// <returns></returns> 
+        private bool ContainsAllElements(IEnumerable<t> other) {
+            foreach (T element in other) { 
+                if (!Contains(element)) { 
+                    return false;
+                } 
+            }
+            return true;
+        }
+  
+        /// <summary>
+        /// Implementation Notes: 
+        /// If other is a hashset and is using same equality comparer, then checking subset is 
+        /// faster. Simply check that each element in this is in other.
+        /// 
+        /// Note: if other doesn't use same equality comparer, then Contains check is invalid,
+        /// which is why callers must take are of this.
+        ///
+        /// If callers are concerned about whether this is a proper subset, they take care of that. 
+        ///
+        /// </summary> 
+        /// <param name="other"> 
+        /// <returns></returns>
+        private bool IsSubsetOfHashSetWithSameEC(HashSet<t> other) { 
+ 
+            foreach (T item in this) {
+                if (!other.Contains(item)) {
+                    return false; 
+                }
+            } 
+            return true; 
+        }
+  
+        /// <summary>
+        /// If other is a hashset that uses same equality comparer, intersect is much faster
+        /// because we can use other's Contains
+        /// </summary> 
+        /// <param name="other">
+        private void IntersectWithHashSetWithSameEC(HashSet<t> other) { 
+            for (int i = 0; i < m_lastIndex; i++) { 
+                if (m_slots[i].hashCode >= 0) {
+                    T item = m_slots[i].value; 
+                    if (!other.Contains(item)) {
+                        Remove(item);
+                    }
+                } 
+            }
+        } 
+  
+        /// <summary>
+        /// Iterate over other. If contained in this, mark an element in bit array corresponding to 
+        /// its position in m_slots. If anything is unmarked (in bit array), remove it.
+        ///
+        /// This attempts to allocate on the stack, if below StackAllocThreshold.
+        /// </summary> 
+        /// <param name="other">
+        // <securitykernel critical="True" ring="0"> 
+        // <usesunsafecode name="Local bitArrayPtr of type: Int32*"> 
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1">
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1"> 
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1">
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></securitykernel>
+        [System.Security.SecurityCritical]
+        private unsafe void IntersectWithEnumerable(IEnumerable<t> other) { 
+            Debug.Assert(m_buckets != null, "m_buckets shouldn't be null; callers should check first");
+  
+            // keep track of current last index; don't want to move past the end of our bit array 
+            // (could happen if another thread is modifying the collection)
+            int originalLastIndex = m_lastIndex; 
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+ 
+            BitHelper bitHelper;
+            if (intArrayLength <= StackAllocThreshold) { 
+                int* bitArrayPtr = stackalloc int[intArrayLength];
+                bitHelper = new BitHelper(bitArrayPtr, intArrayLength); 
+            } 
+            else {
+                int[] bitArray = new int[intArrayLength]; 
+                bitHelper = new BitHelper(bitArray, intArrayLength);
+            }
+ 
+            // mark if contains: find index of in slots array and mark corresponding element in bit array 
+            foreach (T item in other) {
+                int index = InternalIndexOf(item); 
+                if (index >= 0) { 
+                    bitHelper.MarkBit(index);
+                } 
+            }
+ 
+            // if anything unmarked, remove it. Perf can be optimized here if BitHelper had a
+            // FindFirstUnmarked method. 
+            for (int i = 0; i < originalLastIndex; i++) {
+                if (m_slots[i].hashCode >= 0 && !bitHelper.IsMarked(i)) { 
+                    Remove(m_slots[i].value); 
+                }
+            } 
+        }
+ 
+        /// <summary>
+        /// Used internally by set operations which have to rely on bit array marking. This is like 
+        /// Contains but returns index in slots array.
+        /// </summary> 
+        /// <param name="item"> 
+        /// <returns></returns>
+        private int InternalIndexOf(T item) { 
+            Debug.Assert(m_buckets != null, "m_buckets was null; callers should check first");
+ 
+            int hashCode = InternalGetHashCode(item);
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) { 
+                if ((m_slots[i].hashCode) == hashCode && m_comparer.Equals(m_slots[i].value, item)) {
+                    return i; 
+                } 
+            }
+            // wasn't found 
+            return -1;
+        }
+ 
+        /// <summary> 
+        /// if other is a set, we can assume it doesn't have duplicate elements, so use this
+        /// technique: if can't remove, then it wasn't present in this set, so add. 
+        /// 
+        /// As with other methods, callers take care of ensuring that other is a hashset using the
+        /// same equality comparer. 
+        /// </summary>
+        /// <param name="other">
+        private void SymmetricExceptWithUniqueHashSet(HashSet<t> other) {
+            foreach (T item in other) { 
+                if (!Remove(item)) {
+                    AddIfNotPresent(item); 
+                } 
+            }
+        } 
+ 
+        /// <summary>
+        /// Implementation notes:
+        /// 
+        /// Used for symmetric except when other isn't a HashSet. This is more tedious because
+        /// other may contain duplicates. HashSet technique could fail in these situations: 
+        /// 1. Other has a duplicate that's not in this: HashSet technique would add then 
+        /// remove it.
+        /// 2. Other has a duplicate that's in this: HashSet technique would remove then add it 
+        /// back.
+        /// In general, its presence would be toggled each time it appears in other.
+        ///
+        /// This technique uses bit marking to indicate whether to add/remove the item. If already 
+        /// present in collection, it will get marked for deletion. If added from other, it will
+        /// get marked as something not to remove. 
+        /// 
+        /// </summary>
+        /// <param name="other"> 
+        // <securitykernel critical="True" ring="0">
+        // <usesunsafecode name="Local itemsToRemovePtr of type: Int32*">
+        // <usesunsafecode name="Local itemsAddedFromOtherPtr of type: Int32*">
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1"> 
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1">
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1"> 
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></usesunsafecode></securitykernel> 
+        [System.Security.SecurityCritical]
+        private unsafe void SymmetricExceptWithEnumerable(IEnumerable<t> other) { 
+            int originalLastIndex = m_lastIndex;
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+ 
+            BitHelper itemsToRemove; 
+            BitHelper itemsAddedFromOther;
+            if (intArrayLength <= StackAllocThreshold / 2) { 
+                int* itemsToRemovePtr = stackalloc int[intArrayLength]; 
+                itemsToRemove = new BitHelper(itemsToRemovePtr, intArrayLength);
+  
+                int* itemsAddedFromOtherPtr = stackalloc int[intArrayLength];
+                itemsAddedFromOther = new BitHelper(itemsAddedFromOtherPtr, intArrayLength);
+            }
+            else { 
+                int[] itemsToRemoveArray = new int[intArrayLength];
+                itemsToRemove = new BitHelper(itemsToRemoveArray, intArrayLength); 
+  
+                int[] itemsAddedFromOtherArray = new int[intArrayLength];
+                itemsAddedFromOther = new BitHelper(itemsAddedFromOtherArray, intArrayLength); 
+            }
+ 
+            foreach (T item in other) {
+                int location = 0; 
+                bool added = AddOrGetLocation(item, out location);
+                if (added) { 
+                    // wasn't already present in collection; flag it as something not to remove 
+                    // *NOTE* if location is out of range, we should ignore. BitHelper will
+                    // detect that it's out of bounds and not try to mark it. But it's 
+                    // expected that location could be out of bounds because adding the item
+                    // will increase m_lastIndex as soon as all the free spots are filled.
+                    itemsAddedFromOther.MarkBit(location);
+                } 
+                else {
+                    // already there...if not added from other, mark for remove. 
+                    // *NOTE* Even though BitHelper will check that location is in range, we want 
+                    // to check here. There's no point in checking items beyond originalLastIndex
+                    // because they could not have been in the original collection 
+                    if (location < originalLastIndex && !itemsAddedFromOther.IsMarked(location)) {
+                        itemsToRemove.MarkBit(location);
+                    }
+                } 
+            }
+  
+            // if anything marked, remove it 
+            for (int i = 0; i < originalLastIndex; i++) {
+                if (itemsToRemove.IsMarked(i)) { 
+                    Remove(m_slots[i].value);
+                }
+            }
+        } 
+ 
+        /// <summary> 
+        /// Add if not already in hashset. Returns an out param indicating index where added. This 
+        /// is used by SymmetricExcept because it needs to know the following things:
+        /// - whether the item was already present in the collection or added from other 
+        /// - where it's located (if already present, it will get marked for removal, otherwise
+        /// marked for keeping)
+        /// </summary>
+        /// <param name="value"> 
+        /// <param name="location">
+        /// <returns></returns> 
+        private bool AddOrGetLocation(T value, out int location) { 
+            Debug.Assert(m_buckets != null, "m_buckets is null, callers should have checked");
+  
+            int hashCode = InternalGetHashCode(value);
+            int bucket = hashCode % m_buckets.Length;
+            for (int i = m_buckets[hashCode % m_buckets.Length] - 1; i >= 0; i = m_slots[i].next) {
+                if (m_slots[i].hashCode == hashCode && m_comparer.Equals(m_slots[i].value, value)) { 
+                    location = i;
+                    return false; //already present 
+                } 
+            }
+            int index; 
+            if (m_freeList >= 0) {
+                index = m_freeList;
+                m_freeList = m_slots[index].next;
+            } 
+            else {
+                if (m_lastIndex == m_slots.Length) { 
+                    IncreaseCapacity(); 
+                    // this will change during resize
+                    bucket = hashCode % m_buckets.Length; 
+                }
+                index = m_lastIndex;
+                m_lastIndex++;
+            } 
+            m_slots[index].hashCode = hashCode;
+            m_slots[index].value = value; 
+            m_slots[index].next = m_buckets[bucket] - 1; 
+            m_buckets[bucket] = index + 1;
+            m_count++; 
+            m_version++;
+            location = index;
+            return true;
+        } 
+ 
+        /// <summary> 
+        /// Determines counts that can be used to determine equality, subset, and superset. This 
+        /// is only used when other is an IEnumerable and not a HashSet. If other is a HashSet
+        /// these properties can be checked faster without use of marking because we can assume 
+        /// other has no duplicates.
+        ///
+        /// The following count checks are performed by callers:
+        /// 1. Equals: checks if unfoundCount = 0 and uniqueFoundCount = m_count; i.e. everything 
+        /// in other is in this and everything in this is in other
+        /// 2. Subset: checks if unfoundCount >= 0 and uniqueFoundCount = m_count; i.e. other may 
+        /// have elements not in this and everything in this is in other 
+        /// 3. Proper subset: checks if unfoundCount > 0 and uniqueFoundCount = m_count; i.e
+        /// other must have at least one element not in this and everything in this is in other 
+        /// 4. Proper superset: checks if unfound count = 0 and uniqueFoundCount strictly less
+        /// than m_count; i.e. everything in other was in this and this had at least one element
+        /// not contained in other.
+        /// 
+        /// An earlier implementation used delegates to perform these checks rather than returning
+        /// an ElementCount struct; however this was changed due to the perf overhead of delegates. 
+        /// </summary> 
+        /// <param name="other">
+        /// <param name="returnIfUnfound">Allows us to finish faster for equals and proper superset 
+        /// because unfoundCount must be 0.
+        /// <returns></returns>
+        // <securitykernel critical="True" ring="0">
+        // <usesunsafecode name="Local bitArrayPtr of type: Int32*"> 
+        // <referencescritical name="Method: BitHelper..ctor(System.Int32*,System.Int32)" ring="1">
+        // <referencescritical name="Method: BitHelper.IsMarked(System.Int32):System.Boolean" ring="1"> 
+        // <referencescritical name="Method: BitHelper.MarkBit(System.Int32):System.Void" ring="1"> 
+        // </referencescritical></referencescritical></referencescritical></usesunsafecode></securitykernel>
+        [System.Security.SecurityCritical] 
+        private unsafe ElementCount CheckUniqueAndUnfoundElements(IEnumerable<t> other, bool returnIfUnfound) {
+            ElementCount result;
+ 
+            // need special case in case this has no elements. 
+            if (m_count == 0) {
+                int numElementsInOther = 0; 
+                foreach (T item in other) { 
+                    numElementsInOther++;
+                    // break right away, all we want to know is whether other has 0 or 1 elements 
+                    break;
+                }
+                result.uniqueCount = 0;
+                result.unfoundCount = numElementsInOther; 
+                return result;
+            } 
+  
+ 
+            Debug.Assert((m_buckets != null) && (m_count > 0), "m_buckets was null but count greater than 0"); 
+ 
+            int originalLastIndex = m_lastIndex;
+            int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
+  
+            BitHelper bitHelper;
+            if (intArrayLength <= StackAllocThreshold) { 
+                int* bitArrayPtr = stackalloc int[intArrayLength]; 
+                bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
+            } 
+            else {
+                int[] bitArray = new int[intArrayLength];
+                bitHelper = new BitHelper(bitArray, intArrayLength);
+            } 
+ 
+            // count of items in other not found in this 
+            int unfoundCount = 0; 
+            // count of unique items in other found in this
+            int uniqueFoundCount = 0; 
+ 
+            foreach (T item in other) {
+                int index = InternalIndexOf(item);
+                if (index >= 0) { 
+                    if (!bitHelper.IsMarked(index)) {
+                        // item hasn't been seen yet 
+                        bitHelper.MarkBit(index); 
+                        uniqueFoundCount++;
+                    } 
+                }
+                else {
+                    unfoundCount++;
+                    if (returnIfUnfound) { 
+                        break;
+                    } 
+                } 
+            }
+  
+            result.uniqueCount = uniqueFoundCount;
+            result.unfoundCount = unfoundCount;
+            return result;
+        } 
+ 
+        /// <summary> 
+        /// Copies this to an array. Used for DebugView 
+        /// </summary>
+        /// <returns></returns> 
+        internal T[] ToArray() {
+            T[] newArray = new T[Count];
+            CopyTo(newArray);
+            return newArray; 
+        }
+  
+        /// <summary> 
+        /// Internal method used for HashSetEqualityComparer. Compares set1 and set2 according
+        /// to specified comparer. 
+        ///
+        /// Because items are hashed according to a specific equality comparer, we have to resort
+        /// to n^2 search if they're using different equality comparers.
+        /// </summary> 
+        /// <param name="set1">
+        /// <param name="set2"> 
+        /// <param name="comparer"> 
+        /// <returns></returns>
+        internal static bool HashSetEquals(HashSet<t> set1, HashSet<t> set2, IEqualityComparer<t> comparer) { 
+            // handle null cases first
+            if (set1 == null) {
+                return (set2 == null);
+            } 
+            else if (set2 == null) {
+                // set1 != null 
+                return false; 
+            }
+  
+            // all comparers are the same; this is faster
+            if (AreEqualityComparersEqual(set1, set2)) {
+                if (set1.Count != set2.Count) {
+                    return false; 
+                }
+                // suffices to check subset 
+                foreach (T item in set2) { 
+                    if (!set1.Contains(item)) {
+                        return false; 
+                    }
+                }
+                return true;
+            } 
+            else {  // n^2 search because items are hashed according to their respective ECs
+                foreach (T set2Item in set2) { 
+                    bool found = false; 
+                    foreach (T set1Item in set1) {
+                        if (comparer.Equals(set2Item, set1Item)) { 
+                            found = true;
+                            break;
+                        }
+                    } 
+                    if (!found) {
+                        return false; 
+                    } 
+                }
+                return true; 
+            }
+        }
+ 
+        /// <summary> 
+        /// Checks if equality comparers are equal. This is used for algorithms that can
+        /// speed up if it knows the other item has unique elements. I.e. if they're using 
+        /// different equality comparers, then uniqueness assumption between sets break. 
+        /// </summary>
+        /// <param name="set1"> 
+        /// <param name="set2">
+        /// <returns></returns>
+        private static bool AreEqualityComparersEqual(HashSet<t> set1, HashSet<t> set2) {
+            return set1.Comparer.Equals(set2.Comparer); 
+        }
+  
+        /// <summary> 
+        /// Workaround Comparers that throw ArgumentNullException for GetHashCode(null).
+        /// </summary> 
+        /// <param name="item">
+        /// <returns>hash code</returns>
+        private int InternalGetHashCode(T item) {
+            if (item == null) { 
+                return 0;
+            } 
+            return m_comparer.GetHashCode(item) & Lower31BitMask; 
+        }
+  
+        #endregion
+ 
+        // used for set checking operations (using enumerables) that rely on counting
+        internal struct ElementCount { 
+            internal int uniqueCount;
+            internal int unfoundCount; 
+        } 
+ 
+        internal struct Slot { 
+            internal int hashCode;      // Lower 31 bits of hash code, -1 if unused
+            internal T value;
+            internal int next;          // Index of next entry, -1 if last
+        } 
+ 
+        [Serializable()] 
+        [System.Security.Permissions.HostProtection(MayLeakOnAbort = true)] 
+        public struct Enumerator : IEnumerator<t>, System.Collections.IEnumerator {
+            private HashSet<t> set; 
+            private int index;
+            private int version;
+            private T current;
+  
+            internal Enumerator(HashSet<t> set) {
+                this.set = set; 
+                index = 0; 
+                version = set.m_version;
+                current = default(T); 
+            }
+ 
+            public void Dispose() {
+            } 
+ 
+            public bool MoveNext() { 
+                if (version != set.m_version) { 
+                    throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumFailedVersion));
+                } 
+ 
+                while (index < set.m_lastIndex) {
+                    if (set.m_slots[index].hashCode >= 0) {
+                        current = set.m_slots[index].value; 
+                        index++;
+                        return true; 
+                    } 
+                    index++;
+                } 
+                index = set.m_lastIndex + 1;
+                current = default(T);
+                return false;
+            } 
+ 
+            public T Current { 
+                get { 
+                    return current;
+                } 
+            }
+ 
+            Object System.Collections.IEnumerator.Current {
+                get { 
+                    if (index == 0 || index == set.m_lastIndex + 1) {
+                        throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumOpCantHappen)); 
+                    } 
+                    return Current;
+                } 
+            }
+ 
+            void System.Collections.IEnumerator.Reset() {
+                if (version != set.m_version) { 
+                    throw new InvalidOperationException(SR.GetString(SR.InvalidOperation_EnumFailedVersion));
+                } 
+  
+                index = 0;
+                current = default(T); 
+            }
+        }
+    }
+  
+}

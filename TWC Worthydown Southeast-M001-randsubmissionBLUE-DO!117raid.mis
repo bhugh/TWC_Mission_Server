@@ -1,0 +1,98 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[GlobalWind_1]
+  Power 0.000 0.000 0.000
+  BottomBound 1450.00
+  TopBound 1450.00
+  GustPower 5
+  GustAngle 44
+[splines]
+[AirGroups]
+  BoB_LW_KuFlGr_706.07
+  BoB_LW_LG2_I.01
+  BoB_LW_LG2_I.02
+  BoB_LW_LG2_I.04
+  BoB_LW_LG2_I.13
+[BoB_LW_KuFlGr_706.07]
+  Flight0  1 2
+  Flight1  11 12
+  Flight2  21 22
+  Class Aircraft.Do-215B-1
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1 1 1 0
+  SpawnFromScript 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KuFlGr_706.07_Way]
+  NORMFLY 19041.34 178527.78 4000.00 300.00
+  RECON 21957.29 211660.80 4000.00 300.00
+  GATTACK_POINT 28663.82 226316.29 4000.00 300.00
+  NORMFLY 57153.02 230323.20 4000.00 300.00
+  GATTACK_TARG 61168.23 228249.05 4000.00 300.00
+  GATTACK_POINT 76666.71 194557.68 4000.00 300.00
+  NORMFLY 79560.23 189165.70 4000.00 300.00
+  NORMFLY 46356.48 177487.87 4000.00 300.00
+  NORMFLY 42195.46 167405.57 4000.00 300.00
+  LANDING 6036.48 159613.44 500.00 300.00
+[BoB_LW_LG2_I.01]
+  Flight0  1 2 3 4
+  Class Aircraft.Bf-109E-3
+  Formation FINGERFOUR
+  CallSign 30
+  Fuel 52
+  Weapons 1 1
+  SpawnFromScript 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_LG2_I.01_Way]
+  ESCORT 20138.56 177124.19 4000.00 300.00 BoB_LW_KuFlGr_706.07 0
+[BoB_LW_LG2_I.02]
+  Flight1  11
+  Class Aircraft.Bf-109E-3
+  Formation FINGERFOUR
+  CallSign 28
+  Fuel 100
+  Weapons 1
+  Skill 1 1 1 1 1 1 1 1
+[BoB_LW_LG2_I.02_Way]
+  ESCORT 18396.85 177069.76 4000.00 300.00 BoB_LW_LG2_I.01 0
+[BoB_LW_LG2_I.04]
+  Flight2  21 22
+  Class Aircraft.Bf-109E-3
+  Formation FINGERFOUR
+  CallSign 20
+  Fuel 43
+  Weapons 1 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_LG2_I.04_Way]
+  ESCORT 21009.42 176144.47 4000.00 300.00 BoB_LW_KuFlGr_706.07 0
+[BoB_LW_LG2_I.13]
+  Flight0  1
+  Flight1  11 12
+  Class Aircraft.Bf-109E-3
+  Formation FINGERFOUR
+  CallSign 7
+  Fuel 100
+  Weapons 1 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_LG2_I.13_Way]
+  ESCORT 19703.13 176035.62 4000.00 300.00 BoB_LW_LG2_I.01 0
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

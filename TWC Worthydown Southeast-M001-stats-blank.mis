@@ -1,0 +1,14 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+[GlobalWind_0]
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+[StaticCamera]
+[AIChiefs]
+[BirthPlace]

@@ -1,0 +1,72 @@
+﻿[Army Red]
+<Name>
+Army Red
+<Description>
+Take off at Old Sarem, Bembridge, or Worthydown. 
+
+You have re-supply bases available at Andover, Gosport and Ford.  (This server does not have R&R.  However, you can land atAndover, Gosport or Ford and then spawn in again with a new aircraft as an approximation of R&R.)
+
+Repel the bomber attacks at Bembridge. Save the radar at Ventner. Enemy raids will be coming to Worthydown and Old Sarum. Our most vital role is to protect the fuel and shipping located at Portsmouth.
+
+Be aware, because there are some real hot pilots coming after you!
+
+Blenny Pilots destroy targets at Cherbourg harbor and the dam at Le Harve along with fuel storage and invasion barges and shipping!!
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+
+
+Mission length: 90 minutes.
+<Slide>
+../../screenshots/screenshot1.jpg
+<Caption>
+[Army Blue]
+<Name>
+Army Blue
+<Description>
+Take off from Le Havre, Querqueville, or Theville.  Your mission is to destroy the airport at Bembridge and the radar installation at Ventnor.
+
+Squadrons of bombers will be attacking these targets, Flak will be fierce and enemy aircraft will be attacking the bomber squadrons.  Defend your bomber squadrons or run your own bombing missions on these important targets.
+
+Many Targets exist for the Bomber boys. Two corvettes guard 5 precious tankers, for example.  The ships and fuel storage at the Portsmouth are the most strategic.
+
+Also a raid is headed to Le Harve.  See if you can stop it. Good luck!
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+
+Mission length: 90 minutes.
+<Slide>
+../../screenshots/shot_20141127_095901.bmp
+<Caption>
+AA works to defend your base also

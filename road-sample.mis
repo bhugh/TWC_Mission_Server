@@ -1,0 +1,54 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$Online_Map
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[GlobalWind_1]
+  Power 0.000 0.000 0.000
+  BottomBound 1450.00
+  TopBound 1450.00
+  GustPower 5
+  GustAngle 44
+[splines]
+  38 0_SplineRoad 14/width 20
+[0_SplineRoad]
+  20074.67 18388.21 -32.00 null R 20320.00 17897.54 -25.47 -1
+  21056.00 16425.54 -5.89  L 20810.67 16916.21 -12.42  R 20880.00 15966.87 -12.42 -1
+  20352.00 14590.87 -32.00  L 20528.00 15049.54 -25.47  R 19354.67 14148.21 -18.37 -1
+  16362.67 12820.21 22.51  L 17360.00 13262.87 8.88 null -1
+[AirGroups]
+  BoB_RAF_F_FatCat_Early.01
+[BoB_RAF_F_FatCat_Early.01]
+  Flight0  1
+  Class Aircraft.SpitfireMkIIa
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_F_FatCat_Early.01_Way]
+  NORMFLY 16576.00 17086.87 500.00 300.00
+[CustomChiefs]
+[Chiefs]
+  0_Chief Vehicle.AEC_Matador gb 
+[0_Chief_Road]
+  11072.00 17364.21 38.40  0 2 4.17
+  11456.00 16702.87 38.40  0 4 2.08
+  11808.00 16352.00 38.40
+  12000.00 16160.00 38.40
+  13610.67 15550.87 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]

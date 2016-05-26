@@ -1,0 +1,224 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  airdrome0 60794.63 228076.43 1 500 500 1
+  airdrome1 157301.45 57869.33 2 1000 700 1
+  airdrome2 28696.95 226282.17 1 700 700 0
+  airdrome4 43803.34 70323.34 2 1000 700 1
+  airdrome3 76353.98 179986.78 1 1000 700 0
+  airdrome5 46220.57 238967.40 0 1000 700 0
+[airdrome0_Runways]
+  60620.23 228182.03 195.00 1300.00 65.00 0
+[airdrome0_Points]
+  60865.16 228415.99 15 13 11 9 7 5 3 1
+  61007.66 228184.65 2
+  61019.08 228167.97
+  60859.66 228028.55 4
+  60991.78 228158.26
+  61021.99 228195.72 6
+  61038.15 228180.44
+  60958.33 228174.42 8
+  60965.35 228150.37
+  60928.47 228167.40 10
+  60936.19 228141.06
+  60900.08 228160.56 12
+  60907.25 228133.06
+  60872.21 228152.74 14
+  60878.63 228125.11
+  60843.81 228143.99 16
+  60849.38 228112.55
+[airdrome1_Runways]
+  157340.88 57901.21 765.00 1200.00 95.00 0
+[airdrome1_Points]
+  157402.58 58089.13 5 3 1
+  157466.55 57895.87 2
+  157563.09 57832.19
+  157513.79 57967.77 4
+  130653.54 60903.39
+  157614.45 58047.88 6
+  157682.24 58008.85
+[airdrome2_Runways]
+  28651.79 226207.10 20.00 1000.00 40.00 0
+[airdrome2_Points]
+  28540.41 226344.62 9 7 5 3 1
+  28465.76 226204.93 2
+  28476.15 226174.72
+  28426.11 226187.94 4
+  28432.72 226160.56
+  28390.23 226177.55 6
+  28401.56 226148.28
+  28354.67 226163.49 8
+  28363.65 226139.62
+  28310.73 226146.01 10
+  28317.86 226125.11
+[airdrome4_Runways]
+  43806.10 70320.59 5.00 1400.00 90.00 0
+[airdrome4_Points]
+  43730.31 70298.49 5 3 1
+  43676.30 70406.20 2
+  43668.00 70472.50
+  43571.34 70417.25 4
+  43571.34 70469.73
+  43482.95 70403.45 6
+  43463.62 70442.11
+[airdrome3_Runways]
+  76228.07 179881.18 710.00 1400.00 90.00 0
+[airdrome3_Points]
+  76833.75 179914.81 5 3 1
+  76825.33 179972.57 2
+  76842.96 180012.72
+  76857.65 179965.72 4
+  76871.36 180001.95
+  76877.23 179941.24 6
+  76910.53 179987.26
+[airdrome5_Points]
+  45720.20 238725.31 11 9 7 5 3 1
+  45525.45 239134.47 2
+  45522.61 239065.09
+  45572.17 239131.64 4
+  45570.75 239062.26
+  45768.95 239145.78 6
+  45778.86 239056.59
+  45723.65 239144.37 8
+  45730.73 239053.76
+  45671.27 239140.12 10
+  45674.10 239062.26
+  45614.64 239134.46 12
+  45620.30 239066.50
+[BirthPlace]
+  Le_Havre 2 157463 57797 0 1 1 1 de . .
+  Worthydown_NE 1 61009 228355 0 1 1 1 gb . .
+  Gosport 1 72338 194021 0 1 1 1 gb . .
+  Ford 1 113174 196278 0 1 1 1 gb . .
+  Bembridge 1 76791 179962 0 1 1 1 gb . .
+  Old_Sarum 1 28495 226193 0 1 1 1 gb . .
+  Querqueville 2 27648 72633 0 1 1 1 de . .
+  Theville 2 43800 70412 0 1 1 1 de . .
+  Andover_west 1 45717 238708 0 0 1 1 gb . .
+  Andover 1 46666 239025 0 0 0 0 gb . .
+  BirthPlace_0 1 28562 226291 0 1 1 1 gb . .
+[BirthPlace0]
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+[BirthPlace1]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace2]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace3]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace4]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace5]
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.DH82A
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace6]
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4B
+[BirthPlace7]
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4B
+[BirthPlace8]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace9]
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace10]
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.HurricaneMkI

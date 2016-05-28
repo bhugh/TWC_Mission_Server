@@ -1,4 +1,5 @@
 //TODO:
+// - Is it killing the player if they are still flying when the server ends? Maybe? OR perhaps something funny happens when you use the right-click menu to skip around among different a/c & vehicles in the server.  Often you 
 // - It may be losing stats when player dies.  Or perhaps just a bug of server rollover to new directory location.
 // X Create separate page for dead pilots
 // - Create more pages for pilots dead during certain time periods (per month?) and/or just remove them
@@ -47,26 +48,16 @@ public class Mission : AMission
     public bool stb_LogStatsUploadHtmlLow = true;//set true to upload
     //Upload sorttable.js and Style.css to the same location on your site manually, created htm depends on them to be viewed properly
     public bool stb_LogStatsUploadHtmlMed = false;//not available yet
-    
-    /* FTP INFO FOR TWCCLAN SERVER
-      Server : u52184908.1and1-data.host
-      Protocol : SFTP
-      Port : 22
 
-      User: u52184908-twcclan
-
-      pass: robinski2wsx
-    
-    */
-    public string stb_LogStatsUploadAddressLow = "ftp://..."; ////FILL IN AS NEEDED
+    public string stb_LogStatsUploadAddressLow = "";
     public string stb_LogStatsUploadAddressExtLow = ".htm";
     public bool stb_AnnounceStatsMessages = true;
     public int stb_AnnounceStatsMessagesFrequency=29*60; //seconds
-    public string stb_LogStatsPublicAddressLow = "xxxxxx.com";  ////FILL IN AS NEEDED
+    public string stb_LogStatsPublicAddressLow = "";
     public bool stb_StatsServerAnnounce = true;
     public string stb_LogStatsUploadAddressMed = "";//not available yet
-    public string stb_LogStatsUploadUserName = "YOURUSERNAME";  ////FILL IN AS NEEDED
-    public string stb_LogStatsUploadPassword = "YOURFTPPASSWORD"; ////FILL IN AS NEEDED
+    public string stb_LogStatsUploadUserName = "";
+    public string stb_LogStatsUploadPassword = "";
     public double stb_LogStatsDelay = 120.0;//seconds 60.0 default
     //public double stb_LogStatsDelay = 10.0;//for testing
     //Mission Related
@@ -993,25 +984,29 @@ public class Mission : AMission
                             sw.WriteLine("<link rel=\"stylesheet\" href=\"Style.css\" type=\"text/css\" />");
                             sw.WriteLine("</head>");
                             sw.WriteLine("<body onload= \"initSort()\">");
-                            
+
                             sw.WriteLine("<h1>TWC Mission Server Stats</h1>");
                             sw.WriteLine("<p>Last Update: " + DateTime.Now.ToString("R") + "</p>");
                             sw.WriteLine("<p>Click for: <a href=\"stats.htm\">Current ALIVE pilots stats list</a> - <a href=\"stats-dead-pilots.htm\">DEAD pilots stats list (archive)</a></p>");
-                            
+
                             sw.WriteLine("<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\">");
                             sw.WriteLine("<thead>");
                             sw.WriteLine("<tr class=\"rh1\"><td class=\"dh bg0\">Name<hr size=\"1\" noshade=\"noshade\"/></td><td class=\"dh bg1\">Missions & Kills Summary<hr size=\"1\" noshade=\"noshade\"/></td>");
                             sw.WriteLine("<td class=\"dh bg2\" colspan=\"3\">Details about Sorties and Damage to Player<hr size=\"1\" noshade=\"noshade\"/></td>");
                             sw.WriteLine("<td class=\"dh bg3\" colspan=\"3\">Details about Player Damage to Enemy<hr size=\"1\" noshade=\"noshade\"/></td>");
-                            sw.WriteLine("<td class=\"dh bg4\" colspan=\"7\">Misc<hr size=\"1\" noshade=\"noshade\"/></td>");                           
+                            sw.WriteLine("<td class=\"dh bg4\" colspan=\"7\">Misc<hr size=\"1\" noshade=\"noshade\"/></td>");
                             sw.WriteLine("</table>");
-                            
-                            
-                            
+
+
+
                             sw.WriteLine("<table class=\"sortable\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\">");
                             sw.WriteLine("<thead>");
                             sw.WriteLine("<tr class=\"rh2\">");
                             sw.WriteLine("<th class=\"bg0\">Name<hr size=\"1\" noshade=\"noshade\"/></th>");
+                            if (!listLive) {
+                                sw.WriteLine("<th class=\"bg0\">Death Date<hr size=\"1\" noshade=\"noshade\"/></th>");
+                                sw.WriteLine("<th class=\"bg0\">Self Kill?<hr size=\"1\" noshade=\"noshade\"/></th>");
+                            }
                             sw.WriteLine("<th class=\"bg1\">Miss- ions<hr size=\"1\" noshade=\"noshade\"/></th>");                          
                             sw.WriteLine("<th class=\"bg1\">Ave. Kills Per Miss- ion<hr size=\"1\" noshade=\"noshade\"/></th>");
                             sw.WriteLine("<th class=\"bg1\">Air/ Ground/ Naval Kills<hr size=\"1\" noshade=\"noshade\"/></th>");
@@ -1037,6 +1032,9 @@ public class Mission : AMission
                             sw.WriteLine("</tr></thead>");
                             sw.WriteLine("<tbody>");
                             bool alternate = true;
+
+
+
                             foreach (KeyValuePair<string, int[]> entry in stbSr_AllPlayerStats)
                             {
                             
@@ -1046,8 +1044,30 @@ public class Mission : AMission
                                 if (alternate) { sw.WriteLine("<tr class=\"r1\">"); }
                                 else { sw.WriteLine("<tr class=\"r2\">"); }
                                 alternate = !alternate;
-                                sw.WriteLine("<td class=\"dn\">" + entry.Key + "</td>");//Name
-                                
+
+                                string deathDate = "";
+                                string deathSelf = "";
+                                string ts = "";
+                                string name = "";                                
+                                if (!listLive && entry.Key.Length > 14)
+                                {
+                                    ts = entry.Key.Substring(14);                                    
+                                    deathDate = ts.Substring(0, ts.IndexOf(" || "));
+                                    name = ts.Substring(ts.IndexOf(" || ") + 4);
+                                                                  
+                                    if (name.Contains(" (self-kill)"))
+                                    {
+                                        deathSelf = "Y";
+                                        name=name.Replace(" (self-kill)", "");
+                                    }                                
+                                   sw.WriteLine("<td class=\"dn\">" + name + "</td>");//Name
+                                   sw.WriteLine("<td class=\"dn\">" + deathDate + "</td>");//death Date
+                                   sw.WriteLine("<td class=\"dn\">" + deathSelf + "</td>");//Self death?
+                                }
+                                else
+                                {
+                                    sw.WriteLine("<td class=\"dn\">" + entry.Key + "</td>");//Name
+                                }
                                 sw.WriteLine("<td>" + entry.Value[779].ToString() + "</td>");//Missions
                                 double kpm = 0;                                
                                 if ( entry.Value[779] != 0) {kpm = (double)(entry.Value[647] + entry.Value[648] + entry.Value[649]) / (double) entry.Value[779]; }  
@@ -2544,7 +2564,7 @@ public class Mission : AMission
             Player player = person.Player();                
             //if (deltaHealth>0 && player != null && player.Name() != null) {
             if (player != null && player.Name() != null) {
-              System.Console.WriteLine("OnPersonHealth for " + player.Name());
+              System.Console.WriteLine("Stats: OnPersonHealth for " + player.Name());
               StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 773 });
               stb_StatRecorder.StbSr_EnqueueTask(sst1);
             }  
@@ -2552,7 +2572,7 @@ public class Mission : AMission
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPersonHealth - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPersonHealth - Exception: " + ex.ToString());
         }
         #endregion
 

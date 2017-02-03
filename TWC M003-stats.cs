@@ -13,10 +13,21 @@
 //Everything still works--you just won't see any Console.WriteLine() messages, making you *think* that everything is failing. 
 
 //TODO:
-// - NULL REFERENCE EXCEPTION somewhere in onactordead
-// - When you are dead, after a while you are kicked out of the aircraft.  Then this registers as "X parachuted" blah blah blah presumably because the kickout-on-death is a place-leave.
+// - Dis-incentives for bomber pilots to fly because they die so often. Create a separate career for a player's heavy bomber missions or come up with some other solution to make it fairer for & encourage more bomber pilots.
+// - General code cleanup & dead code removal 
+// - Add planes written off & perhaps a few more relevant stats to <career and/or <sess
+// X Flight time wasn't registering properly/often wasn't saved (end of mission etc)
+// X MANY kills were not being recorded, esp of the aiaircraft just landed somewhere & didn't die/explode
+// X Rank system advances pilot far too quickly up the ranks - more 'in between' ranks needed, plus a general slow-down in advancement
+// X Pilots die/lose career when they do slow-speed crashes (ie into hangars) or are vulched.  CloD is too anxious to put the 'explosion' effect into play in low-speed ground collisions
+// X Need to handle case of when player leaves a/c or disconnects - die instantly or what?
+// X Players are being given death only when 'onActorDead' is called, which is generally only when an a/c crashes/explodes spectacularly.  Need to also take care of what happens when they parachute in friendly/unfriendly/land/water location, land or crash land, in various locations etc.  In many cases we are giving the player a message "you drowned" or whatever, but in reality **nothing happens** in the stats or to affect the players career.  The only thing that happens is that little message shows up.
+// - When you land outside of an airfield pretty soon the server kicks you out of the plane etc.  But for various interesting special missions you should be able to just stay there & take off again etc if undamaged.
+
+// X NULL REFERENCE EXCEPTION somewhere in onactordead
+// X When you are dead, after a while you are kicked out of the aircraft.  Then this registers as "X parachuted" blah blah blah presumably because the kickout-on-death is a place-leave.
 // X Also, similarly, if you crash into the ground & then you're kicked out of the A/C, then you get a message "XXX left an aircraft in motion. . . . "  (Just needed messaging massage.)
-// - Could prevent/stop various messages that usually happen when you end a flight or leave your position, when they happen
+// X Could prevent/stop various messages that usually happen when you end a flight or leave your position, when they happen
 //   because the server has KICKED YOU from a plane or whatever.
 // - bombs & bullets don't seem to show up in practice server.  Might be because they are set to unlimited in that server?  <sess  I think it was working with different server settings while I was testing it offline. Fixed it partly by changing the bomb/bullet lines in <ses & <car to simply hide themselves if not data
 //Bombs & bullets don't seem to be showing up on the stats pages
@@ -44,13 +55,13 @@
 // - It may not always reliably detect that pilots have been killed, especially if they are not in an a/c at the moment, or other unusual situations  
 // X make it do a final stats save just before killing the server for re-start
 // X keep track of "dumb" deaths & crashes, ie self-inflicted  (perhaps if you die or leave place when the only damage caused is self-inflicted)
-// - What about people who just  leave their plane in mid-air etc?  Do they die, lose their mission?
+// X What about people who just  leave their plane in mid-air etc?  Do they die, lose their mission?
 // - On continuemission, check altitude, too, so that people can't just leave the server above an airport & then spawn in again right at the airport ot continue their mission
 // - 'XXX returned to base' or 'XXX is safe on the ground' or "XXX landed safely" is indication that the landing registered
-// - Fix the thing where just sitting on the ground registers as flight time.  Don't count flight time unless there is an actual take-off. 
-// - On player died page, split the name field into "died on" and 'name' fields.
+// X Fix the thing where just sitting on the ground registers as flight time.  Don't count flight time unless there is an actual take-off. 
+// X On player died page, split the name field into "died on" and 'name' fields.
 // - Track last time the player was active on the server (whenever stats are written or saved) and then use that to filter out old/inactive players (partly complete)
-// - on placeleave shows a message even when you are just changing places in a bomber or parachuting out (the message is nonsensical in those situations)
+// X on placeleave shows a message even when you are just changing places in a bomber or parachuting out (the message is nonsensical in those situations)
 //
 // $reference System.Core.dll  is needed to make HashSet work.  For some reason.
 // /Strategy.dll & /gamePlay.dll are needed to various parts of CLOD

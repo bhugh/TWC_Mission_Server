@@ -1,11 +1,64 @@
+// # define DEBUG
 //http://forum.1cpublishing.eu/showthread.php?t=26112
 //Various emergency & service cars script by naryv posted an sukhoi.ru today.
 //Based on an ambulance script created by fearless frog
 //http://simhq.com/forum/ubbthreads.php/topics/3387619/Ambulance_Station_notes_from_t.html
 //Hacked extensively by bhugh
 
+
+//There has been some problem with auto-generated trucks running into aircraft as they spawn in on the airfield.
+//To solve this, the trucks now look for these objects, in this order, as their "home base" or "magnet point":
+// 1. Two specific Stationary Ground Objects, one each for GB & DE:
+//     - Bedford_MW_tank 
+//     - Opel_Blitz_fuel
+//     - Note that in FMB these are all statics/vehicles  NOT vehicles.  Vehicles move around and require you to set a path for them. Statics just remain motionless in place.
+//
+// 2. If no Stationary Ground Objects are found nearby, the "birthplace" (ie, spawn point at the airport) is used.
+// 3. If no birthplace is found, the airport location is used
+// What this does is allows you to set Stationary Ground Objects in place round the perimeter of the airport.  The ground vehicles will use
+//these vehicles (the closest one) as their home base. Thus, you can direct the ground vehicle traffic by placing these stationary/static trucks
+// Initially we were using the "birthplace" as the home location.  But FMB does not allow the birthplace location to be easily edited.
+//So the solution was using these static trucks/ArmoredCar/tractors to indicate the home base.  These can easily be inserted and edited in FMB.
+//
+//At spawn-in, the auto-generated trucks will appear on a direct line between the spawn-in point and the nearest stationary truck. It will 
+//then drive to the stationary truck.
+//At landing or crash landing, the auto-generated trucks will appear near the stationary truck (on a straight line from the aircraft location 
+// the stationary truck), drive to the aircraft, then return in the direction of the stationary truck.
+//
+//So you need to ensure that the location of your airport spawn points and your stationary trucks located on the perimeter of the airport
+//is suitable. If the straight line between one spawn point and the nearest stationary truck crosses a second spawn point, that is a recipe
+//for disaster--when two players spawn in at once.
+//
+//The auto-generated vehicles won't cross a runway, so you need to ensure that there are stationary trucks on either side of each runway, at equal distance, to act
+//as "home base" for any trucks that start/end on that side
+//
+//You can gain further control of the Ground Vehicles by placing these statationary/static objects on the map, particularly in the area of airports:
+//
+//These two objects make every Ground Vehicle that spawns for any aircraft within 500 meters of these objects, to have a very short life (about 20 seconds):
+//
+//   - Bedford_MW_tent
+//   - Opel_Blitz_tent
+//
+//These two objects **prevent any ground vehicles from spawning at all** for any aircraft within 250 meters of these objects,
+//   - Bicycle_UK1
+//   - Bicycle_GER1
+//
+// Note that the actual distances these various vehicles are effective is set in these variables:
+//        public int magnetTruck_dis_m = 2000; //this distance at which this type of truck becomes effective/starts attracting the ground vehicles
+//        public int shortTimeTruck_dis_m = 500; //effective distance/range of this type of truck 
+//        public int shortTimeTruck_time_sec = 2
+//
+//
 //TODO
+// - Make vehicles avoid and/or spawn out if they approach too close to any of the spawn-in points at the nearest spawn-in point (birthplace).  And/or, if players are killed upon spawn-in by a ground vehicle, figure out some way to make it not count against them in stats.
+// X Some trailers are still not despawning - end in _13 (_Chief_Ammo_13)
+// - Ground Vehicles just spawn out if they get too close to an aircraft now. This should entirely prevent GV just mowing over aircraft sitting on a field or just spawned in.
 // - We could make vehicles drive a ways out from the airport before de-spawning (that way de-spawns would never be seen by human eyes)
+// - Still some vehicles are not being spawned out @ the end, and some trailers.  Prob. missed in the onmissionloaded method, or perhaps because the aircraftnumber doesn't match up. 
+// - Probalby need and onactorcreated filter & set a max life to everything as it is spawned in. base.OnActorCreated(missionNumber, shortName, actor);
+// X Also we could put spawn-out timeouts on everything, all aiactors included trailers, as it comes in onmissionloaded instead of just the aigroups
+// - Include the aircraftnumber in the vehicle names as one part of them so that we **know** the a/c number when it spawns in rather than just needing to guess it as we do know by hoping aircraftnumber hasn't changed between the isectionfile read & when the mission file is actually read into onmissionloaded
+// - Also vehicles are not spawned out if they are killed midway through their task.  Probably need and onactordead filter here. 
 // X Detect when a/c have stopped moving & send vehicles then.  That would detect
 //most other types of landings & crashes that are not now detected. 
 // X Fix prisoner wagon & various other types that aren't working
@@ -21,14 +74,31 @@
 // - If you just keep sitting in plane after crash landing, it will keep spawning more & more emerg. vehicles to come to you.  Perhaps bec. the plane keeps self-damaging & that re-adds it to the airplane list & then it detects you have stopped.  Probably, don't add plane to active list if it self-damages (or perhaps even outside damage?) unless it is moving.  Or keep a list of planes that have already landed/crashed/stopped etc and dont' re-add them to the active a/c list unless/until (something--maybe just a wait of 5 minutes).
 // - Simple blow rads & slight crash on landing triggered 4(!) emerg. veh. groups, not sure why.  Might be related to the issue above; where a landing triggers some vehicle groups but then there is also self-damage still happening after that, triggering more. 
 // - After being hit by bombs etc (ie, killed) vehicles don't spawn out ever, they just stay there.
+// - Make sure players can't evade emerg vehicles after (eg) a crash landing just be exiting their plane quickly
+// - similarly, if they exit the plane just before a crash they still get the emerg vehicles
+// - Potential big addition, could send fire trucks etc when something is bombed or explodes, like ground targets.  Probably only for quite big ones.
 // - 2016/05/25 - a/c are sometimes weathercocking into the initial tender vehicles, perhaps make them spawn a bit further away
+// - OK, we can refactor the entire process of creating & naming groundgroups and then picking them up after the ISectionFile is loaded.  It will be more efficient and not lose groups, and also the groups will be tied in with their aircraft with no chance of mixup.  Just include the aircraft ID# in the groundgroup name, like 0_Chief_Fire_XX_01.  When creating the ISectionFile, also create a Dictionary or LIst of all groundactors etc created. You could also include the names of statics created. Then use OnActorCreated to check for actor.Name() being in this list/dictionary.  Then you can associate the TechCars exactly with the related PlanesQueue item, get all the TechCars with their proper characteristics, etc.
 // - 
 //
 //Code:
 
+
+/* / / - $ debug */
+
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference System.Core.dll
+/* / / $ reference parts/core/maddox.dll */
+/* / / $ reference parts/core/part.dll */
+/* / / $ reference parts/core/core.dll
+*  / / $ reference parts/core/gameWorld.dll
+* / / $reference Campaign.dll
+*/
+
+
+
+
 using System;
 //using System.Core;
 using System.Collections;
@@ -42,16 +112,18 @@ using System.Text;
 using System.ComponentModel;
 using System.Threading;
 using System.Diagnostics;
+using System.Linq;
 
 public class Mission : AMission
 {
     
     public bool DEBUG=false;
-    public int MIN_VEHICLE_LIFE_SEC = 120;
+    public int MIN_VEHICLE_LIFE_SEC = 120; //This sets only a low benchmark for a certain loop. Lifetime for each individual type of techcar is set below. 
     //public int MIN_VEHICLE_LIFE_SEC = 10; //for testing
-    public int MAX_VEHICLE_LIFE_SEC = 240;
+    public int MAX_VEHICLE_LIFE_SEC = 240; //Not used for anything right now.
     //public int MAX_VEHICLE_LIFE_SEC = 20; //for testing
-    public double CAR_POS_RADIUS = 80; //distance vehicles will be positioned from the center point of the Birthplace, Airfield, etc where cars are positioned
+    //public double CAR_POS_RADIUS = 80; //distance vehicles will be positioned from the center point of the Birthplace, Airfield, etc where cars are positioned
+    public double CAR_POS_RADIUS = 35; //distance vehicles will be positioned from the center point of the Birthplace, Airfield, etc where cars are positioned
     public int TICKS_PER_MINUTE=1986; //empirically, based on a timeout test.  This is approximate & varies slightly.
     
     //for landing or crash, they start SPAWN_START_DISTANCE_M away from the plane in the direction of the nearest BirthPlace or Airport point.  They end SPAWN_END_DISTANCE_M away from the a/c.  (Distances are approx., various randomness & functions added on top of these values.)  
@@ -67,13 +139,17 @@ public class Mission : AMission
     string FILE_PATH;
     string FULL_PATH;
 
-    private HashSet<AiActor> actorPlaceEnterList;  //HashSet doesn't work for some reason; it would be a better solution
+    private HashSet<AiActor> actorPlaceEnterList;  
     private HashSet<AiAircraft> aircraftDamagedList;
     private HashSet<AiAircraft> aircraftActiveList;
+    private HashSet<AiAircraft> aircraftAbandonedList;
+    private HashSet<AiAircraft> aircraftRecentLeaveList;
 
     Random rnd = new Random();
 
     maddox.game.ABattle Battle;
+
+    //IGamePlay GP = GamePlay as IGamePlay;
 
     public Mission () {
         //HashSet<int> evenNumbers = new HashSet<int>(); 
@@ -83,10 +159,11 @@ public class Mission : AMission
         actorPlaceEnterList = new HashSet<AiActor>();
         aircraftDamagedList = new HashSet<AiAircraft>();
         aircraftActiveList = new HashSet<AiAircraft>();
+        aircraftRecentLeaveList = new HashSet<AiAircraft>();
 
         USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
         CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover - MOD/";  // DO NOT CHANGE
-        FILE_PATH = @"missions/Multi/Fatal";   // mission install directory (CHANGE AS NEEDED)
+        FILE_PATH = @"missions/Multi/Fatal/M003";   // mission install directory (CHANGE AS NEEDED)
         FULL_PATH = CLOD_PATH + FILE_PATH + @"/";
         rnd = new Random(Guid.NewGuid().GetHashCode()); //randomize the seed . . . 
 
@@ -103,7 +180,7 @@ public class Mission : AMission
         MissionNumberListener = -1; //Listen to events of every mission
         //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this mission/cs file work!
         //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
-        Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", typeof(AircraftType).Namespace,  typeof(AircraftType).Module,  typeof(AircraftType).ToString(), typeof(AircraftType).IsEnum, typeof(AircraftType).IsValueType,typeof(AircraftType).GetType()); //, AircraftType.GetType()
+        if (DEBUG) Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", typeof(AircraftType).Namespace,  typeof(AircraftType).Module,  typeof(AircraftType).ToString(), typeof(AircraftType).IsEnum, typeof(AircraftType).IsValueType,typeof(AircraftType).GetType()); //, AircraftType.GetType()
         if (DEBUG) GamePlay.gpLogServer(null, ".Net framework: " +  Environment.Version, new object[] { });
         
     }
@@ -113,14 +190,90 @@ public class Mission : AMission
     {
         base.OnBattleStarted();
         //MissionNumberListener = -1;
-    }    
+    }
+
+    public class BasePos
+    {
+        internal string _Name;
+        internal Point3d _Pos;
+        public bool startAllowed = true;
+        public int maxTime_sec = 0;
+
+        internal bool DEBUG = false;
+
+        public BasePos(string name, Point3d pos, bool sa=true, int mt=0)
+        {
+            if (name != null)
+                this._Name = name;
+            else this._Name = "";
+            //if (pos!=null)
+            this._Pos = pos;
+            //else this.Pos=new Point3d(0,0,0); 
+            this.startAllowed = sa;
+            this.maxTime_sec = mt;
+        }
+
+        public BasePos(BasePos bp)
+        {
+            this._Name = bp.Name();
+            this._Pos = bp.Pos();
+            if (DEBUG) Console.WriteLine("BasePos inited: " + this.ToString("F2"));
+            this.startAllowed = bp.startAllowed;
+            this.maxTime_sec = bp.maxTime_sec;
+        }
+
+        //a default constructor . . .
+        public BasePos(object o = null)
+        {
+            this._Name = "";
+            this._Pos = new Point3d(0, 0, 0);
+            this.startAllowed = true;
+            this.maxTime_sec = 0;
+        }
+
+        public string Name(string name = null)
+        {
+
+            if (name == null) return this._Name;
+            else
+            {
+                this._Name = name;
+                return null;
+            }
+
+        }
+
+        public Point3d Pos(Point3d pos)
+        {
+            this._Pos = pos;
+            return this._Pos;
+        }
+
+        public Point3d Pos()
+        {
+            return this._Pos;
+        }
+
+        public virtual string ToString(string format="0.0")
+        {
+            return _Name + " "
+            + _Pos.x.ToString(format) + " "
+            + _Pos.y.ToString(format) + " "
+            + _Pos.z.ToString(format) + " "
+            + "Start: " + startAllowed.ToString() + " "
+            + "maxTime: " + maxTime_sec.ToString();
+
+        }
+
+    }
+
 
 
     internal class ActorPos : BasePos
     {
 
         public AircraftType _Type;
-        public ActorPos(string name, Point3d pos, AircraftType type)
+        public ActorPos(string name, Point3d pos, AircraftType type, bool sa=true, int mt =0)
         {
             if (name != null)
                 this._Name = name;
@@ -129,9 +282,12 @@ public class Mission : AMission
             this._Pos = pos;
             //else this.Pos=new Point3d(0,0,0);
             this._Type = type;
-        }
+            this.startAllowed = sa;
+            this.maxTime_sec = mt;
 
-        public AircraftType Type(maddox.game.world.AircraftType type)
+    }
+
+    public AircraftType Type(maddox.game.world.AircraftType type)
         {
             this._Type = type;
             return this._Type;
@@ -142,21 +298,22 @@ public class Mission : AMission
             return this._Type;
         }
 
-        public override string ToString(string format)
+        public override string ToString(string format = "0.0")
         {
             return _Name + " "
             + _Pos.x.ToString(format) + " "
             + _Pos.y.ToString(format) + " "
-            + _Pos.z.ToString(format) +
-            "Type" + _Type.ToString();
+            + _Pos.z.ToString(format) + " "
+            + "Start: " + startAllowed.ToString() + " "
+            + "maxTime: " + maxTime_sec.ToString();
 
         }
-
     }
 
     internal class TechCars
     {
-        //private readonly AMission _mission; //allows us to reference methods etc from the Mission class as 'outer'        
+        //private readonly AMission _mission; //allows us to reference methods etc from the Mission class as 'outer'  
+        internal bool DEBUG = false;      
         internal AiGroundGroup TechCar { get; set; }
         internal BasePos basePos { get; set; }
         internal IRecalcPathParams cur_rp { get; set; }
@@ -170,23 +327,27 @@ public class Mission : AMission
         internal int Life()
         {
             {
-                Console.WriteLine("tc: c:" + ServiceLife.Count);
-                if (ServiceLife.ContainsKey((int)cartype)) Console.WriteLine("tc:" + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString());
+                //Console.WriteLine("tc: c:" + ServiceLife.Count);
+                if (DEBUG) if (ServiceLife.ContainsKey((int)cartype)) Console.WriteLine("tc:" + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString());
 
-                Console.WriteLine("tc:" + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString());
-
+                //Console.WriteLine("tc:" + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString());
+                
+                //return 20;  //for testing
+                
                 int value = 0;
                 if (ServiceLife.TryGetValue((int)cartype, out value))
                 {
-                    Console.WriteLine("tc from ServiceLife: " + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString() + " " + value.ToString());
-                    //return ServiceLife[Convert.ToInt32(CarType)];
-                    return value;
+                    //Console.WriteLine("tc from ServiceLife: " + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString() + " " + value.ToString());
+                    //return ServiceLife[Convert.ToInt32(CarType)];                    
+                    
                 }
                 else
                 {
                     //Console.WriteLine("tc default:" + Convert.ToInt32(CarType).ToString() + " " + cartype.ToString());
-                    return 120;
+                    value = 120;
                 }
+                if (basePos.maxTime_sec > 0 && value > basePos.maxTime_sec) value = basePos.maxTime_sec; //in NearestTruck we set a max time allowed for the cars in that area to exist, in some cases
+                return value;
             }
         }
 
@@ -221,7 +382,7 @@ public class Mission : AMission
                 */
 
                 //Console.WriteLine(".Net framework: " + System.Environment.Version); //GamePlay.gpLogServer(null, ".Net framework: " + System.Environment.Version, new object[] { });
-                Console.WriteLine("TechCars created. basePos: " + this.basePos.ToString("F2") + " " + ServiceLife[4].ToString());
+                if (DEBUG) Console.WriteLine("TechCars created. basePos: " + this.basePos.ToString("F2") + " " + ServiceLife[4].ToString());
             }
             catch (Exception e) { System.Console.WriteLine("techcars: " + e.ToString()); }
         }
@@ -361,12 +522,12 @@ public class Mission : AMission
                     {
                       if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 2 " , new object[] { });                     
                       //(actor as AiGroundActor).Destroy();
-                      destroyGroundGroup(actor as AiGroundGroup);
+                      destroyAGVGroundGroup(actor as AiGroundGroup);
                     }
                 }                 
                 */
                 if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 1 ", new object[] { });
-                destroyGroundGroup(tC.TechCar);
+                destroyAGVGroundGroup(tC.TechCar);
                   
                 CurTechCars.Remove(tC);
         }      
@@ -379,12 +540,12 @@ public class Mission : AMission
                       
                       if (actor as AiGroundGroup != null ) {
                          if (DEBUG) GamePlay.gpLogServer(null, "EndPlaneService/despawning 4 " , new object[] { });
-                         destroyGroundGroup ( actor as AiGroundGroup );
+                         destroyAGVGroundGroup ( actor as AiGroundGroup );
                       } 
                       (actor as AiGroundActor).Destroy();
                } */
                
-              destroyGroundGroup(ground);
+              destroyAGVGroundGroup(ground);
                
                
                 
@@ -530,23 +691,42 @@ public class Mission : AMission
                 {
                     MyCar = GamePlay.gpActorByName(missionNumber.ToString() + CarTypes[j] + i.ToString()) as AiGroundGroup;
                     
-                    //if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group for " +missionNumber.ToString() + CarTypes[j] + i.ToString(), new object[] { });
+                    
                     if (MyCar != null)
                     {
+                        
+                        MissionLoading = false;
+                        if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group for " + missionNumber.ToString() + CarTypes[j] + i.ToString() + " " + MyCar.Name() + " " + MyCar.ID(), new object[] { });
                         BasePos ap = new BasePos();
+                            
                         if (CurPlanesQueue.Count>= MissionLoadingAircraftNumber  && CurPlanesQueue[MissionLoadingAircraftNumber].basePos != null)
                             ap = CurPlanesQueue[MissionLoadingAircraftNumber].basePos;
                         else ap = FindNearestAirport(MyCar, true);
                         
+                        if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group for " + missionNumber.ToString() + CarTypes[j] + i.ToString() + " " + MyCar.Name() + " " + MyCar.ID() + " " + ap.ToString() , new object[] { });
+
+                            if (!ap.startAllowed) //no vehicles allowed to spawn in this location. They shouldn't be spawning in at all of !startAllowed, but we'll just make double-sure of that right here.
+                            {                                
+                                destroyAGVGroundGroup(MyCar as AiGroundGroup); //destroy this car immediately
+                                continue; //no point in doing any of the rest of the setup
+                            }
+
+                        //We're going to do the destroy routine first - that way if any error should happen later in the routine, the cars wil
+                        //be destroyed regardless
                         TmpCar = new TechCars(MyCar, ap, null);
-                        
-                        if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group at " + TmpCar.basePos.Name() + " " + MissionLoadingAircraftNumber.ToString(), new object[] { });
+                        Timeout(1.1 * (int)TmpCar.Life(), () =>
+                        {
+                            //(MyCar as AiGroundActor).Destroy();
+
+                            destroyAGVGroundGroup(MyCar as AiGroundGroup);
+                        });
+                        //if (DEBUG) GamePlay.gpLogServer(null, "Creating groundcar group at " + TmpCar.basePos.Name() + " " + MissionLoadingAircraftNumber.ToString(), new object[] { });
                         TmpCar.CarType = (ServiceType)(1 << j);
                         TmpCar.cur_rp = null;
                         TmpCar.servPlaneNum=MissionLoadingAircraftNumber;
                         if (!CurTechCars.Contains(TmpCar))
                              CurTechCars.Add(TmpCar);
-                        if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + MyCar.GetItems().Length, new object[] { });
+                        //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + MyCar.GetItems().Length, new object[] { });
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.CarType.ToString(), new object[] { });
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.servPlaneNum.ToString(), new object[] { });
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.cartype.ToString(), new object[] { });
@@ -554,17 +734,9 @@ public class Mission : AMission
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.Life().ToString(), new object[] { });     
 
                         //if (CurTechCars.count < MAX_CARS)   CurTechCars.Add(TmpCar);
-                        //These things are unruly, so we're setting a max life on them.
-                        Timeout(2*(int)TmpCar.Life(), () =>
-                        {
-                            //(MyCar as AiGroundActor).Destroy();
-                            
-                            destroyGroundGroup(MyCar as AiGroundGroup);
-                        });
-                        
-                        
+                        //These things are unruly, so we're setting a max life on them.                      
      
-                        MissionLoading = false;
+                        
                     };
                 }             
             }               
@@ -701,97 +873,152 @@ public class Mission : AMission
     public override void OnTickGame() {
       base.OnTickGame();
       try {
-              if ( (Time.tickCounter()) == 0) {
-                //  if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles started ", new object[] { });
+            if ( (Time.tickCounter()) == 0) {
+            //  if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles started ", new object[] { });
               
-              }
+            }
               
-          if ((Time.tickCounter() % (TICKS_PER_MINUTE/6)) == 12 ) {
+            if ((Time.tickCounter() % (TICKS_PER_MINUTE/6)) == 12 ) {
            
             checkForStoppedAircraft(aircraftActiveList);
-          }    
-              
-          if (Time.tickCounter() % 64 == 0)
-          {  
+            }
+
+            //This checks whether the car is too near a friendly a/c and if so, then it will de-spawn the car
+            //Moving it to its own separate loop so that we can make it run a bit more often.  % 32 should be about 1X per second.
+            if ((Time.tickCounter() % (TICKS_PER_MINUTE / 63)) == 5)
+            {
+                try
+                {
+
+                    List<TechCars> CurTechCarsCopy = new List<TechCars>(CurTechCars); //we need a copy for the loop because we might change TechCars mid-loop by deleting something in it
+                    foreach (TechCars car in CurTechCarsCopy)  // (int i = 0; i < CurTechCars.Count; i++)       //again ix-nay on the loop-for-ay . . . .
+                    {
+
+                        if (car.TechCar != null)
+                        {
+
+
+                            Point3d pos_ct = car.TechCar.Pos();
+                            //IGamePlay GP = GamePlay as IGamePlay;
+                            //if < 15 m from nearest plane, just despawn
+                            if ((car.TechCar as AiActor) != null) { if (DEBUG) GamePlay.gpLogServer(null, "car.TechCar is an actor " + (car.TechCar as AiActor).Pos().x, new object[] { }); }
+                            else if (DEBUG) GamePlay.gpLogServer(null, "car.TechCar is NOT an actor", new object[] { });
+                            AiAircraft nearest_ac = GetNearestFriendlyAircraft(car.TechCar as AiActor);
+                            if (nearest_ac != null)
+                            {
+                                double dist_to_nearest_ac = (nearest_ac as AiActor).Pos().distance(ref pos_ct);
+                                if (DEBUG) GamePlay.gpLogServer(null, "distance to nearest ac = " + dist_to_nearest_ac, new object[] { });
+                                if (dist_to_nearest_ac < 15)
+                                {
+                                    if (DEBUG) GamePlay.gpLogServer(null, "De-spawning vehicle because it is too close to an aircraft. " + car.basePos.Name(), new object[] { });
+                                    EndPlaneService(car, car.TechCar);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                } 
+
+                catch (Exception e) { System.Console.WriteLine("autoveh-tickloop3: " + e.ToString()); }
+
+            
+               
+               
+                
+            }
+
+
+            if (Time.tickCounter() % 64 == 0)
+            {  
             try
             { 
-              //if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles continues . . . ", new object[] { });
-              for (int i = 0; i < CurPlanesQueue.Count; i++)
-              { 
-                  CurPlanesQueue[i].Lifetime++;
-                  if (DEBUG) GamePlay.gpLogServer(null, "Lifetime:  " + CurPlanesQueue[i].Lifetime, new object[] { });
-                  if ((CurPlanesQueue[i].State == ServiceType.NONE) || (CurPlanesQueue[i].aircraft == null)  || (CurPlanesQueue[i].Lifetime > (int)((double)MIN_VEHICLE_LIFE_SEC*TICKS_PER_MINUTE/64/60))) // (int)((double)VEHICLE_LIFE_SEC*TICKS_PER_MINUTE/64/60))) 
-                  {
-                      int numTechCarsforThisPlane=0;
-                      foreach ( TechCars car in CurTechCars ) //don't use a for count/index loop here as we are destroying some of the objects mid-loop . . . arghh 
-                      {
+                //if (DEBUG) GamePlay.gpLogServer(null, "Ground vehicles continue . . . ", new object[] { });
+                for (int i = 0; i < CurPlanesQueue.Count; i++)
+                { 
+                    CurPlanesQueue[i].Lifetime++;
+                    if (DEBUG) GamePlay.gpLogServer(null, "Lifetime:  " + CurPlanesQueue[i].Lifetime, new object[] { });
+                    if ((CurPlanesQueue[i].State == ServiceType.NONE) || (CurPlanesQueue[i].aircraft == null)  || (CurPlanesQueue[i].Lifetime > (int)((double)MIN_VEHICLE_LIFE_SEC*TICKS_PER_MINUTE/64/60))) // (int)((double)VEHICLE_LIFE_SEC*TICKS_PER_MINUTE/64/60))) 
+                    {
+                        int numTechCarsforThisPlane=0;
+                        foreach ( TechCars car in CurTechCars ) //don't use a for count/index loop here as we are destroying some of the objects mid-loop . . . arghh 
+                        {
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.cartype.ToString(), new object[] { });
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.ServiceLife[TmpCar.cartype].ToString(), new object[] { });
                         //if (DEBUG) GamePlay.gpLogServer(null, "tmpcar " + TmpCar.Life().ToString(), new object[] { });
-                          if (car.servPlaneNum == i){
-                              numTechCarsforThisPlane++;                        
-                              if (CurPlanesQueue[i].Lifetime > (int)((int)car.Life()*TICKS_PER_MINUTE/64/60))  {
-                                  if (DEBUG) GamePlay.gpLogServer(null, "Removing ground car for plane " + car.servPlaneNum + " " + car.CarType + " in 5 seconds", new object[] { }); 
-                                  //EndPlaneService(j);
-                                  Timeout ( 5f, () => { EndPlaneService(car, car.TechCar); });
-                              }                                  
-                          }    
-                      }        
-                      if (numTechCarsforThisPlane==0) CurPlanesQueue.RemoveAt(i); 
-                  }                  
-              };
-              //This loop isn't doing too much useful now.  We could probably
-              //just eliminate it.  The purpose for it would be re-using
-              //cars after their initial mission is done, but since we 
-              //are not doing that now anyway, no point.
-              foreach ( TechCars car in CurTechCars )  // (int i = 0; i < CurTechCars.Count; i++)       //again ix-nay on the loop-for-ay . . . .
-              {
-                  if (DEBUG) GamePlay.gpLogServer(null, "Ground car at " + car.basePos.Name() + car.CarType, new object[] { }); 
-                  //TechCars car = CurTechCars[i];
-                  if ((car.TechCar != null && car.cur_rp != null) && (car.cur_rp.State == RecalcPathState.SUCCESS) )
-                  {
-                      if (car.TechCar.IsAlive()) // && (car.RouteFlag == 0)) // && (car.servPlaneNum != -1))
-                      {
-                          car.RouteFlag = 1;
-                          car.cur_rp.Path[0].P.x = car.TechCar.Pos().x; car.cur_rp.Path[0].P.y = car.TechCar.Pos().y;
-                          car.TechCar.SetWay(car.cur_rp.Path);
-                          //if (car.servPlaneNum != -1) car.RouteFlag = 0;
-                      }
-                      
-                      //The code below avoids the current plane, right?  But, I'm worried about these ground vehicles hitting **all the other planes** that might be about this particular airport . . . . maybe some fixup needed
-                      //double Dist = Math.Sqrt((car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) + (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y));
-                      
-                      //the above seems to calculate the distance between the car's actual position & the end of it's planned path.  Then it would spawn out (or, originally, end it's mission so that it could be re-used.
-                      //Instead let's calc the distance between the car & the plane;  If it gets too close then it will instantly spawn out.
-                      
-                      Point3d acpos= CurPlanesQueue[car.servPlaneNum].aircraft.Pos();
-                      
-                      double Dist = Math.Sqrt((acpos.x - car.TechCar.Pos().x) * (acpos.x - car.TechCar.Pos().x) + (acpos.y - car.TechCar.Pos().y) * (acpos.y - car.TechCar.Pos().y));
-                      if (car.servPlaneNum != -1)
-                      {
-                          if (Dist < ((CurPlanesQueue[car.servPlaneNum].aircraft.Type() == AircraftType.Bomber) ? 20f : 10f))
-                              //EndPlaneService(i);
-                              EndPlaneService(car, car.TechCar);
-                      }
-                      else if (Dist < 15f)
-                      {                          
-                          //EndPlaneService(i);
-                          EndPlaneService(car, car.TechCar);
-                      }
-                  }        
-                  if ((car.cur_rp == null) && (car.RouteFlag == 0) && (car.servPlaneNum != -1))
-                  {
-                          //EndPlaneService(car, car.TechCar);                      
-                  };
-                  if (car.servPlaneNum == -1 || car.TechCar == null) 
-                      //EndPlaneService(i);  //Once it is no longer serving a plane, we just zap it.
-                      EndPlaneService(car, car.TechCar);
-              };
+                            if (car.servPlaneNum == i){
+                                numTechCarsforThisPlane++;                        
+                                if (CurPlanesQueue[i].Lifetime > (int)((int)car.Life()*TICKS_PER_MINUTE/64/60))  {
+                                    if (DEBUG) GamePlay.gpLogServer(null, "Removing ground car for plane " + car.servPlaneNum + " " + car.CarType + " in 5 seconds", new object[] { }); 
+                                    //EndPlaneService(j);
+                                    Timeout ( 5f, () => { EndPlaneService(car, car.TechCar); });
+                                }                                  
+                            }    
+                        }        
+                        if (numTechCarsforThisPlane==0) CurPlanesQueue.RemoveAt(i); 
+                    }                  
+                };
+                //This loop isn't doing too much useful now.  We could probably
+                //just eliminate it.  The purpose for it would be re-using
+                //cars after their initial mission is done, but since we 
+                //are not doing that now anyway, no point.
+                List<TechCars> CurTechCarsCopy = new List<TechCars>(CurTechCars); //we need a copy for the loop because we might change TechCars mid-loop by deleting something in it
+                foreach ( TechCars car in CurTechCarsCopy )  // (int i = 0; i < CurTechCars.Count; i++)       //again ix-nay on the loop-for-ay . . . .
+                {
+                    if (DEBUG) GamePlay.gpLogServer(null, "Ground car at " + car.basePos.Name() + car.CarType, new object[] { });
+                        //TechCars car = CurTechCars[i];
+                        /*
+                            * //not sure what the code below does, honestly, so it's gone. I think it has to do with repurposing the techCars & changing their paths
+                        if ((car.TechCar != null && car.cur_rp != null) && (car.cur_rp.State == RecalcPathState.SUCCESS))
+                        {
+                            if (car.TechCar.IsAlive()) // && (car.RouteFlag == 0)) // && (car.servPlaneNum != -1))
+                            {
+                                car.RouteFlag = 1;
+                                car.cur_rp.Path[0].P.x = car.TechCar.Pos().x; car.cur_rp.Path[0].P.y = car.TechCar.Pos().y;
+                                car.TechCar.SetWay(car.cur_rp.Path);
+                                //if (car.servPlaneNum != -1) car.RouteFlag = 0;
+                            }
+                           
+                            //The code below avoids the current plane, right?  But, I'm worried about these ground vehicles hitting **all the other planes** that might be about this particular airport . . . . maybe some fixup needed
+                            //double Dist = Math.Sqrt((car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.x - car.TechCar.Pos().x) + (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y) * (car.cur_rp.Path[car.cur_rp.Path.Length - 1].P.y - car.TechCar.Pos().y));
+
+                            //the above seems to calculate the distance between the car's actual position & the end of it's planned path.  Then it would spawn out (or, originally, end it's mission so that it could be re-used.
+                            //Instead let's calc the distance between the car & the plane;  If it gets too close then it will instantly spawn out.
+                        }*/
+                        if (car.TechCar != null)
+                        {
+                            if (CurPlanesQueue.Count> car.servPlaneNum &&  CurPlanesQueue[car.servPlaneNum].aircraft != null)
+                            {                        
+                                Point3d acpos = CurPlanesQueue[car.servPlaneNum].aircraft.Pos();
+
+                                double Dist = Math.Sqrt((acpos.x - car.TechCar.Pos().x) * (acpos.x - car.TechCar.Pos().x) + (acpos.y - car.TechCar.Pos().y) * (acpos.y - car.TechCar.Pos().y));
+                                if (car.servPlaneNum != -1)
+                                {
+                                    if (Dist < ((CurPlanesQueue[car.servPlaneNum].aircraft.Type() == AircraftType.Bomber) ? 20f : 10f))
+                                        //EndPlaneService(i);
+                                        EndPlaneService(car, car.TechCar);
+                                }
+                                else if (Dist < 15f)
+                                {
+                                    //EndPlaneService(i);
+                                    EndPlaneService(car, car.TechCar);
+                                }
+                            }
+
+                        }
+                        if ((car.cur_rp == null) && (car.RouteFlag == 0) && (car.servPlaneNum != -1))
+                        {
+                            //EndPlaneService(car, car.TechCar);                      
+                        };
+                        if (car.servPlaneNum == -1 || car.TechCar == null)
+                            //EndPlaneService(i);  //Once it is no longer serving a plane, we just zap it.
+                            EndPlaneService(car, car.TechCar);
+                        
+                };
             }
             catch (Exception e) { System.Console.WriteLine ("autoveh-tickloop" +e.ToString());}  
-          }
-      }  
-      catch (Exception e) {System.Console.WriteLine ("autoveh-tickloop2: " + e.ToString());}
+            }
+        }  
+        catch (Exception e) {System.Console.WriteLine ("autoveh-tickloop2: " + e.ToString());}
     }
     
 
@@ -800,23 +1027,24 @@ public class Mission : AMission
    
     internal BasePos FindNearestAirport(AiActor actor, bool returnActualNearestAirport=false)
     { 
-      try
+      //try
       {
         if (actor==null) return null;
         Point3d pd = actor.Pos();
         if (DEBUG) GamePlay.gpLogServer(null, "Checking airport " + actor.Name(), new object[] { });
         return FindNearestAirport(pd, returnActualNearestAirport) as BasePos;
       }
-      catch (Exception e) {System.Console.WriteLine ("baseposfind: " + e.ToString()); BasePos ret3=null;  return ret3; }  
+      //catch (Exception e) {System.Console.WriteLine ("baseposfind: " + e.ToString()); BasePos ret3=null;  return ret3; }  
 
     }
 
     internal BasePos FindNearestAirport(Point3d pd, bool returnActualNearestAirport = false)
     {
-        try
+        //try
         {
-            AiActor aMin = null;
+            GroundStationary aMinS = null;
             AiBirthPlace aMinB = null;
+            AiActor aMin = null;          
             double d2Min = 0;
             BasePos ret = new BasePos();
             BasePos ret2 = new BasePos();
@@ -826,27 +1054,59 @@ public class Mission : AMission
             //otherwise we'll search all airports for something closer
             //And . . AiBirthPlace & AiAirport & AiActor are ALMOST the same thing but then again not quite so we have to dance a bit. 
 
-            aMinB = FindNearestBirthplace(pd);
-            //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) found " + aMinB.Name() + " " + aMinB.Pos().distance(ref pd).ToString("F0"), new object[] { });
+            //TruckMessageLocation nearestStationaryTrucks = new TruckMessageLocation();
+
+            if (DEBUG) GamePlay.gpLogServer(null, "Checking nearest items for " + pd.x.ToString("F0")
+                + " " + pd.y.ToString("F0"), new object[] { });
+
+            TruckMessageLocation nearestStationaryTrucks = FindNearestStationaryTrucks(pd);
+            bool startAllowed = true;
+            int maxTime_sec = 0;
+            if (nearestStationaryTrucks.noVehiclesTruck != null ) startAllowed = false;            
+            if (nearestStationaryTrucks.shortTimeTruck != null) maxTime_sec = nearestStationaryTrucks.shortTimeTruck_time_sec;
+
+
+            if (DEBUG) GamePlay.gpLogServer(null, "Found " + nearestStationaryTrucks.magnetTruck + " " + nearestStationaryTrucks.shortTimeTruck + "  " + nearestStationaryTrucks.noVehiclesTruck, new object[] { });
+
+            aMinS = nearestStationaryTrucks.magnetTruck;
+            //if (aMinS == null) aMinB = FindNearestBirthplace(pd);
+            if (aMinS != null) {
+                d2Min = aMinS.pos.distance(ref pd);
+                if (DEBUG) GamePlay.gpLogServer(null, "Checking nearest TRUCKs - found " + aMinS.Name + " " + aMinS.pos.distance(ref pd).ToString("F0")
+                + " " + aMinS.pos.ToString(), new object[] { });
+
+                if (d2Min < 2000)
+                {
+                    retpd = aMinS.pos;
+                    if (retpd.z == 0) retpd.z = pd.z; //BirthPlaces usu. have elevation 0 which makes the ai route finder die horribly 
+                    ret = new BasePos(aMinS.Name, retpd, startAllowed, maxTime_sec);
+                    return ret;
+                }
+
+
+            }
+            aMinB = FindNearestBirthplace(pd); 
+
+            
+            if (DEBUG && aMin != null) GamePlay.gpLogServer(null, "Checking trucks & airport (Birthplace) found " + aMin.Name() + " " + aMin.Pos().distance(ref pd).ToString("F0"), new object[] { });
             //if (1==0 && aMinB!= null) {
             if (aMinB != null)
             {
 
                 d2Min = aMinB.Pos().distance(ref pd);
-                if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) found " + aMinB.Name() + " " + aMinB.Pos().distance(ref pd).ToString("F0")
+                if (DEBUG) GamePlay.gpLogServer(null, "Checking nearest TRUCKs then AIRPORT (Birthplace) found " + aMinB.Name() + " " + aMinB.Pos().distance(ref pd).ToString("F0")
                 + " " + aMinB.Pos().ToString(), new object[] { });
 
                 if (d2Min < 2000)
                 {
                     retpd = aMinB.Pos();
                     if (retpd.z == 0) retpd.z = pd.z; //BirthPlaces usu. have elevation 0 which makes the ai route finder die horribly 
-                    ret = new BasePos(aMinB.Name(), retpd);
+                    ret = new BasePos(aMinS.Name, retpd, startAllowed, maxTime_sec);                    
                     return ret;
                 }
+                if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) NOfound " + d2Min.ToString("F0"), new object[] { });
             }
-
-            if (DEBUG) GamePlay.gpLogServer(null, "Checking airport (Birthplace) NOfound " + d2Min.ToString("F0"), new object[] { });
-
+           
 
 
             int n = GamePlay.gpAirports().Length;
@@ -880,7 +1140,7 @@ public class Mission : AMission
                     //if (DEBUG) GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name(), new object[] { });
                 }
             }
-            if (DEBUG) GamePlay.gpLogServer(null, "CAirport Found: " + aMin.Name() + " " + aMin.Pos().ToString() + " dist " + d2Min.ToString("F2"), new object[] { });
+            if (DEBUG && aMin != null) GamePlay.gpLogServer(null, "CAirport Found: " + aMin.Name() + " " + aMin.Pos().ToString() + " dist " + d2Min.ToString("F2"), new object[] { });
 
             //Hmm, with our new scheme it doesn't really matter if aMin is very
             //distant or what. The cars always start relatively close to the a/c
@@ -897,7 +1157,7 @@ public class Mission : AMission
             int k = 0;
             if (aMin != null)
             {
-                ret2 = new BasePos(aMin.Name(), aMin.Pos());
+                ret2 = new BasePos(aMin.Name(), aMin.Pos(), startAllowed, maxTime_sec);                
                 aMinSaves[j] = aMin;
                 if (d2Min < 2000 * 2000 || returnActualNearestAirport)
                 {
@@ -910,14 +1170,14 @@ public class Mission : AMission
                     if (j > 12) k = j - 12; //choose randomly from the 12 closest matches.  Note that most airports will generate 2-3 different matches, thus this is maybe 3-4-5 actual different airports
                     int ran = rnd.Next(k, j + 1);
                     if (DEBUG) GamePlay.gpLogServer(null, "CAirport Returning: ran=" + ran.ToString(), new object[] { });
-                    ret2 = new BasePos(aMinSaves[ran].Name(), aMinSaves[ran].Pos());
+                    ret2 = new BasePos(aMinSaves[ran].Name(), aMinSaves[ran].Pos(), startAllowed, maxTime_sec); ;
                 }
 
             }
             if (DEBUG) GamePlay.gpLogServer(null, "CAirport Returning: " + ret2.Name() + " " + ret2.Pos().ToString() + " dist " + ret2.Pos().distance(ref pd).ToString("F0") + " " + (j - k).ToString() + " " + k.ToString() + " " + j.ToString() + " choices " + ret2.ToString("F0"), new object[] { });
         return ret2;
       }
-      catch (Exception e) {System.Console.WriteLine ("basepos2: " + e.ToString()); BasePos ret3=null;  return ret3; }
+      //catch (Exception e) {System.Console.WriteLine ("basepos2: " + e.ToString()); BasePos ret3=null;  return ret3; }
     }
     
     public AiBirthPlace GetBirthPlaceByName(string birthPlaceName)
@@ -975,8 +1235,126 @@ public class Mission : AMission
         return nearestBirthplace;
       }
       catch (Exception e) {System.Console.WriteLine ("fnbirth: " + e.ToString()); return null; }  
-    }    
+    }
+
+    public class TruckMessageLocation
+    {
+        public GroundStationary magnetTruck = null; //This type of truck attracts the ground vehicles to it, if w/in the magnetTruck_dis & it's the closest magnet truck
+        public int magnetTruck_dis_m = 2000; //this distance at which this type of truck becomes effective/starts attracting the ground vehicles
+        public GroundStationary shortTimeTruck = null; //This type of truck makes ground vehicles last a short time only
+        public int shortTimeTruck_dis_m = 500; //effective distance/range of this type of truck 
+        public int shortTimeTruck_time_sec = 20; //# of seconds ground vehicles will live when this truck type is close to them
+        public GroundStationary noVehiclesTruck = null; //This type of truck makes ground vehicles disappear immediately/never appear at all
+        public int noVehiclesTruck_dis_m = 250; //effective distance/range of this type of truck 
+        public TruckMessageLocation ()
+        { 
+            magnetTruck = null; //This type of truck attracts the ground vehicles to it, if w/in the magnetTruck_dis & it's the closest magnet truck
+            magnetTruck_dis_m = 2000; //this distance at which this type of truck becomes effective/starts attracting the ground vehicles
+            shortTimeTruck = null; //This type of truck makes ground vehicles last a short time only
+            shortTimeTruck_dis_m = 500; //effective distance/range of this type of truck 
+            shortTimeTruck_time_sec = 20; //# of seconds ground vehicles will live when this truck type is close to them
+            noVehiclesTruck = null; //This type of truck makes ground vehicles disappear immediately/never appear at all
+            noVehiclesTruck_dis_m = 500; //effective distance/range of this type of truck 
+        }
+
+
     
+        public string ToString() {
+            string mt = "";
+            string stt = "";
+            string nvt = "";
+            if (magnetTruck != null) mt = magnetTruck.Name;
+            if (shortTimeTruck != null) mt = shortTimeTruck.Name;
+            if (noVehiclesTruck != null) mt = noVehiclesTruck.Name;
+            return mt + " " + stt + " " + nvt;
+
+        }
+    }
+
+    public TruckMessageLocation FindNearestStationaryTrucks(AiActor actor)
+    {
+        //AiBirthPlace nearestBirthplace = null;
+        //AiBirthPlace[] birthPlaces = GamePlay.gpBirthPlaces();
+
+        Point3d pos = actor.Pos();
+
+        return FindNearestStationaryTrucks(pos);
+    }
+
+    public TruckMessageLocation FindNearestStationaryTrucks(Point3d pos)
+    {
+        //try
+        {
+            //try
+
+            //GroundStationary nearestStationaryTruck = null;
+            TruckMessageLocation nearestStationaryTrucks = new TruckMessageLocation();
+            //double distance = 4000;  //look for anything within say 4 km ?  It is narrowed down to 2km later I believe
+            double distance = Math.Max(nearestStationaryTrucks.magnetTruck_dis_m, Math.Max(nearestStationaryTrucks.noVehiclesTruck_dis_m, nearestStationaryTrucks.shortTimeTruck_dis_m));
+            GroundStationary[] StationaryTrucks = GamePlay.gpGroundStationarys(pos.x, pos.y, distance);
+
+            //catch (Exception e) { System.Console.WriteLine("#1: " + e.ToString()); return null; }
+            //AiGroundActorType[] typesToUse = new AiGroundActorType[] { AiGroundActorType.Truck, AiGroundActorType.ArmoredCar, AiGroundActorType.Tractor };
+            string nbsp = ((char)(160)).ToString(); //the groundsationary.Title uses non-breaking spaces in a couple of spots; nbsp is char #160
+            string[] titlesForMagnet = new string[] { "Stationary" + nbsp + "Car" + nbsp + "Bedford_MW_tank", "Stationary" + nbsp + "Car" + nbsp + "Opel_Blitz_fuel" };
+            string[] titlesForShortTime = new string[] { "Stationary" + nbsp + "Car" + nbsp + "Bedford_MW_tent", "Stationary" + nbsp + "Car" + nbsp + "Opel_Blitz_tent" };
+            string[] titlesForNoVehicles = new string[] { "Stationary" + nbsp + "Bicycles" + nbsp + "Bicycle_UK1", "Stationary" + nbsp + "Bicycles" + nbsp + "Bicycle_GER1" };
+
+            if (DEBUG) GamePlay.gpLogServer(null, "Checking trucks: " + StationaryTrucks.Length.ToString() + " found", new object[] { });
+
+            //if (StationaryTrucks != null)
+            //{
+                foreach (GroundStationary truck in StationaryTrucks)
+                {
+                    if (DEBUG) GamePlay.gpLogServer(null, "Checking trucks: type " + truck.Type.ToString() + " - " + truck.Title, new object[] { });
+
+                    double truckDist = truck.pos.distance(ref pos);
+                    //for shortTime & noVehicles trucks, we don't need the "best" truck--we just need to know that one
+                    //exists AT ALL within the specified distance
+                    if (nearestStationaryTrucks.shortTimeTruck == null && (Array.Exists(titlesForShortTime, element => element == truck.Title)) && truckDist <= nearestStationaryTrucks.shortTimeTruck_dis_m) nearestStationaryTrucks.shortTimeTruck = truck;
+                    if (nearestStationaryTrucks.noVehiclesTruck == null & (Array.Exists(titlesForNoVehicles, element => element == truck.Title)) && truckDist <= nearestStationaryTrucks.noVehiclesTruck_dis_m) nearestStationaryTrucks.noVehiclesTruck = truck;
+
+                    if (!(Array.Exists(titlesForMagnet , element => element == truck.Title)) )
+                    //if ("Stationary" + nbsp + "Car" + nbsp + "Bedford_MW_tank" != truck.Title)
+                    {
+                        /* int diff=Calcs.GetFirstDiffIndex("Stationary Car Bedford_MW_tank", truck.Title);
+                        char c1 = truck.Title[diff - 1];
+                        char c2 = truck.Title[diff];
+                        char c3 = truck.Title[diff + 1];
+                        if (DEBUG) GamePlay.gpLogServer(null, "Diff: " + diff.ToString() + " 1. " + (int)c1 + " 2. " + (int)c2 + " 3. " + (int)c3 + " Stationary Car Bedford_MW_tank != " + truck.Title, new object[] { });
+                        */
+                        continue;
+                    }
+                                        
+                    if (truckDist > nearestStationaryTrucks.magnetTruck_dis_m) continue;
+                
+                    if (DEBUG) GamePlay.gpLogServer(null, "Checking trucks: type " + truck.Type.ToString() + " - " + truck.Title + " is GOOD! " + truck.pos.distance(ref pos).ToString("F0"), new object[] { });                    
+                    if (nearestStationaryTrucks.magnetTruck != null)
+                    {
+                        
+                        if (DEBUG) GamePlay.gpLogServer(null, "Checking truck " + truck.Name + " - " + truck.Title + " - "
+                          + truck.pos.distance(ref pos).ToString("F0"), new object[] { });
+                        if (nearestStationaryTrucks.magnetTruck.pos.distance(ref pos) > truckDist )
+                        nearestStationaryTrucks.magnetTruck = truck;
+                    }
+                    else nearestStationaryTrucks.magnetTruck = truck;
+                }
+            //}
+            
+            //catch (Exception e) { System.Console.WriteLine("#2: " + e.ToString()); return null; }
+
+            //AiActor ret=new AiActor();
+            //ret.Pos( nearestStationaryTruck.Pos());
+            //ret.Name(nearestStationaryTruck.Name()); 
+            //if (DEBUG) GamePlay.gpLogServer(null, "Checking Stationary Trucks FOUND" + nearestStationaryTrucks.magnetTruck.Name + " "
+            //                       + nearestStationaryTrucks.magnetTruck.pos.distance(ref pos).ToString("F0"), new object[] { });
+            //if (DEBUG) GamePlay.gpLogServer(null, "Checking Stationary Trucks FOUND" + nearestStationaryTruck.Name, new object[] { });
+            return nearestStationaryTrucks;
+            
+    }
+        //catch (Exception e) { System.Console.WriteLine("fnstationary: " + e.ToString()); return null; }
+    }
+
 
     ///TODO: This is highly repetitious & could be abstracted to a single simpler
     //method called 3X.  Then it would be easy to add several more types of 
@@ -1407,7 +1785,7 @@ public class Mission : AMission
         sect = ChiefName1+"0" + "_Road";
         key = "";
         value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";
-        Console.WriteLine(value1);
+        if (DEBUG) Console.WriteLine(value1);
         //BirthPos.x -= 50f * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)); BirthPos.y -= 50f * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y));
 
         double edis=SPAWN_END_DISTANCE_M; //how far away from the plane we stop, when driving in towards it.
@@ -1424,7 +1802,7 @@ public class Mission : AMission
 
         BirthPos.x -= disx * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)) + (leftrightdis + leftrightplus) * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y)); BirthPos.y -= disy * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y)) - (leftrightdis + leftrightplus) * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x));
         value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";;
-        Console.WriteLine(value2);
+        if (DEBUG) Console.WriteLine(value2);
         
         if (reverse ) {
           f.add(sect, key, value2);
@@ -1440,8 +1818,8 @@ public class Mission : AMission
         //BirthPos = TmpStartPos;
         sect = ChiefName2+"1" + "_Road";
         key = "";
-        value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";        
-        Console.WriteLine(value1);
+        value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";
+        if (DEBUG) Console.WriteLine(value1);
         
         if (rnd.Next(2)==0) leftrightdis=-leftrightdis;
         edisplus1=PseudoRnd(1,8);
@@ -1457,7 +1835,7 @@ public class Mission : AMission
         
 
         value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)  + "  0 92 5 ";;
-        Console.WriteLine(value2);
+        if (DEBUG) Console.WriteLine(value2);
         
         if (reverse ) {
           f.add(sect, key, value2);
@@ -1475,7 +1853,7 @@ public class Mission : AMission
         sect = ChiefName3 + "2" + "_Road";
         key = "";
         value1 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";
-        Console.WriteLine(value1);
+        if (DEBUG) Console.WriteLine(value1);
         
         if (rnd.Next(2)==0) leftrightdis=-leftrightdis;
         edisplus1=PseudoRnd(-3,2);
@@ -1489,8 +1867,8 @@ public class Mission : AMission
 
         BirthPos.x -= disx * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x)) - (leftrightdis + leftrightplus)*((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y)); BirthPos.y -= disy * ((BirthPos.y - aircraftPos.y) / Math.Abs(BirthPos.y - aircraftPos.y)) + (leftrightdis + leftrightplus) * ((BirthPos.x - aircraftPos.x) / Math.Abs(BirthPos.x - aircraftPos.x));
         value2 = BirthPos.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + BirthPos.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "  0 92 5 ";;
-        Console.WriteLine(value2);
-         if (reverse ) {
+        if (DEBUG) Console.WriteLine(value2);
+        if (reverse ) {
           f.add(sect, key, value2);
           f.add(sect, key, value1);
         }else {
@@ -1585,19 +1963,21 @@ public class Mission : AMission
             // ??????? ?????? ? ?????????
             //In case of spawn-in, we reverse the direction making it away from the plane.  
             
-            if (DEBUG) GamePlay.gpLogServer(null, "Creating a new car group at " + ((int)CurPlanesQueue[aircraftNumber].State).ToString()+" " + ((int)ServiceType.SPAWNIN).ToString()+ " " + ( ((int)CurPlanesQueue[aircraftNumber].State & (int)ServiceType.SPAWNIN) ==0  ).ToString(), new object[] { });
+            if (DEBUG) GamePlay.gpLogServer(null, "Creating a new car group at " + ((int)CurPlanesQueue[aircraftNumber].State).ToString()+" " + ((int)ServiceType.SPAWNIN).ToString()+ " " + ( ((int)CurPlanesQueue[aircraftNumber].State & (int)ServiceType.SPAWNIN) ==0  ).ToString() + " basePos: " + CurPlanesQueue[aircraftNumber].basePos.ToString(), new object[] { });
                                                  
             bool reverse=true;
             if ( ((int)CurPlanesQueue[aircraftNumber].State & (int)ServiceType.SPAWNIN) ==0  ) reverse=false;
-            
-            ISectionFile f = CreateEmrgCarMission(CurPlanesQueue[aircraftNumber].basePos.Pos(), CAR_POS_RADIUS, ArmyPos, CurPlanesQueue[aircraftNumber].aircraft.Army(), CurPlanesQueue[aircraftNumber].aircraft.Type(),CurPlanesQueue[aircraftNumber].health, CurPlanesQueue[aircraftNumber].aircraft.Pos(), reverse, CurPlanesQueue[aircraftNumber].State);
-            if (delay_sec==0)            
-              GamePlay.gpPostMissionLoad(f);
-            else Timeout ( delay_sec, ()=> {
-                MissionLoadingAircraftNumber = aircraftNumber;
-                GamePlay.gpPostMissionLoad(f);            
-            });
-            
+
+            //Start the vehicles, if it is allowed in this case
+            if (CurPlanesQueue[aircraftNumber].basePos.startAllowed ) {
+                ISectionFile f = CreateEmrgCarMission(CurPlanesQueue[aircraftNumber].basePos.Pos(), CAR_POS_RADIUS, ArmyPos, CurPlanesQueue[aircraftNumber].aircraft.Army(), CurPlanesQueue[aircraftNumber].aircraft.Type(), CurPlanesQueue[aircraftNumber].health, CurPlanesQueue[aircraftNumber].aircraft.Pos(), reverse, CurPlanesQueue[aircraftNumber].State);
+                if (delay_sec == 0)
+                    GamePlay.gpPostMissionLoad(f);
+                else Timeout(delay_sec, () => {
+                    MissionLoadingAircraftNumber = aircraftNumber;
+                    GamePlay.gpPostMissionLoad(f);
+                });
+            }
               
              
             
@@ -1613,9 +1993,9 @@ public class Mission : AMission
     /*public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
     { 
         base.OnAircraftLanded(missionNumber, shortName, aircraft); */
-        
-        aircraftActiveList.Remove(aircraft);
+                
         StartVehiclesForAircraft (aircraft );
+        aircraftActiveList.Remove(aircraft);
     } 
 
 
@@ -1693,22 +2073,54 @@ public class Mission : AMission
 public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex) 
   {
         base.OnPlaceEnter(player, actor, placeIndex);
+        try 
+        { 
     
-        AiAircraft aircraft= actor as AiAircraft;
+            AiAircraft aircraft= actor as AiAircraft;
         
-        if (player != null) if (DEBUG) GamePlay.gpLogServer(null, "Place Enter: " + 
-          player.Name() + " " + 
-          actor.Name() + " " + 
-          placeIndex.ToString() + " " , new object[] { });
+            if (player != null) if (DEBUG) GamePlay.gpLogServer(null, "Place Enter: " + 
+              player.Name() + " " + 
+              actor.Name() + " " + 
+              placeIndex.ToString() + " " , new object[] { });
           
-        //do this only once per actor (avoids many multiple vehicle spawn-ins whwenever bomber players move between positions, triggering this OnplaceEnter repeatedly)
-        if (!actorPlaceEnterList.Contains(actor)) {
-           StartVehiclesForAircraft (aircraft, true ); //this is spawn-in, so we reverse vehicle direction
-           actorPlaceEnterList.Add(actor);
-        }   
-        
-    }  
-    
+            //do this only once per actor (avoids many multiple vehicle spawn-ins whwenever bomber players move between positions, triggering this OnplaceEnter repeatedly)
+            if (!actorPlaceEnterList.Contains(actor)) {
+               StartVehiclesForAircraft (aircraft, true ); //this is spawn-in, so we reverse vehicle direction
+               actorPlaceEnterList.Add(actor);
+            }
+
+
+        }
+        catch (Exception e) { System.Console.WriteLine("opeav: " + e.ToString()); }
+
+    }
+
+    public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
+    {
+
+        base.OnPlaceLeave(player, actor, placeIndex);
+        try
+        {
+            if (actor as AiAircraft != null) {
+                AiAircraft aircraft = actor as AiAircraft;
+                
+                //Add a/c to the recentleave list for 3.5 minutes after they leave the position.  Thus they can't avoid consequences like bringing
+                //emergency vehicles by exiting just before the crash or before they have completely stopped & register as 'landed'
+                aircraftRecentLeaveList.Add(aircraft);
+                Timeout(210, () =>
+                {
+                    
+                   aircraftRecentLeaveList.Remove(aircraft);
+
+                });
+            }
+            
+        }
+        catch (Exception e) { System.Console.WriteLine("oplav: " + e.ToString()); }
+
+    }
+
+
 
     public override void OnCarter(AiActor actor, int placeIndex)
     {
@@ -1766,7 +2178,7 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
             //Add a/c to the active list if they are damaged & moving & not AI
             //Adding them to the active list if damaged while stopped leads to problems of many multiple emergency vehicles being sent.  Until we fix that
             //issue, we'll just not add them if they are damaged & also stopped.
-            if ( aircraft.getParameter(part.ParameterTypes.Z_VelocityTAS, -1) > 2 && !isAiControlledPlane2(aircraft)) aircraftActiveList.Add(aircraft);                             
+            if ( aircraft.getParameter(part.ParameterTypes.Z_VelocityTAS, -1) > 2 && (!isAiControlledPlane2(aircraft) || aircraftRecentLeaveList.Contains(aircraft))) aircraftActiveList.Add(aircraft);                             
 
         }
         catch (Exception e) {System.Console.WriteLine ("oad: " +e.ToString());}
@@ -1782,20 +2194,21 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
         {
             //just keep a list of all damaged aircraft
             aircraftDamagedList.Add(aircraft);
-            if ( !isAiControlledPlane2(aircraft)) aircraftActiveList.Add(aircraft);
+            if ( !isAiControlledPlane2(aircraft) || aircraftRecentLeaveList.Contains(aircraft)) aircraftActiveList.Add(aircraft);
         }
         catch (Exception e) {System.Console.WriteLine ("oacl: " + e.ToString());}
             
     }
     
     public void OnAircraftStopped (AiAircraft aircraft)
-    {        
+    {
+        //base.OnAircraftStopped(aircraft);
         try
         {   
            if (aircraft != null ) {
            
                       if (DEBUG) GamePlay.gpLogServer(null, "Aircraft detected as stopped/landed: " + 
-                      aircraft.Player(0).Name() + " " + 
+                      //aircraft.Player(0).Name() + " " + 
                       aircraft.Name() + " ", new object[] { });
 
               StartVehiclesForAircraft (aircraft );
@@ -1829,10 +2242,12 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
     //name, pos, & type on & that's all we need.
     //new overload methods for AiAircraft & Person, Actor, whatever
      public void StartVehiclesForAircraft (AiAircraft aircraft, bool spawnIn=false, int groupsToSpawn=1, int timeToWait_sec=25, bool isPerson=false ) {
-          try 
-          {   
-            if (aircraft==null ||  (isAiControlledPlane2(aircraft) && !isPerson) ) {
-              if (DEBUG) GamePlay.gpLogServer(null, "aircraft = null OR AIcontroledaircraft; exiting startvehicles", new object[] { }); 
+          //try 
+          {
+
+            if (DEBUG) GamePlay.gpLogServer(null, "StartVehicles, status: Overall-" + ((isAiControlledPlane2(aircraft) || (!aircraftActiveList.Contains(aircraft)) && !spawnIn && !isPerson && !aircraftRecentLeaveList.Contains(aircraft))).ToString() + " isaicontr-" + isAiControlledPlane2(aircraft).ToString() + " spawnin-" + spawnIn.ToString() + " activelist-" + aircraftActiveList.Contains(aircraft).ToString() + " isperson-"+ isPerson.ToString() + " acleavelist-" + aircraftRecentLeaveList.Contains(aircraft).ToString() + " ", new object[] { });
+            if (aircraft==null ||  (( isAiControlledPlane2(aircraft) || (!aircraftActiveList.Contains(aircraft)) && !spawnIn && !isPerson && !aircraftRecentLeaveList.Contains(aircraft))) ) {
+              if (DEBUG) GamePlay.gpLogServer(null, "aircraft = null OR AIcontroledaircraft OR not on active list (with a few exceptions); exiting startvehicles", new object[] { }); 
               return;
             }  
             if (DEBUG) GamePlay.gpLogServer(null, "Getting Airports for startvehicles", new object[] { });
@@ -1841,7 +2256,7 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
     
             if (DEBUG) GamePlay.gpLogServer(null, "Starting vehicles at " + NearestAirport.Name(), new object[] { });
             
-            if (NearestAirport != null)
+            if (NearestAirport != null && NearestAirport.startAllowed)
             {
                 
                 PlanesQueue CurPlane = new PlanesQueue(aircraft, NearestAirport, 0);
@@ -1944,7 +2359,7 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
                 CurPlane = null;
             }
           } 
-          catch (Exception e) {System.Console.WriteLine ("StartVehicles: " + e.ToString());} 
+          //catch (Exception e) {System.Console.WriteLine ("StartVehicles: " + e.ToString());} 
      }
 
      private void checkForStoppedAircraft (HashSet <AiAircraft> aircraftList){
@@ -2093,8 +2508,19 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
        }
        catch (Exception e) {System.Console.WriteLine ("dag1: " + e.ToString()); return false;}   
     }
-    
-    private bool destroyGroundGroup (AiGroundGroup group, bool destroyElements=true, bool destroyGroup=true ) {
+
+    //This doesn't destroy all members of an arbitrary ground group.  Rather it is to specifically destroy
+    //the members of ground groups created in Auto Generate Vehicles via ISectionFiles above.
+    //These may have some static members with names like 2:1_Static
+    //They will have several ground group members with names like 2:0_Chief_Fire_0 or 2:0_Chief_Ammo_1 (last # ranges 0 through 2)
+    //Then their elements are named like 2:0_Chief_Fire_00, 2:0_Chief_Fire_01, 2:0_Chief_Fire_02, 2:0_Chief_Fire_03 or 2:0_Chief_Ammo_10, 2:0_Chief_Ammo_11, etc
+    //Last number is usually just 0 or 1 but can range 0-3.  Also often the 2nd element is a trailer, so 2:0_Chief_Fire_00 is the main actor, 2:0_Chief_Fire_01 is the  trailer & so
+    //it doesn't seem to show up in the "get items" of the groundgroup.  You just sort of have to know it is there & attached to 2:0_Chief_Fire_00
+    //Anyway, to delete the items in a group we created named 2:0_Chief_Fire_0, all we have to do is cycle through 2:0_Chief_Fire_00, 2:0_Chief_Fire_01, 2:0_Chief_Fire_02, 2:0_Chief_Fire_03
+    //and delete any or all.
+    //This isn't a generic "delete any ground group" routine but is specific to the way we created our groups above using the ISectionFiles.
+    private bool destroyAGVGroundGroup (AiGroundGroup group, bool destroyElements = true, bool destroyGroup = true)
+    {
       try
       {
         bool success=false;
@@ -2126,16 +2552,113 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
                 }
             }
 
-            /*
-            //we're just destroying ALL statics relate to the mission immediately with the first mission item destroyed
-            //We can refine this later if wanted
-            string missionNumber = group.Name().Split(':')[0];
 
+            //Now we destroy any Actors or sub-Actors of this group
+            if (destroyElements)
             {
-                string subStaticName = missionNumber + ":" + i.ToString() + "_Static";
-                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
-                        + subStaticName, new object[] { });
-                GroundStationary stat = GamePlay.gpActorByName(subStaticName) as GroundStationary;
+                for (int i = 0; i < 4 ;  i++ )
+                {
+                    string subName = group.Name() +(i).ToString();
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying group element: "
+                            + subName, new object[] { });
+                    AiGroundActor subActor = GamePlay.gpActorByName(subName) as AiGroundActor;
+                    if (subActor != null)
+                    {
+                        if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
+                            + subActor.Name(), new object[] { });
+
+                        //destroyGroundGroup(subActor as AiGroundGroup);
+                        (subActor as AiCart).Destroy();
+                    }
+                }   
+            }      
+                       
+
+            if (destroyGroup)
+            {
+                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Finished destroying group: "
+                    + group.Name() + " "
+                //+ group.CallSign() + " " 
+                //+ group.Type() + " " 
+                //+ group.TypedName() + " " 
+                //+ group.AirGroup().ID()
+                //+ group.GroupType() + " "
+                //+ group.ID() + " "
+                , new object[] { });
+
+
+                //group.Destroy();
+
+                if ((group as AiGroundActor) != null) (group as AiGroundActor).Destroy();
+                success = true;
+
+            }            
+             
+        }
+          
+        return success;
+      }
+      catch (Exception e) {System.Console.WriteLine ("dag2: " + e.ToString()); return false;}  
+    }
+
+
+    //This isn't used now & doesn't completely work.  PRobably can get rid of it.
+    private bool destroyGroundGroup(AiGroundGroup group, bool destroyElements = true, bool destroyGroup = true)
+    {
+        try
+        {
+            bool success = false;
+
+
+            if (group != null)
+            {
+
+                //first, we get rid of any stationaries associated with this mission
+                string missionNumber = group.Name().Split(':')[0];
+
+
+                //string subStatName = missionNumber + ":" + i.ToString() + "_Static";
+                string subStatPrefix = missionNumber + ":";
+
+                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying Stationaries associated with Mission "
+                        + subStatPrefix, new object[] { });
+
+                if (GamePlay.gpGroundStationarys() != null)
+                {
+                    foreach (GroundStationary gg in GamePlay.gpGroundStationarys(group.Pos().x, group.Pos().y, 5000.0)) //all stationaries w/i 5000 meters of this object
+                    {
+                        if (gg.Name.StartsWith(subStatPrefix))
+                        {
+                            gg.Destroy();
+                            if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed "
+                        + gg.Name, new object[] { });
+                        }
+
+                    }
+                }
+
+                /*
+                //we're just destroying ALL statics relate to the mission immediately with the first mission item destroyed
+                //We can refine this later if wanted
+                string missionNumber = group.Name().Split(':')[0];
+
+                {
+                    string subStaticName = missionNumber + ":" + i.ToString() + "_Static";
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
+                            + subStaticName, new object[] { });
+                    GroundStationary stat = GamePlay.gpActorByName(subStaticName) as GroundStationary;
+                    if (stat != null)
+                    {
+                        if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
+                            + stat.Name, new object[] { });
+
+                        destroyGroundGroup(subGroupActor as AiGroundGroup);
+                        (subGroupActor as AiCart).Destroy();
+                    }
+                }
+                */
+
+                /* GroundStationary stat = GamePlay.gpActorByName(subStaticName) as GroundStationary;
                 if (stat != null)
                 {
                     if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
@@ -2143,34 +2666,22 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
 
                     destroyGroundGroup(subGroupActor as AiGroundGroup);
                     (subGroupActor as AiCart).Destroy();
-                }
-            }
-            */
-
-            /* GroundStationary stat = GamePlay.gpActorByName(subStaticName) as GroundStationary;
-            if (stat != null)
-            {
-                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
-                    + stat.Name, new object[] { });
-
-                destroyGroundGroup(subGroupActor as AiGroundGroup);
-                (subGroupActor as AiCart).Destroy();
-            }*/
+                }*/
 
                 //Now we destroy any Actors or sub-Actors of this group
                 if (destroyElements && group.GetItems() != null && group.GetItems().Length > 0)
-            {
-                foreach (AiActor a in group.GetItems())
                 {
-      
-                    AiGroundActor actor=(a as AiGroundActor);   
-                    if (actor != null)
+                    foreach (AiActor a in group.GetItems())
                     {
+
+                        AiGroundActor actor = (a as AiGroundActor);
+                        if (actor != null)
+                        {
                             //Getting rid of the trailers
                             //They have a name ending in 01 or 03 or the like
-                            for (int i = 0; i < 2 ;  i++ )
+                            for (int i = 0; i < 2; i++)
                             {
-                                string subName = actor.Name() +((int)(2*i+1)).ToString();
+                                string subName = actor.Name() + ((int)(2 * i + 1)).ToString();
                                 if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
                                         + subName, new object[] { });
                                 AiGroundActor subActor = GamePlay.gpActorByName(subName) as AiGroundActor;
@@ -2182,69 +2693,141 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
                                     destroyGroundGroup(subActor as AiGroundGroup);
                                     (subActor as AiCart).Destroy();
                                 }
-                            }     
-                       
-                        
-                       if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying group element: " // + a.AirGroup() + " " 
-                       //+ a.CallSign() + " " 
-                       + actor.Type() + " " 
-                       + a.Name() + " " 
-                       + group.GroupType() + " "
-                       + group.ID() + " " 
-                       //+ a.TypedName() + " " 
-                       //+  a.AirGroup().ID()
-                       , new object[] { });                                            
-                      
-                      //actor.Destroy();  //hmm, perhaps this needs to be recursive here?  Can we have nested objects @ several levels?
-                      destroyGroundGroup(actor as AiGroundGroup); //for now this doesn't seem to do anything but I think it is at least potentially true that an actor can also have group members
-                      actor.Destroy();  //hmm, perhaps this needs to be recursive here?  Can we have nested objects @ several levels?
-                      success=true;
-                      
-                      //trying to get the trailers etc
-                      
+                            }
 
 
-                                                                                                                               
+                            if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying group element: " // + a.AirGroup() + " " 
+                                                                                                      //+ a.CallSign() + " " 
+                            + actor.Type() + " "
+                            + a.Name() + " "
+                            + group.GroupType() + " "
+                            + group.ID() + " "
+                            //+ a.TypedName() + " " 
+                            //+  a.AirGroup().ID()
+                            , new object[] { });
+
+                            //actor.Destroy();  //hmm, perhaps this needs to be recursive here?  Can we have nested objects @ several levels?
+                            destroyGroundGroup(actor as AiGroundGroup); //for now this doesn't seem to do anything but I think it is at least potentially true that an actor can also have group members
+                            actor.Destroy();  //hmm, perhaps this needs to be recursive here?  Can we have nested objects @ several levels?
+                            success = true;
+
+                            //trying to get the trailers etc
+
+
+
+
+                        }
+                    }
+                }
+                /*
+                string subGroupName = group.Name() + "1";
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
+                            + subGroupName, new object[] { });
+                    AiGroundActor subGroupActor = GamePlay.gpActorByName(subGroupName) as AiGroundActor;
+                if (subGroupActor != null)
+                {
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
+                        + subGroupActor.Name(), new object[] { });
+
+                    destroyGroundGroup(subGroupActor as AiGroundGroup);
+                    (subGroupActor as AiCart).Destroy();
+                }
+                */
+
+                //Getting rid of the trailers
+                //They have a name ending in 01 or 03, 11, 13, or the like
+                for (int i = 0; i < 2; i++)
+                {
+                    string subName = group.Name() + ((int)(2 * i + 1)).ToString();
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
+                            + subName, new object[] { });
+                    AiGroundActor subActor = GamePlay.gpActorByName(subName) as AiGroundActor;
+                    if (subActor != null)
+                    {
+                        if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
+                            + subActor.Name(), new object[] { });
+
+                        destroyGroundGroup(subActor as AiGroundGroup);
+                        (subActor as AiCart).Destroy();
+                    }
+                }
+
+
+
+                if (destroyGroup)
+                {
+                    if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Finished destroying group: "
+                        + group.Name() + " "
+                    //+ group.CallSign() + " " 
+                    //+ group.Type() + " " 
+                    //+ group.TypedName() + " " 
+                    //+ group.AirGroup().ID()
+                    //+ group.GroupType() + " "
+                    //+ group.ID() + " "
+                    , new object[] { });
+
+
+                    //group.Destroy();
+
+                    if ((group as AiGroundActor) != null) (group as AiGroundActor).Destroy();
+                    success = true;
+                }
+            }
+            return success;
+        }
+        catch (Exception e) { System.Console.WriteLine("dag2: " + e.ToString()); return false; }
+    }
+
+    public AiAircraft GetNearestFriendlyAircraft(AiActor act)
+    {   // Purpose: Returns the nearest frinedly aircraft to the specified actor. 
+        // Use: GamePlay.gpNearestFriendlyAircraft(actor);
+        if (act == null) return null;
+        AiAircraft NearestAircraft = null;
+        Point3d P = act.Pos();
+        
+
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in GamePlay.gpArmies())
+            {                
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                {
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {                        
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor is AiAircraft)
+                                {
+                                    AiAircraft aircraft = actor as AiAircraft;
+                                    if (aircraft != null)
+                                    {
+                                        if ( NearestAircraft == null || aircraft.Pos().distance(ref P) < NearestAircraft.Pos().distance(ref P))
+                                        //if ( aircraft.Pos().distance(ref P) < NearestAircraft.Pos().distance(ref P))
+                                            NearestAircraft = aircraft;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            string subGroupName = group.Name() + "1";
-                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroying : "
-                        + subGroupName, new object[] { });
-                AiGroundActor subGroupActor = GamePlay.gpActorByName(subGroupName) as AiGroundActor;
-            if (subGroupActor != null)
-            {
-                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Destroyed : "
-                    + subGroupActor.Name(), new object[] { });
+        }
 
-                destroyGroundGroup(subGroupActor as AiGroundGroup);
-                (subGroupActor as AiCart).Destroy();
-            }
-
-            
-            if (destroyGroup) {
-                if (DEBUG) GamePlay.gpLogServer(null, "DEBUG: Finished destroying group: "
-                    + group.Name() + " "
-                //+ group.CallSign() + " " 
-                //+ group.Type() + " " 
-                //+ group.TypedName() + " " 
-                //+ group.AirGroup().ID()
-                //+ group.GroupType() + " "
-                //+ group.ID() + " "
-                , new object[] { });
-               
-     
-                  //group.Destroy();
-              
-                  if ((group as AiGroundActor) != null) (group as AiGroundActor).Destroy();
-                  success=true;
-           }   
-        }        
-        return success;
-      }
-      catch (Exception e) {System.Console.WriteLine ("dag2: " + e.ToString()); return false;}  
+        return NearestAircraft;
     }
 
+    //Put a player into a certain place of a certain plane.
+    private bool putPlayerIntoAircraftPosition (Player player, AiActor actor, int place){
+      if (player != null && actor!=null && (actor as AiAircraft!=null)) 
+      {
+         AiAircraft aircraft = actor as AiAircraft;
+         player.PlaceEnter(aircraft, place);
+            return true;
+      }
+      return false;
+    }
         
      private string Left(string Original, int Count)
      {      
@@ -2258,6 +2841,28 @@ public override void OnPlaceEnter (Player player, AiActor actor, int placeIndex)
      }       
 
 
+}
+
+//Various helpful calculations, formulas, etc.
+public static class Calcs
+{
+
+    public static int GetFirstDiffIndex(string str1, string str2)
+    {
+        if (str1 == null || str2 == null) return -1;
+
+        int length = Math.Min(str1.Length, str2.Length);
+
+        for (int index = 0; index < length; index++)
+        {
+            if (str1[index] != str2[index])
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
 }
 
 /*
@@ -2280,67 +2885,4 @@ public class FakeAircraft : AiAircraft
  
 }
 */
-
-public class BasePos
-{
-    internal string _Name;
-    internal Point3d _Pos;
-
-    public BasePos(string name, Point3d pos)
-    {
-        if (name != null)
-            this._Name = name;
-        else this._Name = "";
-        //if (pos!=null)
-        this._Pos = pos;
-        //else this.Pos=new Point3d(0,0,0); 
-    }
-
-    public BasePos(BasePos bp)
-    {
-        this._Name = bp.Name();
-        this._Pos = bp.Pos();
-        Console.WriteLine("BasePos inited: " + this.ToString("F2"));
-    }
-
-    //a default constructor . . .
-    public BasePos(object o = null)
-    {
-        this._Name = "";
-        this._Pos = new Point3d(0, 0, 0);
-    }
-
-    public string Name(string name = null)
-    {
-
-        if (name == null) return this._Name;
-        else
-        {
-            this._Name = name;
-            return null;
-        }
-
-    }
-
-    public Point3d Pos(Point3d pos)
-    {
-        this._Pos = pos;
-        return this._Pos;
-    }
-
-    public Point3d Pos()
-    {
-        return this._Pos;
-    }
-
-    public virtual string ToString(string format)
-    {
-        return _Name + " "
-        + _Pos.x.ToString(format) + " "
-        + _Pos.y.ToString(format) + " "
-        + _Pos.z.ToString(format);
-
-    }
-
-}
 

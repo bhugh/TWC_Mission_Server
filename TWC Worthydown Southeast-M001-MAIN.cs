@@ -4,7 +4,7 @@
 ///$reference parts/core/MySql.Data.dll  //THIS DOESN'T SEEM TO WORK
 ///$reference parts/core/System.Data.dll //THIS DOESN'T SEEM TO WORK
 
-// v.1_17_04. script by oreva, zaltys, small_bee, bhugh, several other contributors/online code snippets & examples
+// v.1_18_00. script by oreva, zaltys, small_bee, bhugh, fatal_error, several other contributors/online code snippets & examples
 
 using System;
 using System.Collections;
@@ -43,8 +43,12 @@ public class Mission : AMission
         public int RESPAWN_MINUTES;
         public int TICKS_PER_MINUTE;
         public double HOURS_PER_SESSION;
+        public double NUMBER_OF_SESSIONS_IN_MISSION;
         public int END_SESSION_TICK;
+        public int END_MISSION_TICK;
         public int RADAR_REALISM;
+        public bool MISSION_STARTED = false;
+        public int START_MISSION_TICK = -1;
         
         bool respawn_on;
         int respawnminutes;
@@ -72,7 +76,8 @@ public class Mission : AMission
         int randRedTickFighterRaid7;
         int randRedTickFighterRaid8;
         int randRedTickFighterRaid9;
-        
+        int randRedTickFighterRaid10;
+		int randRedTickFighterRaid11;
         Stopwatch stopwatch;
         Dictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
     //Constructor
@@ -93,12 +98,27 @@ public class Mission : AMission
          STATS_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + STATS_FILE_NAME;
          LOG_FILE_NAME = MISSION_ID + @"_log_log.txt";
          LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
-         
-      
-      
-         RESPAWN_MINUTES = 100; //For this mission this is used only as max life length for AI aircraft.  So set it a little longer than the entire mission timeline.    
+
+
+
+        /******************************************************************************
+         * 
+         * Timekeeping is a bit of a kludge . . . 
+         * There are "sessions" - define the length below.
+         * Then create variables like randBlueTickFighterRaid1 to determine at which tick 
+         * in the session various random sub-missions will run
+         * 
+         * Then you can make the entire mission some multiple of that session - so you can
+         * run the session 1x, 2x, 3x, or event 2.5x etc.
+         * 
+         * This we can have fairly long missions run, each one repeating a certain sequence
+         * of sub-missions one or several times.
+         * 
+         ******************************************************************************/
+        RESPAWN_MINUTES = 90; //For this mission this is used only as max life length for AI aircraft.  So set it a little longer than the entire mission timeline.    
          TICKS_PER_MINUTE=1986; //empirically, based on a timeout test.  This is approximate & varies slightly.
          HOURS_PER_SESSION=1.5; //# of hours the entire session is to last before re-start
+         NUMBER_OF_SESSIONS_IN_MISSION = 2; //we can repeat this entire sequence 1x, 2x, 3x, etc. OR EVEN 1.5, 2.5, 3.25 etc times  
          END_SESSION_TICK = (int) (TICKS_PER_MINUTE*60*HOURS_PER_SESSION); //When to end/restart server session
          RADAR_REALISM = (int) 5;
 
@@ -107,7 +127,8 @@ public class Mission : AMission
         //endsessiontick = Convert.ToInt32(TICKS_PER_MINUTE*60*HOURS_PER_SESSION); //When to end/restart server session
         tickoffset=20 ; //allows resetting the sub-mission restart times if a sub-mission is re-spawned manually etc
         endsessiontick = END_SESSION_TICK;
-        
+        END_MISSION_TICK = (int)((double)END_SESSION_TICK * NUMBER_OF_SESSIONS_IN_MISSION);
+
         //choose 2 times for hurry strafe mission to spawn, once in 1st half of mission & once in 2nd half        
         randHurryStrafeTick1 = random.Next((int)0/90,(int)(endsessiontick*45/90));  //between minute 0 & 45        
         randHurryStrafeTick2 = random.Next((int)(endsessiontick*46/90),endsessiontick*90/90);  //between minute 46 & 90
@@ -135,8 +156,9 @@ public class Mission : AMission
         randRedTickFighterRaid7 = random.Next((int)(endsessiontick*62/90),(int)(endsessiontick*69/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
         randRedTickFighterRaid8 = random.Next((int)(endsessiontick*73/90),(int)(endsessiontick*78/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
         randRedTickFighterRaid9 = random.Next((int)(endsessiontick*79/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        
-        
+        randRedTickFighterRaid10 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid11 = random.Next((int)(endsessiontick*17/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+		
         stopwatch = Stopwatch.StartNew();
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string,string>>> ();
    } 
@@ -146,19 +168,39 @@ public class Mission : AMission
 // loading sub-missions
 public override void OnTickGame()
 {
+
+    if (!MISSION_STARTED)
+    {
+            //if (Time.tickCounter() % 10600 == 0) {
+            if (Time.tickCounter() % (2 * ticksperminute) == 0)
+            {
+                //DebugAndLog ("Debug: tickcounter: " + Time.tickCounter().ToString() + " tickoffset" + tickoffset.ToString());
+
+                int timewaitingminutes = Convert.ToInt32(((double)Time.tickCounter() / (double)ticksperminute));
+                DebugAndLog("Waiting for first player to join; waiting " + timewaitingminutes.ToString() + " minutes");
+                
+            }
     
-    int respawntick=respawnminutes*ticksperminute; // How often to re-spawn new sub-missions & do other repetitive tasks/messages. 27000=15 min repeat. 1800 'ticks' per minute or  108000 per hour.  I believe that this is approximate, not exact.
-    
-    if ( (Time.tickCounter()) == 0) {
-        //GamePlay.gpLogServer(null, "Mission class initiated 2.", new object[] { });
-        GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
-        Timeout(60, () =>  //how many ticks in 60 seconds
-                  {
-                     //DebugAndLog ( "Debug/one minute: " + Time.tickCounter().ToString() + " " + tickoffset.ToString());
-        });
+            return;
     }
 
-    if ( (Time.tickCounter()) == 200) {
+    if (START_MISSION_TICK == -1) START_MISSION_TICK = Time.tickCounter();
+
+    int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+
+    int respawntick=respawnminutes*ticksperminute; // How often to re-spawn new sub-missions & do other repetitive tasks/messages. 27000=15 min repeat. 1800 'ticks' per minute or  108000 per hour.  I believe that this is approximate, not exact.
+    
+    if ( (tickSinceStarted) == 0) {
+        //GamePlay.gpLogServer(null, "Mission class initiated 2.", new object[] { });
+        GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+
+        /*Timeout(60, () =>  //how many ticks in 60 seconds
+                  {
+                     //DebugAndLog ( "Debug/one minute: " + Time.tickCounter().ToString() + " " + tickoffset.ToString());
+        }); */
+    }
+
+    if ( (tickSinceStarted) == 200) {
         //GamePlay.gpLogServer(null, "Loading initial sub-missions.", new object[] { });  
         //ReadInitialSubmissions(MISSION_ID + "-initsubmission", 60);
     }
@@ -166,7 +208,7 @@ public override void OnTickGame()
     
     /* SAMPLE CODE TO RESET THE MENUS PERIODICALLY IF THEY GET MESSED UP OVER TIME
     //THIS WOULD NEED TO BE REWRITTEN TO LOOP THROUGH ALL PLAYERS ONLINE
-    if ( (Time.tickCounter()) % 2000 == 0) {
+    if ( (tickSinceStarted) % 2000 == 0) {
        
        setSubMenu1(GamePlay.gpPlayer());
        setMainMenu(GamePlay.gpPlayer());
@@ -176,7 +218,7 @@ public override void OnTickGame()
     */
     
     //periodically remove a/c that have gone off the map
-    if ( (Time.tickCounter()) % 2000 == 0) {
+    if ( (tickSinceStarted) % 2100 == 0) {
        
        RemoveOffMapAIAircraft();
        
@@ -185,7 +227,7 @@ public override void OnTickGame()
     
     
 
-    if ( (Time.tickCounter()) % 10000 == 0) {
+    if ( (tickSinceStarted) % 10100 == 0) {
          //DebugAndLog ("Debug: tickcounter: " + Time.tickCounter().ToString() + " tickoffset" + tickoffset.ToString());
          
          DebugAndLog ( "Total number of AI aircraft groups currently active:");
@@ -194,18 +236,20 @@ public override void OnTickGame()
 
            
          //display time left
-         int timespenttick = (Time.tickCounter()-tickoffset) % respawntick;
+         int timespenttick = (tickSinceStarted - tickoffset) % respawntick;
          int timelefttick = respawntick - timespenttick;
          int timespentminutes=Convert.ToInt32(((double)timespenttick/(double)ticksperminute));
          int timeleftminutes=Convert.ToInt32(((double)timelefttick/(double)ticksperminute));
-         int missiontimeleftminutes = Convert.ToInt32((double)(endsessiontick-Time.tickCounter())/(double)ticksperminute);
+         int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK- tickSinceStarted) /(double)ticksperminute);
          if ( missiontimeleftminutes > 1 ) {
-           GamePlay.gpLogServer(null, missiontimeleftminutes.ToString() + " min. left in this mission" , new object[] { });
-           GamePlay.gpHUDLogCenter(missiontimeleftminutes.ToString() + " min. left in this mission");
-         }  
+             string msg = missiontimeleftminutes.ToString() + " min. left in mission  " + MISSION_ID;
+             if (!MISSION_STARTED) msg = "Mission not yet started - waiting for first player to enter.";
+             GamePlay.gpLogServer(null, msg , new object[] { });
+             GamePlay.gpHUDLogCenter(msg);
+            }  
          //Write all a/c position to log
          if (LOG) {
-           DebugAndLog (missiontimeleftminutes.ToString() + " min. left in this mission");
+           DebugAndLog (missiontimeleftminutes.ToString() + " min. left in mission " + MISSION_ID);
            int saveRealism=RADAR_REALISM; //save the accurate radar contact lists
            RADAR_REALISM=0;
            listPositionAllAircraft(GamePlay.gpPlayer(),1, true);
@@ -213,30 +257,50 @@ public override void OnTickGame()
            RADAR_REALISM=saveRealism;
          }
 
-    } 
-    
-    
+    }
+
+    if (tickSinceStarted == 900 ) //load initial ship missions.  Note that these are loaded ONCE only @ start of mission (tickSinceStarted) NOT at the start of each session (tickSession)
+    {
+
+        LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionINITIALSHIPS"); // load sub-mission            
+        
+     }
+
+
     ////load RED random missions @ random times
     // After 4 minutes & before 70 minutes
     // Load one every 10 minutes with an offset of 7 minutes
     // We can come up with better/more devious ways to space out the timing of random mission starts later
-    /* if ( (Time.tickCounter() > TICKS_PER_MINUTE * 4) 
-             && (Time.tickCounter() < TICKS_PER_MINUTE * 70) 
-             && (Time.tickCounter() % (TICKS_PER_MINUTE * 10 ) == (int)((double)TICKS_PER_MINUTE * 7)  )
-    */          
+    /* if ( (tickSinceStarted > TICKS_PER_MINUTE * 4) 
+                && (tickSinceStarted < TICKS_PER_MINUTE * 70) 
+                && (tickSinceStarted % (TICKS_PER_MINUTE * 10 ) == (int)((double)TICKS_PER_MINUTE * 7)  )
+    */
     //FOR TESTING:
-    //if ( Time.tickCounter() > TICKS_PER_MINUTE * 1 && Time.tickCounter() < TICKS_PER_MINUTE * 70 
-    //         && Time.tickCounter() % (TICKS_PER_MINUTE * 1 ) == (int)((double)TICKS_PER_MINUTE * .5)  )
-    if ( Time.tickCounter() == randBlueTick1 || Time.tickCounter() == randBlueTick2 || Time.tickCounter() == randBlueTick3 || Time.tickCounter() == randBlueTick4 )    
+    //if ( tickSinceStarted > TICKS_PER_MINUTE * 1 && tickSinceStarted < TICKS_PER_MINUTE * 70 
+    //         && tickSinceStarted % (TICKS_PER_MINUTE * 1 ) == (int)((double)TICKS_PER_MINUTE * .5)  )
+    int currSessTick = tickSinceStarted % END_SESSION_TICK;
+    if ( currSessTick == randBlueTick1 || currSessTick == randBlueTick2 || currSessTick == randBlueTick3 || currSessTick == randBlueTick4 )    
     {
      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionBLUE"); // sub-mission            
     }
 
+    if (currSessTick == 500 ) //load initial aircraft missions  &re-load them @ the start of every new session
+    {
 
+        LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionINITIALBLUE"); // load sub-mission            
+        
+     }
 
-    //Load the initial Blue bomber raids approx minutes 1-2
-    if ( Time.tickCounter() == randBlueTickInitRaid)    
+     if (currSessTick == 700 ) //load initial aircraft missions  &re-load them @ the start of every new session
+    {
+
+            
+            LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionINITIALRED"); // load sub-mission            
+    }
+
+        //Load the initial Blue bomber raids approx minutes 1-2
+        if ( currSessTick == randBlueTickInitRaid)    
     {
      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionINITBLUE-bomber"); // load sub-mission            
@@ -245,7 +309,7 @@ public override void OnTickGame()
     }
     
     //Load the major Blue fighter raids approx every 30 minutes
-    if ( Time.tickCounter() == randBlueTickFighterRaid1 || Time.tickCounter() == randBlueTickFighterRaid2 || Time.tickCounter() == randBlueTickFighterRaid3)    
+    if ( currSessTick == randBlueTickFighterRaid1 || currSessTick == randBlueTickFighterRaid2 || currSessTick == randBlueTickFighterRaid3)    
     {
      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionRAIDBLUE-fighter"); // load sub-mission            
@@ -255,21 +319,21 @@ public override void OnTickGame()
     
     
     //Load the major RED fighter raids approx every 20 minutes
-    if ( Time.tickCounter() == randRedTickFighterRaid1 || Time.tickCounter() == randRedTickFighterRaid2 || Time.tickCounter() == randRedTickFighterRaid3 || Time.tickCounter() == randRedTickFighterRaid4|| Time.tickCounter() == randRedTickFighterRaid5 || Time.tickCounter() == randRedTickFighterRaid6 || Time.tickCounter() == randRedTickFighterRaid7 || Time.tickCounter() == randRedTickFighterRaid8 || Time.tickCounter() == randRedTickFighterRaid9 || Time.tickCounter() == randRedTickFighterRaid6 )    
+    if ( currSessTick == randRedTickFighterRaid1 || currSessTick == randRedTickFighterRaid2 || currSessTick == randRedTickFighterRaid3 || currSessTick == randRedTickFighterRaid4|| currSessTick == randRedTickFighterRaid5 || currSessTick == randRedTickFighterRaid6 || currSessTick == randRedTickFighterRaid7 || currSessTick == randRedTickFighterRaid8 || currSessTick == randRedTickFighterRaid9 || currSessTick == randRedTickFighterRaid6 )    
     {                      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionREDaircover"); // load sub-mission            
         
     }     
 
     //Load the major bomber & fighter raids between 2400 & 2500 seconds in
-    if ( Time.tickCounter() == randBlueTickRaid )    
+    if ( currSessTick == randBlueTickRaid )    
     {
                      	    
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionRAIDBLUE-bomber"); // load bomber sub-mission a bit later                    	                    
         
     }  
 
-    if ( Time.tickCounter() == randBlueTickLateRaid )    
+    if ( currSessTick == randBlueTickLateRaid )    
     {
      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionLATERAIDBLUE"); // load sub-mission                                
@@ -278,23 +342,23 @@ public override void OnTickGame()
     
     
     ///load RED randHurryStrafe missions @ random times
-    if ( Time.tickCounter() == randHurryStrafeTick1 || Time.tickCounter() == randHurryStrafeTick2 )
+    if ( currSessTick == randHurryStrafeTick1 || currSessTick == randHurryStrafeTick2 )
     //FOR TESTING:
-      if ( Time.tickCounter() == 1000 || Time.tickCounter() == 3000 )     
+    //if ( currSessTick == 1000 || currSessTick == 3000 )     
     {
      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionREDhurrystrafe"); // sub-mission            
     }
         
-    displayMessages (Time.tickCounter(), tickoffset, respawntick);
-    if ( respawn_on && ( (Time.tickCounter()-tickoffset) % respawntick == 0) )     
+    displayMessages (tickSinceStarted, tickoffset, respawntick);
+    if ( respawn_on && ( (tickSinceStarted - tickoffset) % respawntick == 0) )     
     {
       //setMainMenu(GamePlay.gpPlayer());  //initialize menu
       //LoadRandomSubmission (); // sub-mission            
     }
     
     
-    if (Time.tickCounter() == endsessiontick) EndMission(60);// Out of time/end server.  ATAG Server monitor (CloD Watchdog) will auto-start the next mission when this one closes the launcher -server instance.
+    if (tickSinceStarted == END_MISSION_TICK) EndMission(60);// Out of time/end server.  ATAG Server monitor (CloD Watchdog) will auto-start the next mission when this one closes the launcher -server instance.
       
 
     
@@ -308,21 +372,21 @@ public override void OnTickGame()
     int msgfrq=1; //how often to display server messages.  Will be displayed 1/msgfrq times
      
 
-    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 38000) // 27000=15 min repeat. 10000=another few minutes' delay
+    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 38400) // 27000=15 min repeat. 10000=another few minutes' delay
      
     {
         GamePlay.gpLogServer(null, "The Wrecking Crew (TWC) is always looking for new pilots. Check us out at TWCCLAN.COM.", new object[] { });
     }
-        if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 2000) // 27000=15 min repeat. 10000=another few minutes' delay
+        if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 1900) // 27000=15 min repeat. 10000=another few minutes' delay
      
     {
         GamePlay.gpLogServer(null, ">> SERVER TIP: Read the Mission Briefing for important instructions <<", new object[] { });
     }
-    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 20000) 
+    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 20200) 
     {
         GamePlay.gpLogServer(null, ">> SERVER TIP: Use TAB-4-1 for special server commands <<", new object[] { });
     }
-    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 15000) 
+    if ( (random.Next(msgfrq+1)==1) && (tick) % 40000 == 15300) 
     {
         GamePlay.gpLogServer(null, ">> SERVER TIP: Type <help in chat for several useful commands <<", new object[] { });
     }
@@ -407,29 +471,25 @@ public override void OnTickGame()
                 else { sw = new StreamWriter(messageLogPath, false, System.Text.Encoding.UTF8); }
                 sw.WriteLine((string)data);
                 sw.Flush();
-                sw.Close();
+                sw.Close();                
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); };
         }
-   
-   public void logMessage(object data)
-        {          
-            logToFile (data, MESSAGE_FULL_PATH); 
-        }
-        
+           
    public void logStats(object data)
         {          
-            logToFile (data, STATS_FULL_PATH); 
+            logToFile (data, STATS_FULL_PATH);
+            Console.WriteLine("Logging stats to " + STATS_FILE_NAME);
         }
 
    public void DebugAndLog(object data)
         {
             if (DEBUG) GamePlay.gpLogServer(null, (string)data , new object[] { });          
-            if (LOG) logToFile (data, LOG_FULL_PATH); 
+            if (!DEBUG && LOG) Console.WriteLine((string)data); //We're using the regular logs.txt as the logfile now logToFile (data, LOG_FULL_PATH); 
         }
    public void gpLogServerAndLog(Player[] to, object data, object[] third)
         {
-            if (LOG) logToFile (data, LOG_FULL_PATH);
+            //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
             GamePlay.gpLogServer(to, (string)data , third);          
              
         }        
@@ -580,10 +640,21 @@ public override void OnTickGame()
 			return;
 		}
 
-		aircraft.hitNamed (part.NamedDamageTypes.ControlsElevatorDisabled);
-		aircraft.hitNamed (part.NamedDamageTypes.ControlsAileronsDisabled);
-		aircraft.hitNamed (part.NamedDamageTypes.ControlsRudderDisabled);
-		aircraft.hitNamed (part.NamedDamageTypes.FuelPumpFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.FuelPumpFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.Eng0TotalFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.ElecPrimaryFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.ElecBatteryFailure);
+
+            aircraft.hitLimb(part.LimbNames.WingL1, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL2, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL3, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL4, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL5, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL6, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL7, -0.5);
 
         int iNumOfEngines = (aircraft.Group() as AiAirGroup).aircraftEnginesNum();
         for (int i = 0; i < iNumOfEngines; i++)
@@ -607,7 +678,7 @@ public override void OnTickGame()
     {
         #region stb
         base.OnMissionLoaded(missionNumber);
-        //GamePlay.gpLogServer(null, "Main mission started 1", new object[] { });
+        //GamePlay.gpLogServer(null, "Main mission started 1", new object[] { });        
         #endregion
     }   
        
@@ -615,11 +686,19 @@ public override void OnTickGame()
 	public override void OnPlaceLeave (Player player, AiActor actor, int placeIndex) 
     {
 		base.OnPlaceLeave (player, actor, placeIndex);
-		Timeout (60, () =>
-				{damageAiControlledPlane (actor);}
-			);
-    DateTime utcDate = DateTime.UtcNow;  
-    logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));  
+        string pName="";
+        if (player!=null) pName=player.Name();
+        if (actor is AiAircraft) {
+    
+    	    Timeout (0.5f, () => //5 sec seems too long, the ai vigorously takes control sometimes, and immediately.  Perhaps even 1 second or .5 better than 2.
+    			    {
+                damageAiControlledPlane (actor);
+                Console.WriteLine ("Player left plane; damaged aircraft so that AI cannot assume control " + pName + " " + (actor as AiAircraft).Type());
+              }
+    		    );
+        }    
+        DateTime utcDate = DateTime.UtcNow;  
+        logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));  
       
 	}
 
@@ -644,11 +723,235 @@ public override void OnTickGame()
     //    + cs + " " + ias.ToString(), new object[] { });
     */                                                                            
   }
-  
-  
-  
 
-	public override void OnAircraftCrashLanded (int missionNumber, string shortName, AiAircraft aircraft) 
+   
+  # region onbuildingkilled
+    /*
+    //OnBuildingKilled only works on offline servers
+    public override void OnBuildingKilled(string title, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+        base.OnBuildingKilled(title, pos, initiator, eventArgInt);
+
+        string BuildingName = title;
+        string BuildingArmy = "";
+        string PlayerArmy = "";
+        string sectorTitle = "";
+        string sectorName = GamePlay.gpSectorName(pos.x, pos.y);
+
+        if (GamePlay.gpFrontArmy(pos.x, pos.y) == 1)
+        {
+            BuildingArmy = "England";
+        }
+        else if (GamePlay.gpFrontArmy(pos.x, pos.y) == 2)
+        {
+            BuildingArmy = "France";
+        }
+        else
+        {
+            BuildingArmy = "Neutral";
+        }
+
+        if (initiator.Player.Army() == 1)
+        {
+            PlayerArmy = "RAF";
+        }
+        else if (initiator.Player.Army() == 2)
+        {
+            PlayerArmy = "Luftwaffe";
+        }
+        else
+        {
+            PlayerArmy = "Unknown";
+        }
+
+        GamePlay.gpLogServer(null, "BUILDING:" + BuildingName + " in " + BuildingArmy + " was destroyed in sector " + sectorName + " by " + initiator.Player.Name() + " from the " + PlayerArmy + ".", new object[] { });
+    }
+    */
+
+    # endregion
+
+
+    
+    #region stationarykilled
+    //OnStationaryKilled is basically used for dam bombing effects.  It could potentially be used for other things, however
+        /*
+         * FG28_Kodiak
+         * http://forum.1cpublishing.eu/archive/index.php/t-34985.html
+         * 
+         * GamePlay.gpGroundStationarys is overloaded:
+         * GamePlay.gpGroundStationarys(double x, double y, double radius)
+         * GamePlay.gpGroundStationarys(string country)
+         * GamePlay.gpGroundStationarys(string country, double y, double radius)
+         * 
+         * you get a Array of GroundStationary on a Position with a given radius, additional you can specify a country.Or you can get all Stationaries of a country you specify.
+         * 
+         * Statics & buildings are NOT actors!
+         * 
+         */
+    public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        base.OnStationaryKilled(missionNumber,stationary, initiator, eventArgInt);
+
+        GamePlay.gpLogServer(null, "Stationary:" + stationary.Name + " in " + stationary.country + " was destroyed by " + initiator.Player.Name() + " from the " + initiator.Player.Army() + ".", new object[] { });
+
+        if (stationary.Name == "0:Static42" )  //we can check for various things being killed with || but then we will end up loading the submission multiple times. So just once is best.
+        {
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Dam @ Le Harve has been eliminated. Well done"+ name, new object[] { });
+            GamePlay.gpHUDLogCenter("Dam @ Le Harve has been eliminated. Well done" + name);
+            //Dam @ Le Harve has been eliminated. Well done PlayerName!
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+            //
+            
+                GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC M002-damdestruction.mis");
+
+                foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (sta.Name == "0:Static41" || sta.Name == "0:Static42" || sta.Name == "0:Static43") //Need to list the name of EACH item that should be removed/destroyed. We'll have trouble here if editing the file renumbers the statics . . . 
+                {
+                   //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                   Timeout(60, () =>
+                   {
+                       sta.Destroy();
+                       DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                       GamePlay.gpLogServer(null, "Dam bombed; destroying stationary " + sta.Name, new object[] { });
+                   });
+                }
+
+                //sta.Destroy();
+            }
+
+        }
+
+
+    }
+
+    # endregion
+
+    public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
+    {
+        #region stb
+        base.OnActorDead(missionNumber, shortName, actor, damages);
+        try
+        {
+            if (actor != null && actor is AiAircraft)
+            {
+                //if dead, then destroy it within a reasonable time
+                AiAircraft aircraft = actor as AiAircraft;
+                string pName = actor.Name();
+                if (aircraft != null)
+                {
+                    //Timeout(300, () =>
+                    Timeout(20, () => //testing
+                    {
+                        //Force a player into a certain place:
+                        //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
+                        for (int i = 0; i < aircraft.Places(); i++)
+                           {
+                            //aircraft.Player(i).Place() = null;
+                            //aircraft.Player(i).PlaceEnter(null,0);
+                            aircraft.Player(i).PlaceLeave(i);
+                        }
+                           
+                           //Wait 0.5 second for player(s) to leave, then destroy
+                           Timeout(0.5, () =>
+                           {
+                               destroyPlane(aircraft);  //Destroy completely when dead, after a reasonable time period.
+                               Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
+                           });
+
+                    });
+                }
+
+            }
+          
+            if (actor != null && actor is AiGroundActor)
+            { 
+                //If we destroy dead ground objs too soon then eg big oil refinery fires will go out after just a few minutes
+                //Ideally we'd have a filter of some time here to destroy smaller items pretty soon but other bigger ones after a longer time
+                Timeout(90*60, () => { 
+                (actor as AiGroundActor).Destroy();
+                Console.WriteLine ("Destroyed dead ground object " + actor.Name()); 
+              
+                });
+
+               Console.WriteLine("Ground object has died. Name: " + actor.Name());
+
+            }
+
+
+
+        }
+        catch (Exception ex) { Console.WriteLine("OPD: "+ ex.ToString()); }
+        #endregion
+        //add your code here
+    }
+
+    public override void OnPersonHealth(maddox.game.world.AiPerson person, maddox.game.world.AiDamageInitiator initiator, float deltaHealth)
+    {
+        #region stats
+        base.OnPersonHealth(person, initiator, deltaHealth);
+        try
+        {
+            //GamePlay.gpLogServer(null, "Health Changed for " + person.Player().Name(), new object[] { });
+            if (person != null)
+            {
+                Player player = person.Player();
+                //if (deltaHealth>0 && player != null && player.Name() != null) {
+                if (player != null && player.Name() != null)
+                {                    
+                    if (DEBUG) GamePlay.gpLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health " + player.PersonPrimary().Health.ToString("F2"), new object[] { });
+                    //if the person is completely dead we are going to force them to leave their place
+                    //This prevents zombie dead players from just sitting in their planes interminably, 
+                    //which clogs up the airports etc & prevents the planes from dying & de-spawning
+                    //Not really sure the code below is working.
+                    if (player.PersonPrimary() != null && player.PersonPrimary().Health==0
+                        && (player.PersonSecondary() == null 
+                            || (player.PersonSecondary() != null && player.PersonSecondary().Health==0 ))){
+                        //Timeout(300, () =>
+                        if (DEBUG) GamePlay.gpLogServer(null, "Main: 2 OnPersonHealth for " + player.Name(), new object[] { });
+                        Timeout(20, () => //testing
+                        {
+                            if (DEBUG) GamePlay.gpLogServer(null, "Main: 3 OnPersonHealth for " + player.Name(), new object[] { });
+                            //Checking health a second time gives them a while to switch to a different position if
+                            //it is available
+                            if (player.PersonPrimary() != null && player.PersonPrimary().Health == 0
+                                && (player.PersonSecondary() == null
+                                    || (player.PersonSecondary() != null && player.PersonSecondary().Health == 0)))
+                            {
+                                if (DEBUG) GamePlay.gpLogServer(null, "Main: 4 OnPersonHealth for " + player.Name(), new object[] { });
+                               
+                                //Not really sure how this works, but this is a good guess.  
+                                //if (player.PersonPrimary() != null )player.PlaceLeave(0);
+                                //if (player.PersonSecondary() != null) player.PlaceLeave(1);
+                                if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
+                                if (player.PersonSecondary() != null) player.PlaceLeave(player.PersonSecondary().Place());
+                            }
+                            if (DEBUG) GamePlay.gpLogServer(null, player.Name() + " died and was forced to leave player's current place.", new object[] { });
+
+                            if (DEBUG) GamePlay.gpLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health1 " + player.PersonPrimary().Health.ToString("F2")
+                                    + " health2 " + player.PersonSecondary().Health.ToString("F2"), new object[] { });                            
+
+                        });
+
+                    }
+                                      
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("Main.OnPersonHealth - Exception: " + ex.ToString());
+        }
+        #endregion
+
+    }
+
+
+    public override void OnAircraftCrashLanded (int missionNumber, string shortName, AiAircraft aircraft) 
     {
 		base.OnAircraftCrashLanded (missionNumber, shortName, aircraft);
 		Timeout (300, () =>
@@ -806,12 +1109,17 @@ public override void OnTickGame()
             storedtime_ms=message_data.Item1;
             savenewmessages=false; //don't save the messages again because we aren't generating anything new
             
-            //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
-               foreach (var mess in message_data.Item2) {
-                 if (RADAR_REALISM==0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                 else gpLogServerAndLog(new Player[] { player }, mess.Value, null);              
-                  
-               }
+            //Wait just 2 seconds, which gives people a chance to see the message about how long until they can request a new radar return.
+            Timeout (2, ()=>
+            {
+                //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+                foreach (var mess in message_data.Item2)
+                {
+                    if (RADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                    else gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+
+                }
+            });
           }
         
         }
@@ -1051,6 +1359,12 @@ public override void OnTickGame()
     {
         base.OnBattleStarted();
         //DebugAndLog( "Loading initial sub-missions: " + MISSION_ID + "-initsubmission");
+
+        //When battle is started we re-start the Mission tick clock - setting it up to start events
+        //happening when the first player connects
+        MISSION_STARTED = false; 
+        START_MISSION_TICK = -1; 
+
         ReadInitialSubmissions(MISSION_ID + "-auto-generate-vehicles", 0, 0); //want to load this after airports are loaded
         ReadInitialSubmissions(MISSION_ID + "-stats", 10, 1);
         ReadInitialSubmissions(MISSION_ID + "-initsubmission", 60, 10);        
@@ -1303,7 +1617,6 @@ public override void OnTickGame()
 
            string str = WritePlayerStat(player);        
            //split msg into a few chunks as gplogserver doesn't like long msgs
-
            int maxChunkSize=100;
            for (int i = 0; i < str.Length; i += maxChunkSize)             
               GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length-i)), new object[] { });       
@@ -1333,18 +1646,20 @@ public override void OnTickGame()
   //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
   public override void OnPlayerConnected( Player player ) {
     string message;
+    if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
+    MISSION_STARTED = true;
     if( MissionNumber > -1 ) {
       setMainMenu( player );
       
       GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-      GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+      //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
       
       DateTime utcDate = DateTime.UtcNow;
       
       //utcDate.ToString(culture), utcDate.Kind
       //Write current time in UTC, what happened, player name
       message = utcDate.ToString("u") + " Connected " + player.Name() ; 
-      logMessage(message);
+      
       DebugAndLog ( message );
     }
   }
@@ -1359,24 +1674,26 @@ public override void OnTickGame()
       //utcDate.ToString(culture), utcDate.Kind
       //Write current time in UTC, what happened, player name
       message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic ; 
-      logMessage(message);
       DebugAndLog (message);      
     }
   }
   
   public override void OnPlayerArmy( Player player, int Army   ) {
     if( MissionNumber > -1 ) {
-      /* AiAircraft aircraft = (player.Place() as AiAircraft);
-                     string cs = aircraft.CallSign();
-                     //int p = part.ParameterTypes.I_VelocityIAS; 
-                     double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                     GamePlay.gpLogServer(new Player[] { player }, "Plane: "  
+        /* AiAircraft aircraft = (player.Place() as AiAircraft);
+                        string cs = aircraft.CallSign();
+                        //int p = part.ParameterTypes.I_VelocityIAS; 
+                        double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                        GamePlay.gpLogServer(new Player[] { player }, "Plane: "  
                         + cs + " " + ias, new object[] { });
-      */                  
-      setMainMenu( player );
-      
-      GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-      GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+        */                  
+        //We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
+        //always must choose their army before entering the map, so this catches all players before entering the actual gameplay
+        setMainMenu( player );
+        if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
+        MISSION_STARTED = true;
+        GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+      //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
     }
   }
   public override void Inited() {
@@ -1429,14 +1746,17 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
     }
 
     public void showTimeLeft(Player player ){
+         int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
          int respawntick=respawnminutes*ticksperminute;
-         int timespenttick = (Time.tickCounter()-tickoffset) % respawntick;
+         int timespenttick = (tickSinceStarted - tickoffset) % respawntick;
          int timelefttick = respawntick - timespenttick;
          int timespentminutes=Convert.ToInt32(((double)timespenttick/(double)ticksperminute));
          int timeleftminutes=Convert.ToInt32(((double)timelefttick/(double)ticksperminute));
-         int missiontimeleftminutes = Convert.ToInt32((double)(END_SESSION_TICK-Time.tickCounter())/(double)ticksperminute);
-         
-         GamePlay.gpLogServer(new Player[] { player }, "Time left in mission: " + missiontimeleftminutes.ToString() + " min.", new object[] { });
+         int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK-tickSinceStarted) /(double)ticksperminute);
+         string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleftminutes.ToString() + " min.";
+         if (!MISSION_STARTED) msg = "Mission not yet started - waiting for first player to enter.";
+                  
+         GamePlay.gpLogServer(new Player[] { player }, msg , new object[] { });
     }     
     
     /////////////////////
@@ -1504,78 +1824,111 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         {
             showTimeLeft(from);
             //GamePlay.gp(, from);
-            
-        } else if (msg.StartsWith("<rr"))
+
+        }
+        else if (msg.StartsWith("<rr"))
         {
             // GamePlay.gpLogServer(new Player [] { player } , "On this server, you can't reload & refuel (historically unrealistic . . . ).  But if you land and take off again from the same base, your mission will continue unbroken (for stats purposes). EXCEPTION: If you have to land due to self-damage, your mission will end (for stats purposes). ", new object[] { });
             //GamePlay.gp(, from);
-            
-            GamePlay.gpLogServer(new Player [] { player } , "On this server, we don't RR aircraft. But if you land, get a new plane, and take off again from the same base, your mission will continue unbroken (for stats purposes).", new object[] { });
-        } else if (msg.StartsWith("<obj"))
-        {         
-            GamePlay.gpLogServer(new Player [] { player } , "Please read the mission briefings (on the initial 'Flag Page') for detailed info about mission objectives.", new object[] { });
-        } else if (msg.StartsWith("<stat"))                  
-        {         
-              
-           string str = WritePlayerStat(player);        
-           //split msg into a few chunks as gplogserver doesn't like long msgs
-           int maxChunkSize=100;
-           for (int i = 0; i < str.Length; i += maxChunkSize)             
-            GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length-i)), new object[] { });       
 
-            
-        } else if (msg.StartsWith("<pos") && player.Name().Substring(0,4) == @"TWC_")
-        {                       
-           int saveRealism=RADAR_REALISM; //save the accurate radar contact lists
-           RADAR_REALISM=0;
-           listPositionAllAircraft(player,1, true);
-           listPositionAllAircraft(player,1, false);
-           RADAR_REALISM=saveRealism;
-             
-        } else if (msg.StartsWith("<debugon") && player.Name().Substring(0,4) == @"TWC_")
-        {    
-                     
-             DEBUG=true;
-             GamePlay.gpLogServer(new Player [] { player } , "Debug is on", new object[] { });
-             
-        } else if (msg.StartsWith("<debugoff") && player.Name().Substring(0,4) == @"TWC_")
-        {    
-                     
-             DEBUG=false;                        
-             GamePlay.gpLogServer(new Player [] { player } , "Debug is off", new object[] { });
-             
-        } else if (msg.StartsWith("<logon") && player.Name().Substring(0,4) == @"TWC_")
-        {    
-                     
-             LOG=true;
-             GamePlay.gpLogServer(new Player [] { player } , "Log is on", new object[] { });
-             
-        } else if (msg.StartsWith("<logoff") && player.Name().Substring(0,4) == @"TWC_")
-        {    
-                     
-             LOG=false;                        
-             GamePlay.gpLogServer(new Player [] { player } , "Log is off", new object[] { });
+            //GamePlay.gpLogServer(new Player[] { player }, "On this server, we don't RR aircraft. But if you land, get a new plane, and take off again from the same base, your mission will continue unbroken (for stats purposes).", new object[] { });
+        }
+        else if (msg.StartsWith("<obj"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Please read the mission briefings (on the initial 'Flag Page') for detailed info about mission objectives.", new object[] { });
+        }
+        else if (msg.StartsWith("<stat"))
+        {
+
+            string str = WritePlayerStat(player);
+            //split msg into a few chunks as gplogserver doesn't like long msgs
+            int maxChunkSize = 100;
+            for (int i = 0; i < str.Length; i += maxChunkSize)
+                GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
+
+
+        }
+        else if (msg.StartsWith("<pos") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            RADAR_REALISM = 0;
+            listPositionAllAircraft(player, 1, true);
+            listPositionAllAircraft(player, 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        else if (msg.StartsWith("<debugon") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            DEBUG = true;
+            GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
+
+        }
+        else if (msg.StartsWith("<debugoff") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            DEBUG = false;
+            GamePlay.gpLogServer(new Player[] { player }, "Debug is off", new object[] { });
+
+        }
+        else if (msg.StartsWith("<logon") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            LOG = true;
+            GamePlay.gpLogServer(new Player[] { player }, "Log is on", new object[] { });
+
+        }
+        else if (msg.StartsWith("<logoff") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            LOG = false;
+            GamePlay.gpLogServer(new Player[] { player }, "Log is off", new object[] { });
 
         }
         else if (msg.StartsWith("<des") && player.Name().Substring(0, 4) == @"TWC_")
         {
 
             string name = msg.Substring(5);
-            AiGroundActor actor = GamePlay.gpActorByName(name) as AiGroundActor;
-            if (actor!=null) GamePlay.gpLogServer(new Player[] { player }, "Destroying " + name, new object[] { });
-            else GamePlay.gpLogServer(new Player[] { player }, name + " not found", new object[] { });
-            actor.Destroy();
+            AiActor actor = GamePlay.gpActorByName(name) as AiActor;
+            if (actor != null) GamePlay.gpLogServer(new Player[] { player }, "Destroying " + name, new object[] { });
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, name + " not found.  Must have exact name as reported in right-click/View Aircraft-Ships-Misc", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "with 'Show Object Names' selected.Example: '23:BoB_RAF_F_141Sqn_Early.000'", new object[] { });
+            }
+            (actor as AiCart).Destroy();
 
         }
-        else if (msg.StartsWith("<admin") && player.Name().Substring(0,4) == @"TWC_")
-        {    
-                     
-            GamePlay.gpLogServer(new Player [] { player } , "Admin commands: <pos <debugon <debugoff <logon <logoff", new object[] { });
-            
-
-        } else if (msg.StartsWith("<help") || msg.StartsWith("<") )
+        else if (msg.StartsWith("<plv") && player.Name().Substring(0, 4) == @"TWC_")
         {
-            GamePlay.gpLogServer(new Player [] { player } , "Commands: <tl Time Left; <rr How to reload; <stat Some helpful stats", new object[] { });
+            //Not really sure how this works, but this is a good guess.  
+            if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
+            if (player.PersonSecondary() != null) player.PlaceLeave(player.PersonSecondary().Place());
+        }
+        else if (msg.StartsWith("<mov") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            string name = msg.Substring(5);
+            AiActor actor = GamePlay.gpActorByName(name) as AiActor;
+            if (actor != null) GamePlay.gpLogServer(new Player[] { player }, "Moving to " + name, new object[] { });
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, name + " not found.  Must have exact name as reported in right-click/View Aircraft-Ships-Misc", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "with 'Show Object Names' selected.Example: '23:BoB_RAF_F_141Sqn_Early.000'", new object[] { });
+            }
+            putPlayerIntoAircraftPosition(player, actor, 0);
+
+        }
+        else if (msg.StartsWith("<admin") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            GamePlay.gpLogServer(new Player[] { player }, "Admin commands: <pos (all a/c position) <debugon <debugoff <logon <logoff (turn debug/log on/off) <des (destroy an object by name)", new object[] { });
+
+
+        }
+        else if (msg.StartsWith("<help") || msg.StartsWith("<"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <stat Some helpful stats", new object[] { });
             //GamePlay.gp(, from);
         }
     }  
@@ -1698,7 +2051,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
       double maxX =350000;
       double maxY =307500; 
       //////////////Comment this out as we don`t have Your Debug mode  
-      //if (DEBUG) DebugAndLog ("Checking for AI Aircraft off map, to despawn");
+      DebugAndLog ("Checking for AI Aircraft off map, to despawn");
       if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
       {
         foreach (int army in GamePlay.gpArmies())
@@ -1737,7 +2090,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
                            +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
                           );  */
                           numremoved++;                          
-                          Timeout (numremoved * 2, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
+                          Timeout (numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
                         
                         }
                        
@@ -1753,8 +2106,21 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
       }
       // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
     } //method removeoffmapaiaircraft
-    
-    
+
+
+    //Put a player into a certain place of a certain plane.
+    private bool putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
+    {
+        if (player != null && actor != null && (actor as AiAircraft != null))
+        {
+            AiAircraft aircraft = actor as AiAircraft;
+            player.PlaceEnter(aircraft, place);
+            return true;
+        }
+        return false;
+    }
+
+
 } //class mission : amission
 
 //Various helpful calculations & formulas

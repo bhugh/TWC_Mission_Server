@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -18,6 +18,43 @@
 [splines]
 [CustomChiefs]
 [Stationary]
+  Static0 Stationary.Bedford_MW_tank gb 61040.64 227816.36 0.00 
+  Static1 Stationary.Bedford_MW_tank gb 60875.61 228692.55 0.00 
+  Static2 Stationary.Bedford_MW_tank gb 60053.63 228522.41 0.00 
+  Static3 Stationary.Bedford_MW_tank gb 60231.96 227577.45 0.00 
+  Static4 Stationary.Bedford_MW_tank gb 28299.89 226522.94 0.00 
+  Static5 Stationary.Bedford_MW_tank gb 28527.97 225710.00 0.00 
+  Static6 Stationary.Bedford_MW_tank gb 29248.42 225947.80 0.00 
+  Static7 Stationary.Bedford_MW_tank gb 28951.04 226715.86 0.00 
+  Static8 Stationary.Bedford_MW_tank gb 76848.39 180416.77 0.00 
+  Static9 Stationary.Bedford_MW_tank gb 76620.11 179215.63 0.00 
+  Static10 Stationary.Bedford_MW_tank gb 75954.00 180401.73 0.00 
+  Static11 Stationary.Bedford_MW_tank gb 75756.05 179434.72 0.00 
+  Static12 Stationary.Bedford_MW_tank gb 45581.93 239917.31 0.00 
+  Static13 Stationary.Bedford_MW_tank gb 45819.48 237804.02 0.00 
+  Static14 Stationary.Bedford_MW_tank gb 46955.96 238476.17 0.00 
+  Static15 Stationary.Bedford_MW_tank gb 46701.73 239777.92 0.00 
+  Static16 Stationary.Bedford_MW_tank gb 72725.15 193970.75 0.00 
+  Static17 Stationary.Bedford_MW_tank gb 72714.45 193323.86 0.00 
+  Static18 Stationary.Bedford_MW_tank gb 71751.85 193436.08 0.00 
+  Static19 Stationary.Bedford_MW_tank gb 113070.31 196490.13 0.00 
+  Static20 Stationary.Bedford_MW_tank gb 113739.38 195788.67 0.00 
+  Static21 Stationary.Bedford_MW_tank gb 112880.38 195221.05 0.00 
+  Static22 Stationary.Bedford_MW_tank gb 112364.64 195866.41 0.00 
+  Static23 Stationary.Opel_Blitz_fuel de 158044.59 57557.100 0.00 
+  Static24 Stationary.Opel_Blitz_fuel de 157369.00 56988.71 0.00 
+  Static25 Stationary.Opel_Blitz_fuel de 156997.64 58725.10 0.00 
+  Static26 Stationary.Opel_Blitz_fuel de 156233.22 57830.13 0.00 
+  Static27 Stationary.Opel_Blitz_fuel de 43508.55 71686.60 0.00 
+  Static28 Stationary.Opel_Blitz_fuel de 43651.57 68840.28 0.00 
+  Static29 Stationary.Opel_Blitz_fuel de 44952.95 69402.40 0.00 
+  Static30 Stationary.Opel_Blitz_fuel de 44791.48 71190.98 0.00 
+  Static31 Stationary.Opel_Blitz_fuel de 27289.40 72753.10 0.00 
+  Static32 Stationary.Opel_Blitz_fuel de 27451.54 72164.89 0.00 
+  Static33 Stationary.Opel_Blitz_fuel de 27975.79 72167.19 0.00 
+  Static34 Stationary.Opel_Blitz_fuel de 27674.76 73096.56 0.00 
+  Static35 Stationary.Opel_Blitz_fuel de 28210.14 73052.05 0.00 
+  Static36 Stationary.Opel_Blitz_fuel de 28518.67 72563.29 0.00 
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
@@ -28,27 +65,28 @@
   airdrome5 46220.57 238967.40 1 1000 700 1
   airdrome6 72492.02 193966.50 1 650 700 1
   airdrome3 76356.55 180166.94 1 1000 700 0
+  airdrome7 27843.55 72562.48 2 1000 700 0
 [airdrome0_Runways]
-  60620.23 228182.03 195.00 1300.00 65.00 0
+  60515.09 228151.67 195.00 1300.00 65.00 0
   60701.36 228212.03 85.00 1000.00 40.00 0
 [airdrome0_Points]
-  60865.16 228415.99 15 13 11 9 7 5 3 1
-  61007.66 228184.65 2
-  61019.08 228167.97
-  60855.09 228146.39 4
-  60861.16 228118.07
-  61021.99 228195.72 6
-  61038.15 228180.44
-  60958.33 228174.42 8
-  60965.35 228150.37
-  60928.47 228167.40 10
-  60936.19 228141.06
-  60900.08 228160.56 12
-  60907.25 228133.06
-  60872.21 228152.74 14
-  60878.63 228125.11
-  60843.81 228143.99 16
-  60849.38 228112.55
+  60859.54 228522.82 15 13 11 9 7 5 3 1
+  60997.27 228189.44 2
+  61009.27 228164.61
+  60842.54 228135.42 4
+  60854.14 228102.00
+  61031.78 228211.11 6
+  61046.85 228179.86
+  60962.56 228180.06 8
+  60970.99 228151.78
+  60930.71 228174.11 10
+  60943.25 228141.06
+  60902.90 228161.97 12
+  60914.31 228130.24
+  60870.80 228147.10 14
+  60884.27 228115.23
+  60801.44 228124.45 16
+  60812.69 228088.73
 [airdrome1_Runways]
   157335.74 57904.63 765.00 1200.00 95.00 0
 [airdrome1_Points]
@@ -62,7 +100,15 @@
   157563.09 57832.19
   157513.79 57967.77 9
   157628.28 57908.90
-  157614.45 58047.88 11
+  28097.91 72768.70 11
+  27907.70 72732.47 12
+  27945.74 72723.41 13
+  27960.24 72743.34 14
+  27949.37 72746.96 15
+  27949.37 72746.96 16
+  27949.37 72746.96 17
+  28106.97 72783.19 18
+  157614.45 58047.88 19
   157682.24 58008.85
 [airdrome2_Runways]
   28651.79 226207.10 20.00 1000.00 40.00 0
@@ -142,6 +188,10 @@
   76744.13 179943.49
   76650.34 179898.04 12
   76665.17 179957.12
+[airdrome7_Runways]
+  27909.64 72638.48 20.00 900.00 40.00 0
+[airdrome7_Points]
+  27526.85 72767.35
 [FrontMarker]
   FrontMarker0 349056.00 312576.00 2
   FrontMarker1 316416.00 277632.00 2
@@ -172,14 +222,17 @@
   Aircraft.Bf-110C-2
   Aircraft.Bf-109E-3
   Aircraft.Bf-109E-4
+  Aircraft.He-111P-2
 [BirthPlace1]
+  Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI 
   Aircraft.BlenheimMkIV
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
 [BirthPlace2]
-  Aircraft.SpitfireMkIIa
   Aircraft.BlenheimMkIV
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
@@ -198,62 +251,82 @@
   Aircraft.HurricaneMkI_100oct
 [BirthPlace5]
   Aircraft.SpitfireMkIIa
-  Aircraft.SpitfireMkI
   Aircraft.BlenheimMkIV
-  Aircraft.DH82A
+  Aircraft.SpitfireMkIa
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.Ju-88A-1
 [BirthPlace6]
-  Aircraft.Bf-110C-4-NJG
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.He-111P-2  
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1 
   Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-7Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Bf-110C-4N-DeRated
-  Aircraft.Ju-88A-1
-  Aircraft.G50
-  Aircraft.Bf-110C-7Late
-  Aircraft.Bf-109E-1
-  Aircraft.Bf-109E-1B
-  Aircraft.He-111P-2
-  Aircraft.Bf-110C-2
-  Aircraft.He-111H-2
-  Aircraft.Bf-109E-3
   Aircraft.BR-20M
-  Aircraft.Ju-87B-2
-  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-4B  
+  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-109E-4N
-  Aircraft.Bf-109E-4B
+  Aircraft.BlenheimMkIV 
 [BirthPlace7]
-  Aircraft.Bf-110C-4-NJG
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.He-111P-2  
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1 
   Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-7Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Bf-110C-4N-DeRated
-  Aircraft.Ju-88A-1
-  Aircraft.G50
-  Aircraft.Bf-110C-7Late
-  Aircraft.Bf-109E-1
-  Aircraft.Bf-109E-1B
-  Aircraft.He-111P-2
-  Aircraft.Bf-110C-2
-  Aircraft.He-111H-2
-  Aircraft.Bf-109E-3
   Aircraft.BR-20M
-  Aircraft.Ju-87B-2
-  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-4B  
+  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-109E-4N
-  Aircraft.Bf-109E-4B
 [BirthPlace8]
   Aircraft.SpitfireMkIIa
   Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
 [BirthPlace9]
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkI

@@ -1,10 +1,10 @@
-//$reference parts/core/Strategy.dll
+﻿//$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //The two $references above + perhaps the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 ///$reference parts/core/MySql.Data.dll  //THIS DOESN'T SEEM TO WORK
 ///$reference parts/core/System.Data.dll //THIS DOESN'T SEEM TO WORK
 
-// v.1_18_00. script by oreva, zaltys, small_bee, bhugh, fatal_error, several other contributors/online code snippets & examples
+// v.1_18_00. script by oreva, zaltys, small_bee, bhugh, flug, fatal_error, several other contributors/online code snippets & examples
 
 using System;
 using System.Collections;
@@ -77,7 +77,8 @@ public class Mission : AMission
         int randRedTickFighterRaid8;
         int randRedTickFighterRaid9;
         int randRedTickFighterRaid10;
-		int randRedTickFighterRaid11;
+        int randRedTickFighterRaid11;
+
         Stopwatch stopwatch;
         Dictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
     //Constructor
@@ -85,13 +86,13 @@ public class Mission : AMission
         random = new Random();
         //constants = new Constants();
         respawn_on=true;
-         MISSION_ID = "M001";
+         MISSION_ID = "M002";
          DEBUG = false;
          LOG = true;
          
          USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
          CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover - MOD/";  // DO NOT CHANGE
-         FILE_PATH = @"missions/Multi/Fatal";   // mission install directory (CHANGE AS NEEDED)
+         FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/";   // mission install directory (CHANGE AS NEEDED)          
          MESSAGE_FILE_NAME = MISSION_ID + @"_message_log.txt";
          MESSAGE_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + MESSAGE_FILE_NAME;
          STATS_FILE_NAME = MISSION_ID + @"_stats_log.txt";
@@ -148,16 +149,16 @@ public class Mission : AMission
         //GamePlay.gpLogServer(null, "Mission class initiated.", new object[] { });
         
         randRedTickFighterRaid1 = random.Next((int)(endsessiontick*2/90),(int)(endsessiontick*6/90)); //spawn a fighter raid in between minutes 1 & 5 of 90
-        randRedTickFighterRaid2 = random.Next((int)(endsessiontick*13/90),(int)(endsessiontick*17/90)); //spawn a fighter raid in between minutes 54 & 64 of 90
-        randRedTickFighterRaid3 = random.Next((int)(endsessiontick*23/90),(int)(endsessiontick*28/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid4 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*37/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid5 = random.Next((int)(endsessiontick*43/90),(int)(endsessiontick*48/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid6 = random.Next((int)(endsessiontick*52/90),(int)(endsessiontick*59/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid7 = random.Next((int)(endsessiontick*62/90),(int)(endsessiontick*69/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid8 = random.Next((int)(endsessiontick*73/90),(int)(endsessiontick*78/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid9 = random.Next((int)(endsessiontick*79/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid10 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid11 = random.Next((int)(endsessiontick*17/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid2 = random.Next((int)(endsessiontick*13/90),(int)(endsessiontick*17/90)); //spawn a fighter raid in between minutes 13 & 17 of 90
+        randRedTickFighterRaid3 = random.Next((int)(endsessiontick*23/90),(int)(endsessiontick*28/90)); //spawn a fighter raid in between minutes 23 & 65 of 90
+        randRedTickFighterRaid4 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*37/90)); //spawn a fighter raid in between minutes 33 & 65 of 90
+        randRedTickFighterRaid5 = random.Next((int)(endsessiontick*43/90),(int)(endsessiontick*48/90)); //spawn a fighter raid in between minutes 43 & 65 of 90
+        randRedTickFighterRaid6 = random.Next((int)(endsessiontick*52/90),(int)(endsessiontick*59/90)); //spawn a fighter raid in between minutes 52 & 65 of 90
+        randRedTickFighterRaid7 = random.Next((int)(endsessiontick*62/90),(int)(endsessiontick*69/90)); //spawn a fighter raid in between minutes 62 & 65 of 90
+        randRedTickFighterRaid8 = random.Next((int)(endsessiontick*73/90),(int)(endsessiontick*78/90)); //spawn a fighter raid in between minutes 73 & 65 of 90
+        randRedTickFighterRaid9 = random.Next((int)(endsessiontick*79/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 79 & 65 of 90
+        randRedTickFighterRaid10 = random.Next((int)(endsessiontick*23/90),(int)(endsessiontick*29/90)); //spawn a fighter raid in between minutes 23 & 33 of 90
+        randRedTickFighterRaid11 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*43/90)); //spawn a fighter raid in between minutes 33 & 43 of 90
 		
         stopwatch = Stopwatch.StartNew();
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string,string>>> ();
@@ -242,7 +243,7 @@ public override void OnTickGame()
          int timeleftminutes=Convert.ToInt32(((double)timelefttick/(double)ticksperminute));
          int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK- tickSinceStarted) /(double)ticksperminute);
          if ( missiontimeleftminutes > 1 ) {
-             string msg = missiontimeleftminutes.ToString() + " min. left in mission  " + MISSION_ID;
+             string msg = missiontimeleftminutes.ToString() + " min. left in mission " + MISSION_ID;
              if (!MISSION_STARTED) msg = "Mission not yet started - waiting for first player to enter.";
              GamePlay.gpLogServer(null, msg , new object[] { });
              GamePlay.gpHUDLogCenter(msg);
@@ -319,7 +320,7 @@ public override void OnTickGame()
     
     
     //Load the major RED fighter raids approx every 20 minutes
-    if ( currSessTick == randRedTickFighterRaid1 || currSessTick == randRedTickFighterRaid2 || currSessTick == randRedTickFighterRaid3 || currSessTick == randRedTickFighterRaid4|| currSessTick == randRedTickFighterRaid5 || currSessTick == randRedTickFighterRaid6 || currSessTick == randRedTickFighterRaid7 || currSessTick == randRedTickFighterRaid8 || currSessTick == randRedTickFighterRaid9 || currSessTick == randRedTickFighterRaid6 )    
+    if ( currSessTick == randRedTickFighterRaid1 || currSessTick == randRedTickFighterRaid2 || currSessTick == randRedTickFighterRaid3 || currSessTick == randRedTickFighterRaid4|| currSessTick == randRedTickFighterRaid5 || currSessTick == randRedTickFighterRaid6 || currSessTick == randRedTickFighterRaid7 || currSessTick == randRedTickFighterRaid8 || currSessTick == randRedTickFighterRaid9 || currSessTick == randRedTickFighterRaid10 || currSessTick == randRedTickFighterRaid11 )   
     {                      
         LoadRandomSubmission (MISSION_ID + "-" + "randsubmissionREDaircover"); // load sub-mission            
         
@@ -475,11 +476,15 @@ public override void OnTickGame()
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); };
         }
-           
+   
+   public void logMessage(object data)
+        {          
+            logToFile (data, MESSAGE_FULL_PATH); 
+        }
+        
    public void logStats(object data)
         {          
-            logToFile (data, STATS_FULL_PATH);
-            Console.WriteLine("Logging stats to " + STATS_FILE_NAME);
+            logToFile (data, STATS_FULL_PATH); 
         }
 
    public void DebugAndLog(object data)
@@ -1417,7 +1422,7 @@ public override void OnTickGame()
     
                    GamePlay.gpPostMissionLoad(s);
                 
-                //string s2=@"C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\missions\Multi\Fatal\TWC Worthydown Southeast-initsubmission-stationary.mis";
+                //string s2=@"C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\missions\Multi\Fatal\TWC-initsubmission-stationary.mis";
                 //GamePlay.gpPostMissionLoad(s2);
                 //if (DEBUG)
                 //{

@@ -1,0 +1,71 @@
+﻿[Army Red]
+<Name>
+Army Red
+<Description>
+Take off from France and destroy the enemy!
+You have re-supply bases available at over 90% of ATAG's map of central France.Spawn in again with a new aircraft as an approximation of R&R.)
+
+Repel the bomber attacks at Le Harve Save the Dam also as it is a target for the enemy.  Raids will be coming to Rouen Boos and enemy attacks at every airfield on the map. Our most vital role is to protect the fuel and shipping located near Leharve and sailing up the coast to dieppe.
+
+Be aware, because there are some real hot pilots coming after you!
+
+Blenny Pilots destroy targets at Le Trouque and fuel supplies at Arras any ship in a harbor along with fuel storage and invasion barges!!
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+
+
+Mission length: 90 minutes.
+<Slide>
+../../screenshots/screenshot1.jpg
+<Caption>
+[Army Blue]
+<Name>
+Army Blue
+<Description>
+Take off from most bases north of the Somme river.  Your mission is to destroy the airport at enemyfighters and to harrass the enemy in any way possible.
+
+Squadrons of bombers will be attacking these targets, Flak will be fierce and enemy aircraft will be attacking the bomber squadrons.  Defend your bomber squadrons or run your own bombing missions on these important targets.
+
+Many Targets exist for the Bomber boys precious tankers, for example. The ships and fuel storage at the Leharve as well as the dam,fuel at Rouen Boos are the most strategic.
+
+Also a raid is headed to Arras.  See if you can stop it. Good luck!
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+
+Mission length: 90 minutes.
+<Slide>
+../../screenshots/shot_20141127_095901.bmp
+<Caption>
+AA works to defend your base also

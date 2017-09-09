@@ -1,0 +1,320 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 7
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  0_Chief Vehicle.GER_Fuel_Column 7_PD_1940_var2 
+  1_Chief Armor.Pz_38t de /num_units 2
+  2_Chief Train.BR56-00_c4 de 
+  3_Chief Train.C_Class_0-6-0_5x13TFlat de 
+  4_Chief Train.BR56-00_c2 de 
+[0_Chief_Road]
+  171493.53 47397.69 38.40  0 2 1.00
+  171623.19 47483.06 38.40  0 2 1.00
+  171710.61 47508.18 38.40  0 2 1.00
+  171778.80 47479.31 38.40  0 2 1.00
+  171836.83 47469.46 38.40  0 2 1.00
+  171971.03 47463.92 38.40  0 2 1.00
+  172118.56 47439.52 38.40  0 2 1.00
+  172246.11 47405.13 38.40  0 2 1.00
+  172432.45 47402.91 38.40  0 2 1.00
+  172502.34 47470.57 38.40  0 2 1.00
+  172633.22 47577.05 38.40  0 2 1.00
+  172792.95 47679.10 38.40  0 2 1.00
+  173327.56 48097.84 38.40  0 2 1.00
+  173551.73 48206.55 38.40  0 2 1.00
+  173625.75 48159.80 38.40  0 2 1.00
+  173748.45 48152.02 38.40  0 2 1.00
+  173849.73 48226.03 38.40  0 2 1.00
+  173917.91 48362.37 38.40  0 2 1.00
+  174108.78 48463.65 38.40  0 2 1.00
+  174319.13 48537.66 38.40  0 2 1.00
+  174402.88 48687.64 38.40  0 2 1.00
+  174533.38 48796.71 38.40  0 2 1.00
+  174741.55 48880.35 38.40  0 2 1.00
+  174788.91 48641.69 38.40  0 2 1.00
+  174961.58 48289.46 38.40  0 2 1.00
+  175391.97 48099.94 38.40  0 2 1.00
+  175580.06 48202.29 38.40  0 2 1.00
+  175721.30 48133.22 38.40  0 2 1.00
+  175883.95 48190.36 38.40  0 2 1.00
+  176000.38 48389.70 38.40  0 2 1.00
+  176194.58 48471.12 38.40  0 2 1.00
+  176288.45 48496.01 38.40  0 2 1.00
+  176481.59 48530.08 38.40  0 2 1.00
+  176452.78 48685.58 38.40  0 2 1.00
+  176615.25 48810.77 38.40  0 2 1.00
+  176799.03 48869.36 38.40  0 2 1.00
+  177116.00 48983.89 38.40  0 2 1.00
+  177289.13 49093.10 38.40  0 2 1.00
+  177558.14 49348.79 38.40  0 2 1.00
+  177678.00 49479.30 38.40  0 2 1.00
+  177829.81 49551.22 38.40  0 2 1.00
+  177957.67 49564.54 38.40
+[1_Chief_Road]
+  171474.11 47383.43 38.40  0 2 4.17
+  171597.73 47480.18 38.40  0 2 2.08
+  171720.00 47516.45 38.40  0 2 2.08
+  171939.02 47455.99 38.40  0 2 2.08
+  172219.84 47427.77 38.40  0 2 2.08
+  172420.05 47388.80 38.40  0 2 2.08
+  172589.34 47519.14 38.40  0 2 2.08
+  172989.77 47818.78 38.40  0 2 2.08
+  173462.72 48180.22 38.40  0 2 2.08
+  173619.94 48180.22 38.40  0 2 2.08
+  173798.64 48150.66 38.40  0 2 2.08
+  173969.28 48348.18 38.40  0 2 2.08
+  174407.31 48565.85 38.40  0 2 2.08
+  174553.78 48768.74 38.40  0 2 2.08
+  174733.83 48849.36 38.40
+[2_Chief_Road]
+  S 401 3 0.10 5.00 P 160449.59 53284.60  0 2 11.11
+  S 401 3 0.30 5.00 P 160594.02 53332.70
+[3_Chief_Road]
+  S 2671 6 0.10 5.00 P 160449.95 53320.33  0 2 11.11
+  S 2671 5 0.15 5.00 P 160560.00 53342.62
+[4_Chief_Road]
+  S 395 65 0.08 5.00 P 187589.84 37819.31  0 10 11.11
+  S 395 57 0.00 -196.00 P 184378.38 38704.25
+  S 395 56 0.00 -196.00 P 184169.16 38713.02
+  S 395 31 0.00 -194.00 P 174376.02 36244.98
+  S 395 30 0.00 -194.00 P 174172.34 36293.59
+  S 395 22 0.00 -193.00 P 172379.56 39382.68
+  S 395 21 0.00 -193.00 P 172355.00 39590.63
+  S 395 6 0.00 -242.00 P 170556.36 43613.84
+  S 395 5 0.00 -242.00 P 170352.61 43565.48
+  S 395 0 0.05 5.00 P 168287.27 44828.58
+[Stationary]
+  Static112 Artillery.20_mm_Flak_38 de 171700.91 46132.94 989.10 /timeout 0/radius_hide 0/hstart 20
+  Static157 Artillery.20_mm_Flak_38 de 171814.98 47114.14 989.10 /timeout 0/radius_hide 0/hstart 20
+  Static167 Artillery.20_mm_Flak_38 de 177723.28 49527.25 989.10 /timeout 0/radius_hide 0/hstart 20
+  Static165 Stationary.Environment.FuelDrum_UK1_9 de 177966.00 49575.40 140.00 /hstart 10
+  Static166 Artillery.20_mm_Flak_38 de 177869.77 49660.42 989.10 /timeout 0/radius_hide 0/hstart 20
+  Static204 Stationary.Environment.FuelDrum_UK1_9 de 160067.14 50490.65 140.00 
+  Static201 Stationary.Environment.FuelDrum_UK1_9 de 160064.42 50494.66 140.00 
+  Static203 Stationary.Environment.FuelDrum_UK1_9 de 160068.92 50493.59 140.00 
+  Static206 Stationary.Environment.FuelDrum_UK1_9 de 160075.66 50489.72 140.00 
+  Static202 Stationary.Environment.FuelDrum_UK1_9 de 160070.14 50495.80 140.00 
+  Static205 Stationary.Environment.FuelDrum_UK1_9 de 160073.28 50492.30 140.00 
+  Static200 Stationary.Environment.FuelDrum_UK1_9 de 160066.92 50498.30 140.00 
+  Static186 Stationary.Environment.FuelDrum_UK1_9 de 160565.30 50981.06 140.00 
+  Static185 Stationary.Environment.FuelDrum_UK1_9 de 160566.66 50984.85 140.00 
+  Static183 Stationary.Environment.FuelDrum_UK1_9 de 160564.80 50987.14 140.00 
+  Static187 Stationary.Environment.FuelDrum_UK1_9 de 160570.02 50981.99 140.00 
+  Static184 Stationary.Environment.FuelDrum_UK1_9 de 160570.66 50985.14 140.00 
+  Static182 Stationary.Environment.FuelDrum_UK1_9 de 160567.30 50990.14 140.00 
+  Static189 Stationary.Environment.FuelDrum_UK1_9 de 160570.38 50988.36 140.00 
+  Static188 Stationary.Environment.FuelDrum_UK1_9 de 160573.38 50986.07 140.00 
+  Static178 Stationary.Environment.FuelDrum_UK1_9 de 160671.33 51015.24 140.00 
+  Static179 Stationary.Environment.FuelDrum_UK1_9 de 160676.27 51014.75 140.00 
+  Static175 Stationary.Environment.FuelDrum_UK1_9 de 160672.91 51020.11 140.00 
+  Static180 Stationary.Environment.FuelDrum_UK1_9 de 160675.13 51018.04 140.00 
+  Static181 Stationary.Environment.FuelDrum_UK1_9 de 160672.63 51023.04 140.00 
+  Static176 Stationary.Environment.FuelDrum_UK1_9 de 160679.13 51017.60 140.00 
+  Static177 Stationary.Environment.FuelDrum_UK1_9 de 160677.77 51021.61 140.00 
+  Static174 Stationary.Environment.FuelDrum_UK1_9 de 160677.63 51025.96 140.00 
+  Static198 Stationary.Environment.FuelDrum_UK1_9 de 160664.14 51104.68 140.00 
+  Static194 Stationary.Environment.FuelDrum_UK1_9 de 160662.94 51110.62 140.00 
+  Static197 Stationary.Environment.FuelDrum_UK1_9 de 160669.02 51105.64 140.00 
+  Static195 Stationary.Environment.FuelDrum_UK1_9 de 160668.05 51108.66 140.00 
+  Static193 Stationary.Environment.FuelDrum_UK1_9 de 160666.69 51110.81 140.00 
+  Static196 Stationary.Environment.FuelDrum_UK1_9 de 160670.78 51107.95 140.00 
+  Static190 Stationary.Environment.FuelDrum_UK1_9 de 160662.50 51115.21 140.00 
+  Static191 Stationary.Environment.FuelDrum_UK1_9 de 160664.41 51114.92 140.00 
+  Static192 Stationary.Environment.FuelDrum_UK1_9 de 160668.28 51112.87 140.00 
+  Static199 Stationary.Environment.FuelDrum_UK1_9 de 160671.61 51111.05 140.00 
+  Static110 Stationary.Opel_Blitz_cargo de 160101.41 51181.23 205.00 
+  Static161 Stationary.Environment.FuelDrum_UK1_9 de 160107.73 51197.43 140.00 
+  Static162 Stationary.Environment.FuelDrum_UK1_9 de 160115.50 51194.39 140.00 
+  Static163 Stationary.Environment.FuelDrum_UK1_9 de 160127.41 51189.32 140.00 
+  Static164 Stationary.Environment.FuelDrum_UK1_9 de 160138.89 51186.96 140.00 
+  Static173 Stationary.Environment.FuelDrum_UK1_9 de 160166.61 51184.62 140.00 
+  Static107 Stationary.Kubelwagen de 160170.44 51182.87 295.00 
+  Static168 Stationary.Environment.FuelDrum_UK1_9 de 160172.48 51180.64 140.00 
+  Static172 Stationary.Environment.FuelDrum_UK1_9 de 160198.59 51177.46 140.00 
+  Static169 Stationary.Environment.FuelDrum_UK1_9 de 160204.47 51178.08 140.00 
+  Static170 Stationary.Environment.FuelDrum_UK1_9 de 160093.67 51207.25 140.00 
+  Static171 Stationary.Environment.FuelDrum_UK1_9 de 160106.97 51201.96 140.00 
+  Static109 ShipUnit.Tanker_Medium1 de 158217.61 51749.79 50.00 /sleep 0/skill 2/slowfire 1
+  Static98 ShipUnit.Minensuchboote de 158039.02 51847.23 45.00 /sleep 0/skill 2/slowfire 1
+  Static87 Stationary.Morris_CS8-Bedford_MW_CargoAmmo1 de 158453.59 51853.87 0.00 
+  Static90 Stationary.Morris_CS8-Bedford_MW_CargoAmmo1 de 158460.66 51849.53 0.00 
+  Static89 Stationary.Morris_CS8-Bedford_MW_CargoAmmo1 de 158467.97 51847.71 0.00 
+  Static88 Stationary.Morris_CS8-Bedford_MW_CargoAmmo1 de 158475.86 51842.24 0.00 
+  Static91 Stationary.Truck_SdKfz_9_GER1_Transport de 158475.23 51862.45 0.00 
+  Static101 ShipUnit.MotorBarge_Large1 de 158204.98 51962.48 90.00 /sleep 0/skill 2/slowfire 1
+  Static102 ShipUnit.MotorBarge_Large1 de 158235.67 51961.96 90.00 /sleep 0/skill 2/slowfire 1
+  Static100 ShipUnit.MotorBarge_Large1 de 158258.91 51962.62 90.00 /sleep 0/skill 2/slowfire 1
+  Static94 Artillery.Bofors_StandAlone de 158412.66 51954.58 0.00 /timeout 0/radius_hide 0
+  Static103 ShipUnit.MotorBarge_Large1 de 158185.30 52025.31 90.00 /sleep 0/skill 2/slowfire 1
+  Static99 ShipUnit.MotorBarge_Large1 de 158268.52 52011.57 90.00 /sleep 0/skill 2/slowfire 1
+  Static108 ShipUnit.Tanker_Medium1 de 158550.77 52011.48 10.00 /sleep 0/skill 2/slowfire 1
+  Static105 ShipUnit.MotorBarge_Large1 de 158210.73 52045.63 90.00 /sleep 0/skill 2/slowfire 1
+  Static104 ShipUnit.MotorBarge_Large1 de 158243.64 52044.26 90.00 /sleep 0/skill 2/slowfire 1
+  Static97 Artillery.Bofors de 158271.08 52211.30 0.00 /timeout 0/radius_hide 0
+  Static93 Artillery.Bofors_StandAlone de 158710.83 52195.17 0.00 /timeout 0/radius_hide 0
+  Static96 Artillery.Bofors de 158356.70 52233.35 0.00 /timeout 0/radius_hide 0
+  Static95 Artillery.Bofors_StandAlone de 158461.41 52280.58 0.00 /timeout 0/radius_hide 0
+  Static215 Stationary.Environment.TentZeltbahnBig_GER1 de 160537.64 53274.88 0.00 
+  Static214 Stationary.Environment.TentZeltbahnBig_GER1 de 160549.73 53274.88 0.00 
+  Static213 Stationary.Environment.TentZeltbahnBig_GER1 de 160562.38 53277.08 0.00 
+  Static211 Stationary.Environment.TentZeltbahnBig_GER1 de 160575.02 53278.73 0.00 
+  Static209 Stationary.Horch_108_Typ_1A_open de 160554.67 53310.62 0.00 
+  Static212 Stationary.Environment.TentZeltbahnBig_GER1 de 160584.36 53280.38 0.00 
+  Static210 Stationary.Environment.TentZeltbahnBig_GER1 de 160596.45 53278.73 0.00 
+  Static208 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 160565.67 53313.91 0.00 
+  Static207 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 160582.72 53317.21 0.00 
+  Static16 Artillery.20_mm_Flak_38 de 156906.34 57203.67 200.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Flak30_Shield de 156753.19 57240.80 200.00 /timeout 0/radius_hide 0
+  Static17 Artillery.20_mm_Flak_38 de 156544.61 57338.43 200.00 /timeout 0/radius_hide 0
+  Static18 Artillery.20_mm_Flak_38 de 158104.53 57927.40 200.00 /timeout 0/radius_hide 0
+  Static14 Artillery.20_mm_Flak_38 de 157983.06 58224.69 200.00 /timeout 0/radius_hide 0
+  Static13 Artillery.20_mm_Flak_38 de 157054.86 58368.56 200.00 /timeout 0/radius_hide 0
+  Static15 Artillery.20_mm_Flak_38 de 157904.16 58461.38 200.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak30_Shield de 157091.98 58721.27 200.00 /timeout 0/radius_hide 0
+  Static124 Artillery.Bofors_StandAlone de 32732.26 70182.51 1105.00 /timeout 0/radius_hide 0
+  Static116 ShipUnit.MotorBarge_Large1 de 33936.23 70164.41 1080.00 /sleep 0/skill 2/slowfire 1
+  Static123 Artillery.Flak37 de 32757.20 70213.88 1105.00 /timeout 0/radius_hide 0
+  Static122 Artillery.Flak37 de 32761.51 70240.73 1105.00 /timeout 0/radius_hide 0
+  Static121 Artillery.Flak37 de 32765.65 70268.70 1105.00 /timeout 0/radius_hide 0
+  Static126 Artillery.Bofors de 33125.97 70274.16 1105.00 /timeout 0/radius_hide 0
+  Static118 ShipUnit.MotorBarge_Large1 de 33619.26 70280.02 1080.00 /sleep 0/skill 2/slowfire 1
+  Static125 Artillery.Bofors_StandAlone de 33566.02 70348.34 1105.00 /timeout 0/radius_hide 0
+  Static117 ShipUnit.MotorBarge_Large1 de 33603.16 70450.21 1080.00 /sleep 0/skill 2/slowfire 1
+  Static115 ShipUnit.MotorBarge_Large1 de 33559.87 70503.46 1080.00 /sleep 0/skill 2/slowfire 1
+  Static114 ShipUnit.MotorBarge_Large1 de 32581.26 70714.19 989.10 /sleep 0/skill 2/slowfire 1
+  Static128 Artillery.Bofors de 43116.87 70833.54 1105.00 /timeout 0/radius_hide 0
+  Static129 Artillery.Bofors de 44512.32 70896.97 1105.00 /timeout 0/radius_hide 0
+  Static119 ShipUnit.Tanker_Medium1 de 33521.35 71276.98 1325.00 /sleep 0/skill 2/slowfire 1
+  Static113 ShipUnit.MotorBarge_Large1 de 35038.79 72535.94 989.10 /sleep 0/skill 2/slowfire 1
+  Static44 Artillery.Bofors_StandAlone gb 69530.48 170699.41 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.Bofors gb 69698.65 170777.03 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.Bofors gb 70035.01 170880.52 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Bofors gb 70280.80 170919.33 0.00 /timeout 0/radius_hide 0
+  Static27 Stationary.Radar.EnglishRadar2 gb 70032.23 171145.58 0.00 
+  Static26 Stationary.Radar.EnglishRadar2 gb 70347.66 171726.53 0.00 
+  Static25 Stationary.Radar.EnglishRadar2 gb 70435.20 171744.09 0.00 
+  Static38 Artillery.Bofors gb 70681.84 172665.78 0.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Bofors_StandAlone gb 70397.23 173015.06 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Bofors gb 70280.80 173170.31 0.00 /timeout 0/radius_hide 0
+  Static40 Artillery.Bofors gb 71341.61 176805.50 0.00 /timeout 0/radius_hide 0
+  Static41 Artillery.Bofors gb 71082.88 176883.13 0.00 /timeout 0/radius_hide 0
+  Static43 Artillery.Bofors_StandAlone gb 72014.31 176947.81 0.00 /timeout 0/radius_hide 0
+  Static42 Artillery.Bofors_StandAlone gb 71005.26 177322.97 0.00 /timeout 0/radius_hide 0
+  Static83 Artillery.Bofors gb 67663.96 179338.55 135.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Bofors gb 76542.14 179561.02 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Bofors gb 76231.66 179599.83 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Bofors gb 76852.63 179599.83 0.00 /timeout 0/radius_hide 0
+  Static46 Artillery.Bofors_StandAlone gb 75377.84 179987.92 0.00 /timeout 0/radius_hide 0
+  Static23 Stationary.BeaufighterMkIF gb 76759.80 180227.91 0.00 
+  Static145 Artillery.Bofors_StandAlone gb 77276.04 180316.58 0.00 /timeout 0/radius_hide 0
+  Static22 Stationary.BeaufighterMkIF gb 76865.56 180389.48 0.00 
+  Static139 Stationary.Industrial.Oxygen_Facility gb 77116.14 180458.00 -20.00 
+  Static21 Stationary.BeaufighterMkIF gb 76984.05 180525.61 0.00 
+  Static34 Artillery.Bofors gb 77266.59 180518.33 0.00 /timeout 0/radius_hide 0
+  Static24 Stationary.BeaufighterMkIF gb 77078.07 180548.13 0.00 
+  Static47 Artillery.Bofors_StandAlone gb 75882.38 180621.81 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Bofors gb 76800.88 180634.75 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Bofors gb 77072.55 180712.38 0.00 /timeout 0/radius_hide 0
+  Static147 Artillery.Bofors_StandAlone gb 75944.00 180798.36 0.00 /timeout 0/radius_hide 0
+  Static146 Artillery.Bofors_StandAlone gb 76493.78 180923.05 0.00 /timeout 0/radius_hide 0
+  Static48 Artillery.Bofors_StandAlone gb 74135.92 183519.63 0.00 /timeout 0/radius_hide 0
+  Static49 Artillery.Bofors_StandAlone gb 74601.64 183636.06 0.00 /timeout 0/radius_hide 0
+  Static65 Artillery.Bofors_StandAlone gb 99608.20 185692.98 0.00 /timeout 0/radius_hide 0
+  Static66 Artillery.Bofors_StandAlone gb 98586.20 186727.92 0.00 /timeout 0/radius_hide 0
+  Static59 Artillery.Bofors_StandAlone gb 77654.70 191423.92 0.00 /timeout 0/radius_hide 0
+  Static58 Artillery.Bofors_StandAlone gb 77344.21 191773.22 0.00 /timeout 0/radius_hide 0
+  Static57 Artillery.Bofors_StandAlone gb 77176.04 192057.83 0.00 /timeout 0/radius_hide 0
+  Static84 Artillery.Bofors gb 72044.33 193461.44 135.00 /timeout 0/radius_hide 0
+  Static127 Stationary.Environment.FuelDrum_UK1_9 nn 76784.21 193501.34 140.00 
+  Static120 Stationary.Environment.FuelDrum_UK1_9 nn 76788.24 193518.19 140.00 
+  Static111 Stationary.Environment.FuelDrum_UK1_9 nn 76792.66 193532.61 140.00 
+  Static142 Artillery.Bofors_StandAlone gb 72825.96 193569.03 0.00 /timeout 0/radius_hide 0
+  Static50 Artillery.Bofors_StandAlone gb 72117.80 193661.97 0.00 /timeout 0/radius_hide 0
+  Static130 Stationary.Environment.FuelDrum_UK1_9 nn 76654.96 193544.27 140.00 
+  Static149 Stationary.Environment.FuelDrum_UK1_9 nn 76656.86 193544.39 140.00 
+  Static148 Stationary.Environment.FuelDrum_UK1_9 nn 76656.15 193545.58 140.00 
+  Static151 Stationary.Environment.FuelDrum_UK1_9 nn 76656.98 193546.64 140.00 
+  Static150 Stationary.Environment.FuelDrum_UK1_9 nn 76658.99 193545.70 140.00 
+  Static106 Stationary.Environment.FuelDrum_UK1_9 nn 76795.20 193549.94 140.00 
+  Static141 Artillery.Bofors_StandAlone gb 73033.20 193924.30 0.00 /timeout 0/radius_hide 0
+  Static154 Stationary.Environment.FuelDrum_UK1_9 nn 77239.82 193978.94 140.00 
+  Static144 Artillery.Bofors_StandAlone gb 71837.87 194057.53 0.00 /timeout 0/radius_hide 0
+  Static155 Stationary.Environment.FuelDrum_UK1_9 nn 77259.05 194003.56 140.00 
+  Static156 Stationary.Environment.FuelDrum_UK1_9 nn 77303.22 194020.08 140.00 
+  Static152 Stationary.Environment.FuelDrum_UK1_9 nn 77255.67 194081.13 140.00 
+  Static153 Stationary.Environment.FuelDrum_UK1_9 nn 77259.38 194079.09 140.00 
+  Static51 Artillery.Bofors_StandAlone gb 72907.00 194249.39 0.00 /timeout 0/radius_hide 0
+  Static92 Stationary.Environment.FuelDrum_UK1_9 nn 77555.75 194292.67 140.00 
+  Static158 Stationary.Environment.FuelDrum_UK1_9 nn 77580.81 194285.42 140.00 
+  Static159 Stationary.Environment.FuelDrum_UK1_9 nn 76730.20 194398.83 140.00 
+  Static140 Artillery.Bofors_StandAlone gb 74912.77 194493.34 0.00 /timeout 0/radius_hide 0
+  Static160 Stationary.Environment.FuelDrum_UK1_9 nn 76815.91 194497.08 140.00 
+  Static133 Stationary.Environment.FuelDrum_UK1_9 nn 77263.21 194548.78 140.00 
+  Static131 Stationary.Environment.FuelDrum_UK1_9 nn 77259.71 194552.63 140.00 
+  Static132 Stationary.Environment.FuelDrum_UK1_9 nn 77267.56 194550.33 140.00 
+  Static134 Stationary.Environment.FuelDrum_UK1_9 nn 77271.91 194547.77 140.00 
+  Static136 Stationary.Environment.FuelDrum_UK1_9 nn 77275.75 194544.95 140.00 
+  Static135 Stationary.Environment.FuelDrum_UK1_9 nn 77278.82 194547.52 140.00 
+  Static138 Stationary.Environment.FuelDrum_UK1_9 nn 77283.68 194542.39 140.00 
+  Static137 Stationary.Environment.FuelDrum_UK1_9 nn 77287.01 194545.97 140.00 
+  Static52 Artillery.Bofors_StandAlone gb 68844.84 195266.11 0.00 /timeout 0/radius_hide 0
+  Static60 Artillery.Bofors_StandAlone gb 80539.57 195175.55 0.00 /timeout 0/radius_hide 0
+  Static56 Artillery.Bofors_StandAlone gb 77345.32 195282.91 0.00 /timeout 0/radius_hide 0
+  Static85 Artillery.Bofors gb 77120.46 195369.61 135.00 /timeout 0/radius_hide 0
+  Static71 Artillery.Bofors_StandAlone gb 112531.91 194942.69 0.00 /timeout 0/radius_hide 0
+  Static80 Artillery.Bofors gb 112984.70 194903.89 0.00 /timeout 0/radius_hide 0
+  Static55 Artillery.Bofors_StandAlone gb 77344.21 195524.84 0.00 /timeout 0/radius_hide 0
+  Static53 Artillery.Bofors_StandAlone gb 69478.73 195680.08 0.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Bofors_StandAlone gb 77227.78 195628.34 0.00 /timeout 0/radius_hide 0
+  Static72 Artillery.Bofors_StandAlone gb 113385.73 195188.48 0.00 /timeout 0/radius_hide 0
+  Static86 Artillery.Bofors gb 73805.39 195885.73 135.00 /timeout 0/radius_hide 0
+  Static73 Artillery.Bofors_StandAlone gb 114226.62 195317.86 0.00 /timeout 0/radius_hide 0
+  Static143 Artillery.Bofors_StandAlone gb 73642.08 196219.08 0.00 /timeout 0/radius_hide 0
+  Static76 Artillery.Bofors gb 112092.07 195654.20 0.00 /timeout 0/radius_hide 0
+  Static63 Artillery.Bofors_StandAlone gb 89918.64 196042.31 0.00 /timeout 0/radius_hide 0
+  Static77 Artillery.Bofors gb 113476.29 195900.00 0.00 /timeout 0/radius_hide 0
+  Static61 Artillery.Bofors_StandAlone gb 79737.49 196663.27 0.00 /timeout 0/radius_hide 0
+  Static78 Artillery.Bofors gb 112480.16 196249.30 0.00 /timeout 0/radius_hide 0
+  Static79 Artillery.Bofors gb 112480.16 196249.30 0.00 /timeout 0/radius_hide 0
+  Static74 Artillery.Bofors_StandAlone gb 111833.34 196326.92 0.00 /timeout 0/radius_hide 0
+  Static62 Artillery.Bofors_StandAlone gb 80500.76 196909.06 0.00 /timeout 0/radius_hide 0
+  Static64 Artillery.Bofors_StandAlone gb 89530.54 196870.25 0.00 /timeout 0/radius_hide 0
+  Static75 Artillery.Bofors gb 113062.31 196753.83 0.00 /timeout 0/radius_hide 0
+  Static82 Artillery.Bofors gb 133709.22 197995.75 0.00 /timeout 0/radius_hide 0
+  Static69 Artillery.Bofors_StandAlone gb 101496.95 198927.19 0.00 /timeout 0/radius_hide 0
+  Static67 Artillery.Bofors_StandAlone gb 103903.16 198927.19 0.00 /timeout 0/radius_hide 0
+  Static68 Artillery.Bofors_StandAlone gb 105170.95 199987.98 0.00 /timeout 0/radius_hide 0
+  Static70 Artillery.Bofors_StandAlone gb 101354.64 200479.58 0.00 /timeout 0/radius_hide 0
+  Static81 Artillery.Bofors gb 182040.22 202635.08 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Bofors gb 60893.35 227866.69 200.00 /timeout 0/radius_hide 0
+  Static28 Stationary.Environment.TentMedicLarge_UK1 gb 60979.98 227889.48 589.10 
+  Static7 Artillery.Bofors gb 60973.88 227918.70 200.00 /timeout 0/radius_hide 0
+  Static1 Stationary.Environment.Portable_Siren_UK1 gb 60986.94 227949.72 140.00 
+  Static6 Artillery.Bofors gb 59921.09 227989.80 200.00 /timeout 0/radius_hide 0
+  Static5 Stationary.BlenheimMkIV gb 61014.73 228048.77 160.00 
+  Static0 Stationary.Environment.Loudspeaker_UK1 nn 61029.50 228071.50 125.00 
+  Static4 Stationary.BlenheimMkIV gb 61024.19 228083.41 160.00 
+  Static11 Artillery.Bofors gb 59927.80 228119.64 200.00 /timeout 0/radius_hide 0
+  Static8 Stationary.BlenheimMkIV gb 61032.70 228112.97 160.00 
+  Static9 Artillery.Bofors gb 60455.30 228579.28 200.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors gb 60893.35 228671.83 200.00 /timeout 0/radius_hide 0
+  Static2 Stationary.HurricaneMkI_100oct-NF gb 60530.25 228678.02 -65.00 
+  Static3 Stationary.HurricaneMkI_100oct-NF gb 60581.48 228697.28 -65.00 
+[Buildings]
+[BuildingsLinks]

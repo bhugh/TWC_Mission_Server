@@ -155,7 +155,8 @@ public class Mission : AMission
     public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.myserver.com/mydirectory/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
     public string stb_LogStatsUploadUserName = "myFTPusername";  //FTP username
     public string stb_LogStatsUploadPassword = "myFTPpassword";  //FTP password
-    //IMPORTANT NOTE: Upload sorttable.js and Style.css to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
+    //IMPORTANT NOTE: Upload sorttable.js and Style.css and the ENTIRE CONTENTS of the 'res' subdirectory to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
+
 
 
     //FUNCTIONALITY RELATED CUSTOMIZATIONS
@@ -412,8 +413,8 @@ private void stb_loadINI(string file)
     public string stb_StatsWebPageTagLine = "<p>Visit <a href=\"http://twcclan.com\">TWCClan.com</a> for more information about TWC and the TWC Training Server.</p>"; //This is added at 3 points in the stats web page - allows you to link back to your main web page etc in a customizable way   
     public string stb_StatsWebPageLinksLine = "<p><i><b>Go to:</b> <a href=\"http://brenthugh.com/twc/mission-server-stats.htm\">Mission Server Stats</a> - <a href=\"http://brenthugh.com/twc/training-server-stats.htm\">Training Server Stats</a> - <a href=\"http://brenthugh.com/twc/practice-server-stats.htm\">Practice Server Stats</a> - <a href=\"http://brenthugh.com/twc/stats-archive.htm\">Older Stats Archive</a></i></p>";//This is added at 3 points in the stats web page & allows you to link to other mission stats pages you have or basically anything else you want to insert at these points. You'll have to use full http addresses for any links. Escape any need " characters with backslash, like \"
     public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.brenthugh.com/brenthugh.com/twc/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
-    public string stb_LogStatsUploadUserName = "mobikefed";  //FTP username
-    public string stb_LogStatsUploadPassword = "1Spoke$#$";  //FTP password
+    public string stb_LogStatsUploadUserName = "exampleusername";  //FTP username
+    public string stb_LogStatsUploadPassword = "examplepassword";  //FTP password
     //IMPORTANT NOTE: Upload sorttable.js and Style.css to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
 
     //FUNCTIONALITY RELATED CUSTOMIZATIONS

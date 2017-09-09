@@ -1,0 +1,160 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 14
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 7
+  ThermalActivity 7
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[splines]
+[CustomChiefs]
+[Chiefs]
+[Stationary]
+  Static8 Artillery.Breen_Carrier_Mk_I gb 294149.19 85079.67 -30.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Breen_Carrier_Mk_I gb 294029.38 85136.89 -30.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Cruiser_Mk_IV gb 294122.38 85163.36 -30.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Cruiser_Mk_IV gb 294198.25 85125.54 -30.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Breen_Carrier_Mk_I gb 293921.63 85184.30 -30.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Cruiser_Mk_IV gb 293924.41 85236.23 -30.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Cruiser_Mk_IV gb 294034.94 85193.93 -30.00 /timeout 0/radius_hide 0
+  Static0 Artillery.Flak37 de 299674.38 113226.53 -30.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 de 299719.50 113252.38 -30.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 299764.72 113286.48 -30.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 299822.81 113321.88 -30.00 /timeout 0/radius_hide 0
+  Static4 ShipUnit.Tanker_Medium1 de 270552.47 129654.70 -30.00 /sleep 0/skill 2/slowfire 1
+  Static5 ShipUnit.Tanker_Medium1 de 270083.75 130349.48 -30.00 /sleep 0/skill 2/slowfire 1
+[Buildings]
+  0_bld buildings.House$CastleStraightHighWall 1 172035.26 46942.43 0.00
+  1_bld buildings.House$CastleStraightHighWall 1 172035.05 46921.49 0.00
+  2_bld buildings.House$CastleStraightHighWall 1 172034.89 46901.00 0.00
+  3_bld buildings.House$CastleStraightHighWall 1 172034.85 46879.92 0.00
+  4_bld buildings.House$CastleStraightHighWall 1 172034.81 46859.37 0.00
+  5_bld buildings.House$CastleStraightHighWall 1 172034.64 46838.91 0.00
+  6_bld buildings.House$CastleStraightHighWall 1 172034.72 46818.57 0.00
+  7_bld buildings.House$CastleStraightHighWall 1 172034.83 46797.65 0.00
+  8_bld buildings.House$CastleStraightHighWall 1 172035.40 46295.36 0.00
+  9_bld buildings.House$CastleStraightHighWall 1 172035.38 46316.09 0.00
+  10_bld buildings.House$CastleStraightHighWall 1 172034.85 46776.75 0.00
+  11_bld buildings.House$CastleStraightHighWall 1 172034.86 46755.98 0.00
+  12_bld buildings.House$CastleStraightHighWall 1 172034.89 46734.98 0.00
+  13_bld buildings.House$CastleStraightHighWall 1 172035.01 46713.97 0.00
+  14_bld buildings.House$CastleStraightHighWall 1 172035.01 46692.98 0.00
+  15_bld buildings.House$CastleStraightHighWall 1 172035.01 46672.03 0.00
+  16_bld buildings.House$CastleStraightHighWall 1 172035.01 46651.10 0.00
+  17_bld buildings.House$CastleStraightHighWall 1 172035.01 46630.12 0.00
+  18_bld buildings.House$CastleStraightHighWall 1 172035.01 46609.18 0.00
+  19_bld buildings.House$CastleStraightHighWall 1 172035.01 46588.29 0.00
+  20_bld buildings.House$CastleStraightHighWall 1 172035.05 46567.30 0.00
+  21_bld buildings.House$CastleStraightHighWall 1 172035.10 46546.36 0.00
+  22_bld buildings.House$CastleStraightHighWall 1 172035.10 46525.42 0.00
+  23_bld buildings.House$CastleStraightHighWall 1 172035.10 46504.48 0.00
+  24_bld buildings.House$CastleStraightHighWall 1 172035.10 46483.59 0.00
+  25_bld buildings.House$CastleStraightHighWall 1 172035.10 46462.60 0.00
+  26_bld buildings.House$CastleStraightHighWall 1 172035.14 46441.66 0.00
+  27_bld buildings.House$CastleStraightHighWall 1 172035.23 46420.69 0.00
+  28_bld buildings.House$CastleStraightHighWall 1 172035.21 46399.83 0.00
+  29_bld buildings.House$CastleStraightHighWall 1 172035.28 46379.02 0.00
+  30_bld buildings.House$CastleStraightHighWall 1 172035.28 46358.06 0.00
+  31_bld buildings.House$CastleStraightHighWall 1 172035.36 46337.11 0.00
+  32_bld buildings.House$CastleStraightHighWall 1 172035.36 46274.46 0.00
+  33_bld buildings.House$Oil_Bunker-Big 1 172037.41 46587.68 4.00
+  34_bld buildings.House$Oil_Bunker-Big 1 172036.52 46613.53 4.00
+  35_bld buildings.House$Oil_Bunker-Big 1 159025.49 50743.35 0.00
+  36_bld buildings.House$Oil_Bunker-Big 1 159606.80 50588.98 0.00
+  37_bld buildings.House$Oil_Bunker-Big 1 159656.28 50577.44 0.00
+  38_bld buildings.House$Oil_Bunker-Big 1 159956.99 50535.10 0.00
+  39_bld buildings.House$Oil_Bunker-Big 1 160001.52 50557.09 0.00
+  40_bld buildings.House$Oil_Bunker-Big 1 160035.61 50519.71 0.00
+  41_bld buildings.House$Oil_Bunker-Big 1 172046.93 46629.47 0.00
+  42_bld buildings.House$Oil_Bunker-Big 1 172035.54 46637.64 0.00
+  43_bld buildings.House$Oil_Bunker-Big 1 172035.44 46666.60 0.00
+  44_bld buildings.House$Oil_Bunker-Small 1 172037.58 46596.80 0.00
+  45_bld buildings.House$Oil_Bunker-Big 1 229274.60 101282.10 -90.00
+  46_bld buildings.House$Oil_Bunker-Big 1 229263.60 101245.27 -90.00
+  47_bld buildings.House$Oil_Bunker-Big 1 229221.15 101258.89 -90.00
+  48_bld buildings.House$Oil_Bunker-Big 1 229210.67 101214.88 -90.00
+  49_bld buildings.House$Oil_Bunker-Big 1 229253.12 101206.49 -90.00
+  50_bld buildings.House$Oil_Bunker-Big 1 229215.39 101174.00 -90.00
+  51_bld buildings.House$Oil_Bunker-Big 1 229277.22 101166.14 -90.00
+  52_bld buildings.House$Oil_Bunker-Big 1 229210.67 101134.18 -90.00
+  53_bld buildings.House$Oil_Bunker-Big 1 229273.03 101117.41 -90.00
+  54_bld buildings.House$Oil_Bunker-Big 1 229878.27 100135.40 -90.00
+  55_bld buildings.House$Oil_Bunker-Big 1 229834.26 100149.02 -90.00
+  56_bld buildings.House$Oil_Bunker-Big 1 229665.51 100724.29 -90.00
+  57_bld buildings.House$Oil_Bunker-Big 1 229761.93 100682.89 -90.00
+  58_bld buildings.House$Oil_Bunker-Big 1 229721.58 100653.55 -90.00
+  59_bld buildings.House$Oil_Bunker-Big 1 229841.58 100632.59 -90.00
+  60_bld buildings.House$Oil_Bunker-Big 1 229703.24 100739.49 -90.00
+  61_bld buildings.House$Oil_Bunker-Big 1 229731.01 100709.62 -90.00
+  62_bld buildings.House$Oil_Bunker-Big 1 229695.90 100690.75 -90.00
+  63_bld buildings.House$Oil_Bunker-Big 1 229720.12 100929.49 -90.00
+  64_bld buildings.House$Oil_Bunker-Big 1 266737.62 167680.49 -90.00
+  65_bld buildings.House$Oil_Bunker-Big 1 266835.72 167727.73 -90.00
+  66_bld buildings.House$Oil_Bunker-Big 1 266832.09 167589.66 -90.00
+  67_bld buildings.House$Oil_Bunker-Big 1 266926.56 167625.99 -90.00
+  68_bld buildings.House$Oil_Bunker-Big 1 266901.13 167513.35 -90.00
+  69_bld buildings.House$Oil_Bunker-Big 1 266999.23 167567.86 -90.00
+  70_bld buildings.House$Oil_Bunker-Big 1 266973.80 167444.32 -90.00
+  71_bld buildings.House$Oil_Bunker-Big 1 267090.07 167502.45 -90.00
+  72_bld buildings.House$Oil_Bunker-Big 1 267006.50 167506.09 -90.00
+  73_bld buildings.House$Oil_Bunker-Big 1 266912.03 167575.12 -90.00
+  74_bld buildings.House$Oil_Bunker-Big 1 266821.19 167662.33 -90.00
+  75_bld buildings.House$Oil_Bunker-Big 1 350657.47 142038.88 -90.00
+  76_bld buildings.House$Oil_Bunker-Big 1 350614.63 142019.17 -90.00
+  77_bld buildings.House$Oil_Bunker-Big 1 350580.35 142092.87 -90.00
+  78_bld buildings.House$Oil_Bunker-Big 1 350554.64 142136.57 -90.00
+  79_bld buildings.House$Oil_Bunker-Big 1 350535.02 142179.55 -90.00
+  80_bld buildings.House$Oil_Bunker-Big 1 350514.43 142219.02 -90.00
+  81_bld buildings.House$Oil_Bunker-Big 1 231287.52 44649.67 -90.00
+  82_bld buildings.House$Oil_Bunker-Big 1 231327.15 44660.94 -90.00
+  83_bld buildings.House$Oil_Bunker-Big 1 231369.61 44680.74 -90.00
+  84_bld buildings.House$Oil_Bunker-Big 1 231320.11 44626.10 -90.00
+  85_bld buildings.House$Oil_Bunker-Big 1 231373.93 44646.82 -90.00
+  86_bld buildings.House$Oil_Bunker-Big 1 231288.94 44441.38 -90.00
+  87_bld buildings.House$Oil_Bunker-Big 1 231305.94 44410.21 -90.00
+  88_bld buildings.House$Oil_Bunker-Big 1 231280.47 44607.14 -90.00
+  89_bld buildings.House$Oil_Bunker-Big 1 230956.08 45461.33 -90.00
+  90_bld buildings.House$Oil_Bunker-Big 1 231014.13 45475.27 -90.00
+  91_bld buildings.House$Oil_Bunker-Big 1 284570.31 121365.81 -90.00
+  92_bld buildings.House$Oil_Bunker-Big 1 284611.37 121361.71 -90.00
+  93_bld buildings.House$Oil_Bunker-Big 1 284649.69 121360.34 -90.00
+  94_bld buildings.House$Oil_Bunker-Big 1 284588.10 121332.97 -90.00
+  95_bld buildings.House$Oil_Bunker-Big 1 284627.79 121328.86 -90.00
+  96_bld buildings.House$Oil_Bunker-Big 1 284672.95 121328.86 -90.00
+  97_bld buildings.House$Oil_Bunker-Big 1 284555.26 121308.34 -90.00
+  98_bld buildings.House$Oil_Bunker-Big 1 284601.79 121305.60 -90.00
+  99_bld buildings.House$Oil_Bunker-Big 1 284651.05 121300.13 -90.00
+  100_bld buildings.House$Oil_Bunker-Big 1 159639.30 50606.30 130.00
+  101_bld buildings.House$Oil_Bunker-Big 1 159671.23 50627.53 130.00
+  102_bld buildings.House$Oil_Bunker-Big 1 160556.11 51007.53 130.00
+  103_bld buildings.House$Oil_Bunker-Big 1 160586.50 51018.16 130.00
+  104_bld buildings.House$Oil_Bunker-Big 1 160577.38 51091.10 130.00
+  105_bld buildings.House$Oil_Bunker-Big 1 160612.33 51086.54 130.00
+  106_bld buildings.House$Oil_Bunker-Big 1 160630.57 51123.01 130.00
+  107_bld buildings.House$Oil_Bunker-Big 1 160659.44 51054.63 130.00
+  108_bld buildings.House$Oil_Bunker-Big 1 160206.67 50990.70 130.00
+  109_bld buildings.House$Oil_Bunker-Big 1 158658.98 51223.45 130.00
+  110_bld buildings.House$Oil_Bunker-Big 1 158692.50 51246.08 130.00
+  111_bld buildings.House$Oil_Bunker-Big 1 158871.71 51773.51 130.00
+  112_bld buildings.House$Oil_Bunker-Big 1 158844.46 51872.77 130.00
+  113_bld buildings.House$Oil_Bunker-Big 1 158818.63 51915.32 130.00
+  114_bld buildings.House$Oil_Bunker-Big 1 231358.38 44444.30 130.00
+  115_bld buildings.House$Oil_Bunker-Big 1 231384.43 44369.04 130.00
+  116_bld buildings.House$Oil_Bunker-Big 1 231410.48 44311.15 130.00
+  117_bld buildings.House$Oil_Bunker-Big 1 231448.15 44253.27 130.00
+  118_bld buildings.House$Oil_Bunker-Big 1 231491.53 44183.79 130.00
+  119_bld buildings.House$Oil_Bunker-Big 1 231352.44 42444.42 130.00
+  120_bld buildings.House$Oil_Bunker-Big 1 231317.80 42421.28 130.00
+  121_bld buildings.House$Oil_Bunker-Big 1 231283.14 42395.29 130.00
+  122_bld buildings.House$Oil_Bunker-Big 1 231338.05 42383.61 130.00
+  123_bld buildings.House$Oil_Bunker-Big 1 231297.61 42369.15 130.00
+[BuildingsLinks]

@@ -1,0 +1,24 @@
+[AirGroups]
+  BoB_RAF_F_141Sqn_Early.01
+[BoB_RAF_F_141Sqn_Early.01]
+  Flight0 1
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 1
+  Belt _Gun03 Gun.Browning303MkII MainBelt 11 11 9 11 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10
+  Belt _Gun06 Gun.Browning303MkII MainBelt 9 11 11 11
+  Belt _Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10 Residual 50 ResidueBelt 11 11 11 11 9
+  Belt _Gun01 Gun.Browning303MkII MainBelt 9 11 11 11
+  Belt _Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 11 11 11 11 9
+  Belt _Gun02 Gun.Browning303MkII MainBelt 11 11 9
+  Belt _Gun05 Gun.Browning303MkII MainBelt 11 11 9 11
+  Belt _Gun04 Gun.Browning303MkII MainBelt 11 11 11 9 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10
+  Weapons 1
+  Fuel 100
+  Serial0 Flug
+  Skin0 default.jpg
+  Skill0 0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99
+  SetOnPark 1
+  Idle 1
+[BoB_RAF_F_141Sqn_Early.01_Way]
+  TAKEOFF 71417.87 192665.28 0 0

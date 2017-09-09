@@ -1,0 +1,575 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940_Autumn
+  BattleArea 0 0 350000 300000 10000
+  TIME 14
+  WeatherIndex 2
+  CloudsHeight 1400
+  BreezeActivity 7
+  ThermalActivity 7
+  player BoB_RAF_F_141Sqn_Early.000
+[GlobalWind_0]
+  Power -4.500 7.794 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[splines]
+[AirGroups]
+  BoB_RAF_F_141Sqn_Early.01
+[BoB_RAF_F_141Sqn_Early.01]
+  Flight0  3
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Serial0 fatal
+[BoB_RAF_F_141Sqn_Early.01_Way]
+  TAKEOFF 226415.51 94482.55 0 0
+[CustomChiefs]
+[Stationary]
+  Static49 Stationary.Bedford_MW_tank gb 305491.44 37914.52 0.00 
+  Static48 Stationary.Bedford_MW_tank gb 304352.91 38109.86 0.00 
+  Static53 Stationary.Bedford_MW_tank gb 305570.22 38269.15 0.00 
+  Static52 Stationary.Bedford_MW_tank gb 304345.94 38464.63 0.00 
+  Static50 Stationary.Bedford_MW_tank gb 305593.59 38647.57 0.00 
+  Static51 Stationary.Bedford_MW_tank gb 304495.53 38847.59 0.00 
+  Static57 Stationary.Bedford_MW_tank gb 237405.75 40725.88 0.00 
+  Static56 Stationary.Bedford_MW_tank gb 235564.13 41263.02 0.00 
+  Static58 Stationary.Bedford_MW_tank gb 237572.77 41366.84 0.00 
+  Static54 Stationary.Bedford_MW_tank gb 235803.36 41872.38 0.00 
+  Static59 Stationary.Bedford_MW_tank gb 237689.78 41994.11 0.00 
+  Static55 Stationary.Bedford_MW_tank gb 235961.34 42301.19 0.00 
+  Static42 Stationary.Bedford_MW_tank gb 307769.38 49324.71 0.00 
+  Static43 Stationary.Bedford_MW_tank gb 308097.81 49752.31 0.00 
+  Static47 Stationary.Bedford_MW_tank gb 306786.84 49834.16 0.00 
+  Static44 Stationary.Bedford_MW_tank gb 308356.00 50298.02 0.00 
+  Static46 Stationary.Bedford_MW_tank gb 307124.19 50419.13 0.00 
+  Static45 Stationary.Bedford_MW_tank gb 307360.13 50818.11 0.00 
+  Static65 Stationary.Bedford_MW_tank gb 157574.25 56842.34 0.00 
+  Static64 Stationary.Bedford_MW_tank gb 158105.91 57331.71 0.00 
+  Static63 Stationary.Bedford_MW_tank gb 158476.59 57849.18 0.00 
+  Static60 Stationary.Bedford_MW_tank gb 156396.52 58163.99 0.00 
+  Static61 Stationary.Bedford_MW_tank gb 156737.34 58661.37 0.00 
+  Static62 Stationary.Bedford_MW_tank gb 157234.63 59016.12 0.00 
+  Static37 Stationary.Bedford_MW_tank gb 293341.63 63932.48 0.00 
+  Static38 Stationary.Bedford_MW_tank gb 292548.97 63990.24 0.00 
+  Static36 Stationary.Bedford_MW_tank gb 294124.47 64124.97 0.00 
+  Static39 Stationary.Bedford_MW_tank gb 292514.78 65077.44 0.00 
+  Static41 Stationary.Bedford_MW_tank gb 294070.50 65144.40 0.00 
+  Static40 Stationary.Bedford_MW_tank gb 293225.69 65363.43 0.00 
+  Static32 Stationary.Bedford_MW_tank gb 285033.06 69423.41 0.00 
+  Static31 Stationary.Bedford_MW_tank gb 286208.28 69578.98 0.00 
+  Static33 Stationary.Bedford_MW_tank gb 284723.81 70422.90 0.00 
+  Static35 Stationary.Bedford_MW_tank gb 286197.13 70794.51 0.00 
+  Static34 Stationary.Bedford_MW_tank gb 285093.84 70871.90 0.00 
+  Static20 Stationary.Bedford_MW_tank gb 334949.94 71879.46 0.00 
+  Static25 Stationary.Bedford_MW_tank gb 291774.84 72877.14 0.00 
+  Static26 Stationary.Bedford_MW_tank gb 290375.94 72899.55 0.00 
+  Static24 Stationary.Bedford_MW_tank gb 334500.25 72376.13 0.00 
+  Static21 Stationary.Bedford_MW_tank gb 336101.09 72543.50 0.00 
+  Static19 Stationary.Bedford_MW_tank gb 334304.41 72921.34 0.00 
+  Static28 Stationary.Bedford_MW_tank gb 291958.09 73663.85 0.00 
+  Static27 Stationary.Bedford_MW_tank gb 290179.81 73708.13 0.00 
+  Static22 Stationary.Bedford_MW_tank gb 336060.38 73157.72 0.00 
+  Static30 Stationary.Bedford_MW_tank gb 290487.66 74289.36 0.00 
+  Static29 Stationary.Bedford_MW_tank gb 291739.06 74244.95 0.00 
+  Static23 Stationary.Bedford_MW_tank gb 335682.53 73617.29 0.00 
+  Static16 Stationary.Bedford_MW_tank gb 345636.25 86661.03 0.00 
+  Static18 Stationary.Bedford_MW_tank gb 347014.03 87073.43 0.00 
+  Static5 Stationary.Bedford_MW_tank gb 292900.16 88337.20 0.00 
+  Static8 Stationary.Bedford_MW_tank gb 292568.69 88511.89 0.00 
+  Static15 Stationary.Bedford_MW_tank gb 345338.72 87952.28 0.00 
+  Static4 Stationary.Bedford_MW_tank gb 292191.16 88793.40 0.00 
+  Static0 Stationary.Bedford_MW_tank gb 293193.50 88830.09 0.00 
+  Static105 Stationary.Bedford_MW_tank gb 346446.06 88026.54 0.00 
+  Static7 Stationary.Bedford_MW_tank gb 292872.50 89094.75 0.00 
+  Static6 Stationary.Bedford_MW_tank gb 292379.78 89190.98 0.00 
+  Static17 Stationary.Bedford_MW_tank gb 346528.84 88341.36 0.00 
+  Static14 Stationary.Bedford_MW_tank gb 228549.59 95839.07 0.00 
+  Static11 Stationary.Bedford_MW_tank gb 229960.31 96351.06 0.00 
+  Static13 Stationary.Bedford_MW_tank gb 228369.02 96672.62 0.00 
+  Static12 Stationary.Bedford_MW_tank gb 229601.03 96981.46 0.00 
+  Static10 Stationary.Opel_Blitz_fuel de 283538.19 124155.48 0.00 
+  Static3 Stationary.Opel_Blitz_fuel de 284792.56 124403.02 0.00 
+  Static9 Stationary.Opel_Blitz_fuel de 283011.88 124797.64 0.00 
+  Static2 Stationary.Opel_Blitz_fuel de 283309.00 125316.95 0.00 
+  Static1 Stationary.Opel_Blitz_fuel de 284742.38 125480.84 0.00 
+  Static76 Stationary.Opel_Blitz_fuel de 298651.97 126556.26 0.00 
+  Static81 Stationary.Opel_Blitz_fuel de 297741.41 126781.36 0.00 
+  Static77 Stationary.Opel_Blitz_fuel de 299309.28 127122.82 0.00 
+  Static80 Stationary.Opel_Blitz_fuel de 297545.59 127934.53 0.00 
+  Static78 Stationary.Opel_Blitz_fuel de 299223.22 128002.32 0.00 
+  Static79 Stationary.Opel_Blitz_fuel de 298343.69 128428.67 0.00 
+  Static74 Stationary.Opel_Blitz_fuel de 294661.00 129787.88 0.00 
+  Static75 Stationary.Opel_Blitz_fuel de 295579.66 129879.20 0.00 
+  Static85 Stationary.Opel_Blitz_fuel de 315361.63 130057.35 0.00 
+  Static73 Stationary.Opel_Blitz_fuel de 294538.28 130761.63 0.00 
+  Static84 Stationary.Opel_Blitz_fuel de 314112.41 130641.58 0.00 
+  Static82 Stationary.Opel_Blitz_fuel de 315617.50 130643.69 0.00 
+  Static72 Stationary.Opel_Blitz_fuel de 295487.47 131020.76 0.00 
+  Static83 Stationary.Opel_Blitz_fuel de 314423.28 131130.36 0.00 
+  Static71 Stationary.Opel_Blitz_fuel de 284272.06 139338.44 0.00 
+  Static70 Stationary.Opel_Blitz_fuel de 285070.72 139333.70 0.00 
+  Static69 Stationary.Opel_Blitz_fuel de 285704.19 139402.56 0.00 
+  Static67 Stationary.Opel_Blitz_fuel de 284239.56 140770.84 0.00 
+  Static66 Stationary.Opel_Blitz_fuel de 284951.34 140848.56 0.00 
+  Static68 Stationary.Opel_Blitz_fuel de 285626.34 140839.55 0.00 
+  Static106 Stationary.Opel_Blitz_fuel de 351346.50 144219.25 0.00 
+  Static107 Stationary.Opel_Blitz_fuel de 350492.69 144759.08 0.00 
+  Static109 Stationary.Opel_Blitz_fuel de 352114.84 145750.75 0.00 
+  Static108 Stationary.Opel_Blitz_fuel de 351395.28 146092.55 0.00 
+  Static104 Stationary.Opel_Blitz_fuel de 306310.06 159667.70 0.00 
+  Static103 Stationary.Opel_Blitz_fuel de 305860.53 159875.75 0.00 
+  Static97 Stationary.Opel_Blitz_fuel de 307144.78 159893.88 0.00 
+  Static102 Stationary.Opel_Blitz_fuel de 305516.50 160542.64 0.00 
+  Static98 Stationary.Opel_Blitz_fuel de 307392.72 160610.34 0.00 
+  Static101 Stationary.Opel_Blitz_fuel de 305621.84 161135.72 0.00 
+  Static99 Stationary.Opel_Blitz_fuel de 307125.50 161307.83 0.00 
+  Static100 Stationary.Opel_Blitz_fuel de 306473.31 161579.58 0.00 
+  Static92 Stationary.Opel_Blitz_fuel de 267874.56 166057.19 0.00 
+  Static93 Stationary.Opel_Blitz_fuel de 267720.91 166278.22 0.00 
+  Static94 Stationary.Opel_Blitz_fuel de 267506.16 166412.95 0.00 
+  Static91 Stationary.Opel_Blitz_fuel de 268424.28 166408.63 0.00 
+  Static86 Stationary.Opel_Blitz_fuel de 268262.09 166566.58 0.00 
+  Static95 Stationary.Opel_Blitz_fuel de 267415.66 166686.61 0.00 
+  Static87 Stationary.Opel_Blitz_fuel de 268112.56 166714.02 0.00 
+  Static88 Stationary.Opel_Blitz_fuel de 267958.78 166846.67 0.00 
+  Static96 Stationary.Opel_Blitz_fuel de 267308.28 166901.34 0.00 
+  Static89 Stationary.Opel_Blitz_fuel de 267800.88 166983.44 0.00 
+  Static90 Stationary.Opel_Blitz_fuel de 267651.44 167128.69 0.00 
+  Static110 Stationary.Bedford_MW_tank gb 284897.81 70702.15 0.00 
+  Static111 Stationary.Bedford_MW_tank gb 285487.91 70555.33 0.00 
+  Static112 Stationary.Bedford_MW_tank gb 285349.44 70388.40 0.00 
+  Static113 Stationary.Bedford_MW_tank gb 285133.19 70177.84 0.00 
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  airdrome0 229014.85 96401.96 1 1000 700 0
+  airdrome1 292722.95 88748.30 1 900 700 0
+  airdrome2 335227.86 72753.70 1 1000 700 0
+  airdrome3 291097.95 73513.29 1 1000 700 0
+  airdrome4 285480.60 70198.69 1 1000 700 0
+  airdrome5 293205.60 64575.55 1 1000 700 0
+  airdrome6 307574.78 50094.40 1 1000 700 0
+  airdrome7 304933.45 38334.12 1 1000 700 0
+  airdrome8 236479.34 41395.23 1 1000 700 0
+  airdrome9 157455.25 58007.76 1 1000 700 0
+  airdrome10 284037.31 124874.70 2 800 600 1
+  airdrome11 285024.54 140034.76 2 1000 700 1
+  airdrome12 295359.53 130424.91 2 1000 700 0
+  airdrome13 298415.22 127481.36 2 1000 700 0
+  airdrome14 314701.71 130721.77 2 1000 700 1
+  airdrome16 306441.90 160633.20 2 1000 700 0
+  airdrome17 346149.29 87449.99 1 1000 700 0
+  airdrome18 351295.74 145360.98 2 1000 700 1
+  airdrome15 267791.73 166681.11 2 1000 700 0
+[airdrome0_Runways]
+  229172.15 96255.43 105.00 1100.00 80.00 0
+[airdrome0_Points]
+  229217.42 96264.47 5 3 1
+  229291.48 96247.69 2
+  229435.38 96282.12
+  229298.54 96168.24 4
+  229444.21 96221.21
+  229310.90 96076.42 6
+  229490.12 96141.75
+[airdrome1_Runways]
+  292684.42 88756.34 150.00 900.00 40.00 0
+[airdrome1_Points]
+  292927.88 88663.55 7 5 3 1
+  292974.03 88736.90 2
+  292997.91 88770.79
+  293012.54 88707.64 4
+  293032.57 88741.53
+  293055.60 88684.15 6
+  293078.27 88711.51
+  293096.25 88657.96 8
+  293121.26 88682.98
+[airdrome2_Runways]
+  335214.21 72737.32 120.00 1400.00 40.00 0
+[airdrome2_Points]
+  335136.52 73253.29 7 5 3 1
+  335039.50 73111.30 2
+  334933.04 73062.16
+  334984.90 73185.00 4
+  334908.47 73133.14
+  334949.42 73242.33 6
+  334878.44 73195.92
+  334933.04 73288.73 8
+  334832.04 73272.36
+[airdrome3_Runways]
+  291088.34 73520.60 90.00 1300.00 70.00 0
+[airdrome3_Points]
+  291207.15 73136.40 7 5 3 1
+  291372.40 73220.79 2
+  291477.39 73169.25
+  291368.58 73148.25 4
+  291458.30 73108.16
+  291330.40 73075.71 6
+  291418.21 73039.44
+  291246.40 73003.17 8
+  291297.95 72955.44
+[airdrome4_Points]
+  285727.94 69971.75 7 5 3 1
+  285926.56 69958.56 2
+  286008.37 69889.95
+  285881.70 69882.03 4
+  285942.39 69821.34
+  285836.84 69813.42 6
+  285894.90 69776.48
+  285760.32 69776.48 8
+  285802.54 69731.62
+[airdrome5_Runways]
+  293358.06 64583.50 185.00 1600.00 90.00 0
+[airdrome5_Points]
+  293641.39 64554.37 7 5 3 1
+  293533.89 64485.54 2
+  293532.45 64464.30
+  293602.73 64490.83 4
+  293596.19 64466.29
+  293663.62 64493.48 6
+  293663.62 64467.88
+  293687.45 64527.90 8
+  293723.06 64472.52
+[airdrome6_Runways]
+  307527.53 50033.37 235.00 1100.00 40.00 0
+[airdrome6_Points]
+  307400.94 49729.54 7 5 3 1
+  307482.24 49718.33 2
+  307541.31 49667.14
+  307466.49 49671.08 4
+  307501.93 49623.82
+  307448.77 49608.07 6
+  307472.40 49574.60
+  307389.70 49606.10 8
+  307405.45 49550.97
+[airdrome7_Runways]
+  304929.56 38295.21 260.00 900.00 40.00 0
+[airdrome7_Points]
+  304937.31 38123.45 11 9 7 5 3 1
+  304834.21 38079.21 2
+  304768.04 38094.77
+  304830.31 38048.07 4
+  304769.99 38055.85
+  304828.37 38005.26 6
+  304771.94 38014.99
+  305009.34 38106.45 8
+  305036.58 38090.88
+  304984.04 38040.29 10
+  305007.39 37993.58
+  304945.12 37987.75 12
+  304978.20 37954.67
+[airdrome8_Runways]
+  236616.96 41478.22 75.00 1100.00 70.00 0
+[airdrome8_Points]
+  236331.47 41421.00 7 5 3 1
+  236248.61 41602.21 2
+  236174.55 41639.24
+  236198.35 41553.27 4
+  236122.97 41595.60
+  236152.06 41504.34 6
+  236079.32 41553.27
+  236100.48 41456.72 8
+  236039.64 41514.92
+[airdrome9_Runways]
+  157376.21 57932.31 45.00 1400.00 80.00 0
+  284046.59 124882.61 45.00 1400.00 40.00 0
+  284046.59 124882.61 45.00 1400.00 40.00 0
+[airdrome9_Points]
+  156956.45 57734.71 7 5 3 1
+  156866.03 57928.72 2
+  156779.81 58007.76
+  156822.92 57889.20 4
+  156758.25 57953.87
+  156790.59 57842.49 6
+  156711.54 57889.20
+  156754.66 57774.23 8
+  156672.02 57824.53
+[airdrome10_Runways]
+  284061.98 124905.17 95.00 1200.00 40.00 0
+[airdrome10_Points]
+  284129.41 125281.86 7 5 3 1
+  284399.93 125180.28 2
+  284525.78 125206.19
+  284366.62 125235.81 4
+  284488.77 125250.61
+  284333.31 125298.73 6
+  284425.84 125317.24
+  284299.99 125354.25 8
+  284399.93 125398.67
+[airdrome11_Runways]
+  284987.63 140031.07 185.00 1400.00 80.00 0
+[airdrome11_Points]
+  284804.46 140104.90 7 5 3 1
+  285094.69 140330.09 2
+  285102.07 140455.61
+  284983.94 140296.87 4
+  284987.63 140451.92
+  284899.03 140330.09 6
+  284939.64 140440.84
+  284817.81 140363.32 8
+  284891.65 140448.23
+[airdrome12_Runways]
+  295365.63 130412.71 190.00 1100.00 40.00 0
+  295111.38 130498.14 270.00 700.00 40.00 0
+[airdrome12_Points]
+  295231.08 130685.26 9 7 5 3 1
+  295373.77 130685.26 2
+  295385.97 130715.77
+  295339.19 130713.74 4
+  295355.46 130754.42
+  295306.64 130732.04 6
+  295326.98 130778.83
+  295261.90 130750.35 8
+  295286.30 130791.03
+  295231.39 130764.59 10
+  295247.66 130807.30
+[airdrome13_Points]
+  298511.45 127068.42 5 3 1
+  298628.56 126969.34 2
+  298647.93 126918.14
+  298553.83 126923.67 4
+  298546.91 126900.14
+  298592.58 126933.36 6
+  298596.73 126901.53
+[airdrome14_Runways]
+  314910.25 130697.75 245.00 1400.00 80.00 0
+[airdrome14_Points]
+  315017.92 130979.97 11 9 7 5 3 1
+  315025.02 130723.07 2
+  315066.51 130698.18
+  315031.94 130753.49 4
+  315087.25 130729.98
+  315076.19 130853.05 6
+  315128.74 130835.08
+  315092.78 130882.09 8
+  315137.03 130869.65
+  315112.14 130918.05 10
+  315152.24 130895.92
+  315124.59 130948.47 12
+  315166.07 130924.96
+[airdrome16_Runways]
+  306349.41 160741.78 285.00 1700.00 90.00 0
+  306580.64 160665.37 435.00 1200.00 60.00 0
+  306671.12 160653.31 390.00 900.00 40.00 0
+[airdrome16_Points]
+  306550.30 160334.07 9 7 5 3 1
+  306662.38 160008.92 2
+  306716.68 159965.48
+  306676.86 160070.46 4
+  306763.74 160045.12
+  306734.78 160113.90 6
+  306814.42 160099.42
+  306763.74 160179.06 8
+  306828.90 160135.62
+  306785.46 160233.36 10
+  306879.58 160182.68
+[airdrome17_Points]
+  345682.03 87576.94
+[airdrome18_Runways]
+  351409.95 145161.11 -30.00 1600.00 70.00 0
+[airdrome18_Points]
+  350595.74 145360.98
+[airdrome15_Runways]
+  267848.41 166603.44 130.00 1000.00 40.00 0
+[airdrome15_Points]
+  267981.86 166506.87 11 9 7 5 3 1
+  268115.03 166439.69 2
+  268180.11 166492.17
+  268075.14 166483.77 4
+  268140.22 166519.46
+  267995.37 166567.75 6
+  268039.45 166620.23
+  268016.36 166553.05 8
+  268058.35 166595.04
+  268041.55 166534.16 10
+  268081.44 166571.95
+  268066.74 166508.97 12
+  268112.93 166542.56
+[FrontMarker]
+  FrontMarker0 361728.00 102067.20 2
+  FrontMarker1 326707.20 97689.60 2
+  FrontMarker2 316569.60 96767.10 2
+  FrontMarker3 292608.00 135014.40 2
+  FrontMarker4 264960.00 150451.20 2
+  FrontMarker5 299059.02 202060.92 2
+  FrontMarker6 333158.33 220876.94 2
+  FrontMarker7 361036.80 251980.80 2
+  FrontMarker8 299519.70 306355.25 1
+  FrontMarker9 220723.21 220876.71 1
+  FrontMarker10 261734.40 113280.00 1
+  FrontMarker11 240375.18 148809.61 1
+  FrontMarker12 302054.40 86886.02 1
+  FrontMarker13 321638.40 88268.42 1
+  FrontMarker14 355968.00 94258.82 1
+[BirthPlace]
+  Dieppe 1 229243 96620 0 6 1 1 gb . .
+  "Poix Nord" 1 292900 88679 0 6 1 1 . . .
+  Monididier 1 335199 73266 0 6 1 1 . . .
+  Grandvillers 1 291325 73961 0 6 1 1 . . .
+  "BirthPlace_4 brombos" 1 285642 70057 0 4 1 1 . . .
+  "Haute Fontaine" 1 293662 64691 0 6 1 1 . . .
+  "Beauvis Nivillers" 1 307800 50033 0 0 0 0 . . .
+  "Rouen Boos" 1 236723 41574 0 6 1 1 . . .
+  "Le Havre" 1 157196 57946 0 6 1 1 gb . .
+  Abbyville 2 284140 125480 0 4 1 1 . . .
+  vrench 2 295208 130654 0 4 1 1 . . .
+  "Cramont " 2 298980 127528 0 4 1 1 . . .
+  Tramcourt 2 307122 160479 0 8 1 1 . . .
+  BirthPlace_1 2 314968 130440 0 4 1 1 . . .
+  Abbecourt 1 305019 38276 0 6 1 1 . . .
+  "Beauviis Nivillers" 1 307602 49958 0 4 1 1 . . .
+  BirthPlace_3 1 293646 64688 0 8 1 1 . . .
+  Barley 2 314890 131082 0 0 0 0 . . .
+  tramcourt 2 306490 160897 0 0 1 1 . . .
+  arras 2 351645 145450 0 8 1 1 . . .
+  "Le Troquet" 2 267725 166600 0 20 1 1 de . .
+  BirthPlace_0 2 284774 139861 0 6 1 1 . . .
+[BirthPlace0]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_dH5-20_100oct
+[BirthPlace1]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.BlenheimMkIVF
+[BirthPlace2]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace3]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace4]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.BlenheimMkIVF
+[BirthPlace5]
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace6]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.BlenheimMkIVF
+[BirthPlace7]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace8]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace9]
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Bf-110C-7Late
+[BirthPlace10]
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-2
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+[BirthPlace11]
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+[BirthPlace12]
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-2
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace14]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+[BirthPlace15]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkI_100oct
+[BirthPlace16]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkI_100oct
+[BirthPlace17]
+  Aircraft.Bf-109E-3B
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+[BirthPlace18]
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+[BirthPlace19]
+  Aircraft.Ju-88A-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-1
+  Aircraft.BR-20M
+[BirthPlace20]
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-7Late
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace21]
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4

@@ -1,0 +1,90 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static3 Artillery.Flak30 de 245892.55 21170.25 190.00 /timeout 0/radius_hide 0
+  Static0 Artillery.Flak30 de 242481.72 21621.80 190.00 /timeout 0/radius_hide 0
+  Static44 Artillery.Flak30 de 245271.89 22819.54 257.80 /timeout 0/radius_hide 0/hstart 2.5
+  Static124 Stationary.Environment.JerryCan_GER1_1 nn 245281.17 22817.58 195.00 /hstart -2
+  Static113 Stationary.Environment.JerryCan_GER1_1 nn 245243.48 22887.89 195.00 /hstart -2
+  Static111 Stationary.Environment.JerryCan_GER1_1 nn 245236.45 22906.18 195.00 /hstart -2
+  Static118 Stationary.Environment.JerryCan_GER1_1 nn 245271.75 22855.27 195.00 /hstart -2
+  Static109 Stationary.Environment.JerryCan_GER1_1 nn 245232.03 22919.16 195.00 /hstart -2
+  Static110 Stationary.Environment.JerryCan_GER1_1 nn 245247.98 22914.33 195.00 /hstart -2
+  Static105 Stationary.Environment.JerryCan_GER1_1 nn 245219.19 22959.91 195.00 /hstart -2
+  Static176 Stationary.Environment.JerryCan_GER1_1 nn 245225.02 22975.01 195.00 /hstart -2
+  Static174 Stationary.Environment.JerryCan_GER1_1 nn 245211.97 22976.46 195.00 /hstart -2
+  Static103 Stationary.Environment.JerryCan_GER1_1 nn 245223.88 22982.30 195.00 /hstart -2
+  Static99 Stationary.Environment.JerryCan_GER1_1 nn 245208.98 23021.28 195.00 /hstart -2
+  Static97 Stationary.Environment.JerryCan_GER1_1 nn 245203.17 23035.31 195.00 /hstart -2
+  Static90 Stationary.Environment.JerryCan_GER1_1 nn 245174.61 23085.55 195.00 /hstart -2
+  Static95 Stationary.Environment.JerryCan_GER1_1 nn 245197.80 23053.45 195.00 /hstart -2
+  Static93 Stationary.Environment.JerryCan_GER1_1 nn 245194.11 23062.38 195.00 /hstart -2
+  Static139 Stationary.Environment.JerryCan_GER1_1 nn 245048.91 23147.10 195.00 /hstart -2
+  Static87 Stationary.Environment.JerryCan_GER1_1 nn 245168.66 23105.54 195.00 /hstart -2
+  Static86 Stationary.Environment.JerryCan_GER1_1 nn 245165.69 23113.90 195.00 /hstart -2
+  Static83 Stationary.Environment.JerryCan_GER1_1 nn 245154.31 23141.82 195.00 /hstart -2
+  Static134 Stationary.Environment.JerryCan_GER1_1 nn 245050.61 23188.48 195.00 /hstart -2
+  Static136 Stationary.Environment.JerryCan_GER1_1 nn 245025.39 23216.12 195.00 /hstart -2
+  Static130 Stationary.Environment.JerryCan_GER1_1 nn 245080.23 23174.31 195.00 /hstart -2
+  Static126 Stationary.Environment.JerryCan_GER1_1 nn 245104.47 23212.01 195.00 /hstart -2
+  Static58 Stationary.Environment.TelegaBallon_UK1 nn 245111.55 23217.04 200.00 /hstart -2
+  Static67 Stationary.Environment.TelegaBallon_UK1 nn 245134.38 23175.10 200.00 /hstart -2
+  Static61 Stationary.Environment.JerryCan_GER1_1 nn 245134.14 23198.95 200.00 /hstart -2
+  Static56 Stationary.Environment.TelegaBallon_UK1 nn 245120.59 23213.81 200.00 /hstart -2
+  Static70 Stationary.Environment.TelegaBallon_UK1 nn 245137.38 23203.66 200.00 /hstart -2
+  Static51 Stationary.Environment.JerryCan_GER1_1 nn 245128.00 23220.30 200.00 /hstart -2
+  Static50 Stationary.Environment.JerryCan_GER1_1 nn 245125.63 23224.58 200.00 /hstart -2
+  Static127 Stationary.Environment.JerryCan_GER1_1 nn 245086.75 23234.12 195.00 /hstart -2
+  Static78 Stationary.Environment.JerryCan_GER1_1 nn 245119.16 23240.13 200.00 /hstart -2
+  Static75 Stationary.Environment.JerryCan_GER1_1 nn 245115.08 23247.59 200.00 /hstart -2
+  Static71 Stationary.Environment.JerryCan_GER1_1 nn 245111.33 23254.90 200.00 /hstart -2
+  Static141 Stationary.Environment.JerryCan_GER1_1 nn 245099.66 23287.26 195.00 /hstart -2
+  Static45 Stationary.Environment.JerryCan_GER1_1 nn 245120.22 23236.45 200.00 /hstart -2
+  Static143 Stationary.Environment.JerryCan_GER1_1 nn 245090.52 23309.97 195.00 /hstart -2
+  Static147 Stationary.Environment.JerryCan_GER1_1 nn 245074.16 23353.64 195.00 /hstart -2
+  Static149 Stationary.Environment.JerryCan_GER1_1 nn 245064.94 23378.16 195.00 /hstart -2
+  Static148 Stationary.Environment.JerryCan_GER1_1 nn 245082.09 23371.36 195.00 /hstart -2
+  Static155 Stationary.Environment.JerryCan_GER1_1 nn 245042.27 23443.64 195.00 /hstart -2
+  Static159 Stationary.Environment.JerryCan_GER1_1 nn 245027.11 23486.72 195.00 /hstart -2
+  Static158 Stationary.Environment.JerryCan_GER1_1 nn 245041.70 23481.20 195.00 /hstart -2
+  Static163 Stationary.Environment.JerryCan_GER1_1 nn 245007.42 23539.58 195.00 /hstart -2
+  Static169 Stationary.Environment.JerryCan_GER1_1 nn 244983.75 23602.65 195.00 /hstart -2
+  Static172 Stationary.Environment.JerryCan_GER1_1 nn 244977.28 23613.31 195.00 /hstart -2
+  Static168 Stationary.Environment.JerryCan_GER1_1 nn 244999.67 23600.20 195.00 /hstart -2
+  Static79 Artillery.Flak30 de 244983.97 23617.99 190.00 /timeout 0/radius_hide 0/hstart 1.5
+  Static171 Stationary.Environment.JerryCan_GER1_1 nn 244983.00 23618.35 195.00 /hstart -2
+  Static170 Stationary.Environment.JerryCan_GER1_1 nn 244992.92 23617.65 195.00 /hstart -2
+  Static80 Artillery.Flak30 de 246397.02 23836.94 190.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak30 de 244433.02 24629.00 190.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak30 de 248086.52 25679.15 190.00 /timeout 0/radius_hide 0
+  Static4 Stationary.Environment.TelegaBallon_UK1 nn 245148.58 23186.39 200.00 /hstart -2
+  Static5 Stationary.Environment.TelegaBallon_UK1 nn 245138.94 23190.26 200.00 /hstart -2
+  Static6 Stationary.Environment.TelegaBallon_UK1 nn 245142.55 23197.50 200.00 /hstart -2
+  Static7 Stationary.Environment.TelegaBallon_UK1 nn 245140.38 23207.41 200.00 /hstart -2
+  Static8 Stationary.Environment.TelegaBallon_UK1 nn 245132.19 23204.49 200.00 /hstart -2
+  Static9 Stationary.Environment.TelegaBallon_UK1 nn 245133.39 23196.77 200.00 /hstart -2
+  Static10 Stationary.Environment.TelegaBallon_UK1 nn 245122.97 23242.46 200.00 /hstart -2
+  Static11 Stationary.Environment.TelegaBallon_UK1 nn 245114.53 23242.90 200.00 /hstart -2
+  Static12 Stationary.Environment.TelegaBallon_UK1 nn 245107.34 23240.67 200.00 /hstart -2
+  Static13 Stationary.Environment.TelegaBallon_UK1 nn 245117.91 23233.50 200.00 /hstart -2
+  Static14 Stationary.Environment.TelegaBallon_UK1 nn 245129.73 23237.87 200.00 /hstart -2
+  Static15 Stationary.Environment.TelegaBallon_UK1 nn 245110.70 23235.63 200.00 /hstart -2
+[Buildings]
+[BuildingsLinks]

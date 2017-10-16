@@ -1,0 +1,72 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static531 Smoke.Environment.BuildingFireSmall nn 63329.82 187622.22 110.00 /height 15.08
+  Static532 Smoke.Environment.BuildingFireSmall nn 63367.77 187643.97 110.00 /height 15.08
+  Static533 Smoke.Environment.BuildingFireSmall nn 63389.39 187651.59 110.00 /height 15.08
+  Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+  Static535 Smoke.Environment.BuildingFireSmall nn 63458.30 187669.73 110.00 /height 15.08
+  Static536 Smoke.Environment.BuildingFireSmall nn 63483.37 187688.75 110.00 /height 15.08
+  Static537 Smoke.Environment.BuildingFireSmall nn 63529.95 187703.25 110.00 /height 15.08
+  Static538 Smoke.Environment.BuildingFireSmall nn 63567.20 187714.39 110.00 /height 15.08
+  Static539 Smoke.Environment.BuildingFireSmall nn 63603.80 187722.33 110.00 /height 15.08
+  Static540 Smoke.Environment.BuildingFireSmall nn 63634.19 187731.64 110.00 /height 15.08
+  Static541 Smoke.Environment.BuildingFireSmall nn 63670.09 187745.11 110.00 /height 15.08
+  Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+  Static543 Smoke.Environment.BuildingFireSmall nn 63739.56 187780.80 110.00 /height 15.08
+  Static544 Smoke.Environment.BuildingFireSmall nn 63773.07 187792.50 110.00 /height 15.08
+  Static545 Smoke.Environment.BuildingFireSmall nn 63802.35 187800.27 110.00 /height 15.08
+  Static546 Smoke.Environment.BuildingFireSmall nn 63828.16 187809.88 110.00 /height 15.08
+  Static547 Smoke.Environment.BuildingFireSmall nn 63872.21 187826.47 110.00 /height 15.08
+  Static548 Smoke.Environment.BuildingFireSmall nn 63902.13 187837.06 110.00 /height 15.08
+  Static549 Smoke.Environment.BuildingFireSmall nn 63939.85 187855.41 110.00 /height 16.24
+  Static550 Smoke.Environment.BuildingFireSmall nn 63905.36 187845.03 110.00 /height 16.24
+  Static551 Smoke.Environment.BuildingFireSmall nn 63870.04 187834.84 110.00 /height 16.24
+  Static552 Smoke.Environment.BuildingFireBig nn 63835.95 187819.61 110.00 /height 16.24    
+  Static553 Smoke.Environment.BuildingFireSmall nn 63797.54 187811.23 110.00 /height 16.24
+  Static554 Smoke.Environment.BuildingFireSmall nn 63775.28 187800.36 110.00 /height 16.24
+  Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+  Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+  Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+  Static558 Smoke.Environment.BuildingFireSmall nn 63650.25 187755.41 110.00 /height 16.24
+  Static559 Smoke.Environment.BuildingFireSmall nn 63620.90 187748.50 110.00 /height 16.24
+  Static560 Smoke.Environment.BuildingFireSmall nn 63591.55 187735.38 110.00 /height 16.24
+  Static561 Smoke.Environment.BuildingFireSmall nn 63558.75 187721.92 110.00 /height 16.24
+  Static562 Smoke.Environment.BuildingFireSmall nn 63522.85 187709.56 110.00 /height 16.24
+  Static563 Smoke.Environment.BuildingFireSmall nn 63496.25 187704.31 110.00 /height 16.24
+  Static564 Smoke.Environment.BuildingFireSmall nn 63459.83 187695.66 110.00 /height 16.24
+  Static565 Smoke.Environment.BuildingFireSmall nn 63435.62 187686.06 110.00 /height 16.24
+  Static566 Smoke.Environment.Smoke2 nn 63397.92 187662.84 110.00 /height 16.24
+  Static567 Smoke.Environment.BuildingFireSmall nn 63377.33 187654.94 110.00 /height 16.24
+  Static568 Smoke.Environment.BuildingFireSmall nn 63339.32 187635.69 110.00 /height 16.24
+  Static569 Smoke.Environment.BuildingFireSmall nn 63296.77 187617.92 110.00 /height 17.01
+  Static570 Smoke.Environment.BuildingFireSmall nn 63560.13 187756.09 110.00 /height 17.01
+  Static571 Smoke.Environment.BuildingFireSmall nn 63544.94 187789.25 110.00 /height 17.01
+  Static572 Smoke.Environment.Smoke2 nn 63551.50 187827.22 110.00 /height 17.01
+  Static573 Smoke.Environment.BuildingFireSmall nn 63597.42 187821.70 110.00 /height 17.01
+  Static574 Smoke.Environment.BuildingFireSmall nn 63609.52 187790.50 110.00 /height 17.01
+  Static575 Smoke.Environment.BigSitySmoke_0 nn 63624.60 187767.11 110.00 /height 17.01
+  Static576 Smoke.Environment.BigSitySmoke_0 nn 63595.94 187751.91 110.00 /height 17.01
+  Static577 Smoke.Environment.BuildingFireBig nn 63474.55 187687.78 110.00 /height 15.08
+  Static578 Smoke.Environment.BuildingFireBig nn 63551.06 187799.91 110.00 /height 15.08
+  Static579 Smoke.Environment.BuildingFireBig nn 63558.65 187706.69 110.00 /height 15.08
+  Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+[Buildings]
+[BuildingsLinks]

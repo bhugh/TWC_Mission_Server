@@ -20,7 +20,6 @@
 [CustomChiefs]
 [Chiefs]
   0_Chief Vehicle.GER_Fuel_Column de 
-  1_Chief Train.BR56-00_c4 de 
   4_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
   5_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
 [0_Chief_Road]
@@ -120,10 +119,6 @@
   S 1775 17 0.82 20.00 P 299354.19 112922.24
   S 1775 18 0.31 20.00 P 299591.94 112510.95
   299633.34 112447.77 38.40
-[1_Chief_Road]
-  S 484 11 0.61 5.00 P 323707.72 95933.77  0 2 1.00
-  S 484 9 0.71 5.00 P 322815.44 95905.33  0 2 5.56
-  S 484 7 0.64 5.00 P 322047.50 96172.61
 [4_Chief_Road]
   255228.30 121629.49 38.40  0 2 5.56
   252294.72 118745.08 38.40  0 2 2.78

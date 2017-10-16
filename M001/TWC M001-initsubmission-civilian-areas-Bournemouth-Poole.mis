@@ -1,0 +1,163 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.AEC_Regent_II gb 15482.09 185478.61 -80.00 
+  Static1 Stationary.AEC_Regent_II gb 15470.86 184646.45 -80.00 
+  Static2 Stationary.AEC_Regent_II gb 16208.97 184886.48 -80.00 
+  Static3 Stationary.AEC_Regent_II gb 16820.92 185391.55 -80.00 
+  Static4 Stationary.AEC_Regent_II gb 17638.73 185299.08 -80.00 
+  Static5 Stationary.AEC_Regent_II gb 18464.50 185384.16 -80.00 
+  Static6 Stationary.AEC_Regent_II gb 17478.09 186156.34 -80.00 
+  Static7 Stationary.AEC_Regent_II gb 18055.88 186090.00 -80.00 
+  Static8 Stationary.AEC_Regent_II gb 17128.87 185833.33 -80.00 
+  Static9 Stationary.AEC_Regent_II gb 18374.98 184183.08 -80.00 
+  Static10 Stationary.AEC_Regent_II gb 17490.31 183494.20 -80.00 
+  Static11 Stationary.AEC_Regent_II gb 17937.36 182827.36 -80.00 
+  Static12 Stationary.AEC_Regent_II gb 18567.12 182317.72 -80.00 
+  Static13 Stationary.AEC_Regent_II gb 18929.31 182898.64 -80.00 
+  Static14 Stationary.AEC_Regent_II gb 19628.15 183566.09 -80.00 
+  Static15 Stationary.AEC_Regent_II gb 19566.14 184390.11 -80.00 
+  Static16 Stationary.AEC_Regent_II gb 20445.51 183879.67 -80.00 
+  Static17 Stationary.AEC_Regent_II gb 23417.95 185879.36 -80.00 
+  Static18 Stationary.AEC_Regent_II gb 22984.85 186659.33 -80.00 
+  Static19 Stationary.AEC_Regent_II gb 22156.91 186720.44 -80.00 
+  Static20 Stationary.AEC_Regent_II gb 21666.86 187445.28 -80.00 
+  Static21 Stationary.AEC_Regent_II gb 22664.90 187520.58 -80.00 
+  Static22 Stationary.AEC_Regent_II gb 22726.05 188288.72 -80.00 
+  Static23 Stationary.AEC_Regent_II gb 21713.69 188547.14 -80.00 
+  Static24 Stationary.AEC_Regent_II gb 26099.66 186216.94 -80.00 
+  Static25 Stationary.AEC_Regent_II gb 26798.82 186572.23 -80.00 
+  Static26 Stationary.AEC_Regent_II gb 25712.59 184933.53 -80.00 
+  Static27 Stationary.AEC_Regent_II gb 24927.83 184908.17 -80.00 
+  Static28 Stationary.AEC_Regent_II gb 24000.49 184595.84 -80.00 
+  Static29 Stationary.AEC_Regent_II gb 26484.52 185013.17 -80.00 
+  Static30 Stationary.AEC_Regent_II gb 27128.64 185428.47 -80.00 
+  Static31 Stationary.AEC_Regent_II gb 27828.95 185182.55 -80.00 
+  Static32 Stationary.AEC_Regent_II gb 27516.14 184729.25 -80.00 
+  Static33 Stationary.MG_TA gb 28374.14 184573.48 -80.00 
+  Static34 Stationary.MG_TA gb 12687.65 184291.75 -80.00 
+  Static35 Stationary.MG_TA gb 12797.57 183806.78 -80.00 
+  Static36 Stationary.MG_TA gb 13245.89 183664.53 -80.00 
+  Static37 Stationary.MG_TA gb 14299.88 183703.33 -80.00 
+  Static38 Stationary.MG_TA gb 14263.23 183539.52 -80.00 
+  Static39 Stationary.MG_TA gb 14608.10 183552.45 -80.00 
+  Static40 Stationary.MG_TA gb 14654.67 183602.31 -80.00 
+  Static41 Stationary.MG_TA gb 14489.26 183762.77 -80.00 
+  Static42 Stationary.MG_TA gb 14360.50 183897.47 -80.00 
+  Static43 Stationary.MG_TA gb 14917.78 184261.81 -80.00 
+  Static44 Stationary.MG_TA gb 15172.11 184451.48 -80.00 
+  Static45 Stationary.MG_TA gb 15096.68 184281.20 -80.00 
+  Static46 Stationary.MG_TA gb 15232.85 184940.75 -80.00 
+  Static47 Stationary.MG_TA gb 14706.76 185588.81 -80.00 
+  Static48 Stationary.MG_TA gb 14914.69 185852.19 -80.00 
+  Static49 Stationary.MG_TA gb 15052.25 185579.75 -80.00 
+  Static50 Stationary.MG_TA gb 15288.63 185874.25 -80.00 
+  Static51 Stationary.MG_TA gb 15642.87 185997.97 -80.00 
+  Static52 Stationary.MG_TA gb 15602.49 185702.34 -80.00 
+  Static53 Stationary.MG_TA gb 15997.61 185523.83 -80.00 
+  Static54 Stationary.MG_TA gb 15872.19 186090.34 -80.00 
+  Static55 Stationary.MG_TA gb 16346.62 185778.73 -80.00 
+  Static56 Stationary.MG_TA gb 16704.57 184753.69 -80.00 
+  Static57 Stationary.MG_TA gb 16888.03 184926.00 -80.00 
+  Static58 Stationary.MG_TA gb 17164.88 184948.27 -80.00 
+  Static59 Stationary.MG_TA gb 17524.73 184971.91 -80.00 
+  Static60 Stationary.MG_TA gb 16150.86 184220.14 -80.00 
+  Static61 Stationary.MG_TA gb 16765.07 183944.75 -80.00 
+  Static62 Stationary.MG_TA gb 16913.71 184146.89 -80.00 
+  Static63 Stationary.MG_TA gb 17580.78 184364.38 -80.00 
+  Static64 Stationary.MG_TA gb 17836.45 184368.70 -80.00 
+  Static65 Stationary.MG_TA gb 18091.43 184359.38 -80.00 
+  Static66 Stationary.MG_TA gb 18398.14 184372.28 -80.00 
+  Static67 Stationary.MG_TA gb 18568.77 184413.92 -80.00 
+  Static68 Stationary.MG_TA gb 18598.47 183886.34 -80.00 
+  Static69 Stationary.MG_TA gb 18204.84 183924.58 -80.00 
+  Static70 Stationary.MG_TA gb 17862.03 184133.83 -80.00 
+  Static71 Stationary.MG_TA gb 17979.61 183755.03 -80.00 
+  Static72 Stationary.MG_TA gb 17909.59 183352.89 -80.00 
+  Static73 Stationary.MG_TA gb 17483.54 183037.19 -80.00 
+  Static74 Stationary.MG_TA gb 18522.77 181961.67 -80.00 
+  Static75 Stationary.MG_TA gb 20063.27 184460.02 -80.00 
+  Static76 Stationary.MG_TA gb 19682.53 184654.67 -80.00 
+  Static77 Stationary.MG_TA gb 19373.36 184777.77 -80.00 
+  Static78 Stationary.MG_TA gb 20366.72 184316.88 -80.00 
+  Static79 Stationary.MG_TA gb 20755.59 184118.84 -80.00 
+  Static80 Stationary.MG_TA gb 21186.20 184016.53 -80.00 
+  Static81 Stationary.MG_TA gb 20632.59 183503.63 -80.00 
+  Static82 Stationary.MG_TA gb 20112.26 183221.45 -80.00 
+  Static83 Stationary.MG_TA gb 21684.36 183962.42 -80.00 
+  Static84 Stationary.MG_TA gb 21407.24 184472.59 -80.00 
+  Static85 Stationary.MG_TA gb 20966.55 185024.39 -80.00 
+  Static86 Stationary.MG_TA gb 20035.22 185208.64 -80.00 
+  Static87 Stationary.MG_TA gb 20992.18 185389.73 -80.00 
+  Static88 Stationary.MG_TA gb 22023.07 184121.06 -80.00 
+  Static89 Stationary.MG_TA gb 22335.95 184337.73 -80.00 
+  Static90 Stationary.MG_TA gb 22731.19 184433.56 -80.00 
+  Static91 Stationary.MG_TA gb 23139.06 184494.94 -80.00 
+  Static92 Stationary.MG_TA gb 23514.19 184567.59 -80.00 
+  Static93 Stationary.MG_TA gb 23393.54 184705.50 -80.00 
+  Static94 Stationary.MG_TA gb 23133.41 184753.75 -80.00 
+  Static95 Stationary.MG_TA gb 22792.71 184894.84 -80.00 
+  Static96 Stationary.MG_TA gb 22500.10 185138.77 -80.00 
+  Static97 Stationary.MG_TA gb 22226.85 185346.38 -80.00 
+  Static98 Stationary.MG_TA gb 21991.77 185376.88 -80.00 
+  Static99 Stationary.MG_TA gb 22102.55 184960.52 -80.00 
+  Static100 Stationary.MG_TA gb 21836.86 184714.69 -80.00 
+  Static101 Stationary.MG_TA gb 21244.57 185384.94 -80.00 
+  Static102 Stationary.MG_TA gb 21576.42 185412.23 -80.00 
+  Static103 Stationary.MG_TA gb 22458.01 184741.42 -80.00 
+  Static104 Stationary.MG_TA gb 23759.93 184755.89 -80.00 
+  Static105 Stationary.MG_TA gb 24031.26 184843.45 -80.00 
+  Static106 Stationary.MG_TA gb 24358.49 184980.34 -80.00 
+  Static107 Stationary.MG_TA gb 24634.68 185143.05 -80.00 
+  Static108 Stationary.MG_TA gb 25189.09 185187.58 -80.00 
+  Static109 Stationary.MG_TA gb 24655.26 184557.45 -80.00 
+  Static110 Stationary.MG_TA gb 23457.84 184348.75 -80.00 
+  Static111 Stationary.MG_TA gb 25255.96 184686.61 -80.00 
+  Static112 Stationary.MG_TA gb 25601.40 185197.28 -80.00 
+  Static113 Stationary.MG_TA gb 26005.47 185208.00 -80.00 
+  Static114 Stationary.MG_TA gb 26251.56 185269.52 -80.00 
+  Static115 Stationary.MG_TA gb 26634.67 185404.25 -80.00 
+  Static116 Stationary.MG_TA gb 26911.40 185548.89 -80.00 
+  Static117 Stationary.MG_TA gb 27145.17 185761.16 -80.00 
+  Static118 Stationary.MG_TA gb 27460.18 185609.06 -80.00 
+  Static119 Stationary.MG_TA gb 27756.78 185398.44 -80.00 
+  Static120 Stationary.MG_TA gb 28188.72 185101.88 -80.00 
+  Static121 Stationary.MG_TA gb 27211.08 186349.98 -80.00 
+  Static122 Stationary.MG_TA gb 26680.97 186186.75 -80.00 
+  Static123 Stationary.MG_TA gb 26370.09 185992.00 -80.00 
+  Static124 Stationary.MG_TA gb 26065.80 185859.48 -80.00 
+  Static125 Stationary.MG_TA gb 25823.85 185816.91 -80.00 
+  Static126 Stationary.MG_TA gb 21119.97 188055.33 -80.00 
+  Static127 Stationary.MG_TA gb 20276.50 187985.86 -80.00 
+  Static128 Stationary.MG_TA gb 20513.47 187771.17 -80.00 
+  Static129 Stationary.MG_TA gb 20129.06 187643.16 -80.00 
+  Static130 Stationary.MG_TA gb 19850.16 187332.52 -80.00 
+  Static131 Stationary.MG_TA gb 19565.07 187295.45 -80.00 
+  Static132 Stationary.MG_TA gb 20066.32 187303.80 -80.00 
+  Static133 Stationary.MG_TA gb 17939.03 186610.75 -80.00 
+  Static134 Stationary.MG_TA gb 17359.27 186554.78 -80.00 
+  Static135 Stationary.MG_TA gb 17583.72 186919.52 -80.00 
+  Static136 Stationary.MG_TA gb 24230.00 185798.20 -80.00 
+  Static137 Stationary.MG_TA gb 24928.26 186265.95 -80.00 
+  Static138 Stationary.MG_TA gb 23964.47 186897.27 -80.00 
+  Static139 Stationary.MG_TA gb 23349.47 187925.55 -80.00 
+  Static140 Stationary.MG_TA gb 17295.79 180437.30 -80.00 
+[Buildings]
+[BuildingsLinks]

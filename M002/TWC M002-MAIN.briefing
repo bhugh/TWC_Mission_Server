@@ -1,18 +1,37 @@
-[Army Red]
+﻿[Army Red]
 <Name>
 Army Red
 <Description>
 Mission 2 0700 hrs.
 
-Take off at Old Sarem, Bembridge, Worthydown, Ford, or Gosport 
+Take off at Old Sarem, Bembridge, Worthydown, Ford, or Gosport. You have re-supply bases available at Andover, Gosport and Ford.  
 
-You have re-supply bases available at Andover, Gosport and Ford.  
+Repel the bomber attacks at Bembridge. Save the radar at Ventnor. Enemy raids will be coming to Worthydown and Old Sarum. Our most vital role is to protect the fuel and shipping located at Portsmouth, as well as the dams at Cowes, Hamble, and Southampton.
 
-Repel the bomber attacks at Bembridge. Save the radar at Ventnor. Enemy raids will be coming to Worthydown and Old Sarum. Our most vital role is to protect the fuel and shipping located at Portsmouth.
+The enemy can turn the map by destroying the dams at Southampton and Cowes and the Fuel Storage at Portsmouth Harbor, decimating our industrial capacity and paving the way for the invasion of the homeland.  Defend those three targets at all costs!
 
-Be aware, because there are some real hot pilots coming after you!
+Blenny Pilots: Your primary mission is to destroy the dams at Le Havre and Les Andelys (AY-03.5) and the Fuel Dump at Le Havre. If you destroy those three targets, you will turn the map.
 
-Blenny Pilots: Your primary mission is to destroy the dam at Le Harve.  Additionally, destroy targets at Cherbourg harbor along with fuel storage and invasion barges and shipping in both locations!
+The Fuel Dump at Le Havre is complex of large fuel tanks along an inner harbor at AQ-06.1. This is about 1.2 miles ESE of the end of the long pier, where many ships, including the Minensuchtboot, often linger.
+
+Additionally, destroy targets at Cherbourg harbor along with fuel storage and invasion barges and shipping in both Cherbourg and Le Havre and an important dam at Les Andelys (AY-03.5)!
+
+There are many bomber targets of opportunity--fuel dumps and isolated factory complexes building war materials.  Fly along the coast or along the river towards Rouen-Boos and you will see many of these bombing targets appear (visible black dots); destruction of any of them will help build your career. 
+
+Additionally, nearly every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Le Havre, Caen, Rouen, Querqueville, etc. Many of these do not show with visible black dots, but require finding and seeking. 
+
+An enemy tanker has been spotted south of Niton on the Isle of Wight.
+
+Several trains are running and are targets for both bombers and fighters.
+
+Bombers and fighter cover can take off using air spawn points and land or R&R at small beachheads the army has managed to carve out at Dieppe and Crepon.  If necessary, bomber pilots can ditch anywhere in friendly waters with relative safety and--with even greater safety--anywhere on land within friendly territory on the two beachheads near Dieppe and Crepon.
+
+AA works to defend your base and is live for you to operate if you choose it from the map screen.
+
+AVAILABLE AIRCRAFT
+On the Mission Server, you gain access to more aircraft as you work your way up the ranks and get promotions.  So you will find many aircraft at airports that are not yet available for your use, because you have not yet earned access.
+
+Use Chat Commands <ac and <nextac to find out which aircraft you are allowed use at your current rank.
 
 RADAR
 Radar is available (use TAB-4-1).
@@ -31,27 +50,42 @@ Translation of Radar transmission:
 There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
 
 Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
-AA works to defend your base also and is live for you to use if you choose!
-
-Mission length: 90 minutes.
 <Slide>
-../../screenshots/screenshot1.jpg
+../twc-spits.bmp
 <Caption>
 [Army Blue]
 <Name>
 Army Blue
 <Description>
-
 Mission 2 0700 hrs
 
-Take off from Le Havre, Querqueville, or Theville.  Your mission is to protect you airport from the enemy fighters and bombers attacking the resorces and shipping in your area!
+Take off from Le Havre, Querqueville, or Theville.  Your mission is to protect you airport from the enemy fighters and bombers attacking the resources and shipping in your area!
+
 You may also attack the airport at Bembridge and the radar installation at Ventnor.
 
 Squadrons of bombers will be attacking these targets, Flak will be fierce and enemy aircraft will be attacking the bomber squadrons.  Defend your bomber squadrons or run your own bombing missions on these important targets.
 
-Many Targets exist for the Bomber boys. Two corvettes guard 5 precious tankers, for example.  The ships and fuel storage at the Portsmouth are the most strategic.
+Many Targets exist for the Bomber pilots. Two corvettes guard 5 precious tankers--search near Selsey point and near the Isle of Wight at Sandown.  The ships and fuel storage at the Portsmouth are of vital importance to the enemy.  A large dam is upriver of Hamble.
 
-Also a raid is headed to Le Harve. Bombers will be attempting to destroy that dam and other valuable targets.  See if you can stop them. Good luck!
+Bombers can turn the map by destroying three of the highest priority targets: the dams at Southampton (AG-20.7) and at Cowes (AG-19.8) and the Fuel Dump at Portsmouth Harbor (AH-20.3). Destroying these three targets will decimate the Brits' industrial capacity and pave the way for the invasion of Great Britain. 
+
+Bombers and fighter cover can take off using an air spawn point and land or R&R at a small beachhead the army has managed to carve out at Shoreham.
+
+An enemy raid is headed to Le Havre, where it will try to take out the city's industrial area. 
+
+There are many bomber targets of opportunity--fuel dumps and isolated factory complexes building war materials.  Fly along the English coast, over the Isle of Wight, up the river towards Southampton, or anywhere in the surrounding countryside and you will see many of these bombing targets appear; destruction of any of them will help build your career. 
+
+Additionally, nearly every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Portsmouth, Bournemouth, Southampton, London, Gravesend, Reading, Basingstoke,  Petersfield, Chichester, Worthing, Hastings, etc. Many of these do not show with visible black dots, but require finding and seeking.
+
+Two corvettes guard 5 precious tankers--search near Selsey point and near the Isle of Wight at Sandown.  
+
+Several trains are running and are targets for both bombers and fighters.
+
+Bombers and fighter cover can take off using air spawn points and land or R&R at small beachheads the army has managed to carve out at Shoreham and the peninsula east of Bournemouth.  If necessary, bomber pilots can ditch anywhere in friendly waters with relative safety and--with even greater safety--anywhere within friendly territory on the two beachheads near Shoreham and Bournemouth.
+
+Bombers will be attempting to destroy the Le Havre dam, the dams at Les Andelys and Ouistreham, and other valuable targets.  If the enemy destroys the dams at Le Havre and Les Andelys (AY-03.5) and the fuel storage at Le Havre Harbor, they will turn the map.  Defend them at all costs!
+
+AA works to defend your base also and is live for you to use if you choose it from the map screen.
 
 RADAR
 Radar is available (use TAB-4-1).
@@ -70,10 +104,13 @@ Translation of Radar transmission:
 There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
 
 Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
-AA works to defend your base also and is live for you to use if you choose
 
-Mission length: 90 minutes.
+AA works to defend your base and is live for you to operate if you choose it from the map screen.
+
+AVAILABLE AIRCRAFT
+On the Mission Server, you gain access to more aircraft as you work your way up the ranks and get promotions.  So you will find many aircraft at airports that are not yet available for your use, because you have not yet earned access.
+
+Use Chat Commands <ac and <nextac to find out which aircraft you are allowed use at your current rank.
 <Slide>
 ../../screenshots/shot_20141127_095901.bmp
 <Caption>
-

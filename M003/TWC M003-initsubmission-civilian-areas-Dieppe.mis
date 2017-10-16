@@ -1,0 +1,56 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 14
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 7
+  ThermalActivity 7
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.MG_TA nn 231000.14 101109.13 45.00 
+  Static1 Stationary.MG_TA nn 230747.75 100853.45 45.00 
+  Static2 Stationary.MG_TA nn 230490.34 100698.54 45.00 
+  Static3 Stationary.MG_TA nn 230240.11 100851.30 45.00 
+  Static4 Stationary.MG_TA nn 230084.44 101065.34 45.00 
+  Static5 Stationary.MG_TA nn 229871.14 101294.54 45.00 
+  Static6 Stationary.MG_TA nn 229654.27 101542.93 45.00 
+  Static7 Stationary.MG_TA nn 229181.50 101638.59 45.00 
+  Static8 Stationary.MG_TA nn 228886.11 101425.09 45.00 
+  Static9 Stationary.MG_TA nn 228821.08 101123.84 45.00 
+  Static10 Stationary.MG_TA nn 228876.16 100828.99 45.00 
+  Static11 Stationary.MG_TA nn 228867.69 100531.42 45.00 
+  Static12 Stationary.MG_TA nn 228826.89 100285.59 45.00 
+  Static13 Stationary.MG_TA nn 228727.19 100017.43 45.00 
+  Static14 Stationary.MG_TA nn 228459.94 99787.59 45.00 
+  Static15 Stationary.MG_TA nn 228129.39 99610.18 45.00 
+  Static16 Stationary.MG_TA nn 227772.00 99401.86 45.00 
+  Static17 Stationary.MG_TA nn 228547.77 99017.62 45.00 
+  Static18 Stationary.MG_TA nn 228841.17 99232.30 45.00 
+  Static19 Stationary.MG_TA nn 229091.75 99497.07 45.00 
+  Static20 Stationary.MG_TA nn 229331.59 99228.81 45.00 
+  Static21 Stationary.MG_TA nn 229564.06 99028.03 45.00 
+  Static22 Stationary.MG_TA nn 229837.80 98796.49 45.00 
+  Static23 Stationary.MG_TA nn 229114.59 98835.53 45.00 
+  Static24 Stationary.AEC_Regent_II nn 228819.97 98858.98 45.00 
+  Static25 Stationary.AEC_Regent_II nn 230252.34 101635.45 45.00 
+  Static26 Stationary.AEC_Regent_II nn 230688.61 101471.20 45.00 
+  Static27 Stationary.AEC_Regent_II nn 228213.19 100782.95 45.00 
+  Static28 Stationary.AEC_Regent_II nn 227662.09 100542.52 45.00 
+  Static29 Stationary.AEC_Regent_II nn 228077.23 100100.70 45.00 
+  Static30 Stationary.MG_TA nn 230690.56 102232.81 45.00 
+  Static31 Stationary.MG_TA nn 231180.00 102428.19 45.00 
+  Static32 Stationary.MG_TA nn 231824.34 102502.57 45.00 
+  Static33 Stationary.MG_TA nn 232311.72 102545.30 45.00 
+[Buildings]
+[BuildingsLinks]

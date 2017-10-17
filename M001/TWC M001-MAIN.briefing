@@ -1,4 +1,4 @@
-﻿[Army Red]
+[Army Red]
 <Name>
 Army Red
 <Description>
@@ -74,24 +74,25 @@ The ground vehicles will be all over the airport and may be on the runway--espec
 MISSION 1 GENERAL OBJECTIVES
 Take off at Old Sarem, Bembridge, Worthydown, Ford, or Gosport. You have re-supply bases available at Andover, Gosport and Ford.  
 
-Bomber Targets
+BOMBER TARGETS
 Bombers may destroy targets at Cherbourg harbor along with fuel storage and invasion barges and shipping in both Cherbourg and Le Havre and an important dam at Les Andelys (AY-03.5)!
        
 There are many bomber targets of opportunity--fuel dumps and isolated factory complexes building war materials.  Fly along the coast or along the river towards Rouen-Boos and you will see many of these bombing targets appear (visible black dots); destruction of any of them will help build your career. 
 
-Additionally, nearly every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Le Havre, Caen, Rouen, Querqueville, etc. Many of these do not show with visible black dots, but require finding and seeking. 
+Additionally, every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Le Havre, Caen, Rouen, Querqueville, etc. Many of these do not show with visible black dots, but require finding and seeking.
+
+Every industrial area is a bomber target and can be area bombed.  Every airport is a bomber target; bomb hits create craters that disrupt airport traffic and with sufficient hits, disable the airport. 
 
 An enemy tanker has been spotted south of Niton on the Isle of Wight. Several tankers and a Minensuchboot are docked at Le Havre. 
 
 Minensuchtboote have been spotted: (1) about 20 miles NNW of Fecamp, steaming towards the mouth of the Seine, (2) at the western tip of the Cherbourg peninsula steaming north towards Bournemouth, and (3) patrolling the western coast of the Cherbourg peninsula, just south of the NW tip of the peninsula.
 
-Several trains are running and are targets for both bombers and fighters.
+Several trains may be running and, if spotted, are targets for both bombers and fighters.
 
-Advance Refueling Airports
+ADVANCE REFUELING AIRPORTS
 Bombers and fighter cover can take off using air spawn points and land or R&R at small beachheads the army has managed to carve out at Dieppe and Crepon.  If necessary, bomber pilots can ditch anywhere in friendly waters with relative safety and--with even greater safety--anywhere on land within friendly territory on the two beachheads near Dieppe and Crepon.
 
 AA works to defend your bases and is live for you to operate if you choose it from the map screen.
-
 
 MISSION 1 TOP PRIORITY OBJECTIVES
 
@@ -103,7 +104,7 @@ Blenny Pilots: Your primary mission is to destroy the dams at Le Havre and Ouist
 
 The Fuel Dump at Le Havre is complex of large fuel tanks along an inner harbor at AQ-06.1. This is about 1.2 miles ESE of the end of the long pier, where many ships, including the Minensuchtboot, often linger.
 
-<obj to check friendly & enemy objectives
+Use chat command <obj to check friendly & enemy objectives.
 <Slide>
 ../twc-spits.bmp
 <Caption>
@@ -183,20 +184,22 @@ The ground vehicles will be all over the airport and may be on the runway--espec
 MISSION 1 GENERAL OBJECTIVES AND TARGETS
 Take off from Le Havre, Querqueville, or Theville.
   
-Bomber Targets
+BOMBER TARGETS
 Bombers may attack the airport at Bembridge and the radar installation at Ventnor.
 
 There are many bomber targets of opportunity--fuel dumps and isolated factory complexes building war materials.  Fly along the English coast, over the Isle of Wight, up the river towards Southampton, or anywhere in the surrounding countryside and you will see many of these bombing targets appear (visible black dots); destruction of any of them will help build your career.
 
-Additionally, nearly every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Portsmouth, Bournemouth, Southampton, London, Gravesend, Reading, Basingstoke,  Petersfield, Chichester, Worthing, Hastings, etc. Many of these do not show with visible black dots, but require finding and seeking.
+Additionally, every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Portsmouth, Bournemouth, Southampton, London, Gravesend, Reading, Basingstoke,  Petersfield, Chichester, Worthing, Hastings, etc. Many of these do not show with visible black dots, but require finding and seeking.
+
+Every industrial area is a bomber target and can be area bombed.  Every airport is a bomber target; bomb hits create craters that disrupt airport traffic and with sufficient hits, disable the airport. 
 
 Two corvettes guard 5 precious tankers--search near Selsey point and near the Isle of Wight at Sandown.  
 
 Intelligence reports three single corvette patrols--attack if you dare: (1) Originating near Bournemouth and steaming due south towards Cherbourge; (2) about 30 km south of Brighton steam towards Selsey Point; and (3)  steaming up the mouth of the Thames starting near Southend-on-Sea and proceeding west towards London.
 
-Several trains are running and are targets for both bombers and fighters.
+Several trains may be running and, if spotted, are targets for both bombers and fighters.
 
-Bomber Advance Refueling Bases
+ADVANCE REFUELING BASES
 Bombers and fighter cover can take off using air spawn points and land or R&R at small beachheads the army has managed to carve out at Shoreham and the peninsula east of Bournemouth.  If necessary, bomber pilots can ditch anywhere in friendly waters with relative safety and--with even greater safety--anywhere within friendly territory on the two beachheads near Shoreham and Bournemouth.
 
 AA works to defend your base also and is live for you to use if you choose it from the map screen.
@@ -208,7 +211,7 @@ Bombers can turn the map by destroying three of the highest priority targets: th
 
 Enemy bombers will be attempting to destroy the Le Havre dam, the dams at Les Andelys and Ouistreham, and other valuable targets.  If the enemy destroys the fuel storage at Le Havre Harbor and the dams at Le Havre and Ouistreham, they will turn the map.  Defend these three targets at all costs!
 
-<obj to check friendly & enemy objectives
+Use chat command <obj to check friendly & enemy objectives.
 <Slide>
 ../twc-spits.bmp
 <Caption>

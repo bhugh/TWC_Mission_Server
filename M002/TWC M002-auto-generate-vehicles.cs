@@ -676,14 +676,24 @@ public class Mission : AMission
             CarTypes.Add(":0_Chief_Bomb_");
             CarTypes.Add(":0_Chief_Prisoner_");
 
-            //listAllGroundActors(missionNumber); //testing
-            //listAllStationaries(missionNumber); //testing
+                /*if (missionNumber > 42)
+                {
+                    listAllGroundActors(missionNumber); //testing
+                    listAllStationaries(missionNumber); //testing
+                }*/
 
-            //Timeout (30, () => { destroyAllGroundActors(missionNumber); }); //testing
+                //Timeout (30, () => { destroyAllGroundActors(missionNumber); }); //testing
+
+
+                /*Timeout(90, () => {
+                    listAllGroundActors(missionNumber); //testing
+                    listAllStationaries(missionNumber); //testing
+
+                }); */
 
 
 
-            AiGroundGroup MyCar = null;
+                    AiGroundGroup MyCar = null;
             
             for (int i = 0; i < 3; i++)
             {

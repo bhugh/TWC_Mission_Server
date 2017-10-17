@@ -132,7 +132,7 @@ using maddox.game.play;
 using maddox.game.page;
 using part;
 using Ini;
-//using TF_Extensions;  //not working for now?
+using TF_Extensions;  //not working for now?
 
 //test
 
@@ -363,7 +363,7 @@ public class Mission : AMission
         stb_ChangeBomberAttackProb = (stb_ChangeBomberAttackProbHigh - stb_ChangeBomberAttackProbLow) * stb_random.NextDouble() + stb_ChangeBomberAttackProbLow;
         stb_ChangeAttackProb_SmallGroup = (stb_ChangeAttackProb_SmallGroupHigh - stb_ChangeAttackProb_SmallGroupLow) * stb_random.NextDouble() + stb_ChangeAttackProb_SmallGroupLow;            
 
-        if (stb_Debug) Console.WriteLine("stb_ChangeAttackProb: " + stb_ChangeAttackProb + " stb_ChangeBomberAttackProb:" + stb_ChangeBomberAttackProb);
+        //if (stb_Debug) Console.WriteLine("stb_ChangeAttackProb: " + stb_ChangeAttackProb + " stb_ChangeBomberAttackProb:" + stb_ChangeBomberAttackProb);
 
 }
 
@@ -885,7 +885,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if ( aircraft==null || aircraft_type==null ) {
                 if (this.mission.stb_restrictAircraftByKills || this.mission.stb_restrictAircraftByRank)
                 {
-                    if (mission.stb_Debug) Console.WriteLine("StbRaa_isPlayerAllowedAircraft: Reached with Aircraft==null");
+                    //if (mission.stb_Debug) Console.WriteLine("StbRaa_isPlayerAllowedAircraft: Reached with Aircraft==null");
                     //if (player != null) mission.Stb_Message(new Player[] { player }, "Restricted from this aircraft because of your rank or ace level OR a general error has occured. Please report to the admins if you feel this is in error.", new object[] { });
                     return false;
                 }
@@ -1503,7 +1503,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             bool endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = false;
 
-            if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec < 10 * 60))
+            if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec < 10 * 60)  && flightDuration_sec > 0)
                 endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true; //Short flight & all self-damage, your mission is over
 
             if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec >= 10 * 60) && (cm.selfDamageThisFlight > 10))
@@ -1513,7 +1513,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             //record the time for the flight              
             Mission.StbStatTask sst = new Mission.StbStatTask(Mission.StbStatCommands.Mission, player.Name(), new int[] { 792, flightDuration_sec }, player.Place() as AiActor);
-            this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+            if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
 
 
@@ -1522,7 +1522,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                 }, player.Place() as AiActor);  //putting the # in the [2] position (ie, 829, 0, MYNEWVALUE) in StbStatCommands.Mission means to set the value to that number, vs putting it in the [1] position which ADDS the value to the existing entry
             this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
-            if (cm.alive && actorAlive && !endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage)
+            if (cm.alive && actorAlive && !endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
             {
                 cm.mayContinue = true;
                 if (!cm.isForcedPlaceMove) this.mission.Stb_Message(new Player[] { player }, "Important Notice: When you land safely at an airport and and take off again from that same airport, your Continuous Mission will continue unbroken (for stats purposes).", new object[] { });
@@ -1534,7 +1534,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
             //Record the fact that the sortie was ended with only self-damage.  ID=791
-            if (cm.alive && actorAlive && endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage)
+            if (cm.alive && actorAlive && endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
             {
                 Mission.StbStatTask sst1 = new Mission.StbStatTask(Mission.StbStatCommands.Mission, player.Name(), new int[] { 791 }, player.Place() as AiActor);
                 this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst1);
@@ -1716,7 +1716,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
               
               //record the time for the flight
               Mission.StbStatTask sst = new Mission.StbStatTask(Mission.StbStatCommands.Mission, playerName, new int[] { 792, flightDuration_sec  });
-              this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);            
+              if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);            
                           
               //p = player.Place() as AiAircraft;          
               //p.Pos().x, p.Pos().y)
@@ -3200,7 +3200,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             string msg1 = string.Format("Current Session Stats: {0:0.00} total Kill Points; {1:0.00}/{2:0.00}/{3:0.00}/{4:0.00} Air/AA/Naval/Ground Kill Points",
                 (double)(currSessStat.getSessStat(798)) / 100, (double)(currSessStat.getSessStat(802)) / 100, (double)(currSessStat.getSessStat(806)) / 100, (double)(currSessStat.getSessStat(810)) / 100, ((double)currSessStat.getSessStat(814)) / 100);
 
-            this.mission.Stb_Message(new Player[] { player }, msg1, null);
+            //Also include player's penalty points if there are any.
+            if (currSessStat.getSessStat(847) < 0)
+            {
+                msg1 += string.Format("; Penalty Points: {0:0.00}", (double)(currSessStat.getSessStat(847)) / 100);
+            }
+
+            this.mission.Stb_Message(new Player[] { player }, msg1, null);           
 
 
             mission.Timeout(2, () => { //Apparently Timeout is a method of mission . . . who knew?
@@ -3318,9 +3324,17 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                   (double)(BS.getSessStat(798)) / 100, (double)(BS.getSessStat(802)) / 100, (double)(BS.getSessStat(806)) / 100, 
                   (double)(BS.getSessStat(810)) / 100, (double)(BS.getSessStat(814)) / 100);
 
+                //Also include Team's penalty points if there are any.
+                if (BS.getSessStat(847) < 0)
+                {
+                    msg1 += string.Format("; Penalty Points: {0:0.00}", (double)(BS.getSessStat(847)) / 100);
+                }
+
+
                 if (player != null) mission.Timeout(2, () => {
                     this.mission.Stb_Message(new Player[] { player }, msg1, null);
                 });
+
                 ms = msg1;
             
 
@@ -3370,14 +3384,21 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //currSessStat.getSessStat(778);
                 //PlayerStats.getSessStat(778);
                 
-                    string msg4 = string.Format("RED session totals: {0:0.0} total Kill Points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground Kill Points",
+                string msg4 = string.Format("RED session totals: {0:0.0} total Kill Points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground Kill Points",
                       (double)(RS.getSessStat(798)) / 100, (double)(RS.getSessStat(802)) / 100, (double)(RS.getSessStat(806)) / 100,
                       (double)(RS.getSessStat(810)) / 100, (double)(RS.getSessStat(814)) / 100);
 
-                    if (player != null) mission.Timeout(5, () => {
+                //Also include Team's penalty points if there are any.
+                if (RS.getSessStat(847) < 0)
+                {
+                    msg4 += string.Format("; Penalty Points: {0:0.00}", (double)(RS.getSessStat(847)) / 100);
+                }
+
+
+                if (player != null) mission.Timeout(5, () => {
                         this.mission.Stb_Message(new Player[] { player }, msg4, null);
-                    });
-                    ms += "<br>" + msg4;
+                });
+                ms += "<br>" + msg4;
                 
 
                 
@@ -3575,7 +3596,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 if (stbSr_LogStats)
                 {
                     if (stbSr_AllPlayerStats.Count == 0) return;
-                    StbSr_WriteLine("Stats: Writing stats file to hard drive.");
+                    //StbSr_WriteLine("Stats: Writing stats file to hard drive.");
                     
                     int currTime_sec = Calcs.TimeSince2016_sec();
                     
@@ -4240,20 +4261,24 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         */
 
                         bool append = true;
-                        if (!file_exists || lastwrite.ToString("dd") != now.ToString("dd") ) append = false; //every day when UTC date changes we start a new file & save the previous one day
-                        
-                        try
-                        {
-                            if (prev_file_exists) File.Delete(previous_filename);
-                        }
-                        catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "teamdelete"); }
+                        if (!file_exists || lastwrite.ToString("dd") != now.ToString("dd") ) append = false; //every day when UTC date changes we start a new file & save the previous one day                        
 
-                        try
+
+                        //Copy over to prev-day file if we are starting a new file here, OR the prev-day file doesn't exist
+                        if (file_exists && (!append || !prev_file_exists))
                         {
-                            //Copy over to prev-day file if we are starting a new file here, OR the prev-day file doesn't exist
-                            if (file_exists && (!append || !prev_file_exists)) File.Copy(filename, previous_filename);
+                            try
+                            {
+                                if (prev_file_exists) File.Delete(previous_filename);
+                            }
+                            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "teamdelete"); }
+                            try
+                            {
+                                File.Copy(filename, previous_filename);
+                            }
+                            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "teamcopy"); }
                         }
-                        catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "teamcopy"); }
+                        
 
                         string ms = StbSr_Display_SessionStatsTeam(null);
                         bool changed = (ms != StbSr_STSS_old_ms);
@@ -5388,539 +5413,539 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     }
 
 
-    private void Stb_LoadBombers1DraftToMemory()
-    {
-        ISectionFile f = GamePlay.gpCreateSectionFile();
-        string s = "";
-        string k = "";
-        string v = "";
+   private void Stb_LoadBombers1DraftToMemory()
+   {
+       ISectionFile f = GamePlay.gpCreateSectionFile();
+       string s = "";
+       string k = "";
+       string v = "";
 
-        s = "AirGroups";
-        k = "gb02.03"; v = ""; f.add(s, k, v);
-        k = "g02.03"; v = ""; f.add(s, k, v);
-        s = "gb02.03";
-        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-        k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
-        k = "Formation"; v = "VIC3"; f.add(s, k, v);
-        k = "CallSign"; v = "26"; f.add(s, k, v);
-        k = "Fuel"; v = "66"; f.add(s, k, v);
-        k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
-        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        s = "gb02.03_Way";
-        k = "NORMFLY"; v = "19500.00 39000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "19500.00 31000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "17500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "17000.00 18000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "19500.00 39000.00 3000.00 366.00"; f.add(s, k, v);
-        s = "g02.03";
-        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-        k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
-        k = "Formation"; v = "VIC3"; f.add(s, k, v);
-        k = "CallSign"; v = "30"; f.add(s, k, v);
-        k = "Fuel"; v = "66"; f.add(s, k, v);
-        k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
-        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        s = "g02.03_Way";
-        k = "NORMFLY"; v = "10500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "10500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "12500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "13000.00 24000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "10500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
-        s = "Stationary";
-        k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       s = "AirGroups";
+       k = "gb02.03"; v = ""; f.add(s, k, v);
+       k = "g02.03"; v = ""; f.add(s, k, v);
+       s = "gb02.03";
+       k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+       k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+       k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
+       k = "Formation"; v = "VIC3"; f.add(s, k, v);
+       k = "CallSign"; v = "26"; f.add(s, k, v);
+       k = "Fuel"; v = "66"; f.add(s, k, v);
+       k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
+       k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       s = "gb02.03_Way";
+       k = "NORMFLY"; v = "19500.00 39000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "19500.00 31000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "17500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "17000.00 18000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "19500.00 39000.00 3000.00 366.00"; f.add(s, k, v);
+       s = "g02.03";
+       k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+       k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+       k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
+       k = "Formation"; v = "VIC3"; f.add(s, k, v);
+       k = "CallSign"; v = "30"; f.add(s, k, v);
+       k = "Fuel"; v = "66"; f.add(s, k, v);
+       k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
+       k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       s = "g02.03_Way";
+       k = "NORMFLY"; v = "10500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "10500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "12500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "13000.00 24000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "10500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
+       s = "Stationary";
+       k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
 
-        stb_Bombers1 = f;
-    }
+       stb_Bombers1 = f;
+   }
 
-    private void Stb_LoadBombers2DraftToMemory()
-    {
-        ISectionFile f = GamePlay.gpCreateSectionFile();
-        string s = "";
-        string k = "";
-        string v = "";
+   private void Stb_LoadBombers2DraftToMemory()
+   {
+       ISectionFile f = GamePlay.gpCreateSectionFile();
+       string s = "";
+       string k = "";
+       string v = "";
 
-        s = "AirGroups";
-        k = "gb02.03"; v = ""; f.add(s, k, v);
-        k = "g02.03"; v = ""; f.add(s, k, v);
-        s = "gb02.03";
-        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-        k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
-        k = "Formation"; v = "VIC3"; f.add(s, k, v);
-        k = "CallSign"; v = "26"; f.add(s, k, v);
-        k = "Fuel"; v = "66"; f.add(s, k, v);
-        k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
-        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        s = "gb02.03_Way";
-        k = "NORMFLY"; v = "11600.00 38900.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "12500.00 30000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "11500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "12500.00 18000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "11600.00 38900.00 3000.00 366.00"; f.add(s, k, v);
-        s = "g02.03";
-        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-        k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
-        k = "Formation"; v = "VIC3"; f.add(s, k, v);
-        k = "CallSign"; v = "30"; f.add(s, k, v);
-        k = "Fuel"; v = "66"; f.add(s, k, v);
-        k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
-        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-        s = "g02.03_Way";
-        k = "NORMFLY"; v = "20500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "20500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "18500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "18500.00 24000.00 2000.00 250.00"; f.add(s, k, v);
-        k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
-        k = "NORMFLY"; v = "20500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
-        s = "Stationary";
-        k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-        k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       s = "AirGroups";
+       k = "gb02.03"; v = ""; f.add(s, k, v);
+       k = "g02.03"; v = ""; f.add(s, k, v);
+       s = "gb02.03";
+       k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+       k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+       k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
+       k = "Formation"; v = "VIC3"; f.add(s, k, v);
+       k = "CallSign"; v = "26"; f.add(s, k, v);
+       k = "Fuel"; v = "66"; f.add(s, k, v);
+       k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
+       k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       s = "gb02.03_Way";
+       k = "NORMFLY"; v = "11600.00 38900.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "12500.00 30000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "11500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "12500.00 18000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "11600.00 38900.00 3000.00 366.00"; f.add(s, k, v);
+       s = "g02.03";
+       k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+       k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+       k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
+       k = "Formation"; v = "VIC3"; f.add(s, k, v);
+       k = "CallSign"; v = "30"; f.add(s, k, v);
+       k = "Fuel"; v = "66"; f.add(s, k, v);
+       k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
+       k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+       k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+       k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+       s = "g02.03_Way";
+       k = "NORMFLY"; v = "20500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "20500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "18500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "18500.00 24000.00 2000.00 250.00"; f.add(s, k, v);
+       k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
+       k = "NORMFLY"; v = "20500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
+       s = "Stationary";
+       k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+       k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
 
-        stb_Bombers2 = f;
-    }
+       stb_Bombers2 = f;
+   }
 
-    // Recursive Methods-------------------------------------------------------------------------------------------------------
+   // Recursive Methods-------------------------------------------------------------------------------------------------------
 
-    private void Stb_SpawnAntiAirRecursive()
-    {
-        try
-        {
-            for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-            {
-                bool willBreak = false;
-                for (int j = 0; j < 6; j++)
-                {
-                    string fullActorName = i.ToString() + ":baseDefenseShip_R_" + j.ToString("00");
-                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                }
-                for (int j = 0; j < 6; j++)
-                {
-                    string fullActorName = i.ToString() + ":baseDefenseShip_B_" + j.ToString("00");
-                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                }
-                if (willBreak) { break; }
-            }
-            for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-            {
-                bool willBreak = false;
-                for (int j = 0; j < 28; j++)
-                {
-                    string fullActorName = i.ToString() + ":baseDefenseGun_R_" + j.ToString("00");
-                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                }
-                for (int j = 0; j < 28; j++)
-                {
-                    string fullActorName = i.ToString() + ":baseDefenseGun_B_" + j.ToString("00");
-                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                }
-                if (willBreak) { break; }
-            }
-            GamePlay.gpPostMissionLoad(stb_BaseAntiAirDefenses);
-            Timeout(stb_SpawnAntiAirDelay, Stb_SpawnAntiAirRecursive);
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnAntiAirRecursive()
+   {
+       try
+       {
+           for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+           {
+               bool willBreak = false;
+               for (int j = 0; j < 6; j++)
+               {
+                   string fullActorName = i.ToString() + ":baseDefenseShip_R_" + j.ToString("00");
+                   AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                   if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+               }
+               for (int j = 0; j < 6; j++)
+               {
+                   string fullActorName = i.ToString() + ":baseDefenseShip_B_" + j.ToString("00");
+                   AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                   if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+               }
+               if (willBreak) { break; }
+           }
+           for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+           {
+               bool willBreak = false;
+               for (int j = 0; j < 28; j++)
+               {
+                   string fullActorName = i.ToString() + ":baseDefenseGun_R_" + j.ToString("00");
+                   AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                   if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+               }
+               for (int j = 0; j < 28; j++)
+               {
+                   string fullActorName = i.ToString() + ":baseDefenseGun_B_" + j.ToString("00");
+                   AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                   if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+               }
+               if (willBreak) { break; }
+           }
+           GamePlay.gpPostMissionLoad(stb_BaseAntiAirDefenses);
+           Timeout(stb_SpawnAntiAirDelay, Stb_SpawnAntiAirRecursive);
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_SpawnFrontline1Recursive()
-    {
-        try
-        {
-            if (stb_SpawnFrontline1)
-            {
-                GamePlay.gpPostMissionLoad(stb_Frontline1);
-                Timeout(600.0, Stb_SpawnFrontline1Recursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnFrontline1Recursive()
+   {
+       try
+       {
+           if (stb_SpawnFrontline1)
+           {
+               GamePlay.gpPostMissionLoad(stb_Frontline1);
+               Timeout(600.0, Stb_SpawnFrontline1Recursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_SpawnFrontline2Recursive()
-    {
-        try
-        {
-            if (stb_SpawnFrontline2)
-            {
-                GamePlay.gpPostMissionLoad(stb_Frontline2);
-                Timeout(660.0, Stb_SpawnFrontline2Recursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnFrontline2Recursive()
+   {
+       try
+       {
+           if (stb_SpawnFrontline2)
+           {
+               GamePlay.gpPostMissionLoad(stb_Frontline2);
+               Timeout(660.0, Stb_SpawnFrontline2Recursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_SpawnFrontline3Recursive()
-    {
-        try
-        {
-            if (stb_SpawnFrontline3)
-            {
-                GamePlay.gpPostMissionLoad(stb_Frontline3);
-                Timeout(720.0, Stb_SpawnFrontline3Recursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnFrontline3Recursive()
+   {
+       try
+       {
+           if (stb_SpawnFrontline3)
+           {
+               GamePlay.gpPostMissionLoad(stb_Frontline3);
+               Timeout(720.0, Stb_SpawnFrontline3Recursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_SpawnFrontline4Recursive()
-    {
-        try
-        {
-            if (stb_SpawnFrontline4)
-            {
-                GamePlay.gpPostMissionLoad(stb_Frontline4);
-                Timeout(420.0, Stb_SpawnFrontline4Recursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnFrontline4Recursive()
+   {
+       try
+       {
+           if (stb_SpawnFrontline4)
+           {
+               GamePlay.gpPostMissionLoad(stb_Frontline4);
+               Timeout(420.0, Stb_SpawnFrontline4Recursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_SpawnBombersRecursive()
-    {
-        try
-        {
-            if (stb_SpawnBombers)
-            {
-                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                {
-                    bool willBreak = false;
-                    for (int k = 0; k < 2; k++)
-                    {
-                        for (int j = 0; j < 3; j++)
-                        {
-                            string fullActorName = i.ToString() + ":g02.0" + k.ToString() + j.ToString();
-                            AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
-                            if (aiAircraft != null)
-                            {
-                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
-                                willBreak = true;
-                            }
-                        }
-                    }
-                    for (int k = 0; k < 2; k++)
-                    {
-                        for (int j = 0; j < 3; j++)
-                        {
-                            string fullActorName = i.ToString() + ":gb02.0" + k.ToString() + j.ToString();
-                            AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
-                            if (aiAircraft != null)
-                            {
-                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
-                                willBreak = true;
-                            }
-                        }
-                    }
-                    if (willBreak) { break; }
-                }
-                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                {
-                    bool willBreak = false;
-                    for (int j = 0; j < 4; j++)
-                    {
-                        string fullActorName = i.ToString() + ":BmbArt_R" + j.ToString("0");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    for (int j = 0; j < 4; j++)
-                    {
-                        string fullActorName = i.ToString() + ":BmbArt_B" + j.ToString("0");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    if (willBreak) { break; }
-                }
-                if (stb_BomberMissionTurn)
-                {
-                    GamePlay.gpPostMissionLoad(stb_Bombers1);
-                    stb_BomberMissionTurn = !stb_BomberMissionTurn;
-                }
-                else
-                {
-                    GamePlay.gpPostMissionLoad(stb_Bombers2);
-                    stb_BomberMissionTurn = !stb_BomberMissionTurn;
-                }
-                Timeout(600.0, Stb_SpawnBombersRecursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_SpawnBombersRecursive()
+   {
+       try
+       {
+           if (stb_SpawnBombers)
+           {
+               for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+               {
+                   bool willBreak = false;
+                   for (int k = 0; k < 2; k++)
+                   {
+                       for (int j = 0; j < 3; j++)
+                       {
+                           string fullActorName = i.ToString() + ":g02.0" + k.ToString() + j.ToString();
+                           AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
+                           if (aiAircraft != null)
+                           {
+                               Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                               willBreak = true;
+                           }
+                       }
+                   }
+                   for (int k = 0; k < 2; k++)
+                   {
+                       for (int j = 0; j < 3; j++)
+                       {
+                           string fullActorName = i.ToString() + ":gb02.0" + k.ToString() + j.ToString();
+                           AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
+                           if (aiAircraft != null)
+                           {
+                               Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                               willBreak = true;
+                           }
+                       }
+                   }
+                   if (willBreak) { break; }
+               }
+               for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+               {
+                   bool willBreak = false;
+                   for (int j = 0; j < 4; j++)
+                   {
+                       string fullActorName = i.ToString() + ":BmbArt_R" + j.ToString("0");
+                       AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                       if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                   }
+                   for (int j = 0; j < 4; j++)
+                   {
+                       string fullActorName = i.ToString() + ":BmbArt_B" + j.ToString("0");
+                       AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                       if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                   }
+                   if (willBreak) { break; }
+               }
+               if (stb_BomberMissionTurn)
+               {
+                   GamePlay.gpPostMissionLoad(stb_Bombers1);
+                   stb_BomberMissionTurn = !stb_BomberMissionTurn;
+               }
+               else
+               {
+                   GamePlay.gpPostMissionLoad(stb_Bombers2);
+                   stb_BomberMissionTurn = !stb_BomberMissionTurn;
+               }
+               Timeout(600.0, Stb_SpawnBombersRecursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_LogStatsRecursive()
-    {
-        try
-        {
-            if (stb_LogStats)
-            {
-                StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0 });
-                stb_StatRecorder.StbSr_EnqueueTask(sst);
-                Timeout(stb_LogStatsDelay, Stb_LogStatsRecursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
-
-
-    private void Stb_StatsServerAnnounceRecursive()
-    {
-        try
-        {   
-            if (stb_AnnounceStatsMessages)         
-            {
-                string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Chat Commands <career, <sess";
-                if (stb_restrictAircraftByRank) msg += ", <ac, <nextac.";
-                Stb_Message(null, msg, new object[] { });
-                if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(5, () => { Stb_Message(null, stb_iniFileErrorMessages); }); //Also display the error message bec it is quite important & shouldn't even exist under normal circumstances
-                Timeout(stb_AnnounceStatsMessagesFrequency, Stb_StatsServerAnnounceRecursive);
-            }
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+   private void Stb_LogStatsRecursive()
+   {
+       try
+       {
+           if (stb_LogStats)
+           {
+               StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0 });
+               stb_StatRecorder.StbSr_EnqueueTask(sst);
+               Timeout(stb_LogStatsDelay, Stb_LogStatsRecursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
 
+   private void Stb_StatsServerAnnounceRecursive()
+   {
+       try
+       {   
+           if (stb_AnnounceStatsMessages)         
+           {
+               string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Chat Commands <career, <sess";
+               if (stb_restrictAircraftByRank) msg += ", <ac, <nextac.";
+               Stb_Message(null, msg, new object[] { });
+               if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(5, () => { Stb_Message(null, stb_iniFileErrorMessages); }); //Also display the error message bec it is quite important & shouldn't even exist under normal circumstances
+               Timeout(stb_AnnounceStatsMessagesFrequency, Stb_StatsServerAnnounceRecursive);
+           }
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
 
 
 
-    // Other Methods-----------------------------------------------------------------------------------------------------------
-    public void Stb_Message(Player[] players, string msg, object[] objs = null) //gets around the fact that child objects can't reference GamePlay
-    {
-        //GamePlay.gpLogServer( players, msg, objs);
-        gpLogServerAndLog(players, msg, objs); //using the wrapper with delay etc.
-    }
-    //wrapper for Gameplay.GPLogServer so that we can do things to it, like log it, suppress all output, delay successive messages etc.
-    public void gpLogServerAndLog(Player[] to, object data, object[] third = null)
-    {
-        //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
-        //gpLogServerWithDelay(to, (string)data, third);
-
-        //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
-        string str = (string)data;
-        int maxChunkSize = 200;
-
-        IEnumerable<string> lines = Calcs.SplitToLines(str, maxChunkSize);
-        //for (int i = 0; i < str.Length; i += maxChunkSize)
-        //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
-
-        foreach (string line in lines ) gpLogServerWithDelay(to, line, third);
 
 
-    }
-    //This is designed to space out gplogserver calls, as (say) 5-10 of these in a row will cause a very noticeable stutter
-    //It's sort of a stack for gplogserver messages
-    public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
-    {
-        //defined above:
-        //public Int64 lastGpLogServerMsg_tick = 0;
-        //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
-        //public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second
-        DateTime currentDate = DateTime.Now;
-        //currentDate.Ticks
-        Int64 nextMsg_tick = Math.Max(currentDate.Ticks, lastGpLogServerMsg_tick + GpLogServerMsgDelay_tick);
-        Int64 remainder;
-        Int64 roundTo = 1000000; //round nextMsg_tick UP to the next 1/10 second.  This is to allow different missions/modules to output at different portions of the 0.1 second interval, with the objective of avoiding stutters when messages from different .mis files or modules pile up
-        nextMsg_tick = (Math.DivRem(nextMsg_tick - 1, roundTo, out remainder) + 1) * roundTo; // -1 handles the specific but common situation where we want a 0.1 sec delay but it always rounds it up to 0.2 sec.  This makes it round up for anything greater than roundTo, rather than greater than OR EQUAL TO roundTo.
-        double nextMsgDelay_sec = (double)(nextMsg_tick - currentDate.Ticks) / 10000000;
-        //string msg = (string)data + "(Delayed: " + nextMsgDelay_sec.ToString("0.00") + ")"; //for testing
-        string msg = (string)data; 
-        //GamePlay.gpLogServer(null, nextMsg_tick.ToString() + " " + nextMsgDelay_sec.ToString("0.00"), null); //for debugging
-        Timeout(nextMsgDelay_sec, () => { GamePlay.gpLogServer(to, msg, third); });
-        lastGpLogServerMsg_tick = nextMsg_tick; //Save the time_tick that this message will be displayed; next message will be at least GpLogServerMsgDelay_tick after this
+   // Other Methods-----------------------------------------------------------------------------------------------------------
+   public void Stb_Message(Player[] players, string msg, object[] objs = null) //gets around the fact that child objects can't reference GamePlay
+   {
+       //GamePlay.gpLogServer( players, msg, objs);
+       gpLogServerAndLog(players, msg, objs); //using the wrapper with delay etc.
+   }
+   //wrapper for Gameplay.GPLogServer so that we can do things to it, like log it, suppress all output, delay successive messages etc.
+   public void gpLogServerAndLog(Player[] to, object data, object[] third = null)
+   {
+       //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
+       //gpLogServerWithDelay(to, (string)data, third);
 
-    }
+       //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
+       string str = (string)data;
+       int maxChunkSize = 200;
 
-    //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
-    //the messages can be seen on the lobby/map screen
-    public void Stb_Chat(string line, Player player)
-    {
-        if (GamePlay is GameDef)
-        {
-            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
-        }
-    }
-    private void Stb_CutPlane(AiAircraft aircraft, LimbNames ln)
-    {
-        try { aircraft.cutLimb(ln); }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+       IEnumerable<string> lines = Calcs.SplitToLines(str, maxChunkSize);
+       //for (int i = 0; i < str.Length; i += maxChunkSize)
+       //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
 
-    private void Stb_DamagePlane(AiAircraft aircraft, NamedDamageTypes ndt)
-    {
-        try { aircraft.hitNamed(ndt); }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+       foreach (string line in lines ) gpLogServerWithDelay(to, line, third);
 
-    private bool Stb_isAiControlledPlane(AiAircraft aircraft)
-    {
-        try {   
 
-            if (aircraft == null)
-                return false;
+   }
+   //This is designed to space out gplogserver calls, as (say) 5-10 of these in a row will cause a very noticeable stutter
+   //It's sort of a stack for gplogserver messages
+   public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
+   {
+       //defined above:
+       //public Int64 lastGpLogServerMsg_tick = 0;
+       //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
+       //public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second
+       DateTime currentDate = DateTime.Now;
+       //currentDate.Ticks
+       Int64 nextMsg_tick = Math.Max(currentDate.Ticks, lastGpLogServerMsg_tick + GpLogServerMsgDelay_tick);
+       Int64 remainder;
+       Int64 roundTo = 1000000; //round nextMsg_tick UP to the next 1/10 second.  This is to allow different missions/modules to output at different portions of the 0.1 second interval, with the objective of avoiding stutters when messages from different .mis files or modules pile up
+       nextMsg_tick = (Math.DivRem(nextMsg_tick - 1, roundTo, out remainder) + 1) * roundTo; // -1 handles the specific but common situation where we want a 0.1 sec delay but it always rounds it up to 0.2 sec.  This makes it round up for anything greater than roundTo, rather than greater than OR EQUAL TO roundTo.
+       double nextMsgDelay_sec = (double)(nextMsg_tick - currentDate.Ticks) / 10000000;
+       //string msg = (string)data + "(Delayed: " + nextMsgDelay_sec.ToString("0.00") + ")"; //for testing
+       string msg = (string)data; 
+       //GamePlay.gpLogServer(null, nextMsg_tick.ToString() + " " + nextMsgDelay_sec.ToString("0.00"), null); //for debugging
+       Timeout(nextMsgDelay_sec, () => { GamePlay.gpLogServer(to, msg, third); });
+       lastGpLogServerMsg_tick = nextMsg_tick; //Save the time_tick that this message will be displayed; next message will be at least GpLogServerMsgDelay_tick after this
 
-            //check if a player is in any of the "places"
-            for (int i = 0; i < aircraft.Places(); i++)
-                if (aircraft.Player(i) != null)
-                    return false;
+   }
 
-            return true;
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
-    }
+   //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
+   //the messages can be seen on the lobby/map screen
+   public void Stb_Chat(string line, Player player)
+   {
+       if (GamePlay is GameDef)
+       {
+           (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
+       }
+   }
+   private void Stb_CutPlane(AiAircraft aircraft, LimbNames ln)
+   {
+       try { aircraft.cutLimb(ln); }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-    private void Stb_RemovePlayerFromCart(AiCart cart, Player player=null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
-    //if player = null then remove ALL players from ALL positions
-    {
-        try
-        {
+   private void Stb_DamagePlane(AiAircraft aircraft, NamedDamageTypes ndt)
+   {
+       try { aircraft.hitNamed(ndt); }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-            if (cart == null)
-                return;
+   private bool Stb_isAiControlledPlane(AiAircraft aircraft)
+   {
+       try {   
 
-            //check if the player is in any of the "places" - if so remove
-            for (int i = 0; i < cart.Places(); i++) {
-                if (cart.Player(i) == null) continue;
-                if (player != null)
-                {
-                    if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
-                } else {
-                    cart.Player(i).PlaceLeave(i);
-                }
-            }
+           if (aircraft == null)
+               return false;
 
-        }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-    }
+           //check if a player is in any of the "places"
+           for (int i = 0; i < aircraft.Places(); i++)
+               if (aircraft.Player(i) != null)
+                   return false;
 
-    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
-    private void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
-    {
-                Timeout(timeToRemove_sec, () => {
+           return true;
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+   }
 
-                    //player.PlaceLeave(0);
-                    Stb_RemovePlayerFromCart(aircraft as AiCart, player);
-                    Timeout(timetoDestroy_sec, () => {
-                        if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);
-                    }); //Destroy it a bit later--but only if no other players are in it
+   private void Stb_RemovePlayerFromCart(AiCart cart, Player player=null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
+   //if player = null then remove ALL players from ALL positions
+   {
+       try
+       {
 
-                    //Stb_DestroyPlaneUnsafe(actor as AiAircraft);  //OK, this approach seems to cause some problems when a player gets kicked out here &  then tries to click on the flags to change armies etc.
-                    //Also, it can cause problems if there are TWO players in a plane & one is allowed, the other isn't.  The plane will be destroyed for both.
-                    //also, if they jump into another plane (via right-click or whatever) in general that plane will just be destroyed ASAP.
-                    //Stb_destroyAnyPlane(actor, false, 30);
-                    //Stb_BalanceDisableForBan(actor); //can try this, too
-                    //Stb_DestroyPlaneUnsafe(actor as AiAircraft);
+           if (cart == null)
+               return;
 
-                });
-    }
+           //check if the player is in any of the "places" - if so remove
+           for (int i = 0; i < cart.Places(); i++) {
+               if (cart.Player(i) == null) continue;
+               if (player != null)
+               {
+                   if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
+               } else {
+                   cart.Player(i).PlaceLeave(i);
+               }
+           }
 
-    //Removes ALL players from an a/c after a specified period of time (seconds)
-    private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
-    {
-        Timeout(timeToRemove_sec, () => {
+       }
+       catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+   }
 
-            //player.PlaceLeave(0);
+   //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
+   private void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+   {
+               Timeout(timeToRemove_sec, () => {
 
-            for (int place = 0; place < aircraft.Places(); place++)
-            {
-                if (aircraft.Player(place) != null)
-                {
-                    //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
-                    Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
-                }
-            }
+                   //player.PlaceLeave(0);
+                   Stb_RemovePlayerFromCart(aircraft as AiCart, player);
+                   Timeout(timetoDestroy_sec, () => {
+                       if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);
+                   }); //Destroy it a bit later--but only if no other players are in it
 
-        });
-    }
+                   //Stb_DestroyPlaneUnsafe(actor as AiAircraft);  //OK, this approach seems to cause some problems when a player gets kicked out here &  then tries to click on the flags to change armies etc.
+                   //Also, it can cause problems if there are TWO players in a plane & one is allowed, the other isn't.  The plane will be destroyed for both.
+                   //also, if they jump into another plane (via right-click or whatever) in general that plane will just be destroyed ASAP.
+                   //Stb_destroyAnyPlane(actor, false, 30);
+                   //Stb_BalanceDisableForBan(actor); //can try this, too
+                   //Stb_DestroyPlaneUnsafe(actor as AiAircraft);
 
-    private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI=true, int timeToWait=300)
-    {
-        try { 
-            if (actor == null || !(actor is AiAircraft))
-            {
-                return;
-            }
+               });
+   }
 
-            AiAircraft aircraft = (actor as AiAircraft);
+   //Removes ALL players from an a/c after a specified period of time (seconds)
+   private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
+   {
+       Timeout(timeToRemove_sec, () => {
 
-            if (checkForAI && !Stb_isAiControlledPlane(aircraft))
-            {
-                return;
-            }
+           //player.PlaceLeave(0);
 
-            if (aircraft == null)
-            {
-                return;
-            }
+           for (int place = 0; place < aircraft.Places(); place++)
+           {
+               if (aircraft.Player(place) != null)
+               {
+                   //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
+                   Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
+               }
+           }
 
-            aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
-            aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
-            aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled);
-            aircraft.hitNamed(part.NamedDamageTypes.FuelPumpFailure);
-            aircraft.hitNamed(part.NamedDamageTypes.Eng0TotalFailure);
-            aircraft.hitNamed(part.NamedDamageTypes.ElecPrimaryFailure);
-            aircraft.hitNamed(part.NamedDamageTypes.ElecBatteryFailure);
+       });
+   }
 
-            aircraft.hitLimb(part.LimbNames.WingL1, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL2, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL3, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL4, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL5, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL6, -0.5);
-            aircraft.hitLimb(part.LimbNames.WingL7, -0.5);
+   private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI=true, int timeToWait=300)
+   {
+       try { 
+           if (actor == null || !(actor is AiAircraft))
+           {
+               return;
+           }
 
-            int iNumOfEngines = (aircraft.Group() as AiAirGroup).aircraftEnginesNum();
-            for (int i = 0; i < iNumOfEngines; i++)
-            {
-                aircraft.hitNamed((part.NamedDamageTypes)Enum.Parse(typeof(part.NamedDamageTypes), "Eng" + i.ToString() + "TotalFailure"));
-            }
+           AiAircraft aircraft = (actor as AiAircraft);
 
-            /***Timeout (240, () =>
-                    {explodeFuelTank (aircraft);}
-                );
-                * ***/
+           if (checkForAI && !Stb_isAiControlledPlane(aircraft))
+           {
+               return;
+           }
+
+           if (aircraft == null)
+           {
+               return;
+           }
+
+           aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
+           aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
+           aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled);
+           aircraft.hitNamed(part.NamedDamageTypes.FuelPumpFailure);
+           aircraft.hitNamed(part.NamedDamageTypes.Eng0TotalFailure);
+           aircraft.hitNamed(part.NamedDamageTypes.ElecPrimaryFailure);
+           aircraft.hitNamed(part.NamedDamageTypes.ElecBatteryFailure);
+
+           aircraft.hitLimb(part.LimbNames.WingL1, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL2, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL3, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL4, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL5, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL6, -0.5);
+           aircraft.hitLimb(part.LimbNames.WingL7, -0.5);
+
+           int iNumOfEngines = (aircraft.Group() as AiAirGroup).aircraftEnginesNum();
+           for (int i = 0; i < iNumOfEngines; i++)
+           {
+               aircraft.hitNamed((part.NamedDamageTypes)Enum.Parse(typeof(part.NamedDamageTypes), "Eng" + i.ToString() + "TotalFailure"));
+           }
+
+           /***Timeout (240, () =>
+                   {explodeFuelTank (aircraft);}
+               );
+               * ***/
 
         Timeout(timeToWait, () =>
         { Stb_DestroyPlaneUnsafe(aircraft); }
@@ -6361,7 +6386,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         //OK, any aircraft that were previously called via onAircraftKilled, if we haven't given credit for them yet via onActorDead, we will do it now @ the end.
         foreach (string aname in stb_aircraftKilled)
         {
-            if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
+            //if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
             AiActor actor = GamePlay.gpActorByName(aname);
             Stb_KillACNowIfInAircraftKilled(actor as AiAircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
         }
@@ -6450,8 +6475,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (stb_SpawnBombers) { Stb_SpawnBombersRecursive(); }
             if (stb_LogStats) { Stb_LogStatsRecursive(); }
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive();}
-          
-        }
+            SetAirfieldTargets();
+
+
+        } 
 
     }
 
@@ -6866,7 +6893,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             else if (msgTrim.Length > 0) fuelStr = msgTrim.Trim();
 
 
-            if (stb_Debug) Console.WriteLine("<RR PARSE RESULTS: fb: " + fighterbomber + " f: " + fuelStr + " d: " + delay_sec + " w: " + weapons + " s: " + skin_filename);
+            //if (stb_Debug) Console.WriteLine("<RR PARSE RESULTS: fb: " + fighterbomber + " f: " + fuelStr + " d: " + delay_sec + " w: " + weapons + " s: " + skin_filename);
 
 
 
@@ -6884,8 +6911,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             //private string Stb_LoadSubAircraft(Point3d loc, string type = "SpitfireMkIa_100oct", string callsign = "26", string hullNumber="3", string serialNumber="001", string regiment="gb02", int fuel = 100, string weapons= "1", double velocity=0 )
 
-            if (stb_Debug) Stb_Message(new Player[] { player }, "Spawning new a/c at " + myLoc.x.ToString("F0") + " " + myLoc.y.ToString("F0") + " " + acType + " " + aircraft.TypedName() +
-                 " hn:" + hullNumber + " r:" + regiment + " cS:" + callsign + " sN:" + serialNumber, new object[] { });
+            //if (stb_Debug) Stb_Message(new Player[] { player }, "Spawning new a/c at " + myLoc.x.ToString("F0") + " " + myLoc.y.ToString("F0") + " " + acType + " " + aircraft.TypedName() +
+                 // " hn:" + hullNumber + " r:" + regiment + " cS:" + callsign + " sN:" + serialNumber, new object[] { });
 
             string newACActorName = Stb_LoadSubAircraft(loc: myLoc, type: acType, callsign: callsign, hullNumber: hullNumber, fuelStr: fuelStr, serialNumber: serialNumber, regiment: regiment, weapons: weapons, velocity: 0, delay_sec: delay_sec, skin_filename: skin_filename, fighterbomber: fighterbomber);
 
@@ -7028,7 +7055,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         }
 
-        GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { });
+        //GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { }); //just for testing
 
         ot_CivilianBombings[name] = new Tuple<int, DateTime>(infract, newtime);
         return infract;
@@ -7042,7 +7069,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     //These negative kill points will have a bad effect on the player's rank, ace level, and also on the entire army's 
     //point level as recorded by <obj.  Kill point totals can actually go negative for bad infractions.
     //Also every 8 infractions the player is kicked out of the plane (usually results in player death/loss of career)
-    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator)
+    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg)
     {
         if (player == null) return;
 
@@ -7052,7 +7079,16 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         int infractions = ot_IncCivilianBombings(playername);
 
 
-        GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
+        /* string firetype = "BuildingFireSmall";
+        if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger */
+        string firetype = "BigSitySmoke_1";
+        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 1200, stb_FullPath);
+
+        double score = 0.5; //50 lb bomb; 22kg
+        if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
+
+
+        //GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
         if (infractions == 1) //First infraction
         {
             if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
@@ -7071,7 +7107,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
             //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
             //? Nothing here yet, needs to be added ?
-            stb_RecordStatsOnActorDead(initiator, 4, -4, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            stb_RecordStatsOnActorDead(initiator, 4, -4 * score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + ( -4 * score ).ToString("0.0") + " point penalty", new object[] { });
 
         }
         else if (infractions > 0 && infractions > 4) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
@@ -7086,6 +7123,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //? Nothing here yet, needs to be added ?
 
             stb_RecordStatsOnActorDead(initiator, 4, -2, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -2 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-2 * score).ToString("0.0") + " point penalty", new object[] { });
 
         }
 
@@ -7100,6 +7138,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //? Nothing here yet, needs to be added ?
 
             stb_RecordStatsOnActorDead(initiator, 4, -1, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player } , "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
         }
 
 
@@ -7129,69 +7168,553 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         }
     }
 
+    /***************************************************************
+     * Handle Area Bombings
+     *
+     * "Live" areas for bombing, such as industrial or military areas.
+     * 
+     * We set up jerrycans to designate the bombable areas.  These are detected
+     * below in OnBombExplosion, then sent here to be handle.
+     * 
+     *    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
+     *    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
+     *    // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
+     *    // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
+     *    
+     *    Bombers receive points for bombing these areas (calculated below, depends on size of bomb etc)
+     *    Also each bomb is marked with a smoke plume.
+     *    
+     *    TODO: Make sure they are bombing enemy territory/point deductions for bombing friendly
+     * 
+     ****************************************************************/
+
+
+    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1 ) //IsEnemy 0=friendly, 1 enemy, 2 neutral
+    {
+        if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
+        string playername = player.Name();
+        //GamePlay.gpLogServer(new Player[] { player }, "Area bombing by " + playername + " " + mass_kg.ToString("n0") + "kg at " + pos.x.ToString("n0") + " " + pos.y.ToString("n0"), new object[] { });
+
+        //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+        //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+        // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+        //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+        //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+        //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+        //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+        //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+        double score = 0.5; //50 lb bomb; 22kg
+        if (mass_kg > 0) score = 0.06303 * Math.Pow (mass_kg, 0.67);
+
+        /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+         * 
+         * //Default is 0.5 points for ie 50 lb bomb
+         * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+        if (mass_kg > 110) score = 1.41; //250 
+        if (mass_kg > 220) score = 2.33; //500
+        if (mass_kg > 440) score = 3.70; //1000
+        if (mass_kg > 880) score = 5.92; //2000
+        if (mass_kg > 1760) score = 9.33 ; //4000
+        
+         */
+
+        if (isEnemy == 0 || isEnemy == 2)
+        {
+            score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                             //but, still helps destroy the objects/area (for your enemies) as usual
+            GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
+
+        }
+
+        GamePlay.gpLogServer(new Player[] { player }, "Ground area hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
+
+
+        stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+        //TODO: More/less points depending on bomb tonnage.
+
+        //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+        // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+        string firetype = "BuildingFireSmall";
+        //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
+        if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
+        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 20, stb_FullPath);
+        //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+        //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
+
+
+    }
+
+    /************************************************************
+     * 
+     * handle airport bombing
+     * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
+     * 
+     * We give credit (points) for any bomb that hits within the radius of an airfield.
+     * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
+     * 
+     * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
+     * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
+     * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
+     * 
+     *************************************************************/
+
+    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime>>(); //Dictionary to hold the AiAirport, status(is airfield active or not), sub mission name, bomb weight to knock out, bomb weight taken
+
+    public void SetAirfieldTargets()
+    {
+        foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
+        {
+
+            //We're just going to add ALL airfields as targets.
+            AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime>(true, ap.Name(), 30, 0, DateTime.Now)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
+
+            //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+
+        }
+    }
+
+    //stamps a rectangular pattern of craters over an airfield to disable it
+    public void AirfieldDisable(AiAirport ap)
+
+    {
+
+        GamePlay.gpHUDLogCenter(null, "Airfield " + ap.Name() + " has been disabled");
+        double radius = ap.FieldR();
+        Point3d pos = ap.Pos();
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        
+        string val1 = "Stationary";        
+        string type = "BombCrater_firmSoil_largekg";
+        int count = 0;
+        string value = "";
+                
+        
+            for (double x = pos.x - radius * 1.1; x < pos.x + radius *1.1; x = x + 80)
+            {
+                for (double y = pos.y - radius * 1.1; y < pos.y + radius *1.1; y = y + 80)
+                {
+                    string key = "Static" + count.ToString();
+                    value = val1 + ".Environment." + type + " nn " + (x - 100 + 200*stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                    f.add(sect, key, value);
+                    count++;
+
+                }
+        
+            }
+        f.save(stb_FullPath + "airfielddisable-ISectionFile.txt"); //testing
+        GamePlay.gpPostMissionLoad(f);
+        //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
+
+    }
+
+    public void LoadAirfieldSpawns()
+    {
+        return;
+
+        //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
+        //so, maybe we will do all that later, and maybe not
+        //For now we are just skipping this part altogether (return;)
+        //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
+
+        foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+
+        {
+            bp.destroy();//Removes all spawnpoints
+        }
+        GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
+
+        foreach (AiAirport ap in AirfieldTargets.Keys)
+        {
+            if (AirfieldTargets[ap].Item1)
+            {
+                //Airfield still active so load mission
+                GamePlay.gpPostMissionLoad("missions/YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
+            }
+        }
+    }
+
+    /*************************************************
+    *
+    * Handle smoke, fire, crater ISection files for area bombing, civilian bombing, airport bombing
+    * 
+    ********************************************************/
+
+    public void loadSmokeOrFire(double x, double y, double z, string type, double duration_s = 300, string path = "", string type2="")
+    {
+        //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
+        // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
+        // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
+        // BombCrater_firmSoil_EXlargekg doesn't actually exist but will place TWO BombCrater_firmSoil_largekg craters near each other
+        /* Samples: 
+         * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+ Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+ Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+ Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+ Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+ Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+ Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+ Static0 Stationary.Environment.BombCrater_firmSoil_mediumkg nn 251217.50 257427.39 -520.00 
+ Static2 Stationary.Environment.BombCrater_firmSoil_largekg nn 251211.73 257398.98 -520.00 
+ Static1 Stationary.Environment.BombCrater_firmSoil_smallkg nn 251256.22 257410.66 -520.00
+
+        Not sure if height is above sea level or above ground level.
+ */
+        /*
+         * OK, so the whole idea to remove the smokes after a while doesn't seem to work at all, because the smokes
+         * do not show up in the GamePlay list of stationary ground objects at all.  They don't seem to show up 
+         * in search of aigroundactors either.  So, it seems to be impossible to control or remove them once they have been loaded
+        Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
+        GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
+        Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
+        Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
+        */
+        /*
+        Timeout(duration_s, () => {
+            //GamePlay.gpLogServer(null, "Deleting object (delete4)", new object[] { });
+            Point2d P = new Point2d(x, y);
+            GamePlay.gpLogServer(null, "Deleting object (delete4) at" + P.x.ToString ("0.0") + " " + P.y.ToString("0.0"), new object[] { });
+                                try
+                                {
+                //GamePlay.gpRemoveGroundStationarys(P, 10);
+
+                //GamePlay.gpGroundStationarys(x, y, distance)
+
+   
+                
+                    foreach (GroundStationary gg in GamePlay.gpGroundStationarys(x, y, 2)) //all stationaries w/i 500000 or whatever meters of this object
+                    {
+                        //if (gg.Name.StartsWith(subStatPrefix))
+                        {
+                            GamePlay.gpLogServer(null, "Destroying " + gg.Name, new object[] { });
+                            gg.Destroy();
+                            
+                        }
+
+                    }
+                
+
+
+
+            } catch (Exception ex)
+            {
+                System.Console.WriteLine("smoke&fire - Exception: " + ex.ToString());                                    
+            }
+    }); */
+        Timeout(duration_s, () =>
+        {
+            //Console.WriteLine("Deleting stationary smokes . . . ");
+            //This should work for bomb craters but HAS NO EFFECT for smoke effects
+            //GamePlay.gpLogServer(null, "Deleting stationary bomb effects . . . ", new object[] { });
+            Point2d P = new Point2d(x, y);
+            //GamePlay.gpRemoveGroundStationarys(P, 10); //this is part of TF_extensions and doesn't work; it just fails silently when the timeout is called & entire timeout fails to run
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, 2))
+            {
+                if (sta == null) continue;
+                Console.WriteLine("Deleting " + sta.Name + " " + sta.Title);
+                if (sta.Name.Contains("smoke") || sta.Title.Contains("fire") || sta.Title.Contains("crater")) {
+                    Console.WriteLine("Deleting stationary bomb effect " + sta.Name + " - end of life");
+                    sta.Destroy();
+                }
+            }
+
+
+        });
+       
+        //AMission mission = GamePlay as AMission;
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        string keybase = "Static";
+        int count = 0;
+
+        List<string> types = new List<string> { type };
+        if (type2.Length > 0) types.Add(type2);
+
+        foreach (string t in types)
+        {
+
+            string ttemp = t;
+            string val1 = "Smoke";
+            if (t.Contains("BombCrater")) val1 = "Stationary";
+            int lines = 1;
+            if (t == "BombCrater_firmSoil_EXlargekg")
+            {
+                ttemp = "BombCrater_firmSoil_largekg";
+                lines = 2;
+            }
+
+            count++;
+            string key = keybase + count.ToString();
+            string value = val1 + ".Environment." + ttemp + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+            f.add(sect, key, value);
+
+            if (lines == 2)
+            {
+
+                count++;
+                key = keybase + count.ToString();
+                value = val1 + ".Environment." + ttemp + " nn " + (x + 9).ToString("0.00") + " " + (y - 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+                f.add(sect, key, value);
+
+                count++;
+                key = keybase + count.ToString();
+                value = val1 + ".Environment." + ttemp + " nn " + (x - 9).ToString("0.00") + " " + (y + 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+                f.add(sect, key, value);
+            }
+        }
+
+        /*
+        sect = "Stationary";
+        key = "Static2";
+        value = "Smoke.Environment." + "Smoke1" + " nn " + x.ToString("0.00") + " " + (y  + 130).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static3";
+        value = "Smoke.Environment." + "Smoke2" + " nn " + x.ToString("0.00") + " " + (y + 260).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static4";
+        value = "Smoke.Environment." + "BuildingFireSmall" + " nn " + x.ToString("0.00") + " " + (y + 390).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static5";
+        value = "Smoke.Environment." + "BuildingFireBig" + " nn " + x.ToString("0.00") + " " + (y + 420).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static6";
+        value = "Smoke.Environment." + "BigSitySmoke_0" + " nn " + x.ToString("0.00") + " " + (y + 550).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static7";
+        value = "Smoke.Environment." + "BigSitySmoke_1" + " nn " + x.ToString("0.00") + " " + (y + 680).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static8";
+        value = "Smoke.Environment." + "BigSitySmoke_2" + " nn " + x.ToString("0.00") + " " + (y + 710).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+        */
+
+        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
+        f.save(path + "smoke-ISectionFile.txt"); //testing
+        //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
+        Timeout(stb_random.NextDouble()*8, () => { GamePlay.gpPostMissionLoad(f); });
+
+
+        //TODO: The part to delete smokes after a while isn't working; it never finds or stops any of the smokes.   It does delete craters, however.     
+
+
+
+    }
+
+    /*****************************************************************************
+     * 
+     * OnBombExplosion - handling points & other routines for area bombing, bombing of civilian areas, and bombing of airports
+     * 
+     *****************************************************************************/
 
     //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
     //TODO: Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
-    public override void OnBombExplosion(string title, double mass, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
 
-        base.OnBombExplosion(title, mass, pos, initiator, eventArgInt);
+        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
 
         bool ai = true;
         if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
 
-        if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
+        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+        if (terr == 00) isEnemy = 2;
+        if (initiator.Player.Army() == terr) isEnemy = 0;
+
+        //for testing
+        //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
+
+        //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
 
         //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
 
+        /***************************
+         * 
+         * Handle bombing civilian areas AND area bombing generally
+         * 
+         ***************************/
         //Give penalties to players if they bomb civilian areas
         if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
-        {
-            if (sta == null) continue;
-            if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
+            {
+                if (sta == null) continue;
+                //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
 
-            //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above
-            //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
-            if (sta.Title.Contains("AEC_Regent_II")) ot_HandleCivilianBombings(initiator.Player, pos, initiator);
-            if (sta.Title.Contains("MG_TA") && sta.pos.distance(ref pos) <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator);
+                double dis_m = sta.pos.distance(ref pos);  //distance from this groundstationary to the bomb detonation location, meters
 
 
-        }
+                if (sta.Title.Contains("JerryCan_GER1_1") || sta.Title.Contains("JerryCan_GER1_2") || sta.Title.Contains("JerryCan_GER1_3") || sta.Title.Contains("JerryCan_GER1_5"))
+                {
+                    //We use jerrycans to designate area targets or bombable areas.  
+                    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
+                    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
+                    // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
+                    // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
+                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
+                    // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
+                    //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
+                }
 
-        //We could also handle airport destruction here but leaving it be for now.  Sample code from reddog below.
+
+                //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
+                //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
+                if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+
+
+            }
+
+        
         //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
-        /*
-        foreach (AiAirport ap in AirfieldTargets.Keys)//Loop through the targets
+
+        /********************
+         * 
+         * Handle airport bombing
+         * 
+         *******************/
+
+        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+        apkeys = AirfieldTargets.Keys.ToList();
+        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
         {
-            if (!AirfieldTargets[ap].Item1)
+            /* if (!AirfieldTargets[ap].Item1)
             {//airfield has already been knocked out so do nothing
             }
             else
-            {
-                //Airfield is still active need check if bomb fell inside radius and if so increment up
-                if (ap != null & ap.Pos().distance(ref pos) <= ap.FieldR())//has bomb landed inside field check
-                {
-                    //set placeholder variables
-                    double WeightToKnockOut = AirfieldTargets[ap].Item3;
-                    double WeightTaken = AirfieldTargets[ap].Item4 + mass;
-                    string Mission = AirfieldTargets[ap].Item2;
+            { */
 
-                    if (WeightTaken >= WeightToKnockOut) //has weight limit been reached?
+            //Check if bomb fell inside radius and if so increment up
+            if (ap != null & ap.Pos().distance(ref pos) <= ap.FieldR())//has bomb landed inside airfield check
+            {
+
+
+                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+                double score = 0.5; //50 lb bomb; 22kg
+                if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
+
+                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+                 * 
+                 * //Default is 0.5 points for ie 50 lb bomb
+                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+                if (mass_kg > 110) score = 1.41; //250 
+                if (mass_kg > 220) score = 2.33; //500
+                if (mass_kg > 440) score = 3.70; //1000
+                if (mass_kg > 880) score = 5.92; //2000
+                if (mass_kg > 1760) score = 9.33 ; //4000
+
+                 */
+
+                double individualscore = score;
+
+                if (isEnemy == 0 || isEnemy == 2)
+                {
+                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                         //but, still helps destroy that base (for your enemies) as usual
+                    GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                }
+
+                    stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+                                                                                          //TODO: More/less points depending on bomb tonnage.
+
+                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+                string firetype = "BuildingFireSmall";                
+                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+                //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+                //set placeholder variables
+                double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                double PointsTaken = AirfieldTargets[ap].Item4 + score;
+                string Mission = AirfieldTargets[ap].Item2;
+                bool disabled = AirfieldTargets[ap].Item1;
+                DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+                string cratertype = "BombCrater_firmSoil_mediumkg";                
+                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+                double percent = 0;
+                double prev_percent = 0;
+                if (PointsToKnockOut > 0)
+                {
+                    percent = PointsTaken / PointsToKnockOut;
+                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                    if (prev_percent > 1) prev_percent = 1;
+                }
+
+                double timereduction = 0;
+                if (prev_percent > 0)
+                {
+                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                }
+
+                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+                if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                {
+                    percent = 1;
+                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                }
+                //Advise player of hit/percent/points
+                if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+                loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
+
+                //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+
+                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now));
+                    if (!disabled)
                     {
-                        AirfieldTargets.Remove(ap);
-                        AirfieldTargets.Add(ap, Tuple<bool, string, double, double>(false, Mission, WeightToKnockOut, WeightTaken));
-                        LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields.
+                        AirfieldDisable(ap); //covers the airfield in craters to disable itmum
+                        LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
                     }
-                    else
-                    {
-                        AirfieldTargets.Remove(ap);
-                        AirfieldTargets.Add(ap, Tuple<bool, string, double, double>(true, Mission, WeightToKnockOut, WeightTaken));
-                    }
+                }
+                else
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now));
                 }
             }
         }
-        */
-}
+    }
+        
+
 
 /*******************************************************************
 //We're not using their onplaceenter bec. it does balance etc etc that we don't want or need. 
@@ -7650,8 +8173,11 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
         base.OnActorCreated(missionNumber, shortName, actor);
+
+        //Stb_Message(null, shortName + " created!", new object[] { });
+
         //Ground objects (except AA Guns) will die after X min when counted from their birth
-        
+
         /*** //Experimental method to create wounded AI aicraft for testing purposes.
         if (actor is AiAircraft)
         {
@@ -7676,7 +8202,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
          *  - Jumping into a tank or AA (it already exists)
          *  - A 2nd/3rd player jumping into a bomber (it already exists)
          *  */
-        
+
         if (actor != null && actor is AiAircraft ) {
             //IsAirborne is false right now, but if we wait a little bit becomes true, when we are spawning in at an airspawn
             /* moving this part, to detect sortie start, to onplaceenter . . .
@@ -9239,7 +9765,7 @@ try
     }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPersonParachuteLanded - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPersonParachuteLanded - Exception: " + ex.ToString());
         }
         #endregion
     }
@@ -9268,7 +9794,7 @@ try
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPlayerArmy - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPlayerArmy - Exception: " + ex.ToString());
         }
         #endregion
 
@@ -9291,7 +9817,7 @@ try
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPlayerConnected - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPlayerConnected - Exception: " + ex.ToString());
         }
 
         #endregion
@@ -9313,7 +9839,7 @@ try
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPlayerDisconnected - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPlayerDisconnected - Exception: " + ex.ToString());
         }
 
         #endregion
@@ -9334,7 +9860,7 @@ try
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnPersonMoved - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnPersonMoved - Exception: " + ex.ToString());
         }
     
     }  
@@ -9438,7 +9964,7 @@ try
             }
         catch (Exception ex)
         {
-            System.Console.WriteLine("Stats.OnAircraftTookOff - Exception: " + ex);
+            System.Console.WriteLine("Stats.OnAircraftTookOff - Exception: " + ex.ToString());
         }
         #endregion
         //add your code here
@@ -9780,7 +10306,7 @@ public static class Calcs
             else return timespan.ToString(@"d\dhh\hmm\m");
         } catch (Exception ex)
         {
-            System.Console.WriteLine("Calcs.SecondsToFormatted - Exception: " + ex);
+            System.Console.WriteLine("Calcs.SecondsToFormatted - Exception: " + ex.ToString());
             return sec.ToString();
         }
     }
@@ -9849,6 +10375,112 @@ public static class Calcs
         //Random clc_random = new Random();
         return strings[clc_random.Next(strings.Length)];
     }
+
+    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type, double duration_s = 300, string path = "")
+    {
+        /* Samples: 
+         * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+ Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+ Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+ Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+ Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+ Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+ Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+
+        Not sure if height is above sea level or above ground level.
+ */
+
+        mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
+        //GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
+        mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
+        mission.Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
+        mission.Timeout(4.5, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete4)", new object[] { }); });
+
+        mission.Timeout(5.0, () => {
+            GamePlay.gpLogServer(null, "Executing the timeout (delete5)", new object[] { });
+            //Point2d P = new Point2d(x, y);
+            //GamePlay.gpRemoveGroundStationarys(P, 10);
+        });
+        /*
+        mission.Timeout(duration_s, () =>
+        {
+            //Console.WriteLine("Deleting stationary smokes . . . ");
+            GamePlay.gpLogServer(null, "Deleting stationary smokes . . . ", new object[] { });
+            Point2d P = new Point2d(x, y);
+            GamePlay.gpRemoveGroundStationarys(P, 10);
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, z + 1))
+            {
+                if (sta == null) continue;
+                Console.WriteLine("Deleting , , , " + sta.Name + " " + sta.Title);
+                if (sta.Name.Contains(key) || sta.Title.Contains(key)) {
+                    Console.WriteLine("Deleting stationary smoke " + sta.Name + " - end of life");
+                    sta.Destroy();
+                }
+            }
+
+
+        });
+
+     */
+        //AMission mission = GamePlay as AMission;
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        string key = "Static1";
+        string value = "Smoke.Environment." + type + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + (duration_s/60).ToString ("0.0") + " /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        /*
+        sect = "Stationary";
+        key = "Static2";
+        value = "Smoke.Environment." + "Smoke1" + " nn " + x.ToString("0.00") + " " + (y  + 130).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static3";
+        value = "Smoke.Environment." + "Smoke2" + " nn " + x.ToString("0.00") + " " + (y + 260).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static4";
+        value = "Smoke.Environment." + "BuildingFireSmall" + " nn " + x.ToString("0.00") + " " + (y + 390).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static5";
+        value = "Smoke.Environment." + "BuildingFireBig" + " nn " + x.ToString("0.00") + " " + (y + 420).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static6";
+        value = "Smoke.Environment." + "BigSitySmoke_0" + " nn " + x.ToString("0.00") + " " + (y + 550).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static7";
+        value = "Smoke.Environment." + "BigSitySmoke_1" + " nn " + x.ToString("0.00") + " " + (y + 680).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static8";
+        value = "Smoke.Environment." + "BigSitySmoke_2" + " nn " + x.ToString("0.00") + " " + (y + 710).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+        */
+
+
+
+        //maybe this part dies silently some times, due to f.save or perhaps section file load?  PRobably needs try/catch
+        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
+        //f.save(path + "smoke-ISectionFile.txt"); //testing
+        GamePlay.gpPostMissionLoad(f);
+
+
+        //TODO: This part isn't working; it never finds any of the smokes again.
+        //get rid of it after the specified period
+
+
+        
+    }
+
 
 
 }

@@ -2492,6 +2492,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
     {
         base.OnActorCreated(missionNumber, shortName, actor);
         //Ground objects (except AA Guns) will die after X min when counted from their birth
+        //TODO: This is either 1. not working right or 2. causing problems when e.g. ships, jerrycans, etc suddenly disappear after 2 hours?
         if (actor is AiGroundActor)
             if ((actor as AiGroundActor).Type() != maddox.game.world.AiGroundActorType.AAGun)
                 Timeout(2*60*60, () =>

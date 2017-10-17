@@ -950,10 +950,10 @@ public class Mission : AMission
     public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
     {
         base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
-
+        
         HashSet<string> targets;
 
-        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) GamePlay.gpLogServer(new Player[] { initiator.Player }, "You destroyed a ground target (" + stationary.Name + ")", new object[] { });
+        if (initiator!=null && initiator.Player != null && initiator.Player.Name() != null) GamePlay.gpLogServer(new Player[] { initiator.Player }, "You destroyed a ground target (" + stationary.Name +")", new object[] { });
         // + " in " + stationary.country + " was destroyed by " + initiator.Player.Name() + " from the " + initiator.Player.Army() + ".", new object[] { });
 
         /******************************************************************
@@ -961,8 +961,8 @@ public class Mission : AMission
          * Handle Le Havre Dam bombing
          *
          ******************************************************************/
-
-        targets = new HashSet<string>(new string[] { "0:Static41", "0:Static42", "0:Static43" });
+ 
+        targets = new HashSet<string>(new string[] { "0:Static41", "0:Static42", "0:Static43" });       
 
         if (!osk_LeHavreDam_destroyed && targets.Contains(stationary.Name))  //any of these stationaries being killed will kill the dam, but we want to be sure we go through this routine once only, not 2X or 3X
         {
@@ -977,15 +977,15 @@ public class Mission : AMission
             osk_RedObjCompleted += "Le Havre Dam - ";
 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-LeHavDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LeHavDam-inactive.mis");
 
             //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears)
             foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
             {
-                if (targets.Contains(sta.Name))
-                {
+                if (targets.Contains(sta.Name)) 
+                    {
                     //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60 + random.Next(-15, 30), () =>
+                    Timeout(60 + random.Next(-15,30) , () =>
                     {
                         sta.Destroy();
                         DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
@@ -1005,7 +1005,7 @@ public class Mission : AMission
 
         targets = new HashSet<string>(new string[] { "0:Static63", "0:Static65", "0:Static66" });
 
-
+  
         if (!osk_LesAndelysDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_LesAndelysDam_destroyed = true;
@@ -1015,15 +1015,15 @@ public class Mission : AMission
 
             GamePlay.gpLogServer(null, "Les Andelys Dam eliminated. Well done" + name, new object[] { });
             GamePlay.gpHUDLogCenter("The Les Andelys Dam has been eliminated. Well done" + name);
-
+ 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-LesAndelysDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LesAndelysDam-inactive.mis");
 
             //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
             foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
             {
                 if (targets.Contains(sta.Name))
-                {
+                    {
                     //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
                     Timeout(60, () =>
                     {
@@ -1047,7 +1047,7 @@ public class Mission : AMission
         targets = new HashSet<string>(new string[] { "0:Static680", "0:Static681", "0:Static686" });
 
         if (!osk_OuistrehamDam_destroyed && targets.Contains(stationary.Name))
-
+        
         {
             osk_OuistrehamDam_destroyed = true;
             osk_RedObjCompleted += "Ouistreham Dam - ";
@@ -1058,7 +1058,7 @@ public class Mission : AMission
             GamePlay.gpHUDLogCenter("The Ouistreham Dam has been eliminated. Well done" + name);
 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-OuistrehamDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-OuistrehamDam-inactive.mis");
 
             //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
             foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
@@ -1138,38 +1138,38 @@ public class Mission : AMission
         if (!osk_CowesDam_destroyed && targets.Contains(stationary.Name))
 
         {
-            osk_CowesDam_destroyed = true;
-            osk_BlueObjCompleted += "Cowes Dam - ";
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+                osk_CowesDam_destroyed = true;
+                osk_BlueObjCompleted += "Cowes Dam - ";
+                string name = "!";
+                if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
-            GamePlay.gpLogServer(null, "Cowes Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Cowes Dam has been eliminated. Well done" + name);
+                GamePlay.gpLogServer(null, "Cowes Dam eliminated. Well done" + name, new object[] { });
+                GamePlay.gpHUDLogCenter("The Cowes Dam has been eliminated. Well done" + name);
 
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+                //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
 
-            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-CowesDam-inactive.mis");
+                //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
+                GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-CowesDam-inactive.mis");
 
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
+                //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+                foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
                 {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
+                    if (targets.Contains(sta.Name))
                     {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                        Timeout(60, () =>
+                        {
+                            sta.Destroy();
+                            DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
                             //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
                         });
+                    }
+
+                    //sta.Destroy();
                 }
 
-                //sta.Destroy();
+
             }
-
-
-        }
 
         /******************************************************************
         *
@@ -1180,7 +1180,7 @@ public class Mission : AMission
 
         targets = new HashSet<string>(new string[] { "0:Static68", "0:Static133" });
 
-        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))
+        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))        
         {
             osk_HambleDam_destroyed = true;
             osk_BlueObjCompleted += "Hamble Dam - ";
@@ -1207,7 +1207,7 @@ public class Mission : AMission
                         DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
                         //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
                     });
-                }
+                }                
             }
 
 
@@ -1224,12 +1224,12 @@ public class Mission : AMission
         // when the fuel storage tanks explode, and the player always seems to get credit.  So we need to check only one jerry can
         // to see if the objective has been destroyed.
 
-        targets = new HashSet<string>(new string[] { "0:Static184", "0:Static188", "0:Static190" });
+        targets = new HashSet<string>(new string[] { "0:Static184", "0:Static188", "0:Static190" } );
 
-        if (!osk_LeHavreFuelStorage_destroyed && targets.Contains(stationary.Name))
+        if ( !osk_LeHavreFuelStorage_destroyed && targets.Contains(stationary.Name)  ) 
         {
             osk_LeHavreFuelStorage_destroyed = true;
-            osk_RedObjCompleted += " Le Havre Fuel Dump - ";
+            osk_RedObjCompleted += "Le Havre Fuel Dump - ";
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1237,12 +1237,12 @@ public class Mission : AMission
             GamePlay.gpHUDLogCenter("The Le Havre Fuel Storage Complex has been destroyed. Well done" + name);
         }
 
-        targets = new HashSet<string>(new string[] { "0:Static385", "0:Static386", "0:Static388", "0:Static389" });
+        targets = new HashSet<string>(new string[] { "0:Static385", "0:Static386", "0:Static388", "0:Static389" } );
 
         if (!osk_PortsmouthFuelStorage_destroyed && targets.Contains(stationary.Name))
         {
             osk_PortsmouthFuelStorage_destroyed = true;
-            osk_BlueObjCompleted += " Portsmouth Fuel Dump - ";
+            osk_BlueObjCompleted += "Portsmouth Fuel Dump - ";
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1297,16 +1297,14 @@ public class Mission : AMission
         catch (Exception ex) { System.Console.WriteLine("Main mission - read sessstats.txt - Exception: " + ex.ToString()); }
 
         //Check whether the 50-kill objective is reached.  Remember that RedTotalF & BlueTotalF are kills X 100 NOT just plain kills!
-        if (!osk_Red50Kills && (double)(RedTotalF) / 100 >= 50)
-        {
+        if (!osk_Red50Kills && (double)(RedTotalF) / 100 >= 50) {
             osk_RedObjCompleted += " 50 total Team Kills - ";
             osk_Red50Kills = true;
             GamePlay.gpLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
             GamePlay.gpHUDLogCenter("RED reached 50 Team Kills. Well done Red!");
 
         }
-        if (!osk_Blue50Kills && (double)(BlueTotalF) / 100 >= 50)
-        {
+        if (!osk_Blue50Kills && (double)(BlueTotalF) / 100 >= 50) {
             osk_BlueObjCompleted += " 50 total Team Kills - ";
             osk_Blue50Kills = true;
             GamePlay.gpLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });

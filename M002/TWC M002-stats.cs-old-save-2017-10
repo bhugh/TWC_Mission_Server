@@ -3200,13 +3200,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             string msg1 = string.Format("Current Session Stats: {0:0.00} total Kill Points; {1:0.00}/{2:0.00}/{3:0.00}/{4:0.00} Air/AA/Naval/Ground Kill Points",
                 (double)(currSessStat.getSessStat(798)) / 100, (double)(currSessStat.getSessStat(802)) / 100, (double)(currSessStat.getSessStat(806)) / 100, (double)(currSessStat.getSessStat(810)) / 100, ((double)currSessStat.getSessStat(814)) / 100);
 
-            //Also include player's penalty points if there are any.
-            if (currSessStat.getSessStat(847) < 0)
-            {
-                msg1 += string.Format("; Penalty Points: {0:0.00}", (double)(currSessStat.getSessStat(847)) / 100);
-            }
-
-            this.mission.Stb_Message(new Player[] { player }, msg1, null);           
+            this.mission.Stb_Message(new Player[] { player }, msg1, null);
 
 
             mission.Timeout(2, () => { //Apparently Timeout is a method of mission . . . who knew?
@@ -3324,17 +3318,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                   (double)(BS.getSessStat(798)) / 100, (double)(BS.getSessStat(802)) / 100, (double)(BS.getSessStat(806)) / 100, 
                   (double)(BS.getSessStat(810)) / 100, (double)(BS.getSessStat(814)) / 100);
 
-                //Also include Team's penalty points if there are any.
-                if (BS.getSessStat(847) < 0)
-                {
-                    msg1 += string.Format("; Penalty Points: {0:0.00}", (double)(BS.getSessStat(847)) / 100);
-                }
-
-
                 if (player != null) mission.Timeout(2, () => {
                     this.mission.Stb_Message(new Player[] { player }, msg1, null);
                 });
-
                 ms = msg1;
             
 
@@ -3384,21 +3370,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //currSessStat.getSessStat(778);
                 //PlayerStats.getSessStat(778);
                 
-                string msg4 = string.Format("RED session totals: {0:0.0} total Kill Points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground Kill Points",
+                    string msg4 = string.Format("RED session totals: {0:0.0} total Kill Points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground Kill Points",
                       (double)(RS.getSessStat(798)) / 100, (double)(RS.getSessStat(802)) / 100, (double)(RS.getSessStat(806)) / 100,
                       (double)(RS.getSessStat(810)) / 100, (double)(RS.getSessStat(814)) / 100);
 
-                //Also include Team's penalty points if there are any.
-                if (RS.getSessStat(847) < 0)
-                {
-                    msg4 += string.Format("; Penalty Points: {0:0.00}", (double)(RS.getSessStat(847)) / 100);
-                }
-
-
-                if (player != null) mission.Timeout(5, () => {
+                    if (player != null) mission.Timeout(5, () => {
                         this.mission.Stb_Message(new Player[] { player }, msg4, null);
-                });
-                ms += "<br>" + msg4;
+                    });
+                    ms += "<br>" + msg4;
                 
 
                 
@@ -7055,7 +7034,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         }
 
-        //GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { }); //just for testing
+        GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { });
 
         ot_CivilianBombings[name] = new Tuple<int, DateTime>(infract, newtime);
         return infract;
@@ -7069,7 +7048,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     //These negative kill points will have a bad effect on the player's rank, ace level, and also on the entire army's 
     //point level as recorded by <obj.  Kill point totals can actually go negative for bad infractions.
     //Also every 8 infractions the player is kicked out of the plane (usually results in player death/loss of career)
-    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg)
+    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator)
     {
         if (player == null) return;
 
@@ -7083,9 +7062,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger */
         string firetype = "BigSitySmoke_1";
         loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 1200, stb_FullPath);
-
-        double score = 0.5; //50 lb bomb; 22kg
-        if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
 
 
         //GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
@@ -7107,8 +7083,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
             //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
             //? Nothing here yet, needs to be added ?
-            stb_RecordStatsOnActorDead(initiator, 4, -4 * score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + ( -4 * score ).ToString("0.0") + " point penalty", new object[] { });
+            stb_RecordStatsOnActorDead(initiator, 4, -4, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
 
         }
         else if (infractions > 0 && infractions > 4) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
@@ -7123,7 +7098,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //? Nothing here yet, needs to be added ?
 
             stb_RecordStatsOnActorDead(initiator, 4, -2, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -2 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-2 * score).ToString("0.0") + " point penalty", new object[] { });
 
         }
 
@@ -7138,7 +7112,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //? Nothing here yet, needs to be added ?
 
             stb_RecordStatsOnActorDead(initiator, 4, -1, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-            GamePlay.gpLogServer(new Player[] { player } , "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
         }
 
 
@@ -7189,7 +7162,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
      ****************************************************************/
 
 
-    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1 ) //IsEnemy 0=friendly, 1 enemy, 2 neutral
+    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player)
     {
         if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
         string playername = player.Name();
@@ -7218,15 +7191,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         
          */
 
-        if (isEnemy == 0 || isEnemy == 2)
-        {
-            score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                             //but, still helps destroy the objects/area (for your enemies) as usual
-            GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
-
-        }
-
-        GamePlay.gpLogServer(new Player[] { player }, "Ground area hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
+        GamePlay.gpLogServer(new Player[] { player }, "Vital area hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
 
 
         stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
@@ -7531,11 +7496,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         bool ai = true;
         if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
 
-        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
-        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
-        if (terr == 00) isEnemy = 2;
-        if (initiator.Player.Army() == terr) isEnemy = 0;
-
         //for testing
         //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
 
@@ -7543,11 +7503,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
 
-        /***************************
-         * 
-         * Handle bombing civilian areas AND area bombing generally
-         * 
-         ***************************/
         //Give penalties to players if they bomb civilian areas
         if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
             {
@@ -7564,10 +7519,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
                     // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
                     // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
-                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player); return; }
                     // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
                     //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
                 }
@@ -7575,20 +7530,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
                 //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
-                if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
-                if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator);
+                if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator);
 
 
             }
 
-        
+        //We could also handle airport destruction here but leaving it be for now.  Sample code from reddog below.
         //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
-
-        /********************
-         * 
-         * Handle airport bombing
-         * 
-         *******************/
 
         var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
         apkeys = AirfieldTargets.Keys.ToList();
@@ -7627,18 +7576,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 if (mass_kg > 880) score = 5.92; //2000
                 if (mass_kg > 1760) score = 9.33 ; //4000
 
-                 */
+                 */                
 
-                double individualscore = score;
-
-                if (isEnemy == 0 || isEnemy == 2)
-                {
-                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                                         //but, still helps destroy that base (for your enemies) as usual
-                    GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
-                }
-
-                    stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+                stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
                                                                                           //TODO: More/less points depending on bomb tonnage.
 
                 //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
@@ -7656,7 +7596,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 string cratertype = "BombCrater_firmSoil_mediumkg";                
                 if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
 
                 double percent = 0;
                 double prev_percent = 0;
@@ -7664,7 +7604,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 {
                     percent = PointsTaken / PointsToKnockOut;
                     prev_percent = (PointsTaken - score) / PointsToKnockOut;
-                    if (prev_percent > 1) prev_percent = 1;
                 }
 
                 double timereduction = 0;
@@ -7687,7 +7626,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     timetofix = 24 * 60 * 60; //24 hours to repair . . . 
                 }
                 //Advise player of hit/percent/points
-                if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+                if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
 
                 loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
                 //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
@@ -7695,14 +7634,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
                 Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
 
-                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                if (PointsTaken >= PointsToKnockOut) //has weight limit been reached?
                 {
                     AirfieldTargets.Remove(ap);
                     AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now));
                     if (!disabled)
                     {
                         AirfieldDisable(ap); //covers the airfield in craters to disable itmum
-                        LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                        LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields.
                     }
                 }
                 else

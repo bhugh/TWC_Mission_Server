@@ -81,7 +81,11 @@ There are many bomber targets of opportunity--fuel dumps and isolated factory co
 
 Additionally, nearly every fuel tank, large factory building, and train station in the campaign area is a bombable target that will help improve your ground victory count and advance your career. Check industrial areas and train stations of every city--Le Havre, Caen, Rouen, Querqueville, etc. Many of these do not show with visible black dots, but require finding and seeking. 
 
-An enemy tanker has been spotted south of Niton on the Isle of Wight.
+Every industrial area is a bomber target and can be area bombed.  Every airport is a bomber target; bomb hits create craters that disrupt airport traffic and with sufficient hits, disable the airport. 
+
+An enemy tanker has been spotted south of Niton on the Isle of Wight. Several tankers and a Minensuchboot are docked at Le Havre. 
+
+Minensuchtboote have been spotted: (1) about 20 miles NNW of Fecamp, steaming towards the mouth of the Seine, (2) at the western tip of the Cherbourg peninsula steaming north towards Bournemouth, and (3) patrolling the western coast of the Cherbourg peninsula, just south of the NW tip of the peninsula.
 
 Several trains may be running and, if spotted, are targets for both bombers and fighters.
 
@@ -96,9 +100,11 @@ Repel the bomber attacks at Bembridge. Save the radar at Ventnor. Enemy raids wi
 
 The enemy can turn the map by destroying the dams at Southampton and Cowes and the Fuel Storage at Portsmouth Harbor, decimating our industrial capacity and paving the way for the invasion of the homeland.  Defend those three targets at all costs!
 
-Blenny Pilots: Your primary mission is to destroy the dams at Le Havre and Les Andelys (AY-03.5) and the Fuel Dump at Le Havre. If you destroy those three targets, you will turn the map.
+Blenny Pilots: Your primary mission is to destroy the dams at Le Havre and Les Andelys (AY-03.5) and the Fuel Dump at Le Havre. 
 
 The Fuel Dump at Le Havre is complex of large fuel tanks along an inner harbor at AQ-06.1. This is about 1.2 miles ESE of the end of the long pier, where many ships, including the Minensuchtboot, often linger.
+
+To turn the map, in addition to destroying these three targets, your team must achieve 50 total victories and 10 more victories than the opposing team. Use <obj to check status. 
 
 Use chat command <obj to check friendly & enemy objectives.
 <Slide>
@@ -205,7 +211,9 @@ AA works to defend your base also and is live for you to use if you choose it fr
 MISSION 2 TOP PRIORITY OBJECTIVES
 Your first mission is to protect your airport from the enemy fighters and bombers attacking the resources and shipping in your area!
 
-Bombers can turn the map by destroying three of the highest priority targets: the dams at Southampton (AG-20.7) and at Cowes (AG-19.8) and the Fuel Dump at Portsmouth Harbor (AH-20.3). Destroying these three targets will decimate the Brits' industrial capacity and pave the way for the invasion of Great Britain.  
+Bombers can turn the map by destroying three of the highest priority targets: the dams at Southampton (AG-20.7) and at Cowes (AG-19.8) and the Fuel Dump at Portsmouth Harbor (AH-20.3). Destroying these three targets will decimate the Brits' industrial capacity and pave the way for the invasion of Great Britain.
+
+To turn the map, in addition to destroying these three targets, your team must achieve 50 total victories and 10 more victories than the opposing team. Use <obj to check status.   
 
 Enemy Bombers will be attempting to destroy the Le Havre dam, the dams at Les Andelys and Ouistreham, and other valuable targets.  If the enemy destroys the dams at Le Havre and Les Andelys (AY-03.5) and the fuel storage at Le Havre Harbor, they will turn the map.  Defend them at all costs!
 

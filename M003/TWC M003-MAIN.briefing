@@ -1,23 +1,84 @@
-﻿[Army Red]
+[Army Red]
 <Name>
 Army Red
 <Description>
+Mission 3: France v. France
+
+Mission specifics & objectives @ the bottom of this file. Check in-game using the map screen/show briefing.
+
+RADAR
+Radar is available--use TAB-4-1 or chat command <rad. 
+
+Disregard TAB-7-1 radar--it is ineffective and misleading.
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+ * NOTE: The most relevant listings (closest, easiest intercepts) are at the BOTTOM of the listing. Least relevent (most distant) are at the TOP, and may scroll off your screen. Read the listings from the bottom up. 
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
+
+Like all equipment, the radar has certain limitations and malfunctions. It takes time to get a current readout; sometimes it confuses bombers and fighters, sometimes it misses targets entirely--particularly small groups; it loses effectiveness close to the ground and sometimes up high. All these are realistic WWII-era radar limitations.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids. 
+
+Note that the radar will show only a fraction of the aircraft active in-game at any given time. In particular it lists only those visible to radar (given limitations outlined above) AND close/relevant to your current position.
+
+YOUR CAREERS
+On the Mission Server you have a FIGHTER PILOT career and a separate BOMBER PILOT career. Fly clean,  fight hard, and above all STAY ALIVE to keep your career moving forward.
+
+The promotion system rewards pilot who achieve victories, who fly continuous missions (ie, landing & taking off again from the same airport rather than hopping all over the map), who land their planes in one piece--writing off as few as possible, and above all, who stay alive through many sorties and missions.
+
+Parachuting or landing safely anywhere on friendly ground is quite safe; parachuting or landing in friendly water slightly less safe; parachuting or landing on enemy ground quite dangerous; and parachuting or landing on enemy waters the most dangerous of all (as it was in real life).
+
+For career purposes, best option is to land your plane at a friendly airport in one piece. Next best is to land or parachute anywhere in friendly territory--this is quite safe. Worst is land or parachute in enemy territory.
+
+In contrast to most CloD servers, parachuting to the ground is quite safe (as it was in real life during WW2). What happens after you reach the ground in enemy territory or on water may be different, however.
+
+In contrast to most CloD servers, once you are on the ground and stopped (or moving very slowly) you are very UNlikely to have a career-ending death.  
+
+You may lose your aircraft to enemy attack or low-speed crash, but you will most likely survive. This is simply because these ground activites are not modeled as part of the game--you can't jump out of your plane and dive into a ditch in-game, for example. So, for career purposes, once you are on friendly ground and stopped, you are pretty safe.
+
+If you are still in the air at the end of a mission (or when the server disconnects for any reason) all is well and your career will continue. Successful landings do bolster your career--but missing the opportunity to record a successful landing is the only consequence of flying until server disconnect.
+
+AVAILABLE AIRCRAFT PER RANK
+On the Mission Server, you gain access to more aircraft as you work your way up the ranks and get promotions.  So you will find many aircraft at airports that are not yet available for your use, because you have not yet earned access.
+
+Note that in at some ranks, you may be given access to secret stock of enemy aircraft that may help you better accomplish mission objectives. All a/c are badged with the proper army, however. Particularly, Red Bomber Pilots have early access to  HE-111 and BR.20 bombers, which give these pilots access to bombing capacity that was available to British bomber pilots at this stage of the war, but which is not available in CloD's Blenheim IV model.
+
+Use Chat Commands <ac and <nextac to find out which aircraft you are allowed use at your current rank.
+
+R&R <rr
+You can use the <rr command to refuel & re-arm at or close to ANY friendly airport--both the colored (active) airports and the gray (inactive) airports. You can <rr ANY aircraft--fighter or bomber.
+
+You can <rr even if your aircraft is damaged--<rr brings you a a NEW plane instantly, rather spending time to refuel/rearm your old one, which would take 20 minutes or more.
+
+<rr is advantageous because you have access to ALL airfields, active or inactive, and because you can stop at these inactive airfields while continuing your unbroken continuous mission (the other option is landing at an inactive airport and then spawning in again elsewhere--which will end your continuous mission).
+
+Additionally, some key airports are available ONLY for <rr and do not allow direct spawns.
+
+<rrhelp for details.
+
+GROUND VEHICLES
+EVERY aircraft that spawns in, lands, or crashes is tended by airport staff and/or emergency vehicles as appropriate.
+
+LOOK SHARP for these ground vehicles before taxiing, taking off, or landing.
+
+The ground vehicles will be all over the airport and may be on the runway--especially if someone was dumb enough to land and abandon their aircraft here.
+
+MISSION 3 GENERAL OBJECTIVES
 Take off from France and destroy the enemy!
 
 You have re-supply bases available at over 90% of ATAG's map of central France.
 
-Repel the bomber attacks at Le Harve. Save the Dam also as it is a target for the enemy.  Raids will be coming to Rouen Boos and enemy attacks at every airfield on the map. Our most vital role is to protect the fuel and shipping located near Le Harve and sailing up the coast to Dieppe.
+Repel the bomber attacks at Le Havre. Save the Le Havre Dam also as it is a target for the enemy.  Raids will be coming to Rouen Boos and enemy attacks at every airfield on the map. Our most vital role is to protect the fuel and shipping located near Le Harve and sailing up the coast to Dieppe.  
 
-Bomber pilots can turn the map by destroying all three of these mission objectives: 
-
-#1. Boulogne Lower Dam (BA20.2), key source of Axis power generation
-#2. Frevent Secret Factory (BF14.9), where a new and very dangerous high explosive is being produced, based on formulas stolen by spies
-#3. Arras Fuel Dump (BI14.1).  Hidden in the the Arras industrial zone is a small group of fuel storage tanks holding an experimental new fuel that, intelligence indicates, will power a new German warplane faster than anything ever built before. Destroy this fuel at all costs.
-
-The Arras industrial zone may contain more than one fuel dump; it is vital to destroy the correct tanks.  The secret experimental fuel is held in a group of fuel tanks in the center of the industrial area, adjacent to the railroad line, that includes FOUR large tanks, FIVE medium tanks, and ONE small tank.  
-
-German pilots can turn the map if they destroy these three targets--defend them at all costs:  Dieppe Dam (AH-20.3) - Neufchatel-en-Bray Secret Factory (AZ09.4) - Forges-les-Eaux Fuel Dumps (BA07.4).
-
+BOMBER TARGETS
 Aside from the three primary mission targets, the enemy's area is very rich in bombing targets, and bombers who successfully destroy these targets will be well rewarded in ground victory points and promotions.  Some of the targets that will richly reward bombing, according to our intelligence reports:
  
   - Le Touquet: Fuel dump
@@ -33,48 +94,114 @@ Aside from the three primary mission targets, the enemy's area is very rich in b
   - 8km east of Abbeville industrial area: Secret factory in isolated area; bomb repeatedly
   - Bonningues-les-Ardres: Top secret factory near a farmhouse 1km west of the village; bomb repeatedly
   - Boulogne: Two dams, several fuel dumps in industrial areas
-  - Generally: Any fuel bunkers, ships, trains, vehicles, or factories you see on enemy territory
+  - Generally: Any enemy airport, industrial area, fuel bunker, ship, train, military vehicle, or factory you see on enemy territory
 
-In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map.  
+In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map.  Each of them is a bombable target that will help improve your ground victory count and advance your career.  
+
+Every industrial area is a bomber target and can be area bombed.  Every airport is a bomber target; bomb hits create craters that disrupt airport traffic and with sufficient hits, disable the airport. 
+
+Several ships (tankers and Minensuchtboote) have been spotted in Abbeville harbor. In addition, intelligence reports a Minensuchtboot off the coast of Le Treport steaming SW and another 25 km west of Boulogne steaming towards Dieppe and another 40 km west of Le Touquet steaming towards Fecamp.
   
 Enemy convoys and railroads are known to be operating--search along roads and railroads. Railroads run a predictable schedule on regular routes, and are carrying war supplies.  All these targets are shootable and bombable.
 
-RADAR
-Radar is available (use TAB-4-1).
+MISSION 3 TOP PRIORITY OBJECTIVES
+Bomber pilots can turn the map by destroying all three of these mission objectives: 
 
-A typical radar transmission looks like this:
+#1. Boulogne Lower Dam (BA20.2), key source of Axis power generation
+#2. Frevent Secret Factory (BF14.9), where a new and very dangerous high explosive is being produced, based on formulas stolen by spies
+#3. Arras Fuel Dump (BI14.1).  Hidden in the the Arras industrial zone is a small group of fuel storage tanks holding an experimental new fuel that, intelligence indicates, will power a new German warplane faster than anything ever built before. Destroy this fuel at all costs.
 
-~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+The Arras industrial zone may contain more than one fuel dump; it is vital to destroy the correct tanks.  The secret experimental fuel is held in a group of fuel tanks in the center of the industrial area, adjacent to the railroad line, that includes FOUR large tanks, FIVE medium tanks, and ONE small tank. 
 
-Translation of Radar transmission:
+To turn the map, in addition to destroying these three targets, your team must achieve 50 total victories and 10 more victories than the opposing team. Use <obj to check status. 
 
- * ~5F: approx. 5 fighters (~5B: 5 bombers)
- * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
- * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
- * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+The map holds numerous secondary targets, listed above under "Bomber Targets". 
 
-There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
+German pilots can turn the map if they destroy these three targets--defend them at all costs:  Dieppe Dam (AH-20.3) - Neufchatel-en-Bray Secret Factory (AZ09.4) - Forges-les-Eaux Fuel Dumps (BA07.4).
 
-Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+Use chat command <obj to check friendly & enemy objectives.
 <Slide>
-../../screenshots/screenshot1.jpg
+../twc-spits.bmp
 <Caption>
 [Army Blue]
 <Name>
 Army Blue
 <Description>
+Mission 3: France v. France
+
+Mission specifics & objectives @ the bottom of this file. Check in-game using the map screen/show briefing.
+
+RADAR
+Radar is available--use TAB-4-1 or chat command <rad. 
+
+Disregard TAB-7-1 radar--it is ineffective and misleading.
+
+A typical radar transmission looks like this:
+
+~5F 70k350dg1.5k 310k/h180dg AO13 Intcpt: 353dg7min AP10
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 70k350dg1.5k: 70 km from your location, heading 350 from your location, 1.5km altitude
+ * 310k/h180dg AD17: target aircraft current speed is 310 km/h, heading 180 degrees, location in sector AO13
+ * Intcpt: 353dg7min AP10: At your current speed, take intercept course 353 degrees to intercept in 7 minutes. Intercept point will be in sector AP10.
+ * NOTE: The most relevant listings (closest, easiest intercepts) are at the BOTTOM of the listing. Least relevent (most distant) are at the TOP, and may scroll off your screen. Read the listings from the bottom up.  
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
+
+Like all equipment, the radar has certain limitations and malfunctions. It takes time to get a current readout; sometimes it confuses bombers and fighters, sometimes it misses targets entirely--particularly small groups; it loses effectiveness close to the ground and sometimes up high. All these are realistic WWII-era radar limitations.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids. 
+
+Note that the radar will show only a fraction of the aircraft active in-game at any given time. In particular it lists only those visible to radar (given limitations outlined above) AND close/relevant to your current position.
+
+YOUR CAREERS
+On the Mission Server you have a FIGHTER PILOT career and a separate BOMBER PILOT career. Fly clean,  fight hard, and above all STAY ALIVE to keep your career moving forward.
+
+The promotion system rewards pilot who achieve victories, who fly continuous missions (ie, landing & taking off again from the same airport rather than hopping all over the map), who land their planes in one piece--writing off as few as possible, and above all, who stay alive through many sorties and missions.
+
+Parachuting or landing safely anywhere on friendly ground is quite safe; parachuting or landing in friendly water slightly less safe; parachuting or landing on enemy ground quite dangerous; and parachuting or landing on enemy waters the most dangerous of all (as it was in real life).
+
+For career purposes, best option is to land your plane at a friendly airport in one piece. Next best is to land or parachute anywhere in friendly territory--this is quite safe. Worst is land or parachute in enemy territory.
+
+In contrast to most CloD servers, parachuting to the ground is quite safe (as it was in real life during WW2). What happens after you reach the ground in enemy territory or on water may be different, however.
+
+In contrast to most CloD servers, once you are on the ground and stopped (or moving very slowly) you are very UNlikely to have a career-ending death.  
+
+You may lose your aircraft to enemy attack or low-speed crash, but you will most likely survive. This is simply because these ground activites are not modeled as part of the game--you can't jump out of your plane and dive into a ditch in-game, for example. So, for career purposes, once you are on friendly ground and stopped, you are pretty safe.
+
+If you are still in the air at the end of a mission (or when the server disconnects for any reason) all is well and your career will continue. Successful landings do bolster your career--but missing the opportunity to record a successful landing is the only consequence of flying until server disconnect.
+
+AVAILABLE AIRCRAFT PER RANK
+On the Mission Server, you gain access to more aircraft as you work your way up the ranks and get promotions.  So you will find many aircraft at airports that are not yet available for your use, because you have not yet earned access.
+
+Note that in at some ranks, you may be given access to secret stock of enemy aircraft that may help you better accomplish mission objectives. All a/c are badged with the proper army, however. Particularly, Red Bomber Pilots have early access to  HE-111 and BR.20 bombers, which give these pilots access to bombing capacity that was available to British bomber pilots at this stage of the war, but which is not available in CloD's Blenheim IV model.
+
+Use Chat Commands <ac and <nextac to find out which aircraft you are allowed use at your current rank.
+
+R&R <rr
+You can use the <rr command to refuel & re-arm at or close to ANY friendly airport--both the colored (active) airports and the gray (inactive) airports. You can <rr ANY aircraft--fighter or bomber.
+
+You can <rr even if your aircraft is damaged--<rr brings you a a NEW plane instantly, rather spending time to refuel/rearm your old one, which would take 20 minutes or more.
+
+<rr is advantageous because you have access to ALL airfields, active or inactive, and because you can stop at these inactive airfields while continuing your unbroken continuous mission (the other option is landing at an inactive airport and then spawning in again elsewhere--which will end your continuous mission).
+
+Additionally, some key airports are available ONLY for <rr and do not allow direct spawns.
+
+<rrhelp for details.
+
+GROUND VEHICLES
+EVERY aircraft that spawns in, lands, or crashes is tended by airport staff and/or emergency vehicles as appropriate.
+
+LOOK SHARP for these ground vehicles before taxiing, taking off, or landing.
+
+The ground vehicles will be all over the airport and may be on the runway--especially if someone was dumb enough to land and abandon their aircraft here.
+
+MISSION 3 GENERAL OBJECTIVES AND TARGETS
 Take off from most bases north of the Somme River.  Your mission is to destroy enemy airports, destroy their dams, fuel depots, and industrial capacity, and harrass the enemy in any way possible.
 
 Squadrons of bombers will be attacking these targets, Flak will be fierce and enemy aircraft will be attacking the bomber squadrons.  Defend your bomber squadrons or run your own bombing missions on these important targets.
-
-Bomber pilots can turn the map by destroying all three of these mission objectives: 
-
-#1. Dieppe Dam (AH-20.3), source of Allied power generation.  
-#2. Neufchatel-en-Bray Secret Factory (AZ09.4), where a new and very dangerous high explosive is being produced.
-#3. Forges-les-Eaux Fuel Dumps (BA07.4), where Allied forces are storing fuel vital for their bombing missions.
-
-British pilots can turn the map if they destroy these three targets--defend them at all costs: Boulogne Lower Dam (BA20.2) - Frevent Secret Factory (BF14.9) - Arras Fuel Dump (BJ15.1-15.4).
-
+  
+BOMBER TARGETS
 Aside from the three primary mission targets, the enemy's area is very rich in bombing targets, and bombers who successfully destroy these targets will be well rewarded in ground victory points and promotions.  Some of the targets that will richly reward bombing, according to our intelligence reports:
 
  - Le Treport: Dam
@@ -90,32 +217,30 @@ Aside from the three primary mission targets, the enemy's area is very rich in b
  - Le Havre: Dam
  - Le Havre: Fuel dumps in industrial area along harbor; destroy all LARGE factory buildings in the industrial area
  - Ouistreham: Dam
- - Generally, any fuel dumps, moving or stationary vehicles, trains, ships, or factories in enemy territory are fair game and valuable targets
+ - Generally: Any enemy airport, industrial area, fuel bunker, ship, train, military vehicle, or factory you see on enemy territory
 
-In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map; doing so will help both the war effort and your career.  
- 
-Enemy convoys and railroads are known to be operating--search along roads and railroads. Railroads run a predictable schedule on regular routes, and are carrying war supplies. All these targets are shootable and bombable. 
+In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map.  Each of them is a bombable target that will help improve your ground victory count and advance your career.  
 
-A raid is headed to Arras, to attack the factories and fuel depots there.  See if you can stop it. Good luck!
+Every industrial area is a bomber target and can be area bombed.  Every airport is a bomber target; bomb hits create craters that disrupt airport traffic and with sufficient hits, disable the airport. 
 
-RADAR
-Radar is available (use TAB-4-1).
+Intelligence reports a Corvette (Flower Class) 25km west of le Crotoy steaming NNE towards French Point. Another Corvette is 15km north of French Point steaming ENE towards Ostende.  A tanker is plying the coast between Le Havre and Fecamp. A small flotilla of cargo ships may be traveling from Dieppe to Le Havre.
+  
+Enemy convoys and railroads are known to be operating--search along roads and railroads. Railroads run a predictable schedule on regular routes, and are carrying war supplies.  All these targets are shootable and bombable.
 
-A typical radar transmission looks like this:
+MISSION 3 TOP PRIORITY OBJECTIVES
+Your first mission is to protect your airports, resources, and shipping from the enemy fighters and bombers in your area!
 
-~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+Bomber pilots can turn the map by destroying all three of these mission objectives: 
 
-Translation of Radar transmission:
+#1. Dieppe Dam (AH20.3), source of Allied power generation.  
+#2. Neufchatel-en-Bray Secret Factory (AZ09.4), where a new and very dangerous high explosive is being produced.
+#3. Forges-les-Eaux Fuel Dumps (BA07.4), where Allied forces are storing fuel vital for their bombing missions.
 
- * ~5F: approx. 5 fighters (~5B: 5 bombers)
- * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
- * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
- * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+To turn the map, in addition to destroying these three targets, your team must achieve 50 total victories and 10 more victories than the opposing team. Use <obj to check status. 
 
-There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
+British pilots can turn the map if they destroy these three targets--defend them at all costs: Boulogne Lower Dam (BA20.2) - Frevent Secret Factory (BF14.9) - Arras Fuel Dump (BJ15.1-15.4).
 
-Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+Use chat command <obj to list & check friendly & enemy objectives.
 <Slide>
-../../screenshots/shot_20141127_095901.bmp
+../twc-spits.bmp
 <Caption>
-AA works to defend your base also

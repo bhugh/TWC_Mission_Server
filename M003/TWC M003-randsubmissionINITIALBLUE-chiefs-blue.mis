@@ -1,4 +1,4 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -9,7 +9,6 @@
   CloudsHeight 1000
   BreezeActivity 10
   ThermalActivity 10
-  player BoB_RAF_F_73Sqn_Early.010
 [GlobalWind_0]
   Power 3.000 0.000 0.000
   BottomBound 0.00
@@ -22,6 +21,13 @@
   0_Chief Vehicle.GER_Fuel_Column de 
   4_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
   5_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
+  1_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
+  14_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
+  15_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 1
+  16_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 1
+  17_Chief Ship.MotorBarge_Large1 gb /sleep 0/skill 2/slowfire 1
+  18_Chief Ship.MotorBarge_Large1 gb /sleep 0/skill 2/slowfire 1
+  19_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
 [0_Chief_Road]
   299984.56 112033.70 38.40  0 2 6.11
   299925.06 112002.92 38.40  0 5 3.06
@@ -130,7 +136,17 @@
   158564.80 68515.09 38.40  0 2 2.78
   159886.03 76064.96 38.40  0 2 2.78
   168568.38 82482.36 38.40  0 2 2.78
-  178949.45 88522.25 38.40
+  178949.45 88522.25 38.40  0 2 1.00
+  164738.77 81729.33 38.40
+[1_Chief_Road]
+  237737.97 188571.44 38.40  0 2 5.56
+  215105.59 114141.58 38.40
+[14_Chief_Road]
+  225852.13 164544.28 38.40  0 2 5.56
+  185362.94 96758.59 38.40
+[15_Chief_Road]
+  243036.36 134981.33 38.40  0 2 5.56
+  262713.13 205848.05 38.40
 [NPC]
   2_Chief Ship.Minensuchboote de /posx 271656.63/posy 130424.87 /sleep 0/skill 2/slowfire 1
   3_Chief Ship.Minensuchboote de /posx 271190.38/posy 129709.59 /sleep 0/skill 2/slowfire 1
@@ -142,6 +158,28 @@
   11_Chief Armor.Guy_Mk_IA gb /posx 294051.22/posy 85087.86 
   12_Chief Armor.Bedford_OXA gb /posx 294007.19/posy 85243.54 
   13_Chief Armor.Bedford_OXA gb /posx 294146.81/posy 85198.51 
+[16_Chief_Road]
+  266341.78 221568.77 38.40  0 2 5.56
+  300901.50 234471.06 38.40  0 2 2.78
+  349659.94 247565.41 38.40
+[17_Chief_Road]
+  227675.64 103859.04 38.40  0 2 6.67
+  218497.41 102769.80 38.40  0 2 3.33
+  209422.03 100202.40 38.40  0 2 3.33
+  186658.42 93220.79 38.40  0 2 3.33
+  170532.84 83165.34 38.40
+[18_Chief_Road]
+  227646.45 104626.22 38.40  0 2 6.67
+  218439.05 103380.10 38.40  0 2 3.33
+  209439.33 100957.10 38.40  0 2 3.33
+  186247.73 93757.32 38.40  0 2 3.33
+  169569.08 83790.58 38.40
+[19_Chief_Road]
+  227424.98 105472.67 38.40  0 2 5.56
+  218226.31 104075.27 38.40  0 2 2.78
+  209086.42 101829.32 38.40  0 2 2.78
+  185893.28 94397.79 38.40  0 2 2.78
+  168807.30 85079.13 38.40
 [Stationary]
 [Buildings]
 [BuildingsLinks]

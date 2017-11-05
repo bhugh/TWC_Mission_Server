@@ -16,16 +16,22 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
+using maddox.game.page;
 using part;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Net;
+using System.Security.Cryptography;
 using System.ComponentModel;
 using System.Threading;
+using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Linq;
 using TF_Extensions;
 
 /* TODO:
@@ -43,16 +49,22 @@ using TF_Extensions;
 //[Serializable]
 public class Mission : AMission
 {
-    Random random;
+    Random random, stb_random;
     //Constants constants; 
 
     public string MISSION_ID;
+    public string SERVER_ID;
+    public string SERVER_ID_SHORT;
     public bool DEBUG;
     public bool LOG; //Whether to log debug messages to  a log file.
 
+    public string MISSION_FOLDER_PATH;
     public string USER_DOC_PATH;
     public string CLOD_PATH;
     public string FILE_PATH;
+    public string stb_FullPath;
+    public Dictionary<int, string> radarpasswords;
+    public string BOMBERMISSIONS_FILE_PATH;
     public string MESSAGE_FILE_NAME;
     public string MESSAGE_FULL_PATH;
     public string STATS_FILE_NAME;
@@ -104,15 +116,26 @@ public class Mission : AMission
     //Constructor
     public Mission() {
         random = new Random();
+        stb_random = random;
         //constants = new Constants();
         respawn_on = true;
         MISSION_ID = "M001";
+        SERVER_ID = "Mission Server";
+        SERVER_ID_SHORT = "Mission";
         DEBUG = false;
         LOG = true;
+        radarpasswords = new Dictionary<int, string>
+        {
+            { -1, "twc"}, //Red army #1
+            { -2, "twc"}, //Blue, army #2
+            { -3, "twc2twc"}, //admin
+            //note that passwords are CASEINSENSITIVE
+        };
 
         USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
         CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover - MOD/";  // DO NOT CHANGE
-        FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/";   // mission install directory (CHANGE AS NEEDED)          
+        FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/";   // mission install directory (CHANGE AS NEEDED)   
+        stb_FullPath = CLOD_PATH + FILE_PATH;
         MESSAGE_FILE_NAME = MISSION_ID + @"_message_log.txt";
         MESSAGE_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + MESSAGE_FILE_NAME;
         STATS_FILE_NAME = MISSION_ID + @"_stats_log.txt";
@@ -191,6 +214,43 @@ public class Mission : AMission
     // loading sub-missions
     public override void OnTickGame()
     {
+        //Ticks below write out TOPHAT radar files for red, blue, & admin
+        //We do each every ~minute but space them out a bit from each other
+        //roughly every one minute
+        //do this regardless of whether players are loaded, so it must be first here
+        if ((Time.tickCounter()) % 1000 == 0)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        if ((Time.tickCounter()) % 1000 == 334)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -2, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        if ((Time.tickCounter()) % 1000 == 666)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -3, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
 
         if (!MISSION_STARTED)
         {
@@ -248,6 +308,19 @@ public class Mission : AMission
 
 
         }
+
+        //roughly every two minutes
+        if ((Time.tickCounter()) % 2000 == 0)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+        }
+
 
 
 
@@ -408,6 +481,374 @@ public class Mission : AMission
 
     }
 
+    /************************************************************
+    * 
+    * handle airport bombing
+    * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
+    * 
+    * We give credit (points) for any bomb that hits within the radius of an airfield.
+    * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
+    * 
+    * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
+    * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
+    * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
+    * 
+    * //Version for -MAIN.cs//
+    *************************************************************/
+
+    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double>>();
+    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+
+    public void SetAirfieldTargets()
+    {
+        foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
+        {
+
+            //We're just going to add ALL airfields as targets, but then make sure there are no duplicates (bec. built-in & .mis-added airports sometimes overlap).
+
+            //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
+
+            ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
+            //int pointstoknockout = 30; 
+            //if ( ap.Army() != null && ap.Army() == 1 ) pointstoknockout = 65;
+
+            ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
+            int pointstoknockout = 32;  //This is two HE111 or JU88 loads (or 1 full load & just a little more) and about 6 Blennie loads
+
+            double radius = ap.FieldR();
+
+
+            //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
+            //most .mis airports are placed on top of an existing built-in airport. We check whether this airport has already been added & skip adding it if so.
+            Point3d pos = ap.Pos();
+            bool add = true;
+            foreach (AiAirport apk in AirfieldTargets.Keys)//Loop through the targets
+            {
+                if (apk != null & apk.Pos().distance(ref pos) <= apk.FieldR())
+                {
+                    //AirfieldTargets[apk].Item3
+                    add = false; //
+                    if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
+                    break;
+                }
+            }
+
+            //We'll get the NAME of the airport from the birthplace/spawn point declare in a .mis file, if it exists
+
+            string apName = ap.Name();
+            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+            {
+                if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
+                {
+                    if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE"))) apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
+                    break;
+                }
+            }
+
+
+            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(false, apName, pointstoknockout, 0, DateTime.Now, radius)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
+                                                                                                                                                                   //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+                                                                                                                                                                   //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+
+        }
+        GamePlay.gpLogServer (null, "SetAirfieldTargets initialized.", null);
+    }
+
+    public void ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false)
+    {
+        int count = 0;
+        foreach (AiAirport ap in AirfieldTargets.Keys)
+        {
+
+            double PointsTaken = AirfieldTargets[ap].Item4;
+            bool disabled = AirfieldTargets[ap].Item1;
+
+            if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
+            if (army != -1 & army != ap.Army()) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
+
+            count++;
+            double PointsToKnockOut = AirfieldTargets[ap].Item3;
+            string Mission = AirfieldTargets[ap].Item2;
+            DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+            double percent = 0;
+            if (PointsToKnockOut > 0)
+            {
+                percent = PointsTaken / PointsToKnockOut;
+            }
+
+            double timereduction = 0;
+            if (percent > 0)
+            {
+                timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+            }
+
+            double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                      //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                      //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                      //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                      //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+            if (PointsTaken >= PointsToKnockOut) //airport knocked out
+            {
+                percent = 1;
+                timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+            }
+
+            GamePlay.gpLogServer(new Player[] { player }, Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago", new object[] { });
+
+
+        }
+        if (count == 0) GamePlay.gpLogServer(new Player[] { player }, "No airports damaged or destroyed yet", new object[] { });
+    }
+
+    //stamps a rectangular pattern of craters over an airfield to disable it
+    public void AirfieldDisable(AiAirport ap)
+
+    {
+        string apName = ap.Name();
+        if (AirfieldTargets.ContainsKey(ap)) apName = AirfieldTargets[ap].Item2;
+
+        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+        double radius = ap.FieldR();
+        Point3d pos = ap.Pos();
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+
+        string val1 = "Stationary";
+        string type = "BombCrater_firmSoil_largekg";
+        int count = 0;
+        string value = "";
+
+
+        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 80)
+        {
+            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 80)
+            {
+                string key = "Static" + count.ToString();
+                value = val1 + ".Environment." + type + " nn " + (x - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                f.add(sect, key, value);
+                count++;
+
+            }
+
+        }
+        f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
+        GamePlay.gpPostMissionLoad(f);
+        //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
+
+    }
+    /*
+        public void LoadAirfieldSpawns()
+        {
+
+            return;
+
+            //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
+            //so, maybe we will do all that later, and maybe not
+            //For now we are just skipping this part altogether (return;)
+            //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
+
+            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+
+            {
+                bp.destroy();//Removes all spawnpoints
+            }
+        //        GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
+
+            foreach (AiAirport ap in AirfieldTargets.Keys)
+            {
+                if (AirfieldTargets[ap].Item1)
+                {
+                    //Airfield still active so load mission
+                    GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
+                }
+            }
+
+
+        }
+    */
+
+
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+
+        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+
+        //GamePlay.gpLogServer(null, "bombe 1", null);
+        bool ai = true;
+        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+
+        //GamePlay.gpLogServer(null, "bombe 2", null);
+        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+        //GamePlay.gpLogServer(null, "bombe 3", null);
+        if (terr == 00) isEnemy = 2;
+        if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
+        //GamePlay.gpLogServer(null, "bombe 4", null);
+
+
+        //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
+
+        /********************
+         * 
+         * Handle airport bombing
+         * 
+         *******************/
+
+        //GamePlay.gpLogServer(null, "bombe 5", null);
+
+        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+        apkeys = AirfieldTargets.Keys.ToList();
+
+        //GamePlay.gpLogServer(null, "bombe 6", null);
+
+        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+        {
+            /* if (!AirfieldTargets[ap].Item1)
+            {//airfield has already been knocked out so do nothing
+            }
+            else
+            { */
+
+            //GamePlay.gpLogServer(null, "bombe 7", null);
+            double radius = AirfieldTargets[ap].Item6;
+
+            //Check if bomb fell inside radius and if so increment up
+            if (ap != null & ap.Pos().distance(ref pos) <= radius)//has bomb landed inside airfield check
+            {
+
+
+                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+                double score = 0.5; //50 lb bomb; 22kg
+                if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
+
+                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+                 * 
+                 * //Default is 0.5 points for ie 50 lb bomb
+                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+                if (mass_kg > 110) score = 1.41; //250 
+                if (mass_kg > 220) score = 2.33; //500
+                if (mass_kg > 440) score = 3.70; //1000
+                if (mass_kg > 880) score = 5.92; //2000
+                if (mass_kg > 1760) score = 9.33 ; //4000
+
+                 */
+
+                double individualscore = score;
+
+                if (!ai && (isEnemy == 0 || isEnemy == 2))
+                {
+                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                         //but, still helps destroy that base (for your enemies) as usual
+                                                         //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                }
+
+                //  stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+                //TODO: X More/less points depending on bomb tonnage.
+
+                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+                string firetype = "BuildingFireSmall";
+                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+                if (stb_random.NextDouble() > 0.25) firetype = "";
+                //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                //set placeholder variables
+                double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                double PointsTaken = AirfieldTargets[ap].Item4 + score;
+                string Mission = AirfieldTargets[ap].Item2;
+                bool disabled = AirfieldTargets[ap].Item1;
+                DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+
+                string cratertype = "BombCrater_firmSoil_mediumkg";
+                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+                double percent = 0;
+                double prev_percent = 0;
+                if (PointsToKnockOut > 0)
+                {
+                    percent = PointsTaken / PointsToKnockOut;
+                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                    if (prev_percent > 1) prev_percent = 1;
+                }
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                double timereduction = 0;
+                if (prev_percent > 0)
+                {
+                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                }
+
+                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+                if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                {
+                    percent = 1;
+                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                }
+                //Advise player of hit/percent/points
+                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+
+                //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius));
+                    if (!disabled)
+                    {
+                        //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                        //This airport has been destroyed, so remove the spawn point
+                        if (ap != null)
+                        {
+                            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                            {
+                                Point3d bp_pos = bp.Pos();
+                                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius));
+                }
+                //GamePlay.gpLogServer(null, "bombe 11", null);
+                break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
+            }
+        }
+    }
+
+
     //TO DISPLAY VARIOUS MESSAGES AT VARIOUS TIMES IN THE MISSION CYCLE
     public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 20000) {
 
@@ -444,7 +885,7 @@ public class Mission : AMission
         DebugAndLog("Num matching submissions found in directory: " + list.Count);
         return list;
     }
-
+  
     //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
     public void EndMission(int endseconds = 0, string winner = "") {
         if (winner == "")
@@ -452,6 +893,14 @@ public class Mission : AMission
             GamePlay.gpLogServer(null, "Mission is restarting soon!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Mission is restarting soon!!!");
         } else {
+            if (endseconds > 60)
+            {
+                Timeout(endseconds + 40, () =>
+                {
+                    GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                    GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                });
+            }
             Timeout(endseconds / 2, () =>
               {
                   GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
@@ -522,11 +971,12 @@ public class Mission : AMission
 
             //if (DEBUG) 
             DebugAndLog("Loading mission " + RandomMission);
+            Console.WriteLine("Loading mission " + Path.GetFileName(RandomMission));
             DebugAndLog("Current time: " + DateTime.UtcNow.ToString("O"));
         }
 
         return ret;
-
+ /////////////////////////////////////ends submission calls ////////////////////// 0000000000000000000000000000000000000000000000000000000000000000000000000/////////////
 
         //GamePlay.gpPostMissionLoad("missions/Multi/Flug/Blue vs Red - Scimitar-Flug-2016-04-19-submis");
 
@@ -568,6 +1018,28 @@ public class Mission : AMission
         //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
         GamePlay.gpLogServer(to, (string)data, third);
 
+    }
+
+    private void sendScreenMessageTo(int army, string msg, object[] parms)
+    {
+        List<Player> Players = new List<Player>();
+
+        // on Dedi the server or for singleplayertesting
+        if (GamePlay.gpPlayer() != null)
+        {
+            if (GamePlay.gpPlayer().Army() == army || army == -1)
+                Players.Add(GamePlay.gpPlayer());
+        }
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in GamePlay.gpRemotePlayers())
+            {
+                if (p.Army() == army || army == -1)
+                    Players.Add(p);
+            }
+        }
+        if (Players != null && Players.Count > 0)
+            GamePlay.gpHUDLogCenter(Players.ToArray(), msg, parms);
     }
 
     //WRITE OUT PLAYER STATS////////////////////////////////////////////    
@@ -1187,8 +1659,8 @@ public class Mission : AMission
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
-            GamePlay.gpLogServer(null, "Hamble Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Hamble Dam has been eliminated. Well done" + name);
+            GamePlay.gpLogServer(null, "The Hamble Dam has been eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("Hamble Dam eliminated. Well done" + name);
 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
 
@@ -1251,8 +1723,10 @@ public class Mission : AMission
         }
 
     }
-    #endregion
 
+    #endregion
+    int RedTotalF = 0;
+    int BlueTotalF = 0;
     public void CheckMapTurned()
     {
         /************************************************
@@ -1260,10 +1734,9 @@ public class Mission : AMission
          * Check to see if anyone has turned the map
          * Recursive function called every X seconds
          ************************************************/
-        Timeout(28, () => { CheckMapTurned(); });
+        Timeout(28, () => { CheckMapTurned(); }); 
         
-        int RedTotalF = 0;
-        int BlueTotalF = 0;
+        
 
         // Read the stats file where we tally red & blue victories for the session
         //This allows us to make red/blue victories part of our mission objectives &
@@ -1316,7 +1789,7 @@ public class Mission : AMission
         {
             osk_RedObjCompleted += " 10 more Team Kills than Blue - ";
             osk_MapTurned = true;
-            EndMission(60, "RED");
+            EndMission(300, "RED");
 
         }
 
@@ -1326,7 +1799,7 @@ public class Mission : AMission
         {
             osk_BlueObjCompleted += " 10 more Team Kills than Red - ";
             osk_MapTurned = true;
-            EndMission(60, "BLUE");
+            EndMission(300, "BLUE");
 
         }
 
@@ -1516,8 +1989,19 @@ public class Mission : AMission
         }
     }
 
+    public System.IO.FileInfo fi;// = new System.IO.FileInfo(STATSCS_FULL_PATH + MISSION_ID + "_radar.txt"); //file to write to
+    public System.IO.StreamWriter sw;
+
     //List all a/c positions to console///////////////////////////
     //Radar . . . 
+    // RADAR_REALISM = 0 lists <pos detailed info to chat window, for admins
+    // RADAR_REALISM > 0 is regular tab-4-1 <rad filtered radar returns for in-game
+    // RADAR_REALISM = -1 is for online radar/TOPHAT system and saves the info for both armies to a file
+    // inOwnArmy = true list aircraft in own army, false in opposing army
+    //BUT inOwnArmy = false & playerArmy -1, -2, -3 will list ALL aircraft regardless
+    // playerArmy -1 is for TOPHAT & will list all a/c but with the red TOPHAT slant
+    // playerArmy -2 is for TOPHAT & will list all a/c but with the blue TOPHAT slant
+    // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
     public string posmessage;
     public int poscount;
     public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy) {
@@ -1525,15 +2009,19 @@ public class Mission : AMission
 
 
         // int RADAR_REALISM;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
+        // realism = -1 gives the lat/long output for radar files.
         AiAircraft p = null;
         Point3d pos1;
         Point3d pos2;
-        Point3d VwldP, intcpt;
+        Point3d VwldP, intcpt, longlat;
         Vector3d Vwld, player_Vwld;
         double player_vel_mps = 0;
         double player_vel_mph = 0;
+        double player_alt_m = 0;
         string type, player_sector;
+        string playertype = "";
         bool player_place_set = false;
+        bool isHeavyBomber = false;
         double vel_mps = 0;
         double vel_mph = 0;
         int vel_mph_10 = 0;
@@ -1546,12 +2034,15 @@ public class Mission : AMission
         int bearing_10 = 0;
         double alt_ft = 0;
         double alt_km = 0;
+        double altAGL_m = 0;
+        double altAGL_ft = 0;
         int alt_angels = 0;
         string sector = "";
         double intcpt_heading = 0;
         double intcpt_time_min = 0;
         string intcpt_sector = "";
         bool intcpt_reasonable_time = false;
+        bool climb_possible = true;
         int aigroup_count = 0;
         string playername = "TWC_server_159273";
         string playername_index;
@@ -1574,16 +2065,22 @@ public class Mission : AMission
 
         enorfriend = "ENEMY";
         if (inOwnArmy) enorfriend = "FRIENDLY";
+        if (playerArmy < 0 ) enorfriend = "BOTH ARMIES";
 
         if (player != null && (player.Place() is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
             p = player.Place() as AiAircraft;
             player_Vwld = p.AirGroup().Vwld();
             player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
             player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+            player_alt_m = p.Pos().z; 
             player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
             player_sector = player_sector.Replace(",", ""); // remove the comma
             player_place_set = true;
-            playername = player.Name();
+            playername = player.Name();            
+            playertype = p.Type().ToString();
+            if (playertype.Contains("Fighter") || playertype.Contains("fighter")) playertype = "F";
+            else if (playertype.Contains("Bomber") || playertype.Contains("bomber")) playertype = "B";
+            else playertype = "U";
 
             /* posmessage = "Radar intercepts are based on your current speed/position: " +
                          player_vel_mph.ToString("F0") +"mph " + 
@@ -1594,6 +2091,7 @@ public class Mission : AMission
         }
         playername_index = playername + "_0";
         if (inOwnArmy) playername_index = playername + "_1";
+        playername_index = playername_index + "_" + RADAR_REALISM.ToString();
 
         savenewmessages = true; //save the messages that are generated
         currtime_ms = stopwatch.ElapsedMilliseconds;
@@ -1644,6 +2142,11 @@ public class Mission : AMission
 
             radar_messages = new SortedDictionary<string, string>(new ReverseComparer<string>());//clear it out before starting anew . . .           
             radar_messages.Add("9999999999", " >>> " + enorfriend + " RADAR CONTACTS <<< ");
+
+            if (RADAR_REALISM < 0) radar_messages.Add("9999999998", "p"+Calcs.GetMD5Hash(radarpasswords[playerArmy].ToUpper())); //first letter 'p' indicates passward & next characters up to space or EOL are the password.  Can customize this per  type of return, randomize each mission, or whatever.
+            //RADAR_REALISM < 0 is our returns for the online radar screen, -1 = red returns, -2 = blue returns, -3 = admin (ALL SEEING EYE) returns
+            //passwords are CASEINSENSITIVE and the MD5 of the password is saved in the -radar.txt file for red, blue, and admin respectively
+            
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
             if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
@@ -1669,16 +2172,22 @@ public class Mission : AMission
                                             player_Vwld = p.AirGroup().Vwld();
                                             player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
                                             player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+                                            player_alt_m = p.Pos().z;
                                             player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
                                             player_sector = player_sector.Replace(",", ""); // remove the comma
                                             player_place_set = true;
                                         }
 
                                         bool isAI = isAiControlledPlane2(a);
+
+                                        string acType = Calcs.GetAircraftType(a);
+                                        isHeavyBomber = false;
+                                        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV")) isHeavyBomber = true;
+
                                         type = a.Type().ToString();
                                         if (type.Contains("Fighter") || type.Contains("fighter")) type = "F";
                                         else if (type.Contains("Bomber") || type.Contains("bomber")) type = "B";
-                                        if (a == p) type = "Your position";
+                                        if (a == p && RADAR_REALISM >= 0) type = "Your position";
                                         /* if (DEBUG) GamePlay.gpLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
                                          + a.CallSign() + " " 
                                          + a.Type() + " " 
@@ -1702,8 +2211,12 @@ public class Mission : AMission
                                         bearing = Calcs.CalculateGradientAngle(p.Pos(), a.Pos());
                                         bearing_10 = Calcs.GetDegreesIn10Step(bearing);
 
+                                        longlat = Calcs.Il2Point3dToLongLat(a.Pos());
+
                                         alt_km = a.Pos().z/1000;
                                         alt_ft = Calcs.meters2feet(a.Pos().z);
+                                        altAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
+                                        altAGL_ft = Calcs.meters2feet(altAGL_m); 
                                         alt_angels = Calcs.Feet2Angels(alt_ft);
                                         sector = GamePlay.gpSectorName(a.Pos().x, a.Pos().y).ToString();
                                         sector = sector.Replace(",", ""); // remove the comma
@@ -1716,9 +2229,19 @@ public class Mission : AMission
                                         intcpt_sector = intcpt_sector.Replace(",", ""); // remove the comma
                                         intcpt_reasonable_time = (intcpt_time_min >= 0.02 && intcpt_time_min < 20);
 
+                                        climb_possible = true;
+                                        if (player_alt_m <= a.Pos().z && intcpt_time_min > 1)
+                                        {
+                                            double altdiff_m = a.Pos().z - player_alt_m;
+                                            if (intcpt_time_min > 3 && altdiff_m / intcpt_time_min > 1100) { climb_possible = false; } //109 can climb @ a little over 1000 meters per minute in a sustained way.  So anything that requires more climb than that we exclude from the listing
+                                            else if (altdiff_m / intcpt_time_min > 2500) climb_possible = false; //We allow for the possibility of more climb for a brief time, less then 3 minutes
+
+                                        }
+
                                     string mi = dis_mi.ToString("F0") + "mi";
                                     string mi_10 = dis_10.ToString("F0") + "mi";
                                     string ft = alt_ft.ToString("F0") + "ft ";
+                                    string ftAGL = altAGL_ft.ToString("F0") + "ftAGL ";
                                     string mph = vel_mph.ToString("F0") + "mph";
                                     string ang = "A" + alt_angels.ToString("F0") + " ";
 
@@ -1729,78 +2252,185 @@ public class Mission : AMission
                                         if (dis_m>30000) mi_10 = ((double)(Calcs.RoundInterval(dis_m,10000)) / 1000).ToString("F0") + "k";
 
                                         ft = alt_km.ToString("F2") + "k ";
+                                        ftAGL = altAGL_m.ToString("F0") + "mAGL ";
                                         mph = (Calcs.RoundInterval(vel_mps *3.6,10)) .ToString("F0") + "k/h";
                                         ang = ((double)(Calcs.RoundInterval(alt_km*10,5))/10).ToString("F1") + "k ";
                                     }
 
+                                        //comprehensive radar returns for tophat/sysadmin purposes
+                                        //TODO:
+                                        //Add strong server-generated password for each session that can be communicated to admins etc
+                                        //Make a more filtered "TopHat" version that could be actually used by a commander/mission 
+                                        //control during missions, and also broadcast instructions & password for one person
+                                        //(or maybe a couple of people, or maybe everyone ? ) from each side to be able to use
+                                        //the more filtered version that is pretty comparable to what is already 
+                                        //shown as text radar in-mission
+                                        //TODO: 
+                                        //We could give Blue tophat measurements in metric units, maybe
+                                    if (RADAR_REALISM < 0)
+                                        {
 
-                                        if (RADAR_REALISM == 0) {
+                                            string numContacts = poscount.ToString();
+                                            string aircraftType = Calcs.GetAircraftType(a);                                            
+                                            string vel = vel_mph.ToString("n0");
+                                            string alt = alt_angels.ToString("n0");
+                                            string he = heading.ToString("F0");
+
+                                            string aplayername = "";
+                                            if (a.Player(0) != null && a.Player(0).Name() != null)
+                                            {
+                                                aplayername = a.Player(0).Name();
+                                            }
+
+                                            //red & blue tophat operators only get an approximation of how many a/c in each group and also
+                                            //don't get perfect information about whether fighters or bombers or unknown
+                                            //and also don't get the EXACT type of a/c or the name of the player
+                                            if (playerArmy == -1 || playerArmy == -2)
+                                            {
+                                                numContacts = "~" + Calcs.NoOfAircraft(poscount).ToString("F0");
+                                                if (random.Next(8) == 1)
+                                                { //oops, sometimes we get mixed up on the type.  So sad . . .  See notes below about relative inaccuracy of early radar.
+                                                    type = "F";
+                                                    if (random.Next(3) == 1) type = "B";
+                                                    if (random.Next(8) == 1) type = "U";
+                                                }
+                                                aircraftType = "";
+                                                aplayername = "";
+
+                                                vel = vel_mph_10.ToString("n0");
+                                                alt = alt_angels.ToString("n0"); 
+                                                he =heading_10.ToString("F0");
+
+                                            }
+
+                                            
+                                            posmessage =
+                                            a.Pos().x.ToString()
+                                            + "," + a.Pos().y.ToString() + "," +
+                                            longlat.y.ToString()
+                                            + "," + longlat.x.ToString() + "," +
+                                            army.ToString() + "," +
+                                            type + "," +
+                                            he + "," +
+                                            vel + "," +
+                                            alt + "," +
+                                            sector.ToString() + "," +
+                                            numContacts + "," +
+                                            aircraftType.Replace(',','_') + "," //Replace any commas since we are using comma as a delimiter here
+                                            + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
+                                            + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
+
+                                            //-radar.txt data file structure is:
+                                            //First line header info - just ignore it
+                                            //Each succeeding line is comma delimited, no quotation marks:
+                                            //0 & 1 - posx & posy (meters), 2 & 3 - lat & long (approximate & not too accurate) 
+                                            //4 - army (int), 5 type (string, F or B), 6 Heading (degrees), 7 vel (int, MPH), 
+                                            //8 - altitude (int, Angels, 1000s of feet), 9 - IL2 CloD sector (string)
+                                            //10 - how many in this formation (int, exact)
+                                            //11 - aircraft type (string, exact type & CloD a/c name)
+                                            //12 - unique hashcode (int) for this actor (not actually 100% guaranteed to be unique but fast & probably good enough for our simple purposes)
+                                            //13 - player steam name (string) if it exists
+
+
+                                            //For red & blue TopHot operators we give a slightly filtered view of the contacts,
+                                            //simulating what actual WWII radar could see
+                                            //For example contacts low to the ground fade out.
+                                            //TODO: We could set up radar towers & contacts could be seen better if closer to the 
+                                            //tower (ie, lower to the ground.  But then if the enemy destroys your tower you lose
+                                            //that & can only see what your remaining towers can see (which will likely be contacts only quite high in altitude)
+                                            //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
+                                            //are etc
+                                            if ((playerArmy == -1 || playerArmy == -2)  && (
+                                                           (altAGL_ft < 250 && altAGL_ft < random.Next(500)) || //Less then 250 ft AGL they start to phase out from radar
+                                                           (altAGL_ft < 175) || //And, if they are less than 175 feet AGL, they are gone from radar                                                     
+                                                           ((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(4) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
+                                                                                                                                 //However if the player heavy bombers group up they are MUCH more likely to show up on radar.  But they will still be harder than usual to track because each individual bomber will phase in/out quite often
+
+                                                           (random.Next(7) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
+                                                           ) 
+                                           ){ posmessage = ""; }
+
+
+                                        }
+                                        else if (RADAR_REALISM == 0)
+                                        {
                                             posmessage = type + " " +
 
                                               mi +
                                               bearing.ToString("F0") + "°" +
                                               ft +
+                                              ftAGL +
                                               mph +
                                               heading.ToString("F0") + "° " +
                                               sector.ToString() + " " +
                                               Calcs.GetAircraftType(a);
                                             if (intcpt_time_min > 0.02)
+                                            {
                                                 posmessage +=
                                                    " Intcpt: " +
                                                    intcpt_heading.ToString("F0") + "°" +
                                                    intcpt_time_min.ToString("F0") + "min " +
                                                    intcpt_sector + " " +
                                                    intcpt.x.ToString("F0") + " " + intcpt.y.ToString("F0");
+                                            }
 
                                             /* "(" + 
                                             Calcs.meters2miles(a.Pos().x).ToString ("F0") + ", " +
                                             Calcs.meters2miles(a.Pos().y).ToString ("F0") + ")";
                                             */
                                             //GamePlay.gpLogServer(new Player[] { player }, posmessage, new object[] { });
-                                        } else if (RADAR_REALISM > 0) {
+                                    } else if (RADAR_REALISM > 0) {
 
                                             //Trying to give at least some semblance of reality based on capabilities of Chain Home & Chain Home Low
                                             //https://en.wikipedia.org/wiki/Chain_Home
                                             //https://en.wikipedia.org/wiki/Chain_Home_Low
-                                            if (random.Next(8) == 1) { //oops, sometimes we get mixed up on the type.  So sad . . .
+                                            if (random.Next(8) == 1) { //oops, sometimes we get mixed up on the type.  So sad . . .  See notes below about relative inaccuracy of early radar.
                                                 type = "F";
                                                 if (random.Next(3) == 1) type = "B";
-                                            }
-                                            if (dis_mi <= 2 && a != p) { posmessage = type + " nearby"; }
+                                            }                                            
+                                            if (dis_mi <= 2 && a != p && Math.Abs( player_alt_m - a.Pos().z) < 5000) { posmessage = type + " nearby"; }
+
 
                                             //Below conditions are situations where radar doesn't work/fails, working to integrate realistic conditions for radar
                                             //To do this in full realism we'd need the full locations of Chain Home & Chain Home Low stations & exact capabilities
                                             //As an approximation we're using distance from the current aircraft, altitude, etc.
+                                            /* wikipedia gives an idea of how rough early CH output & methods were: CH output was read with an oscilloscope. When a pulse was sent from the broadcast towers, a visible line travelled horizontally across the screen very rapidly. The output from the receiver was amplified and fed into the vertical axis of the scope, so a return from an aircraft would deflect the beam upward. This formed a spike on the display, and the distance from the left side – measured with a small scale on the bottom of the screen – would give target range. By rotating the receiver goniometer connected to the antennas, the operator could estimate the direction to the target (this was the reason for the cross shaped antennas), while the height of the vertical displacement indicated formation size. By comparing the strengths returned from the various antennas up the tower, altitude could be gauged with some accuracy.
+                                             * Upshot is, exact #, position, no of aircraft, type of aircraft, altitude etc were NOT that precisely known.  Rather they were estimates/guesstimates based on strength of pulse of the radar return as viewed on an oscilliscope etc.
+                                             * ******************/
                                             else if ((dis_mi >= 50 && poscount < 8 && random.Next(15) > 1 && !intcpt_reasonable_time) ||  //don't show enemy groups too far away, unless they are quite large, or can be intercepted in reasonable time.  Except once in a while randomly show one.
                                                      (dis_mi >= 25 && poscount < 4 && random.Next(12) > 1 && !intcpt_reasonable_time) ||
                                                      (dis_mi >= 15 && poscount <= 2 && random.Next(8) > 1 && !intcpt_reasonable_time) ||
-                                                     (dis_mi >= 70 && alt_ft < 4500) || //chain home only worked above ~4500 ft & Chain Home Low had effective distance only 35 miles
+                                                     (!climb_possible && playertype != "B" && army != playerArmy ) ||  //If the aircraft is too high for us to be able to climb to, we exclude it from the listing, unless the player is a bomber pilot (who is going to be interested in which planes are above in attack position) OR we are getting a listing of our own army, in which case we want all nearby a/c not just ones we can attack
+                                                     (dis_mi >= 70 && altAGL_ft < 4500) || //chain home only worked above ~4500 ft & Chain Home Low had effective distance only 35 miles
                                                                                   //however, to implement this we really need the distance of the target from the CHL stations, not the current aircraft
-                                                                                  //We'll approximate it by eliminating low contacts > 70 miles away from current a/c
-                                                     (dis_mi >= 10 && alt_ft < 250 && alt_ft < random.Next(250)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
+                                                                                  //We'll approximate it by eliminating low contacts > 70 miles away from current a/c 
+                                                     (dis_mi >= 10 && altAGL_ft < 500 && altAGL_ft < random.Next(500)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
                                                                                                            //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
                                                                                                            //phasing out targets below 250 feet.
-                                                     (dis_mi < 10 && alt_ft < 65 && alt_ft < random.Next(150)) || //Within 10 miles though you really have to be right on the deck before the radar fails. Approximating 50 foot alt lower limit.
-                                                     ((isAI || type == "B") && dis_mi > 7 && poscount <= 2 && random.Next(5) <= 2) || // Small AI groups & breather bombers have a higher chance of being overlooked/dropping out, espe when further away
-                                                     ((isAI || type == "B") && dis_mi <= 7 && poscount <= 2 && random.Next(15) == 1) || // Small AI groups & breather bombers have a higher chance of being overlooked/dropping out, but not so much when close
-                                                                                                                                     //We're always showing breather FIGHTERS here, because they always show up as a group of 1, and we'd like to help them find each other & fight it out
-                                                     (random.Next(7) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because.
+                                                     (dis_mi < 10 && altAGL_ft < 250 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
+                                                     (altAGL_ft < 175 ) || //And, if they are less than 175 feet AGL, they are gone from radar
+                                                     ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi > 11 && poscount <= 2 && random.Next(4) <= 2) || // Breather bombers have a higher chance of being overlooked/dropping out, especially when further away.  3/4 times it doesn't show up on radar.
+                                                     ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi <= 11 && poscount <= 2 && random.Next(5) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out when close (this is close enough it should be visual range, so we're not going to help them via radar)
+                                                     //((!isAI && type == "B" && army != playerArmy) && random.Next(5) > 0) || // Enemy bombers don't show up on your radar screen if less than 7 miles away as a rule - just once in a while.  You'll have to spot them visually instead at this distance!
+                                                                                                                                       //We're always showing breather FIGHTERS here (ie, they are not included in isAI || type == "B"), because they always show up as a group of 1, and we'd like to help them find each other & fight it out
+                                                     (random.Next(7) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
                                                      ) { posmessage = ""; }
                                             else {
-                                                posmessage = type + " " +
-
-                                                mi_10 +
-                                                bearing_10.ToString("F0") + "°" +
-                                                ang +
-                                                mph +
-                                                heading_10.ToString("F0") + "° " +
-                                                sector.ToString();
+                                                    posmessage = type + " " +
+                                                       mi_10 +
+                                                       bearing_10.ToString("F0") + "°" +
+                                                       ang +
+                                                       mph +
+                                                       heading_10.ToString("F0") + "° ";
+                                                       //+ sector.ToString();
                                                 if (intcpt_time_min >= 0.02)
-                                                    posmessage +=
-                                                       " Intcpt: " +
-                                                       intcpt_heading.ToString("F0") + "°" +
-                                                       intcpt_time_min.ToString("F0") + "min " +
-                                                       intcpt_sector + " ";
+                                                    {
+                                                        posmessage +=
+                                                           " Intcpt: " +
+                                                           intcpt_heading.ToString("F0") + "°" +
+                                                           intcpt_time_min.ToString("F0") + "min ";
+                                                        //+ intcpt_sector + " ";
+                                                    }
 
                                             }
 
@@ -1824,13 +2454,15 @@ public class Mission : AMission
                                     if (intcpt_time_min <= 0 || intcpt_time_min > 99) intcpt_time_index = 99;
 
                                     try {
+                                        string addMess = posmessage;
+                                        if (RADAR_REALISM > 0) addMess = "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage;
                                         radar_messages.Add(
                                            ((int)intcpt_time_index).ToString("D2") + ((int)dis_mi).ToString("D3") + aigroup_count.ToString("D5"), //adding aigroup ensure uniqueness of index
-                                           "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage
+                                           addMess
                                         );
                                     }
                                     catch (Exception e) {
-                                        GamePlay.gpLogServer(new Player[] { player }, "Error: " + e, new object[] { });
+                                        GamePlay.gpLogServer(new Player[] { player }, "RadError: " + e, new object[] { });
                                     }
 
 
@@ -1845,14 +2477,101 @@ public class Mission : AMission
             //There is always one message - the header.  
             if (radar_messages.Count == 1) radar_messages.Add("0000000000", "<NO TRADE>");
 
+
+            if (RADAR_REALISM < 0)
+            {
+                try
+                {
+                    string typeSuff = "";
+                    if (playerArmy == -3) typeSuff = "_ADMIN";
+                    if (playerArmy == -1) typeSuff = "_RED";
+                    if (playerArmy == -2) typeSuff = "_BLUE";                    
+                    string filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_radar.txt";
+                    if (File.Exists(filepath)) { File.Delete(filepath); }
+                    fi = new System.IO.FileInfo(filepath); //file to write to
+                    sw = fi.CreateText(); // Writes Lat long & other info to file
+
+                    foreach (var mess in radar_messages)
+                    {
+                        sw.WriteLine(mess.Value);
+                    }
+
+                    sw.Close();
+
+                    //And, now we create a file with the list of players:
+                    filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_players.txt";
+                    if (File.Exists(filepath)) { File.Delete(filepath); }
+                    fi = new System.IO.FileInfo(filepath); //file to write to
+                    sw = fi.CreateText(); // Writes Lat long & other info to file
+                    sw.WriteLine(DateTime.UtcNow.ToString("u").Trim() + " - " + showTimeLeft(null, false));
+                    sw.WriteLine();                                
+
+                    int pycount = 0;
+                    int pyinplace = 0;
+                    string msg = "";
+                    if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+                    {
+                        
+                        foreach (Player py in GamePlay.gpRemotePlayers())
+                        {
+                            pycount++;
+                            string pl = "(none)";
+                            if (py.Place() != null)
+                            {
+                                pyinplace++;
+                                AiActor act = py.Place();
+                                pl = act.Name();
+
+                                if (act as AiAircraft != null)
+                                {
+                                    AiAircraft acf = act as AiAircraft;
+                                    string acType = Calcs.GetAircraftType(acf);
+                                    pl = acType;
+                                }
+
+                                if (playerArmy == -3)
+                                {
+                                    //Point3d ps = Calcs.Il2Point3dToLongLat(act.Pos());
+                                    //pl += " " + ps.y.ToString("n2") + " " + ps.x.ToString("n2");
+                                    pl += " " + act.Pos().y.ToString("n0") + " " + act.Pos().x.ToString("n0");
+                                }
+                                
+                            }
+                            msg += py.Name() + " " + py.Army() + " " + pl +"\n";
+                            
+                        }
+                        
+                    }
+
+                    sw.WriteLine("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString());
+                    sw.WriteLine();
+                    if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
+                    if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);                    
+                    sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
+                    sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
+                    sw.WriteLine("Blue/Red total score: " + (BlueTotalF / 100).ToString("N1") + "/" + (RedTotalF / 100).ToString("N1"));
+                    sw.WriteLine();
+                    sw.WriteLine(msg);
+
+
+                    sw.Close();
+
+
+                }
+                catch (Exception ex) { Console.WriteLine("Radar Write1: " + ex.ToString()); }
+            }
             Timeout(wait_s, () => {
                 //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+
+
                 foreach (var mess in radar_messages) {
+
                     if (RADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                    else gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                    else if (RADAR_REALISM >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
 
                 }
                 radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages);
+                               
             });//timeout      
         }
     }//method radar     
@@ -1938,7 +2657,8 @@ public class Mission : AMission
             //so that all the stutters happen at that point
             if ((timespread == 0) && (wait == 0)) {
                 GamePlay.gpPostMissionLoad(s);
-                DebugAndLog(s + " file Loaded");
+                DebugAndLog(s + " file loaded");
+                Console.WriteLine(s + " file loaded");
             } else {
                 Timeout(wait + random.Next(timespread), () => {
 
@@ -1950,7 +2670,8 @@ public class Mission : AMission
                     //GamePlay.gpPostMissionLoad(s2);
                     //if (DEBUG)
                     //{
-                    DebugAndLog(s + " file Loaded");
+                    DebugAndLog(s + " file loaded");
+                    Console.WriteLine(s + " file loaded");
                     //}
                 });
             }
@@ -2027,10 +2748,11 @@ public class Mission : AMission
                   }
                  */
 
-            //}
+                    //}
 
-            //1st submenu////////////////
-        } else if (ID == 1) { // sub menu
+                    //1st submenu////////////////
+                }
+          else if (ID == 1) { // sub menu
 
             if (menuItemIndex == 0) {
                 setSubMenu1(player);
@@ -2234,6 +2956,8 @@ public class Mission : AMission
             setMainMenu(GamePlay.gpPlayer());
             GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
 
+            Timeout(90, () => { SetAirfieldTargets(); });
+
             //OK, these are kludges to ensure that ATAG CLOD Commander works.  If the misison
             //takes too long to load etc it will just time out.
             //This approach may have unexpected ramifications, so we'll have to test.
@@ -2276,8 +3000,9 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         }
 
     }
-
-    public void showTimeLeft(Player player) {
+    //Displays time left to player & also returns the time left message as a string
+    //Calling with (null, false) will just return the message rather than displaying it
+    public string showTimeLeft(Player player, bool showMessage = true) {
         int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
         int respawntick = respawnminutes * ticksperminute;
         int timespenttick = (tickSinceStarted - tickoffset) % respawntick;
@@ -2286,9 +3011,10 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         int timeleftminutes = Convert.ToInt32(((double)timelefttick / (double)ticksperminute));
         int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK - tickSinceStarted) / (double)ticksperminute);
         string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleftminutes.ToString() + " min.";
-        if (!MISSION_STARTED) msg = "Mission not yet started - waiting for first player to enter.";
+        if (!MISSION_STARTED) msg = "Mission " + MISSION_ID + " not yet started - waiting for first player to enter.";
 
-        GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+        if (showMessage && player != null) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+        return msg;
     }
 
     /////////////////////
@@ -2401,6 +3127,14 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         else if (msg.StartsWith("<rad"))
         {
             listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
+        }
+        else if (msg.StartsWith("<apall"))
+        {
+            ListAirfieldTargetDamage(player, -1, true);//list ALL airports, damaged or not, of both teams
+        }
+        else if (msg.StartsWith("<ap"))
+        {
+            ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
         }
         else if (msg.StartsWith("<debugon") && player.Name().Substring(0, 4) == @"TWC_")
         {
@@ -2622,7 +3356,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
     //Removes AIAircraft if they are off the map. Convenient way to get rid of
     //old a/c - just send them off the map
     public void RemoveOffMapAIAircraft()
-    {   
+    {  
       int numremoved=0;
       //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
       double minX =8200;
@@ -2705,6 +3439,8 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 //Various helpful calculations & formulas
 public static class Calcs
 {
+
+  private static Random clc_random = new Random();
 
   public static double distance (double a, double b){
   
@@ -2886,6 +3622,42 @@ public static class Calcs
         return (int)distanceMiles;
     }
 
+    public static Point3d Il2Point3dToLongLat(Point3d pos)
+    {
+        //This is an approximate calc. 
+        //Courtesy mevans, https://theairtacticalassaultgroup.com/forum/showthread.php?t=26483
+        /*pos.x = (int)pos.x - 146643;
+        pos.x = pos.x / 63763.30751;
+        pos.x = pos.x - 0.095287;
+        */
+        /* pos.y = (int)pos.y - 250937;
+        pos.y = pos.y / 112533.651;
+        pos.y = pos.y + 51.303649;
+        */
+
+        //Cubic Regression Curve Fit for four points on various corners of the map done 
+        //via https://www.mycurvefit.com/ 
+        //Should be accurate to about the 6th decimal place of the lat/long at those four points,
+        //however is inaccurate to 10-20km in some points more in the middle of the map, not sure why.
+        pos.x = -2.017013 + 0.00001256447 * pos.x + 5.532674e-12 * pos.x * pos.x - 6.478475e-18 * pos.x * pos.x * pos.x;
+        pos.y = 49.01039 + 0.00000923699 * pos.y - 2.674155e-12 * pos.y * pos.y + 7.598837e-18 * pos.y * pos.y * pos.y;
+
+        //mycurvefit.com came up with these possible curve fitting formulas based on those 4 points,
+        //perhaps one of the others will work better:
+        //#1:
+        //lat =0.00000907759*y+49.0913
+        //lon = 0.00001390456 * x - 2.097487
+        //
+        //#2:
+        //lat = 49.01703 + 0.000008851254*y+7.476433*10^-13*y^2
+        //lon = -2.041605 + 0.00001312839 * x + 1.959212e-12 * x ^ 2
+
+        //#3: (implemented above)
+        //lat = 49.01039 + 0.00000923699*y - 2.674155e-12*y^2 + 7.598837e-18*y^3
+        //lon = -2.017013 + 0.00001256447 * x + 5.532674e-12 * x ^ 2 - 6.478475e-18 * x ^ 3
+        return pos;
+    }
+
 
     public static string DegreesToWindRose(double degrees)
     {
@@ -2980,7 +3752,13 @@ public static class Calcs
         if (higherDecimal > 0)
             return (int)higherDecimal * 10;
         else
+        {
+            if (firstDecimal >0 && firstDecimal <= 3) //If # is 1,2,3 then 50% of the time we get mixed up & get it wrong.  This is bec. radar can't always distinguish between 1,2,3 etc contacts.  "the height of the vertical displacement indicated formation size" - in other words it was a ROUGH estimate of the strength of the radar return, which they then turned into a guesstimate of how many a/c were in the formation.
+            {
+                firstDecimal = 2;
+            }
             return (int)firstDecimal;
+        }
     }
     
     #endregion
@@ -2998,6 +3776,34 @@ public static class Calcs
       return result;
     }
 
+    /// <summary>
+    /// Returns a MD5 hash as a string
+    /// </summary>
+    /// <param name="TextToHash">String to be hashed.</param>
+    /// <returns>Hash as string.</returns>
+    /// Matches with javascript MD5 output
+    public static string GetMD5Hash(string input)
+    {
+
+        //Calculate MD5 hash. This requires that the string is splitted into a byte[].
+        MD5 md5Hash = new MD5CryptoServiceProvider();
+        // Convert the input string to a byte array and compute the hash.
+        byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+        // Create a new Stringbuilder to collect the bytes
+        // and create a string.
+        StringBuilder sBuilder = new StringBuilder();
+
+        // Loop through each byte of the hashed data 
+        // and format each one as a hexadecimal string.
+        for (int i = 0; i < data.Length; i++)
+        {
+            sBuilder.Append(data[i].ToString("x2"));
+        }
+
+        // Return the hexadecimal string.
+        return sBuilder.ToString();
+    }
 
 
 }

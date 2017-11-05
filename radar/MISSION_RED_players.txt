@@ -1,0 +1,10 @@
+2017-11-05 05:42:42Z - Mission M002 not yet started - waiting for first player to enter.
+
+Players logged in: 0 Active: 0
+
+Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Les Andelys Dam (AY03.5) - 50 total Team Kills - 10 more Team Kills than Blue
+Blue Objectives complete: - 
+Red Objectives complete: - 
+Blue/Red total score: 0.0/0.0
+
+

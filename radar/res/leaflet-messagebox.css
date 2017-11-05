@@ -1,0 +1,13 @@
+.leaflet-control-messagebox {
+	display: none; /* Initially hidden */
+	border: 2px solid red;
+	background-color: white;
+	padding: 3px 10px;
+  
+  /* make at the exact center of the screen */
+  /*should work for phones, tablets, when part of the map viewport is off-screen, etc */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

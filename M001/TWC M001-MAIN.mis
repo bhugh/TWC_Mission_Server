@@ -27,7 +27,7 @@
   BoB_RAF_F_FatCat_Early.02
   BoB_LW_LG2_I.01
   BoB_RA_43St_99Gruppo_243Sq.01
-  BoB_RAF_F_FatCat_Early.31
+  BoB_RAF_F_FatCat_Early.33
 [BoB_RAF_F_FatCat_Early.02]
   Flight1  11
   Class Aircraft.SpitfireMkIa_100oct
@@ -65,8 +65,9 @@
   MarkingsOn0 0
 [BoB_RA_43St_99Gruppo_243Sq.01_Way]
   TAKEOFF 41648.24 184814.41 0 0
-[BoB_RAF_F_FatCat_Early.31]
+[BoB_RAF_F_FatCat_Early.33]
   Flight0  1
+  Flight1  11 12 13 14 15
   Class Aircraft.He-111P-2
   Formation VIC3
   CallSign 30
@@ -77,15 +78,15 @@
   Belt _Gun00 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6 Residual 50 ResidueBelt 0
   Belt _Gun01 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
   Belt _Gun02 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
-  Detonator Bomb.SD-250 0 -1 0.08
   Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 11
+  Detonator Bomb.SD-250 0 -1 0.08
   Detonator Bomb.SC-250_Type1_J 2 -1 0.08
   Detonator Bomb.SC-50_GradeII_J 1 -1 14
   Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 11
   Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-[BoB_RAF_F_FatCat_Early.31_Way]
+[BoB_RAF_F_FatCat_Early.33_Way]
   NORMFLY 240380.95 42708.37 1000.00 300.00
-  NORMFLY 237924.82 41484.85 1000.00 300.00
+  GATTACK_TARG 238904.58 42205.27 1000.00 300.00
 [CustomChiefs]
 [Stationary]
   Static10 Stationary.Environment.JerryCan_GER1_1 nn 121783.80 20720.08 65.00 
@@ -113,8 +114,8 @@
   Static184 Stationary.Environment.JerryCan_GER1_1 de 160575.44 51090.39 65.00 /hstart -2
   Static188 Stationary.Environment.JerryCan_GER1_1 de 160607.84 51088.52 65.00 /hstart -2
   Static427 Stationary.Industrial.Huge_Factory.Part_C gb 63584.64 187755.98 110.00 
-  Static430 Stationary.Industrial.Huge_Factory.Part_B gb 63570.23 187795.72 110.00 
   Static429 Stationary.Industrial.Huge_Factory.Part_A gb 63572.66 187793.55 110.00 
+  Static430 Stationary.Industrial.Huge_Factory.Part_B gb 63570.23 187795.72 110.00 
   Static386 Stationary.Environment.JerryCan_GER1_1 gb 76388.63 194100.44 65.00 /hstart -2
   Static385 Stationary.Environment.JerryCan_GER1_1 gb 76359.60 194167.50 65.00 /hstart -2
   Static388 Stationary.Environment.JerryCan_GER1_1 gb 76398.20 194143.52 65.00 /hstart -2

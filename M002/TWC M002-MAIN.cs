@@ -12,7 +12,7 @@
 ///$reference parts/core/MySql.Data.dll  //THIS DOESN'T SEEM TO WORK
 ///$reference parts/core/System.Data.dll //THIS DOESN'T SEEM TO WORK
 
-// v.1_18_00. script by oreva, zaltys, small_bee, bhugh, flug, fatal_error, several other contributors/online code snippets & examples
+// v.1_19_07. script by oreva, zaltys, small_bee, bhugh, flug, fatal_error, several other contributors/online code snippets & examples
 
 using System;
 using System.Collections;

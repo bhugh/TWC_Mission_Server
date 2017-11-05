@@ -1,0 +1,121 @@
+﻿[Army Red]
+<Name>
+Army Red
+<Description>
+Take off from France and destroy the enemy!
+
+You have re-supply bases available at over 90% of ATAG's map of central France.
+
+Repel the bomber attacks at Le Harve. Save the Dam also as it is a target for the enemy.  Raids will be coming to Rouen Boos and enemy attacks at every airfield on the map. Our most vital role is to protect the fuel and shipping located near Le Harve and sailing up the coast to Dieppe.
+
+Bomber pilots can turn the map by destroying all three of these mission objectives: 
+
+#1. Boulogne Lower Dam (BA20.2), key source of Axis power generation
+#2. Frevent Secret Factory (BF14.9), where a new and very dangerous high explosive is being produced, based on formulas stolen by spies
+#3. Arras Fuel Dump (BI14.1).  Hidden in the the Arras industrial zone is a small group of fuel storage tanks holding an experimental new fuel that, intelligence indicates, will power a new German warplane faster than anything ever built before. Destroy this fuel at all costs.
+
+The Arras industrial zone may contain more than one fuel dump; it is vital to destroy the correct tanks.  The secret experimental fuel is held in a group of fuel tanks in the center of the industrial area, adjacent to the railroad line, that includes FOUR large tanks, FIVE medium tanks, and ONE small tank.  
+
+German pilots can turn the map if they destroy these three targets--defend them at all costs:  Dieppe Dam (AH-20.3) - Neufchatel-en-Bray Secret Factory (AZ09.4) - Forges-les-Eaux Fuel Dumps (BA07.4).
+
+Aside from the three primary mission targets, the enemy's area is very rich in bombing targets, and bombers who successfully destroy these targets will be well rewarded in ground victory points and promotions.  Some of the targets that will richly reward bombing, according to our intelligence reports:
+ 
+  - Le Touquet: Fuel dump
+  - Etaples: Dam
+  - Arras: Extensive industrial area along the river with fuel storage & medium/large factory buildings
+  - St Ouen: Large and medium factory buildings
+  - Any ship in a harbor along with fuel storage and invasion barges!!
+  - Amien: Fuel dumps on the north & east outskirts
+  - Amiens: Fuel depots and large factory buildings just south of the river  
+  - Frevent: Two secret factories in fields SE of town. These will repay thorough and repeated bombing
+  - Berck Harbor: Dam
+  - Abbeville: Large & medium factories, fuel dump on NE outskirts
+  - 8km east of Abbeville industrial area: Secret factory in isolated area; bomb repeatedly
+  - Bonningues-les-Ardres: Top secret factory near a farmhouse 1km west of the village; bomb repeatedly
+  - Boulogne: Two dams, several fuel dumps in industrial areas
+  - Generally: Any fuel bunkers, ships, trains, vehicles, or factories you see on enemy territory
+
+In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map.  
+  
+Enemy convoys and railroads are known to be operating--search along roads and railroads. Railroads run a predictable schedule on regular routes, and are carrying war supplies.  All these targets are shootable and bombable.
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+<Slide>
+../../screenshots/screenshot1.jpg
+<Caption>
+[Army Blue]
+<Name>
+Army Blue
+<Description>
+Take off from most bases north of the Somme River.  Your mission is to destroy enemy airports, destroy their dams, fuel depots, and industrial capacity, and harrass the enemy in any way possible.
+
+Squadrons of bombers will be attacking these targets, Flak will be fierce and enemy aircraft will be attacking the bomber squadrons.  Defend your bomber squadrons or run your own bombing missions on these important targets.
+
+Bomber pilots can turn the map by destroying all three of these mission objectives: 
+
+#1. Dieppe Dam (AH-20.3), source of Allied power generation.  
+#2. Neufchatel-en-Bray Secret Factory (AZ09.4), where a new and very dangerous high explosive is being produced.
+#3. Forges-les-Eaux Fuel Dumps (BA07.4), where Allied forces are storing fuel vital for their bombing missions.
+
+British pilots can turn the map if they destroy these three targets--defend them at all costs: Boulogne Lower Dam (BA20.2) - Frevent Secret Factory (BF14.9) - Arras Fuel Dump (BJ15.1-15.4).
+
+Aside from the three primary mission targets, the enemy's area is very rich in bombing targets, and bombers who successfully destroy these targets will be well rewarded in ground victory points and promotions.  Some of the targets that will richly reward bombing, according to our intelligence reports:
+
+ - Le Treport: Dam
+ - Blangy-sur-Bresle: Top secret factory in isolated location 8 km directly east of down. Please bomb thoroughly and repeatedly to completely destroy this secret technology.
+ - Fressenneville: Two fuel dumps on the outskirts of the village
+ - Dieppe: Dam and several fuel dumps along the river
+ - Neufchatel-en-Bray: Secret factor in isolated location 6 km NW of the village. Bomb repeatedly.
+ - Montdidier: Two fuel dumps, on the outskirts of town, one south and one east
+ - Forges-les-Eaux: Two fuel dumps south & southeast of the village.
+ - Poix-de-Picardie: Tank brigade NE of the village.
+ - Rouen: Extensive fuel dumps as well as medium and large factory buildings in the industrial area all along the river. Destroying this industrial center thoroughly is one of our top objectives.
+ - Les Andelys: Dam 6km WSW of the village.
+ - Le Havre: Dam
+ - Le Havre: Fuel dumps in industrial area along harbor; destroy all LARGE factory buildings in the industrial area
+ - Ouistreham: Dam
+ - Generally, any fuel dumps, moving or stationary vehicles, trains, ships, or factories in enemy territory are fair game and valuable targets
+
+In addition to these specific targets, every city (even small-ish villages) has an industrial or factory area that is producing materials for the war effort and can be destroyed. These targets do not have any special markings or "black dots" - it is up to you to find and destroy and industrial targets on the enemy side of the map; doing so will help both the war effort and your career.  
+ 
+Enemy convoys and railroads are known to be operating--search along roads and railroads. Railroads run a predictable schedule on regular routes, and are carrying war supplies. All these targets are shootable and bombable. 
+
+A raid is headed to Arras, to attack the factories and fuel depots there.  See if you can stop it. Good luck!
+
+RADAR
+Radar is available (use TAB-4-1).
+
+A typical radar transmission looks like this:
+
+~5F 40mi230dgA4 240mph30dg AD17 Intcpt: 241dg5min AE20
+
+Translation of Radar transmission:
+
+ * ~5F: approx. 5 fighters (~5B: 5 bombers)
+ * 40mi230dgA4: 40 miles from your location, heading 230 from your location, Angels 4
+ * 240mph30dg AD17: target aircraft current speed is 240 mph, heading 30 degrees, location in sector AD17
+ * Intcpt: 241dg5min AE20: At your current speed, take intercept course 241 degrees to intercept in 5 minutes. Intercept point will be in sector AE20.
+
+There is a delay between requesting and receiving radar plots, and another delay before a new plot can be requested.  However, you can always re-list your previous plot. If the plot lists immediately it is the re-listing of an older plot; new plots take a few seconds to appear.
+
+Like all equipment, the radar has certain limitations and malfunctions.  But using it will allow you to locate friendly and enemy aircraft you may not otherwise find and to plan more extensive missions and raids.
+<Slide>
+../../screenshots/shot_20141127_095901.bmp
+<Caption>
+AA works to defend your base also

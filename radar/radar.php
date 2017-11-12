@@ -2,7 +2,7 @@
 <html>
 <head>
 	
-	<title>TWC - Mission Overview</title>
+	<title>TWC - Contact Plotting Table</title>
 
 	  <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -486,7 +486,7 @@ function changetitle () {
      
        s="";
        if (side) s=side.toUpperCase()
-       var ms = "<b>"+server+ " Server Radar - " + s + "</b>";       
+       var ms = "<b>"+server+ " Server Contact Plotting Table - " + s + "</b>";       
        if (s != "BLUE" && s != "RED" && s != "ADMIN") ms += "<br><br><b>NOTE: Side may be entered incorrectly! You can <a href=\"index.php\">return to the radar entry page and re-enter the information</a><b><br><br>"
        if (document.getElementById("sess_title") != null) document.getElementById("sess_title").innerHTML = ms;
 
@@ -863,6 +863,13 @@ if ($_GET['pass'] == "twc" && $_GET['mission'] !==null ) {
 
 </pre>
 </div>
+
+<hr>
+<p>Go to: <a href="/twc/radar"> Server Radar Login</a> - <a href="/twc/mission-server-stats.htm">TWC Server Stats</a> </p>
+
+<p>Learn more about typical early WWII-era radar and how it worked--and its shortcomings, many of which are modeled or suggested here--at <a href="https://en.wikipedia.org/wiki/Chain_Home#Distance_and_bearing_measurement">Wikipedia.</a></p>
+
+<p>Visit <a href="TWCClan.com">TWCClan.com</a> for more information about TWC and the TWC Servers.</p>
 
 </body>
 </html>

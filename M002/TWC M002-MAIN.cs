@@ -81,6 +81,17 @@ public class Mission : AMission
     public int RADAR_REALISM;
     public bool MISSION_STARTED = false;
     public int START_MISSION_TICK = -1;
+    public bool COOP_START_MODE = true;
+    public double COOP_MODE_TIME_SEC = 90;
+    public int START_COOP_TICK = -1;
+    public double COOP_TIME_LEFT_MIN = 9999;
+
+    
+    //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+    //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+    //used in method admins_privilege_level below
+    public string[] admins_basic = new String [] { "TWC_", "69th_", "JG4_", "/JG52", "/JG26", "ATAG_" };
+    public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error"};
 
     bool respawn_on;
     int respawnminutes;
@@ -167,7 +178,7 @@ public class Mission : AMission
         NUMBER_OF_SESSIONS_IN_MISSION = 2; //we can repeat this entire sequence 1x, 2x, 3x, etc. OR EVEN 1.5, 2.5, 3.25 etc times  
         END_SESSION_TICK = (int)(TICKS_PER_MINUTE * 60 * HOURS_PER_SESSION); //When to end/restart server session
         RADAR_REALISM = (int)5;
-
+        
         respawnminutes = RESPAWN_MINUTES;
         ticksperminute = TICKS_PER_MINUTE;
         //endsessiontick = Convert.ToInt32(TICKS_PER_MINUTE*60*HOURS_PER_SESSION); //When to end/restart server session
@@ -210,6 +221,55 @@ public class Mission : AMission
     }
 
 
+    public void CheckCoop()
+    {
+        /************************************************
+         * 
+         * Check to see if COOP mode is still on & if so,
+         * make sure that no aircraft or ie tanks have moved 
+         * too far, or have taken off OR are going too fast
+         * 
+         * If so they will just be destroyed
+         * 
+         * Recursive function called every X seconds
+         ************************************************/
+        if (!COOP_START_MODE) return;
+
+        Timeout(5, () => { CheckCoop(); });
+
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in GamePlay.gpRemotePlayers())
+            {
+
+                if (p.Place() != null)
+                {
+                    AiActor act = p.Place();
+
+                    //remove players from aircraft/destroy it, if the aircraft has taken off
+                    AiAircraft air = p.Place() as AiAircraft;
+                    if (air != null && air.IsAirborne())
+                    {
+                        Stb_RemoveAllPlayersFromAircraftandDestroy(air, p, 0, 1.0);
+                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You took off before Mission Start Time.", null);
+                        GamePlay.gpLogServer(new Player[] { p }, "Your aircraft was destroyed.", null);
+                    }
+
+                    //If it is too far away from an airport, destroy (this takes care of tanks etc going rogue overland during the coop start period)
+                    else if (Stb_distanceToNearestAirport(act) > 2500)
+                    {
+                        Stb_RemovePlayerFromCart(act as AiCart, p);
+                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You left the airport or spawn point before Mission Start Time; " + Stb_distanceToNearestAirport(act).ToString("n0") + " meters to nearest airport or spawn point", null);
+                        GamePlay.gpLogServer(new Player[] { p }, "You have been removed from your position.", null);
+                    }
+                }
+
+            }
+        }
+    }
+
+
+
 
     // loading sub-missions
     public override void OnTickGame()
@@ -222,7 +282,7 @@ public class Mission : AMission
         {
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            Console.WriteLine("Writing current radar returns to file");
+            //Console.WriteLine("Writing current radar returns to file");
             RADAR_REALISM = -1;
             listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -233,7 +293,7 @@ public class Mission : AMission
         {
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            Console.WriteLine("Writing current radar returns to file");
+            //Console.WriteLine("Writing current radar returns to file");
             RADAR_REALISM = -1;
             listPositionAllAircraft(GamePlay.gpPlayer(), -2, false); //-1 & false will list ALL aircraft of either army
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -244,13 +304,15 @@ public class Mission : AMission
         {
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            Console.WriteLine("Writing current radar returns to file");
+            //Console.WriteLine("Writing current radar returns to file");
             RADAR_REALISM = -1;
             listPositionAllAircraft(GamePlay.gpPlayer(), -3, false); //-1 & false will list ALL aircraft of either army
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
             RADAR_REALISM = saveRealism;
 
         }
+
+
 
         if (!MISSION_STARTED)
         {
@@ -267,6 +329,74 @@ public class Mission : AMission
             return;
         }
 
+        if (START_COOP_TICK == -1) START_COOP_TICK = Time.tickCounter();
+
+        if (COOP_START_MODE)
+        {
+
+            int tickSinceCoopStarted = Time.tickCounter() - START_COOP_TICK;
+
+            if (tickSinceCoopStarted >= Convert.ToInt32((COOP_MODE_TIME_SEC * (double)TICKS_PER_MINUTE)/60.0) ) {
+                COOP_START_MODE = false;
+
+                Stb_Chat("CO-OP MISSION START NOW!", null);
+                Stb_Chat("CO-OP START: Pilots, you may take off at will", null);
+
+                GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!");
+                Timeout(5, () => { GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!"); });
+                Timeout(10, () => { GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!"); });
+
+                return;
+            }
+
+
+            if (tickSinceCoopStarted % (ticksperminute/4) == 0)
+            {
+                //DebugAndLog ("Debug: tickcounter: " + Time.tickCounter().ToString() + " tickoffset" + tickoffset.ToString());
+                COOP_TIME_LEFT_MIN = (COOP_MODE_TIME_SEC/60 - ((double)tickSinceCoopStarted / (double)ticksperminute));
+                double timeleftseconds = (COOP_MODE_TIME_SEC - ((double)tickSinceCoopStarted) * 60.0 / (double)ticksperminute);
+                string s = COOP_TIME_LEFT_MIN.ToString("n2") + " MINUTES";
+                if (timeleftseconds < 120) s = timeleftseconds.ToString("n0") + " SECONDS";
+
+                //let players who can control <coop know about the command, 1X per minute
+                if (tickSinceCoopStarted % ticksperminute == 0)
+                {
+                    Timeout (7.5, () => {
+                        foreach (Player p in GamePlay.gpRemotePlayers())
+                        {
+                            if (admin_privilege_level(p) >= 1) //about once a minute, a message to players who can issue coop commands
+                            {
+                                GamePlay.gpLogServer(new Player[] { p }, "CO-OP MODE CONTROL: Use chat command <coop to start immediately OR extend time", null);
+                            }
+                        }
+                    });
+                }
+
+                //gpLogServerAndLog(null, "COOP START: You can spawn in and taxi but DO NOT TAKE OFF for " + s, null);
+
+                Stb_Chat("CO-OP MISSION START IN " + s, null);
+                Stb_Chat("CO-OP START: You can spawn on the ground and taxi near your spawn point but", null);
+                Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
+                //Stb_Chat("CO-OP time: " + ( COOP_MODE_TIME_SEC / 60).ToString("n2"), null);
+
+
+                string s2 = COOP_TIME_LEFT_MIN.ToString("n2") + " more minutes";
+                if (timeleftseconds < 120) s = timeleftseconds.ToString("n0") + " more seconds";
+
+
+                GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2);
+                Timeout(5, () => { GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2); });
+                Timeout(10, () => { GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2); });
+
+                
+
+            }
+
+
+            return;
+        }
+
+
         if (START_MISSION_TICK == -1) START_MISSION_TICK = Time.tickCounter();
 
         int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
@@ -277,6 +407,7 @@ public class Mission : AMission
             //GamePlay.gpLogServer(null, "Mission class initiated 2.", new object[] { });
             GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
             CheckMapTurned(); //Start the routine to check for objectives completed etc
+    
 
             /*Timeout(60, () =>  //how many ticks in 60 seconds
                       {
@@ -309,6 +440,8 @@ public class Mission : AMission
 
         }
 
+        /**** Turning this off for now bec. the radar/plotting table scheme
+         * runs the radar every minute or so
         //roughly every two minutes
         if ((Time.tickCounter()) % 2000 == 0)
         {
@@ -320,7 +453,7 @@ public class Mission : AMission
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
             RADAR_REALISM = saveRealism;
         }
-
+        */
 
 
 
@@ -496,8 +629,9 @@ public class Mission : AMission
     * //Version for -MAIN.cs//
     *************************************************************/
 
-    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double>>();
-    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+    //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
 
     public void SetAirfieldTargets()
     {
@@ -509,13 +643,18 @@ public class Mission : AMission
             //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
 
             ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
-            //int pointstoknockout = 30; 
-            //if ( ap.Army() != null && ap.Army() == 1 ) pointstoknockout = 65;
+            //UPDATE 2017/11/06: We don't need this adjustment bec. we have adjusted the points received
+            //so that blenheims receive relatively more & the blue bombers relatively less.  So this 
+            //should handle the discrepancy between the sides with no further adjustment necessary
+            //int pointstoknockout = 30;
+            //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
 
             ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
-            int pointstoknockout = 32;  //This is two HE111 or JU88 loads (or 1 full load & just a little more) and about 6 Blennie loads
+            ////Use this for MISSION SERVER  && TACTICAL SERVER 
+            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
 
             double radius = ap.FieldR();
+            Point3d center = ap.Pos();
 
 
             //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
@@ -529,6 +668,7 @@ public class Mission : AMission
                     //AirfieldTargets[apk].Item3
                     add = false; //
                     if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
+                    center = apk.Pos();  //We use the position of the airport set i nthe .mis file for the center, if it exists - thus we can change/move the center position as we wish
                     break;
                 }
             }
@@ -546,18 +686,19 @@ public class Mission : AMission
             }
 
 
-            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(false, apName, pointstoknockout, 0, DateTime.Now, radius)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
-                                                                                                                                                                   //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
-                                                                                                                                                                   //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, apName, pointstoknockout, 0, DateTime.Now, radius, center)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
+                                                                                                                                                                                    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+                                                                                                                                                                                    //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
 
         }
-        GamePlay.gpLogServer (null, "SetAirfieldTargets initialized.", null);
+        GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
     }
 
-    public void ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false)
+    public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
     {
         int count = 0;
-        foreach (AiAirport ap in AirfieldTargets.Keys)
+        string returnmsg = "";
+        if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)
         {
 
             double PointsTaken = AirfieldTargets[ap].Item4;
@@ -595,11 +736,21 @@ public class Mission : AMission
                 timetofix = 24 * 60 * 60; //24 hours to repair . . . 
             }
 
-            GamePlay.gpLogServer(new Player[] { player }, Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago", new object[] { });
+            string msg = Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago";
+            returnmsg += msg + "\n";
+
+            if (display) GamePlay.gpLogServer(new Player[] { player }, msg , new object[] { });
 
 
         }
-        if (count == 0) GamePlay.gpLogServer(new Player[] { player }, "No airports damaged or destroyed yet", new object[] { });
+        if (count == 0)
+        {
+            string msg = "No airports damaged or destroyed yet";
+            if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+            returnmsg = ""; //In case of display == false we just don't return any message at all, allowing this bit to simply be omitted
+        }
+
+        return returnmsg;
     }
 
     //stamps a rectangular pattern of craters over an airfield to disable it
@@ -607,11 +758,18 @@ public class Mission : AMission
 
     {
         string apName = ap.Name();
-        if (AirfieldTargets.ContainsKey(ap)) apName = AirfieldTargets[ap].Item2;
-
-        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
         double radius = ap.FieldR();
         Point3d pos = ap.Pos();
+
+        if (AirfieldTargets.ContainsKey(ap))
+        {
+            apName = AirfieldTargets[ap].Item2;
+            radius = AirfieldTargets[ap].Item6;
+            pos = AirfieldTargets[ap].Item7;
+
+        }
+
+        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
         ISectionFile f = GamePlay.gpCreateSectionFile();
         string sect = "Stationary";
@@ -634,7 +792,7 @@ public class Mission : AMission
             }
 
         }
-        f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
+        //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
         GamePlay.gpPostMissionLoad(f);
         //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
 
@@ -671,186 +829,237 @@ public class Mission : AMission
     */
 
 
-    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-    {
 
-        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+/*****************************************************************************
+ * 
+ * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
+ * 
+ *****************************************************************************/
 
-        //GamePlay.gpLogServer(null, "bombe 1", null);
-        bool ai = true;
-        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+//Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
+//TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
+//TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+{
 
-        //GamePlay.gpLogServer(null, "bombe 2", null);
-        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
-        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+    base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
 
-        //GamePlay.gpLogServer(null, "bombe 3", null);
-        if (terr == 00) isEnemy = 2;
-        if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
-        //GamePlay.gpLogServer(null, "bombe 4", null);
+    //GamePlay.gpLogServer(null, "bombe 1", null);
+    bool ai = true;
+    if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+
+    //GamePlay.gpLogServer(null, "bombe 2", null);
+    int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+    int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+    //GamePlay.gpLogServer(null, "bombe 3", null);
+    if (terr == 00) isEnemy = 2;
+    if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
+    //GamePlay.gpLogServer(null, "bombe 4", null);
 
 
-        //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
+    //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
 
-        /********************
-         * 
-         * Handle airport bombing
-         * 
-         *******************/
+    /********************
+     * 
+     * Handle airport bombing
+     * 
+     *******************/
 
-        //GamePlay.gpLogServer(null, "bombe 5", null);
+    //GamePlay.gpLogServer(null, "bombe 5", null);
 
-        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
-        apkeys = AirfieldTargets.Keys.ToList();
+    var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+    apkeys = AirfieldTargets.Keys.ToList();
 
-        //GamePlay.gpLogServer(null, "bombe 6", null);
+    maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+
+    //For now, all things we handle below are on land, so if the land type is water we just
+    //get out of here immediately
+    if (landType == maddox.game.LandTypes.WATER) return;
+
+    //GamePlay.gpLogServer(null, "bombe 6", null);
+
+    bool blenheim = false;
+    AiAircraft aircraft = initiator.Actor as AiAircraft;
+    string acType = Calcs.GetAircraftType(aircraft);
+    if (acType.Contains("Blenheim")) blenheim = true;
 
         foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+    {
+        /* if (!AirfieldTargets[ap].Item1)
+        {//airfield has already been knocked out so do nothing
+        }
+        else
+        { */
+
+        //GamePlay.gpLogServer(null, "bombe 7", null);
+        double radius = AirfieldTargets[ap].Item6;
+        Point3d APPos = AirfieldTargets[ap].Item7;
+        double distFromCenter = 1000000000;
+        if (ap != null) distFromCenter = APPos.distance(ref pos);
+        //Check if bomb fell inside radius and if so increment up
+        if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
         {
-            /* if (!AirfieldTargets[ap].Item1)
-            {//airfield has already been knocked out so do nothing
+
+
+            //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+            //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+            // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+            //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+            //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+            //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+            //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+            //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+            //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+
+
+            //double scoreBase = 0.06303;
+            double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
+            if (blenheim) scoreBase *= 4; //double score for Blenheims since their bomb load is pathetic (double the OLD score which is 4X the NEW score.  This makes 1 Blenheim (4 bombs X 4) about 50% as effective as on HE 11. (32 bombs)             
+
+            //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
+            //TODO: Could also give more if exactly on the the runway, or near it, or whatever
+            double multiplier = 0.5;
+            if (distFromCenter <= 2 * radius / 3) multiplier = 1;
+            if (distFromCenter <= radius / 3) multiplier = 1.5;
+
+            //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
+            if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+            {
+                multiplier = 1.6;
+            }
+
+            scoreBase *= multiplier;
+
+
+            if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+            double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+            /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+             * 
+             * //Default is 0.5 points for ie 50 lb bomb
+             * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+            if (mass_kg > 110) score = 1.41; //250 
+            if (mass_kg > 220) score = 2.33; //500
+            if (mass_kg > 440) score = 3.70; //1000
+            if (mass_kg > 880) score = 5.92; //2000
+            if (mass_kg > 1760) score = 9.33 ; //4000
+
+            //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
+
+             */
+
+            double individualscore = score;
+
+            if (!ai && (isEnemy == 0 || isEnemy == 2))
+            {
+                individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                     //but, still helps destroy that base (for your enemies) as usual
+                                                     //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+            }
+
+
+
+            //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+            // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+            string firetype = "BuildingFireSmall";
+            if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+            if (stb_random.NextDouble() > 0.25) firetype = "";
+            //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+            //GamePlay.gpLogServer(null, "bombe 8", null);
+
+            //set placeholder variables
+            double PointsToKnockOut = AirfieldTargets[ap].Item3;
+            double PointsTaken = AirfieldTargets[ap].Item4 + score;
+            string Mission = AirfieldTargets[ap].Item2;
+            bool disabled = AirfieldTargets[ap].Item1;
+            DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+
+            string cratertype = "BombCrater_firmSoil_mediumkg";
+            if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+            if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+            double percent = 0;
+            double prev_percent = 0;
+            double points_reduction_factor = 1;
+            if (PointsToKnockOut > 0)
+            {
+                percent = PointsTaken / PointsToKnockOut;
+                prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                if (prev_percent > 1) prev_percent = 1;
+                if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
+            }
+
+            //GamePlay.gpLogServer(null, "bombe 8", null);
+
+            individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
+
+            //if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
+
+
+            double timereduction = 0;
+            if (prev_percent > 0)
+            {
+                timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+            }
+
+            double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                      //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                      //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                      //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                      //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+            if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+            if (PointsTaken >= PointsToKnockOut) //airport knocked out
+            {
+                percent = 1;
+                timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+            }
+            //Advise player of hit/percent/points
+            //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+            //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+
+            //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+            Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+
+            //GamePlay.gpLogServer(null, "bombe 8", null);
+
+            if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+            {
+                AirfieldTargets.Remove(ap);
+                AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                if (!disabled)
+                {
+                    //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                    //This airport has been destroyed, so remove the spawn point
+                    if (ap != null)
+                    {
+                        foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                        {
+                            Point3d bp_pos = bp.Pos();
+                            if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                        }
+                    }
+
+                }
             }
             else
-            { */
-
-            //GamePlay.gpLogServer(null, "bombe 7", null);
-            double radius = AirfieldTargets[ap].Item6;
-
-            //Check if bomb fell inside radius and if so increment up
-            if (ap != null & ap.Pos().distance(ref pos) <= radius)//has bomb landed inside airfield check
             {
-
-
-                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
-                double score = 0.5; //50 lb bomb; 22kg
-                if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
-
-                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-                 * 
-                 * //Default is 0.5 points for ie 50 lb bomb
-                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-                if (mass_kg > 110) score = 1.41; //250 
-                if (mass_kg > 220) score = 2.33; //500
-                if (mass_kg > 440) score = 3.70; //1000
-                if (mass_kg > 880) score = 5.92; //2000
-                if (mass_kg > 1760) score = 9.33 ; //4000
-
-                 */
-
-                double individualscore = score;
-
-                if (!ai && (isEnemy == 0 || isEnemy == 2))
-                {
-                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                                         //but, still helps destroy that base (for your enemies) as usual
-                                                         //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
-                }
-
-                //  stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
-                //TODO: X More/less points depending on bomb tonnage.
-
-                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-                string firetype = "BuildingFireSmall";
-                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
-                if (stb_random.NextDouble() > 0.25) firetype = "";
-                //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                //set placeholder variables
-                double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                double PointsTaken = AirfieldTargets[ap].Item4 + score;
-                string Mission = AirfieldTargets[ap].Item2;
-                bool disabled = AirfieldTargets[ap].Item1;
-                DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-
-                string cratertype = "BombCrater_firmSoil_mediumkg";
-                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-
-                double percent = 0;
-                double prev_percent = 0;
-                if (PointsToKnockOut > 0)
-                {
-                    percent = PointsTaken / PointsToKnockOut;
-                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
-                    if (prev_percent > 1) prev_percent = 1;
-                }
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                double timereduction = 0;
-                if (prev_percent > 0)
-                {
-                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
-                }
-
-                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
-
-                if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                {
-                    percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                }
-                //Advise player of hit/percent/points
-                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
-
-                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
-
-                //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
-                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
-                {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius));
-                    if (!disabled)
-                    {
-                        //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
-                        //This airport has been destroyed, so remove the spawn point
-                        if (ap != null)
-                        {
-                            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-                            {
-                                Point3d bp_pos = bp.Pos();
-                                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
-                            }
-                        }
-
-                    }
-                }
-                else
-                {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius));
-                }
-                //GamePlay.gpLogServer(null, "bombe 11", null);
-                break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
+                AirfieldTargets.Remove(ap);
+                AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
             }
+            //GamePlay.gpLogServer(null, "bombe 11", null);
+            break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
         }
     }
+}
 
-
-    //TO DISPLAY VARIOUS MESSAGES AT VARIOUS TIMES IN THE MISSION CYCLE
-    public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 20000) {
+//TO DISPLAY VARIOUS MESSAGES AT VARIOUS TIMES IN THE MISSION CYCLE
+public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 20000) {
 
         int msgfrq = 1; //how often to display server messages.  Will be displayed 1/msgfrq times
 
@@ -1411,6 +1620,10 @@ public class Mission : AMission
     bool osk_PortsmouthFuelStorage_destroyed = false;
     bool osk_Blue50Kills = false;
     bool osk_Red50Kills = false;
+    bool osk_Blue10AirKills = false;
+    bool osk_Red10AirKills = false;
+    bool osk_Blue10GroundKills = false;
+    bool osk_Red10GroundKills = false;
     string osk_RedObjCompleted = "- ";
     string osk_BlueObjCompleted = "- ";
     string osk_RedObjDescription = "Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Les Andelys Dam (AY03.5) - 50 total Team Kills - 10 more Team Kills than Blue";
@@ -1725,8 +1938,20 @@ public class Mission : AMission
     }
 
     #endregion
-    int RedTotalF = 0;
-    int BlueTotalF = 0;
+
+    //Red & blue point totals transferred from -stats.cs
+    //REMEMBER that these are ints and they are percentage X100 (so that we have decimal percentageand so you must DIVIDE BY 100 to get decimal percentage points)
+    //So we are going to do that here & keep them as doubles
+    double RedTotalF = 0;
+    double BlueTotalF = 0;
+    double RedAirF = 0;
+    double RedAAF = 0;
+    double RedNavalF = 0;
+    double RedGroundF = 0;
+    double BlueAirF = 0;
+    double BlueAAF = 0;
+    double BlueNavalF = 0;
+    double BlueGroundF = 0;
     public void CheckMapTurned()
     {
         /************************************************
@@ -1748,6 +1973,14 @@ public class Mission : AMission
                 string RedTotalS = sr.ReadLine();
                 string BlueTotalS = sr.ReadLine();
                 string TimeS = sr.ReadLine();
+                string RedAirS = sr.ReadLine();
+                string RedAAS = sr.ReadLine();
+                string RedNavalS = sr.ReadLine();
+                string RedGroundS = sr.ReadLine();
+                string BlueAirS = sr.ReadLine();
+                string BlueAAS = sr.ReadLine();
+                string BlueNavalS = sr.ReadLine();
+                string BlueGroundS = sr.ReadLine();
 
                 //Only if they are recent (less than 125 seconds old) do we accept the numbers.
                 //-stats.cs generally writes this data every 2 minutes, so older than that is an old mission or something
@@ -1755,9 +1988,17 @@ public class Mission : AMission
                
                 if (Time.AddSeconds(125).ToUniversalTime() > DateTime.Now.ToUniversalTime())
                 {
-                    RedTotalF = Convert.ToInt32(RedTotalS);
-                    BlueTotalF = Convert.ToInt32(BlueTotalS);
+                    RedTotalF = Convert.ToDouble(RedTotalS)/100;
+                    BlueTotalF = Convert.ToDouble(BlueTotalS)/100;
                     //GamePlay.gpLogServer(null, "Read SessStats.txt: Times MATCH", null);
+                    RedAirF = Convert.ToDouble(RedAirS) / 100;
+                    RedAAF = Convert.ToDouble(RedAAS) / 100;
+                    RedNavalF = Convert.ToDouble(RedNavalS) / 100;
+                    RedGroundF = Convert.ToDouble(RedGroundS) / 100;
+                    BlueAirF = Convert.ToDouble(BlueAirS) / 100;
+                    BlueAAF = Convert.ToDouble(BlueAAS) / 100;
+                    BlueNavalF = Convert.ToDouble(BlueNavalS) / 100;
+                    BlueGroundF = Convert.ToDouble(BlueGroundS) / 100;
                 }
 
                 //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
@@ -1769,25 +2010,56 @@ public class Mission : AMission
         }
         catch (Exception ex) { System.Console.WriteLine("Main mission - read sessstats.txt - Exception: " + ex.ToString()); }
 
-        //Check whether the 50-kill objective is reached.  Remember that RedTotalF & BlueTotalF are kills X 100 NOT just plain kills!
-        if (!osk_Red50Kills && (double)(RedTotalF) / 100 >= 50) {
-            osk_RedObjCompleted += " 50 total Team Kills - ";
+        //Check whether the 50-kill objective is reached.  
+        if (!osk_Red50Kills && RedTotalF >= 50) {
+            osk_RedObjCompleted += "50 total Team Kills - ";
             osk_Red50Kills = true;
             GamePlay.gpLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
             GamePlay.gpHUDLogCenter("RED reached 50 Team Kills. Well done Red!");
 
         }
-        if (!osk_Blue50Kills && (double)(BlueTotalF) / 100 >= 50) {
-            osk_BlueObjCompleted += " 50 total Team Kills - ";
+        if (!osk_Blue50Kills && BlueTotalF >= 50) {
+            osk_BlueObjCompleted += "50 total Team Kills - ";
             osk_Blue50Kills = true;
             GamePlay.gpLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });
             GamePlay.gpHUDLogCenter("BLUE reached 50 Team Kills. Well done Blue!");
         }
 
-        //RED has turned the map
-        if (!osk_MapTurned && osk_LeHavreDam_destroyed && osk_LesAndelysDam_destroyed && osk_LeHavreFuelStorage_destroyed && RedTotalF >= 5000 && RedTotalF > BlueTotalF + 1000)
+        //Check whether the 50-kill objective is reached.  
+        if (!osk_Red10AirKills && RedAirF >= 10)
         {
-            osk_RedObjCompleted += " 10 more Team Kills than Blue - ";
+            osk_RedObjCompleted += "10 total Air Kills - ";
+            osk_Red10AirKills = true;
+            GamePlay.gpLogServer(null, "Red reached 10 total Air Kills. Well done Team Red!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red reached 10  total Air Kills. Well done Red!");
+        }
+        if (!osk_Blue10AirKills && BlueAirF >= 10)
+        {
+            osk_BlueObjCompleted += "10 total Air Kills - ";
+            osk_Blue10AirKills = true;
+            GamePlay.gpLogServer(null, "BLUE reached 10 total Air Kills. Well done Team Blue!", new object[] { });
+            GamePlay.gpHUDLogCenter("BLUE reached 10  total Air Kills. Well done Blue!");
+        }
+        if (!osk_Red10GroundKills && (RedAAF + RedNavalF + RedGroundF) >= 10)
+        {
+            osk_RedObjCompleted += "10 total AA/Naval/Ground Kills - ";
+            osk_Red10GroundKills = true;
+            GamePlay.gpLogServer(null, "Red reached 10 total AA/Naval/Ground Kills. Well done Team Red!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red reached 10  total AA/Naval/Ground Kills. Well done Red!");
+        }
+        if (!osk_Blue10GroundKills && (BlueAAF + BlueNavalF + BlueGroundF) >= 10)
+        {
+            osk_BlueObjCompleted += "10 total AA/Naval/Ground Kills - ";
+            osk_Blue10GroundKills = true;
+            GamePlay.gpLogServer(null, "BLUE reached 10 total AA/Naval/Ground Kills. Well done Team Blue!", new object[] { });
+            GamePlay.gpHUDLogCenter("BLUE reached 10  total AA/Naval/Ground Kills. Well done Blue!");
+        }
+
+
+        //RED has turned the map
+        if (!osk_MapTurned && osk_LeHavreDam_destroyed && osk_LesAndelysDam_destroyed && osk_LeHavreFuelStorage_destroyed && osk_Red10AirKills && osk_Red10GroundKills && RedTotalF >= 50 && RedTotalF > BlueTotalF + 10)//We use RedTotalF >= 50 here, rather than osk_Red50Kills == true, because the team may get 50 kills but then LOSE SOME due to penalty points.
+        {
+            osk_RedObjCompleted += "10 more Team Kills than Blue - ";
             osk_MapTurned = true;
             EndMission(300, "RED");
 
@@ -1795,9 +2067,9 @@ public class Mission : AMission
 
 
         //BLUE has turned the map
-        if (!osk_MapTurned && osk_SouthamptonDam_destroyed && osk_CowesDam_destroyed && osk_PortsmouthFuelStorage_destroyed && BlueTotalF >= 5000 && BlueTotalF > RedTotalF + 1000)
+        if (!osk_MapTurned && osk_SouthamptonDam_destroyed && osk_CowesDam_destroyed && osk_PortsmouthFuelStorage_destroyed && osk_Blue10AirKills && osk_Blue10GroundKills && BlueTotalF >= 50 && BlueTotalF > RedTotalF + 10)
         {
-            osk_BlueObjCompleted += " 10 more Team Kills than Red - ";
+            osk_BlueObjCompleted += "10 more Team Kills than Red - ";
             osk_MapTurned = true;
             EndMission(300, "BLUE");
 
@@ -2135,7 +2407,7 @@ public class Mission : AMission
             //with special time code -1, which means that radar returns are currently underway; don't give them any more until finished.
             radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(-1, radar_messages);
 
-            GamePlay.gpLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
+            if (RADAR_REALISM>0) GamePlay.gpLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
 
 
 
@@ -2498,7 +2770,9 @@ public class Mission : AMission
 
                     sw.Close();
 
+
                     //And, now we create a file with the list of players:
+                    //TODO: This probably could/should be a separate method that we just call here
                     filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_players.txt";
                     if (File.Exists(filepath)) { File.Delete(filepath); }
                     fi = new System.IO.FileInfo(filepath); //file to write to
@@ -2549,10 +2823,18 @@ public class Mission : AMission
                     if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);                    
                     sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
                     sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
-                    sw.WriteLine("Blue/Red total score: " + (BlueTotalF / 100).ToString("N1") + "/" + (RedTotalF / 100).ToString("N1"));
+                    //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
+                    sw.WriteLine( string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
+  BlueAirF, BlueAAF, BlueNavalF,BlueGroundF));
+                    sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
+  RedAirF, RedAAF, RedNavalF, RedGroundF));
                     sw.WriteLine();
+                    if (msg.Length > 0) sw.WriteLine("PLAYER SUMMARY");
                     sw.WriteLine(msg);
-
+                    sw.WriteLine();
+                    msg = ListAirfieldTargetDamage( null, -1, false, false); //Add the list of current airport conditions
+                    if (msg.Length > 0 ) sw.WriteLine("AIRFIELD CONDITION SUMMARY");
+                    sw.WriteLine(msg);
 
                     sw.Close();
 
@@ -2560,14 +2842,16 @@ public class Mission : AMission
                 }
                 catch (Exception ex) { Console.WriteLine("Radar Write1: " + ex.ToString()); }
             }
+
+            var saveRADAR_REALISM = RADAR_REALISM;
             Timeout(wait_s, () => {
                 //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
 
                 foreach (var mess in radar_messages) {
 
-                    if (RADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                    else if (RADAR_REALISM >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                    if (saveRADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                    else if (saveRADAR_REALISM >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
 
                 }
                 radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages);
@@ -2612,6 +2896,9 @@ public class Mission : AMission
         //happening when the first player connects
         MISSION_STARTED = false;
         START_MISSION_TICK = -1;
+        COOP_START_MODE = true;
+        START_COOP_TICK = -1;
+        CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
 
         ReadInitialSubmissions(MISSION_ID + "-auto-generate-vehicles", 0, 0); //want to load this after airports are loaded
         ReadInitialSubmissions(MISSION_ID + "-stats", 1, 1);
@@ -2704,17 +2991,30 @@ public class Mission : AMission
     bool debugSave;
     int radar_realismSave;
     private void setMainMenu(Player player) {
-        GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Server Options - Users" }, new bool[] { true });
+        //GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Server Options - Users" }, new bool[] { true });
+        if (admin_privilege_level(player) >= 1)
+        {
+            //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
+            //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATE or TAKE YOU TO ANOTHER MENU
+            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Mission Objectives", "", "", "", "", "Admin options" }, new bool[] { false, false, false, false, false, false, false, false, true });
+        }                        
+        else
+        {
+            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Mission Objectives" }, new bool[] { false, false, false, false});
+
+        }
     }
 
     private void setSubMenu1(Player player) {
-        if (player.Name().Substring(0, 4) == @"TWC_") {
+        if (admin_privilege_level(player) >= 1) {
 
             string rollovertext = "(admin) End mission now/roll over to next mission";
             if (EndMissionSelected) rollovertext = "(admin) CANCEL End mission now command";
-            GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", rollovertext, "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "Your stats" }, new bool[] { false, false, false, false, false, false, false });
+            if (admin_privilege_level(player) == 2)
+                GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "(admin) Show some internal stats",  rollovertext, "Return to User Menu" }, new bool[] { false, false, false,false, true });
+            else GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "", "", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
         } else {
-            GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "Enemy radar", "Friendly radar", "Time left in mission" }, new bool[] { false, false, false });
+            setMainMenu(player);
 
         }
     }
@@ -2728,13 +3028,134 @@ public class Mission : AMission
     public override void OnOrderMissionMenuSelected(Player player, int ID, int menuItemIndex) {
         //base.OnOrderMissionMenuSelected(player, ID, menuItemIndex); //2015/05/16 - not sure why this was missing previously? We'll see . . .
 
-        //main menu////////////////
-        if (ID == 0) { // main menu
-            if (menuItemIndex == 1) {
+        /*****************************************************
+         * 
+         * ADMIN SUBMENU (2nd submenu, ID ==1, Tab-4-8)
+         * 
+         *****************************************************/
+        if (ID == 1)
+        { // main menu
+
+            if (menuItemIndex == 0)
+            {
                 setSubMenu1(player);
-            } else if (menuItemIndex == 0) {
                 setMainMenu(player);
-            } else {
+            }
+
+            //start/stop display a/c damage inflicted info/////////////////////////// 
+            else if (menuItemIndex == 1)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    dmgOn = !dmgOn;
+                    if (dmgOn)
+                    {
+                        GamePlay.gpHUDLogCenter("Will show damage on all aircraft");
+                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
+
+                    }
+                    else
+                    {
+                        GamePlay.gpHUDLogCenter("Will not show damage on all aircraft");
+                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
+                    }
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 2)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    debugMenu = !debugMenu;
+                    if (debugMenu)
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
+                        radar_realismSave = RADAR_REALISM;
+                        DEBUG = true;
+                        RADAR_REALISM = 0;
+
+                    }
+                    else
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
+                        RADAR_REALISM = radar_realismSave;
+                        DEBUG = false;
+
+                    }
+                }
+
+                setMainMenu(player);
+            }
+
+            //Display Stats
+            //WritePlayerStat(player)
+            else if (menuItemIndex == 3)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    string str = WritePlayerStat(player);
+                    //split msg into a few chunks as gplogserver doesn't like long msgs
+                    int maxChunkSize = 100;
+                    for (int i = 0; i < str.Length; i += maxChunkSize)
+                        GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
+                }
+
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 4)
+            {
+                if (admin_privilege_level(player) >= 1)
+                {
+                    if (EndMissionSelected == false)
+                    {
+                        EndMissionSelected = true;
+                        GamePlay.gpLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-9-4 again.  You have 30 seconds to cancel.", new object[] { });
+                        Timeout(30, () => {
+                            if (EndMissionSelected)
+                            {
+                                EndMission(0);
+                            }
+                            else
+                            {
+                                GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
+                                GamePlay.gpLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
+                            }
+
+                        });
+
+                    }
+                    else
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
+                        EndMissionSelected = false;
+
+                    }
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 5)
+            {
+
+                setMainMenu(player);
+            }
+
+
+
+
+            //Respawn/rearm   
+            else if (menuItemIndex == 9)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
+                //Spawn in mission file with 1 copy of any/all needed aircraft included
+                //copy the one matching the player's plane to the player's current spot or nearby
+                //also copy existing plane's position, direction, location etc etc etc
+                //move player to new a/c 
+                //player.PlaceEnter(aircraft,0);
+                //destroy old a/c
+                setMainMenu(player);
+            }
+            else
+            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
                 setMainMenu(player);
             }
 
@@ -2748,14 +3169,18 @@ public class Mission : AMission
                   }
                  */
 
-                    //}
+            //}
 
-                    //1st submenu////////////////
-                }
-          else if (ID == 1) { // sub menu
+        /*****************************************************
+         * 
+         * USER SUBMENU (1st submenu, ID == 0, Tab-4)
+         * 
+         *****************************************************/
+        }
+          else if (ID == 0) { // sub menu
 
             if (menuItemIndex == 0) {
-                setSubMenu1(player);
+                //setSubMenu1(player);
                 setMainMenu(player);
             } else if (menuItemIndex == 1)
             {
@@ -2798,110 +3223,61 @@ public class Mission : AMission
 
                 setMainMenu(player);
             }
-
-            //immediate end of mission///////////////
             else if (menuItemIndex == 4)
             {
-                if (player.Name().Substring(0, 4) == @"TWC_") {
-                    if (EndMissionSelected == false) {
-                        EndMissionSelected = true;
-                        GamePlay.gpLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-1 again.  You have 30 seconds to cancel.", new object[] { });
-                        Timeout(30, () => {
-                            if (EndMissionSelected) {
-                                EndMission(0);
-                            } else {
-                                GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
-                                GamePlay.gpLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
-                            }
+  
+                    GamePlay.gpLogServer(null, osk_BlueObjDescription, new object[] { });
+                    GamePlay.gpLogServer(null, osk_RedObjDescription, new object[] { });
+                    GamePlay.gpLogServer(null, "Blue Objectives Completed: " + osk_BlueObjCompleted, new object[] { });
 
-                        });
-
-                    } else {
-                        GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
-                        EndMissionSelected = false;
-
-                    }
-                }
-                setMainMenu(player);
-            }
-
-
-
-            //start/stop display a/c damage inflicted info/////////////////////////// 
-            else if (menuItemIndex == 5)
-            {
-                if (player.Name().Substring(0, 4) == @"TWC_") {
-                    dmgOn = !dmgOn;
-                    if (dmgOn) {
-                        GamePlay.gpHUDLogCenter("Will show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
-
-                    } else {
-                        GamePlay.gpHUDLogCenter("Will not show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
-                    }
-                }
-                setMainMenu(player);
-            }
-            else if (menuItemIndex == 6)
-            {
-                if (player.Name().Substring(0, 4) == @"TWC_") {
-                    debugMenu = !debugMenu;
-                    if (debugMenu) {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
-                        radar_realismSave = RADAR_REALISM;
-                        DEBUG = true;
-                        RADAR_REALISM = 0;
-
-                    } else {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
-                        RADAR_REALISM = radar_realismSave;
-                        DEBUG = false;
-
-                    }
-                }
+                    GamePlay.gpLogServer(null, "Red Objectives Completed: " + osk_RedObjCompleted, new object[] { });
 
                 setMainMenu(player);
             }
-
-            //Display Stats
-            //WritePlayerStat(player)
-            else if (menuItemIndex == 7)
-            {
-
-                string str = WritePlayerStat(player);
-                //split msg into a few chunks as gplogserver doesn't like long msgs
-                int maxChunkSize = 100;
-                for (int i = 0; i < str.Length; i += maxChunkSize)
-                    GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
-
-
-                setMainMenu(player);
-            }
-
-            //Respawn/rearm   
+            //ADMIN sub-menu
             else if (menuItemIndex == 9)
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
-                //Spawn in mission file with 1 copy of any/all needed aircraft included
-                //copy the one matching the player's plane to the player's current spot or nearby
-                //also copy existing plane's position, direction, location etc etc etc
-                //move player to new a/c 
-                //player.PlaceEnter(aircraft,0);
-                //destroy old a/c
-                setMainMenu(player);
-            } else { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
+                setSubMenu1(player);
+            }
+            else
+            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
                 setMainMenu(player);
             }
+
+            //immediate end of mission///////////////
+
 
         } //menu if   
     } // method
 
+
+    /****************************************************************
+     * 
+     * ADMIN PRIVILEGE
+     * 
+     * Determine if player is an admin, and what level
+     * 
+     ****************************************************************/
+
+    public int admin_privilege_level (Player player)
+    {
+        if (player == null || player.Name() == null) return 0;
+        string name = player.Name();
+        //name = "TWC_muggle"; //for testing
+        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+        return 0;
+
+    }
+
+
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
     public override void OnPlayerConnected(Player player) {
         string message;
-        if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
-        MISSION_STARTED = true;
+        //Not starting it here due to Coop Start Mode
+        //if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
+        //MISSION_STARTED = true;
+        
         if (MissionNumber > -1) {
             setMainMenu(player);
 
@@ -2915,6 +3291,12 @@ public class Mission : AMission
             message = utcDate.ToString("u") + " Connected " + player.Name();
 
             DebugAndLog(message);
+            if (COOP_START_MODE)
+            {
+                Stb_Chat("CO-OP MISSION START MODE", null);
+                Stb_Chat("CO-OP START: You can spawn on the ground and taxi but", null);
+                Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
+            }
         }
     }
 
@@ -3012,6 +3394,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK - tickSinceStarted) / (double)ticksperminute);
         string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleftminutes.ToString() + " min.";
         if (!MISSION_STARTED) msg = "Mission " + MISSION_ID + " not yet started - waiting for first player to enter.";
+        else if (COOP_START_MODE) msg = "Mission " + MISSION_ID + " not yet started - waiting for Co-op Start.";
 
         if (showMessage && player != null) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
         return msg;
@@ -3077,6 +3460,8 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 
     void Mission_EventChat(IPlayer from, string msg)
     {
+        string msg_orig = msg;
+        msg = msg.ToLower();
         Player player = from as Player;
         if (msg.StartsWith("<tl"))
         {
@@ -3115,7 +3500,49 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 
 
         }
-        else if (msg.StartsWith("<pos") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<coop start") && admin_privilege_level(player) >= 1)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX more minutes", null);
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            if (COOP_START_MODE)
+            {
+
+                COOP_MODE_TIME_SEC = 0;
+                GamePlay.gpLogServer(new Player[] { player }, "CO-OP Mission will START NOW!", null);
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "<coop start command works only during initial Co-op Start Mode period", null);
+            }
+
+        }
+
+        else if (msg.StartsWith("<coop") && admin_privilege_level(player) >= 1)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX minutes", null);
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            if (COOP_START_MODE)
+            {
+                double time_sec = 5 * 60;
+                string time_str = msg.Substring(5).Trim();
+                double time_min = Convert.ToDouble(time_str);
+                if (time_min != 0 || time_str == "0") time_sec = time_min * 60;
+
+
+                COOP_MODE_TIME_SEC += time_sec;
+                double time_left_sec = COOP_TIME_LEFT_MIN * 60 + time_sec;
+
+
+                GamePlay.gpLogServer(new Player[] { player }, "CO-OP MODE start time added " + ((double)time_sec / 60).ToString("n1") + " minutes; ", null);
+                GamePlay.gpLogServer(new Player[] { player }, (COOP_MODE_TIME_SEC / 60).ToString("n1") + " min. total Co-Op start period; " + (time_left_sec / 60).ToString("n1") + " min. remaining", null);
+                Stb_Chat ( "CO-OP START MODE EXTENDED: " + (time_left_sec / 60).ToString("n1") + " min. until co-op start", null);
+            } else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "<coop command works only during initial Co-op Start Mode period", null);
+            }
+
+        }
+        else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
         {
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
             RADAR_REALISM = 0;
@@ -3136,35 +3563,35 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         {
             ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
         }
-        else if (msg.StartsWith("<debugon") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<debugon") && admin_privilege_level(player) >= 2)
         {
 
             DEBUG = true;
             GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
 
         }
-        else if (msg.StartsWith("<debugoff") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<debugoff") && admin_privilege_level(player) >= 2)
         {
 
             DEBUG = false;
             GamePlay.gpLogServer(new Player[] { player }, "Debug is off", new object[] { });
 
         }
-        else if (msg.StartsWith("<logon") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<logon") && admin_privilege_level(player) >= 2)
         {
 
             LOG = true;
             GamePlay.gpLogServer(new Player[] { player }, "Log is on", new object[] { });
 
         }
-        else if (msg.StartsWith("<logoff") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<logoff") && admin_privilege_level(player) >= 2)
         {
 
             LOG = false;
             GamePlay.gpLogServer(new Player[] { player }, "Log is off", new object[] { });
 
         }
-        else if (msg.StartsWith("<des") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<des") && admin_privilege_level(player) >= 2)
         {
 
             string name = msg.Substring(5);
@@ -3178,13 +3605,13 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             (actor as AiCart).Destroy();
 
         }
-        else if (msg.StartsWith("<plv") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<plv") && admin_privilege_level(player) >= 2)
         {
             //Not really sure how this works, but this is a good guess.  
             if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
             if (player.PersonSecondary() != null) player.PlaceLeave(player.PersonSecondary().Place());
         }
-        else if (msg.StartsWith("<mov") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<mov") && admin_privilege_level(player) >= 2)
         {
 
             string name = msg.Substring(5);
@@ -3198,10 +3625,18 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             putPlayerIntoAircraftPosition(player, actor, 0);
 
         }
-        else if (msg.StartsWith("<admin") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<admin") && admin_privilege_level(player) >= 1)
         {
 
-            GamePlay.gpLogServer(new Player[] { player }, "Admin commands: <pos (all a/c position) <debugon <debugoff <logon <logoff (turn debug/log on/off) <des (destroy an object by name)", new object[] { });
+            GamePlay.gpLogServer(new Player[] { player }, "Admin commands: <coop set initial co-op start length <pos (all a/c position)", new object[] { });
+
+
+        }
+        else if (msg.StartsWith("<admin") && admin_privilege_level(player) >= 2)
+        {
+
+            GamePlay.gpLogServer(new Player[] { player }, "FULL Admin commands: <pos full a/c position listing <debugon <debugoff <logon <logoff (turn debug/log on/off)", new object[] { });
+            GamePlay.gpLogServer(new Player[] { player }, "<des (destroy an object by name) <plv force place leave <mov move actor", new object[] { });
 
 
         }
@@ -3431,6 +3866,152 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             return true;
         }
         return false;
+    }
+
+    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
+    {
+        try
+        {
+            if (aircraft != null)
+            {
+                //Console.WriteLine("Destroying aircraft -stats.cs DPU");
+                aircraft.Destroy();
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+    }
+
+    private void Stb_RemovePlayerFromCart(AiCart cart, Player player = null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
+                                                                             //if player = null then remove ALL players from ALL positions
+    {
+        try
+        {
+
+            if (cart == null)
+                return;
+
+            //check if the player is in any of the "places" - if so remove
+            for (int i = 0; i < cart.Places(); i++)
+            {
+                if (cart.Player(i) == null) continue;
+                if (player != null)
+                {
+                    if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
+                }
+                else
+                {
+                    cart.Player(i).PlaceLeave(i);
+                }
+            }
+
+        }
+        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+    }
+    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then removes any other players from the aircraft, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
+    private void Stb_RemoveAllPlayersFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    {
+        Timeout(timeToRemove_sec, () => {
+
+            //player.PlaceLeave(0);
+            Stb_RemovePlayerFromCart(aircraft as AiCart, player); //remove the primary player
+            Stb_RemoveAllPlayersFromAircraft(aircraft, 0); //remove any other players
+            Timeout(timetoDestroy_sec, () => {
+                if (isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);  //destroy if AI controlled, which SHOULD be the case all of the time now
+            }); //Destroy it a bit later
+        });
+    }
+
+    //Removes ALL players from an a/c after a specified period of time (seconds)
+    private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
+    {
+        Timeout(timeToRemove_sec, () => {
+
+            //player.PlaceLeave(0);
+
+            for (int place = 0; place < aircraft.Places(); place++)
+            {
+                if (aircraft.Player(place) != null)
+                {
+                    //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
+                    Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
+                }
+            }
+
+        });
+    }
+    //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
+    //Includes airports AND spawnpoints
+    private double Stb_distanceToNearestAirport(AiActor actor)
+    {
+        double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        double d2Min = d2;
+        if (actor == null) return d2Min;
+        Point3d pd = actor.Pos();
+        int n = GamePlay.gpAirports().Length;
+        //AiActor[] aMinSaves = new AiActor[n + 1];
+        //int j = 0;
+        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
+        for (int i = 0; i < n; i++)
+        {
+            AiActor a = (AiActor)GamePlay.gpAirports()[i];
+            if (a == null) continue;
+            //if (actor.Army() != a.Army()) continue; //only count friendly airports
+            //if (actor.Army() != (a.Pos().x, a.Pos().y)
+            //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
+
+            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+
+            if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+            }
+
+        }
+
+        foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
+        {
+            if (a.Army() != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+            }
+
+        }
+        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
+    }
+
+    //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
+    //the messages can be seen on the lobby/map screen
+    public void Stb_Chat(string line, Player player)
+    {
+        string to = " TO ";
+        if (player != null && player.Name() != null) to += player.Name();
+        if (GamePlay is GameDef)
+        {
+            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + to);
+        }
     }
 
 

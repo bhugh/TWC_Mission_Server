@@ -21,7 +21,8 @@
 [Buildings]
 [BuildingsLinks]
 [BirthPlace]
-  "Test Bomber 1" 1 50571 69989 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
-  "Test Bomber 1" 2 72637 195429 400 1 0 1 de Luftwaffe_Bomber_1940 .
-  "Test Bomber 2" 1 162200 62897 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
-  "Test Bomber 2" 2 114528 196865 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  "Test Bomber 1" 1 123915 25061 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Test Bomber 1" 2 71101 180453 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  "Test Bomber 2" 1 116685 15141 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Test Bomber 2" 2 110880 193217 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  Tanks1 1 121152 204480 0 0 0 1 . . .

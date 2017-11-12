@@ -1,13 +1,19 @@
-2017-11-12 04:41:44Z - Mission M001 not yet started - waiting for first player to enter.
+2017-11-12 02:15:42Z - Time left in mission M001: 47 min.
 
-Players logged in: 0 Active: 0
+Players logged in: 1 Active: 0
 
 Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Ouistreham Dam (AN03.8) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills - 10 more Team Kills than Blue
-Blue Objectives complete: - 
+Blue Objectives complete: - Portsmouth Fuel Dump - 
 Red Objectives complete: - 
 BLUE session totals: 0.0 total points; 0.0/0.0/0.0/0.0 Air/AA/Naval/Ground points
 RED session totals: 0.0 total points; 0.0/0.0/0.0/0.0 Air/AA/Naval/Ground points
 
+PLAYER SUMMARY
+TWC_Flug 1 (none)
 
 
+AIRFIELD CONDITION SUMMARY
+Ford 8% destroyed; last hit 47 minutes ago
+Gosport 25% destroyed; last hit 95 minutes ago
+Bembridge 100% destroyed; last hit 34 minutes ago
 

@@ -1,4 +1,4 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -18,6 +18,19 @@
 [splines]
 [CustomChiefs]
 [Stationary]
+  Static165 Stationary.Opel_Blitz_fuel de 191376.92 9598.56 0.00 
+  Static167 Stationary.Opel_Blitz_fuel de 192694.22 10239.99 0.00 
+  Static164 Stationary.Opel_Blitz_fuel de 191045.25 10340.12 0.00 
+  Static166 Stationary.Opel_Blitz_fuel de 192425.13 10821.98 0.00 
+  Static163 Stationary.Opel_Blitz_fuel de 191833.75 11150.52 0.00 
+  Static161 Stationary.Opel_Blitz_fuel de 52813.13 39094.69 0.00 
+  Static162 Stationary.Opel_Blitz_fuel de 52068.13 39394.48 0.00 
+  Static160 Stationary.Opel_Blitz_fuel de 53179.35 40029.98 0.00 
+  Static159 Stationary.Opel_Blitz_fuel de 52509.75 40281.30 0.00 
+  Static157 Stationary.Opel_Blitz_fuel de 236880.80 41122.72 0.00 
+  Static158 Stationary.Opel_Blitz_fuel de 236194.44 41204.29 0.00 
+  Static156 Stationary.Opel_Blitz_fuel de 237159.33 41817.05 0.00 
+  Static155 Stationary.Opel_Blitz_fuel de 236397.36 41956.31 0.00 
   Static21 Stationary.Opel_Blitz_fuel de 157313.48 57077.60 0.00 
   Static22 Stationary.Opel_Blitz_fuel de 156366.97 57616.78 0.00 
   Static20 Stationary.Opel_Blitz_fuel de 158055.67 57650.56 0.00 
@@ -75,16 +88,16 @@
   Static70 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42550.43 184547.67 -380.00 
   Static113 Stationary.Airfield.OuterMarker nn 42673.69 184529.88 -200.00 /radioFreq 380
   Static118 Stationary.Airfield.AirfieldSign_White_1 nn 42114.92 184582.42 -565.00 /hstart 8
-  Static36 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42114.52 184584.09 -290.00 
   Static119 Stationary.Airfield.AirfieldSign_White_1 nn 42117.30 184581.30 -385.00 /hstart 8
+  Static36 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42114.52 184584.09 -290.00 
   Static138 Stationary.Environment.Windsock_Strong nn 42583.88 184638.80 -385.00 
   Static123 Stationary.Environment.Polotnische_X_white_1 nn 42583.77 184639.27 -425.00 
   Static35 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41952.57 184644.69 -290.00 
   Static121 Stationary.Airfield.AirfieldSign_White_1 nn 41951.04 184646.81 -565.00 /hstart 8
   Static124 Stationary.Airfield.AirfieldSign_White_1 nn 41953.42 184645.67 -385.00 /hstart 8
   Static73 Stationary.Airfield.AirfieldSign_White_1 nn 42443.77 184691.27 -565.00 /hstart 8
-  Static67 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42445.32 184691.95 -110.00 
   Static74 Stationary.Airfield.AirfieldSign_White_1 nn 42446.14 184690.13 -385.00 /hstart 8
+  Static67 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42445.32 184691.95 -110.00 
   Static75 Stationary.Airfield.AirfieldSign_White_1 nn 42551.79 184652.22 -565.00 /hstart 8
   Static68 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42552.14 184651.70 -110.00 
   Static76 Stationary.Airfield.AirfieldSign_White_1 nn 42554.16 184651.08 -385.00 /hstart 8
@@ -92,8 +105,8 @@
   Static127 Stationary.Airfield.AirfieldSign_White_1 nn 41654.16 184761.55 -565.00 /hstart 8
   Static128 Stationary.Airfield.AirfieldSign_White_1 nn 41656.54 184760.42 -385.00 /hstart 8
   Static125 Stationary.Airfield.AirfieldSign_White_1 nn 41783.37 184707.81 -565.00 /hstart 8
-  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static34 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41783.80 184708.59 -290.00 
+  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static71 Stationary.Airfield.AirfieldSign_White_1 nn 42331.27 184724.78 -565.00 /hstart 8
   Static72 Stationary.Airfield.AirfieldSign_White_1 nn 42333.65 184723.64 -385.00 /hstart 8
   Static66 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42331.15 184726.42 -110.00 
@@ -101,13 +114,13 @@
   Static32 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41513.92 184813.38 -290.00 
   Static130 Stationary.Airfield.AirfieldSign_White_1 nn 41517.04 184810.61 -385.00 /hstart 8
   Static57 Stationary.Airfield.AirfieldSign_White_1 nn 42018.90 184831.52 -385.00 /hstart 8
-  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
   Static69 Stationary.Airfield.AirfieldSign_White_1 nn 42185.86 184771.91 -385.00 /hstart 8
+  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
   Static65 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42185.86 184774.17 -110.00 
   Static63 Stationary.Airfield.Fuel_Storage de 41323.32 184883.83 -200.00 
   Static131 Stationary.Airfield.AirfieldSign_White_1 nn 41388.30 184863.72 -565.00 /hstart 8
-  Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
   Static111 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41387.36 184865.16 -290.00 
+  Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
   Static54 Stationary.Airfield.AirfieldSign_White_1 nn 41846.10 184893.44 -565.00 /hstart 8
   Static55 Stationary.Airfield.AirfieldSign_White_1 nn 41849.37 184892.30 -385.00 /hstart 8
   Static64 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41849.91 184894.59 -110.00 
@@ -118,19 +131,19 @@
   Static52 Stationary.Airfield.AirfieldSign_White_1 nn 41713.61 184943.34 -565.00 /hstart 8
   Static53 Stationary.Airfield.AirfieldSign_White_1 nn 41715.98 184942.20 -385.00 /hstart 8
   Static62 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41714.17 184945.52 -110.00 
-  Static47 Stationary.Environment.Polotnische_X_white_1 nn 41297.80 184989.77 -430.00 /hstart 8
   Static120 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41297.14 184989.27 -205.00 
+  Static47 Stationary.Environment.Polotnische_X_white_1 nn 41297.80 184989.77 -430.00 /hstart 8
   Static50 Stationary.Airfield.AirfieldSign_White_1 nn 41583.87 184987.88 -565.00 /hstart 8
   Static51 Stationary.Airfield.AirfieldSign_White_1 nn 41586.25 184986.73 -385.00 /hstart 8
   Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41585.44 184988.47 -110.00 
   Static134 Stationary.Environment.Polotnische_X_white_1 nn 41126.34 185057.69 -430.00 
-  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
   Static133 Stationary.Environment.Polotnische_X_white_1 nn 41204.13 185026.73 -430.00 
-  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
+  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
   Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
+  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
   Static48 Stationary.Airfield.AirfieldSign_White_1 nn 41449.32 185035.34 -565.00 /hstart 8
-  Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
   Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
+  Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
   Static136 Stationary.Environment.Polotnische_X_white_1 nn 40966.41 185128.88 -430.00 
   Static135 Stationary.Environment.Polotnische_X_white_1 nn 41038.41 185096.53 -430.00 
   Static140 Stationary.Environment.Polotnische_X_white_1 nn 40803.72 185196.03 -430.00 
@@ -173,34 +186,21 @@
   Static14 Stationary.Bedford_MW_tank gb 46751.12 238566.41 0.00 
   Static12 Stationary.Bedford_MW_tank gb 45637.77 239421.84 0.00 
   Static15 Stationary.Bedford_MW_tank gb 46507.54 239628.25 0.00 
-  Static155 Stationary.Opel_Blitz_fuel de 236397.36 41956.31 0.00 
-  Static156 Stationary.Opel_Blitz_fuel de 237159.33 41817.05 0.00 
-  Static157 Stationary.Opel_Blitz_fuel de 236880.80 41122.72 0.00 
-  Static158 Stationary.Opel_Blitz_fuel de 236194.44 41204.29 0.00 
-  Static159 Stationary.Opel_Blitz_fuel de 52509.75 40281.30 0.00 
-  Static160 Stationary.Opel_Blitz_fuel de 53179.35 40029.98 0.00 
-  Static161 Stationary.Opel_Blitz_fuel de 52813.13 39094.69 0.00 
-  Static162 Stationary.Opel_Blitz_fuel de 52068.13 39394.48 0.00 
-  Static163 Stationary.Opel_Blitz_fuel de 191833.75 11150.52 0.00 
-  Static164 Stationary.Opel_Blitz_fuel de 191045.25 10340.12 0.00 
-  Static165 Stationary.Opel_Blitz_fuel de 191376.92 9598.56 0.00 
-  Static166 Stationary.Opel_Blitz_fuel de 192425.13 10821.98 0.00 
-  Static167 Stationary.Opel_Blitz_fuel de 192694.22 10239.99 0.00 
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
-  airdrome0 60601.22 228669.41 1 800 500 1
-  airdrome1 157171.35 58047.36 2 1000 700 1
-  airdrome2 28641.67 226318.44 1 700 700 0
-  airdrome4 43777.18 70568.72 2 1000 700 1
-  airdrome5 46220.57 238967.40 1 1000 700 1
-  airdrome6 72492.02 193966.50 1 650 700 1
-  airdrome3 76356.55 180166.94 1 1000 700 0
-  airdrome7 27843.55 72562.48 2 1000 700 0
+  airdrome0 60665.73 228163.33 1 700 500 1
+  airdrome1 157325.30 57928.40 2 800 700 1
+  airdrome2 28686.58 226282.17 1 550 700 0
+  airdrome4 43816.29 70526.60 2 800 700 1
+  airdrome5 46220.57 238967.40 1 800 700 1
+  airdrome6 72434.42 193916.68 1 500 700 1
+  airdrome3 76327.59 180164.53 1 700 700 0
+  airdrome7 27915.30 72640.52 2 500 700 1
   airdrome8 41623.71 184848.86 2 500 700 1
-  airdrome9 236538.91 41462.43 2 1000 700 1
+  airdrome9 236614.01 41471.44 2 700 700 1
   airdrome10 52594.98 39499.27 2 1000 700 1
-  airdrome11 191793.41 10281.19 2 1000 700 1
+  airdrome11 191793.41 10281.19 2 900 700 1
 [airdrome0_Runways]
   60620.23 228182.03 195.00 1300.00 65.00 0
   60701.36 228212.03 85.00 1000.00 40.00 0
@@ -648,26 +648,26 @@
   Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-4N
 [BirthPlace9]
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI_100oct
-  Aircraft.BlenheimMkIV
   Aircraft.SpitfireMkIIa
-  Aircraft.SpitfireMkIa
-  Aircraft.BlenheimMkIVF
-  Aircraft.SpitfireMkI_100oct
-  Aircraft.SpitfireMkI
-  Aircraft.HurricaneMkI_dH5-20
-  Aircraft.HurricaneMkI_dH5-20_100oct
-  Aircraft.HurricaneMkI_100oct-NF
-  Aircraft.DH82A
-  Aircraft.BlenheimMkIVNF
   Aircraft.SpitfireMkI_Heartbreaker
-  Aircraft.G50
-  Aircraft.He-111P-2
-  Aircraft.BR-20M
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.DH82A
+  Aircraft.SpitfireMkIa_100oct
   Aircraft.Ju-88A-1
-  Aircraft.He-111H-2
+  Aircraft.BlenheimMkIVF
+  Aircraft.G50
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_100oct
   Aircraft.Bf-110C-7Late
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.He-111P-2
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.HurricaneMkI_dH5-20
   Aircraft.Bf-109E-4N
 [BirthPlace10]
   Aircraft.BlenheimMkIV

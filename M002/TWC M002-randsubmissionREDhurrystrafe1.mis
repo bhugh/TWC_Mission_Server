@@ -3,8 +3,8 @@
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
-  BattleArea 0 0 350000 320000 10000
-  TIME 7
+  BattleArea 150000 100000 100000 150000 1000
+  TIME 12
   WeatherIndex 0
   CloudsHeight 1000
   BreezeActivity 10

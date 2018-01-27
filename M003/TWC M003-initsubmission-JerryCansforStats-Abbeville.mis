@@ -18,17 +18,15 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static214 Artillery.20_mm_Flak_38 de 286424.44 119741.65 -60.00 /timeout 0/radius_hide 0
-  Static187 Artillery.Flak30 de 282121.63 120210.44 65.00 /timeout 0/radius_hide 0
   Static194 Stationary.Environment.JerryCan_GER1_1 nn 281903.44 120366.21 65.00 
   Static192 Stationary.Environment.JerryCan_GER1_1 nn 281908.50 120362.01 65.00 
   Static203 Stationary.Environment.JerryCan_GER1_1 nn 281907.19 120364.37 65.00 
   Static193 Stationary.Environment.JerryCan_GER1_1 nn 281912.66 120364.75 65.00 
   Static202 Stationary.Environment.JerryCan_GER1_1 nn 281906.50 120373.41 65.00 
   Static201 Stationary.Environment.JerryCan_GER1_1 nn 281913.25 120370.84 65.00 
-  Static191 Stationary.Industrial.Huge_Factory.Part_C nn 281920.44 120380.95 -60.00 
-  Static190 Stationary.Industrial.Huge_Factory.Part_B nn 281920.88 120380.88 -60.00 
   Static189 Stationary.Industrial.Huge_Factory.Part_A nn 281920.53 120380.91 -60.00 
+  Static190 Stationary.Industrial.Huge_Factory.Part_B nn 281920.88 120380.88 -60.00 
+  Static191 Stationary.Industrial.Huge_Factory.Part_C nn 281920.44 120380.95 -60.00 
   Static199 Stationary.Environment.JerryCan_GER1_1 nn 281917.16 120402.94 65.00 
   Static198 Stationary.Environment.JerryCan_GER1_1 nn 281917.69 120409.95 65.00 
   Static195 Stationary.Environment.JerryCan_GER1_1 nn 281920.75 120396.32 65.00 
@@ -50,7 +48,6 @@
   Static206 Stationary.Environment.JerryCan_GER1_1 nn 282230.00 120545.71 205.00 
   Static205 Stationary.Environment.JerryCan_GER1_1 nn 282218.00 120562.63 205.00 
   Static204 Stationary.Environment.JerryCan_GER1_1 nn 282207.09 120576.81 205.00 
-  Static210 Artillery.Flak30 de 284334.50 121045.55 65.00 /timeout 0/radius_hide 0
   Static132 Stationary.Environment.JerryCan_GER1_1 nn 284594.63 121244.83 65.00 
   Static133 Stationary.Environment.JerryCan_GER1_1 nn 284603.63 121274.51 65.00 
   Static130 Stationary.Environment.JerryCan_GER1_1 nn 284633.28 121242.13 65.00 
@@ -60,7 +57,6 @@
   Static127 Stationary.Environment.JerryCan_GER1_1 nn 284670.97 121259.25 65.00 
   Static126 Stationary.Environment.JerryCan_GER1_1 nn 284691.56 121244.00 65.00 
   Static125 Stationary.Environment.JerryCan_GER1_1 nn 284705.94 121263.77 65.00 
-  Static211 Artillery.Flak30 de 286102.13 121235.34 65.00 /timeout 0/radius_hide 0
   Static134 Stationary.Environment.JerryCan_GER1_1 nn 284602.72 121320.38 65.00 
   Static136 Stationary.Environment.JerryCan_GER1_1 nn 284625.22 121289.80 65.00 
   Static137 Stationary.Environment.JerryCan_GER1_1 nn 284661.19 121301.49 65.00 
@@ -104,8 +100,8 @@
   Static21 Stationary.Environment.JerryCan_GER1_1 nn 284564.31 121741.06 65.00 
   Static15 Stationary.Environment.JerryCan_GER1_1 nn 284571.81 121766.54 65.00 
   Static19 Stationary.Environment.JerryCan_GER1_1 nn 284568.22 121773.16 65.00 
-  Static18 Stationary.Environment.JerryCan_GER1_1 nn 284568.75 121780.16 65.00 
   Static16 Stationary.Environment.JerryCan_GER1_1 nn 284583.19 121765.57 65.00 
+  Static18 Stationary.Environment.JerryCan_GER1_1 nn 284568.75 121780.16 65.00 
   Static17 Stationary.Environment.JerryCan_GER1_1 nn 284577.09 121772.80 65.00 
   Static20 Stationary.Environment.JerryCan_GER1_1 nn 284575.22 121775.85 65.00 
   Static56 Stationary.Environment.JerryCan_GER1_1 nn 284980.03 121738.19 65.00 
@@ -117,8 +113,8 @@
   Static9 Stationary.Environment.JerryCan_GER1_1 nn 284583.75 121849.77 65.00 
   Static3 Stationary.Environment.JerryCan_GER1_1 nn 284591.25 121875.25 65.00 
   Static7 Stationary.Environment.JerryCan_GER1_1 nn 284587.66 121881.87 65.00 
-  Static4 Stationary.Environment.JerryCan_GER1_1 nn 284602.63 121874.28 65.00 
   Static6 Stationary.Environment.JerryCan_GER1_1 nn 284588.19 121888.88 65.00 
+  Static4 Stationary.Environment.JerryCan_GER1_1 nn 284602.63 121874.28 65.00 
   Static5 Stationary.Environment.JerryCan_GER1_1 nn 284596.53 121881.51 65.00 
   Static8 Stationary.Environment.JerryCan_GER1_1 nn 284594.69 121884.56 65.00 
   Static145 Stationary.Environment.JerryCan_GER1_1 nn 285165.78 121914.58 65.00 
@@ -128,14 +124,14 @@
   Static152 Stationary.Environment.JerryCan_GER1_1 nn 285362.00 121987.88 65.00 
   Static161 Stationary.Environment.JerryCan_GER1_1 nn 285355.84 121996.54 65.00 
   Static160 Stationary.Environment.JerryCan_GER1_1 nn 285362.59 121993.98 65.00 
-  Static147 Stationary.Industrial.Huge_Factory.Central nn 285369.78 122004.29 -60.00 
-  Static148 Stationary.Industrial.Huge_Factory.Part_A nn 285369.88 122004.05 -60.00 
   Static150 Stationary.Industrial.Huge_Factory.Part_C nn 285369.78 122004.09 -60.00 
+  Static148 Stationary.Industrial.Huge_Factory.Part_A nn 285369.88 122004.05 -60.00 
+  Static147 Stationary.Industrial.Huge_Factory.Central nn 285369.78 122004.29 -60.00 
   Static149 Stationary.Industrial.Huge_Factory.Part_B nn 285370.22 122004.01 -60.00 
   Static154 Stationary.Environment.JerryCan_GER1_1 nn 285370.09 122019.45 65.00 
   Static158 Stationary.Environment.JerryCan_GER1_1 nn 285366.50 122026.07 65.00 
-  Static156 Stationary.Environment.JerryCan_GER1_1 nn 285375.38 122025.71 65.00 
   Static157 Stationary.Environment.JerryCan_GER1_1 nn 285367.03 122033.08 65.00 
+  Static156 Stationary.Environment.JerryCan_GER1_1 nn 285375.38 122025.71 65.00 
   Static159 Stationary.Environment.JerryCan_GER1_1 nn 285373.50 122028.77 65.00 
   Static155 Stationary.Environment.JerryCan_GER1_1 nn 285381.47 122018.48 65.00 
   Static38 Stationary.Environment.JerryCan_GER1_1 nn 284927.63 122204.17 65.00 
@@ -152,22 +148,20 @@
   Static168 Stationary.Environment.JerryCan_GER1_1 nn 285333.56 122189.88 65.00 
   Static177 Stationary.Environment.JerryCan_GER1_1 nn 285327.41 122198.54 65.00 
   Static176 Stationary.Environment.JerryCan_GER1_1 nn 285334.16 122195.98 65.00 
-  Static165 Stationary.Industrial.Huge_Factory.Part_B nn 285341.78 122206.01 -60.00 
-  Static166 Stationary.Industrial.Huge_Factory.Part_C nn 285341.34 122206.09 -60.00 
   Static164 Stationary.Industrial.Huge_Factory.Part_A nn 285341.44 122206.05 -60.00 
   Static163 Stationary.Industrial.Huge_Factory.Central nn 285341.34 122206.29 -60.00 
+  Static165 Stationary.Industrial.Huge_Factory.Part_B nn 285341.78 122206.01 -60.00 
+  Static166 Stationary.Industrial.Huge_Factory.Part_C nn 285341.34 122206.09 -60.00 
   Static170 Stationary.Environment.JerryCan_GER1_1 nn 285341.66 122221.45 65.00 
   Static174 Stationary.Environment.JerryCan_GER1_1 nn 285338.06 122228.07 65.00 
-  Static173 Stationary.Environment.JerryCan_GER1_1 nn 285338.59 122235.08 65.00 
-  Static171 Stationary.Environment.JerryCan_GER1_1 nn 285353.03 122220.48 65.00 
   Static172 Stationary.Environment.JerryCan_GER1_1 nn 285346.94 122227.71 65.00 
+  Static171 Stationary.Environment.JerryCan_GER1_1 nn 285353.03 122220.48 65.00 
+  Static173 Stationary.Environment.JerryCan_GER1_1 nn 285338.59 122235.08 65.00 
   Static175 Stationary.Environment.JerryCan_GER1_1 nn 285345.09 122230.77 65.00 
   Static43 Stationary.Environment.JerryCan_GER1_1 nn 284941.34 122240.89 65.00 
   Static42 Stationary.Environment.JerryCan_GER1_1 nn 284941.91 122247.91 65.00 
   Static41 Stationary.Environment.JerryCan_GER1_1 nn 284950.22 122240.54 65.00 
   Static44 Stationary.Environment.JerryCan_GER1_1 nn 284948.38 122243.59 65.00 
-  Static212 Artillery.Flak30 de 285177.44 122594.26 65.00 /timeout 0/radius_hide 0
-  Static213 Artillery.20_mm_Flak_38 de 284079.97 122751.12 -60.00 /timeout 0/radius_hide 0
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Big 1 284594.76 121877.15 65.00
   1_bld buildings.House$Oil_Bunker-Big 1 284579.59 121847.34 65.00

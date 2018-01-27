@@ -9,7 +9,6 @@
   CloudsHeight 1000
   BreezeActivity 0
   ThermalActivity 0
-  player BoB_RAF_F_FatCat_Early.000
 [GlobalWind_0]
   Power 0.000 0.000 0.000
   BottomBound 0.00
@@ -17,19 +16,6 @@
   GustPower 0
   GustAngle 45
 [splines]
-[AirGroups]
-  BoB_RAF_F_FatCat_Early.01
-[BoB_RAF_F_FatCat_Early.01]
-  Flight0  1
-  Class Aircraft.SpitfireMkIIa
-  Formation VIC3
-  CallSign 26
-  Fuel 100
-  Weapons 1
-  Skill 1 1 1 1 1 1 1 1
-[BoB_RAF_F_FatCat_Early.01_Way]
-  GATTACK_POINT 243843.34 22803.98 500.00 300.00
-  GATTACK_POINT 245009.44 23072.58 500.00 300.00
 [CustomChiefs]
 [Stationary]
   Static194 Smoke.Environment.BuildingFireSmall nn 245269.88 22826.33 200.00 /height 14.00

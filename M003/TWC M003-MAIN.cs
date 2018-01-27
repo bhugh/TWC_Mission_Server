@@ -32,9 +32,11 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TF_Extensions;
 
 /* TODO:
+ * X Sometimes campaign score isn't saved at the end (CLoD . . . ), so figure out a way to save it every 10-15 minutes or so throughout the mission.  Just save the current campaign/map score as already calculated throughout the mission.
  * X Radar displays in English units even for German pilots.  Confusing.
  * 
  * 
@@ -53,6 +55,7 @@ public class Mission : AMission
     //Constants constants; 
 
     public string MISSION_ID;
+    public string CAMPAIGN_ID;
     public string SERVER_ID;
     public string SERVER_ID_SHORT;
     public bool DEBUG;
@@ -82,11 +85,17 @@ public class Mission : AMission
     public bool MISSION_STARTED = false;
     public int START_MISSION_TICK = -1;
     public bool COOP_START_MODE = true;
-    public double COOP_MODE_TIME_SEC = 90;
+    public double COOP_MODE_TIME_SEC = 45;
     public int START_COOP_TICK = -1;
     public double COOP_TIME_LEFT_MIN = 9999;
+    public double CampaignMapState = 0; //Determines which base map to load in & where the front it.  0 is the neutral map, - numbers tend more towards Blue, + numbers more towards Red
+    public string CampaignMapSuffix = "-0"; //The initial initairports files will have suffix -0
+    public int CampaignMapMaxRedSuffixMax = 23; //This implies you have initairports files named with suffix ie -R001, -R002, -R003, -R004
+    public int CampaignMapMaxBlueSuffixMax = 17; //This implies you have initairports files named ie -B001, -B002, -B003, -B004
+    public double CampaignMapRedPoints = 0; //Destruction of various targets & objectives will lead to points, 100 points will move the map/front one notch 
+    public double CampaignMapBluePoints = 0;
 
-    
+
     //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
     //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
     //used in method admins_privilege_level below
@@ -110,6 +119,10 @@ public class Mission : AMission
     int randBlueTickFighterRaid1;
     int randBlueTickFighterRaid2;
     int randBlueTickFighterRaid3;
+
+    int randRedTickBomberRaid1;
+    int randRedTickBomberRaid2;
+    int randRedTickBomberRaid3;
     int randRedTickFighterRaid1;
     int randRedTickFighterRaid2;
     int randRedTickFighterRaid3;
@@ -131,8 +144,10 @@ public class Mission : AMission
         //constants = new Constants();
         respawn_on = true;
         MISSION_ID = "M003";
-        SERVER_ID = "Mission Server";
-        SERVER_ID_SHORT = "Mission";
+        SERVER_ID = "Mission Server43";
+        SERVER_ID_SHORT = "Mission43";
+        //SERVER_ID_SHORT = "MissionTEST43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        CAMPAIGN_ID = "Franco Fandango"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = true;
         radarpasswords = new Dictionary<int, string>
@@ -192,34 +207,53 @@ public class Mission : AMission
         //Choose 4X for Blue raids to spawn 
         randBlueTick1 = random.Next((int)(endsessiontick * 5 / 90), (int)(endsessiontick * 18 / 90));  //between minute 5 & 18
         //randBlueTick1 = random.Next((int)(endsessiontick/180),(int)(endsessiontick/178));//FOR TESTING; load a submission about 1 minute after mission start
-        randBlueTick2 = random.Next((int)(endsessiontick*19/90),(int)(endsessiontick*36/90));//another between minutes 19 & 36
-        randBlueTick3 = random.Next((int)(endsessiontick*50/90),(int)(endsessiontick*68/90)); //another between minutes 50 & 68 
-        randBlueTick4 = random.Next((int)(endsessiontick*70/90),(int)(endsessiontick*77/90)); //another between minutes 70 & 77
-        
-        randBlueTickInitRaid = random.Next((int)(endsessiontick*1/90),(int)(endsessiontick*2/90)); //spawn a major bomber raid in between minutes 1 & 2 of 90        ;
-        randBlueTickRaid= random.Next((int)(endsessiontick*43/90),(int)(endsessiontick*47/90)); //spawn a major bomber raid in between minutes 43 & 47 of 90        
-        randBlueTickLateRaid= random.Next((int)(endsessiontick*52/90),(int)(endsessiontick*66/90)); //spawn a major bomber raid in between minutes 54 & 64 of 90        
-        randBlueTickFighterRaid1 = random.Next((int)(endsessiontick*1/90),(int)(endsessiontick*5/90)); //spawn a fighter raid in between minutes 1 & 5 of 90
-        randBlueTickFighterRaid2 = random.Next((int)(endsessiontick*28/90),(int)(endsessiontick*32/90)); //spawn a fighter raid in between minutes 54 & 64 of 90
-        randBlueTickFighterRaid3 = random.Next((int)(endsessiontick*57/90),(int)(endsessiontick*65/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        //GamePlay.gpLogServer(null, "Mission class initiated.", new object[] { });
-        
-        randRedTickFighterRaid1 = random.Next((int)(endsessiontick*2/90),(int)(endsessiontick*6/90)); //spawn a fighter raid in between minutes 1 & 5 of 90
-        randRedTickFighterRaid2 = random.Next((int)(endsessiontick*13/90),(int)(endsessiontick*17/90)); //spawn a fighter raid in between minutes 54 & 64 of 90
-        randRedTickFighterRaid3 = random.Next((int)(endsessiontick*23/90),(int)(endsessiontick*28/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid4 = random.Next((int)(endsessiontick*33/90),(int)(endsessiontick*37/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid5 = random.Next((int)(endsessiontick*43/90),(int)(endsessiontick*48/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid6 = random.Next((int)(endsessiontick*52/90),(int)(endsessiontick*59/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid7 = random.Next((int)(endsessiontick*62/90),(int)(endsessiontick*69/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid8 = random.Next((int)(endsessiontick*73/90),(int)(endsessiontick*78/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid9 = random.Next((int)(endsessiontick*79/90),(int)(endsessiontick*82/90)); //spawn a fighter raid in between minutes 57 & 65 of 90
-        randRedTickFighterRaid10=random.Next((int)(endsessiontick*52/90),(int)(endsessiontick*57/90)); //spawn 10
-        randRedTickFighterRaid11=random.Next((int)(endsessiontick*70/90),(int)(endsessiontick*72/90)); //spawn 11
-        
+        randBlueTick2 = random.Next((int)(endsessiontick * 19 / 90), (int)(endsessiontick * 36 / 90));//another between minutes 19 & 36
+        randBlueTick3 = random.Next((int)(endsessiontick * 50 / 90), (int)(endsessiontick * 68 / 90)); //another between minutes 50 & 68 
+        randBlueTick4 = random.Next((int)(endsessiontick * 70 / 90), (int)(endsessiontick * 77 / 90)); //another between minutes 70 & 77
+
+        randBlueTickInitRaid = random.Next((int)(endsessiontick * 3 / 90), (int)(endsessiontick * 6 / 90)); //spawn a major bomber raid in between minutes 1 & 2 of 90        ;
+        randBlueTickRaid = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 37 / 90)); //spawn a major bomber raid in between minutes 43 & 47 of 90        
+        randBlueTickLateRaid = random.Next((int)(endsessiontick * 42 / 90), (int)(endsessiontick * 56 / 90)); //spawn a major bomber raid in between minutes 42 & 56 of 90 (previously 54 & 64 of 90 but we stretched out the start of the missions by about 10 minutes so moved up their spawn in times by the same amount, 11/14/2017)
+        randBlueTickFighterRaid1 = random.Next((int)(endsessiontick * 1 / 90), (int)(endsessiontick * 5 / 90)); //spawn a fighter raid in between minutes 1 & 5 of 90
+        randBlueTickFighterRaid2 = random.Next((int)(endsessiontick * 28 / 90), (int)(endsessiontick * 32 / 90)); //spawn a fighter raid in between minutes 54 & 64 of 90
+        randBlueTickFighterRaid3 = random.Next((int)(endsessiontick * 57 / 90), (int)(endsessiontick * 65 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+                                                                                                                 
+        randRedTickBomberRaid1 = random.Next((int)(endsessiontick * 1 / 90), (int)(endsessiontick * 5 / 90)); //Red bomber raids targeting priority blue objectives
+        randRedTickBomberRaid2 = random.Next((int)(endsessiontick * 20 / 90), (int)(endsessiontick * 32 / 90));
+        randRedTickBomberRaid3 = random.Next((int)(endsessiontick * 48 / 90), (int)(endsessiontick * 58 / 90));
+
+
+        randRedTickFighterRaid1 = random.Next((int)(endsessiontick * 2 / 90), (int)(endsessiontick * 6 / 90)); //spawn a fighter raid in between minutes 1 & 5 of 90
+        randRedTickFighterRaid2 = random.Next((int)(endsessiontick * 13 / 90), (int)(endsessiontick * 17 / 90)); //spawn a fighter raid in between minutes 54 & 64 of 90
+        randRedTickFighterRaid3 = random.Next((int)(endsessiontick * 23 / 90), (int)(endsessiontick * 28 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid4 = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 37 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid5 = random.Next((int)(endsessiontick * 43 / 90), (int)(endsessiontick * 48 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid6 = random.Next((int)(endsessiontick * 52 / 90), (int)(endsessiontick * 59 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid7 = random.Next((int)(endsessiontick * 62 / 90), (int)(endsessiontick * 69 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid8 = random.Next((int)(endsessiontick * 73 / 90), (int)(endsessiontick * 78 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid9 = random.Next((int)(endsessiontick * 79 / 90), (int)(endsessiontick * 82 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid10 = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 85 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        randRedTickFighterRaid11 = random.Next((int)(endsessiontick * 17 / 90), (int)(endsessiontick * 85 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+
         stopwatch = Stopwatch.StartNew();
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
     }
 
+    /********************************************************
+     * 
+     * Save campaign state every 10 minutes so that if
+     * something messes up before end of mission, we
+     * don't lose all the campaign developments this mission
+     * 
+     *******************************************************/
+
+    public void SaveCampaignStateIntermediate()
+    {
+
+        Timeout(600, () => { SaveCampaignStateIntermediate(); });
+        if (!MISSION_STARTED) return;
+        SaveMapState("", true);
+    }
 
     public void CheckCoop()
     {
@@ -265,6 +299,92 @@ public class Mission : AMission
                 }
 
             }
+        }
+    }
+
+    bool EndMissionIfPlayersInactive_initialized = false;
+    DateTime LastTimePlayerLoggedIn = DateTime.Now;
+    DateTime LastTimePlayerInPlace = DateTime.Now;
+
+    public void EndMissionIfPlayersInactive()
+    {
+        /************************************************
+         * 
+         *We check every minute or so to see if any players are logged on
+         * and if so, if they are actually in a place.
+         * 
+         * If the mission is active &  no one has logged in for 7.5 minutes the mission will end.
+         * 
+         * If the mission is active &  no one been in a place (ie, in an aircraft, tank, etc0 for 15 minutes the mission will end
+         * 
+         * This is to prevent AI from marching forward & destroying all the mission targets, and thus moving the campaign maps around by huge amounts, when no one is even playing
+         * 
+         * Also it coudl potentially ward off some cheating type behaviors, if people realize that AI tends to score more points for one side or the other when no one is playing, then
+         * they could  just start a mission & leave it, just to rack up points for their side.
+         * 
+         * Recursive function called every X seconds
+         ************************************************/
+ 
+
+        Timeout(63.25, () => { EndMissionIfPlayersInactive(); });
+
+        //Before the mission official starts, we still update the times as though players were in place - reason is, we could get in some weird situation where the mission
+        //was paused because of one of these modes, put we somehow get a sample of the time, then wait 30 minutes, then someone jumps in to play & we restart, 
+        //noticing there has a been a 30 minute delay & kill the game.  Which would not be good.  So, this is a bit belt & suspenders--really we dont' even start with this routine
+        //until Mission is started & coop mode is over.
+        if (!MISSION_STARTED || COOP_START_MODE)
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            //Console.WriteLine("Not miss started/coopstart");
+            return;  
+        }
+        if (!EndMissionIfPlayersInactive_initialized)
+        {
+
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            EndMissionIfPlayersInactive_initialized = true;
+            //Console.WriteLine("EMIPI initialized");
+            return;
+        }
+        if (GamePlay.gpPlayer() != null && GamePlay.gpPlayer().Place() != null)
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            //Console.WriteLine("EMIPI single player in place");
+            return; //we only need one . .. 
+        }
+
+        //if (GamePlay.gpPlayer() != null || (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0))
+        if ((GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)) //giving up on looking for the single player as GamePlay.gpPlayer() always seems to be != null
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            //Console.WriteLine("EMIPI a player is logged in " + (GamePlay.gpPlayer() != null).ToString() + " " + (GamePlay.gpRemotePlayers() != null).ToString() + " " + GamePlay.gpRemotePlayers().Length.ToString());
+
+   
+            if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+            {
+                foreach (Player p in GamePlay.gpRemotePlayers())
+                {
+
+                    if (p.Place() != null)
+                    {
+                        LastTimePlayerInPlace = DateTime.Now;
+                        Console.WriteLine("EMIPI multi player in place");
+                        return; //we only need one . .. 
+                    }
+
+                }
+            }
+        }
+
+        //Console.WriteLine("EMIPI checking time since last player");
+        //End the mission if it has been 7.5 minutes since someone logged in OR 15 minutes since they were actually in a place.
+        //if (LastTimePlayerLoggedIn.AddMinutes(.5) < DateTime.Now || LastTimePlayerInPlace.AddMinutes(15) < DateTime.Now)  //testing
+        if (LastTimePlayerLoggedIn.AddMinutes(7.5) < DateTime.Now || LastTimePlayerInPlace.AddMinutes(15) < DateTime.Now)
+        {
+                EndMission(0);
         }
     }
 
@@ -564,6 +684,16 @@ public class Mission : AMission
 
 
         }
+        //Load the major Red fighter raids approx every 20-30 minutes - targeting major objectives on the Blue side
+        if (currSessTick == randRedTickBomberRaid1 || currSessTick == randRedTickBomberRaid2 || currSessTick == randRedTickBomberRaid3)
+        {
+
+            LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionREDBomber"); // load sub-mission            
+
+
+        }
+
+        
 
 
         //Load the major RED fighter raids approx every 20 minutes
@@ -884,7 +1014,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
     string acType = Calcs.GetAircraftType(aircraft);
     if (acType.Contains("Blenheim")) blenheim = true;
 
-        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+    foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
     {
         /* if (!AirfieldTargets[ap].Item1)
         {//airfield has already been knocked out so do nothing
@@ -915,7 +1045,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
 
             //double scoreBase = 0.06303;
             double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-            if (blenheim) scoreBase *= 4; //double score for Blenheims since their bomb load is pathetic (double the OLD score which is 4X the NEW score.  This makes 1 Blenheim (4 bombs X 4) about 50% as effective as on HE 11. (32 bombs)             
+            if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic (double the OLD score which is 4X the NEW score.  This makes 1 Blenheim (4 bombs X 4) about 50% as effective as on HE 11. (32 bombs)             
 
             //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
             //TODO: Could also give more if exactly on the the runway, or near it, or whatever
@@ -1034,6 +1164,19 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                 AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
                 if (!disabled)
                 {
+                    //TODO: Sometimes this doesn't seem to add points to the correct army?  Maybe the army # is wrong or doesn't exist for some ap's ?
+                    //Code below is supposed to fix this, but we'll see.
+                    int arm = ap.Army();
+                    if (arm != 1 && arm !=2 )
+                        {
+                            arm = GamePlay.gpFrontArmy(APPos.x, APPos.y);  //This can be 1,2, or 0 for neutral territory.  
+                        }                   
+                    if (arm == 1) CampaignMapBluePoints += 5; //5 campaign points for knocking out an airfield
+                    else if (arm == 2) CampaignMapRedPoints += 5;
+
+                    Console.WriteLine("Airport destroyed, awarding points to destroying army; airport owned by army: " + arm.ToString());
+                    
+
                     //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
                     //This airport has been destroyed, so remove the spawn point
                     if (ap != null)
@@ -1140,6 +1283,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
               {
                   GamePlay.gpLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
                   GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
+                  SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other
               });
         Timeout(endseconds + 60, () =>
               {
@@ -1635,7 +1779,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     string osk_RedObjCompleted = "- ";
     string osk_BlueObjCompleted = "- ";
     string osk_RedObjDescription = "Red Objectives: Boulogne Lower Dam (BA20.2) - Frevent Secret Factory (BF14.9) - Arras Fuel Dump (BI14.1) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills - 10 more Team Kills than Blue";
-    string osk_BlueObjDescription = "Blue Objectives: Dieppe Dam (AH-20.3) - Neufchatel-en-Bray Secret Factory (AZ09.4) - Forges-les-Eaux Fuel Dumps (BA07.4) - Hamble Dam (AG21.1) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills -10 more Team Kills than Red";
+    string osk_BlueObjDescription = "Blue Objectives: Dieppe Dam (AH-20.3) - Neufchatel-en-Bray Secret Factory (AZ09.4) - Forges-les-Eaux Fuel Dumps (BA07.4) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills -10 more Team Kills than Red";
     int osk_RedGroundTargets = 0;
     int osk_BlueGroundTargets = 0;
 
@@ -1676,6 +1820,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             GamePlay.gpHUDLogCenter("The Le Havre Dam has been eliminated. Well done" + name);
 
             osk_LeHavreDam_destroyed = true;
+            CampaignMapBluePoints += 10;
 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
             GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LeHavDam-inactive.mis");
@@ -1706,18 +1851,20 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         targets = new HashSet<string>(new string[] { "0:Static63", "0:Static65", "0:Static66" });
 
-
+  
         if (!osk_LesAndelysDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_LesAndelysDam_destroyed = true;
+            CampaignMapBluePoints += 10;
+
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
             GamePlay.gpLogServer(null, "Les Andelys Dam eliminated. Well done" + name, new object[] { });
             GamePlay.gpHUDLogCenter("The Les Andelys Dam has been eliminated. Well done" + name);
-
+ 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-LesAndelysDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LesAndelysDam-inactive.mis");
 
             //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
             foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
@@ -1750,6 +1897,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         {
             osk_OuistrehamDam_destroyed = true;
+            CampaignMapBluePoints += 10;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1757,7 +1905,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             GamePlay.gpHUDLogCenter("The Ouistreham Dam has been eliminated. Well done" + name);
 
             //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-OuistrehamDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-OuistrehamDam-inactive.mis");
 
             //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
             foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
@@ -1793,6 +1941,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
 
             osk_SouthamptonDam_destroyed = true;
+            CampaignMapBluePoints += 10;
+
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1837,6 +1987,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         {
             osk_CowesDam_destroyed = true;
+            CampaignMapBluePoints += 10;
+
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1877,9 +2029,11 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         targets = new HashSet<string>(new string[] { "0:Static68", "0:Static133" });
 
-        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))
+        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))        
         {
             osk_HambleDam_destroyed = true;
+            CampaignMapBluePoints += 10;
+
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1922,6 +2076,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_BoulogneLowerDam_destroyed = true;
             osk_RedObjCompleted += "Boulogne Lower Dam - ";
+            CampaignMapRedPoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -1961,6 +2116,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         if (!osk_BoulogneUpperDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_BoulogneUpperDam_destroyed = true;
+            CampaignMapRedPoints += 10;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2001,6 +2157,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         if (!osk_EtaplesDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_EtaplesDam_destroyed = true;
+            CampaignMapRedPoints += 10;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2041,6 +2198,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         if (!osk_BerckDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_BerckDam_destroyed = true;
+            CampaignMapRedPoints += 10;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2082,6 +2240,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         if (!osk_LeTreportDam_destroyed && targets.Contains(stationary.Name))
         {
             osk_LeTreportDam_destroyed = true;
+            CampaignMapBluePoints += 10;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2124,6 +2283,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_DieppeDam_destroyed = true;
             osk_BlueObjCompleted += "Dieppe Dam - ";
+            CampaignMapBluePoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2170,6 +2330,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_FreventFactory_destroyed = true;
             osk_RedObjCompleted += "Frevent Secret Factory - ";
+            CampaignMapRedPoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2183,6 +2344,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_ArrasFuelStorage_destroyed = true;
             osk_RedObjCompleted += "Arras Fuel Storage - ";
+            CampaignMapRedPoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2195,6 +2357,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_NeufchatelFactory_destroyed = true;
             osk_BlueObjCompleted += "Neufchatel Secret Factory - ";
+            CampaignMapBluePoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
@@ -2207,13 +2370,16 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         {
             osk_ForgesFuelStorage_destroyed = true;
             osk_BlueObjCompleted += "Forges Fuel Storage - ";
+            CampaignMapBluePoints += 20;
             string name = "!";
             if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
 
             GamePlay.gpLogServer(null, "The Forges Fuel Storage has been destroyed. Well done" + name, new object[] { });
             GamePlay.gpHUDLogCenter("Forges Fuel Storage destroyed. Well done" + name);
         }
+
     }
+
     #endregion
 
     //Red & blue point totals transferred from -stats.cs
@@ -2225,10 +2391,12 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     double RedAAF = 0;
     double RedNavalF = 0;
     double RedGroundF = 0;
+    double RedPlanesWrittenOffI = 0;
     double BlueAirF = 0;
     double BlueAAF = 0;
     double BlueNavalF = 0;
     double BlueGroundF = 0;
+    double BluePlanesWrittenOffI = 0;
     public void CheckMapTurned()
     {
         /************************************************
@@ -2254,10 +2422,12 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
                 string RedAAS = sr.ReadLine();
                 string RedNavalS = sr.ReadLine();
                 string RedGroundS = sr.ReadLine();
+                string RedPlanesWrittenOffS = sr.ReadLine();
                 string BlueAirS = sr.ReadLine();
                 string BlueAAS = sr.ReadLine();
                 string BlueNavalS = sr.ReadLine();
                 string BlueGroundS = sr.ReadLine();
+                string BluePlanesWrittenOffS = sr.ReadLine();
 
                 //Only if they are recent (less than 125 seconds old) do we accept the numbers.
                 //-stats.cs generally writes this data every 2 minutes, so older than that is an old mission or something
@@ -2272,10 +2442,12 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
                     RedAAF = Convert.ToDouble(RedAAS) / 100;
                     RedNavalF = Convert.ToDouble(RedNavalS) / 100;
                     RedGroundF = Convert.ToDouble(RedGroundS) / 100;
+                    RedPlanesWrittenOffI = Convert.ToInt32(RedPlanesWrittenOffS);
                     BlueAirF = Convert.ToDouble(BlueAirS) / 100;
                     BlueAAF = Convert.ToDouble(BlueAAS) / 100;
                     BlueNavalF = Convert.ToDouble(BlueNavalS) / 100;
                     BlueGroundF = Convert.ToDouble(BlueGroundS) / 100;
+                    BluePlanesWrittenOffI = Convert.ToInt32(BluePlanesWrittenOffS);
                 }
 
                 //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
@@ -2351,6 +2523,313 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             EndMission(300, "BLUE");
 
         }
+
+
+    }
+
+    /******************************************************************************
+     * 
+     * Routines dealing with the LONG TERM CAMPAIGN and calculating the points
+     * for each team that determine the current campaign status
+     * and which map will be used next mission
+     *      
+     ******************************************************************************/
+
+    //CalcMapMove - returns a double with DOUBLE the current mission score and STRING the text message detailing the score
+    public Tuple <double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null) {
+        double MapMove = 0;
+        string msg = "";
+        string outputmsg = "";
+        Player[] recipients = null;
+        if (player != null) recipients = new Player[] { player };
+        if (winner == "Red")
+        {
+            msg = "Red moved the campaign forward by 150 points by achieving all Mission Objectives and turning the map!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            return new Tuple<double, string>(1.5, outputmsg);
+        }
+        if (winner == "Blue")
+        {
+            msg = "Blue moved the campaign forward by 150 points by achieving all Mission Objectives and turning the map!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            return new Tuple<double, string>(-1.5, outputmsg);
+        }
+
+        if (RedTotalF > 3)
+        {
+            msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total victories!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += RedTotalF / 200;
+        }
+        if (BlueTotalF > 3)
+        {
+            msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total victories!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= BlueTotalF / 200;
+        }
+
+        double difference = RedTotalF - BlueTotalF;
+        if (Math.Abs(difference) >= 5)
+        {
+            if (difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + difference.ToString("n1") + " more total victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (difference < 0) {
+                msg = "Blue has moved the campaign forward by getting " + (-difference).ToString("n1") + " more total victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += difference / 400;
+        }
+
+        double air_difference = RedAirF - BlueAirF;
+        
+        if (Math.Abs(air_difference) >= 5)
+        {
+            if (air_difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + air_difference.ToString("n1") + " more air victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (air_difference < 0) {
+                msg = "Blue has moved the campaign forward by getting " + (-air_difference).ToString("n1") + " more air victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += air_difference / 400;
+        }
+        double ground_difference = RedAAF + RedNavalF + RedGroundF - BlueAAF - BlueNavalF - BlueGroundF;
+        if (Math.Abs(ground_difference) >= 5)
+        {
+            if (ground_difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + ground_difference.ToString("n1") + " more ground victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (ground_difference < 0)
+            {
+                msg = "Blue has moved the campaign forward by getting " + (-ground_difference).ToString("n1") + " more ground victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += ground_difference / 400;
+        }
+
+        if (CampaignMapRedPoints > 0)
+        {
+            msg = "Red has moved the campaign forward by getting " + CampaignMapRedPoints.ToString("n0") + " points by destroying airports, important objectives, and Mission Objectives!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += CampaignMapRedPoints / 100;
+        }
+
+        if (CampaignMapBluePoints > 0)
+        {
+            msg = "Blue has moved the campaign forward by getting " + CampaignMapBluePoints.ToString("n0") + " points by destroying airports, important objectives, and Mission Objectives!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= CampaignMapBluePoints / 100;
+        }
+        if (RedPlanesWrittenOffI >= 3)
+        {
+            msg = "Red has lost ground by losing " + RedPlanesWrittenOffI.ToString() + " aircraft in battle!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= (double)RedPlanesWrittenOffI / 200;  //These are LOSSES, so - points for red & + points for blue
+        }
+        if (BluePlanesWrittenOffI >= 3)
+        {
+            msg = "Blue has lost ground by losing " + BluePlanesWrittenOffI.ToString() + " aircraft in battle!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += (double)BluePlanesWrittenOffI / 200; //These are LOSSES, so - points for red & + points for blue
+        }
+
+        if (final) {
+
+            double portionComplete = calcProportionTimeComplete(); //0= just start, 1 = complete
+            double outside = (random.NextDouble() - 0.5) * portionComplete;  //if a full mission we can get up to +/- 0.5 added by 'outside factors'.  But if we have done only a half mission it would be half that, 1/4 mission = 1/4 that, etc.
+
+
+            if (outside > 0.05)
+            {
+                string reason = "Help from Allies";
+                if (random.Next(2) == 1) reason = "A naval victory";
+                msg = reason + " has strengthened Red's position";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (outside < -0.05)
+            {
+                string reason = "Help from Allies has";
+                if (random.Next(3) == 1) reason = "A naval victory has";
+                else if (random.Next(1) == 1) reason = "Positive developments on the Eastern Front have";
+                msg = reason + " strengthened Blue's position";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += outside;
+        }
+
+        //We can move AT MOST one notch (one map) in either direction, per mission
+        if (MapMove > 1) MapMove = 1;
+        if (MapMove < -1) MapMove = -1;
+
+        string word = "Currently, ";
+        if (final) word = "Altogether, ";
+
+        if (MapMove > 0)
+        {
+            msg = word + "this mission has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        if (MapMove < 0)
+        {
+            msg = word + "this mission has improved Blue's campaign position by " + (-MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        if (MapMove == 0)
+        {
+            msg = word + "this mission is a COMPLETE STALEMATE!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+
+        return new Tuple<double, string> (MapMove, outputmsg);
+
+    }
+    public string summarizeCurrentMapstate(double ms, bool output = true, Player player = null)
+    {
+        string outputmsg = "";
+        string msg = "";
+        Player[] recipients = null;
+        if (player != null) recipients = new Player[] { player };
+
+        if (ms > 0)
+        {
+            msg = "Red stands at +" + (ms * 100).ToString("n0") + " for the entire " + CAMPAIGN_ID + " campaign.";
+            outputmsg += msg + Environment.NewLine;
+            if ( output ) gpLogServerAndLog(recipients, msg, null);
+        }
+        else if (ms < 0)
+        {
+            msg = "Blue stands at +" + (-ms * 100).ToString("n0") + " for the entire " + CAMPAIGN_ID + " campaign.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        else
+        {
+            msg = "The entire " + CAMPAIGN_ID + " campaign is exactly balanced. Blue stands at +0, Red +0.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        return outputmsg;
+    }
+
+    //saves the current map state to a text file as the first line.  Previous mapstates are in reverse order from the top down, each on one line.
+    //Also, saves the previous version of the _MapState file as *_MapState_old.txt
+    public bool MapStateSaved = false;
+    public void SaveMapState(string winner, bool intermediateSave=false)
+    {
+        if (!intermediateSave && MapStateSaved) return; //Due to the way it works (adding a certain value to the value in the file), we can only save map state ONCE per session.  So we can call it a few times near the end to be safe, but it only will save once at most
+        try
+        {
+
+            Tuple<double, string> res = CalcMapMove(winner,true, true, null);
+            double newMapState = CampaignMapState + res.Item1;
+            string outputmsg = res.Item2;
+            string msg = "";
+
+            bool writeOutput = true;
+            if (intermediateSave) writeOutput = false;
+            outputmsg += summarizeCurrentMapstate(newMapState, writeOutput);
+
+
+            //TODO: We could write outputmsg to a file or send it to the -stats.cs or something
+            //This saves the summary text to a file with CR/LF replaced with <br> so it can be used in HTML page
+
+            try
+            {
+                File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", Regex.Replace(outputmsg, @"\r\n?|\n", "<br>" + Environment.NewLine));
+            }
+            catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
+
+            string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt";
+            string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState_old.txt";
+            string currentContent = String.Empty;
+
+            try
+            {
+                if (File.Exists(filepath_old)) { File.Delete(filepath_old); }
+                File.Copy(filepath, filepath_old);
+            } catch (Exception ex) { Console.WriteLine("MapState Write Inner: " + ex.ToString()); }
+
+            //if (File.Exists(filepath)) { File.Delete(filepath); }
+            /*fi = new System.IO.FileInfo(filepath); //file to write to
+            sw = fi.CreateText();
+            sw.WriteLine(newMapState.ToString());
+            sw.Close(); */
+
+            if (File.Exists(filepath))            
+            {
+                currentContent = File.ReadAllText(filepath);
+            }
+            //TODO: We could trim currentContent to some certain length or whatever
+            //currentContent = currentContent.Split(Environment.NewLine.ToCharArray()).FirstOrDefault(); //cut down prev content to max of 20 lines
+            //currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), 21).Take(20)); //cut down prev content to max of 20 lines
+
+            currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(s => s.Trim()).Take(72)); //cut down prev content to max of 20 lines & omit blank lines
+            File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + currentContent);
+            MapStateSaved = true;
+        }
+        catch (Exception ex) { Console.WriteLine("MapState Write: " + ex.ToString()); }
+
+    }
+
+    public string GetMapSuffix()
+    {
+        double MapState = GetMapState();
+        int MapState_int = Convert.ToInt32(MapState);
+        if (MapState_int > CampaignMapMaxRedSuffixMax) MapState_int = CampaignMapMaxRedSuffixMax;
+        if (-MapState_int > CampaignMapMaxBlueSuffixMax) MapState_int = -CampaignMapMaxBlueSuffixMax;               
+
+        if (MapState_int == 0) return "-0";
+        if (MapState_int > 0) return "-R" + MapState_int.ToString("D3");  //3 digits so that our files will be named ie TWC M001-initairports-R002.mis - 002 is 3 digits
+        else return "-B" + (-MapState_int).ToString("D3");
+    }
+
+    public double GetMapState()
+    {
+
+        double MapState = 0;
+
+        try
+        {
+            using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt"))
+            {
+                MapState = Convert.ToDouble(sr.ReadLine());
+            }
+        }
+        catch (Exception ex) {
+            System.Console.WriteLine("Main mission - read mapstate - Exception: " + ex.ToString());
+            MapState = 0;
+        }
+
+        if (MapState > 100000 || MapState < -100000) MapState = 0;
+        CampaignMapState = MapState;
+        return MapState;
 
 
     }
@@ -3096,6 +3575,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
                     sw.WriteLine("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString());
                     sw.WriteLine();
+
+                    sw.WriteLine("MISSION SUMMARY");
                     if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
                     if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);                    
                     sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
@@ -3105,6 +3586,15 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
   BlueAirF, BlueAAF, BlueNavalF,BlueGroundF));
                     sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
   RedAirF, RedAAF, RedNavalF, RedGroundF));
+                    sw.WriteLine();
+
+                    sw.WriteLine("CAMPAIGN SUMMARY");
+
+                    Tuple<double, string> res = CalcMapMove("", false, false, null);
+                    sw.Write( res.Item2);
+                    double newMapState = CampaignMapState + res.Item1; 
+                    sw.Write (summarizeCurrentMapstate(newMapState, false, null));
+
                     sw.WriteLine();
                     if (msg.Length > 0) sw.WriteLine("PLAYER SUMMARY");
                     sw.WriteLine(msg);
@@ -3176,9 +3666,15 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         COOP_START_MODE = true;
         START_COOP_TICK = -1;
         CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
+        EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
+        SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
 
         ReadInitialSubmissions(MISSION_ID + "-auto-generate-vehicles", 0, 0); //want to load this after airports are loaded
         ReadInitialSubmissions(MISSION_ID + "-stats", 1, 1);
+
+        CampaignMapSuffix = GetMapSuffix();
+        LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
+                                                                 //TODO: Make this dependent on which side has been winning or has turned the map or whatever
         ReadInitialSubmissions(MISSION_ID + "-initsubmission", 10, 1);
 
         //ReadInitialSubmissions(MISSION_ID + "-hud", 0);
@@ -3190,12 +3686,21 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
         }
 
+        //Delete any old CampaignSummary.txt files so that they are not hanging around causing trouble
+        try
+        {
+            File.Delete(STATSCS_FULL_PATH + "CampaignSummary.txt");
+        }
+        catch (Exception ex) { Console.WriteLine("CampaignSummary Delete: " + ex.ToString()); }
+
     }
 
     public override void OnBattleStoped()
     {
         base.OnBattleStoped();
 
+        Console.WriteLine("Battle Stopping");
+        SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
         if (GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
@@ -3659,16 +4164,35 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         }
 
     }
+
+    //Ranges 0 to 1.  0= just started, 1=full mission time complete
+    public double calcProportionTimeComplete()
+    {
+        double tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+        double perc = tickSinceStarted / ((double)END_MISSION_TICK);
+
+        if (perc < 0) perc = 0;
+        if (perc > 1) perc = 1;
+        return perc;
+    }
+
+    //Calcs minutes left as an int
+    public int calcTimeLeft()
+    {
+        int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+        //int respawntick = respawnminutes * ticksperminute;
+        //int timespenttick = (tickSinceStarted - tickoffset) % respawntick;
+        //int timelefttick = respawntick - timespenttick;
+        //int timespentminutes = Convert.ToInt32(((double)timespenttick / (double)ticksperminute));
+        //int timeleftminutes = Convert.ToInt32(((double)timelefttick / (double)ticksperminute)); //This is going to be time left in session, given our new scheme (2X sessions per mission)
+        int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK - tickSinceStarted) / (double)ticksperminute);
+        
+        return missiontimeleftminutes;
+    }
     //Displays time left to player & also returns the time left message as a string
     //Calling with (null, false) will just return the message rather than displaying it
     public string showTimeLeft(Player player, bool showMessage = true) {
-        int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
-        int respawntick = respawnminutes * ticksperminute;
-        int timespenttick = (tickSinceStarted - tickoffset) % respawntick;
-        int timelefttick = respawntick - timespenttick;
-        int timespentminutes = Convert.ToInt32(((double)timespenttick / (double)ticksperminute));
-        int timeleftminutes = Convert.ToInt32(((double)timelefttick / (double)ticksperminute));
-        int missiontimeleftminutes = Convert.ToInt32((double)(END_MISSION_TICK - tickSinceStarted) / (double)ticksperminute);
+        int missiontimeleftminutes = calcTimeLeft();
         string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleftminutes.ToString() + " min.";
         if (!MISSION_STARTED) msg = "Mission " + MISSION_ID + " not yet started - waiting for first player to enter.";
         else if (COOP_START_MODE) msg = "Mission " + MISSION_ID + " not yet started - waiting for Co-op Start.";
@@ -3766,6 +4290,33 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             });
 
         }
+        else if (msg.StartsWith("<camlong")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far, longer & more detailed analysis
+        {
+            Tuple<double, string> res = CalcMapMove("", false, true, player);
+            //string outputmsg = res.Item2;
+            //string msg = "";
+
+            double newMapState = CampaignMapState + res.Item1;
+
+            summarizeCurrentMapstate(newMapState, true, player);
+
+        }
+        else if (msg.StartsWith("<cam")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far
+        {
+
+
+            Tuple<double, string> res = CalcMapMove("", false, false, player);
+            double score = res.Item1 * 100;
+            string mes = "Campaign score for this mission so far: ";
+            if (score > 0) mes += "Red +" + score.ToString("n0");
+            else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
+            else mes += "A tie!";
+            GamePlay.gpLogServer(new Player[] { player }, mes, null);
+
+            double newMapState = CampaignMapState + res.Item1;
+            summarizeCurrentMapstate(newMapState, true, player);
+
+        }
         else if (msg.StartsWith("<stat"))
         {
 
@@ -3812,8 +4363,9 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 
                 GamePlay.gpLogServer(new Player[] { player }, "CO-OP MODE start time added " + ((double)time_sec / 60).ToString("n1") + " minutes; ", null);
                 GamePlay.gpLogServer(new Player[] { player }, (COOP_MODE_TIME_SEC / 60).ToString("n1") + " min. total Co-Op start period; " + (time_left_sec / 60).ToString("n1") + " min. remaining", null);
-                Stb_Chat ( "CO-OP START MODE EXTENDED: " + (time_left_sec / 60).ToString("n1") + " min. until co-op start", null);
-            } else
+                Stb_Chat("CO-OP START MODE EXTENDED: " + (time_left_sec / 60).ToString("n1") + " min. until co-op start", null);
+            }
+            else
             {
                 GamePlay.gpLogServer(new Player[] { player }, "<coop command works only during initial Co-op Start Mode period", null);
             }
@@ -3917,16 +4469,17 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 
 
         }
-        else if ((msg.StartsWith("<help") || msg.StartsWith("<")) && 
+        else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
             //Don't give our help when any of these typical -stats.cs chat commands are entered
-            ! (msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr") 
-            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac") )
+            !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
+            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac"))
 
             )
         {
             Timeout(0.1, () =>
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <stat Some helpful stats", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <cam, <camlong Campaign status (short/long)", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
                 //GamePlay.gp(, from);
             });
         }

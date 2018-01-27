@@ -32,8 +32,6 @@
   Static101 Stationary.Environment.JerryCan_GER1_1 nn 62888.50 202151.48 65.00 /hstart -2
   Static95 Stationary.Environment.JerryCan_GER1_1 nn 62892.63 202150.14 65.00 /hstart -2
   Static91 Stationary.Environment.JerryCan_GER1_1 nn 62896.66 202147.98 65.00 /hstart -2
-  Static87 Stationary.Environment.JerryCan_GER1_1 nn 62901.95 202145.52 65.00 /hstart -2
-  Static83 Stationary.Environment.JerryCan_GER1_1 nn 62906.65 202144.16 65.00 /hstart -2
   Static136 Stationary.Environment.JerryCan_GER1_1 nn 62887.25 202163.84 65.00 /hstart -2
   Static112 Stationary.Environment.JerryCan_GER1_1 nn 62891.50 202161.56 65.00 /hstart -2
   Static108 Stationary.Environment.JerryCan_GER1_1 nn 62896.79 202159.67 65.00 /hstart -2
@@ -48,9 +46,7 @@
   Static76 Stationary.Environment.JerryCan_GER1_1 nn 62919.90 202137.16 65.00 /hstart -2
   Static71 Stationary.Environment.JerryCan_GER1_1 nn 62932.39 202132.70 65.00 /hstart -2
   Static70 Stationary.Environment.JerryCan_GER1_1 nn 62936.99 202130.56 65.00 /hstart -2
-  Static84 Stationary.Environment.JerryCan_GER1_1 nn 62918.05 202149.77 65.00 /hstart -2
-  Static69 Stationary.Environment.JerryCan_GER1_1 nn 62942.48 202129.13 65.00 /hstart -2
-  Static80 Stationary.Environment.JerryCan_GER1_1 nn 62926.13 202146.38 65.00 /hstart -2
+   Static80 Stationary.Environment.JerryCan_GER1_1 nn 62926.13 202146.38 65.00 /hstart -2
   Static50 Stationary.Environment.JerryCan_GER1_1 nn 62948.25 202126.44 65.00 /hstart -2
   Static75 Stationary.Environment.JerryCan_GER1_1 nn 62935.52 202141.42 65.00 /hstart -2
   Static48 Stationary.Environment.JerryCan_GER1_1 nn 62953.54 202123.98 65.00 /hstart -2
@@ -89,9 +85,7 @@
   Static49 Stationary.Environment.TelegaBallon_UK1 gb 62976.06 202134.06 65.00 /hstart -2
   Static45 Stationary.Environment.TelegaBallon_UK1 gb 62983.08 202131.44 65.00 /hstart -2
   Static27 Stationary.Environment.TelegaBallon_UK1 gb 62995.98 202124.22 65.00 /hstart -2
-  Static26 Stationary.Environment.TelegaBallon_UK1 gb 63009.88 202116.53 65.00 /hstart -2
-  Static59 Stationary.Environment.TelegaBallon_UK1 gb 62982.58 202163.47 65.00 /hstart -2
-  Static58 Stationary.Environment.TelegaBallon_UK1 gb 62987.90 202160.86 65.00 /hstart -2
+   Static58 Stationary.Environment.TelegaBallon_UK1 gb 62987.90 202160.86 65.00 /hstart -2
   Static57 Stationary.Environment.TelegaBallon_UK1 gb 62994.01 202158.28 65.00 /hstart -2
   Static55 Stationary.Environment.TelegaBallon_UK1 gb 62999.28 202155.55 65.00 /hstart -2
   Static53 Stationary.Environment.TelegaBallon_UK1 gb 63006.16 202153.23 65.00 /hstart -2
@@ -125,8 +119,6 @@
   Static132 Stationary.Environment.JerryCan_GER1_1 nn 62907.32 202197.39 65.00 /hstart -2
   Static127 Stationary.Environment.JerryCan_GER1_1 nn 62913.63 202187.95 65.00 /hstart -2
   Static125 Stationary.Environment.JerryCan_GER1_1 nn 62918.98 202186.84 65.00 /hstart -2
-  Static123 Stationary.Environment.JerryCan_GER1_1 nn 62922.46 202184.67 65.00 /hstart -2
-  Static131 Stationary.Environment.JerryCan_GER1_1 nn 62912.11 202195.47 65.00 /hstart -2
   Static120 Stationary.Environment.JerryCan_GER1_1 nn 62925.84 202182.55 65.00 /hstart -2
   Static129 Stationary.Environment.JerryCan_GER1_1 nn 62917.70 202192.95 65.00 /hstart -2
   Static119 Stationary.Environment.JerryCan_GER1_1 nn 62929.59 202181.34 65.00 /hstart -2
@@ -135,7 +127,6 @@
   Static126 Stationary.Environment.JerryCan_GER1_1 nn 62925.27 202189.67 65.00 /hstart -2
   Static113 Stationary.Environment.JerryCan_GER1_1 nn 62937.86 202178.64 65.00 /hstart -2
   Static124 Stationary.Environment.JerryCan_GER1_1 nn 62930.29 202188.89 65.00 /hstart -2
-  Static121 Stationary.Environment.JerryCan_GER1_1 nn 62934.21 202185.95 65.00 /hstart -2
   Static117 Stationary.Environment.JerryCan_GER1_1 nn 62942.41 202184.44 65.00 /hstart -2
   Static110 Stationary.Environment.JerryCan_GER1_1 nn 62947.29 202181.52 65.00 /hstart -2
   Static109 Stationary.Environment.JerryCan_GER1_1 nn 62950.73 202179.77 65.00 /hstart -2

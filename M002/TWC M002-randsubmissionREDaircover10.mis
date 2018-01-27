@@ -3,8 +3,8 @@
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
-  BattleArea 0 0 350000 320000 10000
-  TIME 7
+  BattleArea 150000 100000 100000 150000 1000
+  TIME 12
   WeatherIndex 0
   CloudsHeight 1000
   BreezeActivity 10
@@ -299,6 +299,7 @@
   Skill 1 1 1 1 1 1 1 1
   Skin10 White Spitfire 11a.jpg
   Serial10 death
+  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [BoB_RAF_F_141Sqn_Early.02_Way]
   NORMFLY 106784.09 100861.60 500.00 300.00
   NORMFLY 73727.10 102063.67 500.00 300.00
@@ -320,6 +321,7 @@
   Skill 1 1 1 1 1 1 1 1
   Skin0 layerspiranah.jpg
   Serial0 fish
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [BoB_RAF_F_141Sqn_Early.01_Way]
   ESCORT 107348.86 101216.46 6000.00 300.00 BoB_RAF_F_141Sqn_Early.02 0
   ESCORT 74192.46 102567.28 6000.00 300.00 BoB_RAF_F_141Sqn_Early.02 0
@@ -340,6 +342,7 @@
   Weapons 1
   Skill 1 1 1 1 1 1 1 1
   Serial0 hurst
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [BoB_RAF_F_85Sqn_Early.11_Way]
   AATTACK_FIGHTERS 106122.45 101532.25 6000.00 300.00
   AATTACK_FIGHTERS 73560.83 102551.92 6000.00 300.00

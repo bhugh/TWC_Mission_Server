@@ -1,0 +1,895 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 7
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static165 Stationary.Opel_Blitz_fuel de 191376.92 9598.56 0.00 
+  Static167 Stationary.Opel_Blitz_fuel de 192694.22 10239.99 0.00 
+  Static164 Stationary.Opel_Blitz_fuel de 191045.25 10340.12 0.00 
+  Static166 Stationary.Opel_Blitz_fuel de 192425.13 10821.98 0.00 
+  Static163 Stationary.Opel_Blitz_fuel de 191833.75 11150.52 0.00 
+  Static175 Artillery.Bofors_StandAlone gb 111773.59 28712.64 -430.00 /timeout 0/radius_hide 0
+  Static169 Artillery.Bofors_StandAlone gb 110766.17 31544.81 -430.00 /timeout 0/radius_hide 0
+  Static168 Artillery.Bofors_StandAlone gb 113389.26 32476.20 -430.00 /timeout 0/radius_hide 0
+  Static178 Artillery.Bofors_StandAlone gb 118635.43 33673.70 -430.00 /timeout 0/radius_hide 0
+  Static170 Artillery.Bofors_StandAlone gb 109435.63 34034.84 -430.00 /timeout 0/radius_hide 0
+  Static176 Artillery.Bofors_StandAlone gb 113180.17 34491.04 -430.00 /timeout 0/radius_hide 0
+  Static179 Artillery.Bofors_StandAlone gb 115765.24 34643.10 -430.00 /timeout 0/radius_hide 0
+  Static171 Artillery.Bofors_StandAlone gb 111032.28 35422.42 -430.00 /timeout 0/radius_hide 0
+  Static173 Artillery.Bofors_StandAlone gb 120536.21 35536.47 -430.00 /timeout 0/radius_hide 0
+  Static172 Artillery.Bofors_StandAlone gb 107781.94 36163.73 -430.00 /timeout 0/radius_hide 0
+  Static174 Artillery.Bofors_StandAlone gb 114643.77 36429.84 -430.00 /timeout 0/radius_hide 0
+  Static177 Artillery.Bofors_StandAlone gb 110595.10 36695.95 -430.00 /timeout 0/radius_hide 0
+  Static161 Stationary.Opel_Blitz_fuel de 52813.13 39094.69 0.00 
+  Static162 Stationary.Opel_Blitz_fuel de 52068.13 39394.48 0.00 
+  Static160 Stationary.Opel_Blitz_fuel de 53179.35 40029.98 0.00 
+  Static159 Stationary.Opel_Blitz_fuel de 52509.75 40281.30 0.00 
+  Static157 Stationary.Opel_Blitz_fuel de 236880.80 41122.72 0.00 
+  Static158 Stationary.Opel_Blitz_fuel de 236194.44 41204.29 0.00 
+  Static156 Stationary.Opel_Blitz_fuel de 237159.33 41817.05 0.00 
+  Static155 Stationary.Opel_Blitz_fuel de 236397.36 41956.31 0.00 
+  Static21 Stationary.Opel_Blitz_fuel de 157313.48 57077.60 0.00 
+  Static22 Stationary.Opel_Blitz_fuel de 156366.97 57616.78 0.00 
+  Static20 Stationary.Opel_Blitz_fuel de 158055.67 57650.56 0.00 
+  Static23 Stationary.Opel_Blitz_fuel de 157002.53 58571.10 0.00 
+  Static25 Stationary.Opel_Blitz_fuel de 43633.08 69270.16 0.00 
+  Static26 Stationary.Opel_Blitz_fuel de 44699.14 69411.63 0.00 
+  Static24 Stationary.Opel_Blitz_fuel de 43481.13 71467.55 0.00 
+  Static27 Stationary.Opel_Blitz_fuel de 44446.45 71489.59 0.00 
+  Static28 Stationary.Opel_Blitz_fuel de 27705.80 72294.85 0.00 
+  Static31 Stationary.Opel_Blitz_fuel de 28427.92 72639.71 0.00 
+  Static29 Stationary.Opel_Blitz_fuel de 27406.70 72694.52 0.00 
+  Static30 Stationary.Opel_Blitz_fuel de 28262.29 72983.12 0.00 
+  Static181 Artillery.Bofors_StandAlone gb 231701.72 99572.19 -430.00 /timeout 0/radius_hide 0
+  Static188 Artillery.Bofors_StandAlone gb 235257.44 99757.38 -430.00 /timeout 0/radius_hide 0
+  Static180 Artillery.Bofors_StandAlone gb 226886.67 100424.08 -430.00 /timeout 0/radius_hide 0
+  Static186 Artillery.Bofors_StandAlone gb 240998.45 102276.02 -430.00 /timeout 0/radius_hide 0
+  Static185 Artillery.Bofors_StandAlone gb 232146.19 103276.07 -430.00 /timeout 0/radius_hide 0
+  Static182 Artillery.Bofors_StandAlone gb 242368.89 103609.42 -430.00 /timeout 0/radius_hide 0
+  Static184 Artillery.Bofors_StandAlone gb 236035.27 105202.09 -430.00 /timeout 0/radius_hide 0
+  Static187 Artillery.Bofors_StandAlone gb 244183.80 106498.45 -430.00 /timeout 0/radius_hide 0
+  Static183 Artillery.Bofors_StandAlone gb 241479.97 108646.70 -430.00 /timeout 0/radius_hide 0
+  Static9 Stationary.Bedford_MW_tank gb 76593.53 179362.89 0.00 
+  Static11 Stationary.Bedford_MW_tank gb 75791.20 179435.19 0.00 
+  Static8 Stationary.Bedford_MW_tank gb 76810.31 180251.50 0.00 
+  Static10 Stationary.Bedford_MW_tank gb 76006.93 180441.50 0.00 
+  Static1170 Artillery.20_mm_Flak_38 de 45211.34 183088.67 -155.00 /timeout 0/radius_hide 0
+  Static1176 Artillery.Flak30 de 43622.02 183972.61 -155.00 /timeout 0/radius_hide 0
+  Static151 Stationary.Environment.Polotnische_X_white_1 nn 43805.01 184105.56 -425.00 
+  Static150 Stationary.Environment.Polotnische_X_white_1 nn 43619.03 184173.14 -425.00 
+  Static149 Stationary.Environment.Polotnische_X_white_1 nn 43441.95 184233.30 -425.00 
+  Static148 Stationary.Environment.Polotnische_X_white_1 nn 43269.03 184292.05 -425.00 
+  Static1183 Artillery.Flak30 de 42586.02 184350.28 -155.00 /timeout 0/radius_hide 0
+  Static146 Stationary.Environment.Polotnische_X_white_1 nn 43041.02 184368.20 -425.00 
+  Static147 Stationary.Environment.Polotnische_X_white_1 nn 43140.92 184335.30 -425.00 
+  Static60 Stationary.Airfield.Fuel_Storage de 42535.36 184446.55 -160.00 
+  Static144 Stationary.Environment.Polotnische_X_white_1 nn 42874.58 184431.31 -425.00 
+  Static112 Stationary.Airfield.OuterMarker nn 42960.19 184396.58 -200.00 /radioFreq 380
+  Static145 Stationary.Environment.Polotnische_X_white_1 nn 42960.24 184396.31 -425.00 
+  Static38 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42378.69 184501.69 -290.00 
+  Static114 Stationary.Airfield.AirfieldSign_White_1 nn 42378.52 184501.16 -565.00 /hstart 8
+  Static115 Stationary.Airfield.AirfieldSign_White_1 nn 42380.90 184500.03 -385.00 /hstart 8
+  Static39 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42483.72 184464.75 -290.00 
+  Static77 Stationary.Airfield.AirfieldSign_White_1 nn 42481.76 184467.05 -565.00 /hstart 8
+  Static78 Stationary.Airfield.AirfieldSign_White_1 nn 42484.14 184465.92 -385.00 /hstart 8
+  Static40 Stationary.Environment.Polotnische_X_white_1 nn 42515.33 184450.88 -425.00 
+  Static43 Stationary.Environment.Windsock_Strong nn 42515.44 184450.42 -385.00 
+  Static142 Stationary.Environment.Polotnische_X_white_1 nn 42657.83 184509.47 -425.00 
+  Static143 Stationary.Environment.Polotnische_X_white_1 nn 42763.38 184471.58 -425.00 
+  Static1181 Artillery.Flak30 de 42159.30 184522.48 -155.00 /timeout 0/radius_hide 0
+  Static116 Stationary.Airfield.AirfieldSign_White_1 nn 42259.96 184538.75 -565.00 /hstart 8
+  Static117 Stationary.Airfield.AirfieldSign_White_1 nn 42262.34 184537.63 -385.00 /hstart 8
+  Static37 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42260.36 184539.22 -290.00 
+  Static46 Stationary.Environment.Polotnische_X_white_1 nn 42549.73 184547.56 -425.00 /hstart 8
+  Static70 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42550.43 184547.67 -380.00 
+  Static113 Stationary.Airfield.OuterMarker nn 42673.69 184529.88 -200.00 /radioFreq 380
+  Static118 Stationary.Airfield.AirfieldSign_White_1 nn 42114.92 184582.42 -565.00 /hstart 8
+  Static119 Stationary.Airfield.AirfieldSign_White_1 nn 42117.30 184581.30 -385.00 /hstart 8
+  Static36 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42114.52 184584.09 -290.00 
+  Static138 Stationary.Environment.Windsock_Strong nn 42583.88 184638.80 -385.00 
+  Static123 Stationary.Environment.Polotnische_X_white_1 nn 42583.77 184639.27 -425.00 
+  Static35 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41952.57 184644.69 -290.00 
+  Static121 Stationary.Airfield.AirfieldSign_White_1 nn 41951.04 184646.81 -565.00 /hstart 8
+  Static124 Stationary.Airfield.AirfieldSign_White_1 nn 41953.42 184645.67 -385.00 /hstart 8
+  Static73 Stationary.Airfield.AirfieldSign_White_1 nn 42443.77 184691.27 -565.00 /hstart 8
+  Static67 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42445.32 184691.95 -110.00 
+  Static74 Stationary.Airfield.AirfieldSign_White_1 nn 42446.14 184690.13 -385.00 /hstart 8
+  Static68 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42552.14 184651.70 -110.00 
+  Static75 Stationary.Airfield.AirfieldSign_White_1 nn 42551.79 184652.22 -565.00 /hstart 8
+  Static76 Stationary.Airfield.AirfieldSign_White_1 nn 42554.16 184651.08 -385.00 /hstart 8
+  Static1187 Artillery.Flak30 de 42623.87 184679.67 -155.00 /timeout 0/radius_hide 0
+  Static1182 Artillery.Flak30 de 41483.56 184732.58 -155.00 /timeout 0/radius_hide 0
+  Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
+  Static127 Stationary.Airfield.AirfieldSign_White_1 nn 41654.16 184761.55 -565.00 /hstart 8
+  Static128 Stationary.Airfield.AirfieldSign_White_1 nn 41656.54 184760.42 -385.00 /hstart 8
+  Static125 Stationary.Airfield.AirfieldSign_White_1 nn 41783.37 184707.81 -565.00 /hstart 8
+  Static34 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41783.80 184708.59 -290.00 
+  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
+  Static71 Stationary.Airfield.AirfieldSign_White_1 nn 42331.27 184724.78 -565.00 /hstart 8
+  Static72 Stationary.Airfield.AirfieldSign_White_1 nn 42333.65 184723.64 -385.00 /hstart 8
+  Static66 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42331.15 184726.42 -110.00 
+  Static1110 Artillery.Bofors_StandAlone de 43146.44 184726.45 -155.00 /timeout 0/radius_hide 0
+  Static1184 Artillery.Flak30 de 41210.04 184779.73 -155.00 /timeout 0/radius_hide 0
+  Static129 Stationary.Airfield.AirfieldSign_White_1 nn 41514.66 184811.75 -565.00 /hstart 8
+  Static32 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41513.92 184813.38 -290.00 
+  Static130 Stationary.Airfield.AirfieldSign_White_1 nn 41517.04 184810.61 -385.00 /hstart 8
+  Static57 Stationary.Airfield.AirfieldSign_White_1 nn 42018.90 184831.52 -385.00 /hstart 8
+  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
+  Static69 Stationary.Airfield.AirfieldSign_White_1 nn 42185.86 184771.91 -385.00 /hstart 8
+  Static65 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42185.86 184774.17 -110.00 
+  Static1186 Artillery.Flak30 de 42249.24 184813.52 -155.00 /timeout 0/radius_hide 0
+  Static1174 Artillery.20_mm_Flak_38 de 44750.56 184800.16 -155.00 /timeout 0/radius_hide 0
+  Static63 Stationary.Airfield.Fuel_Storage de 41323.32 184883.83 -200.00 
+  Static131 Stationary.Airfield.AirfieldSign_White_1 nn 41388.30 184863.72 -565.00 /hstart 8
+  Static111 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41387.36 184865.16 -290.00 
+  Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
+  Static54 Stationary.Airfield.AirfieldSign_White_1 nn 41846.10 184893.44 -565.00 /hstart 8
+  Static55 Stationary.Airfield.AirfieldSign_White_1 nn 41849.37 184892.30 -385.00 /hstart 8
+  Static64 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41849.91 184894.59 -110.00 
+  Static56 Stationary.Airfield.AirfieldSign_White_1 nn 42016.52 184832.66 -565.00 /hstart 8
+  Static42 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42018.66 184833.88 -110.00 
+  Static1180 Artillery.Flak30 de 41148.53 184937.55 -155.00 /timeout 0/radius_hide 0
+  Static122 Stationary.Environment.Polotnische_X_white_1 nn 41260.53 184906.92 -430.00 
+  Static139 Stationary.Environment.Windsock_Strong nn 41260.54 184907.13 -385.00 
+  Static52 Stationary.Airfield.AirfieldSign_White_1 nn 41713.61 184943.34 -565.00 /hstart 8
+  Static53 Stationary.Airfield.AirfieldSign_White_1 nn 41715.98 184942.20 -385.00 /hstart 8
+  Static62 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41714.17 184945.52 -110.00 
+  Static47 Stationary.Environment.Polotnische_X_white_1 nn 41297.80 184989.77 -430.00 /hstart 8
+  Static120 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41297.14 184989.27 -205.00 
+  Static50 Stationary.Airfield.AirfieldSign_White_1 nn 41583.87 184987.88 -565.00 /hstart 8
+  Static51 Stationary.Airfield.AirfieldSign_White_1 nn 41586.25 184986.73 -385.00 /hstart 8
+  Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41585.44 184988.47 -110.00 
+  Static1178 Artillery.Bofors_StandAlone de 41984.44 184994.89 -155.00 /timeout 0/radius_hide 0
+  Static134 Stationary.Environment.Polotnische_X_white_1 nn 41126.34 185057.69 -430.00 
+  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
+  Static133 Stationary.Environment.Polotnische_X_white_1 nn 41204.13 185026.73 -430.00 
+  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
+  Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
+  Static48 Stationary.Airfield.AirfieldSign_White_1 nn 41449.32 185035.34 -565.00 /hstart 8
+  Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
+  Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
+  Static136 Stationary.Environment.Polotnische_X_white_1 nn 40966.41 185128.88 -430.00 
+  Static135 Stationary.Environment.Polotnische_X_white_1 nn 41038.41 185096.53 -430.00 
+  Static1179 Artillery.Flak30 de 41587.88 185104.78 -155.00 /timeout 0/radius_hide 0
+  Static140 Stationary.Environment.Polotnische_X_white_1 nn 40803.72 185196.03 -430.00 
+  Static137 Stationary.Environment.Polotnische_X_white_1 nn 40893.55 185160.94 -430.00 
+  Static1185 Artillery.Flak30 de 41333.31 185167.95 -155.00 /timeout 0/radius_hide 0
+  Static152 Stationary.Environment.Polotnische_X_white_1 nn 40484.39 185343.00 -430.00 
+  Static1175 Artillery.Flak30 de 39766.04 185451.80 -155.00 /timeout 0/radius_hide 0
+  Static1173 Artillery.20_mm_Flak_38 de 43369.08 185419.88 -155.00 /timeout 0/radius_hide 0
+  Static153 Stationary.Environment.Polotnische_X_white_1 nn 40086.35 185493.80 -430.00 
+  Static1177 Artillery.Flak30 de 41726.43 185531.77 -155.00 /timeout 0/radius_hide 0
+  Static154 Stationary.Environment.Polotnische_X_white_1 nn 39619.26 185690.30 -430.00 
+  Static1172 Artillery.20_mm_Flak_38 de 40935.67 185675.19 -155.00 /timeout 0/radius_hide 0
+  Static79 Stationary.Airfield.OuterMarker nn 39090.63 185908.94 -200.00 /radioFreq 380
+  Static141 Stationary.Environment.Polotnische_X_white_1 nn 39090.12 185909.14 -430.00 
+  Static1171 Artillery.20_mm_Flak_38 de 38101.62 186158.00 -155.00 /timeout 0/radius_hide 0
+  Static1168 Artillery.Bofors_StandAlone de 39515.30 186176.97 -155.00 /timeout 0/radius_hide 0
+  Static1169 Artillery.Bofors_StandAlone de 42281.41 186282.19 -155.00 /timeout 0/radius_hide 0
+  Static18 Stationary.Bedford_MW_tank gb 72943.91 193489.77 0.00 
+  Static17 Stationary.Bedford_MW_tank gb 71851.80 193675.38 0.00 
+  Static19 Stationary.Bedford_MW_tank gb 72987.07 194314.23 0.00 
+  Static16 Stationary.Bedford_MW_tank gb 72028.78 194422.16 0.00 
+  Static1104 Artillery.Flak30 de 133747.45 197543.08 -155.00 /timeout 0/radius_hide 0
+  Static1099 Artillery.20_mm_Flak_38 de 133153.55 197619.59 -155.00 /timeout 0/radius_hide 0
+  Static1107 Artillery.Bofors_StandAlone de 134365.81 197723.73 -155.00 /timeout 0/radius_hide 0
+  Static1101 Artillery.Flak30 de 132334.22 197792.08 -155.00 /timeout 0/radius_hide 0
+  Static99 Artillery.Flak30 de 167549.63 197373.77 -155.00 /timeout 0/radius_hide 0
+  Static1105 Artillery.Bofors_StandAlone de 131687.19 197897.59 -155.00 /timeout 0/radius_hide 0
+  Static93 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133803.09 198012.08 -155.00 
+  Static1100 Artillery.20_mm_Flak_38 de 134375.94 197980.84 -155.00 /timeout 0/radius_hide 0
+  Static96 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133140.14 198065.17 -155.00 
+  Static94 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133548.23 198030.28 -155.00 
+  Static107 Artillery.Bofors_StandAlone de 166921.42 197532.67 -155.00 /timeout 0/radius_hide 0
+  Static95 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133401.08 198080.34 -155.00 
+  Static92 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134059.48 198083.38 -155.00 
+  Static91 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134255.19 198238.13 -155.00 
+  Static80 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133089.03 198356.89 -155.00 
+  Static81 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133240.27 198398.92 -155.00 
+  Static90 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134318.89 198385.27 -155.00 
+  Static82 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133366.19 198432.30 -155.00 
+  Static1102 Artillery.Flak30 de 132032.94 198508.58 -155.00 /timeout 0/radius_hide 0
+  Static83 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133501.20 198471.75 -155.00 
+  Static84 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133646.84 198505.13 -155.00 
+  Static1108 Artillery.Bofors_StandAlone de 134442.75 198489.31 -155.00 /timeout 0/radius_hide 0
+  Static101 Stationary.Opel_Blitz_fuel de 167327.73 197996.89 0.00 
+  Static85 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133792.48 198543.05 -155.00 
+  Static86 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 133898.67 198573.39 -155.00 
+  Static87 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134017.00 198618.91 -155.00 
+  Static88 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134132.30 198652.28 -155.00 
+  Static104 Stationary.Opel_Blitz_fuel de 167022.55 198145.22 0.00 
+  Static89 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 134265.80 198702.34 -155.00 
+  Static106 Artillery.Bofors_StandAlone de 168951.13 198166.66 -155.00 /timeout 0/radius_hide 0
+  Static97 Stationary.Opel_Blitz_fuel de 168045.58 198247.95 0.00 
+  Static1109 Artillery.Bofors_StandAlone de 134204.78 198814.69 -155.00 /timeout 0/radius_hide 0
+  Static1097 Artillery.20_mm_Flak_38 de 132819.34 198999.50 -155.00 /timeout 0/radius_hide 0
+  Static105 Stationary.Opel_Blitz_fuel de 168515.94 198470.78 0.00 
+  Static108 Stationary.Opel_Blitz_fuel de 167010.53 198633.53 0.00 
+  Static98 Artillery.Flak30 de 168821.91 198766.41 -155.00 /timeout 0/radius_hide 0
+  Static103 Stationary.Opel_Blitz_fuel de 167154.47 198797.83 0.00 
+  Static1098 Artillery.20_mm_Flak_38 de 133865.06 199419.94 -155.00 /timeout 0/radius_hide 0
+  Static100 Artillery.Flak30 de 166896.28 198903.95 -155.00 /timeout 0/radius_hide 0
+  Static102 Stationary.Opel_Blitz_fuel de 168248.91 198882.70 0.00 
+  Static110 Stationary.Opel_Blitz_fuel de 167451.50 199061.27 0.00 
+  Static1103 Artillery.Flak30 de 133206.86 199647.14 -155.00 /timeout 0/radius_hide 0
+  Static1106 Artillery.Bofors_StandAlone de 133851.67 199731.69 -155.00 /timeout 0/radius_hide 0
+  Static109 Artillery.Bofors_StandAlone de 167091.73 199360.31 -155.00 /timeout 0/radius_hide 0
+  Static5 Stationary.Bedford_MW_tank gb 28490.66 225820.20 0.00 
+  Static6 Stationary.Bedford_MW_tank gb 29228.84 226114.45 0.00 
+  Static4 Stationary.Bedford_MW_tank gb 28312.40 226452.41 0.00 
+  Static7 Stationary.Bedford_MW_tank gb 28986.14 226609.98 0.00 
+  Static3 Stationary.Bedford_MW_tank gb 60253.00 227683.09 0.00 
+  Static0 Stationary.Bedford_MW_tank gb 61042.03 227852.66 0.00 
+  Static2 Stationary.Bedford_MW_tank gb 60093.11 228611.66 0.00 
+  Static1 Stationary.Bedford_MW_tank gb 60910.99 228615.77 0.00 
+  Static13 Stationary.Bedford_MW_tank gb 45693.34 238407.16 0.00 
+  Static14 Stationary.Bedford_MW_tank gb 46751.12 238566.41 0.00 
+  Static12 Stationary.Bedford_MW_tank gb 45637.77 239421.84 0.00 
+  Static15 Stationary.Bedford_MW_tank gb 46507.54 239628.25 0.00 
+  Static189 Artillery.Bofors_StandAlone gb 239608.94 107778.90 -430.00 /timeout 0/radius_hide 0
+  Static190 Artillery.Bofors_StandAlone gb 238396.14 106768.92 -430.00 /timeout 0/radius_hide 0
+  Static191 Artillery.Bofors_StandAlone gb 238506.84 106984.41 -430.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  airdrome0 60665.73 228163.33 1 700 500 1
+  airdrome1 157325.30 57928.40 2 800 700 1
+  airdrome2 28686.58 226282.17 1 550 700 0
+  airdrome4 43816.29 70526.60 2 800 700 1
+  airdrome5 46220.57 238967.40 1 800 700 1
+  airdrome6 72434.42 193916.68 1 500 700 1
+  airdrome3 76327.59 180164.53 1 700 700 0
+  airdrome7 27915.30 72640.52 2 500 700 1
+  airdrome8 41623.71 184848.86 2 500 700 1
+  airdrome9 236614.01 41471.44 2 700 700 1
+  airdrome10 52594.98 39499.27 2 1000 700 1
+  airdrome11 191793.41 10281.19 2 900 700 1
+  airdrome12 238835.22 107354.84 1 500 500 1  
+[airdrome0_Runways]
+  60620.23 228182.03 195.00 1300.00 65.00 0
+  60701.36 228212.03 85.00 1000.00 40.00 0
+[airdrome0_Points]
+  60865.16 228415.99 15 13 11 9 7 5 3 1
+  61007.66 228184.65 2
+  61019.08 228167.97
+  60855.09 228146.39 4
+  60861.16 228118.07
+  61021.99 228195.72 6
+  61038.15 228180.44
+  60958.33 228174.42 8
+  60965.35 228150.37
+  60928.47 228167.40 10
+  60936.19 228141.06
+  60900.08 228160.56 12
+  60907.25 228133.06
+  60872.21 228152.74 14
+  60878.63 228125.11
+  60843.81 228143.99 16
+  60849.38 228112.55
+[airdrome1_Runways]
+  157335.74 57904.63 765.00 1200.00 95.00 0
+[airdrome1_Points]
+  157229.69 58219.23 10 8 6 4 1
+  157382.93 57796.80 2
+  157466.49 57740.53 3
+  157504.01 57725.18
+  157434.09 57839.44 5
+  157517.65 57779.75
+  157466.55 57895.87 7
+  157563.09 57832.19
+  157513.79 57967.77 9
+  157628.28 57908.90
+  28097.91 72768.70 11
+  27907.70 72732.47 12
+  27945.74 72723.41 13
+  27960.24 72743.34 14
+  27949.37 72746.96 15
+  27949.37 72746.96 16
+  27949.37 72746.96 17
+  28106.97 72783.19 18
+  157614.45 58047.88 19
+  157682.24 58008.85
+[airdrome2_Runways]
+  28651.79 226207.10 20.00 1000.00 40.00 0
+[airdrome2_Points]
+  28540.41 226344.62 9 7 5 3 1
+  28465.76 226204.93 2
+  28476.15 226174.72
+  28426.11 226187.94 4
+  28432.72 226160.56
+  28390.23 226177.55 6
+  28401.56 226148.28
+  28354.67 226163.49 8
+  28363.65 226139.62
+  28310.73 226146.01 10
+  28317.86 226125.11
+[airdrome4_Runways]
+  43806.10 70320.59 5.00 1400.00 90.00 0
+[airdrome4_Points]
+  43577.77 70680.67 5 3 1
+  43676.30 70406.20 2
+  43668.00 70472.50
+  43571.34 70417.25 4
+  43571.34 70469.73
+  43482.95 70403.45 6
+  43463.62 70442.11
+[airdrome5_Points]
+  45720.20 238725.31 11 9 7 5 3 1
+  45525.45 239134.47 2
+  45522.61 239065.09
+  45572.17 239131.64 4
+  45570.75 239062.26
+  45768.95 239145.78 6
+  45778.86 239056.59
+  45723.65 239144.37 8
+  45730.73 239053.76
+  45671.27 239140.12 10
+  45674.10 239062.26
+  45614.64 239134.46 12
+  45620.30 239066.50
+[airdrome6_Runways]
+  72419.46 193906.62 80.00 900.00 40.00 0
+[airdrome6_Points]
+  72605.05 193977.54 19 17 15 13 11 9 7 5 3 1
+  72432.12 194264.00 2
+  72406.44 194273.96
+  72200.25 193926.99 4
+  72178.75 193908.80
+  72253.18 194051.05 6
+  72239.12 194059.32
+  72196.95 194012.18 8
+  72178.75 194000.60
+  72419.34 194215.23 10
+  72402.88 194226.38
+  72391.30 194173.45 12
+  72368.97 194189.99
+  72371.45 194124.65 14
+  72350.77 194142.85
+  72272.89 194076.10 16
+  72258.66 194088.23
+  72308.65 194089.02 18
+  72298.67 194102.32
+  72180.40 193965.04 20
+  72164.11 193948.58
+[airdrome3_Runways]
+  76229.71 179877.01 -10.00 1200.00 75.00 0
+[airdrome3_Points]
+  76745.96 180187.15 11 9 7 5 3 1
+  76935.14 179859.27 2
+  76954.72 179928.15
+  76568.01 179921.32 4
+  76573.77 179976.55
+  76860.67 179841.27 6
+  76872.41 179907.38
+  76793.78 179859.52 8
+  76806.49 179922.16
+  76730.07 179876.70 10
+  76744.13 179943.49
+  76650.34 179898.04 12
+  76665.17 179957.12
+[airdrome7_Runways]
+  27909.64 72638.48 20.00 900.00 40.00 0
+[airdrome7_Points]
+  27526.85 72767.35
+[airdrome8_Runways]
+  41660.11 184862.99 -20.00 200.00 20.00 0
+[airdrome8_Points]
+  41629.19 184845.52 13 11 9 7 5 3 1
+  42039.83 184618.66 2
+  42034.83 184607.13
+  41860.08 184683.21 4
+  41855.67 184674.08
+  41711.20 184741.38 6
+  41705.33 184728.71
+  41511.66 185004.28 8
+  41518.04 185021.38
+  41635.94 184961.80 10
+  41644.79 184977.72
+  41433.14 184854.61 12
+  41427.02 184838.33
+  41588.16 184789.30 14
+  41581.55 184776.15
+[airdrome9_Runways]
+  236629.36 41482.76 75.00 1000.00 60.00 0
+[airdrome9_Points]
+  236419.10 41505.64 9 7 5 3 1
+  236247.58 41330.98 2
+  236184.48 41345.54
+  236267.64 41398.70 4
+  236208.36 41415.17
+  236285.78 41456.40 6
+  236218.31 41470.88
+  236314.91 41516.72 8
+  236262.07 41536.53
+  236347.36 41599.36 10
+  236297.20 41618.34
+[airdrome10_Runways]
+  52634.80 39643.59 -115.00 1200.00 60.00 0
+[airdrome10_Points]
+  52643.29 40023.93 11 9 7 5 3 1
+  52528.89 39898.58 2
+  52470.26 39919.89
+  52541.35 39938.96 4
+  52490.27 39960.27
+  52555.49 39976.56 6
+  52504.14 40001.71
+  52570.49 40017.14 8
+  52524.62 40036.49
+  52588.07 40053.80 10
+  52545.65 40074.64
+  52608.90 40098.26 12
+  52568.05 40120.04
+[airdrome11_Runways]
+  191934.20 10251.76 -105.00 1200.00 60.00 0
+  192027.31 10266.46 -145.00 900.00 50.00 0
+  191715.31 10235.43 -250.00 1800.00 70.00 0
+[airdrome11_Points]
+  192053.79 9767.28 11 9 7 5 3 1
+  192070.13 9892.85 2
+  192172.45 9944.01
+  192218.95 9530.09 4
+  192311.97 9569.62
+  192186.40 9609.15 6
+  192291.04 9646.36
+  192163.14 9678.91 8
+  192249.18 9720.77
+  192137.57 9760.30 10
+  192230.58 9799.83
+  192109.66 9825.41 12
+  192198.03 9871.92
+[airdrome12_Runways]
+  238767.68 107466.32 -140.00 1000.00 40.00 0
+[airdrome12_Points]
+  238813.06 107426.38 13 11 9 7 5 3 1
+  239146.93 107608.05 2
+  239208.17 107633.89
+  238782.60 107327.43 4
+  238747.91 107292.43
+  239140.09 107568.19 6
+  239186.51 107586.09
+  238869.67 107381.64 8
+  238912.96 107420.91
+  239062.91 107549.27 10
+  239097.26 107576.74
+  238964.05 107473.54 12
+  239000.26 107503.58
+  238948.74 107557.84 14
+  238979.94 107587.06  
+[FrontMarker]
+  FrontMarker0 349056.00 312576.00 2
+  FrontMarker1 314803.21 277632.00 2
+  FrontMarker2 170005.75 157134.99 2
+  FrontMarker3 129958.85 204534.65 2
+  FrontMarker4 52877.03 119654.37 2
+  FrontMarker5 16012.72 115737.49 2
+  FrontMarker6 337920.00 312000.00 1
+  FrontMarker7 310656.00 280896.00 1
+  FrontMarker8 172351.65 193456.83 1
+  FrontMarker9 128982.32 217722.04 1
+  FrontMarker10 67737.70 122649.62 1
+  FrontMarker11 7180.78 118617.54 1
+  FrontMarker12 258969.01 208510.36 2
+  FrontMarker13 166162.24 196220.30 2
+  FrontMarker14 255052.25 210123.15 1
+  FrontMarker15 167015.48 205872.75 1
+  FrontMarker16 137036.03 204560.50 1
+  FrontMarker17 137500.30 194207.34 2
+  FrontMarker18 71990.33 71270.78 2
+  FrontMarker19 108474.54 31266.78 2
+  FrontMarker20 115804.85 30690.96 2
+  FrontMarker21 129794.16 45547.91 2
+  FrontMarker22 79038.26 75471.75 1
+  FrontMarker23 109895.48 32073.26 1
+  FrontMarker24 114843.84 32413.62 1
+  FrontMarker25 124532.45 46572.78 1
+  FrontMarker26 43251.42 183088.86 2
+  FrontMarker27 47478.61 185684.50 2
+  FrontMarker28 45587.50 190560.60 2
+  FrontMarker29 42157.54 190801.62 2
+  FrontMarker30 37800.57 189095.91 2
+  FrontMarker31 34720.17 177714.89 2
+  FrontMarker32 43325.58 181679.79 1
+  FrontMarker33 33277.06 178003.59 1
+  FrontMarker34 37299.99 189392.56 1
+  FrontMarker35 42064.84 191339.29 1
+  FrontMarker36 45884.14 190783.08 1
+  FrontMarker37 47738.17 185462.01 1
+  FrontMarker38 121233.81 118485.10 1
+  FrontMarker39 129432.16 122053.84 2
+  FrontMarker40 118078.29 192198.65 1
+  FrontMarker41 127119.84 192854.35 2
+  FrontMarker42 142848.33 89164.10 2
+  FrontMarker43 133632.40 88242.51 1
+  FrontMarker44 146755.83 186100.01 2
+  FrontMarker45 140312.15 196412.96 1
+  FrontMarker46 160893.09 194545.33 1
+  FrontMarker47 159014.55 188669.78 2
+  FrontMarker48 95847.10 166090.44 1
+  FrontMarker49 129959.72 158627.18 2
+  FrontMarker50 130911.78 201039.04 2
+  FrontMarker51 136502.68 202440.50 1
+  FrontMarker52 135852.47 198513.98 1
+  FrontMarker53 135877.92 197640.04 2
+  FrontMarker54 133965.45 198958.85 2
+  FrontMarker55 134833.15 199221.80 1
+  FrontMarker56 136787.92 198372.04 1
+  FrontMarker57 117678.39 205705.35 1
+  FrontMarker58 123664.26 205820.47 2
+  FrontMarker59 147916.96 191462.97 1
+  FrontMarker60 231302.61 200275.10 1
+  FrontMarker61 242756.64 179506.05 2
+  FrontMarker62 178781.59 141482.05 2
+  FrontMarker63 200661.30 117604.63 2
+  FrontMarker64 224824.12 99054.44 2
+  FrontMarker65 230436.74 97912.89 2
+  FrontMarker66 236334.75 98008.02 2
+  FrontMarker67 242708.40 100195.99 2
+  FrontMarker68 245276.89 103049.86 2
+  FrontMarker69 247464.86 107806.32 2
+  FrontMarker70 242232.76 111516.36 2
+  FrontMarker71 235098.07 144240.80 2
+  FrontMarker72 239949.66 180389.89 1
+  FrontMarker73 232719.84 143860.28 1
+  FrontMarker74 240330.17 110469.94 1
+  FrontMarker75 244706.11 107045.29 1
+  FrontMarker76 243754.82 104286.54 1
+  FrontMarker77 242137.63 101337.54 1
+  FrontMarker78 237000.65 99910.60 1
+  FrontMarker79 230436.74 99244.70 1
+  FrontMarker80 225870.54 101052.15 1
+  FrontMarker81 201993.11 119412.08 1
+  FrontMarker82 181350.08 142813.86 1
+  FrontMarker83 174310.52 157654.01 1
+  FrontMarker84 245915.98 110176.72 2
+  FrontMarker85 243161.84 109212.77 1
+[BirthPlace]
+  Le_Havre 2 157119 58335 0 1 1 1 de . .
+  Worthydown_NE 1 60865 228433 0 1 1 1 gb . .
+  Gosport 1 72645 194007 0 1 1 1 gb . .
+  Ford 1 113337 196093 0 1 1 1 gb . .
+  Bembridge 1 76573 180385 0 1 1 1 gb . .
+  "Old Sarum" 1 28495 226193 0 1 1 1 gb . .
+  Querqueville 2 27795 72736 0 1 1 1 de . .
+  Theville 2 43711 70785 0 1 1 1 de . .
+  Andover_west 1 45725 238701 0 1 1 1 gb . .
+  "Old Sarum 2" 1 28501 226342 0 1 1 1 gb . .
+  "Advance Bomber 1" 1 118309 99941 500 1 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Advance Bomber 1" 2 126836 153980 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  "Advance Bomber 2" 1 79027 105291 500 1 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Advance Bomber 2" 2 34407 145417 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  "Blue Secret Spy Base" 2 41636 184844 0 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_LG1_II
+  "Rouen Boos" 2 236570 41535 0 1 1 1 de . .
+  Carquebut 2 52588 39779 0 1 1 1 de . .
+  Bernay 2 191773 10348 0 1 1 1 de . .
+  "Blue Wilmington" 2 167682 198392 0 1 1 1 de Luftwaffe_Bomber_1940 .
+  "Red Dieppe Rough Field" 1 238798 107402 0 1 1 1 . . .
+[BirthPlace0]
+  Aircraft.Bf-109E-1
+  Aircraft.G50
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-4
+  Aircraft.BR-20M
+[BirthPlace1]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-4N
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+[BirthPlace2]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+[BirthPlace3]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.G50
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-4N
+[BirthPlace4]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+[BirthPlace5]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.G50
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-4N
+[BirthPlace6]
+  Aircraft.G50
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-4
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.BR-20M
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-109E-4N
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+[BirthPlace7]
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.BR-20M
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-109E-4N
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+[BirthPlace8]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.DH82A
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.G50
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-4N
+[BirthPlace9]
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.DH82A
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.Ju-88A-1
+  Aircraft.BlenheimMkIVF
+  Aircraft.G50
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.Bf-110C-7Late
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.He-111P-2
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.Bf-109E-4N
+[BirthPlace10]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+[BirthPlace11]
+  Aircraft.Bf-110C-4
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace12]
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.He-111P-2
+  Aircraft.BR-20M
+  Aircraft.Ju-88A-1
+  Aircraft.He-111H-2
+[BirthPlace13]
+  Aircraft.Bf-110C-4
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace14]
+  Aircraft.DH82A
+[BirthPlace15]
+  Aircraft.SpitfireMkIIa
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4B
+[BirthPlace16]
+  Aircraft.SpitfireMkIIa
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4B
+[BirthPlace17]
+  Aircraft.SpitfireMkIIa
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-4N-DeRated
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.Bf-110C-4N-DeRated
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-110C-7Late
+  Aircraft.Bf-109E-1
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.Bf-110C-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4B
+[BirthPlace18]
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+[BirthPlace19]
+  Aircraft.DH82A

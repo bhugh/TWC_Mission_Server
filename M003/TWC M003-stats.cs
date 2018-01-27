@@ -13,6 +13,7 @@
 //Everything still works--you just won't see any Console.WriteLine() messages, making you *think* that everything is failing. 
 
 //TODO:
+// - Make HTML save only maybe every 10 or 15 minutes, rather than every 2.  Stats file should still save every 2.
 // - Make self-kill only register if there is actually NO damage to the plane from other aircraft or flak etc
 // - Sometimes deaths reported to not actually result in the death/end of that career.  Specifically, when landing safe in enemy territory & reported "captured" etc.  Specifically also when doing this in a bomber (not sure about fighter)
 // - Death of bomber pilot is sometimes (often!?) attributed to the fighter personality instead.  Specifically when parachuted out of the plane & both personalities were reported as 'captured'
@@ -188,7 +189,7 @@ public class Mission : AMission
     //FUNCTIONALITY RELATED CUSTOMIZATIONS
     public bool stb_ResetPlayerStatsWhenKilled = true;//If TRUE: When a player is killed, all stats reset to 0 (Old stats are still avail under different "dead player" name however). If FALSE: Player stats are compiled continuously regardless of player death.
     public string stb_LogStatsDeadPilotsSuffix = "-dead-pilots"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
-    public string stb_LogStatsTeamSuffix = "-team"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
+    public string stb_LogStatsTeamSuffix = "-team"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the team stats page. Generally, no need to change or customize this.
 
     public bool stb_NoRankMessages = false;//if TRUE: Messages about rank and/or promotions will not be displayed during gameplay.
 
@@ -1278,7 +1279,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
             StbSis_AddToMissionStat(player, 842, (int)(Math.Round(bombsOnTarget_kg)));
-            StbSis_AddToMissionStat(player, 843, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);
+
+            //We do 'writeDiff' for CloD generated stats where we need to occasionally 'write the difference' to figure out what happened in the CloD stats and save the changes for this session.
+            //But for 845 we are generating this stat directly so can just save it directly using StbSis_AddSessStat so we don't need to ALSO do the writeDiff
+            //StbSis_AddToMissionStat(player, 845, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);  //Note that this is the TWC 'corrected' planes written off stat (845) NOT the raw Netstats planes written off (843)
 
             //gkills=Ips.gkills;
             //fgkillIps.fgkills;
@@ -3304,7 +3308,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
             StbSis_AddToMissionStat(player, 842, (int)(Math.Round(bombsOnTarget_kg)));
-            StbSis_AddToMissionStat(player, 843, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);
+            StbSis_AddToMissionStat(player, 845, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);
 
                 */
 
@@ -3323,15 +3327,17 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     sw.WriteLine(BS.getSessStat(798));
                     sw.WriteLine(DateTime.Now.ToUniversalTime().ToString("R"));
 
-                    //Now Air/AA/Naval/Ground points for red, then blue
+                    //Now Air/AA/Naval/Ground points, then planes written off, for red, then blue
                     sw.WriteLine(RS.getSessStat(802));
                     sw.WriteLine(RS.getSessStat(806));
                     sw.WriteLine(RS.getSessStat(810));
                     sw.WriteLine(RS.getSessStat(814));
+                    sw.WriteLine(RS.getSessStat(845));
                     sw.WriteLine(BS.getSessStat(802));
                     sw.WriteLine(BS.getSessStat(806));
                     sw.WriteLine(BS.getSessStat(810));
                     sw.WriteLine(BS.getSessStat(814));
+                    sw.WriteLine(BS.getSessStat(845));
 
                 }
             } catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "stbsr_writeSessStats.txt"); }
@@ -3468,16 +3474,28 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
 
 
-
+        int StbSr_SPSCount = 0;
         public void StbSr_SavePlayerStats(int[] p) //p[0] is the time delay requested, p[1]=1 means this is end-of-session stats requested, so force immediate save
         {
             try
             {
                 //timeouts give a little delay between saves, perhaps saves some server stuttering
                 //StbSr_Calc_All_AceAndRank(); //OK, we calc ace/rank when we read the file in & at significant events like actor killed etc. Prob. no need to calc them again for every player EVERY TIME the files are saved.  They'll be calc-ed anew @ start of every mission if all else fails.
+
+                //Do the FTP situation map thing 2X, separated by 60 seconds, to double the upload speed.  A Kludge; we should have the time between saves separate from the other things & setable via stats.ini
+                StbSr_UploadSituationMapFilesLowFilter();
+                this.mission.Timeout(60, () => {  StbSr_UploadSituationMapFilesLowFilter();  });
+
                 StbSr_SavePlayerStatsStringToFileFull(p);
-                StbSr_SavePlayerStatsStringToFileMedium(p);
-                StbSr_SavePlayerStatsStringToFileLow(p);
+                StbSr_Display_SessionStatsTeam(null); //need to do this every 2 minutes or so or the -MAIN.cs file complains
+
+                //Only save HTML files once every 7X (or if this is the final save of the session), to save a bit on uploading/server capacity.  If stats save time is 2 minutes this gives 14 minute stats updates
+                StbSr_SPSCount++;
+                if (StbSr_SPSCount % 7 == 0 || p[1] == 1)
+                {
+                    StbSr_SavePlayerStatsStringToFileMedium(p);
+                    StbSr_SavePlayerStatsStringToFileLow(p);
+                }
                 StbSr_BackupPlayerStats(p);
 
             }
@@ -4234,58 +4252,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                             sw.WriteLine("</body></html>");
                         }
-                        if (stbSr_LogStatsUploadHtmlLow && listLive) //only do on listLive - otherwise we transfer them via FTP 2X within very short order, wasteful
-                            //TODO: This really needs to be a separate method so that we can have more control over it
-                        {
-                            StbSr_UploadSSL(stbSr_LogStatsUploadAddressLow+fileSuffix+stbSr_LogStatsUploadAddressExtLow, 
-                              stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword, 
-                              stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow);
 
-                            //upload the 'radar' file
-                            //This will transfer any file that fits the mask *radar.txt - a bit of a kludge
-                            //List<string> list = new List<string>();
-                            string[] filenames = Directory.GetFiles(mission.stb_FullPath, "*radar.txt");
-                            string[] filenames2 = Directory.GetFiles(mission.stb_FullPath, "*players.txt");
+                        //now upload the file via FTP
+                        StbSr_UploadSSL(stbSr_LogStatsUploadAddressLow + fileSuffix + stbSr_LogStatsUploadAddressExtLow,
+     stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+     stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow);
 
-                            List<string> list = new List<string>(filenames);
-                            List<string> list2 = new List<string>(filenames2); //combining both lists together
-                            list2 = list2.Concat(list).ToList(); //must add .ToList() bec it concats but returns an ienumerable rather than a list
-
-                            //Console.WriteLine("FTP Radar files . . . ");
-                            foreach (string file in list2)
-                            {
-                                //Console.WriteLine("FTP Radar files: " + file);
-                                string shortname = Path.GetFileName(file);
-                                StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
-                                  stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
-                                  file);
-                            }
-
-                            //upload again in 1 minute, doubling rate of upload of these files
-                            this.mission.Timeout(60, () =>
-                            {
-                                //upload the 'radar' file
-                                //This will transfer any file that fits the mask *radar.txt - a bit of a kludge
-                                //List<string> list = new List<string>();
-                                filenames = Directory.GetFiles(mission.stb_FullPath, "*radar.txt");
-                                filenames2 = Directory.GetFiles(mission.stb_FullPath, "*players.txt");
-
-                                list = new List<string>(filenames);
-                                list2 = new List<string>(filenames2); //combining both lists together
-                                list2 = list2.Concat(list).ToList(); //must add .ToList() bec it concats but returns an ienumerable rather than a list
-
-                                //Console.WriteLine("FTP Radar files (timeout) . . . ");
-                                foreach (string file in list2)
-                                {
-                                    //Console.WriteLine("FTP Radar files (timeout): " + file);
-                                    string shortname = Path.GetFileName(file);
-                                    StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
-                                      stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
-                                      file);
-                                };
-                            });
-                        }
                     }
+
+    
                 }
             }
             catch (Exception ex) { StbSr_PrepareErrorMessage(ex); }
@@ -4360,6 +4335,30 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         bool changed = (ms != StbSr_STSS_old_ms);
                         StbSr_STSS_old_ms = ms;
 
+
+                        //Now append the Campaign Update (created by -main.cs) if it exists, but only on the FINAL team score summary for the mission
+                        if (immediate_save)
+                        {
+                            try
+                            {
+                                string filepath = mission.stb_FullPath + "CampaignSummary.txt";
+                                string campaignSummary = "";
+                                if (File.Exists(filepath))
+                                {
+                                    DateTime timeCreated = File.GetLastWriteTimeUtc(filepath);
+                                    if (timeCreated.AddMinutes(5) > now) //Only add this in if the campaignsummary file was written in the past 5 minutes
+                                    {
+
+                                        campaignSummary = File.ReadAllText(filepath);
+                                        ms += "<br>" +campaignSummary;
+                                    }
+                                    else { Console.WriteLine("CampaignSummary: The file was too old to include."); }
+                                }
+                                else { Console.WriteLine("CampaignSummary: The file did not exist."); }
+                            }
+                            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "Reading team CampaignSummary file"); }
+                        }
+
                         //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
                         if (file_exists && !immediate_save &&  ( lastwrite.AddMinutes(save_min) > now || !changed) ) return;  
 
@@ -4432,6 +4431,42 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
             }
             catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "teamhtm file"); }
+        }
+
+        public void StbSr_UploadSituationMapFilesLowFilter()
+        {
+            try
+            {
+                if (stbSr_LogStats)
+                {
+                    if (stbSr_LogStatsCreateHtmlLow)
+                    {
+                        
+
+                        //upload the 'radar' file
+                        //This will transfer any file that fits the mask *radar.txt - a bit of a kludge
+                        //List<string> list = new List<string>();
+                        string[] filenames = Directory.GetFiles(mission.stb_FullPath, "*radar.txt");
+                        string[] filenames2 = Directory.GetFiles(mission.stb_FullPath, "*players.txt");
+
+                        List<string> list = new List<string>(filenames);
+                        List<string> list2 = new List<string>(filenames2); //combining both lists together
+                        list2 = list2.Concat(list).ToList(); //must add .ToList() bec it concats but returns an ienumerable rather than a list
+
+                        //Console.WriteLine("FTP Radar files . . . ");
+                        foreach (string file in list2)
+                        {
+                            //Console.WriteLine("FTP Radar files: " + file);
+                            string shortname = Path.GetFileName(file);
+                            StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
+                              stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+                              file);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "situation map file"); }
         }
 
         private void StbSr_Upload(string ftpServer, string userName, string password, string filename)
@@ -7301,7 +7336,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         //double scoreBase = 0.06303;
         double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
-        if (blenheim) scoreBase *= 2; //double score for Blenheims since their bomb load is pathetic
+        if (blenheim) scoreBase *= 8; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
         scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
 
 
@@ -7876,7 +7911,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 //double scoreBase = 0.06303;
                 double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-                if (blenheim) scoreBase *= 4; //double score for Blenheims since their bomb load is pathetic                
+                if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic                
 
                 //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
                 //TODO: Could also give more if exactly on the the runway, or near it, or whatever
@@ -8771,9 +8806,10 @@ public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double in
     if (!stb_ACWrittenOffAndTime.TryGetValue(player.Name(), out oldWrittenOffTime)) oldWrittenOffTime = 0;
     if (currTime - oldWrittenOffTime > 30 ) {  //prevents dup write-offs for same plane    
         stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, actor));
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 845, 1);//Also save this for current session stats
 
         string reason = ". Distance to nearest friendly airport: " + distance.ToString("N0") + " meters.";
-        if (injuries >= 0.5) reason = " due to damage. injuries=" + injuries.ToString();
+        if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
         Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });            
     }
 
@@ -9652,7 +9688,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             //initiators.  So we are just fabricating a damage.score of 5 here & the complete 5 points goes to the actor reported in 
             //initiator
         
-        Stb_LogError(msg);
+        //Stb_LogError(msg);
         //if (willReportDead) 
         //Stb_Message(null, msg);
 

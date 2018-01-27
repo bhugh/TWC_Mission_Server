@@ -9,7 +9,6 @@
   CloudsHeight 1000
   BreezeActivity 10
   ThermalActivity 10
-  player BoB_RAF_F_FatCat_Early.300
 [GlobalWind_0]
   Power 3.000 0.000 0.000
   BottomBound 0.00
@@ -27,7 +26,6 @@
   BoB_RAF_F_FatCat_Early.02
   BoB_LW_LG2_I.01
   BoB_RA_43St_99Gruppo_243Sq.01
-  BoB_RAF_F_FatCat_Early.33
 [BoB_RAF_F_FatCat_Early.02]
   Flight1  11
   Class Aircraft.SpitfireMkIa_100oct
@@ -65,28 +63,6 @@
   MarkingsOn0 0
 [BoB_RA_43St_99Gruppo_243Sq.01_Way]
   TAKEOFF 41648.24 184814.41 0 0
-[BoB_RAF_F_FatCat_Early.33]
-  Flight0  1
-  Flight1  11 12 13 14 15
-  Class Aircraft.He-111P-2
-  Formation VIC3
-  CallSign 30
-  Fuel 100
-  Weapons 1 1 1 1 1 2
-  Belt _Gun04 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
-  Belt _Gun05 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
-  Belt _Gun00 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6 Residual 50 ResidueBelt 0
-  Belt _Gun01 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
-  Belt _Gun02 Gun.MG15 MainBelt 0 0 1 2 3 4 5 6
-  Detonator Bomb.SD-250 0 -1 0.08
-  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 11
-  Detonator Bomb.SC-250_Type1_J 2 -1 0.08
-  Detonator Bomb.SC-50_GradeII_J 1 -1 14
-  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 11
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-[BoB_RAF_F_FatCat_Early.33_Way]
-  NORMFLY 174641.58 53250.09 1000.00 300.00
-  GATTACK_TARG 171261.85 53479.06 1000.00 300.00
 [CustomChiefs]
 [Stationary]
   Static10 Stationary.Environment.JerryCan_GER1_1 nn 121783.80 20720.08 65.00 
@@ -1897,6 +1873,62 @@
   1768_bld buildings.House$Oil_Bunker-Big 1 144622.96 198044.36 110.00
   1769_bld buildings.House$Oil_Bunker-Big 1 145218.01 199072.03 110.00
   1770_bld buildings.House$Oil_Bunker-Big 1 145203.50 199117.63 110.00
+  1771_bld buildings.House$Oil_Bunker-Big 1 160714.69 51220.88 65.00
+  1772_bld buildings.House$Oil_Bunker-Big 1 187233.03 37964.89 65.00
+  1773_bld buildings.House$Oil_Bunker-Big 1 187217.86 37935.08 65.00
+  1774_bld buildings.House$Oil_Bunker-Big 1 186955.28 38013.33 65.00
+  1775_bld buildings.House$Oil_Bunker-Big 1 186940.11 37983.52 65.00
+  1776_bld buildings.House$Oil_Bunker-Big 1 234063.33 46743.49 65.00
+  1777_bld buildings.House$Oil_Bunker-Big 1 234048.16 46713.68 65.00
+  1778_bld buildings.House$Oil_Bunker-Big 1 233382.27 50203.51 65.00
+  1779_bld buildings.House$Oil_Bunker-Big 1 233367.10 50173.70 65.00
+  1780_bld buildings.House$Oil_Bunker-Big 1 233379.16 50085.24 65.00
+  1781_bld buildings.House$Oil_Bunker-Big 1 233363.99 50055.43 65.00
+  1782_bld buildings.House$Oil_Bunker-Big 1 230682.47 100121.25 65.00
+  1783_bld buildings.House$Oil_Bunker-Big 1 230295.67 100285.67 65.00
+  1784_bld buildings.House$Oil_Bunker-Big 1 230280.50 100255.86 65.00
+  1785_bld buildings.House$Oil_Bunker-Big 1 229910.34 100155.32 0.00
+  1786_bld buildings.House$Oil_Bunker-Big 1 230064.36 100261.60 65.00
+  1787_bld buildings.House$Oil_Bunker-Big 1 230027.48 100251.24 65.00
+  1788_bld buildings.House$Oil_Bunker-Big 1 230667.30 100091.44 65.00
+  1789_bld buildings.House$Oil_Bunker-Big 1 229884.12 99904.11 65.00
+  1790_bld buildings.House$Oil_Bunker-Big 1 229868.95 99874.30 65.00
+  1791_bld buildings.House$Oil_Bunker-Big 1 229738.71 99653.10 65.00
+  1792_bld buildings.House$Oil_Bunker-Big 1 229723.54 99623.29 65.00
+  1793_bld buildings.House$Oil_Bunker-Big 1 229295.80 101202.81 0.00
+  1794_bld buildings.House$Oil_Bunker-Big 1 229305.15 101242.40 0.00
+  1795_bld buildings.House$Oil_Bunker-Big 1 231773.31 100898.64 65.00
+  1796_bld buildings.House$Oil_Bunker-Big 1 231758.14 100868.83 65.00
+  1797_bld buildings.House$Oil_Bunker-Big 1 229639.76 100956.75 0.00
+  1798_bld buildings.House$Oil_Bunker-Big 1 229672.76 100956.33 0.00
+  1799_bld buildings.House$Oil_Bunker-Big 1 231612.33 100766.38 65.00
+  1800_bld buildings.House$Oil_Bunker-Big 1 231597.16 100736.57 65.00
+  1801_bld buildings.House$Oil_Bunker-Big 1 229275.64 100672.91 -60.00
+  1802_bld buildings.House$Oil_Bunker-Big 1 229274.17 100635.81 -60.00
+  1803_bld buildings.House$Oil_Bunker-Big 1 174656.71 192281.09 65.00
+  1804_bld buildings.House$Oil_Bunker-Big 1 174623.32 192255.69 65.00
+  1805_bld buildings.House$Oil_Bunker-Big 1 174590.54 192235.45 65.00
+  1806_bld buildings.House$Oil_Bunker-Big 1 172549.02 202629.18 65.00
+  1807_bld buildings.House$Oil_Bunker-Big 1 172560.53 202596.96 65.00
+  1808_bld buildings.House$Oil_Bunker-Big 1 172569.74 202565.20 65.00
+  1809_bld buildings.House$Oil_Bunker-Big 1 161724.83 192330.19 65.00
+  1810_bld buildings.House$Oil_Bunker-Big 1 161758.69 192310.91 65.00
+  1811_bld buildings.House$Oil_Bunker-Big 1 161793.96 192290.69 65.00
+  1812_bld buildings.House$Oil_Bunker-Big 1 161882.83 192249.78 65.00
+  1813_bld buildings.House$Oil_Bunker-Big 1 161869.65 192227.28 65.00
+  1814_bld buildings.House$Oil_Bunker-Big 1 161732.82 192241.78 65.00
+  1815_bld buildings.House$Oil_Bunker-Big 1 161701.32 192262.95 65.00
+  1816_bld buildings.House$Oil_Bunker-Big 1 155391.23 202933.42 65.00
+  1817_bld buildings.House$Oil_Bunker-Big 1 155362.03 202918.02 65.00
+  1818_bld buildings.House$Oil_Bunker-Big 1 155354.87 203023.07 65.00
+  1819_bld buildings.House$Oil_Bunker-Big 1 155321.52 203010.86 65.00
+  1820_bld buildings.House$Oil_Bunker-Big 1 174701.28 192326.66 65.00
+  1821_bld buildings.House$Oil_Bunker-Big 1 174727.66 192345.04 65.00
+  1822_bld buildings.House$Oil_Bunker-Big 1 145295.79 211903.20 65.00
+  1823_bld buildings.House$Oil_Bunker-Big 1 145275.31 211865.26 65.00
+  1824_bld buildings.House$Oil_Bunker-Big 1 145260.01 211830.89 65.00
+  1825_bld buildings.House$Oil_Bunker-Big 1 145230.57 211909.70 65.00
+  1826_bld buildings.House$Oil_Bunker-Big 1 145215.27 211876.29 65.00
 [BuildingsLinks]
 [Trigger]
   action TPassThrough 5 2 44698 101920 18550

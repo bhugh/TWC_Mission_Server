@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -27,7 +27,7 @@
   CallSign 33
   Fuel 100
   Weapons 1 1 1 1
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0.053 0 0.11 0.053 0 0.11
 [BoB_LW_KG51_Stab.07_Way]
   NORMFLY 245183.10 171052.66 175.00 320.00
   NORMFLY 134988.69 192734.97 175.00 320.00

@@ -4,7 +4,7 @@
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 0 0 350000 300000 10000
-  TIME 7
+  TIME 7.00000016950071
   WeatherIndex 2
   CloudsHeight 1000
   BreezeActivity 10
@@ -16,6 +16,10 @@
   GustPower 0
   GustAngle 45
 [splines]
+  3257 0_SplineRoad 1/width 40
+[0_SplineRoad]
+  41637.29 184674.03 2.00 null R 41829.13 184607.55 2.00 -40
+  43010.74 184221.34 15.70  L 42042.36 184531.89 12.27 null -40
 [CustomChiefs]
 [Stationary]
   Static165 Stationary.Opel_Blitz_fuel de 191376.92 9598.56 0.00 
@@ -73,100 +77,83 @@
   Static8 Stationary.Bedford_MW_tank gb 76810.31 180251.50 0.00 
   Static10 Stationary.Bedford_MW_tank gb 76006.93 180441.50 0.00 
   Static173 Artillery.20_mm_Flak_38 de 45222.83 183030.06 160.00 /timeout 0/radius_hide 0
-  Static151 Stationary.Environment.Polotnische_X_white_1 nn 43805.01 184105.56 -425.00 
-  Static150 Stationary.Environment.Polotnische_X_white_1 nn 43619.03 184173.14 -425.00 
-  Static149 Stationary.Environment.Polotnische_X_white_1 nn 43441.95 184233.30 -425.00 
-  Static148 Stationary.Environment.Polotnische_X_white_1 nn 43269.03 184292.05 -425.00 
-  Static146 Stationary.Environment.Polotnische_X_white_1 nn 43041.02 184368.20 -425.00 
-  Static147 Stationary.Environment.Polotnische_X_white_1 nn 43140.92 184335.30 -425.00 
+  Static149 Stationary.Environment.Polotnische_X_white_1 nn 45091.33 183478.78 -425.00 
+  Static150 Stationary.Environment.Polotnische_X_white_1 nn 43524.82 184050.06 -425.00 
+  Static146 Stationary.Environment.Polotnische_X_white_1 nn 43577.41 184038.47 -425.00 
+  Static147 Stationary.Environment.Polotnische_X_white_1 nn 43630.20 184019.23 -425.00 
+  Static144 Stationary.Environment.Polotnische_X_white_1 nn 43318.27 184121.33 -425.00 
+  Static148 Stationary.Environment.Polotnische_X_white_1 nn 43398.88 184093.52 -425.00 
+  Static112 Stationary.Airfield.OuterMarker nn 43400.85 184094.20 -200.00 /radioFreq 380
+  Static145 Stationary.Environment.Polotnische_X_white_1 nn 43478.39 184068.09 -425.00 
+  Static45 Stationary.Environment.Polotnische_X_white_1 nn 43073.65 184152.34 -425.00 
+  Static138 Stationary.Environment.Windsock_Strong nn 43075.11 184153.38 -385.00 
+  Static143 Stationary.Environment.Polotnische_X_white_1 nn 43194.92 184163.13 -425.00 
+  Static151 Stationary.Environment.Polotnische_X_white_1 nn 43259.50 184140.50 -425.00 
+  Static142 Stationary.Environment.Polotnische_X_white_1 nn 43086.21 184197.03 -425.00 
+  Static43 Stationary.Environment.Windsock_Strong nn 43099.08 184230.91 -385.00 
+  Static199 Stationary.Environment.Polotnische_X_white_1 nn 43099.77 184231.45 -425.00 
   Static170 Artillery.20_mm_Flak_38 de 43893.85 184359.66 160.00 /timeout 0/radius_hide 0
   Static60 Stationary.Airfield.Fuel_Storage de 42535.36 184446.55 -160.00 
-  Static144 Stationary.Environment.Polotnische_X_white_1 nn 42874.58 184431.31 -425.00 
-  Static145 Stationary.Environment.Polotnische_X_white_1 nn 42960.24 184396.31 -425.00 
-  Static112 Stationary.Airfield.OuterMarker nn 42960.19 184396.58 -200.00 /radioFreq 380
   Static38 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42378.69 184501.69 -290.00 
   Static114 Stationary.Airfield.AirfieldSign_White_1 nn 42378.52 184501.16 -565.00 /hstart 8
   Static115 Stationary.Airfield.AirfieldSign_White_1 nn 42380.90 184500.03 -385.00 /hstart 8
   Static39 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42483.72 184464.75 -290.00 
   Static77 Stationary.Airfield.AirfieldSign_White_1 nn 42481.76 184467.05 -565.00 /hstart 8
   Static78 Stationary.Airfield.AirfieldSign_White_1 nn 42484.14 184465.92 -385.00 /hstart 8
+  Static76 Stationary.SpitfireMkIa_100oct gb 42486.65 184465.47 -385.00 
   Static40 Stationary.Environment.Polotnische_X_white_1 nn 42515.33 184450.88 -425.00 
-  Static43 Stationary.Environment.Windsock_Strong nn 42515.44 184450.42 -385.00 
-  Static142 Stationary.Environment.Polotnische_X_white_1 nn 42657.83 184509.47 -425.00 
-  Static143 Stationary.Environment.Polotnische_X_white_1 nn 42763.38 184471.58 -425.00 
+  Static70 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42637.64 184491.58 -380.00 
   Static116 Stationary.Airfield.AirfieldSign_White_1 nn 42259.96 184538.75 -565.00 /hstart 8
-  Static37 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42260.36 184539.22 -290.00 
   Static117 Stationary.Airfield.AirfieldSign_White_1 nn 42262.34 184537.63 -385.00 /hstart 8
-  Static46 Stationary.Environment.Polotnische_X_white_1 nn 42549.73 184547.56 -425.00 /hstart 8
-  Static70 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42550.43 184547.67 -380.00 
-  Static113 Stationary.Airfield.OuterMarker nn 42673.69 184529.88 -200.00 /radioFreq 380
+  Static37 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42260.36 184539.22 -290.00 
+  Static68 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42542.71 184528.27 -110.00 
   Static118 Stationary.Airfield.AirfieldSign_White_1 nn 42114.92 184582.42 -565.00 /hstart 8
   Static36 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42114.52 184584.09 -290.00 
   Static119 Stationary.Airfield.AirfieldSign_White_1 nn 42117.30 184581.30 -385.00 /hstart 8
-  Static138 Stationary.Environment.Windsock_Strong nn 42583.88 184638.80 -385.00 
-  Static123 Stationary.Environment.Polotnische_X_white_1 nn 42583.77 184639.27 -425.00 
+  Static67 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42398.14 184594.34 -110.00 
   Static35 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41952.57 184644.69 -290.00 
   Static121 Stationary.Airfield.AirfieldSign_White_1 nn 41951.04 184646.81 -565.00 /hstart 8
   Static124 Stationary.Airfield.AirfieldSign_White_1 nn 41953.42 184645.67 -385.00 /hstart 8
-  Static73 Stationary.Airfield.AirfieldSign_White_1 nn 42443.77 184691.27 -565.00 /hstart 8
-  Static74 Stationary.Airfield.AirfieldSign_White_1 nn 42446.14 184690.13 -385.00 /hstart 8
-  Static67 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42445.32 184691.95 -110.00 
-  Static75 Stationary.Airfield.AirfieldSign_White_1 nn 42551.79 184652.22 -565.00 /hstart 8
-  Static68 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42552.14 184651.70 -110.00 
-  Static76 Stationary.Airfield.AirfieldSign_White_1 nn 42554.16 184651.08 -385.00 /hstart 8
-  Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
+  Static46 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42286.01 184640.34 -110.00 /hstart 8
   Static127 Stationary.Airfield.AirfieldSign_White_1 nn 41654.16 184761.55 -565.00 /hstart 8
+  Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
   Static128 Stationary.Airfield.AirfieldSign_White_1 nn 41656.54 184760.42 -385.00 /hstart 8
   Static125 Stationary.Airfield.AirfieldSign_White_1 nn 41783.37 184707.81 -565.00 /hstart 8
   Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static34 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41783.80 184708.59 -290.00 
-  Static71 Stationary.Airfield.AirfieldSign_White_1 nn 42331.27 184724.78 -565.00 /hstart 8
-  Static72 Stationary.Airfield.AirfieldSign_White_1 nn 42333.65 184723.64 -385.00 /hstart 8
-  Static66 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42331.15 184726.42 -110.00 
+  Static42 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41936.27 184738.13 -110.00 
+  Static65 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42097.68 184710.03 -110.00 /hstart 8
+  Static198 Stationary.Environment.Windsock_Strong nn 41231.86 184780.72 -385.00 
+  Static120 Stationary.Environment.Polotnische_X_white_1 nn 41232.00 184781.47 -430.00 /hstart 0.1
   Static129 Stationary.Airfield.AirfieldSign_White_1 nn 41514.66 184811.75 -565.00 /hstart 8
   Static32 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41513.92 184813.38 -290.00 
   Static130 Stationary.Airfield.AirfieldSign_White_1 nn 41517.04 184810.61 -385.00 /hstart 8
-  Static57 Stationary.Airfield.AirfieldSign_White_1 nn 42018.90 184831.52 -385.00 /hstart 8
-  Static69 Stationary.Airfield.AirfieldSign_White_1 nn 42185.86 184771.91 -385.00 /hstart 8
-  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
-  Static65 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42185.86 184774.17 -110.00 
+  Static64 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41835.10 184775.52 -110.00 
+  Static134 Stationary.Environment.Polotnische_X_white_1 nn 41057.64 184880.83 -430.00 
+  Static41 Stationary.Airfield.InnerMarker nn 41118.71 184856.95 -200.00 /radioFreq 380
+  Static133 Stationary.Environment.Polotnische_X_white_1 nn 41174.39 184839.84 -430.00 
+  Static197 Stationary.Environment.Windsock_Strong nn 41267.87 184838.95 -385.00 
+  Static44 Stationary.Environment.Polotnische_X_white_1 nn 41267.94 184839.06 -430.00 
   Static63 Stationary.Airfield.Fuel_Storage de 41323.32 184883.83 -200.00 
   Static131 Stationary.Airfield.AirfieldSign_White_1 nn 41388.30 184863.72 -565.00 /hstart 8
   Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
   Static111 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41387.36 184865.16 -290.00 
-  Static54 Stationary.Airfield.AirfieldSign_White_1 nn 41846.10 184893.44 -565.00 /hstart 8
-  Static55 Stationary.Airfield.AirfieldSign_White_1 nn 41849.37 184892.30 -385.00 /hstart 8
-  Static64 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41849.91 184894.59 -110.00 
-  Static56 Stationary.Airfield.AirfieldSign_White_1 nn 42016.52 184832.66 -565.00 /hstart 8
-  Static42 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42018.66 184833.88 -110.00 
+  Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41520.99 184864.94 -110.00 
+  Static62 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41605.88 184836.52 -110.00 
+  Static136 Stationary.Environment.Polotnische_X_white_1 nn 40847.67 184957.44 -430.00 
+  Static135 Stationary.Environment.Polotnische_X_white_1 nn 40952.65 184917.42 -430.00 
   Static122 Stationary.Environment.Polotnische_X_white_1 nn 41260.53 184906.92 -430.00 
   Static139 Stationary.Environment.Windsock_Strong nn 41260.54 184907.13 -385.00 
-  Static52 Stationary.Airfield.AirfieldSign_White_1 nn 41713.61 184943.34 -565.00 /hstart 8
-  Static53 Stationary.Airfield.AirfieldSign_White_1 nn 41715.98 184942.20 -385.00 /hstart 8
-  Static62 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41714.17 184945.52 -110.00 
-  Static47 Stationary.Environment.Polotnische_X_white_1 nn 41297.80 184989.77 -430.00 /hstart 8
-  Static120 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41297.14 184989.27 -205.00 
-  Static50 Stationary.Airfield.AirfieldSign_White_1 nn 41583.87 184987.88 -565.00 /hstart 8
-  Static51 Stationary.Airfield.AirfieldSign_White_1 nn 41586.25 184986.73 -385.00 /hstart 8
-  Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41585.44 184988.47 -110.00 
-  Static134 Stationary.Environment.Polotnische_X_white_1 nn 41126.34 185057.69 -430.00 
-  Static133 Stationary.Environment.Polotnische_X_white_1 nn 41204.13 185026.73 -430.00 
-  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
-  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
-  Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
-  Static48 Stationary.Airfield.AirfieldSign_White_1 nn 41449.32 185035.34 -565.00 /hstart 8
-  Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
-  Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
+  Static47 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 41255.41 184947.55 -205.00 
+  Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41349.80 184940.30 -110.00 
+  Static140 Stationary.Environment.Polotnische_X_white_1 nn 40673.28 185020.27 -430.00 
+  Static137 Stationary.Environment.Polotnische_X_white_1 nn 40758.51 184988.00 -430.00 
+  Static152 Stationary.Environment.Polotnische_X_white_1 nn 40555.64 185067.84 -430.00 
   Static181 Artillery.Flak30 de 44800.64 185080.81 160.00 /timeout 0/radius_hide 0
-  Static136 Stationary.Environment.Polotnische_X_white_1 nn 40966.41 185128.88 -430.00 
-  Static135 Stationary.Environment.Polotnische_X_white_1 nn 41038.41 185096.53 -430.00 
-  Static140 Stationary.Environment.Polotnische_X_white_1 nn 40803.72 185196.03 -430.00 
-  Static137 Stationary.Environment.Polotnische_X_white_1 nn 40893.55 185160.94 -430.00 
-  Static152 Stationary.Environment.Polotnische_X_white_1 nn 40484.39 185343.00 -430.00 
-  Static153 Stationary.Environment.Polotnische_X_white_1 nn 40086.35 185493.80 -430.00 
-  Static154 Stationary.Environment.Polotnische_X_white_1 nn 39619.26 185690.30 -430.00 
-  Static79 Stationary.Airfield.OuterMarker nn 39090.63 185908.94 -200.00 /radioFreq 380
-  Static141 Stationary.Environment.Polotnische_X_white_1 nn 39090.12 185909.14 -430.00 
+  Static153 Stationary.Environment.Polotnische_X_white_1 nn 40077.37 185263.02 -430.00 
+  Static154 Stationary.Environment.Polotnische_X_white_1 nn 39536.83 185505.95 -430.00 
+  Static141 Stationary.Environment.Polotnische_X_white_1 nn 38990.24 185702.67 -430.00 
+  Static79 Stationary.Airfield.OuterMarker nn 38996.59 185706.05 -200.00 /radioFreq 380
   Static185 Artillery.Flak30 de 38263.83 185944.17 160.00 /timeout 0/radius_hide 0
   Static175 Artillery.20_mm_Flak_38 de 43180.14 185896.70 160.00 /timeout 0/radius_hide 0
   Static171 Artillery.20_mm_Flak_38 de 39338.93 186190.80 160.00 /timeout 0/radius_hide 0
@@ -226,7 +213,7 @@
   airdrome6 72434.42 193916.68 1 500 700 1
   airdrome3 76327.59 180164.53 1 700 700 0
   airdrome7 27915.30 72640.52 2 500 700 1
-  airdrome8 41623.71 184848.86 2 500 700 1
+  airdrome8 42236.82 184458.98 2 500 700 1
   airdrome9 236614.01 41471.44 2 700 700 1
   airdrome10 52594.98 39499.27 2 1000 700 1
   airdrome11 191793.41 10281.19 2 900 700 1
@@ -357,23 +344,23 @@
 [airdrome7_Points]
   27526.85 72767.35
 [airdrome8_Runways]
-  41660.11 184862.99 -20.00 200.00 20.00 0
+  42172.08 184499.95 -20.00 2000.00 40.00 0
 [airdrome8_Points]
   41629.19 184845.52 13 11 9 7 5 3 1
-  42039.83 184618.66 2
-  42034.83 184607.13
-  41860.08 184683.21 4
-  41855.67 184674.08
-  41711.20 184741.38 6
-  41705.33 184728.71
-  41511.66 185004.28 8
-  41518.04 185021.38
-  41635.94 184961.80 10
-  41644.79 184977.72
-  41433.14 184854.61 12
-  41427.02 184838.33
-  41588.16 184789.30 14
-  41581.55 184776.15
+  42979.25 184230.23 2
+  43001.03 184224.42
+  42784.09 184323.62 4
+  42797.12 184338.17
+  42827.44 184316.10 6
+  42848.43 184344.02
+  42652.77 184366.98 8
+  42658.91 184382.55
+  42599.17 184384.82 10
+  42606.04 184402.44
+  42408.66 184447.30 12
+  42417.67 184469.24
+  42204.68 184521.60 14
+  42213.49 184546.13
 [airdrome9_Runways]
   236629.36 41482.76 75.00 1000.00 60.00 0
 [airdrome9_Points]
@@ -517,13 +504,10 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
   Aircraft.Bf-109E-1B
   Aircraft.He-111P-2
@@ -535,6 +519,12 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace1]
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIa_100oct
@@ -551,11 +541,19 @@
   Aircraft.BlenheimMkIVNF
   Aircraft.SpitfireMkI_Heartbreaker
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-4N
   Aircraft.BR-20M
   Aircraft.Ju-88A-1
   Aircraft.He-111H-2
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace2]
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIa_100oct
@@ -565,6 +563,15 @@
   Aircraft.BR-20M
   Aircraft.Ju-88A-1
   Aircraft.He-111H-2
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace3]
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIa_100oct
@@ -577,13 +584,20 @@
   Aircraft.HurricaneMkI_dH5-20
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.HurricaneMkI_100oct-NF
-  Aircraft.DH82A
   Aircraft.BlenheimMkIVNF
   Aircraft.SpitfireMkI_Heartbreaker
   Aircraft.G50
   Aircraft.Ju-88A-1
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-4N
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace4]
   Aircraft.BlenheimMkIV
   Aircraft.HurricaneMkI_100oct
@@ -593,6 +607,15 @@
   Aircraft.BR-20M
   Aircraft.Ju-88A-1
   Aircraft.He-111H-2
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace5]
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIa_100oct
@@ -613,12 +636,21 @@
   Aircraft.BR-20M
   Aircraft.Ju-88A-1
   Aircraft.He-111H-2
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-4N
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace6]
   Aircraft.G50
   Aircraft.Bf-109E-3
   Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
   Aircraft.Bf-110C-2
   Aircraft.Bf-109E-4
   Aircraft.He-111P-2
@@ -628,23 +660,26 @@
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-7
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.BR-20M
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-109E-1B
   Aircraft.Bf-109E-4B
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-109E-4N
   Aircraft.BlenheimMkIV
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkIa_100oct
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace7]
   Aircraft.G50
   Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
   Aircraft.Bf-110C-2
   Aircraft.Bf-109E-3
   Aircraft.Bf-109E-4
@@ -655,20 +690,22 @@
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-7
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.BR-20M
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-109E-1B
   Aircraft.Bf-109E-4B
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-109E-4N
   Aircraft.BlenheimMkIV
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkIa_100oct
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace8]
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkIa_100oct
@@ -689,8 +726,16 @@
   Aircraft.BR-20M
   Aircraft.Ju-88A-1
   Aircraft.He-111H-2
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-4N
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace9]
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkI_Heartbreaker
@@ -705,7 +750,6 @@
   Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVNF
   Aircraft.SpitfireMkI_100oct
-  Aircraft.Bf-110C-7Late
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.He-111P-2
   Aircraft.HurricaneMkI_dH5-20_100oct
@@ -713,6 +757,15 @@
   Aircraft.BR-20M
   Aircraft.HurricaneMkI_dH5-20
   Aircraft.Bf-109E-4N
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace10]
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkI
@@ -723,17 +776,23 @@
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace11]
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
   Aircraft.Bf-109E-1B
   Aircraft.He-111P-2
@@ -745,6 +804,9 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
 [BirthPlace12]
   Aircraft.SpitfireMkIIa
   Aircraft.SpitfireMkI
@@ -755,18 +817,24 @@
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace13]
   Aircraft.SpitfireMkIIa
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
   Aircraft.Bf-109E-1B
   Aircraft.He-111P-2
@@ -778,21 +846,26 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace14]
+  Aircraft.DH82A-1
+  Aircraft.DH82A-2
   Aircraft.DH82A
 [BirthPlace15]
   Aircraft.SpitfireMkIIa
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.SpitfireMkIa_100oct
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
   Aircraft.Bf-109E-1B
   Aircraft.He-111P-2
@@ -805,20 +878,24 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace16]
   Aircraft.SpitfireMkIIa
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.SpitfireMkIa_100oct
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.Bf-109E-1B
   Aircraft.He-111P-2
@@ -830,19 +907,22 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
 [BirthPlace17]
   Aircraft.SpitfireMkIIa
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
-  Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.SpitfireMkIa_100oct
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-1
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.Bf-109E-1B
@@ -855,3 +935,9 @@
   Aircraft.Bf-109E-4
   Aircraft.Bf-109E-4N
   Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1

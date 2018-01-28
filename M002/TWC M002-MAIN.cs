@@ -144,9 +144,9 @@ public class Mission : AMission
         //constants = new Constants();
         respawn_on = true;
         MISSION_ID = "M002";
-        SERVER_ID = "Mission Server43"; //Used by General Situation Map app
-        SERVER_ID_SHORT = "Mission43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
-        //SERVER_ID_SHORT = "MissionTEST43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        SERVER_ID = "Mission Server"; //Used by General Situation Map app
+        SERVER_ID_SHORT = "Mission"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        SERVER_ID_SHORT = "MissionTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         CAMPAIGN_ID = "Channel Clash"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = true;
@@ -1171,7 +1171,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                         {
                             arm = GamePlay.gpFrontArmy(APPos.x, APPos.y);  //This can be 1,2, or 0 for neutral territory.  
                         }                   
-                    if (arm == 1) CampaignMapBluePoints += 5; //5 campaign points for knocking out an airfield
+                    if (arm == 1) CampaignMapBluePoints += 5; //5 campaigns points for knocking out an airfield
                     else if (arm == 2) CampaignMapRedPoints += 5;
 
                     Console.WriteLine("Airport destroyed, awarding points to destroying army; airport owned by army: " + arm.ToString());

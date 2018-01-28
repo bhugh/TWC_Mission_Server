@@ -1,0 +1,31 @@
+The basic trick is 1 or 2 aircraft MAX per airgroup.  Then put (say) the 1 aircraft group escorting the other one.  Then you can layer this technique a few layers deep--2 aircraft in the main group, 2 others escorting them, 2 others escorting them, 1 other escorting them, etc.
+
+Also if the aircraft are on just 'normal flight'  (NORMFLY or whatever it is in FMB) they will never be very aggressive.  They need to be on AATTACK_FIGHTERS or HUNTING or AATTACK_BOMBERS.  Those all work slightly differently & better/worse in various situations and I don't really know the details.
+
+I think that ESCORT can work pretty well too, as they get aggressive if the aircraft they are escorting is attacked.
+
+Also, regardless of anything they will only be aggressive for maybe 5 minutes.  Then they are ALL DONE permanently.  We haven't found a way around that.
+
+A few specific tips:
+
+ - ESCORT works.  COVER doesn't seem to do anything.  (COVER might be for ground targets instead of aircraft?)
+
+ - The airplanes must be CLOSE to each other.  Like in the FMB, they are basically right on top of each other and the escorts maybe a couple hundred feet higher at most.
+
+ - You must be sure to SET the target of the ESCORT in FMB.  IE in FMB aircraft selected in object browser, Waypoint tab, Action: Escort and then click SET button.  Your mouse turns into a little green target and then you click on the aircraft group you want those aircraft to escort.  EVERY segment (waypoint) of the fighters must be set to COVER and the target of the COVER set.  The easiest way to do this is: First create all the fighter waypoints, putting them near (on top of) the bomber waypoints.  Then go to the first fighter waypoint & set it up as ESCORT and SET escort to the bombers . Then use the 'forward propogate' button on Action: Escort to propogate this action to all the waypoints.
+ 
+ In the .mis file, the ESCORT with properly SET target of escort looks something like this:
+ 
+     ESCORT 115599.73 192373.87 6500.00 330.00 BoB_RAF_B_107Sqn.13 0
+     
+"BoB_RAF_B_107Sqn.13" tells which aircraft group is the target of the ESCORT     
+
+ - Also the ESCORTS ****MUST**** be set to ACE skill level.  I tried it even with VETERAN and they just wandered off.  I'm not sure which of the various skill elements are responsible for this, or maybe it is a combination of several.  But in practice I just set to ACE and then if I want to make it a little easier on people I might set aerial gunnery level a little bit lower, maybe veteran or average.  Then they still 'cover' but they are not quite as deadly when they attack.
+
+ - A typical setup would be like a group of bombers doing NORM FLY, then 1-2 fighters ESCORTing them, then 1-2 more fighters escorting the first set of fighters. 
+
+ - Various other combinations are possible - one small fighter group covering another covering another, covering another, etc.  The initial group might be set to AATTACK_FIGHTERS or HUNTING or AATTACK_BOMBERS or even NORMFLY but all the others in this group are set to ESCORT this first one. 5 or 6 fighters set up this way is DEADLY if you encounter it, whereas a simple airgroup of 5 or 6 is pretty easy to defeat because they just fly like a swarm.
+
+ - I haven't experimented much with various speeds for the main group vs escorts.  I *think* that if say bombers are set to say 180mph and ESCORT fighters say 260mph or 280mph then the escorts will still stay with the bombers (perhaps weaving around some) but then when it comes time to attack the enemy they may have higher speed & thus be more effective.  They may run out of fuel quicker, as well, which will affect various things. On the other hand, if the ESCORT fighters are set to a slower speed than the bombers they probably won't be able to keep up.  The ESCORT setting does some things automatically but your settings might override other things and make the ESCORT fail.  Just for example if bombers and ESCORTing fighters start out too far apart the fighters may never get close enough to act as ESCORTs even though they are trying to.  You will have to experiment with various nuances like this.
+ 
+  - A good way to test is to run the mission (or sub-mission) at 16X and watch what happens.  You can created a temporary aircraft for yourself to fight the bombers & escort, or just let the bombers & escort fly while watching them via external views.  But watching at 16X speed is helpful.

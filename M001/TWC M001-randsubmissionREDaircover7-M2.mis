@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -188,9 +188,9 @@
   CallSign 36
   Fuel 100
   Weapons 1
-  Person10_0 0 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
-  Person10_1 1 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
-  Person10_2 2 1 1 1 1 1 1 1 1
+  Person10_0 0 0.7 0.7 0.007 0.7 0.7 0.7 0.7 0.7
+  Person10_1 1 0.7 0.7 0.007 0.7 0.7 0.7 0.7 0.7
+  Person10_2 2 1 1 1 0.001 1 1 1 1
 [BoB_RAF_F_FatCat_Early.02_Way]
   AATTACK_FIGHTERS 88305.95 145186.40 1350.00 300.00
   AATTACK_FIGHTERS 110295.22 124507.49 1350.00 300.00

@@ -1,0 +1,156 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  0_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  1_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 1
+  3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
+  2_Chief Ship.Tanker_Medium1 de /sleep 0/skill 3/slowfire 2
+  4_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
+  5_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
+  6_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
+  7_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  8_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  9_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+[0_Chief_Road]
+  107150.25 182937.50 38.40  0 2 5.56
+  103864.35 181980.16 38.40  0 2 2.78
+  102299.02 185201.39 38.40  0 2 2.78
+  99828.11 181928.42 38.40
+[1_Chief_Road]
+  87161.48 165650.78 38.40  0 2 5.56
+  86917.73 164173.58 38.40  0 2 2.78
+  85623.35 164505.11 38.40  0 2 2.78
+  86371.84 166217.52 38.40  0 2 2.78
+  84072.96 167038.53 38.40  0 2 2.78
+  84072.96 168516.38 38.40  0 2 2.78
+  79062.09 169256.80 38.40
+[3_Chief_Road]
+  85969.13 164063.11 38.40  0 2 5.56
+  85108.26 164493.55 38.40  0 2 2.78
+  85936.02 166049.75 38.40  0 2 2.78
+  83734.16 166662.30 38.40  0 2 2.78
+  83535.50 168069.50 38.40  0 2 2.78
+  81399.87 168566.16 38.40  0 2 2.78
+  78568.91 168946.92 38.40  0 2 2.78
+  77857.03 169857.47 38.40
+[2_Chief_Road]
+  64140.98 154140.47 38.40  0 2 2.78
+  61969.54 157648.17 38.40  0 2 2.78
+  57459.63 155643.77 38.40  0 2 2.78
+  57793.70 158650.38 38.40  0 2 2.78
+  53617.85 157815.20 38.40  0 2 2.78
+  53617.85 159652.58 38.40  0 2 2.78
+  54954.12 161155.91 38.40
+[4_Chief_Road]
+  164966.55 111051.93 38.40  0 2 5.56
+  254821.84 130405.38 38.40
+[5_Chief_Road]
+  11444.09 80413.09 38.40  0 2 2.78
+  12903.75 157131.56 38.40
+[6_Chief_Road]
+  11175.08 71415.41 38.40  0 2 5.56
+  14610.38 69677.07 38.40  0 2 2.78
+  15934.84 65952.04 38.40  0 2 2.78
+  15686.50 61730.34 38.40  0 2 2.78
+  13285.93 59329.77 38.40  0 2 2.78
+  12706.48 56349.75 38.40  0 2 2.78
+  15065.66 54156.12 38.40  0 2 2.78
+  16390.12 50803.60 38.40  0 2 2.78
+  17300.68 48403.02 38.40  0 2 2.78
+  16183.17 49934.43 38.40  0 2 2.78
+  15438.17 53452.50 38.40  0 2 2.78
+  13575.65 55728.91 38.40  0 2 2.78
+  12954.82 58501.98 38.40  0 2 2.78
+  14982.89 60861.17 38.40  0 2 2.78
+  16100.39 64420.64 38.40  0 2 2.78
+  15520.95 67980.11 38.40  0 2 2.78
+  12830.65 70794.58 38.40  0 2 2.78
+  9022.84 72905.42 38.40  0 2 2.78
+  8691.73 79113.80 38.40
+[7_Chief_Road]
+  138854.73 164622.97 38.40  0 2 5.56
+  179586.25 171799.69 38.40  0 2 1.00
+  229357.14 203738.69 38.40
+[8_Chief_Road]
+  23271.67 180520.45 38.40  0 2 5.56
+  20967.68 169922.13 38.40  0 2 2.78
+  10830.16 164392.58 38.40  0 2 2.78
+  10830.16 85135.59 38.40
+[9_Chief_Road]
+  196979.78 274088.84 38.40  0 2 5.56
+  184786.03 273084.13 38.40  0 2 2.78
+  182730.91 268722.69 38.40  0 2 2.78
+  178734.83 268083.31 38.40  0 2 2.78
+  176017.48 268357.31 38.40  0 2 2.78
+  174715.91 270343.94 38.40  0 2 2.78
+  173460.00 270138.44 38.40  0 2 2.78
+  172729.28 269133.72 38.40  0 3 2.78
+  169312.00 270304.00 38.40
+  167591.47 271896.72 38.40  0 2 2.78
+  166038.70 271736.88 38.40  0 2 2.78
+  165148.16 272033.72 38.40  0 2 2.78
+  164485.95 273951.84 38.40  0 3 2.78
+  163424.00 274144.00 38.40
+  162088.30 274956.56 38.40  0 2 2.78
+  160581.20 274933.72 38.40  0 3 2.78
+  159904.00 274784.00 38.40
+  158868.59 274477.03 38.40  0 2 2.78
+  157978.05 273335.28 38.40  0 2 2.78
+  157156.00 272810.09 38.40  0 2 2.78
+  154415.83 272787.25 38.40  0 2 2.78
+  152977.23 273769.16 38.40  0 2 2.78
+  152337.86 273609.31 38.40  0 2 2.78
+  152520.55 272307.72 38.40  0 2 2.78
+  152401.11 271597.44 38.40  0 2 2.78
+  151630.19 271343.72 38.40  0 2 2.78
+  150722.66 271792.63 38.40  0 2 2.78
+  150429.89 272807.50 38.40  0 2 2.78
+  150322.56 273773.59 38.40  0 2 2.78
+  149678.50 273998.03 38.40  0 2 2.78
+  149102.75 273597.94 38.40  0 2 2.78
+  148605.06 273246.63 38.40  0 4 2.78
+  147552.00 273440.00 38.40
+  147104.00 273632.00 38.40
+  146780.23 273812.63 38.40  0 2 2.78
+  145423.80 274007.78 38.40  0 2 2.78
+  144389.41 273822.38 38.40  0 2 2.78
+  144135.69 273353.97 38.40  0 2 2.78
+  144038.09 271958.50 38.40
+[Stationary]
+  Static12 ShipUnit.MotorBarge_Large1 de 160421.34 51083.89 -15.00 /sleep 0/skill 2/slowfire 1
+  Static10 ShipUnit.Tanker_Medium1 de 160148.86 51239.05 -15.00 /sleep 0/skill 2/slowfire 1
+  Static11 ShipUnit.MotorBarge_Large1 de 160515.27 51302.68 0.00 /sleep 0/skill 2/slowfire 1
+  Static8 ShipUnit.Tanker_Medium1 de 158804.02 51702.18 -15.00 /sleep 0/skill 2/slowfire 1
+  Static9 ShipUnit.Tanker_Medium1 de 158431.42 51816.93 -20.00 /sleep 0/skill 2/slowfire 1
+  Static13 ShipUnit.MotorBarge_Large1 de 32728.98 70062.84 -50.00 /sleep 0/skill 2/slowfire 1
+  Static14 ShipUnit.Tanker_Medium1 de 32785.94 70160.70 45.00 /sleep 0/skill 2/slowfire 1
+  Static15 ShipUnit.Tanker_Medium1 de 33298.66 70433.16 180.00 /sleep 0/skill 2/slowfire 1
+  Static4 ShipUnit.MotorBarge_Small1 gb 76636.89 194167.58 0.00 /sleep 0/skill 2/slowfire 1
+  Static5 ShipUnit.MotorBarge_Small1 gb 76639.11 194184.59 0.00 /sleep 0/skill 2/slowfire 1
+  Static3 ShipUnit.MotorBarge_Small1 gb 76613.80 194228.80 45.00 /sleep 0/skill 2/slowfire 1
+  Static6 ShipUnit.MotorBarge_Large1 gb 76689.11 194194.83 0.00 /sleep 0/skill 2/slowfire 1
+  Static7 ShipUnit.MotorBarge_Small1 gb 76734.34 194213.95 90.00 /sleep 0/skill 2/slowfire 1
+  Static0 ShipUnit.Tanker_Medium1 gb 76628.29 194553.81 50.00 /sleep 0/skill 2/slowfire 1
+  Static1 ShipUnit.Tanker_Medium1 gb 76725.66 194666.03 50.00 /sleep 0/skill 2/slowfire 1
+  Static2 ShipUnit.Tanker_Medium1 gb 77004.73 194643.00 -15.00 /sleep 0/skill 2/slowfire 1
+[Buildings]
+[BuildingsLinks]
+[StaticCamera]
+  StaticCamera_0 12941 183265 100

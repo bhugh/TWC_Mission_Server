@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -38,7 +38,8 @@
   Fuel 31
   Weapons 1 1 1 1 1 1 4
   Detonator Bomb.SC-50_GradeII_J 1 -1 0
-  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Skill 0.32 0.32 0 0 0 0 0 0
+  Aging 90
 [BoB_LW_KuFlGr_706.07_Way]
   NORMFLY 10972.82 117703.89 2000.00 300.00
   GATTACK_POINT 56694.23 203062.73 2000.00 300.00

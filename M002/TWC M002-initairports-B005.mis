@@ -1,4 +1,4 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -66,8 +66,6 @@
   Static225 Artillery.Bofors_StandAlone gb 233041.44 103648.27 -430.00 /timeout 0/radius_hide 0
   Static224 Artillery.Bofors_StandAlone gb 235434.94 104800.70 -430.00 /timeout 0/radius_hide 0
   Static223 Artillery.Bofors_StandAlone gb 236794.20 105568.98 -430.00 /timeout 0/radius_hide 0
-  Static231 Artillery.Bofors_StandAlone gb 238184.39 106796.99 -430.00 /timeout 0/radius_hide 0
-  Static230 Artillery.Bofors_StandAlone gb 239366.17 107737.42 -430.00 /timeout 0/radius_hide 0
   Static9 Stationary.Bedford_MW_tank gb 76593.53 179362.89 0.00 
   Static11 Stationary.Bedford_MW_tank gb 75791.20 179435.19 0.00 
   Static8 Stationary.Bedford_MW_tank gb 76810.31 180251.50 0.00 
@@ -85,8 +83,8 @@
   Static144 Stationary.Environment.Polotnische_X_white_1 nn 42874.58 184431.31 -425.00 
   Static145 Stationary.Environment.Polotnische_X_white_1 nn 42960.24 184396.31 -425.00 
   Static112 Stationary.Airfield.OuterMarker nn 42960.19 184396.58 -200.00 /radioFreq 380
-  Static38 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42378.69 184501.69 -290.00 
   Static114 Stationary.Airfield.AirfieldSign_White_1 nn 42378.52 184501.16 -565.00 /hstart 8
+  Static38 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42378.69 184501.69 -290.00 
   Static115 Stationary.Airfield.AirfieldSign_White_1 nn 42380.90 184500.03 -385.00 /hstart 8
   Static39 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42483.72 184464.75 -290.00 
   Static77 Stationary.Airfield.AirfieldSign_White_1 nn 42481.76 184467.05 -565.00 /hstart 8
@@ -122,8 +120,8 @@
   Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
   Static128 Stationary.Airfield.AirfieldSign_White_1 nn 41656.54 184760.42 -385.00 /hstart 8
   Static125 Stationary.Airfield.AirfieldSign_White_1 nn 41783.37 184707.81 -565.00 /hstart 8
-  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static34 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41783.80 184708.59 -290.00 
+  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static71 Stationary.Airfield.AirfieldSign_White_1 nn 42331.27 184724.78 -565.00 /hstart 8
   Static72 Stationary.Airfield.AirfieldSign_White_1 nn 42333.65 184723.64 -385.00 /hstart 8
   Static66 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42331.15 184726.42 -110.00 
@@ -160,10 +158,10 @@
   Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41585.44 184988.47 -110.00 
   Static1178 Artillery.Bofors_StandAlone de 41984.44 184994.89 -155.00 /timeout 0/radius_hide 0
   Static134 Stationary.Environment.Polotnische_X_white_1 nn 41126.34 185057.69 -430.00 
-  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
   Static133 Stationary.Environment.Polotnische_X_white_1 nn 41204.13 185026.73 -430.00 
-  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
+  Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
   Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
+  Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
   Static48 Stationary.Airfield.AirfieldSign_White_1 nn 41449.32 185035.34 -565.00 /hstart 8
   Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
   Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
@@ -284,8 +282,8 @@
   Static14 Stationary.Bedford_MW_tank gb 46751.12 238566.41 0.00 
   Static12 Stationary.Bedford_MW_tank gb 45637.77 239421.84 0.00 
   Static15 Stationary.Bedford_MW_tank gb 46507.54 239628.25 0.00 
-  Static232 Artillery.Bofors_StandAlone gb 238420.92 106746.58 -430.00 /timeout 0/radius_hide 0
-  Static233 Artillery.Bofors_StandAlone gb 239307.52 107526.91 -430.00 /timeout 0/radius_hide 0
+  Static230 Artillery.Bofors_StandAlone gb 239300.25 107709.17 -430.00 /timeout 0/radius_hide 0
+  Static231 Artillery.Bofors_StandAlone gb 238162.41 106806.41 -430.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
@@ -301,7 +299,6 @@
   airdrome9 236614.01 41471.44 2 700 700 1
   airdrome10 52594.98 39499.27 2 1000 700 1
   airdrome11 191793.41 10281.19 2 900 700 1
-  airdrome12 238835.22 107354.84 1 500 500 1  
 [airdrome0_Runways]
   60620.23 228182.03 195.00 1300.00 65.00 0
   60701.36 228212.03 85.00 1000.00 40.00 0
@@ -494,24 +491,6 @@
   192230.58 9799.83
   192109.66 9825.41 12
   192198.03 9871.92
-[airdrome12_Runways]
-  238767.68 107466.32 -140.00 1000.00 40.00 0
-[airdrome12_Points]
-  238813.06 107426.38 13 11 9 7 5 3 1
-  239146.93 107608.05 2
-  239208.17 107633.89
-  238782.60 107327.43 4
-  238747.91 107292.43
-  239140.09 107568.19 6
-  239186.51 107586.09
-  238869.67 107381.64 8
-  238912.96 107420.91
-  239062.91 107549.27 10
-  239097.26 107576.74
-  238964.05 107473.54 12
-  239000.26 107503.58
-  238948.74 107557.84 14
-  238979.94 107587.06  
 [FrontMarker]
   FrontMarker0 316800.25 310848.01 2
   FrontMarker1 301171.32 289535.91 2
@@ -636,7 +615,6 @@
   Bernay 2 191773 10348 0 1 1 1 de . .
   "Blue Wilmington" 2 167682 198392 0 1 1 1 de Luftwaffe_Bomber_1940 .
   "Blue Shorehame" 2 133700 198566 0 1 1 1 de Luftwaffe_Bomber_1940 .
-  "Red Dieppe Rough Field" 1 238880 107432 0 1 1 1 . . .
 [BirthPlace0]
   Aircraft.Bf-109E-1
   Aircraft.G50
@@ -965,5 +943,3 @@
   Aircraft.Bf-110C-2
   Aircraft.He-111H-2
   Aircraft.Ju-87B-2
-[BirthPlace20]
-  Aircraft.DH82A

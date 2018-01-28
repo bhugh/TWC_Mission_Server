@@ -4,7 +4,7 @@
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 0 0 350000 300000 10000
-  TIME 12
+  TIME 12.0000002905726
   WeatherIndex 2
   CloudsHeight 1000
   BreezeActivity 10
@@ -20,6 +20,7 @@
   BoB_LW_KG2_I.07
   BoB_LW_KG27_Stab.07
   BoB_LW_KG51_Stab.07
+  BoB_LW_KG3_Stab.05
 [BoB_LW_KG2_I.07]
   Flight0  1 2
   Flight1  11 12 13
@@ -29,7 +30,7 @@
   CallSign 26
   Fuel 56
   Weapons 1 1 1 1 1 1 4
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0 0 0 0 0 0
 [BoB_LW_KG2_I.07_Way]
   NORMFLY 36296.26 156209.98 300.00 300.00
   NORMFLY 42345.60 179249.48 800.00 300.00
@@ -50,7 +51,7 @@
   Belt _Gun00 Gun.MG15 MainBelt 0 0 2 2 5 5
   Belt _Gun01 Gun.MG15 MainBelt 0 0 2 2 5 5
   Belt _Gun02 Gun.MG15 MainBelt 0 0 2 2 5 5
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0.053 0 0.11 0.053 0 0.11
 [BoB_LW_KG27_Stab.07_Way]
   NORMFLY 21381.35 100327.75 700.00 330.00
   NORMFLY 41930.65 179393.36 900.00 330.00
@@ -66,15 +67,11 @@
   CallSign 33
   Fuel 90
   Weapons 1 1 1 5
-  Belt  MainBelt 0 0 2 2 5 5
-  Belt  MainBelt 0 0 2 2 5 5
-  Belt  MainBelt 0 0 2 2 5 5
-  Skill0 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
-  Skill1 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-  Skill2 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-  Skill10 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-  Skill20 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  Skill0 0.7 0.7 0.7 0.5 0.7 0.7 0.7 0.7
+  Skill1 0.3 0.3 0.3 0.1 0.3 0.3 0.3 0.3
+  Skill2 0.3 0.3 0.3 0.2 0.3 0.3 0.3 0.3
+  Skill10 0.3 0.3 0.3 0.1 0.3 0.3 0.3 0.3
+  Skill20 0.3 0.3 0.3 0.1 0.3 0.3 0.3 0.3
 [BoB_LW_KG51_Stab.07_Way]
   NORMFLY 29486.35 130882.32 350.00 400.00
   NORMFLY 41951.22 178448.51 150.00 400.00
@@ -84,6 +81,20 @@
   NORMFLY 84936.91 184985.62 400.00 400.00
   NORMFLY 24003.43 143387.69 400.00 400.00
   LANDING 6454.17 115014.68 300.00 300.00
+[BoB_LW_KG3_Stab.05]
+  Flight0  1
+  Flight2  21 22
+  Class Aircraft.Bf-109E-4
+  Formation VIC3
+  CallSign 7
+  Fuel 100
+  Weapons 1 1
+  Skill 1 1 1 0.74 1 1 1 1
+[BoB_LW_KG3_Stab.05_Way]
+  ESCORT 21391.78 100336.33 950.00 440.00
+  ESCORT 41926.03 179387.16 950.00 440.00
+  ESCORT 74877.72 199270.73 950.00 440.00
+  ESCORT 4968.32 101955.41 950.00 440.00
 [CustomChiefs]
 [Stationary]
 [Buildings]

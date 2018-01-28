@@ -808,18 +808,24 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             stbRaa_AllowedAircraftByRank_Red.Add("BlenheimMkIV", 0);
             stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_100oct", 0);
             stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkI", 1);
-            stbRaa_AllowedAircraftByRank_Red.Add("BR-20M", 2);
-            stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkIa_100oct", 3);
-            stbRaa_AllowedAircraftByRank_Red.Add("BlenheimMkIVF", 5);
-            stbRaa_AllowedAircraftByRank_Red.Add("Ju-88A-1", 6);
-            stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkI_100oct", 7);
-            stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_dH5-20", 9);
-            stbRaa_AllowedAircraftByRank_Red.Add("He-111H-2", 10);
+            stbRaa_AllowedAircraftByRank_Red.Add("BeaufighterMkIF", 0);            
+            stbRaa_AllowedAircraftByRank_Red.Add("He-111P-2", 2);
+            stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_FB", 0);
+            stbRaa_AllowedAircraftByRank_Red.Add("BlenheimMkIVF", 0);
+            stbRaa_AllowedAircraftByRank_Red.Add("BR-20M", 6);
+            stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkIa_100oct", 7);
+            stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkI_100oct", 9);
+            stbRaa_AllowedAircraftByRank_Red.Add("Ju-88A-1", 10);
             stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkIIa", 11);
-            stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_dH5-20_100oct", 13);
+            stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_dH5-20", 12);
+            stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_dH5-20_100oct", 13);            
+            stbRaa_AllowedAircraftByRank_Red.Add("He-111H-2", 14);        
             stbRaa_AllowedAircraftByRank_Red.Add("HurricaneMkI_100oct-NF", 15);
+            stbRaa_AllowedAircraftByRank_Red.Add("Aircraft.BlenheimMkIVF_Late", 16);
             stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkIa", 17);
-            stbRaa_AllowedAircraftByRank_Red.Add("DH82A", 19);
+            stbRaa_AllowedAircraftByRank_Red.Add("DH82A", 0);
+            stbRaa_AllowedAircraftByRank_Red.Add("DH82A-1", 1);
+            stbRaa_AllowedAircraftByRank_Red.Add("DH82A-2", 2);
             stbRaa_AllowedAircraftByRank_Red.Add("BlenheimMkIVNF", 20);
             stbRaa_AllowedAircraftByRank_Red.Add("SpitfireMkI_Heartbreaker", 21);
             stbRaa_AllowedAircraftByRank_Red.Add("G50", 22);
@@ -831,6 +837,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             stbRaa_AllowedAircraftByRank_Blue = new Dictionary<string, int>(); //string is a/c name & int is rank #. That a/c is allowed at or above that particular rank level            
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-1", 0);
             stbRaa_AllowedAircraftByRank_Blue.Add("He-111P-2", 0);
+            stbRaa_AllowedAircraftByRank_Blue.Add("DH82A", 0);
+            stbRaa_AllowedAircraftByRank_Blue.Add("DH82A-1", 1);
+            stbRaa_AllowedAircraftByRank_Blue.Add("DH82A-2", 2);
             stbRaa_AllowedAircraftByRank_Blue.Add("G50", 1);
             stbRaa_AllowedAircraftByRank_Blue.Add("Ju-88A-1", 2);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-2", 3);
@@ -840,7 +849,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4", 7);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4", 8);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4N-DeRated", 9);
-            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-1B", 10);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-1B", 0); //E-1 isn't spawning in (?!) in TF 4.5 so we're putting this @ level 0 as a replacement.
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4N", 11);
             stbRaa_AllowedAircraftByRank_Blue.Add("BR-20M", 12);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-3B", 13);
@@ -848,19 +857,27 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-7", 15);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-7Late", 16);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4-NJG", 17);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4_Late", 18);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4N", 19);
-            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4B", 21); //BlenheimMkIV
-            stbRaa_AllowedAircraftByRank_Blue.Add("BlenheimMkIV", 22);            
-            stbRaa_AllowedAircraftByRank_Blue.Add("HurricaneMkI_100oct",23);
-            stbRaa_AllowedAircraftByRank_Blue.Add("SpitfireMkIIa",24);
-            stbRaa_AllowedAircraftByRank_Blue.Add("SpitfireMkIa_100oct",25);            
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4B_Late", 20);            
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4B", 21); //BlenheimMkIV        
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4N_Late", 22);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Aircraft.Bf-110C-4Late", 23);        
+            stbRaa_AllowedAircraftByRank_Blue.Add("BlenheimMkIV", 24);            
+            stbRaa_AllowedAircraftByRank_Blue.Add("HurricaneMkI_100oct",25);
+            stbRaa_AllowedAircraftByRank_Blue.Add("SpitfireMkIIa",26);
+            stbRaa_AllowedAircraftByRank_Blue.Add("SpitfireMkIa_100oct",27);            
         }
         private void StbRaa_init_AllowedAircraftByAce_Red()
         {
             stbRaa_AllowedAircraftByAce_Red = new Dictionary<string, int>(); //string is a/c name & int is # of kills required to unlock it. That a/c is allowed at or above that particular # of kills.   
 
             stbRaa_AllowedAircraftByAce_Red.Add("SpitfireMkIa_100oct", 5);
-            stbRaa_AllowedAircraftByAce_Red.Add("He-111P-2", 5);
+            stbRaa_AllowedAircraftByAce_Red.Add("BlenheimMkIV_Late", 5);
+            stbRaa_AllowedAircraftByAce_Red.Add("BeaufighterMkINF", 10);            
+            stbRaa_AllowedAircraftByAce_Red.Add("BlenheimMkIVNF_Late", 15);
+            
+            
 
         }
         private void StbRaa_init_AllowedAircraftByAce_Blue()
@@ -869,6 +886,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-3", 5);
             stbRaa_AllowedAircraftByAce_Blue.Add("BR-20M", 5);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Aircraft.Bf-109E-4_Late", 10);    
+            stbRaa_AllowedAircraftByAce_Blue.Add("Aircraft.Bf-110C-4Late", 15);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Aircraft.Bf-109E-4N_Late", 20);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Ju-87B-2", 10);            
 
         }
 

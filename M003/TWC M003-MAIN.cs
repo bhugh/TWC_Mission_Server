@@ -1,4 +1,4 @@
-//$reference parts/core/CLOD_Extensions.dll
+﻿//$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -144,9 +144,9 @@ public class Mission : AMission
         //constants = new Constants();
         respawn_on = true;
         MISSION_ID = "M003";
-        SERVER_ID = "Mission Server43";
-        SERVER_ID_SHORT = "Mission43";
-        //SERVER_ID_SHORT = "MissionTEST43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        SERVER_ID = "Mission Server";
+        SERVER_ID_SHORT = "Mission";
+        SERVER_ID_SHORT = "MissionTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         CAMPAIGN_ID = "Franco Fandango"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = true;

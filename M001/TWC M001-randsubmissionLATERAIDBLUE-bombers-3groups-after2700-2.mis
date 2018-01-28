@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -36,7 +36,7 @@
   CallSign 26
   Fuel 65
   Weapons 1 1 1 1 2 2 2
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0.053 0 0.11 0.053 0 0.11
 [BoB_LW_KG30_I.07_Way]
   NORMFLY 231113.16 187381.98 2000.00 300.00
   NORMFLY 140710.50 184814.54 2000.00 300.00
@@ -54,7 +54,7 @@
   CallSign 28
   Fuel 100
   Weapons 1
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0 0 0 0 0 0
 [BoB_LW_KG3_Stab.07_Way]
   NORMFLY 207217.20 126698.72 4000.00 300.00
   NORMFLY 51361.94 192903.58 2000.00 300.00
@@ -71,7 +71,7 @@
   CallSign 33
   Fuel 100
   Weapons 1 1 1 1
-  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill 0.32 0.32 0 0 0 0 0 0
 [BoB_LW_KGzbV1_Stab.07_Way]
   NORMFLY 180794.95 221398.17 2500.00 300.00
   NORMFLY 105404.51 223327.29 2500.00 300.00
@@ -88,7 +88,7 @@
   CallSign 8
   Fuel 100
   Weapons 1
-  Skill 1 1 1 1 1 1 1 1
+  Skill 1 1 1 0.8 1 1 1 1
   MarkingsOn0 0
 [BoB_LW_LG2_I.01_Way]
   ESCORT 180135.88 221290.37 2000.00 230.00 BoB_LW_KGzbV1_Stab.07 0

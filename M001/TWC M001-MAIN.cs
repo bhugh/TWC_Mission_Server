@@ -53,7 +53,7 @@ public class Mission : AMission
 {
     Random random, stb_random;
     //Constants constants; 
-
+    public int PERCENT_SUBMISSIONS_TO_LOAD = 60; //percentage of the aircraft sub-missions to load.  50 will load just half of the sub-missions etc.
     public string MISSION_ID;
     public string CAMPAIGN_ID;
     public string SERVER_ID;
@@ -83,8 +83,11 @@ public class Mission : AMission
     public int END_MISSION_TICK;
     public int RADAR_REALISM;
     public bool MISSION_STARTED = false;
+    public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = true;
     public int START_MISSION_TICK = -1;
-    public bool COOP_START_MODE = true;
+    public bool END_MISSION_IF_PLAYERS_INACTIVE = true;
+    public bool COOP_START_MODE_ENABLED = true;
+    public bool COOP_START_MODE = false;
     public double COOP_MODE_TIME_SEC = 45;
     public int START_COOP_TICK = -1;
     public double COOP_TIME_LEFT_MIN = 9999;
@@ -109,6 +112,8 @@ public class Mission : AMission
     int endsessiontick;
     int randHurryStrafeTick1;
     int randHurryStrafeTick2;
+    int randHurryStrafeTick3;
+    int randHurryStrafeTick4;
     int randBlueTick1;
     int randBlueTick2;
     int randBlueTick3;
@@ -144,9 +149,9 @@ public class Mission : AMission
         //constants = new Constants();
         respawn_on = true;
         MISSION_ID = "M001";
-        SERVER_ID = "Mission Server43"; //Used by General Situation Map app
-        SERVER_ID_SHORT = "Mission43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
-        //SERVER_ID_SHORT = "MissionTEST43"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        SERVER_ID = "Mission Server"; //Used by General Situation Map app
+        SERVER_ID_SHORT = "Mission"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        //SERVER_ID_SHORT = "MissionTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         CAMPAIGN_ID = "Channel Clash"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = true;
@@ -159,7 +164,7 @@ public class Mission : AMission
         };
 
         USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
-        CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover - MOD/";  // DO NOT CHANGE
+        CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/";  // DO NOT CHANGE
         FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/";   // mission install directory (CHANGE AS NEEDED)   
         stb_FullPath = CLOD_PATH + FILE_PATH;
         MESSAGE_FILE_NAME = MISSION_ID + @"_message_log.txt";
@@ -168,7 +173,7 @@ public class Mission : AMission
         STATS_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + STATS_FILE_NAME;
         LOG_FILE_NAME = MISSION_ID + @"_log_log.txt";
         LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
-        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover - MOD/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to
+        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to
               
 
 
@@ -202,28 +207,31 @@ public class Mission : AMission
         END_MISSION_TICK = (int)((double)END_SESSION_TICK * NUMBER_OF_SESSIONS_IN_MISSION);
 
         //choose 2 times for hurry strafe mission to spawn, once in 1st half of mission & once in 2nd half        
-        randHurryStrafeTick1 = random.Next((int)0 / 90, (int)(endsessiontick * 45 / 90));  //between minute 0 & 45        
-        randHurryStrafeTick2 = random.Next((int)(endsessiontick * 46 / 90), endsessiontick * 90 / 90);  //between minute 46 & 90
+        randHurryStrafeTick1 = random.Next((int)0 / 90, (int)(endsessiontick * 25 / 90));  //between minute 0 & 45        
+        randHurryStrafeTick2 = random.Next((int)(endsessiontick * 26 / 90), endsessiontick * 50 / 90);  //between minute 46 & 90
+        randHurryStrafeTick3 = random.Next((int)(endsessiontick * 51 / 90), endsessiontick * 65 / 90);  
+        randHurryStrafeTick4 = random.Next((int)(endsessiontick * 66 / 90), endsessiontick * 84 / 90);  
         //Choose 4X for Blue raids to spawn 
-        randBlueTick1 = random.Next((int)(endsessiontick * 5 / 90), (int)(endsessiontick * 18 / 90));  //between minute 5 & 18
+        randBlueTick1 = random.Next((int)(endsessiontick * 0 / 90), (int)(endsessiontick * 18 / 90));  //between minute 5 & 18
         //randBlueTick1 = random.Next((int)(endsessiontick/180),(int)(endsessiontick/178));//FOR TESTING; load a submission about 1 minute after mission start
         randBlueTick2 = random.Next((int)(endsessiontick * 19 / 90), (int)(endsessiontick * 36 / 90));//another between minutes 19 & 36
         randBlueTick3 = random.Next((int)(endsessiontick * 50 / 90), (int)(endsessiontick * 68 / 90)); //another between minutes 50 & 68 
         randBlueTick4 = random.Next((int)(endsessiontick * 70 / 90), (int)(endsessiontick * 77 / 90)); //another between minutes 70 & 77
 
-        randBlueTickInitRaid = random.Next((int)(endsessiontick * 3 / 90), (int)(endsessiontick * 6 / 90)); //spawn a major bomber raid in between minutes 1 & 2 of 90        ;
+        randBlueTickInitRaid = random.Next((int)(endsessiontick * 0 / 90), (int)(endsessiontick * 3 / 90)); //spawn a major bomber raid in between minutes 1 & 2 of 90        ;
         randBlueTickRaid = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 37 / 90)); //spawn a major bomber raid in between minutes 43 & 47 of 90        
         randBlueTickLateRaid = random.Next((int)(endsessiontick * 42 / 90), (int)(endsessiontick * 56 / 90)); //spawn a major bomber raid in between minutes 42 & 56 of 90 (previously 54 & 64 of 90 but we stretched out the start of the missions by about 10 minutes so moved up their spawn in times by the same amount, 11/14/2017)
         randBlueTickFighterRaid1 = random.Next((int)(endsessiontick * 1 / 90), (int)(endsessiontick * 5 / 90)); //spawn a fighter raid in between minutes 1 & 5 of 90
         randBlueTickFighterRaid2 = random.Next((int)(endsessiontick * 28 / 90), (int)(endsessiontick * 32 / 90)); //spawn a fighter raid in between minutes 54 & 64 of 90
         randBlueTickFighterRaid3 = random.Next((int)(endsessiontick * 57 / 90), (int)(endsessiontick * 65 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
                                                                                                                  
-        randRedTickBomberRaid1 = random.Next((int)(endsessiontick * 1 / 90), (int)(endsessiontick * 5 / 90)); //Red bomber raids targeting priority blue objectives
+        randRedTickBomberRaid1 = random.Next((int)(endsessiontick * 1 / 90), (int)(endsessiontick * 3 / 90)); //Red bomber raids targeting priority blue objectives
         randRedTickBomberRaid2 = random.Next((int)(endsessiontick * 20 / 90), (int)(endsessiontick * 32 / 90));
         randRedTickBomberRaid3 = random.Next((int)(endsessiontick * 48 / 90), (int)(endsessiontick * 58 / 90));
 
-
-        randRedTickFighterRaid1 = random.Next((int)(endsessiontick * 2 / 90), (int)(endsessiontick * 6 / 90)); //spawn a fighter raid in between minutes 1 & 5 of 90
+        randRedTickFighterRaid1 = random.Next((int)(endsessiontick * 2 / 90), (int)(endsessiontick * 80 / 90)); //spawn a fighter raid in between minutes 2 & 80 of 90        
+        /*
+        randRedTickFighterRaid1 = random.Next((int)(endsessiontick * 0 / 90), (int)(endsessiontick * 2 / 90)); //spawn a fighter raid in between minutes 1 & 5 of 90
         randRedTickFighterRaid2 = random.Next((int)(endsessiontick * 13 / 90), (int)(endsessiontick * 17 / 90)); //spawn a fighter raid in between minutes 54 & 64 of 90
         randRedTickFighterRaid3 = random.Next((int)(endsessiontick * 23 / 90), (int)(endsessiontick * 28 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
         randRedTickFighterRaid4 = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 37 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
@@ -234,6 +242,7 @@ public class Mission : AMission
         randRedTickFighterRaid9 = random.Next((int)(endsessiontick * 79 / 90), (int)(endsessiontick * 82 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
         randRedTickFighterRaid10 = random.Next((int)(endsessiontick * 33 / 90), (int)(endsessiontick * 85 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
         randRedTickFighterRaid11 = random.Next((int)(endsessiontick * 17 / 90), (int)(endsessiontick * 85 / 90)); //spawn a fighter raid in between minutes 57 & 65 of 90
+        */
 
         stopwatch = Stopwatch.StartNew();
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
@@ -328,6 +337,8 @@ public class Mission : AMission
 
         Timeout(63.25, () => { EndMissionIfPlayersInactive(); });
 
+        if (!END_MISSION_IF_PLAYERS_INACTIVE) return;
+
         //Before the mission official starts, we still update the times as though players were in place - reason is, we could get in some weird situation where the mission
         //was paused because of one of these modes, put we somehow get a sample of the time, then wait 30 minutes, then someone jumps in to play & we restart, 
         //noticing there has a been a 30 minute delay & kill the game.  Which would not be good.  So, this is a bit belt & suspenders--really we dont' even start with this routine
@@ -348,6 +359,8 @@ public class Mission : AMission
             //Console.WriteLine("EMIPI initialized");
             return;
         }
+
+
         if (GamePlay.gpPlayer() != null && GamePlay.gpPlayer().Place() != null)
         {
             LastTimePlayerLoggedIn = DateTime.Now;
@@ -443,6 +456,7 @@ public class Mission : AMission
 
                 int timewaitingminutes = Convert.ToInt32(((double)Time.tickCounter() / (double)ticksperminute));
                 DebugAndLog("Waiting for first player to join; waiting " + timewaitingminutes.ToString() + " minutes");
+                if (timewaitingminutes > 60) EndMission(1); //If we wait too long before starting the mission we get darkness, other problems before it ends.  So just end it after waiting a while.
 
             }
 
@@ -693,15 +707,22 @@ public class Mission : AMission
 
         }
 
-        
+
 
 
         //Load the major RED fighter raids approx every 20 minutes
-        if (currSessTick == randRedTickFighterRaid1 || currSessTick == randRedTickFighterRaid2 || currSessTick == randRedTickFighterRaid3 || currSessTick == randRedTickFighterRaid4 || currSessTick == randRedTickFighterRaid5 || currSessTick == randRedTickFighterRaid6 || currSessTick == randRedTickFighterRaid7 || currSessTick == randRedTickFighterRaid8 || currSessTick == randRedTickFighterRaid9 || currSessTick == randRedTickFighterRaid10 || currSessTick == randRedTickFighterRaid11)
-        {
-            LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionREDaircover"); // load sub-mission            
+        //if (currSessTick == randRedTickFighterRaid1 || currSessTick == randRedTickFighterRaid2 || currSessTick == randRedTickFighterRaid3 || currSessTick == randRedTickFighterRaid4 || currSessTick == randRedTickFighterRaid5 || currSessTick == randRedTickFighterRaid6 || currSessTick == randRedTickFighterRaid7 || currSessTick == randRedTickFighterRaid8 || currSessTick == randRedTickFighterRaid9 || currSessTick == randRedTickFighterRaid10 || currSessTick == randRedTickFighterRaid11)
 
-        }
+        //4.5, Jan 2018: So, we're going to load t his type of mission just ONCE instead of 11X, to save on the # of AI planes in the mission
+        //To make up for it we're going to load the hurri strafe missions 4X instead of 2X.  The remaining 8 mission loads (1/4 of the total) we'll just eliminate to help the mission  run better
+        if (currSessTick == randRedTickFighterRaid1)
+
+            {
+                LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionREDaircover"); // load sub-mission            
+
+            }
+
+        
 
         //Load the major bomber & fighter raids between 2400 & 2500 seconds in
         if (currSessTick == randBlueTickRaid)
@@ -720,7 +741,7 @@ public class Mission : AMission
 
 
         ///load RED randHurryStrafe missions @ random times
-        if (currSessTick == randHurryStrafeTick1 || currSessTick == randHurryStrafeTick2)
+        if (currSessTick == randHurryStrafeTick1 || currSessTick == randHurryStrafeTick2 || currSessTick == randHurryStrafeTick3 || currSessTick == randHurryStrafeTick4)
         //FOR TESTING:
         //if ( currSessTick == 1000 || currSessTick == 3000 )     
         {
@@ -1315,6 +1336,15 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
         //if (DEBUG) 
+
+
+        //random.Next(100) > XX adjust what percentage of AI aicraft sub-missions are actually loaded
+        //random.Next(100) > 85 loads 85% of missions, random.Next(100) > 50 loads 50% of missions, random.Next(100) > 100 loads 100% of missions etc.
+        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD) 
+        {
+            Console.WriteLine("Skipping load of " + fileID + " to reduce submission files loaded.");
+            return ret; 
+        }
         DebugAndLog("Debug: Choosing from " + RandomMissions.Count + " missions to spawn. " + fileID + " " + CLOD_PATH + FILE_PATH);
         if (RandomMissions.Count > 0)
         {
@@ -3376,11 +3406,17 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         //When battle is started we re-start the Mission tick clock - setting it up to start events
         //happening when the first player connects
-        MISSION_STARTED = false;
+
+        MISSION_STARTED = true;
+        if (WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED) MISSION_STARTED = false;
         START_MISSION_TICK = -1;
-        COOP_START_MODE = true;
+
+        COOP_START_MODE = false;
+        if (COOP_START_MODE_ENABLED) COOP_START_MODE = true;
         START_COOP_TICK = -1;
         CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
+
+        //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
         EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
         SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
 
@@ -3444,6 +3480,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
                 DebugAndLog(s + " file loaded");
                 Console.WriteLine(s + " file loaded");
             } else {
+                //if (timespread>2 && random.Next(1) == 1) continue; //TESTING, skip 50% of mission loads just to try it
                 Timeout(wait + random.Next(timespread), () => {
 
                     //string temp = @"missions\AirfieldSpawnTest\Airfields\" + Path.GetFileName(s);
@@ -4305,7 +4342,21 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         AiAction action = GamePlay.gpGetAction(ActorName.Full(missionNumber, shortName));
         if (action != null)
             action.Do();
-            if (DEBUG) GamePlay.gpLogServer(null, "Mission trigger " + shortName + " executing now." , new object[] { });
+        if (DEBUG) GamePlay.gpLogServer(null, "Mission trigger " + shortName + " executing now." , new object[] { });
+        /* 
+         //Sample ontrigger action
+        if ("InterceptR3".Equals(shortName) && active) // TRIGGER NAME HERE is the name of the trigger you created on the triggers tab from the script menu in the full mission builder
+        {
+
+            //Wait 30 minutes to load the mission
+            Timeout(60*30, () => { 
+                GamePlay.gpPostMissionLoad("missions/Multi/Dogfight/The_Battle_of_Britain/Intercept_Missions/InterceptR3.mis"); //If it still doesn't work it might be because the filename is incorrect - we usually specify the entire path just to be on the safe side.  Not sure what it will assume as the 'base' path if only the partial path is specified.
+                sendScreenMessageTo(1, "Scramble! Fighter Scramble Ford. Contact tower for intercept details!", null);
+                // GamePlay.gpLogServer(null, "Fighter Scramble Ford", new object[] { }); //Testmessage to see if your trigger is working
+                GamePlay.gpGetTrigger(shortName).Enable = true;     // Putting this inside the timeout will disable any re-trigger of the action until the 30 minutes has passed, but after that it can be triggered again.
+            });
+        }
+        */
     }
 
     /* EXPERIMENTAL VERSION; THIS ENDED UP IN -STATS.CS INSTEAD

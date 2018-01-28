@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -37,7 +37,8 @@
   CallSign 26
   Fuel 33
   Weapons 1 1 1 1 1 1 4
-  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Skill 0.32 0.32 0 0 0 0 0 0
+  Aging 57
 [BoB_LW_KuFlGr_706.07_Way]
   NORMFLY 14960.28 137217.13 1000.00 300.00
   NORMFLY 76005.14 181241.66 1000.00 300.00

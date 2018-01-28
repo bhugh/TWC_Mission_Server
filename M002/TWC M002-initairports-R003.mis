@@ -114,14 +114,10 @@
   Static11 Stationary.Bedford_MW_tank gb 75791.20 179435.19 0.00 
   Static8 Stationary.Bedford_MW_tank gb 76810.31 180251.50 0.00 
   Static10 Stationary.Bedford_MW_tank gb 76006.93 180441.50 0.00 
-  Static214 Artillery.20_mm_Flak_38 de 45200.69 183100.03 -430.00 /timeout 0/radius_hide 0
-  Static213 Artillery.20_mm_Flak_38 de 45136.01 183197.05 -430.00 /timeout 0/radius_hide 0
-  Static215 Artillery.20_mm_Flak_38 de 43518.93 184005.59 -430.00 /timeout 0/radius_hide 0
   Static151 Stationary.Environment.Polotnische_X_white_1 nn 43805.01 184105.56 -425.00 
   Static150 Stationary.Environment.Polotnische_X_white_1 nn 43619.03 184173.14 -425.00 
   Static149 Stationary.Environment.Polotnische_X_white_1 nn 43441.95 184233.30 -425.00 
   Static148 Stationary.Environment.Polotnische_X_white_1 nn 43269.03 184292.05 -425.00 
-  Static221 Artillery.Flak30 de 42721.17 184339.78 -430.00 /timeout 0/radius_hide 0
   Static146 Stationary.Environment.Polotnische_X_white_1 nn 43041.02 184368.20 -425.00 
   Static147 Stationary.Environment.Polotnische_X_white_1 nn 43140.92 184335.30 -425.00 
   Static60 Stationary.Airfield.Fuel_Storage de 42535.36 184446.55 -160.00 
@@ -134,8 +130,8 @@
   Static39 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42483.72 184464.75 -290.00 
   Static77 Stationary.Airfield.AirfieldSign_White_1 nn 42481.76 184467.05 -565.00 /hstart 8
   Static78 Stationary.Airfield.AirfieldSign_White_1 nn 42484.14 184465.92 -385.00 /hstart 8
-  Static43 Stationary.Environment.Windsock_Strong nn 42515.44 184450.42 -385.00 
   Static40 Stationary.Environment.Polotnische_X_white_1 nn 42515.33 184450.88 -425.00 
+  Static43 Stationary.Environment.Windsock_Strong nn 42515.44 184450.42 -385.00 
   Static142 Stationary.Environment.Polotnische_X_white_1 nn 42657.83 184509.47 -425.00 
   Static143 Stationary.Environment.Polotnische_X_white_1 nn 42763.38 184471.58 -425.00 
   Static116 Stationary.Airfield.AirfieldSign_White_1 nn 42259.96 184538.75 -565.00 /hstart 8
@@ -144,13 +140,11 @@
   Static46 Stationary.Environment.Polotnische_X_white_1 nn 42549.73 184547.56 -425.00 /hstart 8
   Static70 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42550.43 184547.67 -380.00 
   Static113 Stationary.Airfield.OuterMarker nn 42673.69 184529.88 -200.00 /radioFreq 380
-  Static207 Artillery.20_mm_Flak_38 de 43508.15 184533.84 -430.00 /timeout 0/radius_hide 0
   Static118 Stationary.Airfield.AirfieldSign_White_1 nn 42114.92 184582.42 -565.00 /hstart 8
-  Static119 Stationary.Airfield.AirfieldSign_White_1 nn 42117.30 184581.30 -385.00 /hstart 8
   Static36 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42114.52 184584.09 -290.00 
+  Static119 Stationary.Airfield.AirfieldSign_White_1 nn 42117.30 184581.30 -385.00 /hstart 8
   Static138 Stationary.Environment.Windsock_Strong nn 42583.88 184638.80 -385.00 
   Static123 Stationary.Environment.Polotnische_X_white_1 nn 42583.77 184639.27 -425.00 
-  Static206 Artillery.20_mm_Flak_38 de 43389.56 184576.95 -430.00 /timeout 0/radius_hide 0
   Static35 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41952.57 184644.69 -290.00 
   Static121 Stationary.Airfield.AirfieldSign_White_1 nn 41951.04 184646.81 -565.00 /hstart 8
   Static124 Stationary.Airfield.AirfieldSign_White_1 nn 41953.42 184645.67 -385.00 /hstart 8
@@ -160,12 +154,12 @@
   Static68 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42552.14 184651.70 -110.00 
   Static75 Stationary.Airfield.AirfieldSign_White_1 nn 42551.79 184652.22 -565.00 /hstart 8
   Static76 Stationary.Airfield.AirfieldSign_White_1 nn 42554.16 184651.08 -385.00 /hstart 8
-  Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
   Static127 Stationary.Airfield.AirfieldSign_White_1 nn 41654.16 184761.55 -565.00 /hstart 8
+  Static33 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41653.44 184762.39 -290.00 
   Static128 Stationary.Airfield.AirfieldSign_White_1 nn 41656.54 184760.42 -385.00 /hstart 8
   Static125 Stationary.Airfield.AirfieldSign_White_1 nn 41783.37 184707.81 -565.00 /hstart 8
-  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static34 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41783.80 184708.59 -290.00 
+  Static126 Stationary.Airfield.AirfieldSign_White_1 nn 41785.75 184706.69 -385.00 /hstart 8
   Static71 Stationary.Airfield.AirfieldSign_White_1 nn 42331.27 184724.78 -565.00 /hstart 8
   Static72 Stationary.Airfield.AirfieldSign_White_1 nn 42333.65 184723.64 -385.00 /hstart 8
   Static66 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42331.15 184726.42 -110.00 
@@ -173,13 +167,13 @@
   Static32 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41513.92 184813.38 -290.00 
   Static130 Stationary.Airfield.AirfieldSign_White_1 nn 41517.04 184810.61 -385.00 /hstart 8
   Static57 Stationary.Airfield.AirfieldSign_White_1 nn 42018.90 184831.52 -385.00 /hstart 8
-  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
   Static69 Stationary.Airfield.AirfieldSign_White_1 nn 42185.86 184771.91 -385.00 /hstart 8
+  Static58 Stationary.Airfield.AirfieldSign_White_1 nn 42183.48 184773.03 -565.00 /hstart 8
   Static65 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 42185.86 184774.17 -110.00 
   Static63 Stationary.Airfield.Fuel_Storage de 41323.32 184883.83 -200.00 
   Static131 Stationary.Airfield.AirfieldSign_White_1 nn 41388.30 184863.72 -565.00 /hstart 8
-  Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
   Static111 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41387.36 184865.16 -290.00 
+  Static132 Stationary.Airfield.AirfieldSign_White_1 nn 41390.68 184862.58 -385.00 /hstart 8
   Static54 Stationary.Airfield.AirfieldSign_White_1 nn 41846.10 184893.44 -565.00 /hstart 8
   Static55 Stationary.Airfield.AirfieldSign_White_1 nn 41849.37 184892.30 -385.00 /hstart 8
   Static64 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41849.91 184894.59 -110.00 
@@ -195,53 +189,27 @@
   Static50 Stationary.Airfield.AirfieldSign_White_1 nn 41583.87 184987.88 -565.00 /hstart 8
   Static51 Stationary.Airfield.AirfieldSign_White_1 nn 41586.25 184986.73 -385.00 /hstart 8
   Static61 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41585.44 184988.47 -110.00 
-  Static220 Artillery.Flak30 de 42904.44 184975.84 -430.00 /timeout 0/radius_hide 0
-  Static216 Artillery.20_mm_Flak_38 de 40769.89 185029.73 -430.00 /timeout 0/radius_hide 0
   Static134 Stationary.Environment.Polotnische_X_white_1 nn 41126.34 185057.69 -430.00 
   Static41 Stationary.Airfield.InnerMarker nn 41204.60 185026.48 -200.00 /radioFreq 380
   Static133 Stationary.Environment.Polotnische_X_white_1 nn 41204.13 185026.73 -430.00 
-  Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
   Static45 Stationary.Environment.Windsock_Strong nn 41340.92 185072.42 -385.00 
+  Static44 Stationary.Environment.Polotnische_X_white_1 nn 41340.81 185072.88 -430.00 
   Static48 Stationary.Airfield.AirfieldSign_White_1 nn 41449.32 185035.34 -565.00 /hstart 8
-  Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
   Static49 Stationary.Airfield.AirfieldSign_White_1 nn 41451.70 185034.20 -385.00 /hstart 8
+  Static59 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 41449.40 185036.02 -110.00 
   Static136 Stationary.Environment.Polotnische_X_white_1 nn 40966.41 185128.88 -430.00 
   Static135 Stationary.Environment.Polotnische_X_white_1 nn 41038.41 185096.53 -430.00 
   Static140 Stationary.Environment.Polotnische_X_white_1 nn 40803.72 185196.03 -430.00 
   Static137 Stationary.Environment.Polotnische_X_white_1 nn 40893.55 185160.94 -430.00 
-  Static219 Artillery.Flak30 de 40166.18 185299.25 -430.00 /timeout 0/radius_hide 0
   Static152 Stationary.Environment.Polotnische_X_white_1 nn 40484.39 185343.00 -430.00 
-  Static222 Artillery.Flak30 de 41093.30 185331.59 -430.00 /timeout 0/radius_hide 0
-  Static209 Artillery.20_mm_Flak_38 de 42182.14 185407.06 -430.00 /timeout 0/radius_hide 0
-  Static208 Artillery.20_mm_Flak_38 de 41923.41 185450.19 -430.00 /timeout 0/radius_hide 0
   Static153 Stationary.Environment.Polotnische_X_white_1 nn 40086.35 185493.80 -430.00 
-  Static217 Artillery.20_mm_Flak_38 de 39217.49 185590.33 -430.00 /timeout 0/radius_hide 0
   Static154 Stationary.Environment.Polotnische_X_white_1 nn 39619.26 185690.30 -430.00 
   Static79 Stationary.Airfield.OuterMarker nn 39090.63 185908.94 -200.00 /radioFreq 380
   Static141 Stationary.Environment.Polotnische_X_white_1 nn 39090.12 185909.14 -430.00 
-  Static218 Artillery.Flak30 de 37848.36 186129.36 -430.00 /timeout 0/radius_hide 0
-  Static212 Artillery.20_mm_Flak_38 de 38678.46 186161.70 -430.00 /timeout 0/radius_hide 0
-  Static211 Artillery.20_mm_Flak_38 de 40306.32 186150.92 -430.00 /timeout 0/radius_hide 0
-  Static210 Artillery.20_mm_Flak_38 de 40155.40 186237.16 -430.00 /timeout 0/radius_hide 0
-  Static205 Artillery.20_mm_Flak_38 de 37363.24 186485.11 -430.00 /timeout 0/radius_hide 0
-  Static204 Artillery.20_mm_Flak_38 de 37223.09 186506.67 -430.00 /timeout 0/radius_hide 0
   Static18 Stationary.Bedford_MW_tank gb 72943.91 193489.77 0.00 
   Static17 Stationary.Bedford_MW_tank gb 71851.80 193675.38 0.00 
   Static19 Stationary.Bedford_MW_tank gb 72987.07 194314.23 0.00 
   Static16 Stationary.Bedford_MW_tank gb 72028.78 194422.16 0.00 
-  Static228 Artillery.Flak30 de 124788.07 195017.20 -430.00 /timeout 0/radius_hide 0
-  Static230 Artillery.Flak30 de 127181.35 195556.23 -430.00 /timeout 0/radius_hide 0
-  Static229 Artillery.Flak30 de 129121.84 195696.38 -430.00 /timeout 0/radius_hide 0
-  Static224 Artillery.Flak30 de 131148.59 196828.33 -430.00 /timeout 0/radius_hide 0
-  Static227 Artillery.Flak30 de 125499.59 197291.89 -430.00 /timeout 0/radius_hide 0
-  Static1200 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 130499.56 197191.20 -350.00 
-  Static1199 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 130435.76 197458.70 -350.00 
-  Static1198 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 130364.63 197832.66 -350.00 
-  Static1197 Stationary.Hangars.Camouflaged_Hangar_single.Germany de 130316.20 198062.98 -350.00 
-  Static1180 Artillery.Flak30 de 129581.41 198289.00 160.00 /timeout 0/radius_hide 0
-  Static225 Artillery.Flak30 de 128917.02 198585.56 -430.00 /timeout 0/radius_hide 0
-  Static226 Artillery.Flak30 de 125930.80 199307.86 -430.00 /timeout 0/radius_hide 0
-  Static223 Artillery.Flak30 de 127914.42 199609.72 -430.00 /timeout 0/radius_hide 0
   Static5 Stationary.Bedford_MW_tank gb 28490.66 225820.20 0.00 
   Static6 Stationary.Bedford_MW_tank gb 29228.84 226114.45 0.00 
   Static4 Stationary.Bedford_MW_tank gb 28312.40 226452.41 0.00 
@@ -254,6 +222,33 @@
   Static14 Stationary.Bedford_MW_tank gb 46751.12 238566.41 0.00 
   Static12 Stationary.Bedford_MW_tank gb 45637.77 239421.84 0.00 
   Static15 Stationary.Bedford_MW_tank gb 46507.54 239628.25 0.00 
+  Static204 Artillery.20_mm_Flak_38 de 37223.09 186506.67 -430.00 /timeout 0/radius_hide 0
+  Static205 Artillery.20_mm_Flak_38 de 37363.24 186485.11 -430.00 /timeout 0/radius_hide 0
+  Static206 Artillery.20_mm_Flak_38 de 43389.56 184576.95 -430.00 /timeout 0/radius_hide 0
+  Static207 Artillery.20_mm_Flak_38 de 43508.15 184533.84 -430.00 /timeout 0/radius_hide 0
+  Static208 Artillery.20_mm_Flak_38 de 41923.41 185450.19 -430.00 /timeout 0/radius_hide 0
+  Static209 Artillery.20_mm_Flak_38 de 42182.14 185407.06 -430.00 /timeout 0/radius_hide 0
+  Static210 Artillery.20_mm_Flak_38 de 40155.40 186237.16 -430.00 /timeout 0/radius_hide 0
+  Static211 Artillery.20_mm_Flak_38 de 40306.32 186150.92 -430.00 /timeout 0/radius_hide 0
+  Static212 Artillery.20_mm_Flak_38 de 38678.46 186161.70 -430.00 /timeout 0/radius_hide 0
+  Static213 Artillery.20_mm_Flak_38 de 45136.01 183197.05 -430.00 /timeout 0/radius_hide 0
+  Static214 Artillery.20_mm_Flak_38 de 45200.69 183100.03 -430.00 /timeout 0/radius_hide 0
+  Static215 Artillery.20_mm_Flak_38 de 43518.93 184005.59 -430.00 /timeout 0/radius_hide 0
+  Static216 Artillery.20_mm_Flak_38 de 40769.89 185029.73 -430.00 /timeout 0/radius_hide 0
+  Static217 Artillery.20_mm_Flak_38 de 39217.49 185590.33 -430.00 /timeout 0/radius_hide 0
+  Static218 Artillery.Flak30 de 37848.36 186129.36 -430.00 /timeout 0/radius_hide 0
+  Static219 Artillery.Flak30 de 40166.18 185299.25 -430.00 /timeout 0/radius_hide 0
+  Static220 Artillery.Flak30 de 42904.44 184975.84 -430.00 /timeout 0/radius_hide 0
+  Static221 Artillery.Flak30 de 42721.17 184339.78 -430.00 /timeout 0/radius_hide 0
+  Static222 Artillery.Flak30 de 41093.30 185331.59 -430.00 /timeout 0/radius_hide 0
+  Static223 Artillery.Flak30 de 127914.42 199609.72 -430.00 /timeout 0/radius_hide 0
+  Static224 Artillery.Flak30 de 131148.59 196828.33 -430.00 /timeout 0/radius_hide 0
+  Static225 Artillery.Flak30 de 128917.02 198585.56 -430.00 /timeout 0/radius_hide 0
+  Static226 Artillery.Flak30 de 125930.80 199307.86 -430.00 /timeout 0/radius_hide 0
+  Static227 Artillery.Flak30 de 125499.59 197291.89 -430.00 /timeout 0/radius_hide 0
+  Static228 Artillery.Flak30 de 124788.07 195017.20 -430.00 /timeout 0/radius_hide 0
+  Static229 Artillery.Flak30 de 129121.84 195696.38 -430.00 /timeout 0/radius_hide 0
+  Static230 Artillery.Flak30 de 127181.35 195556.23 -430.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
@@ -269,7 +264,6 @@
   airdrome9 236614.01 41471.44 2 700 700 1
   airdrome10 52594.98 39499.27 2 1000 700 1
   airdrome11 191793.41 10281.19 2 900 700 1
-  airdrome12 130271.46 197604.57 2 500 500 1
 [airdrome0_Runways]
   60620.23 228182.03 195.00 1300.00 65.00 0
   60701.36 228212.03 85.00 1000.00 40.00 0
@@ -462,22 +456,6 @@
   192230.58 9799.83
   192109.66 9825.41 12
   192198.03 9871.92
-[airdrome12_Runways]
-  130302.96 197609.31 -80.00 1000.00 40.00 0
-[airdrome12_Points]
-  130400.96 197588.64 11 9 7 5 3 1
-  130215.13 197766.51 2
-  130176.68 197764.23
-  130262.18 197476.61 4
-  130205.82 197472.75
-  130221.45 197711.90 6
-  130171.05 197709.09
-  130259.73 197528.23 8
-  130203.89 197527.53
-  130242.52 197578.98 10
-  130197.39 197574.07
-  130236.02 197645.35 12
-  130185.81 197641.14
 [FrontMarker]
   FrontMarker0 349056.00 312576.00 2
   FrontMarker1 314803.21 277632.00 2
@@ -542,7 +520,7 @@
   FrontMarker60 131987.08 173909.28 2
   FrontMarker61 131512.50 181186.23 2
   FrontMarker62 131117.01 192418.05 2
-  FrontMarker63 130144.05 197666.10 2
+  FrontMarker63 129772.35 197322.08 2
   FrontMarker64 127279.26 199777.90 2
   FrontMarker65 125258.05 195337.24 2
   FrontMarker66 126212.98 188858.67 2
@@ -554,11 +532,6 @@
   FrontMarker72 128195.82 199367.13 2
   FrontMarker73 128998.97 199894.20 1
   FrontMarker74 125847.45 198118.58 2
-  FrontMarker75 129867.38 198611.80 2
-  FrontMarker76 130782.83 198076.07 2
-  FrontMarker77 130218.39 198797.17 1
-  FrontMarker78 132281.87 197004.86 1
-  FrontMarker79 131895.31 196911.15 2
 [BirthPlace]
   Le_Havre 2 157119 58335 0 1 1 1 de . .
   Worthydown_NE 1 60865 228433 0 1 1 1 gb . .
@@ -581,7 +554,6 @@
   "Red Dieppe" 1 229168 96256 0 1 1 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
   "Red Crepon" 1 111526 33318 0 1 1 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
   "Caen Carpiquet" 2 117893 18179 0 1 1 1 de . .
-  "Blue Worthing Rough Field" 2 129669 197587 0 1 1 1 . . .
 [BirthPlace0]
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
@@ -916,5 +888,3 @@
   Aircraft.G50
   Aircraft.Bf-109E-1
   Aircraft.Bf-109E-1B
-[BirthPlace21]
-  Aircraft.DH82A

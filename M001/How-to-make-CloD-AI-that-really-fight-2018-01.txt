@@ -22,10 +22,23 @@ A few specific tips:
 
  - Also the ESCORTS ****MUST**** be set to ACE skill level.  I tried it even with VETERAN and they just wandered off.  I'm not sure which of the various skill elements are responsible for this, or maybe it is a combination of several.  But in practice I just set to ACE and then if I want to make it a little easier on people I might set aerial gunnery level a little bit lower, maybe veteran or average.  Then they still 'cover' but they are not quite as deadly when they attack.
 
- - A typical setup would be like a group of bombers doing NORM FLY, then 1-2 fighters ESCORTing them, then 1-2 more fighters escorting the first set of fighters. 
+ - A typical setup would be like a group of bombers doing NORM FLY, then 1-2 fighters ESCORTing them, then 1-2 more fighters escorting the first set of fighters. Further combinations are possible & effective.
 
  - Various other combinations are possible - one small fighter group covering another covering another, covering another, etc.  The initial group might be set to AATTACK_FIGHTERS or HUNTING or AATTACK_BOMBERS or even NORMFLY but all the others in this group are set to ESCORT this first one. 5 or 6 fighters set up this way is DEADLY if you encounter it, whereas a simple airgroup of 5 or 6 is pretty easy to defeat because they just fly like a swarm.
 
- - I haven't experimented much with various speeds for the main group vs escorts.  I *think* that if say bombers are set to say 180mph and ESCORT fighters say 260mph or 280mph then the escorts will still stay with the bombers (perhaps weaving around some) but then when it comes time to attack the enemy they may have higher speed & thus be more effective.  They may run out of fuel quicker, as well, which will affect various things. On the other hand, if the ESCORT fighters are set to a slower speed than the bombers they probably won't be able to keep up.  The ESCORT setting does some things automatically but your settings might override other things and make the ESCORT fail.  Just for example if bombers and ESCORTing fighters start out too far apart the fighters may never get close enough to act as ESCORTs even though they are trying to.  You will have to experiment with various nuances like this.
+ - I haven't experimented much with various speeds for the main group vs escorts.  I *think* that if say bombers are set to say 180mph and ESCORT fighters say 260mph or 280mph then the escorts will still stay with the bombers (perhaps weaving around some) but then when it comes time to attack the enemy they may have higher speed & thus be more effective.  They may run out of fuel quicker, as well, which will affect various things. On the other hand, if the ESCORT fighters are set to a slower speed than the bombers they probably won't be able to keep up.  The ESCORT setting does some things automatically but your settings might override other things and make the ESCORT fail.  Just for example if bombers and ESCORTing fighters start out too far apart the fighters may never get close enough to act as ESCORTs even though they are trying to.  You will have to experiment with various nuances like this.  Experimentation seems to show that if the escort speed is different from the escorted group speed, then the escort will be too far off to be helpful when the escorted group is attacked.
  
-  - A good way to test is to run the mission (or sub-mission) at 16X and watch what happens.  You can created a temporary aircraft for yourself to fight the bombers & escort, or just let the bombers & escort fly while watching them via external views.  But watching at 16X speed is helpful.
+ - A good way to test is to run the mission (or sub-mission) at 16X and watch what happens.  You can created a temporary aircraft for yourself to fight the bombers & escort, or just let the bombers & escort fly while watching them via external views.  But watching at 16X speed is helpful.
+ 
+ 
+ HOW TO MAKE JU87s DIVE BOMB
+ 
+ 1. Set a static object that will be your dive bomb target.  You can place something like an environment/jerrycan on the spot if there is nothing else already in the right place.
+ 
+ 2. JU87s Normfly at say 1000-3000 meters toward the target.
+ 
+ 3. At the bombing site select "Grount attack - Target".  Generally this is placed nearly right over the target object.  The altitude/speed can be the same as your previous Normfly waypoint altitude/speed (typically 1000 - 3000 meters altitude). Click the "SET" button and select your static object (step 1) as the target.
+ 
+ 4. Create another nearby waypoint at say 300 meters altitude as the exit point and continue further waypoints for the JU87s exit route.
+ 
+ 5. Test by "play mission" and play at 16X speed. 

@@ -1,27 +1,48 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 0 0 350000 300000 10000
-  TIME 12
+  TIME 12.0000002905726
   WeatherIndex 2
   CloudsHeight 1000
   BreezeActivity 10
   ThermalActivity 10
+  player BoB_RA_43St_99Gruppo_243Sq.000
 [GlobalWind_0]
-  Power 3.000 0.000 0.000
+  Power -0.521 -2.954 0.000
   BottomBound 0.00
-  TopBound 1500.00
+  TopBound 300.00
   GustPower 7
   GustAngle 34
 [GlobalWind_1]
-  Power 0.000 0.000 0.000
-  BottomBound 1450.00
-  TopBound 1450.00
+  Power 0.000 -6.000 0.000
+  BottomBound 300.00
+  TopBound 7900.00
+  GustPower 5
+  GustAngle 44
+[GlobalWind_2]
+  Power -2.736 -7.518 0.000
+  BottomBound 7950.00
+  TopBound 10000.00
+  GustPower 5
+  GustAngle 44
+[GlobalWind_3]
+  Power -19.151 -16.070 0.000
+  BottomBound 10000.00
+  TopBound 10000.00
   GustPower 5
   GustAngle 44
 [splines]
+  3257 0_SplineRoad 1/width 40
+  3258 1_SplineRoad 1/width 40
+[0_SplineRoad]
+  130630.41 196186.44 1.00 null R 130766.16 196250.08 1.00 -40
+  131540.69 196673.05 1.00  L 131380.36 196588.36 1.00 null -40
+[1_SplineRoad]
+  41767.19 184630.23 2.00 null R 41829.13 184607.55 2.00 -40
+  43010.74 184221.34 15.70  L 42042.36 184531.89 12.27 null -40
 [AirGroups]
   BoB_RAF_F_FatCat_Early.02
   BoB_LW_LG2_I.01
@@ -44,9 +65,10 @@
   CallSign 26
   Fuel 100
   Weapons 1 1
+  SetOnPark 1
   Skill 1 1 1 1 1 1 1 1
 [BoB_LW_LG2_I.01_Way]
-  NORMFLY 109905.23 228997.68 2500.00 300.00
+  TAKEOFF 131265.55 196618.67 0 0
 [BoB_RA_43St_99Gruppo_243Sq.01]
   Flight0  1
   Class Aircraft.BlenheimMkIV
@@ -62,7 +84,7 @@
   Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
   MarkingsOn0 0
 [BoB_RA_43St_99Gruppo_243Sq.01_Way]
-  TAKEOFF 41648.24 184814.41 0 0
+  TAKEOFF 42419.84 184452.39 0 0
 [CustomChiefs]
 [Stationary]
   Static10 Stationary.Environment.JerryCan_GER1_1 nn 121783.80 20720.08 65.00 
@@ -1517,7 +1539,7 @@
   1412_bld buildings.House$Oil_Bunker-Big 1 116028.28 195384.54 65.00
   1413_bld buildings.House$Oil_Bunker-Big 1 115997.49 195395.28 65.00
   1414_bld buildings.House$Oil_Bunker-Big 1 129172.53 196746.76 720.00
-  1415_bld buildings.House$Oil_Bunker-Big 1 129202.86 196755.53 720.00
+  1415_bld buildings.House$Oil_Bunker-Big 1 43149.93 184179.10 -200.00
   1416_bld buildings.House$Oil_Bunker-Big 1 106964.28 192514.55 65.00
   1417_bld buildings.House$EnglandGeneralServiceShed1916 1 60478.84 228676.60 834.10
   1418_bld buildings.House$Oil_Bunker-Big 1 27164.37 223391.80 720.00
@@ -1930,6 +1952,57 @@
   1825_bld buildings.House$Oil_Bunker-Big 1 145230.57 211909.70 65.00
   1826_bld buildings.House$Oil_Bunker-Big 1 145215.27 211876.29 65.00
 [BuildingsLinks]
+[Airdromes]
+  airdrome1 130672.48 197130.47 2 1000 1200 0
+  airdrome0 42533.97 185002.52 2 1000 1200 0
+[airdrome1_Runways]
+  131088.73 196404.24 -150.00 1000.00 60.00 0
+[airdrome1_Points]
+  130674.05 197129.92 21 19 17 15 13 11 9 7 5 3 1
+  131518.74 196668.36 2
+  131528.79 196671.61
+  130647.66 196198.28 4
+  130636.96 196192.52
+  130891.14 196332.87 6
+  130886.41 196342.85
+  130990.30 196387.96 8
+  130982.81 196399.63
+  131337.32 196569.43 10
+  131325.64 196587.71
+  130783.35 196273.07 12
+  130776.38 196284.05
+  131410.40 196613.28 14
+  131401.48 196625.58
+  131110.52 196454.60 16
+  131103.22 196463.68
+  131301.85 196553.18 18
+  131291.66 196569.07
+  131213.31 196509.68 20
+  131205.55 196520.39
+  131253.85 196534.91 22
+  131245.64 196547.89
+[airdrome0_Runways]
+  42376.65 184417.77 -200.00 1400.00 60.00 0
+[airdrome0_Points]
+  42593.69 184458.73 17 15 13 11 9 7 5 3 1
+  42977.12 184232.03 2
+  43005.25 184225.00
+  41798.49 184618.28 4
+  41783.19 184623.45
+  42695.80 184349.25 6
+  42699.32 184368.00
+  42722.76 184342.21 8
+  42726.28 184356.28
+  42886.86 184284.78 10
+  42890.38 184305.88
+  42756.76 184328.15 12
+  42761.44 184344.56
+  42789.58 184318.77 14
+  42794.26 184330.49
+  42834.12 184302.36 16
+  42837.63 184316.43
+  42639.38 184365.37 18
+  42644.15 184377.07
 [Trigger]
   action TPassThrough 5 2 44698 101920 18550
   trigger TPassThrough 5 2 119460 125983 20300
@@ -1952,3 +2025,31 @@
 [Action]
   action ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
   trigger ASpawnGroup 1 BoB_RAF_F_FatCat_Early.01
+[BirthPlace]
+  BirthPlace_0 1 247219 72115 2500 1 0 1 gb . .
+[BirthPlace0]
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa
+  Aircraft.BlenheimMkIVF
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkI
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVNF
+  Aircraft.SpitfireMkI_Heartbreaker
+  Aircraft.G50
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-4N
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1

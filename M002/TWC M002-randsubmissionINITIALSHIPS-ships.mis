@@ -18,16 +18,16 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 2
-  1_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 1
+  0_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  1_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 1
   3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
   2_Chief Ship.Tanker_Medium1 de /sleep 0/skill 3/slowfire 2
   4_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
   5_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
   6_Chief Ship.Minensuchboote de /sleep 0/skill 2/slowfire 1
-  7_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 2
-  8_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 2
-  9_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 2
+  7_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  8_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  9_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
 [0_Chief_Road]
   107150.25 182937.50 38.40  0 2 5.56
   103864.35 181980.16 38.40  0 2 2.78

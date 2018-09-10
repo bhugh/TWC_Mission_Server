@@ -1,4 +1,4 @@
-//$reference parts/core/CLOD_Extensions.dll
+﻿//$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -192,7 +192,7 @@ public class Mission : AMission
          * of sub-missions one or several times.
          * 
          ******************************************************************************/
-        RESPAWN_MINUTES = 90; //For this mission this is used only as max life length for AI aircraft.  So set it a little longer than the entire mission timeline.    
+        RESPAWN_MINUTES = 180; //For this mission this is used only as max life length for AI aircraft.  So set it a little longer than the entire mission timeline.    
         TICKS_PER_MINUTE = 1986; //empirically, based on a timeout test.  This is approximate & varies slightly.
         HOURS_PER_SESSION = 1.5; //# of hours the entire session is to last before re-start
         NUMBER_OF_SESSIONS_IN_MISSION = 2; //we can repeat this entire sequence 1x, 2x, 3x, etc. OR EVEN 1.5, 2.5, 3.25 etc times  
@@ -540,8 +540,9 @@ public class Mission : AMission
         if ((tickSinceStarted) == 0) {
             //GamePlay.gpLogServer(null, "Mission class initiated 2.", new object[] { });
             GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
-            CheckMapTurned(); //Start the routine to check for objectives completed etc
-    
+             
+            Timeout(188, () => { CheckMapTurned(); }); //Start the routine to check for objectives completed etc
+
 
             /*Timeout(60, () =>  //how many ticks in 60 seconds
                       {
@@ -623,7 +624,7 @@ public class Mission : AMission
 
         }
 
-        if (tickSinceStarted == 900) //load initial ship missions.  Note that these are loaded ONCE only @ start of mission (tickSinceStarted) NOT at the start of each session (tickSession)
+        if (tickSinceStarted == 21) //load initial ship missions.  Note that these are loaded ONCE only @ start of mission (tickSinceStarted) NOT at the start of each session (tickSession)
         {
 
             LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionINITIALSHIPS"); // load sub-mission            
@@ -1340,7 +1341,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         //random.Next(100) > XX adjust what percentage of AI aicraft sub-missions are actually loaded
         //random.Next(100) > 85 loads 85% of missions, random.Next(100) > 50 loads 50% of missions, random.Next(100) > 100 loads 100% of missions etc.
-        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD) 
+        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && !fileID.StartsWith(MISSION_ID + "-" + "randsubmissionINITIALSHIPS") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD) 
         {
             Console.WriteLine("Skipping load of " + fileID + " to reduce submission files loaded.");
             return ret; 
@@ -2149,7 +2150,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
          * Check to see if anyone has turned the map
          * Recursive function called every X seconds
          ************************************************/
-        Timeout(28, () => { CheckMapTurned(); }); 
+        Timeout(188, () => { CheckMapTurned(); }); 
         
         
 
@@ -4244,7 +4245,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         base.OnActorCreated(missionNumber, shortName, actor);
         //Ground objects (except AA Guns) will die after X min when counted from their birth
         //TODO: This is either 1. not working right or 2. causing problems when e.g. ships, jerrycans, etc suddenly disappear after 2 hours?
-        if (actor is AiGroundActor)
+        /* if (actor is AiGroundActor)
             if ((actor as AiGroundActor).Type() != maddox.game.world.AiGroundActorType.AAGun)
                 Timeout(2*60*60, () =>
                 {
@@ -4252,6 +4253,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
                     { (actor as AiGroundActor).Destroy(); }
                 }
                         );
+      */                        
       //AI Aircraft will be destroyed after airspawn minutes (set above)
       //lesson learned: For some reason if the Callsign of a group is high (higher than 50 or so?) then that object is not sent through this routine.  ??!!
       //eg, 12, 22, 32, 45 all work, but not 91 or 88.  They just never come

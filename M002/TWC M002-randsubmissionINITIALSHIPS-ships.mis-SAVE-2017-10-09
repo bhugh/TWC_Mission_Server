@@ -18,8 +18,8 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 2
-  1_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 2/slowfire 1
+  0_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 2
+  1_Chief Ship.Flower_Class_Corvette gb /sleep 0/skill 2/slowfire 1
   3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
   2_Chief Ship.Tanker_Medium1 de /sleep 0/skill 3/slowfire 2
 [0_Chief_Road]

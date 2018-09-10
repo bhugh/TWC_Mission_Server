@@ -821,6 +821,16 @@
   Aircraft.BlenheimMkIV
   Aircraft.Ju-88A-1
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.He-111H-2
@@ -830,6 +840,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.He-111H-2
@@ -839,6 +859,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
@@ -846,6 +876,16 @@
   Aircraft.BlenheimMkIV
   Aircraft.Ju-88A-1
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
@@ -854,6 +894,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
@@ -864,6 +914,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
@@ -877,6 +937,16 @@
   Aircraft.BlenheimMkIVF
   Aircraft.G50
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.SpitfireMkI_100oct
   Aircraft.Bf-110C-7Late
   Aircraft.He-111H-2
@@ -890,6 +960,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.He-111P-2
   Aircraft.He-111H-2
@@ -900,6 +980,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.He-111H-2
   Aircraft.BR-20M
@@ -910,7 +1000,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -929,7 +1018,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -948,7 +1036,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -981,6 +1068,16 @@
   Aircraft.Ju-88A-1
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.BlenheimMkIVNF
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.He-111P-2
@@ -992,6 +1089,16 @@
   Aircraft.SpitfireMkIa
   Aircraft.Ju-88A-1
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.SpitfireMkI_100oct
   Aircraft.He-111P-2
   Aircraft.He-111H-2
@@ -1003,7 +1110,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -1021,7 +1127,6 @@
   Aircraft.Bf-110C-7
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -1043,7 +1148,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -1062,7 +1166,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -1098,7 +1201,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-109E-1
@@ -1119,7 +1221,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-110C-7Late
@@ -1140,7 +1241,6 @@
   Aircraft.Bf-109E-4N-DeRated
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
-  Aircraft.Bf-110C-4N-DeRated
   Aircraft.Ju-88A-1
   Aircraft.G50
   Aircraft.Bf-109E-1
@@ -1173,10 +1273,30 @@
   Aircraft.BlenheimMkIV
   Aircraft.Ju-88A-1
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2
   Aircraft.BR-20M
 [BirthPlace25]
   Aircraft.BlenheimMkIV
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1
   Aircraft.He-111P-2

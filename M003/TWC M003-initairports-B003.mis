@@ -911,7 +911,6 @@
   Aircraft.G50
   Aircraft.HurricaneMkI_100oct
   Aircraft.SpitfireMkI_100oct
-  Aircraft.Bf-110C-7Late
   Aircraft.He-111H-2
   Aircraft.BR-20M
   Aircraft.Bf-109E-4N
@@ -1228,7 +1227,6 @@
   Aircraft.DH82A
   Aircraft.DH82A-1
 [BirthPlace18]
-  Aircraft.Bf-110C-7Late
   Aircraft.Bf-109E-3
   Aircraft.Bf-109E-1B
   Aircraft.Bf-110C-2

@@ -66,3 +66,47 @@ STANDARD AIRPORT - ALL AC
   Aircraft.DH82A
   Aircraft.DH82A-1
 
+STANDARD AIRPORT - MAIN IMPORTANT AC
+
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIV
+  Aircraft.Ju-88A-1
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.He-111P-2
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.SpitfireMkIa_100oct  
+  Aircraft.HurricaneMkI_FB
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.DH82A-2
+  Aircraft.DH82A
+  Aircraft.DH82A-1  
+
+  Aircraft.HurricaneMkI_100oct
+
+  Aircraft.HurricaneMkI_100oct\r\n  Aircraft.SpitfireMkIa_100oct\r\n  Aircraft.HurricaneMkI_FB\r\n  Aircraft.BeaufighterMkINF\r\n  Aircraft.BlenheimMkIVNF_Late\r\n  Aircraft.BeaufighterMkIF\r\n  Aircraft.BlenheimMkIV_Late\r\n  Aircraft.BlenheimMkIVF_Late\r\n  Aircraft.DH82A-2\r\n  Aircraft.DH82A\r\n  Aircraft.DH82A-1
+
+  Aircraft.HurricaneMkI_100oct\r\n  Aircraft.HurricaneMkI_FB\r\n  Aircraft.BeaufighterMkINF\r\n  Aircraft.BlenheimMkIVNF_Late\r\n  Aircraft.BeaufighterMkIF\r\n  Aircraft.BlenheimMkIV_Late\r\n  Aircraft.BlenheimMkIVF_Late\r\n  Aircraft.DH82A-2\r\n  Aircraft.DH82A\r\n  Aircraft.DH82A-1
+
+
+  Aircraft.HurricaneMkI_100oct\r\n  Aircraft.SpitfireMkIa_100oct\r\n  Aircraft.HurricaneMkI_FB\r\n  Aircraft.BeaufighterMkINF\r\n  Aircraft.BlenheimMkIVNF_Late\r\n  Aircraft.BeaufighterMkIF\r\n  Aircraft.BlenheimMkIV_Late\r\n  Aircraft.BlenheimMkIVF_Late\r\n  Aircraft.DH82A-2\r\n  Aircraft.DH82A\r\n  Aircraft.DH82A-1-NF
+
+
+
+M001 SEARCH/REPLACE
+
+  Aircraft.HurricaneMkI_100oct\r
+  Aircraft.HurricaneMkI_100oct\r\n  Aircraft.HurricaneMkI_FB\r\n  Aircraft.BeaufighterMkINF\r\n  Aircraft.BlenheimMkIVNF_Late\r\n  Aircraft.BeaufighterMkIF\r\n  Aircraft.BlenheimMkIV_Late\r\n  Aircraft.BlenheimMkIVF_Late\r\n  Aircraft.DH82A-2\r\n  Aircraft.DH82A\r\n  Aircraft.DH82A-1\r
+
+
+DELETED AC
+
+Aircraft.Bf-109E-4N-DeRated
+Aircraft.Bf-110C-7Late
+Aircraft.Bf-110C-4Late
+Aircraft.Bf-110C-4N-DeRated

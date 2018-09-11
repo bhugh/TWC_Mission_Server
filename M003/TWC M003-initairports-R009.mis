@@ -976,6 +976,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -992,6 +994,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1008,6 +1012,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1080,6 +1086,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1096,6 +1104,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1115,6 +1125,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1131,6 +1143,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1146,6 +1160,8 @@
 [BirthPlace19]
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1162,6 +1178,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1
@@ -1181,6 +1199,8 @@
   Aircraft.Bf-110C-4-NJG
   Aircraft.Bf-110C-4N
   Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4_Late
   Aircraft.Bf-110C-4
   Aircraft.Bf-109E-3B
   Aircraft.Ju-88A-1

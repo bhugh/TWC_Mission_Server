@@ -974,7 +974,7 @@ public class Mission : AMission
                 GamePlay.gpLogServer(new Player[] { player }, "Completed Blue Objectives (" + InitialBlueObjectiveCount.ToString() + " points):", new object[] { }));
                 Timeout(3, () =>
                 GamePlay.gpLogServer(new Player[] { player }, (Objective_Total_Blue), new object[] { }));
-                stopAI("");//for testing
+                stopAI();//for testing
 
                 setMainMenu(player);
             }
@@ -3001,6 +3001,23 @@ public class Mission : AMission
      * However, if you have .cs file then you must include OnTrigger include a bit of code to manually call the action with the same name as the trigger.  That is 
      * included below in the 'else' portion of the method.
      * 
+     * You can call actions at any time; you don't need to rely on the trigger to set it off.  You only need to know the exact name of the 
+     * trigger from the .mis file Sample:
+     * 
+     *      AiAction action = GamePlay.gpGetAction(tr);
+     *      if (action != null) action.Do();
+     * 
+     * You can also call a Trigger at any time using this sample code:
+     *             
+     *             if (GamePlay.gpGetTrigger(tr) != null ) { 
+     *                 GamePlay.gpGetTrigger(tr).Enable = true; //only needed if you want to be sure the Trigger is enabled               
+     *                 Battle.OnEventGame(GameEventId.Trigger, tr, true, 1);
+     *             }
+     *             
+     * You can call both triggers and actions from any mission--either the main mission file or any sub-mission loaded via gpPostMissionLoad.
+     * You only need the EXACT name from the .mis file.
+     *             
+     * 
      * ****************************************************************************************************************/
     //
     public override void OnTrigger(int missionNumber, string shortName, bool active)
@@ -3014,7 +3031,7 @@ public class Mission : AMission
         Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString() + "MO_DestroyObjective result: " + res.ToString());
 
 
-        Console.WriteLine("OnTrigger: Now doing ActionTriggers: " + shortName + " Active: " + active.ToString() + " !stopAI(shortName)=" + (!stopAI(shortName)).ToString() + " zonedef: " + ("zonedefenseblue1".Equals(shortName) && active && !stopAI(shortName)).ToString());
+        Console.WriteLine("OnTrigger: Now doing ActionTriggers: " + shortName + " Active: " + active.ToString() + " !stopAI()=" + (!stopAI()).ToString() + " zonedef: " + ("zonedefenseblue1".Equals(shortName) && active && !stopAI()).ToString());
 
         ///Timed raids into enemy territory////////////////////////// using the action part of the trigger//
 
@@ -3747,7 +3764,7 @@ public class Mission : AMission
             Timeout(12, () =>
             GamePlay.gpLogServer(null, showTimeLeft(), new object[] { }));
 
-            stopAI("");//for testing
+            stopAI();//for testing
         }
 
         if (Time.tickCounter() == 720000)// Red battle Success.

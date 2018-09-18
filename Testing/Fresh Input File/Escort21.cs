@@ -73,6 +73,22 @@ public class Mission : AMission
     static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
     public enum ArmiesE { None, Red, Blue };
 
+    public bool MISSION_STARTED = false;
+    public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
+    public int START_MISSION_TICK = -1;
+    public int END_MISSION_TICK = 720000;
+    public bool END_MISSION_IF_PLAYERS_INACTIVE = false;
+    public bool COOP_START_MODE_ENABLED = false;
+    public bool COOP_START_MODE = false;
+    public double COOP_MODE_TIME_SEC = 45;
+    public int START_COOP_TICK = -1;
+    public double COOP_TIME_LEFT_MIN = 9999;
+    public int ticksperminute = 1986;
+    public double CampaignMapState = 0; //Determines which base map to load in & where the front it.  0 is the neutral map, - numbers tend more towards Blue, + numbers more towards Red
+    public string CampaignMapSuffix = "-0"; //The initial initairports files will have suffix -0
+    public string MapPrevWinner = ""; //Winner of the previous mission, if there was one
+    public int CampaignMapMaxRedSuffixMax = 1; //This implies you have initairports files named with suffix ie -R001, -R002, -R003, -R004 through the max
+    public int CampaignMapMaxBlueSuffixMax = 1; //This implies you have initairports files named ie -B001, -B002, -B003, -B004 through the max
 
     Stopwatch stopwatch;
     Dictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
@@ -92,154 +108,6 @@ public class Mission : AMission
 
     MissionObjectives mission_objectives;
 
-
-    
-    int BlueObjective1 = 2;//AV22.1 Littlestone  Bombers
-    int BlueObjective2 = 2;//AN.24.2 Redhill Bomber Base
-    int BlueObjective3 = 2;//AU 23.5 Ashford Train Depot
-    int BlueObjective4 = 2;//AX 25.9 Manston aircraft
-    int BlueObjective5 = 2;//AX 23.5 British Armor @ Dover
-    int BlueObjective6 = 2;//AP 27.4 British Armor @ London Docks
-    int BlueObjective7 = 3;//Creek Mouth	Corvette
-    int BlueObjective8 = 2;//Creek Mouth Ship at dock	
-    int BlueObjective9 = 2;//Creek Mouth Ship at dock	
-    int BlueObjective10 = 2;//London Docks Tanker at dock	
-    int BlueObjective11 = 2;//London Docks Tanker at dock	
-    int BlueObjective12 = 2;//London Docks Tanker at dock	
-    int BlueObjective13 = 2;//London Docks Corvette
-    int BlueObjective14 = 1; //Westgate RADAR 
-    int BlueObjective15 = 1;//Sandwich RADAR
-    int BlueObjective16 = 1;// Deal RADAR
-    int BlueObjective17 = 1;// Dover RADAR
-    int BlueObjective18 = 1;// Brookland RADAR
-    int BlueObjective19 = 1;// Dungeoness RADAR
-    int BlueObjective20 = 1;// Eastbourne RADAR
-    int BlueObjective21 = 1;// Worthing RADAR
-    int BlueObjective22 = 1;// Ventnor of RADAR Isle of Wight
-	int BlueObjective23 = 3;//Corvette at Creek Mouth dock
-    int BlueObjective24 = 2;// fuel Refinery DITTON	
-    int BlueObjective25 = 2;// Ditton fuel Storage
-	int BlueObjective26 = 2;// Maidstone train repair station	
-	int BlueObjective27 = 2;// Tumbrige wells Armory	
-    int BlueObjective28 = 6;// Radar Communications HQ
-	// Seperation blue / red
-	
-    int RedObjective1 = 2; //"BD 22.1 Motorpool near Grand-Fort Philippe";
-    int RedObjective2 = 2; //"BE 19.2 St. Omar Ball bearing Factory";
-    int RedObjective3 = 3; //"BB 16.4Estree Fuel Depot";
-    int RedObjective4 = 2; //"AZ 19.2 Boulogne Synthetic Fuel"; 
-    int RedObjective5 = 2; //"BB 21.5 CALAIS TRAIN YARD"; 
-    int RedObjective6 = 2; //"BB 21.8 Calais Hydrogen"; 
-    int RedObjective7 = 2; //"BB  21.9 Calais Main Fuel"; 
-    int RedObjective8 = 2; //"BB 21.8  Calais LOX"; 
-    int RedObjective9 = 2; //"BB 21.8 Calais Torpedo"; 
-    int RedObjective10 = 2; //"BB 21.8 Calais Diesel"; 
-    int RedObjective11 = 2; //"AZ 18.9 Boulogne Aviation"; 
-    int RedObjective12 = 2; //"AZ 18.6 Boulogne Diesel"; 
-    int RedObjective13 = 2; //"AZ 18.9 Boulogne Benzine"; 
-    int RedObjective14 = 2; //"AZ 18.8  Boulogne Liquid Oxygen"; 
-	int RedObjective15 = 2; //"AZ18.9  Ethanol Boulogne"; 
-	int RedObjective16 = 4;	//"BI 14.1 Arras Main Fuel"; 
-	int RedObjective17 = 3;	//"BI 14.2 Arras Rubber Factory"; 
-	int RedObjective18 = 2;	//"BD 11 ST Ouen AAA Factory"; 
-	int RedObjective19 = 3;	//"BB 12 Abbeville Main Fuel";  
-	int RedObjective20 = 2;	//"Dieppe Main Fuel"; 
-	int RedObjective21 = 2;  //"Le Treport Fuel"; 
-	int RedObjective22 = 3;	 //"Poix Nord Fuel Storage"; 
-    int RedObjective23 = 2; //"BB 21.8Chemical Research Calais";
-	int RedObjective24 = 2; //"BB 21.8 Optical Research Calais";
-	int RedObjective25 = 2; //"BB 21.8Chemical Storage Calais"; 
-	int RedObjective26 = 1; //"BB 21.8Food Storage Calais";
-	int RedObjective27 = 2; //"BB 21.8 Gunpowder Calais Facility";
-	int RedObjective28 = 1; //"BC 21.8 Radar Oye Plauge "; 
-	int RedObjective29 = 1; // "BA 21.6 Radar Coquells";
-	int RedObjective30 = 3; //" Minensuchboote";  
-	int RedObjective31 = 3; //"BI 14.1 Arras Fuel Storage 2"; 
-    int RedObjective32 = 2; //"BE 20.8 Watten Armory";	//32
-	int RedObjective33 = 2; //"BE 22.   Half track Factory Dunkirk";
-	int RedObjective34 = 2; //"BE 22.  Steel mill Dunkirk";
-	int RedObjective35 = 2; //"BE 22.  Brass Smelter Dunkirk";
-	int RedObjective36 = 2; //"BE 22.  Diesel Storage Dunkirk";
-	int RedObjective37 = 3; //"BE 22.  Ammunition Wharehouse Dunkirk";
-
-	
-	
-	
-	
-	
-	
-	
-	
-//Blue Objectives	
-    const string Objective_A = " AV22.1 Littlestone  Bombers";
-    const string Objective_B = " AN.24.2 Redhill Bomber Base";
-    const string Objective_C = " AU 23.5 Ashford Train Depot";
-    const string Objective_D = " AX 25.9 Manston aircraft";
-    const string Objective_E = " AX 23.5 British Armor @ Dover";
-    const string Objective_F = " AP 27.4 British Armor @ London Docks";
-    const string Objective_S1 = " British Corvette off shore";	
-    const string Objective_S2 = " AP 27.4 Tanker @ London Docks";
-    const string Objective_S3 = " AP 27.4 Cargo Ship @ Creekmouth";
-    const string Objective_S4 = " AP 27.4 Cargo Ship @ Creekmouth";
-    const string Objective_S5 = " AP 27.4 Cargo Ship @ London Docks";
-    const string Objective_S6 = " AO 27.4 Corvette @ Creekmouth";
-    const string Objective_S7 = " AO 27.4 Tanker @ London Docks";
-    const string Objective_S8 = " AO 27.4 Tanker Armor @ London Docks";
-    const string Objective_S9 = " AO 27.4 Tanker @ London Docks";
-    const string Objective_R1 = " Westgate Radar";	
-    const string Objective_R2 = " Sandwich Radar";
-    const string Objective_R3 = " Deal Radar";
-    const string Objective_R4 = " Dover Radar";
-    const string Objective_R5 = " Brookland Radar";
-    const string Objective_R6 = " Dungeness Radar";
-    const string Objective_R7 = " Eastborne Radar";
-    const string Objective_R8 = " Little Hampton Radar";
-	const string Objective_R9 = " Ventnor Radar";
-    const string Objective_1A = " Ar 25.2 Ditton fuel Refinery";
-    const string Objective_1B = " Ar 25.3 Fuel Storage Ditton";
-	const string Objective_1C = " AS 24.7 Maidstone train repair facility";	
-	const string Objective_1D = " AQ 23.5 Tunbridge Wells Armory";
-    const string Objective_1E = " AS 28.7 Radar communications HQ";	
-	//Red objectives
-    const string Objective_G =  " BD 22.1 Motorpool near Grand-Fort Philippe";
-    const string Objective_H =  " BE 19.2 St. Omar Ball bearing Factory";
-    const string Objective_I =  " BB 16.4Estree Fuel Depot";
-    const string Objective_J =  " AZ 19.2 Boulogne Synthetic Fuel"; 
-    const string Objective_K =  " BB 21.5 CALAIS TRAIN YARD"; 
-    const string Objective_L =  " BB 21.8 Calais Hydrogen"; 
-    const string Objective_M =  " BB  21.9 Calais Main Fuel"; 
-    const string Objective_N =  " BB 21.8  Calais LOX"; 
-    const string Objective_O =  " BB 21.8 Calais Torpedo"; 
-    const string Objective_P =  " BB 21.8 Calais Diesel"; 
-    const string Objective_Q =  " AZ 18.9 Boulogne Aviation"; 
-    const string Objective_R =  " AZ 18.6 Boulogne Diesel"; 
-    const string Objective_S =  " AZ 18.9 Boulogne Benzine"; 
-    const string Objective_T =  " AZ 18.8  Boulogne Liquid Oxygen"; 
-    const string Objective_U =  " AZ18.9  Ethanol Boulogne"; 
-    const string Objective_V =  " BI 14.1 Arras Main Fuel"; 
-    const string Objective_W =  " BI 14.2 Arras Rubber Factory"; 
-    const string Objective_X =  " BD 11 ST Ouen AAA Factory"; 
-    const string Objective_Y =  " BB 12 Abbeville Main Fuel";  
-    const string Objective_Z =  " Dieppe Main Fuel"; 
-    const string Objective_AA = " Le Treport Fuel"; 
-    const string Objective_BB = " Poix Nord Fuel Storage"; 
-    const string Objective_CC = " BB 21.8Chemical Research Calais";
-    const string Objective_DD = " BB 21.8 Optical Research Calais";
-    const string Objective_EE = " BB 21.8Chemical Storage Calais"; 
-    const string Objective_FF = " BB 21.8Food Storage Calais";
-    const string Objective_GG = " BB 21.8 Gunpowder Calais Facility";
-    const string Objective_HH = " BC 21.8 Radar Oye Plauge "; 
-    const string Objective_II = " BA 21.6 Radar Coquells";
-    const string Objective_JJ = " Minensuchboote";  
-    const string Objective_KK = " BI 14.1 Arras Fuel Storage 2"; 
- 	const string Objective_LL = " BE 20.8 Watten Armory";  
- 	const string Objective_MM =	" BE 22.  Half track Factory Dunkirk";
- 	const string Objective_NN =	" BE 22.  Steel mill Dunkirk";
- 	const string Objective_OO =	" BE 22.  Brass Smelter Dunkirk";
-  	const string Objective_PP = " BE 22.  Diesel Storage Dunkirk";
- 	const string Objective_QQ = " BE 22.  Ammunition Warehouse Dunkirk";
-    
-
     //Constructor
     public Mission()
     {
@@ -250,6 +118,7 @@ public class Mission : AMission
         SERVER_ID = "Tactical Server"; //Used by General Situation Map app
         //SERVER_ID_SHORT = "Tactical"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         SERVER_ID_SHORT = "MissionTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        CAMPAIGN_ID = "The Big War"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = false;
         radarpasswords = new Dictionary<int, string>
@@ -276,6 +145,986 @@ public class Mission : AMission
 		RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";		
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
     }
+
+    /********************************************************
+     * 
+     * Save campaign state every 10 minutes so that if
+     * something messes up before end of mission, we
+     * don't lose all the campaign developments this mission
+     * 
+     *******************************************************/
+
+    public void SaveCampaignStateIntermediate()
+    {
+
+        Timeout(1800, () => { SaveCampaignStateIntermediate(); });
+        if (!MISSION_STARTED) return;
+        SaveMapState("", true);
+    }
+
+    public void CheckCoop()
+    {
+        /************************************************
+         * 
+         * Check to see if COOP mode is still on & if so,
+         * make sure that no aircraft or ie tanks have moved 
+         * too far, or have taken off OR are going too fast
+         * 
+         * If so they will just be destroyed
+         * 
+         * Recursive function called every X seconds
+         ************************************************/
+        if (!COOP_START_MODE) return;
+
+        Timeout(5, () => { CheckCoop(); });
+
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in GamePlay.gpRemotePlayers())
+            {
+
+                if (p.Place() != null)
+                {
+                    AiActor act = p.Place();
+
+                    //remove players from aircraft/destroy it, if the aircraft has taken off
+                    AiAircraft air = p.Place() as AiAircraft;
+                    if (air != null && air.IsAirborne())
+                    {
+                        Stb_RemoveAllPlayersFromAircraftandDestroy(air, p, 0, 1.0);
+                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You took off before Mission Start Time.", null);
+                        GamePlay.gpLogServer(new Player[] { p }, "Your aircraft was destroyed.", null);
+                    }
+
+                    //If it is too far away from an airport, destroy (this takes care of tanks etc going rogue overland during the coop start period)
+                    else if (Stb_distanceToNearestAirport(act) > 2500)
+                    {
+                        Stb_RemovePlayerFromCart(act as AiCart, p);
+                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You left the airport or spawn point before Mission Start Time; " + Stb_distanceToNearestAirport(act).ToString("n0") + " meters to nearest airport or spawn point", null);
+                        GamePlay.gpLogServer(new Player[] { p }, "You have been removed from your position.", null);
+                    }
+                }
+
+            }
+        }
+    }
+
+    bool EndMissionIfPlayersInactive_initialized = false;
+    DateTime LastTimePlayerLoggedIn = DateTime.Now;
+    DateTime LastTimePlayerInPlace = DateTime.Now;
+
+    public void EndMissionIfPlayersInactive()
+    {
+        /************************************************
+         * 
+         *We check every minute or so to see if any players are logged on
+         * and if so, if they are actually in a place.
+         * 
+         * If the mission is active &  no one has logged in for 7.5 minutes the mission will end.
+         * 
+         * If the mission is active &  no one been in a place (ie, in an aircraft, tank, etc0 for 15 minutes the mission will end
+         * 
+         * This is to prevent AI from marching forward & destroying all the mission targets, and thus moving the campaign maps around by huge amounts, when no one is even playing
+         * 
+         * Also it coudl potentially ward off some cheating type behaviors, if people realize that AI tends to score more points for one side or the other when no one is playing, then
+         * they could  just start a mission & leave it, just to rack up points for their side.
+         * 
+         * Recursive function called every X seconds
+         ************************************************/
+ 
+
+        Timeout(63.25, () => { EndMissionIfPlayersInactive(); });
+
+        if (!END_MISSION_IF_PLAYERS_INACTIVE) return;
+
+        //Before the mission official starts, we still update the times as though players were in place - reason is, we could get in some weird situation where the mission
+        //was paused because of one of these modes, put we somehow get a sample of the time, then wait 30 minutes, then someone jumps in to play & we restart, 
+        //noticing there has a been a 30 minute delay & kill the game.  Which would not be good.  So, this is a bit belt & suspenders--really we dont' even start with this routine
+        //until Mission is started & coop mode is over.
+        if (!MISSION_STARTED || COOP_START_MODE)
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            //Console.WriteLine("Not miss started/coopstart");
+            return;
+        }
+        if (!EndMissionIfPlayersInactive_initialized)
+        {
+
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            EndMissionIfPlayersInactive_initialized = true;
+            //Console.WriteLine("EMIPI initialized");
+            return;
+        }
+
+
+        if (GamePlay.gpPlayer() != null && GamePlay.gpPlayer().Place() != null)
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            LastTimePlayerInPlace = DateTime.Now;
+            //Console.WriteLine("EMIPI single player in place");
+            return; //we only need one . .. 
+        }
+
+        //if (GamePlay.gpPlayer() != null || (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0))
+        if ((GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)) //giving up on looking for the single player as GamePlay.gpPlayer() always seems to be != null
+        {
+            LastTimePlayerLoggedIn = DateTime.Now;
+            //Console.WriteLine("EMIPI a player is logged in " + (GamePlay.gpPlayer() != null).ToString() + " " + (GamePlay.gpRemotePlayers() != null).ToString() + " " + GamePlay.gpRemotePlayers().Length.ToString());
+
+
+            if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+            {
+                foreach (Player p in GamePlay.gpRemotePlayers())
+                {
+
+                    if (p.Place() != null)
+                    {
+                        LastTimePlayerInPlace = DateTime.Now;
+                        Console.WriteLine("EMIPI multi player in place");
+                        return; //we only need one . .. 
+                    }
+
+                }
+            }
+        }
+
+        //Console.WriteLine("EMIPI checking time since last player");
+        //End the mission if it has been 7.5 minutes since someone logged in OR 15 minutes since they were actually in a place.
+        //if (LastTimePlayerLoggedIn.AddMinutes(.5) < DateTime.Now || LastTimePlayerInPlace.AddMinutes(15) < DateTime.Now)  //testing
+        if (LastTimePlayerLoggedIn.AddMinutes(7.5) < DateTime.Now || LastTimePlayerInPlace.AddMinutes(15) < DateTime.Now)
+        {
+            EndMission(0);
+        }
+    }
+
+    public override void OnTickGame()
+    {
+        /* Tick_Mission_Time = 720000 - Time.tickCounter();
+        var Mission_Time = Tick_Mission_Time / 2000;
+        TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
+        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
+        */
+        //int tickSinceStarted = Time.tickCounter();        
+
+        if (!MISSION_STARTED)
+        {
+            //if (Time.tickCounter() % 10600 == 0) {
+            if (Time.tickCounter() % (2 * ticksperminute) == 0)
+            {
+                //DebugAndLog ("Debug: tickcounter: " + Time.tickCounter().ToString() + " tickoffset" + tickoffset.ToString());
+
+                int timewaitingminutes = Convert.ToInt32(((double)Time.tickCounter() / (double)ticksperminute));
+                DebugAndLog("Waiting for first player to join; waiting " + timewaitingminutes.ToString() + " minutes");
+                if (timewaitingminutes > 60) EndMission(1); //If we wait too long before starting the mission we get darkness, other problems before it ends.  So just end it after waiting a while.
+
+            }
+
+            return;
+        }
+
+        if (START_COOP_TICK == -1) START_COOP_TICK = Time.tickCounter();
+
+        if (COOP_START_MODE)
+        {
+
+            int tickSinceCoopStarted = Time.tickCounter() - START_COOP_TICK;
+
+            if (tickSinceCoopStarted >= Convert.ToInt32((COOP_MODE_TIME_SEC * (double)ticksperminute) / 60.0))
+            {
+                COOP_START_MODE = false;
+
+                Stb_Chat("CO-OP MISSION START NOW!", null);
+                Stb_Chat("CO-OP START: Pilots, you may take off at will", null);
+
+                GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!");
+                Timeout(5, () => { GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!"); });
+                Timeout(10, () => { GamePlay.gpHUDLogCenter("CO-OP MISSION START NOW!"); });
+
+                return;
+            }
+
+
+            if (tickSinceCoopStarted % (ticksperminute / 4) == 0)
+            {
+                //DebugAndLog ("Debug: tickcounter: " + Time.tickCounter().ToString() + " tickoffset" + tickoffset.ToString());
+                COOP_TIME_LEFT_MIN = (COOP_MODE_TIME_SEC / 60 - ((double)tickSinceCoopStarted / (double)ticksperminute));
+                double timeleftseconds = (COOP_MODE_TIME_SEC - ((double)tickSinceCoopStarted) * 60.0 / (double)ticksperminute);
+                string s = COOP_TIME_LEFT_MIN.ToString("n2") + " MINUTES";
+                if (timeleftseconds < 120) s = timeleftseconds.ToString("n0") + " SECONDS";
+
+                //let players who can control <coop know about the command, 1X per minute
+                if (tickSinceCoopStarted % ticksperminute == 0)
+                {
+                    Timeout(7.5, () => {
+                        foreach (Player p in GamePlay.gpRemotePlayers())
+                        {
+                            if (admin_privilege_level(p) >= 1) //about once a minute, a message to players who can issue coop commands
+                            {
+                                GamePlay.gpLogServer(new Player[] { p }, "CO-OP MODE CONTROL: Use chat command <coop to start immediately OR extend time", null);
+                            }
+                        }
+                    });
+                }
+
+                //gpLogServerAndLog(null, "COOP START: You can spawn in and taxi but DO NOT TAKE OFF for " + s, null);
+
+                Stb_Chat("CO-OP MISSION START IN " + s, null);
+                Stb_Chat("CO-OP START: You can spawn on the ground and taxi near your spawn point but", null);
+                Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
+                //Stb_Chat("CO-OP time: " + ( COOP_MODE_TIME_SEC / 60).ToString("n2"), null);
+
+
+                string s2 = COOP_TIME_LEFT_MIN.ToString("n2") + " more minutes";
+                if (timeleftseconds < 120) s = timeleftseconds.ToString("n0") + " more seconds";
+
+
+                GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2);
+                Timeout(5, () => { GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2); });
+                Timeout(10, () => { GamePlay.gpHUDLogCenter("CO-OP START: DO NOT TAKE OFF for " + s2); });
+
+
+
+            }
+
+
+            return;
+        }
+
+
+
+        if (START_MISSION_TICK == -1) START_MISSION_TICK = Time.tickCounter();
+
+        int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+
+        //int respawntick = respawnminutes * ticksperminute; // How often to re-spawn new sub-missions & do other repetitive tasks/messages. 27000=15 min repeat. 1800 'ticks' per minute or  108000 per hour.  I believe that this is approximate, not exact.
+
+
+        //periodically remove a/c that have gone off the map
+        if ((tickSinceStarted) % 2100 == 0)
+        {
+
+            RemoveOffMapAIAircraft();
+
+
+        }
+
+
+        if ((tickSinceStarted) % 10100 == 0)
+        {
+            //Write all a/c position to log
+            if (LOG)
+            {
+                DebugAndLog(calcTimeLeft() + " left in mission " + MISSION_ID);
+                int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+                RADAR_REALISM = 0;
+                listPositionAllAircraft(GamePlay.gpPlayer(), 1, true);
+                listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+                RADAR_REALISM = saveRealism;
+            }
+
+        }
+
+        if ((tickSinceStarted) == 0)
+        {
+            GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+            WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
+            Timeout(188, () => { CheckStatsData(); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
+        }
+
+        if (tickSinceStarted % 30000 == 1000)
+        {
+
+            GamePlay.gpLogServer(null, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
+            GamePlay.gpLogServer(null, MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
+            Timeout(10, () =>
+            GamePlay.gpLogServer(null, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
+            Timeout(11, () =>
+            GamePlay.gpLogServer(null, MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { }));
+            Timeout(12, () =>
+            GamePlay.gpLogServer(null, showTimeLeft(), new object[] { }));
+
+            stopAI();//for testing
+        }
+
+        if (tickSinceStarted == END_MISSION_TICK)// Red battle Success.
+                                         //if (Time.tickCounter() == 720)// Red battle Success.  //For testing/very short mission
+        {
+
+            WriteResults_Out_File("3");
+            Timeout(10, () =>
+            {
+                GamePlay.gpLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("The match ends in a tie! Objectives still left for both sides!!!");
+            });
+            EndMission(70, "");
+        }
+
+        //Ticks below write out TOPHAT radar files for red, blue, & admin
+        //We do each every ~minute but space them out a bit from each other
+        //roughly every one minute
+        //do this regardless of whether players are loaded, so it must be first here
+        if ((Time.tickCounter()) % 1000 == 0)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        if ((Time.tickCounter()) % 1000 == 334)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -2, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        if ((Time.tickCounter()) % 1000 == 666)
+        {
+            ///////////////////////////////////////////    
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //Console.WriteLine("Writing current radar returns to file");
+            RADAR_REALISM = -1;
+            listPositionAllAircraft(GamePlay.gpPlayer(), -3, false); //-1 & false will list ALL aircraft of either army
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            RADAR_REALISM = saveRealism;
+
+        }
+
+
+
+
+    }
+
+    /************************************************************
+    * 
+    * handle airport bombing
+    * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
+    * 
+    * We give credit (points) for any bomb that hits within the radius of an airfield.
+    * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
+    * 
+    * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
+    * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
+    * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
+    * 
+    * //Version for -MAIN.cs//
+    *************************************************************/
+
+    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+    //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
+
+    public void SetAirfieldTargets()
+    {
+        foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
+        {
+
+            //We're just going to add ALL airfields as targets, but then make sure there are no duplicates (bec. built-in & .mis-added airports sometimes overlap).
+
+            //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
+
+            ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
+            //UPDATE 2017/11/06: We don't need this adjustment bec. we have adjusted the points received
+            //so that blenheims receive relatively more & the blue bombers relatively less.  So this 
+            //should handle the discrepancy between the sides with no further adjustment necessary
+            //int pointstoknockout = 30;
+            //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
+
+            ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
+            ////Use this for MISSION SERVER  && TACTICAL SERVER 
+            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
+
+            double radius = ap.FieldR();
+            Point3d center = ap.Pos();
+
+
+            //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
+            //most .mis airports are placed on top of an existing built-in airport. We check whether this airport has already been added & skip adding it if so.
+            Point3d pos = ap.Pos();
+            bool add = true;
+            foreach (AiAirport apk in AirfieldTargets.Keys)//Loop through the targets
+            {
+                if (apk != null & apk.Pos().distance(ref pos) <= apk.FieldR())
+                {
+                    //AirfieldTargets[apk].Item3
+                    add = false; //
+                    if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
+                    center = apk.Pos();  //We use the position of the airport set i nthe .mis file for the center, if it exists - thus we can change/move the center position as we wish
+                    break;
+                }
+            }
+
+            //We'll get the NAME of the airport from the birthplace/spawn point declare in a .mis file, if it exists
+
+            string apName = ap.Name();
+            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+            {
+                if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
+                {
+                    if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE"))) apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
+                    break;
+                }
+            }
+
+
+            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, apName, pointstoknockout, 0, DateTime.Now, radius, center)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
+                                                                                                                                                                                    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+                                                                                                                                                                                    //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+
+        }
+        GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
+    }
+
+    public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
+    {
+        int count = 0;
+        string returnmsg = "";
+        if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)
+            {
+
+                double PointsTaken = AirfieldTargets[ap].Item4;
+                bool disabled = AirfieldTargets[ap].Item1;
+
+                if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
+                if (army != -1 & army != ap.Army()) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
+
+                count++;
+                double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                string Mission = AirfieldTargets[ap].Item2;
+                DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+                double percent = 0;
+                if (PointsToKnockOut > 0)
+                {
+                    percent = PointsTaken / PointsToKnockOut;
+                }
+
+                double timereduction = 0;
+                if (percent > 0)
+                {
+                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                }
+
+                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                {
+                    percent = 1;
+                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                }
+
+                string msg = Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago";
+                returnmsg += msg + "\n";
+
+                if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+
+
+            }
+        if (count == 0)
+        {
+            string msg = "No airports damaged or destroyed yet";
+            if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+            returnmsg = ""; //In case of display == false we just don't return any message at all, allowing this bit to simply be omitted
+        }
+
+        return returnmsg;
+    }
+
+    //stamps a rectangular pattern of craters over an airfield to disable it
+    public void AirfieldDisable(AiAirport ap)
+
+    {
+        string apName = ap.Name();
+        double radius = ap.FieldR();
+        Point3d pos = ap.Pos();
+
+        if (AirfieldTargets.ContainsKey(ap))
+        {
+            apName = AirfieldTargets[ap].Item2;
+            radius = AirfieldTargets[ap].Item6;
+            pos = AirfieldTargets[ap].Item7;
+
+        }
+
+        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+
+        string val1 = "Stationary";
+        string type = "BombCrater_firmSoil_largekg";
+        int count = 0;
+        string value = "";
+
+
+        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 80)
+        {
+            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 80)
+            {
+                string key = "Static" + count.ToString();
+                value = val1 + ".Environment." + type + " nn " + (x - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                f.add(sect, key, value);
+                count++;
+
+            }
+
+        }
+        //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
+        GamePlay.gpPostMissionLoad(f);
+        //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
+
+    }
+    /*
+        public void LoadAirfieldSpawns()
+        {
+
+            return;
+
+            //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
+            //so, maybe we will do all that later, and maybe not
+            //For now we are just skipping this part altogether (return;)
+            //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
+
+            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+
+            {
+                bp.destroy();//Removes all spawnpoints
+            }
+        //        GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
+
+            foreach (AiAirport ap in AirfieldTargets.Keys)
+            {
+                if (AirfieldTargets[ap].Item1)
+                {
+                    //Airfield still active so load mission
+                    GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
+                }
+            }
+
+
+        }
+    */
+
+
+
+    /*****************************************************************************
+     * 
+     * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
+     * 
+     *****************************************************************************/
+
+    //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
+    //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
+    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+
+        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+
+        //GamePlay.gpLogServer(null, "bombe 1", null);
+        bool ai = true;
+        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+
+        //GamePlay.gpLogServer(null, "bombe 2", null);
+        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+        //GamePlay.gpLogServer(null, "bombe 3", null);
+        if (terr == 00) isEnemy = 2;
+        if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
+        //GamePlay.gpLogServer(null, "bombe 4", null);
+
+
+        //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
+
+        /********************
+         * 
+         * Handle airport bombing
+         * 
+         *******************/
+
+        //GamePlay.gpLogServer(null, "bombe 5", null);
+
+        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+        apkeys = AirfieldTargets.Keys.ToList();
+
+        maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+
+        //For now, all things we handle below are on land, so if the land type is water we just
+        //get out of here immediately
+        if (landType == maddox.game.LandTypes.WATER) return;
+
+        //GamePlay.gpLogServer(null, "bombe 6", null);
+
+        bool blenheim = false;
+        AiAircraft aircraft = initiator.Actor as AiAircraft;
+        string acType = Calcs.GetAircraftType(aircraft);
+        if (acType.Contains("Blenheim")) blenheim = true;
+
+        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+        {
+            /* if (!AirfieldTargets[ap].Item1)
+            {//airfield has already been knocked out so do nothing
+            }
+            else
+            { */
+
+            //GamePlay.gpLogServer(null, "bombe 7", null);
+            double radius = AirfieldTargets[ap].Item6;
+            Point3d APPos = AirfieldTargets[ap].Item7;
+            string apName = AirfieldTargets[ap].Item2;
+            double distFromCenter = 1000000000;
+            if (ap != null) distFromCenter = APPos.distance(ref pos);
+            //Check if bomb fell inside radius and if so increment up
+            if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
+            {
+
+
+                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+
+
+                //double scoreBase = 0.06303;
+                double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
+                if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic (double the OLD score which is 4X the NEW score.  This makes 1 Blenheim (4 bombs X 4) about 50% as effective as on HE 11. (32 bombs)             
+
+                //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
+                //TODO: Could also give more if exactly on the the runway, or near it, or whatever
+                double multiplier = 0.5;
+                if (distFromCenter <= 2 * radius / 3) multiplier = 1;
+                if (distFromCenter <= radius / 3) multiplier = 1.5;
+
+                //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
+                if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+                {
+                    multiplier = 1.6;
+                }
+
+                scoreBase *= multiplier;
+
+
+                if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+                double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+                 * 
+                 * //Default is 0.5 points for ie 50 lb bomb
+                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+                if (mass_kg > 110) score = 1.41; //250 
+                if (mass_kg > 220) score = 2.33; //500
+                if (mass_kg > 440) score = 3.70; //1000
+                if (mass_kg > 880) score = 5.92; //2000
+                if (mass_kg > 1760) score = 9.33 ; //4000
+
+                //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
+
+                 */
+
+                double individualscore = score;
+
+                if (!ai && (isEnemy == 0 || isEnemy == 2))
+                {
+                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                         //but, still helps destroy that base (for your enemies) as usual
+                                                         //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                }
+
+
+
+                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+                string firetype = "BuildingFireSmall";
+                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+                if (stb_random.NextDouble() > 0.25) firetype = "";
+                //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                //set placeholder variables
+                double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                double PointsTaken = AirfieldTargets[ap].Item4 + score;
+                string Mission = AirfieldTargets[ap].Item2;
+                bool disabled = AirfieldTargets[ap].Item1;
+                DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+
+                string cratertype = "BombCrater_firmSoil_mediumkg";
+                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+                double percent = 0;
+                double prev_percent = 0;
+                double points_reduction_factor = 1;
+                if (PointsToKnockOut > 0)
+                {
+                    percent = PointsTaken / PointsToKnockOut;
+                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                    if (prev_percent > 1) prev_percent = 1;
+                    if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
+                }
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
+
+                //if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
+
+
+                double timereduction = 0;
+                if (prev_percent > 0)
+                {
+                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                }
+
+                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+                if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                {
+                    percent = 1;
+                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                }
+                //Advise player of hit/percent/points
+                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+
+                //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+
+                //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                    if (!disabled)
+                    {
+                        //TODO: Sometimes this doesn't seem to add points to the correct army?  Maybe the army # is wrong or doesn't exist for some ap's ?
+                        //Code below is supposed to fix this, but we'll see.
+                        int arm = ap.Army();
+                        if (arm != 1 && arm != 2)
+                        {
+                            arm = GamePlay.gpFrontArmy(APPos.x, APPos.y);  //This can be 1,2, or 0 for neutral territory.  
+                        }
+
+                        /*
+                         
+                        if (arm == 1) CampaignMapBluePoints += 5; //5 campaign points for knocking out an airfield
+                        else if (arm == 2) CampaignMapRedPoints += 5;
+                        */
+
+                        //Question: Do we want to keep these objective points for knocking out any airfield?
+                        if (arm == 1)
+                        {
+                            MissionObjectiveScore[ArmiesE.Blue]++; //1 campaign point for knocking out an airfield
+                            MissionObjectivesCompletedString[ArmiesE.Blue] += " - " + apName;
+                        }
+                        else if (arm == 2)
+                        {
+                            MissionObjectiveScore[ArmiesE.Red]++;
+                            MissionObjectivesCompletedString[ArmiesE.Red] += " - " + apName;
+                        }
+
+                        Console.WriteLine("Airport destroyed, awarding points to destroying army; airport owned by army: " + arm.ToString());
+
+
+                        //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                        //This airport has been destroyed, so remove the spawn point
+                        if (ap != null)
+                        {
+                            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                            {
+                                Point3d bp_pos = bp.Pos();
+                                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    AirfieldTargets.Remove(ap);
+                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                }
+                //GamePlay.gpLogServer(null, "bombe 11", null);
+                break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
+            }
+        }
+    }
+
+
+    //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
+    public void EndMission(int endseconds = 0, string winner = "")
+    {
+        if (winner == "")
+        {
+            GamePlay.gpLogServer(null, "Mission is restarting soon!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Mission is restarting soon!!!");
+        }
+        else
+        {
+            if (endseconds > 60)
+            {
+                Timeout(endseconds + 40, () =>
+                {
+                    GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                    GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                });
+            }
+            Timeout(endseconds / 2, () =>
+            {
+                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+            });
+            Timeout(endseconds + 15, () =>
+            {
+                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+            });
+            Timeout(endseconds + 45, () =>
+            {
+                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+            });
+            Timeout(endseconds + 61, () =>
+            {
+                GamePlay.gpLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
+
+            });
+        }
+        Timeout(endseconds, () =>
+        {
+            GamePlay.gpLogServer(null, "Mission is restarting in 1 minute!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Mission is restarting in 1 minute!!!");
+        });
+        Timeout(endseconds + 30, () =>
+        {
+            GamePlay.gpLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
+            SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other
+            CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+        });
+        Timeout(endseconds + 60, () =>
+        {
+            GamePlay.gpLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
+            DebugAndLog("Mission ended.");
+
+            //OK, trying this for smoother exit (save stats etc)
+            if (GamePlay is GameDef)
+            {
+                (GamePlay as GameDef).gameInterface.CmdExec("exit");
+            }
+            //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
+        });
+        Timeout(endseconds + 90, () =>  //still doing this as a failsafe but allowing 20 secs to save etc
+        {
+            Process.GetCurrentProcess().Kill();
+        });
+
+    }
+
+
+    /****************************************
+     * LOADRANDOMSUBMISSION
+     * 
+     * Finds all files in the FILE_PATH whose filenames match the pattern (anything or nothing) + fileID + (anything or nothing) + .mis
+     * and randomly selects ONE of them to load.
+     * 
+     * This can be used in mission to, e.g., have a fighter sweep that always launches 12 minutes into the mission.  Instead of 
+     * running the same mission each time,  you can
+     * have 5 different variants of the mission available, and one of them is selected randomly each time.
+     * 
+     * subdir is relative to the FILE_PATH and should not include a leading or trailing / or \
+     * 
+     * Examples:
+     * 
+     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionBOMBERPATROLBLUE"); // load one of several available submissions
+     *   
+     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionFIGHTERPATROLRED", "patrols"); // keep sub-missions in subdirectory "patrols" of your main mission directory (FILE_PATH, above)
+     * 
+     * **************************************/
+
+    public bool LoadRandomSubmission(string fileID = "randsubmission", string subdir = "")
+    {
+        //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
+        //GamePlay.gpHUDLogCenter("Respawning AI air groups");
+        //GamePlay.gpLogServer(null, "RESPAWNING AI AIR GROUPS. AI Aircraft groups re-spawn every " + RESPAWN_MINUTES + " minutes and have a lifetime of " + RESPAWN_MINUTES + "-" + 2*RESPAWN_MINUTES + " minutes. The map restarts every " + Convert.ToInt32((float)END_SESSION_TICK/60/TICKS_PER_MINUTE) + " hours.", new object[] { });
+
+        bool ret = false;
+
+        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
+        //if (DEBUG) 
+
+
+        //random.Next(100) > XX adjust what percentage of AI aicraft sub-missions are actually loaded
+        //random.Next(100) > 85 loads 85% of missions, random.Next(100) > 50 loads 50% of missions, random.Next(100) > 100 loads 100% of missions etc.
+        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && !fileID.StartsWith(MISSION_ID + "-" + "randsubmissionINITIALSHIPS") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD)
+        {
+            Console.WriteLine("Skipping load of " + fileID + " to reduce submission files loaded.");
+            return ret;
+        }
+        DebugAndLog("Debug: Choosing from " + RandomMissions.Count + " missions to spawn. " + fileID + " " + CLOD_PATH + FILE_PATH);
+        if (RandomMissions.Count > 0)
+        {
+            string RandomMission = RandomMissions[random.Next(RandomMissions.Count)];
+            GamePlay.gpPostMissionLoad(RandomMission);
+            ret = true;
+
+            //if (DEBUG) 
+            DebugAndLog("Loading mission " + RandomMission);
+            Console.WriteLine("Loading mission " + Path.GetFileName(RandomMission));
+            DebugAndLog("Current time: " + DateTime.UtcNow.ToString("O"));
+        }
+
+        return ret;
+        /////////////////////////////////////ends submission calls ////////////////////// 0000000000000000000000000000000000000000000000000000000000000000000000000/////////////
+
+        //GamePlay.gpPostMissionLoad("missions/Multi/Flug/Blue vs Red - Scimitar-Flug-2016-04-19-submis");
+
+
+
+    }
+
+    //LOADING OUR RANDOM SUB-MISSIONS//////////////////////////////
+    public List<string> GetFilenamesFromDirectory(string dirPath, string mask = null)
+    {
+        List<string> list = new List<string>();
+        string[] filenames = Directory.GetFiles(dirPath, "*" + mask + "*.mis");
+
+        list = new List<string>(filenames);
+        DebugAndLog("Num matching submissions found in directory: " + list.Count);
+        return list;
+    }
+
+
+
 
 
     private void DoDamageToAirplane(AiAircraft aircraft)
@@ -422,858 +1271,63 @@ public class Mission : AMission
             GamePlay.gpLogServer(Players.ToArray(), msg, parms);
     }
 
+    /************************************************************
+     * ONPLACELEAVE
+     * *********************************************************/
 
-    //The lines below in OnBattleStarted() start the chat parser.  See method Mission_EventChat for the rest of the code
-    //
-    //Note that to make this work, you need all (or maybe just most) of these:  
-    //
-    //  //$reference parts/core/Strategy.dll
-    //  //$reference parts/core/gamePlay.dll
-    //  using maddox.game;
-    //  using maddox.game.world;
-    //  using maddox.GP;
-    //
-    //PLUS you need lines like this in your conf.ini and confs.ini files:
-    //
-    //  [rts]
-    //  scriptAppDomain=0 
-    //  ;avoids the dreaded serialization runtime error when running server
-    //  ;per http://forum.1cpublishing.eu/showthread.php?t=34797
-
-
-    public override void OnBattleStarted()
+    public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
     {
-        base.OnBattleStarted();
+        base.OnPlaceLeave(player, actor, placeIndex);
 
-        //listen to events from all missions.
-        //Note: this is in Init now, so disabling it here.  See note in Init (below).
-        //MissionNumberListener = -1;
-
-        if (GamePlay is GameDef)
+        if (actor != null && actor is AiAircraft)
         {
-            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
-        }
-
-        ReadInitialSubmissions(MISSION_ID + "-stats", 1, 1);
-        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 10, 1); //so we can include initsubmissions if we want
-
-        //Delete any old CampaignSummary.txt files so that they are not hanging around causing trouble
-        try
-        {
-            File.Delete(STATSCS_FULL_PATH + "CampaignSummary.txt");
-        }
-        catch (Exception ex) { Console.WriteLine("CampaignSummary Delete: " + ex.ToString()); }
-    }
-
-    /****************************************
-     * READINITIALSUBMISSIONS
-     * 
-     * Loads any files in the FILE_PATH that match the pattern (anything or nothing) + filenameID + (anything or nothing) + .mis
-     * wait tells how many seconds to wait before starting to load, timespread will spread multiple initialsubmission loads
-     * over a certain time period (seconds)
-     * 
-     * **************************************/
-
-    public void ReadInitialSubmissions(string filenameID, int timespread = 60, int wait = 0)
-    {
-        List<string> InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
-                                                                                                     //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
-                                                                                                     //string[] array = Directory.GetFiles(FILE_PATH + @"Airfields\");
-
-        DebugAndLog("Debug: Loading " + InitSubMissions.Count + " missions to load. " + filenameID + " " + CLOD_PATH + FILE_PATH);
-        foreach (string s in InitSubMissions)
-        {
-            //Distribute loading of initial sub-missions over the first timespread seconds
-            //If you make each sub-mission small enough it will load without a noticeable stutter
-            //If they are large & make a noticeable stutter, probably best to load them all very near the beginning of the mission
-            //so that all the stutters happen at that point
-            if ((timespread == 0) && (wait == 0))
+            //OK, we have to wait a bit here bec. some ppl use ALT-F11 (ALT-F2) for 'external view' which allows to leave two positions
+            //inhabited by bomber pilot & just return to the one position.  But how it actually works is the pilot leaves the aircraft momentarily.
+            Timeout(0.5f, () =>
             {
-                GamePlay.gpPostMissionLoad(s);
-                DebugAndLog(s + " file loaded");
-                Console.WriteLine(s + " file loaded");
-            }
-            else
-            {
-                //if (timespread>2 && random.Next(1) == 1) continue; //TESTING, skip 50% of mission loads just to try it
-                Timeout(wait + random.Next(timespread), () => {
-
-                    //string temp = @"missions\AirfieldSpawnTest\Airfields\" + Path.GetFileName(s);
-
-                    GamePlay.gpPostMissionLoad(s);
-
-                    //string s2=@"C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\missions\Multi\Fatal\TWC-initsubmission-stationary.mis";
-                    //GamePlay.gpPostMissionLoad(s2);
-                    //if (DEBUG)
-                    //{
-                    DebugAndLog(s + " file loaded");
-                    Console.WriteLine(s + " file loaded");
-                    //}
-                });
-            }
-        }
-
-    }
-
-    /****************************************
-     * LOADRANDOMSUBMISSION
-     * 
-     * Finds all files in the FILE_PATH whose filenames match the pattern (anything or nothing) + fileID + (anything or nothing) + .mis
-     * and randomly selects ONE of them to load.
-     * 
-     * This can be used in mission to, e.g., have a fighter sweep that always launches 12 minutes into the mission.  Instead of 
-     * running the same mission each time,  you can
-     * have 5 different variants of the mission available, and one of them is selected randomly each time.
-     * 
-     * subdir is relative to the FILE_PATH and should not include a leading or trailing / or \
-     * 
-     * Examples:
-     * 
-     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionBOMBERPATROLBLUE"); // load one of several available submissions
-     *   
-     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionFIGHTERPATROLRED", "patrols"); // keep sub-missions in subdirectory "patrols" of your main mission directory (FILE_PATH, above)
-     * 
-     * **************************************/
-
-    public bool LoadRandomSubmission(string fileID = "randsubmission", string subdir ="")
-    {
-        //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
-        //GamePlay.gpHUDLogCenter("Respawning AI air groups");
-        //GamePlay.gpLogServer(null, "RESPAWNING AI AIR GROUPS. AI Aircraft groups re-spawn every " + RESPAWN_MINUTES + " minutes and have a lifetime of " + RESPAWN_MINUTES + "-" + 2*RESPAWN_MINUTES + " minutes. The map restarts every " + Convert.ToInt32((float)END_SESSION_TICK/60/TICKS_PER_MINUTE) + " hours.", new object[] { });
-
-        bool ret = false;
-
-        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
-        //if (DEBUG) 
-
-
-        //random.Next(100) > XX adjust what percentage of AI aicraft sub-missions are actually loaded
-        //random.Next(100) > 85 loads 85% of missions, random.Next(100) > 50 loads 50% of missions, random.Next(100) > 100 loads 100% of missions etc.
-        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && !fileID.StartsWith(MISSION_ID + "-" + "randsubmissionINITIALSHIPS") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD)
-        {
-            Console.WriteLine("Skipping load of " + fileID + " to reduce submission files loaded.");
-            return ret;
-        }
-        DebugAndLog("Debug: Choosing from " + RandomMissions.Count + " missions to spawn. " + fileID + " " + CLOD_PATH + FILE_PATH);
-        if (RandomMissions.Count > 0)
-        {
-            string RandomMission = RandomMissions[random.Next(RandomMissions.Count)];
-            GamePlay.gpPostMissionLoad(RandomMission);
-            ret = true;
-
-            //if (DEBUG) 
-            DebugAndLog("Loading mission " + RandomMission);
-            Console.WriteLine("Loading mission " + Path.GetFileName(RandomMission));
-            DebugAndLog("Current time: " + DateTime.UtcNow.ToString("O"));
-        }
-
-        return ret;
-        /////////////////////////////////////ends submission calls ////////////////////// 0000000000000000000000000000000000000000000000000000000000000000000000000/////////////
-
-        //GamePlay.gpPostMissionLoad("missions/Multi/Flug/Blue vs Red - Scimitar-Flug-2016-04-19-submis");
-
-
-
-    }
-
-    //LOADING OUR RANDOM SUB-MISSIONS//////////////////////////////
-    public List<string> GetFilenamesFromDirectory(string dirPath, string mask = null)
-    {
-        List<string> list = new List<string>();
-        string[] filenames = Directory.GetFiles(dirPath, "*" + mask + "*.mis");
-
-        list = new List<string>(filenames);
-        DebugAndLog("Num matching submissions found in directory: " + list.Count);
-        return list;
-    }
-    //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
-    public void EndMission(int endseconds = 0, string winner = "")
-    {
-        if (winner == "")
-        {
-            GamePlay.gpLogServer(null, "Mission is restarting soon!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Mission is restarting soon!!!");
-        }
-        else
-        {
-            if (endseconds > 60)
-            {
-                Timeout(endseconds + 40, () =>
+                string pName = "";
+                if (player != null) pName = player.Name();
+                if (actor is AiAircraft)
                 {
-                    GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
-                    GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
-                });
-            }
-            Timeout(endseconds / 2, () =>
-            {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
-            });
-            Timeout(endseconds + 15, () =>
-            {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
-            });
-            Timeout(endseconds + 45, () =>
-            {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
-            });
-            Timeout(endseconds + 61, () =>
-            {
-                GamePlay.gpLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
 
-            });
-        }
-        Timeout(endseconds, () =>
-        {
-            GamePlay.gpLogServer(null, "Mission is restarting in 1 minute!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Mission is restarting in 1 minute!!!");
-        });
-        Timeout(endseconds + 30, () =>
-        {
-            GamePlay.gpLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
-            //SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other
-            CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
-        });
-        Timeout(endseconds + 60, () =>
-        {
-            GamePlay.gpLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
-            DebugAndLog("Mission ended.");
-
-            //OK, trying this for smoother exit (save stats etc)
-            if (GamePlay is GameDef)
-            {
-                (GamePlay as GameDef).gameInterface.CmdExec("exit");
-            }
-            //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
-        });
-        Timeout(endseconds + 90, () =>  //still doing this as a failsafe but allowing 20 secs to save etc
-        {
-            Process.GetCurrentProcess().Kill();
-        });
-
-    }
-
-
-    public override void OnBattleStoped()
-    {
-        base.OnBattleStoped();
-
-        Console.WriteLine("Battle Stopping");
-        //SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
-        if (GamePlay is GameDef)
-        {
-            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
-            //If we don't remove the new EventChat when the battle is stopped
-            //we tend to get several copies of it operating, if we're not careful
-        }
-    }
-
-    //Listen to events of every mission
-    public override void Init(maddox.game.ABattle battle, int missionNumber)
-    {
-        base.Init(battle, missionNumber);
-        MissionNumberListener = -1; //Listen to events of every mission
-                                    //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
-                                    //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
-                                    //Initialize the mission objectives etc but wait until after initial submissions are loaded
-
-        //This needs to be in Init (not Mission constructor) because it relies on some Battle. stuff that isn't initialized yet at Mission constructor
-        //(For now this is unnecessary but in future we might load things in initial submissions & then mission_objectives potentially affected by them afterwards)
-        //Timeout(30, () => { mission_objectives = new MissionObjectives(this); });
-        //Timeout(1, () => { mission_objectives = new MissionObjectives(this); }); //testing
-        mission_objectives = new MissionObjectives(this);
-
-        //For testing
-        /*
-        Timeout(30, () => {MO_DestroyObjective("BTarget14R");
-            MO_DestroyObjective("BTarget22R");
-            MO_DestroyObjective("RTarget28R");
-            MO_DestroyObjective("RTarget29R");
-
-
-        });
-        */
-        
-
-
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ///MENU SYSTEM////////////////////////////
-
-    bool dmgOn = false;
-    bool EndMissionSelected = false;
-    bool debugMenu = false;
-    bool debugSave;
-    int radar_realismSave;
-    private void setMainMenu(Player player)
-    {
-        //GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Server Options - Users" }, new bool[] { true });
-        if (admin_privilege_level(player) >= 1)
-        {
-            //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
-            //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATE or TAKE YOU TO ANOTHER MENU
-            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Mission Objectives", "", "", "", "", "Admin options" }, new bool[] { false, false, false, false, false, false, false, false, true });
-        }
-        else
-        {
-            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Mission Objectives" }, new bool[] { false, false, false, false });
-
-        }
-    }
-
-    private void setSubMenu1(Player player)
-    {
-        if (admin_privilege_level(player) >= 1)
-        {
-
-            string rollovertext = "(admin) End mission now/roll over to next mission";
-            if (EndMissionSelected) rollovertext = "(admin) CANCEL End mission now command";
-            if (admin_privilege_level(player) == 2)
-                GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
-            else GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "", "", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
-        }
-        else
-        {
-            setMainMenu(player);
-
-        }
-    }
-
-    private void setSubMenu2(Player player)
-    {
-        //GamePlay.gpSetOrderMissionMenu( player, true, 2, new string[] { "Spawn New AI Groups Now", "Dogfight mode: Remove AI Aircraft, stop new spawns (30 minutes)", "Delete all current AI Aircraft", "Show damage reports for all players", "Stop showing damage reports for all players"}, new bool[] { false, false, false, false, false } );
-    }
-
-    //object plnameo= GamePlay.gpPlayer().Name();  
-    //string plname= GamePlay.gpPlayer().Name() as string;
-    public override void OnOrderMissionMenuSelected(Player player, int ID, int menuItemIndex)
-    {
-        //base.OnOrderMissionMenuSelected(player, ID, menuItemIndex); //2015/05/16 - not sure why this was missing previously? We'll see . . .
-
-        /*****************************************************
-         * 
-         * ADMIN SUBMENU (2nd submenu, ID ==1, Tab-4-8)
-         * 
-         *****************************************************/
-        if (ID == 1)
-        { // main menu
-
-            if (menuItemIndex == 0)
-            {
-                setSubMenu1(player);
-                setMainMenu(player);
-            }
-
-            //start/stop display a/c damage inflicted info/////////////////////////// 
-            else if (menuItemIndex == 1)
-            {
-                if (admin_privilege_level(player) == 2)
-                {
-                    dmgOn = !dmgOn;
-                    if (dmgOn)
+                    if (isAiControlledPlane2(actor as AiAircraft))
                     {
-                        GamePlay.gpHUDLogCenter("Will show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
-
-                    }
-                    else
-                    {
-                        GamePlay.gpHUDLogCenter("Will not show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
-                    }
-                }
-                setMainMenu(player);
-            }
-            else if (menuItemIndex == 2)
-            {
-                if (admin_privilege_level(player) == 2)
-                {
-                    debugMenu = !debugMenu;
-                    if (debugMenu)
-                    {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
-                        radar_realismSave = RADAR_REALISM;
-                        DEBUG = true;
-                        RADAR_REALISM = 0;
-
-                    }
-                    else
-                    {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
-                        RADAR_REALISM = radar_realismSave;
-                        DEBUG = false;
-
-                    }
-                }
-
-                setMainMenu(player);
-            }
-
-            //Display Stats
-            //WritePlayerStat(player)
-            /*
-             * else if (menuItemIndex == 3)
-            {
-                if (admin_privilege_level(player) == 2)
-                {
-                    string str = WritePlayerStat(player);
-                    //split msg into a few chunks as gplogserver doesn't like long msgs
-                    int maxChunkSize = 100;
-                    for (int i = 0; i < str.Length; i += maxChunkSize)
-                        GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
-                }
-
-                setMainMenu(player);
-            }
-            */
-            else if (menuItemIndex == 4)
-            {
-                if (admin_privilege_level(player) >= 1)
-                {
-                    if (EndMissionSelected == false)
-                    {
-                        EndMissionSelected = true;
-                        GamePlay.gpLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-9-4 again.  You have 30 seconds to cancel.", new object[] { });
-                        Timeout(30, () => {
-                            if (EndMissionSelected)
+                        Timeout(0.5f, () => //5 sec seems too long, the ai vigorously takes control sometimes, and immediately.  Perhaps even 1 second or .5 better than 2.
+                        {
+                            if (isAiControlledPlane2(actor as AiAircraft))
                             {
-                                EndMission(0);
+                                damageAiControlledPlane(actor);
+                                Console.WriteLine("Player has left plane; damaged aircraft so that AI cannot assume control " + pName + " " + (actor as AiAircraft).Type());
+                                //check limited aircraft
+                                switch ((actor as AiAircraft).InternalTypeName())
+                                {
+
+                                    case "bob:Aircraft.SpitfireMkIIa":
+                                        currentSpitIIas--;
+                                        break;
+                                    case "bob:Aircraft.Bf-109E-4N":
+                                        current109s--;
+                                        break;
+
+                                }
+
                             }
-                            else
-                            {
-                                GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
-                                GamePlay.gpLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
-                            }
-
-                        });
-
-                    }
-                    else
-                    {
-                        GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
-                        EndMissionSelected = false;
-
+                        }
+                        );
                     }
                 }
-                setMainMenu(player);
+                DateTime utcDate = DateTime.UtcNow;
+                //logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));
             }
-            else if (menuItemIndex == 5)
-            {
+            );
 
-                setMainMenu(player);
-            }
-
-
-
-
-            //Respawn/rearm   
-            else if (menuItemIndex == 9)
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
-                //Spawn in mission file with 1 copy of any/all needed aircraft included
-                //copy the one matching the player's plane to the player's current spot or nearby
-                //also copy existing plane's position, direction, location etc etc etc
-                //move player to new a/c 
-                //player.PlaceEnter(aircraft,0);
-                //destroy old a/c
-                setMainMenu(player);
-            }
-            else
-            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
-                setMainMenu(player);
-            }
-
-            /* else if( menuItemIndex == 2 ) {
-                setSubMenu1( player );
-                /* if ( player.Name().Substring(0,3) == @"TWC") {
-                    setSubMenu2( player );
-                  } else {
-                    GamePlay.gpLogServer(new Player[] { player }, player.Name() + " is not authorized", new object[] { }); 
-                    setSubMenu1( player );
-                  }
-                 */
-
-            //}
-
-            /*****************************************************
-             * 
-             * USER SUBMENU (1st submenu, ID == 0, Tab-4)
-             * 
-             *****************************************************/
         }
-        else if (ID == 0)
-        { // sub menu
-
-            if (menuItemIndex == 0)
-            {
-                //setSubMenu1(player);
-                setMainMenu(player);
-            }
-            else if (menuItemIndex == 1)
-            {
-                Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
-                if (DEBUG)
-                {
-                    DebugAndLog("Total number of AI aircraft groups currently active:");
-                    if (GamePlay.gpAirGroups(1) != null && GamePlay.gpAirGroups(2) != null)
-                    {
-
-                        int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
-                        DebugAndLog(totalAircraft.ToString());
-                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
-                    }
-                }
-                setMainMenu(player);
-            }
-            else if (menuItemIndex == 2)
-            {
-                Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), true); //friendly a/c           
-                if (DEBUG)
-                {
-                    DebugAndLog("Total number of AI aircraft groups currently active:");
-                    if (GamePlay.gpAirGroups(1) != null && GamePlay.gpAirGroups(2) != null)
-                    {
-
-                        int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
-                        DebugAndLog(totalAircraft.ToString());
-                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
-                    }
-                }
-                setMainMenu(player);
-                //TIME REMAINING ETC//////////////////////////////////  
-            }
-            else if (menuItemIndex == 3)
-            {
-                //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
-                showTimeLeft(player);
-                //Experiment to see if we could trigger chat commands this way; it didn't work
-                //GamePlay.gpLogServer(new Player[] { player }, "<air", new object[] { });
-                //GamePlay.gpLogServer(new Player[] { player }, "<ter", new object[] { });
-
-                setMainMenu(player);
-            }
-            else if (menuItemIndex == 4)
-            {
-                /*
-                 * Display objectives completed 
-                 */
-
-                GamePlay.gpLogServer(new Player[] { player }, "Completed Red Objectives (" + InitialRedObjectiveCount.ToString() + " points):", new object[] { });
-                GamePlay.gpLogServer(new Player[] { player }, (Objective_Total_Red), new object[] { });
-                Timeout(2, () =>
-                GamePlay.gpLogServer(new Player[] { player }, "Completed Blue Objectives (" + InitialBlueObjectiveCount.ToString() + " points):", new object[] { }));
-                Timeout(3, () =>
-                GamePlay.gpLogServer(new Player[] { player }, (Objective_Total_Blue), new object[] { }));
-                stopAI();//for testing
-
-                setMainMenu(player);
-            }
-            //ADMIN sub-menu
-            else if (menuItemIndex == 9)
-            {
-                setSubMenu1(player);
-            }
-            else
-            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
-                setMainMenu(player);
-            }
-
-            //immediate end of mission///////////////
-
-
-        } //menu if   
-    } // method
-
-
-    /****************************************************************
-     * 
-     * ADMIN PRIVILEGE
-     * 
-     * Determine if player is an admin, and what level
-     * 
-     ****************************************************************/
-
-    public int admin_privilege_level(Player player)
-    {
-        if (player == null || player.Name() == null) return 0;
-        string name = player.Name();
-        //name = "TWC_muggle"; //for testing
-        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
-        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
-        return 0;
 
     }
 
-    //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
-    public override void OnPlayerConnected(Player player)
-    {
-        string message;
-        //Not starting it here due to Coop Start Mode
-        //if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
-        //MISSION_STARTED = true;
-
-        if (MissionNumber > -1)
-        {
-            setMainMenu(player);
-
-            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
-
-            DateTime utcDate = DateTime.UtcNow;
-
-            //utcDate.ToString(culture), utcDate.Kind
-            //Write current time in UTC, what happened, player name
-            message = utcDate.ToString("u") + " Connected " + player.Name();
-        }
-    }
-
-    //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
-    public override void OnPlayerDisconnected(Player player, string diagnostic)
-    {
-        string message;
-        if (MissionNumber > -1)
-        {
-
-            DateTime utcDate = DateTime.UtcNow;
-
-            //utcDate.ToString(culture), utcDate.Kind
-            //Write current time in UTC, what happened, player name
-            message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic;
-            DebugAndLog(message);
-        }
-    }
-
-    public override void OnPlayerArmy(Player player, int Army)
-    {
-        if (MissionNumber > -1)
-        {
-            /* AiAircraft aircraft = (player.Place() as AiAircraft);
-                            string cs = aircraft.CallSign();
-                            //int p = part.ParameterTypes.I_VelocityIAS; 
-                            double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                            GamePlay.gpLogServer(new Player[] { player }, "Plane: "  
-                            + cs + " " + ias, new object[] { });
-            */
-            //We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
-            //always must choose their army before entering the map, so this catches all players before entering the actual gameplay
-            setMainMenu(player);
-            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
-        }
-    }
-    public override void Inited()
-    {
-        if (MissionNumber > -1)
-        {
-
-            setMainMenu(GamePlay.gpPlayer());
-            GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
-
-            Timeout(90, () => { SetAirfieldTargets(); });
-
-
-        }
-    }
-
-
-
-
-
-    /////////////////////
-
-    /////////////////////////CHAT COMMANDS//////////////////////////////////////////////////////////////
-
-    /* public override void OnBattleStarted()
-    {
-        base.OnBattleStarted();
-
-        if (GamePlay is GameDef)
-        {
-            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
-        }
-    } */
-
-    //The lines below implement the the chat parser.  See method  OnBattleInit() for how to initialize it.
-    //
-    //Note that to make this work, you need all (or maybe just most) of these:  
-    //
-    //  //$reference parts/core/Strategy.dll
-    //  //$reference parts/core/gamePlay.dll
-    //  using maddox.game;
-    //  using maddox.game.world;
-    //  using maddox.GP;
-    //
-    //PLUS you need lines like this in your conf.ini and confs.ini files:
-    //
-    //  [rts]
-    //  scriptAppDomain=0 
-    //  ;avoids the dreaded serialization runtime error when running server
-    //  ;per http://forum.1cpublishing.eu/showthread.php?t=34797
-    //
-    // PLUS you need code like this in OnBattleInit() to get it initialized:
-    //
-    // if (GamePlay is GameDef) (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
-    //
-    // PLUS you need code like this in OnBattleStoped() to remove the chat parser when you're done with it:
-    //
-    // (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
-    //
-    //If we don't remove the new EventChat when the battle is stopped
-    //we tend to get several copies of it operating, if we're not careful
-    //
-    //BONUS: How to send a command to server:
-    // public void Chat(string line, Player player)
-    //{
-    //  if (GamePlay is GameDef) (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
-    //}
-    //And, server commands (not all of them may work or be sensible to use from a script):
-    /*
-     ?         admin     alias     ban       channel   chat
-   console   del       deny      difficulty exit     expel
-   f         file      help      history   host      kick
-   kick#     mp_dotrange param   sc        secure    set
-   show      socket    timeout
-
-   */
-
-
-    void Mission_EventChat(IPlayer from, string msg)
-    {
-        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
-        string msg_orig = msg;
-        msg = msg.ToLower();
-        Player player = from as Player;
-        if (msg.StartsWith("<tl"))
-        {
-            showTimeLeft(from);
-            //GamePlay.gp(, from);
-
-        }
-        else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
-        {
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            RADAR_REALISM = 0;
-            listPositionAllAircraft(player, player.Army(), true);
-            listPositionAllAircraft(player, player.Army(), false);
-            RADAR_REALISM = saveRealism;
-
-        }
-        else if (msg.StartsWith("<rad"))
-        {
-            listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
-        }
-        else if (msg.StartsWith("<apall"))
-        {
-            ListAirfieldTargetDamage(player, -1, true);//list ALL airports, damaged or not, of both teams
-        }
-        else if (msg.StartsWith("<ap"))
-        {
-            ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
-        }
-        else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
-        {
-
-            
-            string tr = msg_orig.Substring(8).Trim();
-
-            GamePlay.gpLogServer(new Player[] { player }, "Trying to activate trigger " + tr, new object[] { });
-
-            if (GamePlay.gpGetTrigger(tr) != null ) { 
-                GamePlay.gpGetTrigger(tr).Enable = true;
-                //GamePlay.gpGetTrigger(tr).Active = true;
-                GamePlay.gpLogServer(new Player[] { player }, "Enabled trigger " + tr, new object[] { });
-            }
-
-            //this.OnTrigger(1, tr, true);
-
-            Battle.OnEventGame(GameEventId.Trigger, tr, true, 1);
-            
-            /*
-            AiAction action = GamePlay.gpGetAction("action1");
-
-            if (action != null)
-            {
-                action.Do();
-            }
-            */
-        }
-        else if (msg.StartsWith("<action") && admin_privilege_level(player) >= 2)
-        {
-
-            
-            string tr = msg_orig.Substring(7).Trim();            
-
-            AiAction action = GamePlay.gpGetAction(tr);
-
-            if (action != null)
-            {
-                action.Do();
-                GamePlay.gpLogServer(new Player[] { player }, "Activating action " + tr, new object[] { });
-            } else
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "Didn't find action " + tr + "! No action taken.", new object[] { });
-            }
-            
-
-
-        }
-        else if (msg.StartsWith("<debugon") && admin_privilege_level(player) >= 2)
-        {
-
-            DEBUG = true;
-            GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
-
-        }
-
-        else if (msg.StartsWith("<debugoff") && admin_privilege_level(player) >= 2)
-        {
-
-            DEBUG = false;
-            GamePlay.gpLogServer(new Player[] { player }, "Debug is off", new object[] { });
-
-        }
-        else if (msg.StartsWith("<logon") && admin_privilege_level(player) >= 2)
-        {
-
-            LOG = true;
-            GamePlay.gpLogServer(new Player[] { player }, "Log is on", new object[] { });
-
-        }
-        else if (msg.StartsWith("<logoff") && admin_privilege_level(player) >= 2)
-        {
-
-            LOG = false;
-            GamePlay.gpLogServer(new Player[] { player }, "Log is off", new object[] { });
-
-        }
-
-        else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
-            //Don't give our help when any of these typical -stats.cs chat commands are entered
-            !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
-            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac"))
-
-            )
-        {
-            Timeout(0.1, () =>
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <rad radar", new object[] { });
-                GamePlay.gpLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
-                //GamePlay.gpLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
-                //GamePlay.gp(, from);
-            });
-        }
-    }
-
+    /************************************************************
+    * ONPLACEENTER
+    * *********************************************************/
 
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
@@ -1314,54 +1368,597 @@ public class Mission : AMission
         }
     }
 
-    public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
+
+    /*************************************************************
+     * CHECKSTATSDATA
+     * ***********************************************************/
+
+
+    //Red & blue point totals transferred from -stats.cs
+    //REMEMBER that these are ints and they are percentage X100 (so that we have decimal percentageand so you must DIVIDE BY 100 to get decimal percentage points)
+    //So we are going to do that here & keep them as doubles
+    double RedTotalF = 0;
+    double BlueTotalF = 0;
+    double RedAirF = 0;
+    double RedAAF = 0;
+    double RedNavalF = 0;
+    double RedGroundF = 0;
+    double RedPlanesWrittenOffI = 0;
+    double BlueAirF = 0;
+    double BlueAAF = 0;
+    double BlueNavalF = 0;
+    double BlueGroundF = 0;
+    double BluePlanesWrittenOffI = 0;
+    public void CheckStatsData()
     {
-        base.OnPlaceLeave(player, actor, placeIndex);
+        /************************************************
+         * 
+         * Check/download/transfer stats data
+         * Recursive function called every X seconds
+         ************************************************/
+        Timeout(188, () => { CheckStatsData(); });
 
-        if (actor != null && actor is AiAircraft)
-        {
-                    //OK, we have to wait a bit here bec. some ppl use ALT-F11 (ALT-F2) for 'external view' which allows to leave two positions
-        //inhabited by bomber pilot & just return to the one position.  But how it actually works is the pilot leaves the aircraft momentarily.
-        Timeout(0.5f, () =>
-        {
-            string pName = "";
-            if (player != null) pName = player.Name();
-            if (actor is AiAircraft) {
 
-                if (isAiControlledPlane2(actor as AiAircraft))
+
+        // Read the stats file where we tally red & blue victories for the session
+        //This allows us to make red/blue victories part of our mission objectives &
+        //use the victory tallying mechanism in -stats.cs to do the work of keeping track of that
+        try
+        {
+            using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + "SessStats.txt"))
+            {
+                string RedTotalS = sr.ReadLine();
+                string BlueTotalS = sr.ReadLine();
+                string TimeS = sr.ReadLine();
+                string RedAirS = sr.ReadLine();
+                string RedAAS = sr.ReadLine();
+                string RedNavalS = sr.ReadLine();
+                string RedGroundS = sr.ReadLine();
+                string RedPlanesWrittenOffS = sr.ReadLine();
+                string BlueAirS = sr.ReadLine();
+                string BlueAAS = sr.ReadLine();
+                string BlueNavalS = sr.ReadLine();
+                string BlueGroundS = sr.ReadLine();
+                string BluePlanesWrittenOffS = sr.ReadLine();
+
+                //Only if they are recent (less than 125 seconds old) do we accept the numbers.
+                //-stats.cs generally writes this data every 2 minutes, so older than that is an old mission or something
+                DateTime Time = Convert.ToDateTime(TimeS);
+
+                if (Time.AddSeconds(125).ToUniversalTime() > DateTime.Now.ToUniversalTime())
                 {
-                    Timeout(0.5f, () => //5 sec seems too long, the ai vigorously takes control sometimes, and immediately.  Perhaps even 1 second or .5 better than 2.
-                        {
-                            if (isAiControlledPlane2(actor as AiAircraft))
-                            {
-                                damageAiControlledPlane(actor);
-                                Console.WriteLine("Player has left plane; damaged aircraft so that AI cannot assume control " + pName + " " + (actor as AiAircraft).Type());
-                                //check limited aircraft
-                                switch ((actor as AiAircraft).InternalTypeName())
-                                {
-
-                                    case "bob:Aircraft.SpitfireMkIIa":
-                                        currentSpitIIas--;
-                                        break;
-                                    case "bob:Aircraft.Bf-109E-4N":
-                                        current109s--;
-                                        break;
-
-                                }
-
-                            }
-                        }
-                    );
+                    RedTotalF = Convert.ToDouble(RedTotalS) / 100;
+                    BlueTotalF = Convert.ToDouble(BlueTotalS) / 100;
+                    //GamePlay.gpLogServer(null, "Read SessStats.txt: Times MATCH", null);
+                    RedAirF = Convert.ToDouble(RedAirS) / 100;
+                    RedAAF = Convert.ToDouble(RedAAS) / 100;
+                    RedNavalF = Convert.ToDouble(RedNavalS) / 100;
+                    RedGroundF = Convert.ToDouble(RedGroundS) / 100;
+                    RedPlanesWrittenOffI = Convert.ToInt32(RedPlanesWrittenOffS);
+                    BlueAirF = Convert.ToDouble(BlueAirS) / 100;
+                    BlueAAF = Convert.ToDouble(BlueAAS) / 100;
+                    BlueNavalF = Convert.ToDouble(BlueNavalS) / 100;
+                    BlueGroundF = Convert.ToDouble(BlueGroundS) / 100;
+                    BluePlanesWrittenOffI = Convert.ToInt32(BluePlanesWrittenOffS);
                 }
+
+                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
+                //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100, Time.ToUniversalTime(), DateTime.Now.ToUniversalTime()), null);
+                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} ",
+                //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100), null);
+
             }
-            DateTime utcDate = DateTime.UtcNow;
-            //logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));
         }
-        );
+        catch (Exception ex) { System.Console.WriteLine("Main mission - read sessstats.txt - Exception: " + ex.ToString()); }
+
+        //Write the campaign summary text with current score etc.; this will go on the TEAM STATS page of the stats page
+        try
+        {
+            string outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine;
+            outputmsg += "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]);
+            File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
+        }
+        catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
+
+
+        //Skipping all the points & map-turning related to stats for now.  Just transferring the data for possible use.
+        /*
+        //Check whether the 50-kill objective is reached.  
+        if (!osk_Red50Kills && RedTotalF >= 50)
+        {
+            osk_RedObjCompleted += "50 total Team Kills - ";
+            osk_Red50Kills = true;
+            GamePlay.gpLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
+            GamePlay.gpHUDLogCenter("RED reached 50 Team Kills. Well done Red!");
 
         }
+        if (!osk_Blue50Kills && BlueTotalF >= 50)
+        {
+            osk_BlueObjCompleted += "50 total Team Kills - ";
+            osk_Blue50Kills = true;
+            GamePlay.gpLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });
+            GamePlay.gpHUDLogCenter("BLUE reached 50 Team Kills. Well done Blue!");
+        }
+
+        //Check whether the 50-kill objective is reached.  
+        if (!osk_Red10AirKills && RedAirF >= 10)
+        {
+            osk_RedObjCompleted += "10 total Air Kills - ";
+            osk_Red10AirKills = true;
+            GamePlay.gpLogServer(null, "Red reached 10 total Air Kills. Well done Team Red!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red reached 10  total Air Kills. Well done Red!");
+        }
+        if (!osk_Blue10AirKills && BlueAirF >= 10)
+        {
+            osk_BlueObjCompleted += "10 total Air Kills - ";
+            osk_Blue10AirKills = true;
+            GamePlay.gpLogServer(null, "BLUE reached 10 total Air Kills. Well done Team Blue!", new object[] { });
+            GamePlay.gpHUDLogCenter("BLUE reached 10  total Air Kills. Well done Blue!");
+        }
+        if (!osk_Red10GroundKills && (RedAAF + RedNavalF + RedGroundF) >= 10)
+        {
+            osk_RedObjCompleted += "10 total AA/Naval/Ground Kills - ";
+            osk_Red10GroundKills = true;
+            GamePlay.gpLogServer(null, "Red reached 10 total AA/Naval/Ground Kills. Well done Team Red!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red reached 10  total AA/Naval/Ground Kills. Well done Red!");
+        }
+        if (!osk_Blue10GroundKills && (BlueAAF + BlueNavalF + BlueGroundF) >= 10)
+        {
+            osk_BlueObjCompleted += "10 total AA/Naval/Ground Kills - ";
+            osk_Blue10GroundKills = true;
+            GamePlay.gpLogServer(null, "BLUE reached 10 total AA/Naval/Ground Kills. Well done Team Blue!", new object[] { });
+            GamePlay.gpHUDLogCenter("BLUE reached 10  total AA/Naval/Ground Kills. Well done Blue!");
+        }
+
+
+        //RED has turned the map
+        if (!osk_MapTurned && osk_LeHavreDam_destroyed && osk_OuistrehamDam_destroyed && osk_LeHavreFuelStorage_destroyed && osk_Red10AirKills && osk_Red10GroundKills && RedTotalF >= 50 && RedTotalF > BlueTotalF + 10)//We use RedTotalF >= 50 here, rather than osk_Red50Kills == true, because the team may get 50 kills but then LOSE SOME due to penalty points.
+        {
+            osk_RedObjCompleted += "10 more Team Kills than Blue - ";
+            osk_MapTurned = true;
+            EndMission(300, "RED");
+
+        }
+
+
+        //BLUE has turned the map
+        if (!osk_MapTurned && osk_HambleDam_destroyed && osk_CowesDam_destroyed && osk_PortsmouthFuelStorage_destroyed && osk_Blue10AirKills && osk_Blue10GroundKills && BlueTotalF >= 50 && BlueTotalF > RedTotalF + 10)
+        {
+            osk_BlueObjCompleted += "10 more Team Kills than Red - ";
+            osk_MapTurned = true;
+            EndMission(300, "BLUE");
+
+        }
+
+        */
+
 
     }
+
+
+
+
+
+    public string GetRedObjectivesString()
+    {
+        string StringToReturn = "";
+        StringToReturn = "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):\n";
+        StringToReturn = StringToReturn + MissionObjectivesCompletedString[ArmiesE.Red];
+        return StringToReturn;
+    }
+
+    public string GetBlueObjectivesString()
+    {
+        string StringToReturn = "";
+        StringToReturn = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):\n";
+        StringToReturn = StringToReturn + MissionObjectivesCompletedString[ArmiesE.Blue];
+        return StringToReturn;
+    }
+
+    public string GetTimeLeftString()
+    {
+        string StringToReturn = "";
+        StringToReturn = "Time Remaining In Mission:\n";
+
+        TimeSpan Convert_Ticks = TimeSpan.FromMinutes((720000 - Time.tickCounter()) / 2000);//720000 denotes 6 hours of play
+        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
+
+        StringToReturn = StringToReturn + Time_Remaining;
+        return StringToReturn;
+    }
+
+    /*************************************************************
+    * END - CHECKSTATSDATA
+    * ***********************************************************/
+
+    /******************************************************************************
+     * 
+     * LONG-TERM CAMPAIGN METHODS 
+     * 
+     * Routines dealing with the LONG TERM CAMPAIGN and calculating the points
+     * for each team that determine the current campaign status
+     * and which map will be used next mission
+     *      
+     ******************************************************************************/
+
+    //CalcMapMove - returns a double with DOUBLE the current mission score and STRING the text message detailing the score
+    public Tuple<double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null)
+    {
+        double MapMove = 0;
+        string msg = "";
+        string outputmsg = "";
+        Player[] recipients = null;
+        if (player != null) recipients = new Player[] { player };
+
+        if (winner == "Red")
+        {
+            msg = "Red moved the campaign forward by achieving all Mission Objectives and turning the map!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            return new Tuple<double, string>(1, outputmsg);
+        }
+        if (winner == "Blue")
+        {
+            msg = "Blue moved the campaign forward by achieving all Mission Objectives and turning the map!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            return new Tuple<double, string>(-1, outputmsg);
+        }
+
+        if (RedTotalF > 3)
+        {
+            msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total victories!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += RedTotalF / 1000;
+        }
+        if (BlueTotalF > 3)
+        {
+            msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total victories!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= BlueTotalF / 1000;
+        }
+
+        /*
+        double difference = RedTotalF - BlueTotalF;
+        if (Math.Abs(difference) >= 5)
+        {
+            if (difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + difference.ToString("n1") + " more total victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (difference < 0)
+            {
+                msg = "Blue has moved the campaign forward by getting " + (-difference).ToString("n1") + " more total victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += difference / 400;
+        }
+
+        double air_difference = RedAirF - BlueAirF;
+
+        if (Math.Abs(air_difference) >= 5)
+        {
+            if (air_difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + air_difference.ToString("n1") + " more air victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (air_difference < 0)
+            {
+                msg = "Blue has moved the campaign forward by getting " + (-air_difference).ToString("n1") + " more air victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += air_difference / 400;
+        }
+        double ground_difference = RedAAF + RedNavalF + RedGroundF - BlueAAF - BlueNavalF - BlueGroundF;
+        if (Math.Abs(ground_difference) >= 5)
+        {
+            if (ground_difference > 0)
+            {
+                msg = "Red has moved the campaign forward by getting " + ground_difference.ToString("n1") + " more ground victories than Blue!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (ground_difference < 0)
+            {
+                msg = "Blue has moved the campaign forward by getting " + (-ground_difference).ToString("n1") + " more ground victories than Red!";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += ground_difference / 400;
+        }
+        */
+
+        if (MissionObjectiveScore[ArmiesE.Red] > 0)
+        {
+            msg = "Red has moved the campaign forward by getting " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points by destroying Mission Objectives!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += MissionObjectiveScore[ArmiesE.Red] / 100;
+        }
+
+        if (MissionObjectiveScore[ArmiesE.Blue] > 0)
+        {
+            msg = "Blue has moved the campaign forward by getting " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points by destroying Mission Objectives!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= MissionObjectiveScore[ArmiesE.Blue] / 100;
+        }
+        if (RedPlanesWrittenOffI >= 3)
+        {
+            msg = "Red has lost ground by losing " + RedPlanesWrittenOffI.ToString() + " aircraft in battle!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove -= (double)RedPlanesWrittenOffI / 200;  //These are LOSSES, so - points for red & + points for blue
+        }
+        if (BluePlanesWrittenOffI >= 3)
+        {
+            msg = "Blue has lost ground by losing " + BluePlanesWrittenOffI.ToString() + " aircraft in battle!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+            MapMove += (double)BluePlanesWrittenOffI / 200; //These are LOSSES, so - points for red & + points for blue
+        }
+
+        /*
+        if (final)
+        {
+
+            double portionComplete = calcProportionTimeComplete(); //0= just start, 1 = complete
+            double outside = (random.NextDouble() - 0.5) * portionComplete;  //if a full mission we can get up to +/- 0.5 added by 'outside factors'.  But if we have done only a half mission it would be half that, 1/4 mission = 1/4 that, etc.
+
+
+            if (outside > 0.05)
+            {
+                string reason = "Help from Allies";
+                if (random.Next(2) == 1) reason = "A naval victory";
+                msg = reason + " has strengthened Red's position";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            if (outside < -0.05)
+            {
+                string reason = "Help from Allies has";
+                if (random.Next(3) == 1) reason = "A naval victory has";
+                else if (random.Next(1) == 1) reason = "Positive developments on the Eastern Front have";
+                msg = reason + " strengthened Blue's position";
+                outputmsg += msg + Environment.NewLine;
+                if (output) gpLogServerAndLog(recipients, msg, null);
+            }
+            MapMove += outside;
+        }
+
+        */
+
+        //We can move AT MOST one notch (one map) in either direction, per mission
+        if (MapMove > 1) MapMove = 1;
+        if (MapMove < -1) MapMove = -1;
+
+        string word = "Currently, ";
+        if (final) word = "Altogether, ";
+
+        if (MapMove > 0)
+        {
+            msg = word + "this mission has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        if (MapMove < 0)
+        {
+            msg = word + "this mission has improved Blue's campaign position by " + (-MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        if (MapMove == 0)
+        {
+            msg = word + "this mission is a COMPLETE STALEMATE!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+
+        return new Tuple<double, string>(MapMove, outputmsg);
+
+    }
+    public string summarizeCurrentMapstate(double ms, bool output = true, Player player = null)
+    {
+        string outputmsg = "";
+        string msg = "";
+        Player[] recipients = null;
+        if (player != null) recipients = new Player[] { player };
+
+        if (ms > 0)
+        {
+            msg = "Red stands at +" + (ms * 100).ToString("n0") + " for the entire " + CAMPAIGN_ID + " campaign.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        else if (ms < 0)
+        {
+            msg = "Blue stands at +" + (-ms * 100).ToString("n0") + " for the entire " + CAMPAIGN_ID + " campaign.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        else
+        {
+            msg = "The entire " + CAMPAIGN_ID + " campaign is exactly balanced. Blue stands at +0, Red +0.";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
+        }
+        return outputmsg;
+    }
+
+    //saves the current map state to a text file as the first line.  Previous mapstates are in reverse order from the top down, each on one line.
+    //Also, saves the previous version of the _MapState file as *_MapState_old.txt
+    public bool MapStateSaved = false;
+    public bool MapStateBackedUp = false;
+    public void SaveMapState(string winner, bool intermediateSave = false)
+    {
+        Console.WriteLine("Map Save #0");
+        if (!intermediateSave && MapStateSaved) return; //Due to the way it works (adding a certain value to the value in the file), we can only save map state ONCE per session.  So we can call it a few times near the end to be safe, but it only will save once at most
+        try
+        {
+
+            Console.WriteLine("Map Save #1");
+
+            Tuple<double, string> res = CalcMapMove(winner, true, true, null);
+            double newMapState = CampaignMapState + res.Item1;
+            string outputmsg = res.Item2;
+            string msg = "";
+            string turnString = "(none)";
+            if (winner.Equals("Red") || winner.Equals("Blue")) turnString = winner;
+            DateTime dt = DateTime.UtcNow;
+            string date = dt.ToString("u");
+
+
+            Console.WriteLine("Map Save #2");
+
+            bool writeOutput = true;
+            //for testing
+            if (intermediateSave) writeOutput = false;
+            outputmsg += summarizeCurrentMapstate(newMapState, writeOutput);
+
+
+            //TODO: We could write outputmsg to a file or send it to the -stats.cs or something
+            //This saves the summary text to a file with CR/LF replaced with <br> so it can be used in HTML page
+
+            /*  (removing this save here since we have it in CheckStatsData();
+            try
+            {
+                File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", Regex.Replace(outputmsg, @"\r\n?|\n", "<br>" + Environment.NewLine));
+            }
+            catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
+            */
+            string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt";
+            string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState_old.txt";
+            string currentContent = String.Empty;
+
+            //Save most recent copy of Campaign Map Score with suffix _old
+            try
+            {
+                if (File.Exists(filepath_old)) { File.Delete(filepath_old); }
+                File.Copy(filepath, filepath_old);
+            }
+            catch (Exception ex) { Console.WriteLine("MapState Write Inner: " + ex.ToString()); }
+
+
+            Console.WriteLine("Map Save #3");
+
+            //if (File.Exists(filepath)) { File.Delete(filepath); }
+            /*fi = new System.IO.FileInfo(filepath); //file to write to
+            sw = fi.CreateText();
+            sw.WriteLine(newMapState.ToString());
+            sw.Close(); */
+
+            if (File.Exists(filepath))
+            {
+                currentContent = File.ReadAllText(filepath);
+            }
+            //TODO: We could trim currentContent to some certain length or whatever
+            //currentContent = currentContent.Split(Environment.NewLine.ToCharArray()).FirstOrDefault(); //cut down prev content to max of 20 lines
+            //currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), 21).Take(20)); //cut down prev content to max of 20 lines
+
+            Console.WriteLine("Map Save #4");
+
+            currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(s => s.Trim()).Take(150)); //cut down prev content to max of $X lines & omit blank lines
+            File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
+            if (!intermediateSave) MapStateSaved = true;
+
+            //Save mapstate to special directory once @ beginning of mission & again at very end
+            if (!MapStateBackedUp || !intermediateSave)
+            {
+
+
+                var backPath = STATSCS_FULL_PATH + CAMPAIGN_ID + @" campaign backups\";
+                string filepath_date = backPath + CAMPAIGN_ID + "-" + dt.ToString("yyyy-MM-dd") + ".txt";
+
+                //Create the directory for the MapState.txt backup files, if it doesn't exist
+                if (!System.IO.File.Exists(backPath))
+                {
+
+                    try
+                    {
+                        //System.IO.File.Create(backPath);
+                        System.IO.Directory.CreateDirectory(backPath);
+                    }
+                    catch (Exception ex) { Console.WriteLine("MapState Dir Create Date: " + ex.ToString()); }
+
+                }
+
+                //Save most recent copy of Campaign Map Score with suffix like  -2018-05-13.txt
+                try
+                {
+                    if (File.Exists(filepath_date)) { File.Delete(filepath_date); }
+                    File.Copy(filepath, filepath_date);
+                    MapStateBackedUp = true;
+                }
+                catch (Exception ex) { Console.WriteLine("MapState Write Date: " + ex.ToString()); }
+
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("MapState Write: " + ex.ToString()); }
+
+    }
+
+    public string GetMapSuffix()
+    {
+        double MapState = GetMapState();
+        int MapState_int = Convert.ToInt32(MapState);
+        if (MapState_int > CampaignMapMaxRedSuffixMax) MapState_int = CampaignMapMaxRedSuffixMax;
+        if (-MapState_int > CampaignMapMaxBlueSuffixMax) MapState_int = -CampaignMapMaxBlueSuffixMax;
+
+        if (MapState_int == 0) return "-0";
+        if (MapState_int > 0) return "-R" + MapState_int.ToString("D3");  //3 digits so that our files will be named ie TWC M001-initairports-R002.mis - 002 is 3 digits
+        else return "-B" + (-MapState_int).ToString("D3");
+    }
+
+    public double GetMapState()
+    {
+
+        double MapState = 0;
+        string res = "";
+
+        try
+        {
+            using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt"))
+            {
+                res = sr.ReadLine();
+                MapState = Convert.ToDouble(res); //Total overall score; 0=tied, + = Red winning, - = Blue winning
+                string prevWinner = sr.ReadLine();
+                if (prevWinner == "Red" || prevWinner == "Blue") MapPrevWinner = prevWinner.Trim(); //Winner of previous mission, if there was one.
+
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("Main mission - read mapstate - Exception: " + ex.ToString());
+            MapState = 0;
+        }
+
+        Console.WriteLine("Main mission - read mapstate: " + MapState.ToString() + " " + res + " : " + STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt");
+
+        if (MapState > 100000 || MapState < -100000) MapState = 0;
+        CampaignMapState = MapState;
+        return MapState;
+
+
+    }
+
+    /******************************************************************************
+     * 
+     * END - LONG-TERM CAMPAIGN METHODS 
+     *    
+     ******************************************************************************/
+
+    /*************************
+     * ONACTORDEAD
+     * **********************/
 
     public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
     {
@@ -1419,6 +2016,9 @@ public class Mission : AMission
         catch (Exception ex) { Console.WriteLine("OPD: " + ex.ToString()); }
     }
 
+    /*************************
+     * ONPERSONHEALTH
+     * **********************/
     public override void OnPersonHealth(maddox.game.world.AiPerson person, maddox.game.world.AiDamageInitiator initiator, float deltaHealth)
     {
         #region stats
@@ -1545,450 +2145,6 @@ public class Mission : AMission
         }
     }
 
-    /******************************************************************************************************************** 
-     * MISSION OBJECTIVES CLASSES & METHODS
-     * 
-     * Methods & classes for dealing with objectives, messages & other results of destroying objectives, awarding points, dealing with disabled radar, etc
-     * 
-     * All Mission Objectives should be listed & handled here, then a simple routine below can be called from OnTrigger, OnBombExploded, etc
-     * rather than having code & variables related to objectives scattered hither & yon across the entire file
-     * 
-     * ******************************************************************************************************************/
-    public double InitialBlueObjectiveCount = 0;
-    public double InitialRedObjectiveCount = 0;
-    public string Objective_Total_Blue = "";
-    public string Objective_Total_Red = "";
-
-    //TODO: This percentage is not operative yet
-    public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 75 },
-        {ArmiesE.Blue, 75 }
-    };
-
-    //TODO: Use similar scheme for total points, objectives completed list, objectives completed
-    public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 12 },
-        {ArmiesE.Blue, 12 }
-    };
-
-    Dictionary<string, MissionObjective> MissionObjectivesList = new Dictionary<string, MissionObjective>();
-    Dictionary<ArmiesE, List<MissionObjective>> DestroyedObjectives = new Dictionary<ArmiesE, List<MissionObjective>>() {
-        {ArmiesE.Red, new List<MissionObjective>() },
-        {ArmiesE.Blue, new List<MissionObjective>() }
-    };  //reference as DestroyedObjectives[ArmiesE.Red] DestroyedRadar[ArmiesE.Blue]
-
-    Dictionary<ArmiesE, List<MissionObjective>> DestroyedRadar = new Dictionary<ArmiesE, List<MissionObjective>>() {
-        {ArmiesE.Red, new List<MissionObjective>() },
-        {ArmiesE.Blue, new List<MissionObjective>() }
-    };  //reference as DestroyedRadar[ArmiesE.Red] DestroyedRadar[ArmiesE.Blue]
-
-
-
-    public enum MO_TriggerType { Trigger, Static };
-    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airport, Aircraft, Vehicles, Bridge, Dam, Dock, RRStation, Railroad, Road };
-
-    public class MissionObjective
-    {
-        //public string TriggerName { get; set; }
-        public string ID { get; set; } //unique name, often the Triggername or static name
-        public string Name { get; set; } //Name the will be displayed to the public in messages etc
-        public int AttackingArmy { get; set; } // Army this is an objective for (ie, whose task is to destroy it); can be 1=red, 2=blue,0=none
-        public int OwnerArmy { get; set; } // Army that owns this object (ie, is harmed if it is destroyed)
-        public Mission.MO_ObjectiveType MOObjectiveType { get; set; }
-        public Mission.MO_TriggerType MOTriggerType { get; set; }
-        public bool IsPrimaryTarget { get; set; } //One of the primary/required targets for this mission?
-        public bool InPrimaryTargetPool { get; set; } //If we select primary targets randomly etc, is this one that could be selected?
-        public double Points { get; set; }
-        public bool Destroyed { get; set; }
-        public Point3d Pos { get; set; }
-        public string Sector { get; set; }
-        public string HUDMessage { get; set; }
-        public string LOGMessage { get; set; }
-        public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
-        public double RadarEffectiveRadius { get; set; }
-        public string TriggerName { get; set; }
-        public string TriggerType { get; set; }
-        public double TriggerPercent { get; set; }
-        public double TriggerDestroyRadius { get; set; }
-        public List<string> StaticNames { get; set; } //for static targets, the list of static names that will determine if the target is destroyed
-        public double StaticPercentageRequired { get; set; } //what percentage of those static targets must be destroyed to eliminate the objective
-        public List<string> StaticRemoveNames { get; set; } //what statics to remove when the object is destroyed (allows eg dams to be breached by removal of certain portions)
-        public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
-        public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
-        public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc
-        public Mission msn;
-        public MissionObjective(Mission m)
-        {
-            msn = m;
-        }
-        //RADAR TRIGGER initiator
-        public MissionObjective(Mission m, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, double e, bool pt, bool ptp, string comment) {
-
-            msn = m;
-            MOObjectiveType = MO_ObjectiveType.Radar;
-            MOTriggerType = MO_TriggerType.Trigger;            
-            TriggerName = tn;
-            ID = tn;
-            Name = n;
-            
-            OwnerArmy = ownerarmy;
-            AttackingArmy = 3 - ownerarmy;
-            if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
-            if (AttackingArmy != 0)
-            {
-                HUDMessage = "Red destroyed " + Name;
-                LOGMessage = "Heavy damage to " + Name + " - good job " + ArmiesL[AttackingArmy] + "!!!";
-            }
-            else
-            {
-                HUDMessage = Name + " was destroyed";
-                LOGMessage = Name + " was destroyed";
-            }
-
-            Points = pts;
-            TriggerType = t;
-            TriggerPercent = p;
-            Pos = new Point3d(x, y, 0);
-            Sector = msn.GamePlay.gpSectorName(x,y).ToString();
-            Sector = Sector.Replace(",", ""); // remove the comma
-            TriggerDestroyRadius = d;
-            RadarEffectiveRadius = e;
-            Destroyed = false;
-
-
-            IsPrimaryTarget = pt;
-            InPrimaryTargetPool = ptp;
-            Comment = comment;
-        }
-
-        //TRIGGER initiator (for all types except RADAR)
-        public MissionObjective(Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
-        {
-
-            msn = m;
-            MOObjectiveType = mot;
-            MOTriggerType = MO_TriggerType.Trigger;
-            TriggerName = tn;
-            ID = tn;
-            Name = n;
-
-            OwnerArmy = ownerarmy;
-            AttackingArmy = 3 - ownerarmy;
-            if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
-            if (AttackingArmy != 0)
-            {
-                HUDMessage = "Red destroyed " + Name;
-                LOGMessage = "Heavy damage to " + Name + " - good job " + ArmiesL[AttackingArmy] + "!!!";
-            }
-            else
-            {
-                HUDMessage = Name + " was destroyed";
-                LOGMessage = Name + " was destroyed";
-            }
-
-            Points = pts;
-            TriggerType = t;
-            TriggerPercent = p;
-            Pos = new Point3d(x, y, 0);
-            Sector = msn.GamePlay.gpSectorName(x, y).ToString();
-            Sector = Sector.Replace(",", ""); // remove the comma
-            TriggerDestroyRadius = d;            
-            Destroyed = false;
-
-
-            IsPrimaryTarget = pt;
-            InPrimaryTargetPool = ptp;
-            Comment = comment;
-        }
-    }
-
-    //List<MissionObjective> BlueDestroyedRadar = new List<MissionObjective>();
-
-    public class MissionObjectives
-    {
-        private Mission msn;
-
-        public MissionObjectives(Mission mission)
-        {
-            msn = mission;
-            RadarPositionTriggersSetup();            
-            MissionObjectiveTriggersSetup();
-        }
-
-        public void addRadar(string n, int ownerarmy, double pts, string tn, string t, double p, double x, double y, double d, double e, bool pt, bool ptp, string comment)
-        {
-            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, tn, n, ownerarmy, pts, t, p, x, y, d, e, pt, ptp, comment));
-        }
-
-        public void addTrigger(MO_ObjectiveType mot, string n, int ownerarmy, double pts, string tn, string t="", double p=50, double x=0, double y=0, double d=100, bool pt=false, bool ptp=false, string comment ="")
-        {
-            //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
-            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn,       mot,                   tn,       n,          ownerarmy,   pts,         t,         p,       x,        y,       d,          pt,     ptp,       comment));
-        }
-        public void RadarPositionTriggersSetup()
-        {
-            //MissionObjective(Name, OwnerArmy, points, ID, Trigger Type, Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, isInPrimaryTargetPool) {
-            //ID is the ID used in the [Trigger] portion of the .mis file. The central portion of the line can be copy/pasted from the  .mis file (then lightly edited)
-            addRadar("Westgate Radar", 1, 1, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, false, "");
-            addRadar("Sandwich Radar", 1, 1, "BTarget15R", "TGroundDestroyed", 75, 248739, 253036, 200, 25000, false, false, "");
-            addRadar("Deal Radar", 1, 1, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, false, "");
-            addRadar("Dover Radar", 1, 1, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, false, "");
-            addRadar("Brookland Radar", 1, 1, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, false, "");
-            addRadar("Dungeness Radar", 1, 1, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, false, "");
-            addRadar("Eastbourne Radar", 1, 1, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, false, "");
-            addRadar("Littlehampton Radar", 1, 1, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, false, "");
-            addRadar("Ventnor Radar", 1, 1, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, false, "");
-            addRadar("Radar Communications HQ", 1, 6, "BTarget28", "TGroundDestroyed", 61, 180207, 288435, 200, 100000, false, false, "");
-            addRadar("Oye Plage Freya Radar", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, false, "");
-            addRadar("Coquelles Freya Radar", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 35000, false, false, "");
-            /*
-            BTarget15R TGroundDestroyed 75 248739 253036 200
-            BTarget16R TGroundDestroyed 75 249454 247913 200
-            BTarget17R TGroundDestroyed 75 246777 235751 200
-            BTarget18R TGroundDestroyed 75 212973 220079 200
-            BTarget19R TGroundDestroyed 50 221278 214167 200
-            BTarget20R TGroundDestroyed 75 178778 197288 200
-            BTarget21R TGroundDestroyed 76 123384 196295 200
-            BTarget22R TGroundDestroyed 75 70423 171706 200
-            BTarget28 TGroundDestroyed 61 180207 288435 200
-            RTarget28R TGroundDestroyed 61 294183 219444 50
-            Rtarget29R TGroundDestroyed 63 276566 214150 50
-
-            */
-
-        }
-
-        public void MissionObjectiveTriggersSetup()
-        {
-            //Format: addTrigger(MO_ObjectiveType.Building, "Name,OwnerArmy,Points,ID,TriggerType,PercRequired,XLoc,YLoc,Radius,IsPrimaryTarget,IsInPrimaryTargetPool,Comment "");
-            addTrigger(MO_ObjectiveType.Aircraft, "AV22.1 Littlestone Bombers",         1, 2, "BTarget1","TGroundDestroyed",20,222303,221176,300,false,false, "");
-            addTrigger(MO_ObjectiveType.Airport, "AN.24.2 Redhill Bomber Base",         1, 2, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "AU 23.5 Ashford Train Depot",        1, 2, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Aircraft, "AX 25.9 Manston aircraft",           1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, false, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "AX 23.5 British Armor @ Dover",      1, 2, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, false, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "AP 27.4 British Armor @ CreekMouth", 1, 2, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "British Corvette Destroyed",             1, 3, "BTarget6S", "TGroupDestroyed", 90, 208155.61, 207542.83, 0, false, false, "4_Chief ? HMS Flower Corvette ");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth",                1, 2, "BTarget7S", "TGroundDestroyed", 80, 160045, 274813, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth",                1, 2, "BTarget8S", "TGroundDestroyed", 80, 160172, 274841, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth",                1, 2, "BTarget9S", "TGroundDestroyed", 80, 159888, 274837, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks",              1, 2, "BTarget10S", "TGroundDestroyed", 80, 154957, 273914, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks",              1, 2, "BTarget11S", "TGroundDestroyed", 80, 154104, 273901, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks",              1, 2, "BTarget12S", "TGroundDestroyed", 63, 154488, 273912, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Corvette @ London Docks",                1, 2, "BTarget13S", "TGroundDestroyed", 66, 155847, 273960, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area destroyed",                1, 2, "BTarget13A", "TGroundDestroyed", 63, 160567, 275749, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area destroyed",                1, 2, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery",                   1, 2, "BTarget24", "", 0, 0, 0, 0, false, false, "Trigger missing in .mis file");
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage",                    1, 2, "BTarget25", "", 0, 0, 0, 0, false, false, "Trigger missing in .mis file");
-            addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ",    1, 2, "BTarget26", "", 0, 0, 0, 0, false, false, "Trigger missing in .mis file");
-            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory",             1, 2, "BTarget27", "", 0, 0, 0, 0, false, false, "Trigger missing in .mis file");
-            addTrigger(MO_ObjectiveType.Building, "Unknown",                            1, 2, "RTarget0", "TGroundDestroyed", 100, 251259, 116909, 500, false, false, "No info/points in .cs file for this one?") ;
-            addTrigger(MO_ObjectiveType.Vehicles, "BD 22.1 Motorpool near Grand-Fort Philippe", 2, 2, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "BE 19.2 St. Omar Ball bearing Factory", 2, 2, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "BB 16.4 Estree Fuel Depot", 2, 3, "RTarget3", "TGroundDestroyed", 40, 214728, 235509, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Synthetic Fuel", 2, 2, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.RRStation, "Calais Rail Yard", 2, 2, "RTarget5", "TGroundDestroyed", 60, 283995, 215369, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Calais Hydrogen", 2, 2, "RTarget6", "TGroundDestroyed", 60, 284867, 216414, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Calais Main Fuel Fuel", 2, 2, "RTarget7", "TGroundDestroyed", 60, 285518, 217456, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Calais LOX", 2, 2, "RTarget8", "TGroundDestroyed", 60, 265590, 189900, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Calais Torpedo", 2, 2, "RTarget9", "TGroundDestroyed", 60, 266649, 187099, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Calais Diesel", 2, 2, "RTarget10", "TGroundDestroyed", 60, 266150, 189291, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Aviation Fuel", 2, 2, "RTarget11", "TGroundDestroyed", 43, 264966, 189374, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Diesel", 2, 2, "RTarget12", "TGroundDestroyed", 50, 284978, 215920, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Benzine", 2, 2, "RTarget13", "TGroundDestroyed", 52, 284845, 216884, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Liquid Oxygen", 2, 2, "RTarget14", "TGroundDestroyed", 50, 285019, 217566, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage Boulogne", 2, 2, "RTarget15", "TGroundDestroyed", 50, 284153, 216913, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Arras Main Fuel", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Arras Rubber Factory", 2, 3, "RTarget17", "TGroundDestroyed", 50, 352039, 141214, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "St Ouen AAA Factory", 2, 2, "RTarget18", "TGroundDestroyed", 50, 303445, 114053, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Abbeville Fuel", 2, 2, "RTarget19", "TGroundDestroyed", 50, 285075, 121608, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Dieppe Fuel", 2, 2, "RTarget20", "TGroundDestroyed", 50, 229270, 101222, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Le Treport Fuel", 2, 2, "RTarget21", "TGroundDestroyed", 50, 250477, 116082, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Poix Nord Fuel Storage", 2, 3, "RTarget22", "TGroundDestroyed", 50, 293827, 84983, 150, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Research Facility", 2, 2, "RTarget23", "TGroundDestroyed", 75, 285254, 216717, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Optical Research Facility", 2, 2, "RTarget24", "TGroundDestroyed", 100, 285547, 216579, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Chemical Storage", 2, 2, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Rations Storage", 2, 1, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Gunpowder Facility", 2, 2, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263442.72, 181487.64, 0, false, false, "0_Chief ? Minensuchtboot");
-            addTrigger(MO_ObjectiveType.Fuel, "Arras Fuel Storage 2", 2, 3, "RTarget31", "TGroundDestroyed", 100, 351371, 141966, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Watten Armory", 2, 2, "RTarget32", "TGroundDestroyed", 100, 310395, 200888, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Half track Factory", 2, 2, "RTarget33", "TGroundDestroyed", 100, 314794, 224432, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Steel mill Dunkirk", 2, 2, "RTarget34", "TGroundDestroyed", 100, 315081, 224145, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Brass Smelter Dunkirk", 2, 2, "RTarget35", "TGroundDestroyed", 100, 314832, 223389, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Dunkirk", 2, 2, "RTarget36", "TGroundDestroyed", 100, 314482, 223882, 200, false, false, "");
-            addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Dunkirk", 2, 3, "RTarget37", "TGroundDestroyed", 100, 313878, 223421, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "1A", "TGroundDestroyed", 63, 296130, 218469, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "2A", "TGroundDestroyed", 75, 294090, 85100, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "3A", "TGroundDestroyed", 66, 293279, 84884, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 1", 2, 1, "4A", "TGroundDestroyed", 70, 317402, 196038, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 2", 2, 1, "5A", "TGroundDestroyed", 47, 266055, 190488, 100, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 3", 2, 1, "6A", "TGroundDestroyed", 51, 264801, 188807, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 2", 2, 1, "7A", "TGroundDestroyed", 62, 285982, 216833, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 1", 2, 1, "8A", "TGroundDestroyed", 54, 283234, 215851, 50, false, false, "");
-            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 3", 2, 1, "9A", "TGroundDestroyed", 77, 283224, 216619, 50, false, false, "");
-        }
-    }
-
-    //foreach (AiAirport apk in AirfieldTargets.Keys)
-
-    //Destroys the objective with the given ID and takes other related actions, such as 
-    //adding points, displaying messages, reducing radar coverage
-    public bool MO_DestroyObjective(string ID, bool active=true)
-    {
-        if (!active) return false;  //If a trigger is passed with flag active=false that (generally) means the trigger has already been activated once before & we don't want to repeat it again
-                                    //this is passed when coming from onTrigger, otherwise it should just be TRUE by default
-
-        var OldObj = new MissionObjective(this);
-
-        if (!MissionObjectivesList.TryGetValue(ID, out OldObj))
-        {
-            return false;
-            //OldObj = new MissionObjective(msn);
-        }
-
-        //Turn off the trigger so it won't trigger again - IF this objective type is a trigger
-        if (OldObj.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
-        {
-            Console.WriteLine("MO_DestroyObjective: Disabling trigger " + ID);
-            GamePlay.gpGetTrigger(ID).Enable = false;
-        }
-
-        if (OldObj.Destroyed) return false; //The object has already been destroyed; don't need to do it again; we only give points/credit for destroying any given objective once
-
-        OldObj.Destroyed = true;
-        if (OldObj.MOObjectiveType == MO_ObjectiveType.Radar)
-        {
-            if (OldObj.OwnerArmy == 1) DestroyedRadar[(ArmiesE.Red)].Add(OldObj);
-            if (OldObj.OwnerArmy == 2) DestroyedRadar[(ArmiesE.Blue)].Add(OldObj);
-        }
-        
-        if (OldObj.AttackingArmy == 1)
-        {
-            Objective_Total_Red += " - " + OldObj.Name;
-            InitialBlueObjectiveCount += OldObj.Points;
-        }
-        if (OldObj.AttackingArmy == 2)
-        {
-            Objective_Total_Blue += " - " + OldObj.Name;
-            InitialRedObjectiveCount += OldObj.Points;
-        }
-
-
-        GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
-        Timeout(10, () =>
-        {
-            GamePlay.gpLogServer(null, OldObj.LOGMessage, new object[] { });
-        MissionObjectivesList[ID] = OldObj;
-        });
-
-        MO_CheckObjectivesComplete();
-
-        return true;
-    }
-
-    public void MO_CheckObjectivesComplete()
-    {
-        if (InitialBlueObjectiveCount >= MO_PercentPrimaryTargetsRequired[ArmiesE.Blue])// Blue battle Success
-        {
-            WriteResults_Out_File("2");
-            Timeout(10, () =>
-            {
-                GamePlay.gpLogServer(null, "Blue has Successfully Completed All Objectives!!!", new object[] { });
-                GamePlay.gpHUDLogCenter("Blue has Successfully Completed All Objectives!!!");
-            });
-            EndMission(70, "Blue");
-        }
-        if (InitialRedObjectiveCount >= MO_PercentPrimaryTargetsRequired[ArmiesE.Red])// Red battle Success
-        {
-            WriteResults_Out_File("1");
-            Timeout(10, () =>
-            {
-                GamePlay.gpLogServer(null, "Red has Successfully Completed All Objectives!!!", new object[] { });
-                GamePlay.gpHUDLogCenter("Red has Successfully Completed All Objectives!!!");
-            });
-            EndMission(70, "Red");
-        }
-    }
-
-    public bool MO_IsPointInDestroyedRadarArea(Point3d p, int army)
-    {
-        var DR = new List<MissionObjective>();
-
-        if (army == 1 || army == 2) DR = DestroyedRadar[(ArmiesE)army];        
-        else return false;
-
-        foreach (MissionObjective value in DR)
-        {
-            double dist = Calcs.CalculatePointDistance(p, value.Pos);
-            //if (value.ID == "BTarget14R") Console.WriteLine(value.Name + " " + army.ToString() + " " + dist.ToString("F0") + " " + value.RadarEffectiveRadius.ToString("F0") + " " + p.x.ToString("F0") + " " + p.y.ToString("F0") + " " + value.Pos.x.ToString("F0") + " " + value.Pos.y.ToString("F0"));
-            if (dist < value.RadarEffectiveRadius) return true;
-        }
-        return false;
-    }
-
-    //Figure out which radar areas are disabled depending on army, admin radar, which objectives have been destroyed, etc.
-    //Returns TRUE if radar is enabled for that area/army, returns FALSE if radar is disabled/out for that area/army
-    //radarArmy 1 = red, 2=blue, 0=admin, anything else is not allowed (in practice this will ignore any radar outages)
-    public bool MO_isRadarEnabledByArea( Point3d pos, bool admin=false, int radarArmy=0) {
-        if (admin || radarArmy==0 || radarArmy>2) return true;
-
-        //Console.WriteLine("#1 " + pos.x.ToString() + " " + pos.y.ToString() + " " + radarArmy.ToString());
-        //WITHIN AN AREA WHERE THE RADAR HAS BEEN DESTROYED?
-        //Finds if the point/ac is in an area with destroyed radar for either/both sides
-        if (mission_objectives != null) { if (MO_IsPointInDestroyedRadarArea(pos, radarArmy)) return false; }
-        else Console.WriteLine("#1.5  Mission Objectives doesn't exist!");
-        //Console.WriteLine("#2 " + pos.x.ToString() + " " + radarArmy.ToString());
-
-        //RED army special denied areas or areas the never have radar coverage
-        if (radarArmy==1)
-        {
-
-            //Red doesn't have any special denied areas for now.
-            //TODO: We could make furthest reaches of France out of radar range, or perhaps just start to remove more low-level 
-            //radar the further into France we go.
-            return true;
-
-        }
-
-        //BLUE army special denied areas or areas that never have radar coverage
-        //TODO: Could gradually remove low-level coverage the further from the stations we go (this is realistic)
-        else if (radarArmy == 2)
-        {
-            //BLUE radar only goes approx to English Coast.
-            //This approximates that by taking a line between these points
-
-            //  250000  313000  TopR of map, direct north of Hellfire Corner
-            //  250000  236000  hellfire corner
-            //  170000  194000  Eastbourne
-            //  8000    180000  Edge of map near Bournemouth
-            //TODO: We could make this more realistic in various ways, perhaps extending some high-level radar partially into UK or the like
-
-
-            if (pos.x > 170000 && pos.x <= 250000)
-            {
-                if ((pos.x - 170000) / 80000 * 42000 + 194000 < pos.y) return false;                 
-            }
-            if (pos.x > 8000 && pos.x <= 170000)
-            {
-                if ((pos.x - 8000) / 162000 * 14000 + 180000 < pos.y) return false;
-            }
-            return true;
-        }
-        return true;
-
-    }
-
-    /******************************************************************************************************************** 
-    * ****END****MISSION OBJECTIVES CLASSES & METHODS
-    * **********************************************************************************************************************/
-    
-    /******************************************************************************************************************** 
-    * RADAR
-    * 
-    * 
-    * **********************************************************************************************************************/
-
-
     public System.IO.FileInfo fi;// = new System.IO.FileInfo(STATSCS_FULL_PATH + MISSION_ID + "_radar.txt"); //file to write to
     public System.IO.StreamWriter sw;
 
@@ -2084,8 +2240,9 @@ public class Mission : AMission
             player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
             player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
             player_alt_m = p.Pos().z;
-            player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
-            player_sector = player_sector.Replace(",", ""); // remove the comma
+            /* player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+            player_sector = player_sector.Replace(",", ""); // remove the comma */
+            player_sector = Calcs.correctedSectorName(this, p.Pos());
             player_place_set = true;
             playername = player.Name();
             playertype = p.Type().ToString();
@@ -2093,11 +2250,11 @@ public class Mission : AMission
             else if (playertype.Contains("Bomber") || playertype.Contains("bomber")) playertype = "B";
             else playertype = "U";
 
-            /* posmessage = "Radar intercepts are based on your current speed/position: " +
+             posmessage = "Radar intercepts are based on your current speed/position: " +
                          player_vel_mph.ToString("F0") +"mph " + 
                          player_sector.ToString();
             gpLogServerAndLog(new Player[] { player }, posmessage, null);
-            */
+            
 
         }
         playername_index = playername + "_0";
@@ -2193,8 +2350,9 @@ public class Mission : AMission
                                             player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
                                             player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
                                             player_alt_m = p.Pos().z;
-                                            player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
-                                            player_sector = player_sector.Replace(",", ""); // remove the comma
+                                            /* player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+                                            player_sector = player_sector.Replace(",", ""); // remove the comma */
+                                            player_sector = Calcs.correctedSectorName(this, p.Pos());
                                             player_place_set = true;
                                         }
 
@@ -2245,8 +2403,9 @@ public class Mission : AMission
                                         intcpt = Calcs.calculateInterceptionPoint(a.Pos(), VwldP, p.Pos(), player_vel_mps);
                                         intcpt_heading = (Calcs.CalculateGradientAngle(p.Pos(), intcpt));
                                         intcpt_time_min = intcpt.z / 60;
-                                        intcpt_sector = GamePlay.gpSectorName(intcpt.x, intcpt.y).ToString();
-                                        intcpt_sector = intcpt_sector.Replace(",", ""); // remove the comma
+                                        /* intcpt_sector = GamePlay.gpSectorName(intcpt.x, intcpt.y).ToString();
+                                        intcpt_sector = intcpt_sector.Replace(",", ""); // remove the comma */
+                                        intcpt_sector = Calcs.correctedSectorName(this, intcpt);
                                         intcpt_reasonable_time = (intcpt_time_min >= 0.02 && intcpt_time_min < 20);
 
                                         climb_possible = true;
@@ -2577,8 +2736,8 @@ public class Mission : AMission
 
                     sw.WriteLine("MISSION SUMMARY");
 
-                    sw.WriteLine("Blue Objectives complete (" + InitialBlueObjectiveCount.ToString() + " points):" + (Objective_Total_Blue));
-                    sw.WriteLine("Red Objectives complete (" + InitialRedObjectiveCount.ToString() + " points):" + (Objective_Total_Red));
+                    sw.WriteLine("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]));
+                    sw.WriteLine("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]));
                     /***TODO: Need to include some kind of current mission & campaign summary here
                      * 
                      */
@@ -2596,14 +2755,12 @@ public class Mission : AMission
   RedAirF, RedAAF, RedNavalF, RedGroundF));
                     sw.WriteLine();
 
-                    /*
                     sw.WriteLine("CAMPAIGN SUMMARY");
 
                     Tuple<double, string> res = CalcMapMove("", false, false, null);
-                    sw.Write(res.Item2);
-                    double newMapState = CampaignMapState + res.Item1;
-                    sw.Write(summarizeCurrentMapstate(newMapState, false, null));
-                    */
+                    sw.Write( res.Item2);
+                    double newMapState = CampaignMapState + res.Item1; 
+                    sw.Write (summarizeCurrentMapstate(newMapState, false, null));
 
                     sw.WriteLine();
                     if (msg.Length > 0) sw.WriteLine("PLAYER SUMMARY");
@@ -2645,198 +2802,867 @@ public class Mission : AMission
     * **********************************************************************************************************************/
 
 
-    //Red & blue point totals transferred from -stats.cs
-    //REMEMBER that these are ints and they are percentage X100 (so that we have decimal percentageand so you must DIVIDE BY 100 to get decimal percentage points)
-    //So we are going to do that here & keep them as doubles
-    double RedTotalF = 0;
-    double BlueTotalF = 0;
-    double RedAirF = 0;
-    double RedAAF = 0;
-    double RedNavalF = 0;
-    double RedGroundF = 0;
-    double RedPlanesWrittenOffI = 0;
-    double BlueAirF = 0;
-    double BlueAAF = 0;
-    double BlueNavalF = 0;
-    double BlueGroundF = 0;
-    double BluePlanesWrittenOffI = 0;
-    public void CheckStatsData()
+    //The lines below in OnBattleStarted() start the chat parser.  See method Mission_EventChat for the rest of the code
+    //
+    //Note that to make this work, you need all (or maybe just most) of these:  
+    //
+    //  //$reference parts/core/Strategy.dll
+    //  //$reference parts/core/gamePlay.dll
+    //  using maddox.game;
+    //  using maddox.game.world;
+    //  using maddox.GP;
+    //
+    //PLUS you need lines like this in your conf.ini and confs.ini files:
+    //
+    //  [rts]
+    //  scriptAppDomain=0 
+    //  ;avoids the dreaded serialization runtime error when running server
+    //  ;per http://forum.1cpublishing.eu/showthread.php?t=34797
+
+
+    public override void OnBattleStarted()
     {
-        /************************************************
-         * 
-         * Check/download/transfer stats data
-         * Recursive function called every X seconds
-         ************************************************/
-        Timeout(188, () => { CheckStatsData(); });
+        base.OnBattleStarted();
+
+        //listen to events from all missions.
+        //Note: this is in Init now, so disabling it here.  See note in Init (below).
+        //MissionNumberListener = -1;
+
+        //When battle is started we re-start the Mission tick clock - setting it up to start events
+        //happening when the first player connects
+
+        MISSION_STARTED = true;
+        if (WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED) MISSION_STARTED = false;
+        START_MISSION_TICK = -1;
+
+        COOP_START_MODE = false;
+        if (COOP_START_MODE_ENABLED) COOP_START_MODE = true;
+        START_COOP_TICK = -1;
+        CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
+
+        CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
+        mission_objectives = new MissionObjectives(this); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
+        LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
+
+
+        //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
+        EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
+        SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
+
+        ReadInitialSubmissions(MISSION_ID + "-stats", 1, 1);
+        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 10, 1); //so we can include initsubmissions if we want
 
 
 
-        // Read the stats file where we tally red & blue victories for the session
-        //This allows us to make red/blue victories part of our mission objectives &
-        //use the victory tallying mechanism in -stats.cs to do the work of keeping track of that
+        if (GamePlay is GameDef)
+        {
+            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+        }
+        
+        //Delete any old CampaignSummary.txt files so that they are not hanging around causing trouble
         try
         {
-            using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + "SessStats.txt"))
+            File.Delete(STATSCS_FULL_PATH + "CampaignSummary.txt");
+        }
+        catch (Exception ex) { Console.WriteLine("CampaignSummary Delete: " + ex.ToString()); }
+    }
+
+    public override void OnBattleStoped()
+    {
+        base.OnBattleStoped();
+
+        Console.WriteLine("Battle Stopping");
+        SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
+        if (GamePlay is GameDef)
+        {
+            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+            //If we don't remove the new EventChat when the battle is stopped
+            //we tend to get several copies of it operating, if we're not careful
+        }
+    }
+
+    /****************************************
+     * READINITIALSUBMISSIONS
+     * 
+     * Loads any files in the FILE_PATH that match the pattern (anything or nothing) + filenameID + (anything or nothing) + .mis
+     * wait tells how many seconds to wait before starting to load, timespread will spread multiple initialsubmission loads
+     * over a certain time period (seconds)
+     * 
+     * **************************************/
+
+    public void ReadInitialSubmissions(string filenameID, int timespread = 60, int wait = 0)
+    {
+        List<string> InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
+                                                                                                     //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
+                                                                                                     //string[] array = Directory.GetFiles(FILE_PATH + @"Airfields\");
+
+        DebugAndLog("Debug: Loading " + InitSubMissions.Count + " missions to load. " + filenameID + " " + CLOD_PATH + FILE_PATH);
+        foreach (string s in InitSubMissions)
+        {
+            //Distribute loading of initial sub-missions over the first timespread seconds
+            //If you make each sub-mission small enough it will load without a noticeable stutter
+            //If they are large & make a noticeable stutter, probably best to load them all very near the beginning of the mission
+            //so that all the stutters happen at that point
+            if ((timespread == 0) && (wait == 0))
             {
-                string RedTotalS = sr.ReadLine();
-                string BlueTotalS = sr.ReadLine();
-                string TimeS = sr.ReadLine();
-                string RedAirS = sr.ReadLine();
-                string RedAAS = sr.ReadLine();
-                string RedNavalS = sr.ReadLine();
-                string RedGroundS = sr.ReadLine();
-                string RedPlanesWrittenOffS = sr.ReadLine();
-                string BlueAirS = sr.ReadLine();
-                string BlueAAS = sr.ReadLine();
-                string BlueNavalS = sr.ReadLine();
-                string BlueGroundS = sr.ReadLine();
-                string BluePlanesWrittenOffS = sr.ReadLine();
+                GamePlay.gpPostMissionLoad(s);
+                DebugAndLog(s + " file loaded");
+                Console.WriteLine(s + " file loaded");
+            }
+            else
+            {
+                //if (timespread>2 && random.Next(1) == 1) continue; //TESTING, skip 50% of mission loads just to try it
+                Timeout(wait + random.Next(timespread), () => {
 
-                //Only if they are recent (less than 125 seconds old) do we accept the numbers.
-                //-stats.cs generally writes this data every 2 minutes, so older than that is an old mission or something
-                DateTime Time = Convert.ToDateTime(TimeS);
+                    //string temp = @"missions\AirfieldSpawnTest\Airfields\" + Path.GetFileName(s);
 
-                if (Time.AddSeconds(125).ToUniversalTime() > DateTime.Now.ToUniversalTime())
-                {
-                    RedTotalF = Convert.ToDouble(RedTotalS) / 100;
-                    BlueTotalF = Convert.ToDouble(BlueTotalS) / 100;
-                    //GamePlay.gpLogServer(null, "Read SessStats.txt: Times MATCH", null);
-                    RedAirF = Convert.ToDouble(RedAirS) / 100;
-                    RedAAF = Convert.ToDouble(RedAAS) / 100;
-                    RedNavalF = Convert.ToDouble(RedNavalS) / 100;
-                    RedGroundF = Convert.ToDouble(RedGroundS) / 100;
-                    RedPlanesWrittenOffI = Convert.ToInt32(RedPlanesWrittenOffS);
-                    BlueAirF = Convert.ToDouble(BlueAirS) / 100;
-                    BlueAAF = Convert.ToDouble(BlueAAS) / 100;
-                    BlueNavalF = Convert.ToDouble(BlueNavalS) / 100;
-                    BlueGroundF = Convert.ToDouble(BlueGroundS) / 100;
-                    BluePlanesWrittenOffI = Convert.ToInt32(BluePlanesWrittenOffS);
-                }
+                    GamePlay.gpPostMissionLoad(s);
 
-                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
-                //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100, Time.ToUniversalTime(), DateTime.Now.ToUniversalTime()), null);
-                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} ",
-                //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100), null);
-
+                    //string s2=@"C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\missions\Multi\Fatal\TWC-initsubmission-stationary.mis";
+                    //GamePlay.gpPostMissionLoad(s2);
+                    //if (DEBUG)
+                    //{
+                    DebugAndLog(s + " file loaded");
+                    Console.WriteLine(s + " file loaded");
+                    //}
+                });
             }
         }
-        catch (Exception ex) { System.Console.WriteLine("Main mission - read sessstats.txt - Exception: " + ex.ToString()); }
 
-        //Write the campaign summary text with current score etc.; this will go on the TEAM STATS page of the stats page
-        try
-        {
-            string outputmsg = "Blue Objectives complete (" + InitialBlueObjectiveCount.ToString() + " points):" + (Objective_Total_Blue) + "<br>" + Environment.NewLine;
-            outputmsg +="Red Objectives complete (" + InitialRedObjectiveCount.ToString() + " points):" + (Objective_Total_Red); 
-            File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
-        }
-        catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
+    }
 
+    /************************************************************
+     * INIT
+     * *********************************************************/
 
-        //Skipping all the points & map-turning related to stats for now.  Just transferring the data for possible use.
+    //Listen to events of every mission
+    public override void Init(maddox.game.ABattle battle, int missionNumber)
+    {
+        base.Init(battle, missionNumber);
+        MissionNumberListener = -1; //Listen to events of every mission
+                                    //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
+                                    //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
+                                    //Initialize the mission objectives etc but wait until after initial submissions are loaded
+
+        //This needs to be in Init (not Mission constructor) because it relies on some Battle. stuff that isn't initialized yet at Mission constructor
+        //(For now this is unnecessary but in future we might load things in initial submissions & then mission_objectives potentially affected by them afterwards)
+        //Timeout(30, () => { mission_objectives = new MissionObjectives(this); });
+        //Timeout(1, () => { mission_objectives = new MissionObjectives(this); }); //testing
+        
+
+        //For testing
         /*
-        //Check whether the 50-kill objective is reached.  
-        if (!osk_Red50Kills && RedTotalF >= 50)
-        {
-            osk_RedObjCompleted += "50 total Team Kills - ";
-            osk_Red50Kills = true;
-            GamePlay.gpLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
-            GamePlay.gpHUDLogCenter("RED reached 50 Team Kills. Well done Red!");
-
-        }
-        if (!osk_Blue50Kills && BlueTotalF >= 50)
-        {
-            osk_BlueObjCompleted += "50 total Team Kills - ";
-            osk_Blue50Kills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });
-            GamePlay.gpHUDLogCenter("BLUE reached 50 Team Kills. Well done Blue!");
-        }
-
-        //Check whether the 50-kill objective is reached.  
-        if (!osk_Red10AirKills && RedAirF >= 10)
-        {
-            osk_RedObjCompleted += "10 total Air Kills - ";
-            osk_Red10AirKills = true;
-            GamePlay.gpLogServer(null, "Red reached 10 total Air Kills. Well done Team Red!", new object[] { });
-            GamePlay.gpHUDLogCenter("Red reached 10  total Air Kills. Well done Red!");
-        }
-        if (!osk_Blue10AirKills && BlueAirF >= 10)
-        {
-            osk_BlueObjCompleted += "10 total Air Kills - ";
-            osk_Blue10AirKills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 10 total Air Kills. Well done Team Blue!", new object[] { });
-            GamePlay.gpHUDLogCenter("BLUE reached 10  total Air Kills. Well done Blue!");
-        }
-        if (!osk_Red10GroundKills && (RedAAF + RedNavalF + RedGroundF) >= 10)
-        {
-            osk_RedObjCompleted += "10 total AA/Naval/Ground Kills - ";
-            osk_Red10GroundKills = true;
-            GamePlay.gpLogServer(null, "Red reached 10 total AA/Naval/Ground Kills. Well done Team Red!", new object[] { });
-            GamePlay.gpHUDLogCenter("Red reached 10  total AA/Naval/Ground Kills. Well done Red!");
-        }
-        if (!osk_Blue10GroundKills && (BlueAAF + BlueNavalF + BlueGroundF) >= 10)
-        {
-            osk_BlueObjCompleted += "10 total AA/Naval/Ground Kills - ";
-            osk_Blue10GroundKills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 10 total AA/Naval/Ground Kills. Well done Team Blue!", new object[] { });
-            GamePlay.gpHUDLogCenter("BLUE reached 10  total AA/Naval/Ground Kills. Well done Blue!");
-        }
+        Timeout(30, () => {MO_DestroyObjective("BTarget14R");
+            MO_DestroyObjective("BTarget22R");
+            MO_DestroyObjective("RTarget28R");
+            MO_DestroyObjective("RTarget29R");
 
 
-        //RED has turned the map
-        if (!osk_MapTurned && osk_LeHavreDam_destroyed && osk_OuistrehamDam_destroyed && osk_LeHavreFuelStorage_destroyed && osk_Red10AirKills && osk_Red10GroundKills && RedTotalF >= 50 && RedTotalF > BlueTotalF + 10)//We use RedTotalF >= 50 here, rather than osk_Red50Kills == true, because the team may get 50 kills but then LOSE SOME due to penalty points.
-        {
-            osk_RedObjCompleted += "10 more Team Kills than Blue - ";
-            osk_MapTurned = true;
-            EndMission(300, "RED");
-
-        }
-
-
-        //BLUE has turned the map
-        if (!osk_MapTurned && osk_HambleDam_destroyed && osk_CowesDam_destroyed && osk_PortsmouthFuelStorage_destroyed && osk_Blue10AirKills && osk_Blue10GroundKills && BlueTotalF >= 50 && BlueTotalF > RedTotalF + 10)
-        {
-            osk_BlueObjCompleted += "10 more Team Kills than Red - ";
-            osk_MapTurned = true;
-            EndMission(300, "BLUE");
-
-        }
-
+        });
         */
 
 
+
+    }
+
+    /************************************************************
+     * MENU SYSTEM
+     * *********************************************************/
+
+    bool dmgOn = false;
+    bool EndMissionSelected = false;
+    bool debugMenu = false;
+    bool debugSave;
+    int radar_realismSave;
+    private void setMainMenu(Player player)
+    {
+        //GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Server Options - Users" }, new bool[] { true });
+        if (admin_privilege_level(player) >= 1)
+        {
+            //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
+            //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATE or TAKE YOU TO ANOTHER MENU
+            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Objectives Complete", "Objectives Remaining", "Other Suggested Targets", "", "", "Admin options" }, new bool[] { false, false, false, false, false, false, false, false, true });
+        }
+        else
+        {
+            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Time left in mission", "Objectives Complete", "Objectives Remaining", "Other Suggested Targets" }, new bool[] { false, false, false, false, false, false });
+
+        }
+    }
+
+    private void setSubMenu1(Player player)
+    {
+        if (admin_privilege_level(player) >= 1)
+        {
+
+            string rollovertext = "(admin) End mission now/roll over to next mission";
+            if (EndMissionSelected) rollovertext = "(admin) CANCEL End mission now command";
+            if (admin_privilege_level(player) == 2)
+                GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
+            else GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "", "", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
+        }
+        else
+        {
+            setMainMenu(player);
+
+        }
+    }
+
+    private void setSubMenu2(Player player)
+    {
+        //GamePlay.gpSetOrderMissionMenu( player, true, 2, new string[] { "Spawn New AI Groups Now", "Dogfight mode: Remove AI Aircraft, stop new spawns (30 minutes)", "Delete all current AI Aircraft", "Show damage reports for all players", "Stop showing damage reports for all players"}, new bool[] { false, false, false, false, false } );
+    }
+
+    //object plnameo= GamePlay.gpPlayer().Name();  
+    //string plname= GamePlay.gpPlayer().Name() as string;
+    public override void OnOrderMissionMenuSelected(Player player, int ID, int menuItemIndex)
+    {
+        //base.OnOrderMissionMenuSelected(player, ID, menuItemIndex); //2015/05/16 - not sure why this was missing previously? We'll see . . .
+
+        /*****************************************************
+         * 
+         * ADMIN SUBMENU (2nd submenu, ID ==1, Tab-4-8)
+         * 
+         *****************************************************/
+        if (ID == 1)
+        { // main menu
+
+            if (menuItemIndex == 0)
+            {
+                setSubMenu1(player);
+                setMainMenu(player);
+            }
+
+            //start/stop display a/c damage inflicted info/////////////////////////// 
+            else if (menuItemIndex == 1)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    dmgOn = !dmgOn;
+                    if (dmgOn)
+                    {
+                        GamePlay.gpHUDLogCenter("Will show damage on all aircraft");
+                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
+
+                    }
+                    else
+                    {
+                        GamePlay.gpHUDLogCenter("Will not show damage on all aircraft");
+                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
+                    }
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 2)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    debugMenu = !debugMenu;
+                    if (debugMenu)
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
+                        radar_realismSave = RADAR_REALISM;
+                        DEBUG = true;
+                        RADAR_REALISM = 0;
+
+                    }
+                    else
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
+                        RADAR_REALISM = radar_realismSave;
+                        DEBUG = false;
+
+                    }
+                }
+
+                setMainMenu(player);
+            }
+
+            //Display Stats
+            //WritePlayerStat(player)
+            /*
+             * else if (menuItemIndex == 3)
+            {
+                if (admin_privilege_level(player) == 2)
+                {
+                    string str = WritePlayerStat(player);
+                    //split msg into a few chunks as gplogserver doesn't like long msgs
+                    int maxChunkSize = 100;
+                    for (int i = 0; i < str.Length; i += maxChunkSize)
+                        GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
+                }
+
+                setMainMenu(player);
+            }
+            */
+            else if (menuItemIndex == 4)
+            {
+                if (admin_privilege_level(player) >= 1)
+                {
+                    if (EndMissionSelected == false)
+                    {
+                        EndMissionSelected = true;
+                        GamePlay.gpLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-9-4 again.  You have 30 seconds to cancel.", new object[] { });
+                        Timeout(30, () => {
+                            if (EndMissionSelected)
+                            {
+                                EndMission(0);
+                            }
+                            else
+                            {
+                                GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
+                                GamePlay.gpLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
+                            }
+
+                        });
+
+                    }
+                    else
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
+                        EndMissionSelected = false;
+
+                    }
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 5)
+            {
+
+                setMainMenu(player);
+            }
+
+
+
+
+            //Respawn/rearm   
+            else if (menuItemIndex == 9)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
+                //Spawn in mission file with 1 copy of any/all needed aircraft included
+                //copy the one matching the player's plane to the player's current spot or nearby
+                //also copy existing plane's position, direction, location etc etc etc
+                //move player to new a/c 
+                //player.PlaceEnter(aircraft,0);
+                //destroy old a/c
+                setMainMenu(player);
+            }
+            else
+            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
+                setMainMenu(player);
+            }
+
+            /* else if( menuItemIndex == 2 ) {
+                setSubMenu1( player );
+                /* if ( player.Name().Substring(0,3) == @"TWC") {
+                    setSubMenu2( player );
+                  } else {
+                    GamePlay.gpLogServer(new Player[] { player }, player.Name() + " is not authorized", new object[] { }); 
+                    setSubMenu1( player );
+                  }
+                 */
+
+            //}
+
+            /*****************************************************
+             * 
+             * USER SUBMENU (1st submenu, ID == 0, Tab-4)
+             * 
+             *****************************************************/
+        }
+        else if (ID == 0)
+        { // sub menu
+
+            if (menuItemIndex == 0)
+            {
+                //setSubMenu1(player);
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 1)
+            {
+                Player[] all = { player };
+                listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
+                if (DEBUG)
+                {
+                    DebugAndLog("Total number of AI aircraft groups currently active:");
+                    if (GamePlay.gpAirGroups(1) != null && GamePlay.gpAirGroups(2) != null)
+                    {
+
+                        int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
+                        DebugAndLog(totalAircraft.ToString());
+                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
+                    }
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 2)
+            {
+                Player[] all = { player };
+                listPositionAllAircraft(player, player.Army(), true); //friendly a/c           
+                if (DEBUG)
+                {
+                    DebugAndLog("Total number of AI aircraft groups currently active:");
+                    if (GamePlay.gpAirGroups(1) != null && GamePlay.gpAirGroups(2) != null)
+                    {
+
+                        int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
+                        DebugAndLog(totalAircraft.ToString());
+                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
+                    }
+                }
+                setMainMenu(player);
+                //TIME REMAINING ETC//////////////////////////////////  
+            }
+            else if (menuItemIndex == 3)
+            {
+                //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
+                showTimeLeft(player);
+                //Experiment to see if we could trigger chat commands this way; it didn't work
+                //GamePlay.gpLogServer(new Player[] { player }, "<air", new object[] { });
+                //GamePlay.gpLogServer(new Player[] { player }, "<ter", new object[] { });
+
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 4)
+            {
+                /*
+                 * Display objectives completed 
+                 */
+
+                GamePlay.gpLogServer(new Player[] { player }, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Red]), new object[] { });
+                Timeout(2, () =>
+                GamePlay.gpLogServer(new Player[] { player }, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
+                Timeout(3, () =>
+                GamePlay.gpLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Blue]), new object[] { }));
+                stopAI();//for testing
+
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 5)
+            {
+                /*
+                 * Display objectives remaining
+                 */
+
+                MO_ListRemainingPrimaryObjectives(player, player.Army(), 10);
+
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 6)
+            {
+                /*
+                 * Display Suggested Alternate Objectives
+                 */
+
+                //ListSuggestedObjectives(player, Player.army, 5);
+                MO_ListSuggestedObjectives(player, player.Army(), 5);               
+
+                setMainMenu(player);
+            }
+
+            
+            //ADMIN sub-menu
+            else if (menuItemIndex == 9)
+            {
+                setSubMenu1(player);
+            }
+            else
+            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
+                setMainMenu(player);
+            }
+
+            //immediate end of mission///////////////
+
+
+        } //menu if   
+    } // method
+
+
+    /****************************************************************
+     * 
+     * ADMIN PRIVILEGE
+     * 
+     * Determine if player is an admin, and what level
+     * 
+     ****************************************************************/
+
+    public int admin_privilege_level(Player player)
+    {
+        if (player == null || player.Name() == null) return 0;
+        string name = player.Name();
+        //name = "TWC_muggle"; //for testing
+        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+        return 0;
+
+    }
+
+    /************************************************************
+    * END - MENU SYSTEM
+    * *********************************************************/
+
+    //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
+    public override void OnPlayerConnected(Player player)
+    {
+        string message;
+        //Not starting it here due to Coop Start Mode
+        //if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
+        //MISSION_STARTED = true;
+
+        if (MissionNumber > -1)
+        {
+            setMainMenu(player);
+
+            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+
+            DateTime utcDate = DateTime.UtcNow;
+
+            //utcDate.ToString(culture), utcDate.Kind
+            //Write current time in UTC, what happened, player name
+            message = utcDate.ToString("u") + " Connected " + player.Name();
+
+            DebugAndLog(message);
+            if (COOP_START_MODE)
+            {
+                Stb_Chat("CO-OP MISSION START MODE", null);
+                Stb_Chat("CO-OP START: You can spawn on the ground and taxi but", null);
+                Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
+            }
+        }
+    }
+
+    //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
+    public override void OnPlayerDisconnected(Player player, string diagnostic)
+    {
+        string message;
+        if (MissionNumber > -1)
+        {
+
+            DateTime utcDate = DateTime.UtcNow;
+
+            //utcDate.ToString(culture), utcDate.Kind
+            //Write current time in UTC, what happened, player name
+            message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic;
+            DebugAndLog(message);
+        }
+    }
+
+    public override void OnPlayerArmy(Player player, int Army)
+    {
+        if (MissionNumber > -1)
+        {
+            /* AiAircraft aircraft = (player.Place() as AiAircraft);
+                            string cs = aircraft.CallSign();
+                            //int p = part.ParameterTypes.I_VelocityIAS; 
+                            double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                            GamePlay.gpLogServer(new Player[] { player }, "Plane: "  
+                            + cs + " " + ias, new object[] { });
+            */
+            //We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
+            //always must choose their army before entering the map, so this catches all players before entering the actual gameplay
+            setMainMenu(player);
+            if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
+            MISSION_STARTED = true;
+            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+        }
+    }
+    public override void Inited()
+    {
+        if (MissionNumber > -1)
+        {
+
+            setMainMenu(GamePlay.gpPlayer());
+            GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
+
+            Timeout(90, () => { SetAirfieldTargets(); });
+
+
+        }
     }
 
 
 
 
 
-    public string GetRedObjectivesString()
-	{
-		string StringToReturn="";
-		StringToReturn= "Red Objectives complete (" + InitialRedObjectiveCount.ToString() + " points):\n";
-		StringToReturn=StringToReturn + Objective_Total_Red;
-        return StringToReturn;
-	}
-	
-	public string GetBlueObjectivesString()
-	{
-		string StringToReturn="";
-		StringToReturn= "Blue Objectives complete (" + InitialBlueObjectiveCount.ToString() + " points):\n";
-        StringToReturn =StringToReturn + Objective_Total_Blue;
-		return StringToReturn;
-	}
-	
-	public string GetTimeLeftString()
-	{
-		string StringToReturn="";
-		StringToReturn="Time Remaining In Mission:\n";
-		
-        TimeSpan Convert_Ticks = TimeSpan.FromMinutes((720000 - Time.tickCounter()) / 2000);//720000 denotes 6 hours of play
-        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
-		
-		StringToReturn=StringToReturn + Time_Remaining;
-		return StringToReturn;
-	}
+    /****************************************
+    * END - CHAT COMMANDS
+    * **************************************/
+
+    /* public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+
+        if (GamePlay is GameDef)
+        {
+            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+        }
+    } */
+
+    //The lines below implement the the chat parser.  See method  OnBattleInit() for how to initialize it.
+    //
+    //Note that to make this work, you need all (or maybe just most) of these:  
+    //
+    //  //$reference parts/core/Strategy.dll
+    //  //$reference parts/core/gamePlay.dll
+    //  using maddox.game;
+    //  using maddox.game.world;
+    //  using maddox.GP;
+    //
+    //PLUS you need lines like this in your conf.ini and confs.ini files:
+    //
+    //  [rts]
+    //  scriptAppDomain=0 
+    //  ;avoids the dreaded serialization runtime error when running server
+    //  ;per http://forum.1cpublishing.eu/showthread.php?t=34797
+    //
+    // PLUS you need code like this in OnBattleInit() to get it initialized:
+    //
+    // if (GamePlay is GameDef) (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+    //
+    // PLUS you need code like this in OnBattleStoped() to remove the chat parser when you're done with it:
+    //
+    // (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+    //
+    //If we don't remove the new EventChat when the battle is stopped
+    //we tend to get several copies of it operating, if we're not careful
+    //
+    //BONUS: How to send a command to server:
+    // public void Chat(string line, Player player)
+    //{
+    //  if (GamePlay is GameDef) (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
+    //}
+    //And, server commands (not all of them may work or be sensible to use from a script):
+    /*
+     ?         admin     alias     ban       channel   chat
+   console   del       deny      difficulty exit     expel
+   f         file      help      history   host      kick
+   kick#     mp_dotrange param   sc        secure    set
+   show      socket    timeout
+
+   */
+
+
+    void Mission_EventChat(IPlayer from, string msg)
+    {
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
+        string msg_orig = msg;
+        msg = msg.ToLower();
+        Player player = from as Player;
+        if (msg.StartsWith("<tl"))
+        {
+            showTimeLeft(from);
+            //GamePlay.gp(, from);
+
+        }
+        else if (msg.StartsWith("<obj"))
+        {
+
+            Timeout(8, () =>
+            {
+                GamePlay.gpLogServer(null, MissionObjectivesString[ArmiesE.Blue], new object[] { });
+                GamePlay.gpLogServer(null, MissionObjectivesString[ArmiesE.Red], new object[] { });
+                GamePlay.gpLogServer(null, "Blue Objectives Completed: " + MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { });
+
+                GamePlay.gpLogServer(null, "Red Objectives Completed: " + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
+            });
+
+        }
+        else if (msg.StartsWith("<camlong")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far, longer & more detailed analysis
+        {
+            Tuple<double, string> res = CalcMapMove("", false, true, player);
+            //string outputmsg = res.Item2;
+            //string msg = "";
+
+            double newMapState = CampaignMapState + res.Item1;
+
+            summarizeCurrentMapstate(newMapState, true, player);
+
+        }
+        else if (msg.StartsWith("<cam")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far
+        {
+
+
+            Tuple<double, string> res = CalcMapMove("", false, false, player);
+            double score = res.Item1 * 100;
+            string mes = "Campaign score for this mission so far: ";
+            if (score > 0) mes += "Red +" + score.ToString("n0");
+            else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
+            else mes += "A tie!";
+            GamePlay.gpLogServer(new Player[] { player }, mes, null);
+
+            double newMapState = CampaignMapState + res.Item1;
+            summarizeCurrentMapstate(newMapState, true, player);
+
+        }
+        else if (msg.StartsWith("<coop start") && admin_privilege_level(player) >= 1)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX more minutes", null);
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            if (COOP_START_MODE)
+            {
+
+                COOP_MODE_TIME_SEC = 0;
+                GamePlay.gpLogServer(new Player[] { player }, "CO-OP Mission will START NOW!", null);
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "<coop start command works only during initial Co-op Start Mode period", null);
+            }
+
+        }
+
+        else if (msg.StartsWith("<coop") && admin_privilege_level(player) >= 1)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX minutes", null);
+            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            if (COOP_START_MODE)
+            {
+                double time_sec = 5 * 60;
+                string time_str = msg.Substring(5).Trim();
+                double time_min = Convert.ToDouble(time_str);
+                if (time_min != 0 || time_str == "0") time_sec = time_min * 60;
+
+
+                COOP_MODE_TIME_SEC += time_sec;
+                double time_left_sec = COOP_TIME_LEFT_MIN * 60 + time_sec;
+
+
+                GamePlay.gpLogServer(new Player[] { player }, "CO-OP MODE start time added " + ((double)time_sec / 60).ToString("n1") + " minutes; ", null);
+                GamePlay.gpLogServer(new Player[] { player }, (COOP_MODE_TIME_SEC / 60).ToString("n1") + " min. total Co-Op start period; " + (time_left_sec / 60).ToString("n1") + " min. remaining", null);
+                Stb_Chat("CO-OP START MODE EXTENDED: " + (time_left_sec / 60).ToString("n1") + " min. until co-op start", null);
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "<coop command works only during initial Co-op Start Mode period", null);
+            }
+
+        }
+        else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
+        {
+            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            RADAR_REALISM = 0;
+            listPositionAllAircraft(player, player.Army(), true);
+            listPositionAllAircraft(player, player.Army(), false);
+            RADAR_REALISM = saveRealism;
+
+        }
+        else if (msg.StartsWith("<rad"))
+        {
+            listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
+        }
+        else if (msg.StartsWith("<apall"))
+        {
+            ListAirfieldTargetDamage(player, -1, true);//list ALL airports, damaged or not, of both teams
+        }
+        else if (msg.StartsWith("<ap"))
+        {
+            ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
+        }
+        else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
+        {
+
+
+            string tr = msg_orig.Substring(8).Trim();
+
+            GamePlay.gpLogServer(new Player[] { player }, "Trying to activate trigger " + tr, new object[] { });
+
+            if (GamePlay.gpGetTrigger(tr) != null)
+            {
+                GamePlay.gpGetTrigger(tr).Enable = true;
+                //GamePlay.gpGetTrigger(tr).Active = true;
+                GamePlay.gpLogServer(new Player[] { player }, "Enabled trigger " + tr, new object[] { });
+            }
+
+            //this.OnTrigger(1, tr, true);
+
+            Battle.OnEventGame(GameEventId.Trigger, tr, true, 1);
+
+            /*
+            AiAction action = GamePlay.gpGetAction("action1");
+
+            if (action != null)
+            {
+                action.Do();
+            }
+            */
+        }
+        else if (msg.StartsWith("<action") && admin_privilege_level(player) >= 2)
+        {
+
+
+            string tr = msg_orig.Substring(7).Trim();
+
+            AiAction action = GamePlay.gpGetAction(tr);
+
+            if (action != null)
+            {
+                action.Do();
+                GamePlay.gpLogServer(new Player[] { player }, "Activating action " + tr, new object[] { });
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Didn't find action " + tr + "! No action taken.", new object[] { });
+            }
+
+
+
+        }
+        else if (msg.StartsWith("<debugon") && admin_privilege_level(player) >= 2)
+        {
+
+            DEBUG = true;
+            GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
+
+        }
+
+        else if (msg.StartsWith("<debugoff") && admin_privilege_level(player) >= 2)
+        {
+
+            DEBUG = false;
+            GamePlay.gpLogServer(new Player[] { player }, "Debug is off", new object[] { });
+
+        }
+        else if (msg.StartsWith("<logon") && admin_privilege_level(player) >= 2)
+        {
+
+            LOG = true;
+            GamePlay.gpLogServer(new Player[] { player }, "Log is on", new object[] { });
+
+        }
+        else if (msg.StartsWith("<logoff") && admin_privilege_level(player) >= 2)
+        {
+
+            LOG = false;
+            GamePlay.gpLogServer(new Player[] { player }, "Log is off", new object[] { });
+
+        }
+
+        else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
+            //Don't give our help when any of these typical -stats.cs chat commands are entered
+            !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
+            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac")
+            || msg.StartsWith("<net"))
+
+            )
+        {
+            Timeout(0.1, () =>
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <rad radar", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
+                //GamePlay.gpLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
+                //GamePlay.gp(, from);
+            });
+        }
+    }
+
+    /****************************************
+    * END - CHAT COMMANDS
+    * **************************************/
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2935,11 +3761,1138 @@ public class Mission : AMission
             );
     }
 
+    //Ranges 0 to 1.  0= just started, 1=full mission time complete
+    public double calcProportionTimeComplete()
+    {
+        double tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+        double perc = tickSinceStarted / ((double)END_MISSION_TICK);
+
+        if (perc < 0) perc = 0;
+        if (perc > 1) perc = 1;
+        return perc;
+    }
+
+
+    //Calcs minutes left as an int
+    public string calcTimeLeft()
+    {
+
+        Tick_Mission_Time = 720000 - Time.tickCounter();
+        var Mission_Time = Tick_Mission_Time / 2000;
+        TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
+        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
+
+
+        return Time_Remaining;
+    }
+    //Displays time left to player & also returns the time left message as a string
+    //Calling with (null, false) will just return the message rather than displaying it
+    public string showTimeLeft(Player player = null, bool showMessage = true)
+    {
+        string missiontimeleft = calcTimeLeft();
+        string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleft ;
+
+        /*
+         *        
+        if (!MISSION_STARTED) msg = "Mission " + MISSION_ID + " not yet started - waiting for first player to enter.";
+        else if (COOP_START_MODE) msg = "Mission " + MISSION_ID + " not yet started - waiting for Co-op Start.";
+        */
+
+        if (showMessage && player != null) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+        return msg;
+    }
+
+
+    public void logToFile(object data, string messageLogPath)
+    {
+        try
+        {
+            FileInfo fi = new FileInfo(messageLogPath);
+            StreamWriter sw;
+            if (fi.Exists) { sw = new StreamWriter(messageLogPath, true, System.Text.Encoding.UTF8); }
+            else { sw = new StreamWriter(messageLogPath, false, System.Text.Encoding.UTF8); }
+            sw.WriteLine((string)data);
+            sw.Flush();
+            sw.Close();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); };
+    }
+
+    public void logMessage(object data)
+    {
+        logToFile(data, MESSAGE_FULL_PATH);
+    }
+
+    public void logStats(object data)
+    {
+        logToFile(data, STATS_FULL_PATH);
+    }
+
+    public void DebugAndLog(object data)
+    {
+        if (DEBUG) GamePlay.gpLogServer(null, (string)data, new object[] { });
+        if (!DEBUG && LOG) Console.WriteLine((string)data); //We're using the regular logs.txt as the logfile now logToFile (data, LOG_FULL_PATH); 
+    }
+    public void gpLogServerAndLog(Player[] to, object data, object[] third)
+    {
+        //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
+        GamePlay.gpLogServer(to, (string)data, third);
+
+    }
+
+
+    /*****************************************************
+     * ONACTORCREATED
+     * ***************************************************/
+
+    //Kill off AI aircraft after a pre-set length of time.  Stops AI aircraft from hanging around too long after they have
+    //crashlanded, landed in the water, wandered off the map, etc
+    //You can CHANGE the amount of time here depending on the type of AI aircraft you plan to use in your missions
+    //Reason for this is #1. CloD tends to leave a/c hanging around for a long time after they really should be gone (crashed, landed, off map, whatever)
+    //#2. AI aircraft tend to become useless after a certain amount of time anyway, they will just fly straight, be completely unresponsive, etc
+    //#3. You should use a variety of strategies to eliminate AI aircraft when their useful life is done (check when they are crashed and de-spawn, fly them off the 
+    //map at the end of their mission and then de-spawn them, etc) but this is sort of a last resort if all other methods fail
+
+    public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
+    {
+        base.OnActorCreated(missionNumber, shortName, actor);
+        //AI Aircraft will be destroyed after airspawn minutes (set above)
+        //lesson learned: For some reason if the Callsign of a group is high (higher than 50 or so?) then that object is not sent through this routine.  ??!!
+        //eg, 12, 22, 32, 45 all work, but not 91 or 88.  They just never come
+        //to OnActorCreated at all . . . But they are in fact created
+        AiAircraft a = actor as AiAircraft;
+
+        int destroyminutes = 90;//Destroy AI a/c this many minutes after they are spawned in.
+
+
+        Timeout(1.0, () => // wait 1 second for human to load into plane
+        {
+            /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGC: Airgroup: " + a.AirGroup() + " " 
+              + a.CallSign() + " " 
+              + a.Type() + " " 
+              + a.TypedName() + " " 
+              +  a.AirGroup().ID(), new object[] { });
+            */
+
+            if (a != null && isAiControlledPlane2(a))
+            {
+
+
+                int ot = (destroyminutes) * 60 - 10; //de-spawns 10 seconds before new sub-mission spawns in.
+                                                     //int brk=(int)Math.Round(19/20);
+
+
+                /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGD: Airgroup: " + a.AirGroup() + " " 
+                  + a.CallSign() + " " 
+                  + a.Type() + " " 
+                  + a.TypedName() + " " 
+                  +  a.AirGroup().ID() + " timeout: " + ot, new object[] { });
+                */
+
+                Timeout(ot - 60, () =>  //message 60 seconds before de-spawning.
+                {
+                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
+                    {
+                        //GamePlay.gpHUDLogCenter("(Some) Old AI Aircraft de-spawning in 60 seconds");
+                    }
+
+                }
+                              );
+
+                Timeout(ot - 5, () =>
+                {
+                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
+                    {
+                        //GamePlay.gpHUDLogCenter("(Some) Old AI Aircraft de-spawning now!");  
+                    }
+                }
+                              );
+
+                //Timeout(75, () =>  //75 sec - 1.5 minutes for testing
+                Timeout(ot, () =>  //960 sec - 16 minutes for real use
+                {
+                    DebugAndLog("DEBUG: Destroying: " + a.AirGroup() + " "
+                      + a.CallSign() + " "
+                      + a.Type() + " "
+                      + a.TypedName() + " "
+                      + a.AirGroup().ID() + " timeout: " + ot);
+                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
+                    { (actor as AiAircraft).Destroy(); }
+                }
+                );
+            }
+        });
+
+
+
+
+    }
+
+    /*****************************************************
+     * END - ONACTORCREATED
+     * ***************************************************/
+  
+
+    #region Returns whether aircraft is an Ai plane (no humans in any seats)
+    private bool isAiControlledPlane2(AiAircraft aircraft)
+
+    { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
+        if (aircraft == null) return false;
+        //check if a player is in any of the "places"
+        for (int i = 0; i < aircraft.Places(); i++)
+        {
+            if (aircraft.Player(i) != null) return false;
+        }
+        return true;
+    }
+    #endregion
+
+
+
+
+    //Removes AIAircraft if they are off the map. Convenient way to get rid of
+    //old a/c - just send them off the map
+    public void RemoveOffMapAIAircraft()
+    {
+        int numremoved = 0;
+        //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
+        double minX = 8200;
+        double minY = 14500;
+        double maxX = 350000;
+        double maxY = 307500;
+        //////////////Comment this out as we don`t have Your Debug mode  
+        DebugAndLog("Checking for AI Aircraft off map, to despawn");
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in GamePlay.gpArmies())
+            {
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor != null && actor is AiAircraft)
+                                {
+                                    AiAircraft a = actor as AiAircraft;
+                                    /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
+                                       //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
+                                       //+ a.Type() + " " 
+                                       //+ a.TypedName() + " " 
+                                       +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                      );
+                                    */
+                                    if (a != null && isAiControlledPlane2(a) &&
+                                          (a.Pos().x <= minX ||
+                                            a.Pos().x >= maxX ||
+                                            a.Pos().y <= minY ||
+                                            a.Pos().y >= maxY
+                                          )
+
+                                    )   // ai aircraft only
+                                    {
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Off Map/Destroying: " + Calcs.GetAircraftType (a) + " " 
+                                        //+ a.CallSign() + " " 
+                                        //+ a.Type() + " " 
+                                        //+ a.TypedName() + " " 
+                                        +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                       );  */
+                                        numremoved++;
+                                        Timeout(numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
+
+                                    }
+
+
+                                }
+                            }
+
+
+                        }
+                    }
+
+            }
+        }
+        // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
+    } //method removeoffmapaiaircraft
+
+
+    //Put a player into a certain place of a certain plane.
+    private bool putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
+    {
+        if (player != null && actor != null && (actor as AiAircraft != null))
+        {
+            AiAircraft aircraft = actor as AiAircraft;
+            player.PlaceEnter(aircraft, place);
+            return true;
+        }
+        return false;
+    }
+
+    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
+    {
+        try
+        {
+            if (aircraft != null)
+            {
+                //Console.WriteLine("Destroying aircraft -stats.cs DPU");
+                aircraft.Destroy();
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+    }
+
+    private void Stb_RemovePlayerFromCart(AiCart cart, Player player = null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
+                                                                             //if player = null then remove ALL players from ALL positions
+    {
+        try
+        {
+
+            if (cart == null)
+                return;
+
+            //check if the player is in any of the "places" - if so remove
+            for (int i = 0; i < cart.Places(); i++)
+            {
+                if (cart.Player(i) == null) continue;
+                if (player != null)
+                {
+                    if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
+                }
+                else
+                {
+                    cart.Player(i).PlaceLeave(i);
+                }
+            }
+
+        }
+        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+    }
+    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then removes any other players from the aircraft, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
+    private void Stb_RemoveAllPlayersFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    {
+        Timeout(timeToRemove_sec, () => {
+
+            //player.PlaceLeave(0);
+            Stb_RemovePlayerFromCart(aircraft as AiCart, player); //remove the primary player
+            Stb_RemoveAllPlayersFromAircraft(aircraft, 0); //remove any other players
+            Timeout(timetoDestroy_sec, () => {
+                if (isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);  //destroy if AI controlled, which SHOULD be the case all of the time now
+            }); //Destroy it a bit later
+        });
+    }
+
+    //Removes ALL players from an a/c after a specified period of time (seconds)
+    private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
+    {
+        Timeout(timeToRemove_sec, () => {
+
+            //player.PlaceLeave(0);
+
+            for (int place = 0; place < aircraft.Places(); place++)
+            {
+                if (aircraft.Player(place) != null)
+                {
+                    //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
+                    Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
+                }
+            }
+
+        });
+    }
+    //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
+    //Includes airports AND spawnpoints
+    private double Stb_distanceToNearestAirport(AiActor actor)
+    {
+        double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        double d2Min = d2;
+        if (actor == null) return d2Min;
+        Point3d pd = actor.Pos();
+        int n = GamePlay.gpAirports().Length;
+        //AiActor[] aMinSaves = new AiActor[n + 1];
+        //int j = 0;
+        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
+        for (int i = 0; i < n; i++)
+        {
+            AiActor a = (AiActor)GamePlay.gpAirports()[i];
+            if (a == null) continue;
+            //if (actor.Army() != a.Army()) continue; //only count friendly airports
+            //if (actor.Army() != (a.Pos().x, a.Pos().y)
+            //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
+
+            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+
+            if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+            }
+
+        }
+
+        foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
+        {
+            if (a.Army() != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+            }
+
+        }
+        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
+    }
+
+    //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
+    //the messages can be seen on the lobby/map screen
+    public void Stb_Chat(string line, Player player)
+    {
+        string to = " TO ";
+        if (player != null && player.Name() != null) to += player.Name();
+        if (GamePlay is GameDef)
+        {
+            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + to);
+        }
+    }
+
+
+
+    /*******************************************************************************
+     ******************************************************************************* 
+     * METHODS DIFFERENT FOR DIFFERENT CAMPAIGNS
+     * 
+     * Below we're collecting the methods that are wildly different between different TWC
+     * campaigns so that we can more easily use comparison tools on the similar portions above.
+     * 
+     * *******************************************************************************
+     * *****************************************************************************/
+
+
+
+    /******************************************************************************************************************** 
+     * MISSION OBJECTIVES CLASSES & METHODS
+     * 
+     * Methods & classes for dealing with objectives, messages & other results of destroying objectives, awarding points, dealing with disabled radar, etc
+     * 
+     * All Mission Objectives should be listed & handled here, then a simple routine below can be called from OnTrigger, OnBombExploded, etc
+     * rather than having code & variables related to objectives scattered hither & yon across the entire file
+     * 
+     * ******************************************************************************************************************/
+
+    /*
+    public double InitialBlueObjectiveCount = 0;
+    public double InitialRedObjectiveCount = 0;
+    public string Objective_Total_Blue = "";
+    public string Objective_Total_Red = "";
+    osk_BlueObjDescription
+    */
+
+    //was InitialBlueObjectiveCount
+    Dictionary<ArmiesE, double> MissionObjectiveScore = new Dictionary<ArmiesE, double>()
+    {    {ArmiesE.Red, 0 },
+         {ArmiesE.Blue, 0 }
+    };  //reference as MissionObjectiveScore[ArmiesE.Red] MissionObjectiveScore[ArmiesE.Blue]
+
+    //was Objective_Total_Blue
+    Dictionary<ArmiesE, string> MissionObjectivesCompletedString = new Dictionary<ArmiesE, string>()
+    {    {ArmiesE.Red, "" },
+         {ArmiesE.Blue, "" }
+    };
+
+    //was osk_BlueObjDescription
+    Dictionary<ArmiesE, string> MissionObjectivesString = new Dictionary<ArmiesE, string>()
+    {    {ArmiesE.Red, "" },
+         {ArmiesE.Blue, "" }
+    };  
+
+    //TODO: This percentage is not operative yet
+    public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
+        {ArmiesE.Red, 75 },
+        {ArmiesE.Blue, 75 }
+    };
+
+    //TODO: Use similar scheme for total points, objectives completed list, objectives completed
+    public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
+        {ArmiesE.Red, 12 },
+        {ArmiesE.Blue, 12 }
+    };
+
+    //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
+    //This allows mission to be turned in case one objective is malfunctioning or super-difficult - by hitting some other alternate targets
+    public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
+        {ArmiesE.Red, 16 },
+        {ArmiesE.Blue, 16 }
+    };
+
+    Dictionary<string, MissionObjective> MissionObjectivesList = new Dictionary<string, MissionObjective>();
+    Dictionary<ArmiesE, List<MissionObjective>> DestroyedObjectives = new Dictionary<ArmiesE, List<MissionObjective>>() {
+        {ArmiesE.Red, new List<MissionObjective>() },
+        {ArmiesE.Blue, new List<MissionObjective>() }
+    };  //reference as DestroyedObjectives[ArmiesE.Red] DestroyedRadar[ArmiesE.Blue]
+
+    Dictionary<ArmiesE, List<MissionObjective>> DestroyedRadar = new Dictionary<ArmiesE, List<MissionObjective>>() {
+        {ArmiesE.Red, new List<MissionObjective>() },
+        {ArmiesE.Blue, new List<MissionObjective>() }
+    };  //reference as DestroyedRadar[ArmiesE.Red] DestroyedRadar[ArmiesE.Blue]
+
+    Dictionary<ArmiesE, List<String>> MissionObjectivesSuggested = new Dictionary<ArmiesE, List<String>>() {
+        {ArmiesE.Red, new List<String>() },
+        {ArmiesE.Blue, new List<String>() }
+    };
+
+    public enum MO_TriggerType { Trigger, Static };
+    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airport, Aircraft, Vehicles, Bridge, Dam, Dock, RRStation, Railroad, Road };
+
+    public class MissionObjective
+    {
+        //public string TriggerName { get; set; }
+        public string ID { get; set; } //unique name, often the Triggername or static name
+        public string Name { get; set; } //Name the will be displayed to the public in messages etc
+        public int AttackingArmy { get; set; } // Army this is an objective for (ie, whose task is to destroy it); can be 1=red, 2=blue,0=none
+        public int OwnerArmy { get; set; } // Army that owns this object (ie, is harmed if it is destroyed)
+        public Mission.MO_ObjectiveType MOObjectiveType { get; set; }
+        public Mission.MO_TriggerType MOTriggerType { get; set; }
+        public bool IsPrimaryTarget { get; set; } //One of the primary/required targets for this mission?
+        public int PrimaryTargetWeight { get; set; } //If we select primary targets randomly etc, is this one that could be selected? Percentage weight 0-100, 0 means never chosen.
+        public double Points { get; set; }
+        public bool Destroyed { get; set; }
+        public Point3d Pos { get; set; }
+        public string Sector { get; set; }
+        public string HUDMessage { get; set; }
+        public string LOGMessage { get; set; }
+        public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
+        public double RadarEffectiveRadius { get; set; }
+        public string TriggerName { get; set; }
+        public string TriggerType { get; set; }
+        public double TriggerPercent { get; set; }
+        public double TriggerDestroyRadius { get; set; }
+        public List<string> StaticNames { get; set; } //for static targets, the list of static names that will determine if the target is destroyed
+        public double StaticPercentageRequired { get; set; } //what percentage of those static targets must be destroyed to eliminate the objective
+        public List<string> StaticRemoveNames { get; set; } //what statics to remove when the object is destroyed (allows eg dams to be breached by removal of certain portions)
+        public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
+        public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
+        public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc
+        public Mission msn;
+        public MissionObjective(Mission m)
+        {
+            msn = m;
+        }
+        //RADAR TRIGGER initiator
+        public MissionObjective(Mission m, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, double e, bool pt, int ptp, string comment)
+        {
+
+            msn = m;
+            MOObjectiveType = MO_ObjectiveType.Radar;
+            MOTriggerType = MO_TriggerType.Trigger;
+            TriggerName = tn;
+            ID = tn;
+            Name = n;
+
+            OwnerArmy = ownerarmy;
+            AttackingArmy = 3 - ownerarmy;
+            if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+            if (AttackingArmy != 0)
+            {
+                HUDMessage = "Red destroyed " + Name;
+                LOGMessage = "Heavy damage to " + Name + " - good job " + ArmiesL[AttackingArmy] + "!!!";
+            }
+            else
+            {
+                HUDMessage = Name + " was destroyed";
+                LOGMessage = Name + " was destroyed";
+            }
+
+            Points = pts;
+            TriggerType = t;
+            TriggerPercent = p;
+            Pos = new Point3d(x, y, 0);
+            /* string keyp = Calcs.doubleKeypad(Pos);
+            Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
+            Sector = Sector.Replace(",", ""); // remove the comma */
+            Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+            TriggerDestroyRadius = d;
+            RadarEffectiveRadius = e;
+            Destroyed = false;
+
+
+            IsPrimaryTarget = pt;
+            PrimaryTargetWeight = ptp;
+            Comment = comment;
+        }
+
+        //TRIGGER initiator (for all types except RADAR)
+        public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, int ptp, string comment)
+        {
+
+            msn = m;
+            MOObjectiveType = mot;
+            MOTriggerType = MO_TriggerType.Trigger;
+            TriggerName = tn;
+            ID = tn;
+            Name = n;
+
+            OwnerArmy = ownerarmy;
+            AttackingArmy = 3 - ownerarmy;
+            if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+            if (AttackingArmy != 0)
+            {
+                HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
+                LOGMessage = "Heavy damage to " + Name + " - good job " + ArmiesL[AttackingArmy] + "!!!";
+            }
+            else
+            {
+                HUDMessage = Name + " was destroyed";
+                LOGMessage = Name + " was destroyed";
+            }
+
+            Points = pts;
+            TriggerType = t;
+            TriggerPercent = p;
+            Pos = new Point3d(x, y, 0);
+            string keyp = Calcs.doubleKeypad(Pos);
+            /* Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
+            Sector = Sector.Replace(",", ""); // remove the comma     */
+            Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+
+
+
+            TriggerDestroyRadius = d;
+            Destroyed = false;
+
+
+            IsPrimaryTarget = pt;
+            PrimaryTargetWeight = ptp;
+            Comment = comment;
+        }
+    }
+
+    //List<MissionObjective> BlueDestroyedRadar = new List<MissionObjective>();
+
+    public class MissionObjectives
+    {
+        private Mission msn;
+
+        public MissionObjectives(Mission mission)
+        {
+            msn = mission;
+            RadarPositionTriggersSetup();
+            MissionObjectiveTriggersSetup();
+            SelectSuggestedObjectives();
+
+            //Get new objectives for winner if they have turned the map OR read in the old objectives if not
+            if (msn.MapPrevWinner == "Red")
+            {
+                msn.MO_SelectPrimaryObjectives(1);
+                msn.MO_ReadPrimaryObjectives(2);
+            }
+            else if (msn.MapPrevWinner == "Blue")
+            {
+                msn.MO_SelectPrimaryObjectives(2);
+                msn.MO_ReadPrimaryObjectives(1);
+            }
+            else
+            {
+                msn.MO_ReadPrimaryObjectives(2);
+                msn.MO_ReadPrimaryObjectives(1);
+            }
+        }
+
+        public void addRadar(string n, int ownerarmy, double pts, string tn, string t, double p, double x, double y, double d, double e, bool pt, int ptp = 100, string comment = "")
+        {
+            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, tn, n, ownerarmy, pts, t, p, x, y, d, e, pt, ptp, comment));
+        }
+
+        public void addTrigger(MO_ObjectiveType mot, string n, int ownerarmy, double pts, string tn, string t = "", double p = 50, double x = 0, double y = 0, double d = 100, bool pt = false, int ptp = 100, string comment = "")
+        {
+            //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
+            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, ownerarmy, pts, t, p, x, y, d, pt, ptp, comment));
+        }
+        public void RadarPositionTriggersSetup()
+        {
+            //MissionObjective(Name, OwnerArmy, points, ID, Trigger Type, Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, isPrimaryTargetWeight) {
+            //ID is the ID used in the [Trigger] portion of the .mis file. The central portion of the line can be copy/pasted from the  .mis file (then lightly edited)
+            addRadar("Westgate Radar", 1, 1, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 100, "");
+            addRadar("Sandwich Radar", 1, 1, "BTarget15R", "TGroundDestroyed", 75, 248739, 253036, 200, 25000, false, 100, "");
+            addRadar("Deal Radar", 1, 1, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 100, "");
+            addRadar("Dover Radar", 1, 1, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 100, "");
+            addRadar("Brookland Radar", 1, 1, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 100, "");
+            addRadar("Dungeness Radar", 1, 1, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 100, "");
+            addRadar("Eastbourne Radar", 1, 1, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 100, "");
+            addRadar("Littlehampton Radar", 1, 1, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, 100, "");
+            addRadar("Ventnor Radar", 1, 1, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 100, "");
+            addRadar("Radar Communications HQ", 1, 6, "BTarget28", "TGroundDestroyed", 61, 180207, 288435, 200, 100000, false, 100, "");
+            addRadar("Oye Plage Freya Radar", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, 100, "");
+            addRadar("Coquelles Freya Radar", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 35000, false, 100, "");
+            /*
+            BTarget15R TGroundDestroyed 75 248739 253036 200
+            BTarget16R TGroundDestroyed 75 249454 247913 200
+            BTarget17R TGroundDestroyed 75 246777 235751 200
+            BTarget18R TGroundDestroyed 75 212973 220079 200
+            BTarget19R TGroundDestroyed 50 221278 214167 200
+            BTarget20R TGroundDestroyed 75 178778 197288 200
+            BTarget21R TGroundDestroyed 76 123384 196295 200
+            BTarget22R TGroundDestroyed 75 70423 171706 200
+            BTarget28 TGroundDestroyed 61 180207 288435 200
+            RTarget28R TGroundDestroyed 61 294183 219444 50
+            Rtarget29R TGroundDestroyed 63 276566 214150 50
+
+            */
+
+        }
+
+        public void MissionObjectiveTriggersSetup()
+        {
+            //Format: addTrigger(MO_ObjectiveType.Building (Aircraft, airport, etc), "Name,                      OwnerArmy,Points,ID,TriggerType,PercRequired,XLoc,YLoc,Radius,IsPrimaryTarget,IsPrimaryTargetWeight,Comment "");
+            addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers", 1, 2, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, "");
+            addTrigger(MO_ObjectiveType.Airport, "Redhill Bomber Base", 1, 2, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", 1, 2, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft", 1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, "");
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", 1, 2, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "");
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", 1, 2, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "British Corvette", 1, 3, "BTarget6S", "TGroupDestroyed", 90, 208155.61, 207542.83, 0, false, 100, "4_Chief ? HMS Flower Corvette ");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth", 1, 2, "BTarget7S", "TGroundDestroyed", 80, 160045, 274813, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth", 1, 2, "BTarget8S", "TGroundDestroyed", 80, 160172, 274841, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ Creekmouth", 1, 2, "BTarget9S", "TGroundDestroyed", 80, 159888, 274837, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks", 1, 2, "BTarget10S", "TGroundDestroyed", 80, 154957, 273914, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks", 1, 2, "BTarget11S", "TGroundDestroyed", 80, 154104, 273901, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Cargo Ship @ London Docks", 1, 2, "BTarget12S", "TGroundDestroyed", 63, 154488, 273912, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Corvette @ London Docks", 1, 2, "BTarget13S", "TGroundDestroyed", 66, 155847, 273960, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.AA, "AAA London area", 1, 2, "BTarget13A", "TGroundDestroyed", 63, 160567, 275749, 100, false, 4, "");
+            addTrigger(MO_ObjectiveType.AA, "AAA London area", 1, 2, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 100, false, 4, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery", 1, 2, "BTarget24", "", 0, 0, 0, 0, false, 0, "Trigger missing in .mis file");
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage", 1, 2, "BTarget25", "", 0, 0, 0, 0, false, 0, "Trigger missing in .mis file");
+            addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", 1, 2, "BTarget26", "", 0, 0, 0, 0, false, 0, "Trigger missing in .mis file");
+            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", 1, 2, "BTarget27", "", 0, 0, 0, 0, false, 0, "Trigger missing in .mis file");
+            addTrigger(MO_ObjectiveType.Building, "Unknown", 1, 2, "RTarget0", "TGroundDestroyed", 100, 251259, 116909, 500, false, 0, "No info/points in .cs file for this one?");
+            addTrigger(MO_ObjectiveType.Vehicles, "Motorpool near Grand-Fort Philippe", 2, 2, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "St. Omar Ball bearing Factory", 2, 2, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Estree Fuel Depot", 2, 3, "RTarget3", "TGroundDestroyed", 40, 280182, 164399, 50, false, 100, "Incorrect location; hopefully corrected now");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Synthetic Fuel", 2, 2, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.RRStation, "Calais Rail Yard", 2, 2, "RTarget5", "TGroundDestroyed", 60, 283995, 215369, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Calais Hydrogen", 2, 2, "RTarget6", "TGroundDestroyed", 60, 284867, 216414, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Calais Main Fuel", 2, 2, "RTarget7", "TGroundDestroyed", 60, 285518, 217456, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne LOX", 2, 2, "RTarget8", "TGroundDestroyed", 60, 265590, 189900, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Boulogne Torpedo", 2, 2, "RTarget9", "TGroundDestroyed", 60, 266649, 187099, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Diesel", 2, 2, "RTarget10", "TGroundDestroyed", 60, 266150, 189291, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Aviation Fuel", 2, 2, "RTarget11", "TGroundDestroyed", 43, 264966, 189374, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Diesel", 2, 2, "RTarget12", "TGroundDestroyed", 50, 284978, 215920, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Benzine", 2, 2, "RTarget13", "TGroundDestroyed", 52, 284845, 216884, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Liquid Oxygen", 2, 2, "RTarget14", "TGroundDestroyed", 50, 285019, 217566, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage Boulogne", 2, 2, "RTarget15", "TGroundDestroyed", 50, 284153, 216913, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Arras Main Fuel", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Arras Rubber Factory", 2, 3, "RTarget17", "TGroundDestroyed", 50, 352039, 141214, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "St Ouen AAA Factory", 2, 2, "RTarget18", "TGroundDestroyed", 50, 303445, 114053, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Abbeville Fuel", 2, 2, "RTarget19", "TGroundDestroyed", 50, 285075, 121608, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Dieppe Fuel", 2, 2, "RTarget20", "TGroundDestroyed", 50, 229270, 101222, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Le Treport Fuel", 2, 2, "RTarget21", "TGroundDestroyed", 50, 250477, 116082, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Poix Nord Fuel Storage", 2, 3, "RTarget22", "TGroundDestroyed", 50, 293827, 84983, 150, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Research Facility", 2, 2, "RTarget23", "TGroundDestroyed", 75, 285254, 216717, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Optical Research Facility", 2, 2, "RTarget24", "TGroundDestroyed", 100, 285547, 216579, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Chemical Storage", 2, 2, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Rations Storage", 2, 1, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Gunpowder Facility", 2, 2, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263442.72, 181487.64, 0, false, 100, "0_Chief ? Minensuchtboot");
+            addTrigger(MO_ObjectiveType.Fuel, "Arras Fuel Storage 2", 2, 3, "RTarget31", "TGroundDestroyed", 100, 351371, 141966, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Watten Armory", 2, 2, "RTarget32", "TGroundDestroyed", 100, 310395, 200888, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Half track Factory", 2, 2, "RTarget33", "TGroundDestroyed", 100, 314794, 224432, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Steel mill Dunkirk", 2, 2, "RTarget34", "TGroundDestroyed", 100, 315081, 224145, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Brass Smelter Dunkirk", 2, 2, "RTarget35", "TGroundDestroyed", 100, 314832, 223389, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Dunkirk", 2, 2, "RTarget36", "TGroundDestroyed", 100, 314482, 223882, 200, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Dunkirk", 2, 3, "RTarget37", "TGroundDestroyed", 100, 313878, 223421, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "1A", "TGroundDestroyed", 63, 296130, 218469, 50, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "2A", "TGroundDestroyed", 75, 294090, 85100, 100, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "3A", "TGroundDestroyed", 66, 293279, 84884, 100, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 1", 2, 1, "4A", "TGroundDestroyed", 70, 317402, 196038, 100, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 2", 2, 1, "5A", "TGroundDestroyed", 47, 266055, 190488, 100, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Boulogne AAA battery 3", 2, 1, "6A", "TGroundDestroyed", 51, 264801, 188807, 50, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 2", 2, 1, "7A", "TGroundDestroyed", 62, 285982, 216833, 50, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 1", 2, 1, "8A", "TGroundDestroyed", 54, 283234, 215851, 50, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 3", 2, 1, "9A", "TGroundDestroyed", 77, 283224, 216619, 50, false, 2, "");
+        }
+
+        //This creates a randomized list of Blue & Red objectives.  When asked for potential targets we can check which still have not yet been destroyed & list location, name, etc.
+        public void SelectSuggestedObjectives()
+        {
+
+            List<string> keys = new List<string>(msn.MissionObjectivesList.Keys);
+            Calcs.Shuffle(keys);
+
+            foreach (var key in keys)
+            {
+                MissionObjective mo = msn.MissionObjectivesList[key];
+                if (mo.AttackingArmy == 1 || mo.AttackingArmy == 2) msn.MissionObjectivesSuggested[(ArmiesE)mo.AttackingArmy].Add(key);
+
+            }
+        }
+
+        
+
+
+    }
+
+    //This creates a randomized list of Blue or Red Primary Objectives totalling (at least) the required point total
+    //And sets the IsPrimaryTarget flag for each in that army, de-selecting the IsPrimaryTarget flag for all others
+    //Only chooses from those in the PrimaryTargetWeight     
+    //Will do either army=1 or army=2 or BOTH ARMIES if army=0   
+    public void MO_SelectPrimaryObjectives(int army=0)
+    {
+
+        List<string> keys = new List<string>(MissionObjectivesList.Keys);
+        Calcs.Shuffle(keys);
+
+        double totalPoints = 0;
+        List<int> arms = new List<int>();
+        if (army == 0) { arms.Add(1); arms.Add(2); }
+        else if (army == 1 || army == 2) arms.Add(army);
+
+        foreach (var a in arms) {
+
+            foreach (var key in keys)
+            {
+                MissionObjective mo = MissionObjectivesList[key];
+                if (mo.AttackingArmy == a && mo.PrimaryTargetWeight > 0)
+                {
+                    if (mo.PrimaryTargetWeight < stb_random.Next(1,101)) continue; //implement weight; if weight is less than the random number then this one is skipped; so 100% is never skipped, 50% skipped half the time, 0% skipped always
+                    if (totalPoints < MO_PointsRequired[(ArmiesE)a])
+                    {
+                        mo.IsPrimaryTarget = true;
+                        totalPoints += mo.Points;
+                    }
+                    else
+                    {
+                        mo.IsPrimaryTarget = false;
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    //This reads the primary objectives selected from the previous mission
+    //TODO: For now this isn't working at all, but just selecting the objectives randomly
+    public void MO_ReadPrimaryObjectives(int army = 0)
+    {
+        MO_SelectPrimaryObjectives(army);
+    }
+
+    public void MO_ListSuggestedObjectives(Player player, int army, int numToDisplay = 5, double delay = 0.2)
+    {
+
+        int numDisplayed = 0;
+        double totDelay = 0;
+
+        GamePlay.gpLogServer(new Player[] { player }, "Suggested " + ArmiesL[army] + " Secondary Objectives:", new object[] { });
+
+        foreach (var key in MissionObjectivesSuggested[(ArmiesE)army])
+        {
+            
+            if (numDisplayed >= numToDisplay) break;
+            MissionObjective mo = MissionObjectivesList[key];
+            if (!mo.Destroyed)
+            {
+                totDelay += delay;
+                Timeout(totDelay, () =>
+                {
+                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+
+                    GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name + " (" + mo.Pos.x + "," + mo.Pos.y + ")", new object[] { });
+
+                });//timeout      
+
+                
+                numDisplayed++;
+
+
+            }
+        }
+    }
+
+    
+    public void MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 10, double delay = 0.2)
+    {
+
+        int numDisplayed = 0;
+        double totDelay = 0;
+
+        GamePlay.gpLogServer(new Player[] { player }, "Remaining " + ArmiesL[army] + " Primary Objectives:", new object[] { });
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        {
+            
+            if (numDisplayed >= numToDisplay) break;
+            MissionObjective mo = entry.Value;
+            if (!mo.Destroyed && mo.AttackingArmy==army && mo.IsPrimaryTarget)
+            {
+                totDelay += delay;
+                Timeout(totDelay, () =>
+                {                    
+
+                    GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name + " (" + mo.Pos.x + "," + mo.Pos.y + ")", new object[] { });
+
+                });//timeout      
+                
+                numDisplayed++;
+
+            }
+        }
+    }
+
+    
+    public int MO_NumberPrimaryObjectivesComplete(int army)
+    {
+
+        int numComplete = 0;
+                
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        {
+
+            MissionObjective mo = entry.Value;
+            if (mo.Destroyed && mo.AttackingArmy == army && mo.IsPrimaryTarget)
+            {                
+
+                numComplete++;
+
+            }
+        }
+        return numComplete;
+    }
+
+
+    int[] MO_numberprimaryobjectives = new int[3] { 0, 0, 0 };
+        
+    
+
+    public int MO_NumberPrimaryObjectives(int army)
+    {
+
+        if (MO_numberprimaryobjectives[army] > 0) return MO_numberprimaryobjectives[army]; //Once we have figured this out, >0, it won't change
+
+        int num = 0;
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        {
+
+            MissionObjective mo = entry.Value;
+            if (mo.AttackingArmy == army && mo.IsPrimaryTarget)
+            {
+
+                num++;
+
+            }
+        }
+        MO_numberprimaryobjectives[army] = num;
+        return num;
+    }
+
+    public double MO_PercentPrimaryObjectives(int army)
+    {
+        int npo = MO_NumberPrimaryObjectives(army);
+        if (npo == 0) return 0;
+        double x = MO_NumberPrimaryObjectivesComplete(army);
+        return  (x / (double)npo * (double)100.0);
+    }
+
+    
+
+    //Destroys the objective with the given ID and takes other related actions, such as 
+    //adding points, displaying messages, reducing radar coverage
+    public bool MO_DestroyObjective(string ID, bool active = true)
+    {
+        if (!active) return false;  //If a trigger is passed with flag active=false that (generally) means the trigger has already been activated once before & we don't want to repeat it again
+                                    //this is passed when coming from onTrigger, otherwise it should just be TRUE by default
+
+        var OldObj = new MissionObjective(this);
+
+        if (!MissionObjectivesList.TryGetValue(ID, out OldObj))
+        {
+            return false;
+            //OldObj = new MissionObjective(msn);
+        }
+
+        //Turn off the trigger so it won't trigger again - IF this objective type is a trigger
+        if (OldObj.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
+        {
+            Console.WriteLine("MO_DestroyObjective: Disabling trigger " + ID);
+            GamePlay.gpGetTrigger(ID).Enable = false;
+        }
+
+        if (OldObj.Destroyed) return false; //The object has already been destroyed; don't need to do it again; we only give points/credit for destroying any given objective once
+
+        OldObj.Destroyed = true;
+        if (OldObj.MOObjectiveType == MO_ObjectiveType.Radar)
+        {
+            if (OldObj.OwnerArmy == 1) DestroyedRadar[(ArmiesE.Red)].Add(OldObj);
+            if (OldObj.OwnerArmy == 2) DestroyedRadar[(ArmiesE.Blue)].Add(OldObj);
+        }
+
+        if (OldObj.AttackingArmy == 1)
+        {
+            MissionObjectivesCompletedString[ArmiesE.Red] += " - " + OldObj.Name;
+
+            Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
+            Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Red]);
+            MissionObjectiveScore[ArmiesE.Red] += OldObj.Points;
+        }
+        if (OldObj.AttackingArmy == 2)
+        {
+            MissionObjectivesCompletedString[ArmiesE.Blue] += " - " + OldObj.Name;
+            Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
+            Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Blue]);
+
+            MissionObjectiveScore[ArmiesE.Blue] += OldObj.Points;
+        }
+
+
+        GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
+        Timeout(10, () =>
+        {
+            GamePlay.gpLogServer(null, OldObj.LOGMessage, new object[] { });
+            MissionObjectivesList[ID] = OldObj;
+        });
+
+        MO_CheckObjectivesComplete();
+
+        return true;
+    }
+
+    public void MO_CheckObjectivesComplete()
+    { 
+
+        
+        //Turn the map by completing ALL primary objectives
+        //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
+        double bp = MO_PercentPrimaryObjectives((int)ArmiesE.Blue);        
+
+        if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_PointsRequired[ArmiesE.Blue] && bp > 99)
+            || bp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MissionObjectiveScore[ArmiesE.Blue] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Blue])// Blue battle Success
+        
+        {
+            WriteResults_Out_File("2");
+            Timeout(10, () =>
+            {
+                GamePlay.gpLogServer(null, "Blue has Successfully Turned the Map!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Blue has Successfully Turned the Map!!!");
+            });
+            EndMission(70, "Blue");
+        }
+
+        double rp = MO_PercentPrimaryObjectives((int)ArmiesE.Red);
+        if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequired[ArmiesE.Red] && bp > 99)
+            || rp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Red])// Blue battle Success
+        {
+            WriteResults_Out_File("1");
+            Timeout(10, () =>
+            {
+                GamePlay.gpLogServer(null, "Red has Successfully Turned the Map!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
+            });
+            EndMission(70, "Red");
+        }
+    }
+    
+    public bool MO_IsPointInDestroyedRadarArea(Point3d p, int army)
+    {
+        var DR = new List<MissionObjective>();
+
+        if (army == 1 || army == 2) DR = DestroyedRadar[(ArmiesE)army];
+        else return false;
+
+        foreach (MissionObjective value in DR)
+        {
+            double dist = Calcs.CalculatePointDistance(p, value.Pos);
+            //if (value.ID == "BTarget14R") Console.WriteLine(value.Name + " " + army.ToString() + " " + dist.ToString("F0") + " " + value.RadarEffectiveRadius.ToString("F0") + " " + p.x.ToString("F0") + " " + p.y.ToString("F0") + " " + value.Pos.x.ToString("F0") + " " + value.Pos.y.ToString("F0"));
+            if (dist < value.RadarEffectiveRadius) return true;
+        }
+        return false;
+    }
+
+    //Figure out which radar areas are disabled depending on army, admin radar, which objectives have been destroyed, etc.
+    //Returns TRUE if radar is enabled for that area/army, returns FALSE if radar is disabled/out for that area/army
+    //radarArmy 1 = red, 2=blue, 0=admin, anything else is not allowed (in practice this will ignore any radar outages)
+    public bool MO_isRadarEnabledByArea(Point3d pos, bool admin = false, int radarArmy = 0)
+    {
+        if (admin || radarArmy == 0 || radarArmy > 2) return true;
+
+        //Console.WriteLine("#1 " + pos.x.ToString() + " " + pos.y.ToString() + " " + radarArmy.ToString());
+        //WITHIN AN AREA WHERE THE RADAR HAS BEEN DESTROYED?
+        //Finds if the point/ac is in an area with destroyed radar for either/both sides
+        if (mission_objectives != null) { if (MO_IsPointInDestroyedRadarArea(pos, radarArmy)) return false; }
+        else Console.WriteLine("#1.5  Mission Objectives doesn't exist!");
+        //Console.WriteLine("#2 " + pos.x.ToString() + " " + radarArmy.ToString());
+
+        //RED army special denied areas or areas the never have radar coverage
+        if (radarArmy == 1)
+        {
+
+            //Red doesn't have any special denied areas for now.
+            //TODO: We could make furthest reaches of France out of radar range, or perhaps just start to remove more low-level 
+            //radar the further into France we go.
+            return true;
+
+        }
+
+        //BLUE army special denied areas or areas that never have radar coverage
+        //TODO: Could gradually remove low-level coverage the further from the stations we go (this is realistic)
+        else if (radarArmy == 2)
+        {
+            //BLUE radar only goes approx to English Coast.
+            //This approximates that by taking a line between these points
+
+            //  250000  313000  TopR of map, direct north of Hellfire Corner
+            //  250000  236000  hellfire corner
+            //  170000  194000  Eastbourne
+            //  8000    180000  Edge of map near Bournemouth
+            //TODO: We could make this more realistic in various ways, perhaps extending some high-level radar partially into UK or the like
+
+
+            if (pos.x > 170000 && pos.x <= 250000)
+            {
+                if ((pos.x - 170000) / 80000 * 42000 + 194000 < pos.y) return false;
+            }
+            if (pos.x > 8000 && pos.x <= 170000)
+            {
+                if ((pos.x - 8000) / 162000 * 14000 + 180000 < pos.y) return false;
+            }
+            return true;
+        }
+        return true;
+
+    }
+
+    /******************************************************************************************************************** 
+    * ****END****MISSION OBJECTIVES CLASSES & METHODS
+    * **********************************************************************************************************************/
+
+
+
     //return TRUE if AI spawns should be stopped bec of too many players
     //FALSE if AI/trigger missions can continue
     public bool stopAI()
     {
-        
+
         int nump = Calcs.gpNumberOfPlayers(GamePlay);
         Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
         if (nump > 50 || (nump > 40 && random.NextDouble() > 0.5))
@@ -3024,11 +4977,11 @@ public class Mission : AMission
     //public void bartOnTrigger(int missionNumber, string shortName, bool active)
     {
         base.OnTrigger(missionNumber, shortName, active);
-        Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString());
+        Console.WriteLine("OnTrigger: " + shortName + " " + missionNumber.ToString() + " Active: " + active.ToString());
 
         bool res = MO_DestroyObjective(shortName, active);
 
-        Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString() + "MO_DestroyObjective result: " + res.ToString());
+        Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString() + " MO_DestroyObjective result: " + res.ToString());
 
 
         Console.WriteLine("OnTrigger: Now doing ActionTriggers: " + shortName + " Active: " + active.ToString() + " !stopAI()=" + (!stopAI()).ToString() + " zonedef: " + ("zonedefenseblue1".Equals(shortName) && active && !stopAI()).ToString());
@@ -3472,7 +5425,7 @@ public class Mission : AMission
             Timeout(1800, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
                 sendScreenMessageTo(1, "Timer reset Letoquet(BZ1)trigger active", null);
-            });                      
+            });
         }
         else if ("zonedefenseblue2".Equals(shortName) && active && !stopAI())
         {
@@ -3692,7 +5645,7 @@ public class Mission : AMission
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
-        } 
+        }
         else
         {
             //This final ELSE ensures that any other triggers in the mission file (ie time triggers)
@@ -3718,1005 +5671,27 @@ public class Mission : AMission
     }  //End OnTrigger
 
     //Save results to file that will be read by the WatchDog program.  1= red win, 2 = blue win, 3= tie
-    public bool WriteResults_Out_File(string result = "3") {
-		try {
-			using (StreamWriter file = new StreamWriter(RESULTS_OUT_FILE,false))
-			{
-				file.WriteLine(result);
-			}			
-			Console.WriteLine ("WriteResults_Out_File - file & contents: " + RESULTS_OUT_FILE + " " + result); 			
-			return true;
-			
-		}
-        catch (Exception ex) { 
-		
-			Console.WriteLine("WriteResults_Out_File( - Error writing Mission RESULTS_OUT_FILE: " + RESULTS_OUT_FILE + " " + ex.Message); 
-			return false;
-		
-		}	
-	}
-    
-    public override void OnTickGame()
-    {
-        /* Tick_Mission_Time = 720000 - Time.tickCounter();
-        var Mission_Time = Tick_Mission_Time / 2000;
-        TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
-        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
-        */
-        int tickSinceStarted = Time.tickCounter();
-
-        if ((tickSinceStarted) == 0)
-        {
-            GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
-			WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
-            Timeout(188, () => { CheckStatsData(); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
-        }        
-
-        if (Time.tickCounter() % 30000 == 1000)
-        {
-			
-            GamePlay.gpLogServer(null, "Completed Red Objectives (" + InitialRedObjectiveCount.ToString() + " points):", new object[] { });
-            GamePlay.gpLogServer(null, (Objective_Total_Red), new object[] { });
-            Timeout(10, () =>
-            GamePlay.gpLogServer(null, "Completed Blue Objectives (" + InitialBlueObjectiveCount.ToString() + " points):", new object[] { }));
-            Timeout(11, () =>
-            GamePlay.gpLogServer(null, (Objective_Total_Blue), new object[] { }));
-            Timeout(12, () =>
-            GamePlay.gpLogServer(null, showTimeLeft(), new object[] { }));
-
-            stopAI();//for testing
-        }
-
-        if (Time.tickCounter() == 720000)// Red battle Success.
-		//if (Time.tickCounter() == 720)// Red battle Success.  //For testing/very short mission
-        {
-			
-		WriteResults_Out_File("3");	
-	    Timeout(10, () =>
-	    {
-            	GamePlay.gpLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
-            	GamePlay.gpHUDLogCenter("The match ends in a tie! Objectives still left for both sides!!!");
-	    });
-        EndMission(70,"");
-        }
-
-        //Ticks below write out TOPHAT radar files for red, blue, & admin
-        //We do each every ~minute but space them out a bit from each other
-        //roughly every one minute
-        //do this regardless of whether players are loaded, so it must be first here
-        if ((Time.tickCounter()) % 1000 == 0)
-        {
-            ///////////////////////////////////////////    
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            //Console.WriteLine("Writing current radar returns to file");
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
-            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-            RADAR_REALISM = saveRealism;
-
-        }
-        if ((Time.tickCounter()) % 1000 == 334)
-        {
-            ///////////////////////////////////////////    
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            //Console.WriteLine("Writing current radar returns to file");
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -2, false); //-1 & false will list ALL aircraft of either army
-            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-            RADAR_REALISM = saveRealism;
-
-        }
-        if ((Time.tickCounter()) % 1000 == 666)
-        {
-            ///////////////////////////////////////////    
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            //Console.WriteLine("Writing current radar returns to file");
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -3, false); //-1 & false will list ALL aircraft of either army
-            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-            RADAR_REALISM = saveRealism;
-
-        }
-
-
-
-
-        //periodically remove a/c that have gone off the map
-        if ((tickSinceStarted) % 2100 == 0)
-        {
-
-            RemoveOffMapAIAircraft();
-
-
-        }
-
-
-        if ((tickSinceStarted) % 10100 == 0)
-        {
-            //Write all a/c position to log
-            if (LOG)
-            {
-                DebugAndLog(calcTimeLeft() + " left in mission " + MISSION_ID);
-                int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-                RADAR_REALISM = 0;
-                listPositionAllAircraft(GamePlay.gpPlayer(), 1, true);
-                listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-                RADAR_REALISM = saveRealism;
-            }
-
-        }
-
-
-    }
-
-    /************************************************************
-    * 
-    * handle airport bombing
-    * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
-    * 
-    * We give credit (points) for any bomb that hits within the radius of an airfield.
-    * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
-    * 
-    * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
-    * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
-    * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
-    * 
-    * //Version for -MAIN.cs//
-    *************************************************************/
-
-    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
-    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
-    //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
-
-    public void SetAirfieldTargets()
-    {
-        foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
-        {
-
-            //We're just going to add ALL airfields as targets, but then make sure there are no duplicates (bec. built-in & .mis-added airports sometimes overlap).
-
-            //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
-
-            ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
-            //UPDATE 2017/11/06: We don't need this adjustment bec. we have adjusted the points received
-            //so that blenheims receive relatively more & the blue bombers relatively less.  So this 
-            //should handle the discrepancy between the sides with no further adjustment necessary
-            //int pointstoknockout = 30;
-            //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
-
-            ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
-            ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
-
-            double radius = ap.FieldR();
-            Point3d center = ap.Pos();
-
-
-            //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
-            //most .mis airports are placed on top of an existing built-in airport. We check whether this airport has already been added & skip adding it if so.
-            Point3d pos = ap.Pos();
-            bool add = true;
-            foreach (AiAirport apk in AirfieldTargets.Keys)//Loop through the targets
-            {
-                if (apk != null & apk.Pos().distance(ref pos) <= apk.FieldR())
-                {
-                    //AirfieldTargets[apk].Item3
-                    add = false; //
-                    if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
-                    center = apk.Pos();  //We use the position of the airport set i nthe .mis file for the center, if it exists - thus we can change/move the center position as we wish
-                    break;
-                }
-            }
-
-            //We'll get the NAME of the airport from the birthplace/spawn point declare in a .mis file, if it exists
-
-            string apName = ap.Name();
-            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-            {
-                if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
-                {
-                    if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE"))) apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
-                    break;
-                }
-            }
-
-
-            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, apName, pointstoknockout, 0, DateTime.Now, radius, center)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
-                                                                                                                                                                                    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
-                                                                                                                                                                                    //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
-
-        }
-        GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
-    }
-
-    public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
-    {
-        int count = 0;
-        string returnmsg = "";
-        if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)
-            {
-
-                double PointsTaken = AirfieldTargets[ap].Item4;
-                bool disabled = AirfieldTargets[ap].Item1;
-
-                if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
-                if (army != -1 & army != ap.Army()) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
-
-                count++;
-                double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                string Mission = AirfieldTargets[ap].Item2;
-                DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-                double percent = 0;
-                if (PointsToKnockOut > 0)
-                {
-                    percent = PointsTaken / PointsToKnockOut;
-                }
-
-                double timereduction = 0;
-                if (percent > 0)
-                {
-                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
-                }
-
-                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                {
-                    percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                }
-
-                string msg = Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago";
-                returnmsg += msg + "\n";
-
-                if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
-
-
-            }
-        if (count == 0)
-        {
-            string msg = "No airports damaged or destroyed yet";
-            if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
-            returnmsg = ""; //In case of display == false we just don't return any message at all, allowing this bit to simply be omitted
-        }
-
-        return returnmsg;
-    }
-
-    //stamps a rectangular pattern of craters over an airfield to disable it
-    public void AirfieldDisable(AiAirport ap)
-
-    {
-        string apName = ap.Name();
-        double radius = ap.FieldR();
-        Point3d pos = ap.Pos();
-
-        if (AirfieldTargets.ContainsKey(ap))
-        {
-            apName = AirfieldTargets[ap].Item2;
-            radius = AirfieldTargets[ap].Item6;
-            pos = AirfieldTargets[ap].Item7;
-
-        }
-
-        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
-
-        ISectionFile f = GamePlay.gpCreateSectionFile();
-        string sect = "Stationary";
-
-        string val1 = "Stationary";
-        string type = "BombCrater_firmSoil_largekg";
-        int count = 0;
-        string value = "";
-
-
-        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 80)
-        {
-            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 80)
-            {
-                string key = "Static" + count.ToString();
-                value = val1 + ".Environment." + type + " nn " + (x - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
-                f.add(sect, key, value);
-                count++;
-
-            }
-
-        }
-        //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
-        GamePlay.gpPostMissionLoad(f);
-        //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
-
-    }
-    /*
-        public void LoadAirfieldSpawns()
-        {
-
-            return;
-
-            //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
-            //so, maybe we will do all that later, and maybe not
-            //For now we are just skipping this part altogether (return;)
-            //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
-
-            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-
-            {
-                bp.destroy();//Removes all spawnpoints
-            }
-        //        GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
-
-            foreach (AiAirport ap in AirfieldTargets.Keys)
-            {
-                if (AirfieldTargets[ap].Item1)
-                {
-                    //Airfield still active so load mission
-                    GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
-                }
-            }
-
-
-        }
-    */
-
-
-
-    /*****************************************************************************
-     * 
-     * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
-     * 
-     *****************************************************************************/
-
-    //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
-    //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
-    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
-    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-    {
-
-        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
-
-        //GamePlay.gpLogServer(null, "bombe 1", null);
-        bool ai = true;
-        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
-
-        //GamePlay.gpLogServer(null, "bombe 2", null);
-        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
-        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
-
-        //GamePlay.gpLogServer(null, "bombe 3", null);
-        if (terr == 00) isEnemy = 2;
-        if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
-        //GamePlay.gpLogServer(null, "bombe 4", null);
-
-
-        //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
-
-        /********************
-         * 
-         * Handle airport bombing
-         * 
-         *******************/
-
-        //GamePlay.gpLogServer(null, "bombe 5", null);
-
-        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
-        apkeys = AirfieldTargets.Keys.ToList();
-
-        maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
-
-        //For now, all things we handle below are on land, so if the land type is water we just
-        //get out of here immediately
-        if (landType == maddox.game.LandTypes.WATER) return;
-
-        //GamePlay.gpLogServer(null, "bombe 6", null);
-
-        bool blenheim = false;
-        AiAircraft aircraft = initiator.Actor as AiAircraft;
-        string acType = Calcs.GetAircraftType(aircraft);
-        if (acType.Contains("Blenheim")) blenheim = true;
-
-        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
-        {
-            /* if (!AirfieldTargets[ap].Item1)
-            {//airfield has already been knocked out so do nothing
-            }
-            else
-            { */
-
-            //GamePlay.gpLogServer(null, "bombe 7", null);
-            double radius = AirfieldTargets[ap].Item6;
-            Point3d APPos = AirfieldTargets[ap].Item7;
-            string apName = AirfieldTargets[ap].Item2;
-            double distFromCenter = 1000000000;
-            if (ap != null) distFromCenter = APPos.distance(ref pos);
-            //Check if bomb fell inside radius and if so increment up
-            if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
-            {
-
-
-                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
-
-
-                //double scoreBase = 0.06303;
-                double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-                if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic (double the OLD score which is 4X the NEW score.  This makes 1 Blenheim (4 bombs X 4) about 50% as effective as on HE 11. (32 bombs)             
-
-                //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
-                //TODO: Could also give more if exactly on the the runway, or near it, or whatever
-                double multiplier = 0.5;
-                if (distFromCenter <= 2 * radius / 3) multiplier = 1;
-                if (distFromCenter <= radius / 3) multiplier = 1.5;
-
-                //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
-                if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
-                {
-                    multiplier = 1.6;
-                }
-
-                scoreBase *= multiplier;
-
-
-                if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
-                double score = scoreBase * Math.Pow(mass_kg, 0.67);
-
-                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-                 * 
-                 * //Default is 0.5 points for ie 50 lb bomb
-                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-                if (mass_kg > 110) score = 1.41; //250 
-                if (mass_kg > 220) score = 2.33; //500
-                if (mass_kg > 440) score = 3.70; //1000
-                if (mass_kg > 880) score = 5.92; //2000
-                if (mass_kg > 1760) score = 9.33 ; //4000
-
-                //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
-
-                 */
-
-                double individualscore = score;
-
-                if (!ai && (isEnemy == 0 || isEnemy == 2))
-                {
-                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                                         //but, still helps destroy that base (for your enemies) as usual
-                                                         //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
-                }
-
-
-
-                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-                string firetype = "BuildingFireSmall";
-                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
-                if (stb_random.NextDouble() > 0.25) firetype = "";
-                //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                //set placeholder variables
-                double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                double PointsTaken = AirfieldTargets[ap].Item4 + score;
-                string Mission = AirfieldTargets[ap].Item2;
-                bool disabled = AirfieldTargets[ap].Item1;
-                DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-
-                string cratertype = "BombCrater_firmSoil_mediumkg";
-                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-
-                double percent = 0;
-                double prev_percent = 0;
-                double points_reduction_factor = 1;
-                if (PointsToKnockOut > 0)
-                {
-                    percent = PointsTaken / PointsToKnockOut;
-                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
-                    if (prev_percent > 1) prev_percent = 1;
-                    if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
-                }
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
-
-                //if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
-
-
-                double timereduction = 0;
-                if (prev_percent > 0)
-                {
-                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
-                }
-
-                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
-
-                if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                {
-                    percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                }
-                //Advise player of hit/percent/points
-                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
-
-                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
-
-                //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
-                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
-                {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
-                    if (!disabled)
-                    {
-                        //TODO: Sometimes this doesn't seem to add points to the correct army?  Maybe the army # is wrong or doesn't exist for some ap's ?
-                        //Code below is supposed to fix this, but we'll see.
-                        int arm = ap.Army();
-                        if (arm != 1 && arm != 2)
-                        {
-                            arm = GamePlay.gpFrontArmy(APPos.x, APPos.y);  //This can be 1,2, or 0 for neutral territory.  
-                        }
-
-                        /*
-                         
-                        if (arm == 1) CampaignMapBluePoints += 5; //5 campaign points for knocking out an airfield
-                        else if (arm == 2) CampaignMapRedPoints += 5;
-                        */
-
-                        //Question: Do we want to keep these objective points for knocking out any airfield?
-                        if (arm == 1)
-                        {
-                            InitialBlueObjectiveCount++; //1 campaign point for knocking out an airfield
-                            Objective_Total_Blue += " " + apName;
-                        }
-                        else if (arm == 2)
-                        {
-                            InitialRedObjectiveCount++;
-                            Objective_Total_Red += " " + apName;
-                        }
-
-                        Console.WriteLine("Airport destroyed, awarding points to destroying army; airport owned by army: " + arm.ToString());
-
-
-                        //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
-                        //This airport has been destroyed, so remove the spawn point
-                        if (ap != null)
-                        {
-                            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-                            {
-                                Point3d bp_pos = bp.Pos();
-                                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
-                            }
-                        }
-
-                    }
-                }
-                else
-                {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
-                }
-                //GamePlay.gpLogServer(null, "bombe 11", null);
-                break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
-            }
-        }
-    }
-
-    //Calcs minutes left as an int
-    public string calcTimeLeft()
-    {
-
-        Tick_Mission_Time = 720000 - Time.tickCounter();
-        var Mission_Time = Tick_Mission_Time / 2000;
-        TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
-        string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
-
-
-        return Time_Remaining;
-    }
-    //Displays time left to player & also returns the time left message as a string
-    //Calling with (null, false) will just return the message rather than displaying it
-    public string showTimeLeft(Player player = null, bool showMessage = true)
-    {
-        string missiontimeleft = calcTimeLeft();
-        string msg = "Time left in mission " + MISSION_ID + ": " + missiontimeleft ;
-
-        /*
-         *        
-        if (!MISSION_STARTED) msg = "Mission " + MISSION_ID + " not yet started - waiting for first player to enter.";
-        else if (COOP_START_MODE) msg = "Mission " + MISSION_ID + " not yet started - waiting for Co-op Start.";
-        */
-
-        if (showMessage && player != null) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
-        return msg;
-    }
-
-
-    public void logToFile(object data, string messageLogPath)
+    public bool WriteResults_Out_File(string result = "3")
     {
         try
         {
-            FileInfo fi = new FileInfo(messageLogPath);
-            StreamWriter sw;
-            if (fi.Exists) { sw = new StreamWriter(messageLogPath, true, System.Text.Encoding.UTF8); }
-            else { sw = new StreamWriter(messageLogPath, false, System.Text.Encoding.UTF8); }
-            sw.WriteLine((string)data);
-            sw.Flush();
-            sw.Close();
-        }
-        catch (Exception ex) { Console.WriteLine(ex.Message); };
-    }
-
-    public void logMessage(object data)
-    {
-        logToFile(data, MESSAGE_FULL_PATH);
-    }
-
-    public void logStats(object data)
-    {
-        logToFile(data, STATS_FULL_PATH);
-    }
-
-    public void DebugAndLog(object data)
-    {
-        if (DEBUG) GamePlay.gpLogServer(null, (string)data, new object[] { });
-        if (!DEBUG && LOG) Console.WriteLine((string)data); //We're using the regular logs.txt as the logfile now logToFile (data, LOG_FULL_PATH); 
-    }
-    public void gpLogServerAndLog(Player[] to, object data, object[] third)
-    {
-        //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
-        GamePlay.gpLogServer(to, (string)data, third);
-
-    }
-
-    //Kill off AI aircraft after a pre-set length of time.  Stops AI aircraft from hanging around too long after they have
-    //crashlanded, landed in the water, wandered off the map, etc
-    //You can CHANGE the amount of time here depending on the type of AI aircraft you plan to use in your missions
-    //Reason for this is #1. CloD tends to leave a/c hanging around for a long time after they really should be gone (crashed, landed, off map, whatever)
-    //#2. AI aircraft tend to become useless after a certain amount of time anyway, they will just fly straight, be completely unresponsive, etc
-    //#3. You should use a variety of strategies to eliminate AI aircraft when their useful life is done (check when they are crashed and de-spawn, fly them off the 
-    //map at the end of their mission and then de-spawn them, etc) but this is sort of a last resort if all other methods fail
-
-    public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
-    {
-        base.OnActorCreated(missionNumber, shortName, actor);
-        //AI Aircraft will be destroyed after airspawn minutes (set above)
-        //lesson learned: For some reason if the Callsign of a group is high (higher than 50 or so?) then that object is not sent through this routine.  ??!!
-        //eg, 12, 22, 32, 45 all work, but not 91 or 88.  They just never come
-        //to OnActorCreated at all . . . But they are in fact created
-        AiAircraft a = actor as AiAircraft;
-
-        int destroyminutes = 90;//Destroy AI a/c this many minutes after they are spawned in.
-
-
-        Timeout(1.0, () => // wait 1 second for human to load into plane
-        {
-            /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGC: Airgroup: " + a.AirGroup() + " " 
-              + a.CallSign() + " " 
-              + a.Type() + " " 
-              + a.TypedName() + " " 
-              +  a.AirGroup().ID(), new object[] { });
-            */
-
-            if (a != null && isAiControlledPlane2(a))
+            using (StreamWriter file = new StreamWriter(RESULTS_OUT_FILE, false))
             {
-
-
-                int ot = (destroyminutes) * 60 - 10; //de-spawns 10 seconds before new sub-mission spawns in.
-                                                     //int brk=(int)Math.Round(19/20);
-
-
-                /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGD: Airgroup: " + a.AirGroup() + " " 
-                  + a.CallSign() + " " 
-                  + a.Type() + " " 
-                  + a.TypedName() + " " 
-                  +  a.AirGroup().ID() + " timeout: " + ot, new object[] { });
-                */
-
-                Timeout(ot - 60, () =>  //message 60 seconds before de-spawning.
-                {
-                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
-                    {
-                        //GamePlay.gpHUDLogCenter("(Some) Old AI Aircraft de-spawning in 60 seconds");
-                    }
-
-                }
-                              );
-
-                Timeout(ot - 5, () =>
-                {
-                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
-                    {
-                        //GamePlay.gpHUDLogCenter("(Some) Old AI Aircraft de-spawning now!");  
-                    }
-                }
-                              );
-
-                //Timeout(75, () =>  //75 sec - 1.5 minutes for testing
-                Timeout(ot, () =>  //960 sec - 16 minutes for real use
-                {
-                    DebugAndLog("DEBUG: Destroying: " + a.AirGroup() + " "
-                      + a.CallSign() + " "
-                      + a.Type() + " "
-                      + a.TypedName() + " "
-                      + a.AirGroup().ID() + " timeout: " + ot);
-                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
-                    { (actor as AiAircraft).Destroy(); }
-                }
-                );
+                file.WriteLine(result);
             }
-        });
-
-
-
-
-    }
-
-
-
-    #region Returns whether aircraft is an Ai plane (no humans in any seats)
-    private bool isAiControlledPlane2(AiAircraft aircraft)
-
-    { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
-        if (aircraft == null) return false;
-        //check if a player is in any of the "places"
-        for (int i = 0; i < aircraft.Places(); i++)
-        {
-            if (aircraft.Player(i) != null) return false;
-        }
-        return true;
-    }
-    #endregion
-
-
-
-
-    //Removes AIAircraft if they are off the map. Convenient way to get rid of
-    //old a/c - just send them off the map
-    public void RemoveOffMapAIAircraft()
-    {
-        int numremoved = 0;
-        //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
-        double minX = 8200;
-        double minY = 14500;
-        double maxX = 350000;
-        double maxY = 307500;
-        //////////////Comment this out as we don`t have Your Debug mode  
-        DebugAndLog("Checking for AI Aircraft off map, to despawn");
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-        {
-            foreach (int army in GamePlay.gpArmies())
-            {
-                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
-                    {
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
-                        {
-                            //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                            foreach (AiActor actor in airGroup.GetItems())
-                            {
-                                if (actor != null && actor is AiAircraft)
-                                {
-                                    AiAircraft a = actor as AiAircraft;
-                                    /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
-                                       //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
-                                       //+ a.Type() + " " 
-                                       //+ a.TypedName() + " " 
-                                       +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                      );
-                                    */
-                                    if (a != null && isAiControlledPlane2(a) &&
-                                          (a.Pos().x <= minX ||
-                                            a.Pos().x >= maxX ||
-                                            a.Pos().y <= minY ||
-                                            a.Pos().y >= maxY
-                                          )
-
-                                    )   // ai aircraft only
-                                    {
-                                        /* if (DEBUG) DebugAndLog ("DEBUG: Off Map/Destroying: " + Calcs.GetAircraftType (a) + " " 
-                                        //+ a.CallSign() + " " 
-                                        //+ a.Type() + " " 
-                                        //+ a.TypedName() + " " 
-                                        +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                       );  */
-                                        numremoved++;
-                                        Timeout(numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
-
-                                    }
-
-
-                                }
-                            }
-
-
-                        }
-                    }
-
-            }
-        }
-        // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
-    } //method removeoffmapaiaircraft
-
-
-    //Put a player into a certain place of a certain plane.
-    private bool putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
-    {
-        if (player != null && actor != null && (actor as AiAircraft != null))
-        {
-            AiAircraft aircraft = actor as AiAircraft;
-            player.PlaceEnter(aircraft, place);
+            Console.WriteLine("WriteResults_Out_File - file & contents: " + RESULTS_OUT_FILE + " " + result);
             return true;
-        }
-        return false;
-    }
 
-    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
-    {
-        try
-        {
-            if (aircraft != null)
-            {
-                //Console.WriteLine("Destroying aircraft -stats.cs DPU");
-                aircraft.Destroy();
-            }
         }
-        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
-    }
-
-    private void Stb_RemovePlayerFromCart(AiCart cart, Player player = null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
-                                                                             //if player = null then remove ALL players from ALL positions
-    {
-        try
+        catch (Exception ex)
         {
 
-            if (cart == null)
-                return;
-
-            //check if the player is in any of the "places" - if so remove
-            for (int i = 0; i < cart.Places(); i++)
-            {
-                if (cart.Player(i) == null) continue;
-                if (player != null)
-                {
-                    if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
-                }
-                else
-                {
-                    cart.Player(i).PlaceLeave(i);
-                }
-            }
+            Console.WriteLine("WriteResults_Out_File( - Error writing Mission RESULTS_OUT_FILE: " + RESULTS_OUT_FILE + " " + ex.Message);
+            return false;
 
         }
-        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
-    }
-    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then removes any other players from the aircraft, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
-    private void Stb_RemoveAllPlayersFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
-    {
-        Timeout(timeToRemove_sec, () => {
-
-            //player.PlaceLeave(0);
-            Stb_RemovePlayerFromCart(aircraft as AiCart, player); //remove the primary player
-            Stb_RemoveAllPlayersFromAircraft(aircraft, 0); //remove any other players
-            Timeout(timetoDestroy_sec, () => {
-                if (isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);  //destroy if AI controlled, which SHOULD be the case all of the time now
-            }); //Destroy it a bit later
-        });
     }
 
-    //Removes ALL players from an a/c after a specified period of time (seconds)
-    private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
-    {
-        Timeout(timeToRemove_sec, () => {
-
-            //player.PlaceLeave(0);
-
-            for (int place = 0; place < aircraft.Places(); place++)
-            {
-                if (aircraft.Player(place) != null)
-                {
-                    //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
-                    Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
-                }
-            }
-
-        });
-    }
-    //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
-    //Includes airports AND spawnpoints
-    private double Stb_distanceToNearestAirport(AiActor actor)
-    {
-        double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
-        double d2Min = d2;
-        if (actor == null) return d2Min;
-        Point3d pd = actor.Pos();
-        int n = GamePlay.gpAirports().Length;
-        //AiActor[] aMinSaves = new AiActor[n + 1];
-        //int j = 0;
-        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
-        for (int i = 0; i < n; i++)
-        {
-            AiActor a = (AiActor)GamePlay.gpAirports()[i];
-            if (a == null) continue;
-            //if (actor.Army() != a.Army()) continue; //only count friendly airports
-            //if (actor.Army() != (a.Pos().x, a.Pos().y)
-            //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
-
-            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
-
-            if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
-
-
-            //if (!a.IsAlive()) continue;
-
-
-            Point3d pp;
-            pp = a.Pos();
-            pd.z = pp.z;
-            d2 = pd.distanceSquared(ref pp);
-            if (d2 < d2Min)
-            {
-                d2Min = d2;
-                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
-            }
-
-        }
-
-        foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
-        {
-            if (a.Army() != actor.Army()) continue;
-
-
-            //if (!a.IsAlive()) continue;
-
-
-            Point3d pp;
-            pp = a.Pos();
-            pd.z = pp.z;
-            d2 = pd.distanceSquared(ref pp);
-            if (d2 < d2Min)
-            {
-                d2Min = d2;
-                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
-            }
-
-        }
-        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
-        return Math.Sqrt(d2Min);
-    }
-
-    //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
-    //the messages can be seen on the lobby/map screen
-    public void Stb_Chat(string line, Player player)
-    {
-        string to = " TO ";
-        if (player != null && player.Name() != null) to += player.Name();
-        if (GamePlay is GameDef)
-        {
-            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + to);
-        }
-    }
 
 } //class mission : amission
 
@@ -5034,6 +6009,57 @@ public static class Calcs
         return (int)number;
     }
 
+    public static string correctedSectorNameDoubleKeypad(Mission msn, Point3d p)
+    {
+
+        string s = correctedSectorName(msn, p) + "." + doubleKeypad(p);
+        return s;
+
+    }
+
+    public static string correctedSectorNameKeypad(Mission msn, Point3d p)
+    {
+
+        string s = correctedSectorName(msn, p) + "." + singleKeypad(p);
+        return s;
+
+    }
+
+    //So, for whatever reason the gpSectorName puts out a section that is one off in both X & Y from
+    //the sectors shown on the map.  So . . . subtracting 10000km from both x & y corrects this.  I guess?
+    //Maybe a bug in 4.5?
+    public static string correctedSectorName(Mission msn, Point3d p) {
+
+        string sector = msn.GamePlay.gpSectorName(p.x, p.y);
+        sector = sector.Replace(",", ""); // remove the comma
+        return sector;
+
+    }
+
+    public static string doubleKeypad (Point3d p)
+    {
+        int keyp = keypad(p, 10000);
+        int keyp2 = keypad(p, 10000 / 3);
+        return keyp.ToString() + "." + keyp2.ToString();
+    }
+
+    public static string singleKeypad(Point3d p)
+    {
+        int keyp = keypad(p, 10000);
+        //int keyp2 = keypad(latlng, 10000 / 3);
+        return keyp.ToString();
+    }
+
+    //keypad number for area, numbered 1-9 from bottom left to top right
+    //of square size
+    //Called with size = 10000 for normal CloD keypad, size = 10000/3 for mini-keypad
+    public static int keypad(Point3d p, double size)
+    {
+        int lat_rem = (int)Math.Floor(3 * (p.y % size) / size);
+        int lng_rem = (int)Math.Floor(3 * (p.x % size) / size);
+        return lat_rem * 3 + lng_rem + 1;
+    }
+
     public static int NoOfAircraft(int number)
     {
         int firstDecimal = 0;
@@ -5142,6 +6168,19 @@ public static class Calcs
         return result;
     }
 
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        for (var i = 0; i < list.Count; i++)
+            list.Swap(i, clc_random.Next(i, list.Count));
+    }
+
+    public static void Swap<T>(this IList<T> list, int i, int j)
+    {
+        var temp = list[i];
+        list[i] = list[j];
+        list[j] = temp;
+    }
+
 
 }
 
@@ -5172,3 +6211,11 @@ public sealed class ReverseComparer<T> : IComparer<T>
     }
     int IComparer<T>.Compare(T x, T y) { return inner.Compare(y, x); }
 }
+
+/*
+public static IEnumerable<T> Randomize<T>(this IEnumerable<T> source)
+{
+    Random rnd = new Random();
+    return source.OrderBy<T, int>((item) => rnd.Next());
+}
+*/

@@ -3,7 +3,7 @@
   bob.100
 [MAIN]
   MAP Land$Online_Volcanic_Island
-  BattleArea 6000 1700 21000 38000 1000
+  BattleArea 8500 10000 350000 400000 10000
   TIME 12
   Army 1 gb
   Army 2 de

@@ -684,11 +684,11 @@ setInterval(readfile, refreshinterval_ms);
 
     //Figure out ClOD sector name for given lat/long
     function latlng2sector (latlng) {
-        var num = (Math.floor(latlng.lat/10000)+1).toFixed(0).toString();
+        var num = (Math.floor(latlng.lat/10000)).toFixed(0).toString();
         if (num<10 && num>=0) num = '0' + num;
         else if (num>-10 && num<0) num = '-0' + -num;
         
-        var num2 = (Math.floor(latlng.lng/10000)+1).toFixed(0).toString();
+        var num2 = (Math.floor(latlng.lng/10000)).toFixed(0).toString();
         if (num2<10 && num2>=0) num2 = '0' + num2;
         else if (num2>-10 && num2<0) num2 = '-0' + -num2;
         

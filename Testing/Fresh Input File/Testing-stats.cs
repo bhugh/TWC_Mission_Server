@@ -13,6 +13,7 @@
 //Everything still works--you just won't see any Console.WriteLine() messages, making you *think* that everything is failing. 
 
 //TODO:
+// - Stop transfer of radar files older than say 30 minutes
 // - NETSTATS KILL POINTS are coming out as higher than TWC Kill points. Figure out why/could be because some a/c crashes, landings, etc are still not coming through in 4.5, or some other bug
 // - When parachuting as a Bomber pilot, and if you die, the MAIN career is ended instead of the BOMBER career.
 // - Need to add details for new 4.5 aircraft into <rr section
@@ -3330,16 +3331,22 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
         //Display summary of kill point stats for ALL players to a certain player; Display only those on a certain side if side > 0.  Display to all players if player == null
-        public void StbSr_Display_SessionStatsAll(Player player = null, int side = 0)
+        public string StbSr_Display_SessionStatsAll(Player player = null, int side = 0, bool display=true)
         {
 
             //playerName = StbSr_MassagePlayername(player.Name(), player as AiActor);
 
-            double delay = 0.6;
-            mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, "Army Deaths TotalKillPoints Air/AA/Naval/Ground(/Penalty) (KgOnTarget) Name", null); });
-            
+            double delay = 0.2;
+            double delay_interval = 0.2;
+            int total = 0;
+            string res = "";
 
-                                                                                                                            
+            string msg = "Army Deaths PlanesLost TotalKillPoints Air/AA/Naval/Ground(/Penalty) (KgOnTarget) Name";
+            if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg, null); });
+            else res += msg +"<br>" + Environment.NewLine;
+
+
+
 
             Dictionary<string, Stb_PlayerSessStat> stbSis_saveIPlayerStatTEMP = new Dictionary<string, Stb_PlayerSessStat>(mission.stb_SaveIPlayerStat.stbSis_saveIPlayerStat);
             //stbSis_saveIPlayerStatTEMP = stbSis_saveIPlayerStat; //doing it this way just makes them two different names for the same actual object
@@ -3356,42 +3363,64 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 string army = "";
                 if (currPlayer.Army() != null)
                 {
-                    if (currPlayer.Army() == 1) army = "B";
-                    if (currPlayer.Army() == 2) army = "R";
+                    if (currPlayer.Army() == 1) army = "R";
+                    if (currPlayer.Army() == 2) army = "B";
                 }
 
-
+                //Only show IF there is some non-zero stats to show
+                bool report = (0.01 < (double)currSessStat.deaths + (double)currSessStat.planesWrittenOff +
+                    (double)(currSessStat.getSessStat(798)) + (double)(currSessStat.getSessStat(802)) +
+                    (double)(currSessStat.getSessStat(806)) + (double)(currSessStat.getSessStat(810)) +
+                    ((double)currSessStat.getSessStat(814)) - currSessStat.getSessStat(847) + currSessStat.bombsHit
+                );
                 //PlayerStats.getSessStat(778);
 
-                string msg1 = string.Format(army + " {0:0} {1:0.00} {2:0.00}/{3:0.00}/{4:0.00}/{5:0.00}", (double)currSessStat.deaths,
-                    (double)(currSessStat.getSessStat(798)) / 100, (double)(currSessStat.getSessStat(802)) / 100, (double)(currSessStat.getSessStat(806)) / 100, (double)(currSessStat.getSessStat(810)) / 100, ((double)currSessStat.getSessStat(814)) / 100);
-
-                //Also include player's penalty points if there are any.
-                if (currSessStat.getSessStat(847) < 0)
+                if (report)
                 {
-                    msg1 += string.Format("/{0:0.00}", (double)(currSessStat.getSessStat(847)) / 100);
+                    total++;
+                    string msg1 = string.Format(army + " {0:0} {1:0} {2:0.00} {3:0.00}/{4:0.00}/{5:0.00}/{6:0.00}", (double)currSessStat.deaths,
+                        (double)currSessStat.planesWrittenOff,
+                        (double)(currSessStat.getSessStat(798)) / 100, (double)(currSessStat.getSessStat(802)) / 100, (double)(currSessStat.getSessStat(806)) / 100, (double)(currSessStat.getSessStat(810)) / 100, ((double)currSessStat.getSessStat(814)) / 100);
+
+                    //Also include player's penalty points if there are any.
+                    if (currSessStat.getSessStat(847) < 0)
+                    {
+                        msg1 += string.Format("/{0:0.00}", (double)(currSessStat.getSessStat(847)) / 100);
+                    }
+
+
+
+
+                    if (currSessStat.bombsFire > 0)
+                    {
+
+                        double bombsPerc = 0;
+                        double bombsOnTarget_kg = 0;
+                        bombsPerc = (double)currSessStat.bombsHit / (double)currSessStat.bombsFire * 100;
+                        bombsOnTarget_kg = (double)currSessStat.bombsHit / (double)currSessStat.bombsFire * (double)currSessStat.bombsWeight;
+                        msg1 += string.Format(" {0:N0}kg", //, {3} bombs hit, {4} KG bombs dropped"
+                            bombsOnTarget_kg); //, currSessStat.bombsHit, currSessStat.bombsWeight);
+
+                    }
+
+                    msg1 += " " + entry.Key;
+                    delay += delay_interval;
+                    
+                    if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg1, null); });
+                    else res += msg1 + "<br>" + Environment.NewLine;
+
                 }
-
-
-
-                if (currSessStat.bombsFire > 0)
-                {
-
-                    double bombsPerc = 0;
-                    double bombsOnTarget_kg = 0;
-                    bombsPerc = (double)currSessStat.bombsHit / (double)currSessStat.bombsFire * 100;
-                    bombsOnTarget_kg = (double)currSessStat.bombsHit / (double)currSessStat.bombsFire * (double)currSessStat.bombsWeight;
-                    msg1 += string.Format(" {0:N0}kg", //, {3} bombs hit, {4} KG bombs dropped"
-                        bombsOnTarget_kg); //, currSessStat.bombsHit, currSessStat.bombsWeight);
-
-                }
-
-                msg1 += " " + entry.Key;
-                delay += 0.4;
-                mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg1, null); });
-
-
             }
+
+
+            if (total == 0) {
+                string msg2 = "<<<No Netstats to report>>>";
+                if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg2, null); });
+                else res += msg2 + "<br>" + Environment.NewLine;
+            }
+
+            return res;
+            
         }
 
 
@@ -3933,6 +3962,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             if (this.mission.stb_ResetPlayerStatsWhenKilled) sw.WriteLine(alive_dead_pilots_line);
 
                             string ms = StbSr_Display_SessionStatsTeam(null) + "<br>" + StbSr_GetCampaignSummary();
+                            ms += StbSr_Display_SessionStatsAll(null, 0, false);
                             sw.WriteLine("<table style=\"width:50%; margin-right:0px; margin-left:auto; float:right;\" border =\"1\" cellpadding=\"0\" cellspacing=\"1\">");
                             sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "TEAM Totals for Current Session" + "</h3></td></tr>");
                             sw.WriteLine("<tr class=\"\"><td class=\"\">" + ms + "</td></tr>");

@@ -1047,6 +1047,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         //GamePlay.gpLogServer(null, "bombe 7", null);
         double radius = AirfieldTargets[ap].Item6;
         Point3d APPos = AirfieldTargets[ap].Item7;
+        string apName = AirfieldTargets[ap].Item2;
         double distFromCenter = 1000000000;
         if (ap != null) distFromCenter = APPos.distance(ref pos);
         //Check if bomb fell inside radius and if so increment up
@@ -1249,16 +1250,6 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         }
     }
 
-    //LOADING OUR RANDOM SUB-MISSIONS//////////////////////////////
-    public List<string> GetFilenamesFromDirectory(string dirPath, string mask = null)
-    {
-        List<string> list = new List<string>();
-        string[] filenames = Directory.GetFiles(dirPath, "*" + mask + "*.mis");
-
-        list = new List<string>(filenames);
-        DebugAndLog("Num matching submissions found in directory: " + list.Count);
-        return list;
-    }
   
     //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
     public void EndMission(int endseconds = 0, string winner = "") {
@@ -1327,7 +1318,28 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
     }
 
-    public bool LoadRandomSubmission(string fileID = "randsubmission")
+
+    /****************************************
+     * LOADRANDOMSUBMISSION
+     * 
+     * Finds all files in the FILE_PATH whose filenames match the pattern (anything or nothing) + fileID + (anything or nothing) + .mis
+     * and randomly selects ONE of them to load.
+     * 
+     * This can be used in mission to, e.g., have a fighter sweep that always launches 12 minutes into the mission.  Instead of 
+     * running the same mission each time,  you can
+     * have 5 different variants of the mission available, and one of them is selected randomly each time.
+     * 
+     * subdir is relative to the FILE_PATH and should not include a leading or trailing / or \
+     * 
+     * Examples:
+     * 
+     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionBOMBERPATROLBLUE"); // load one of several available submissions
+     *   
+     *   LoadRandomSubmission(MISSION_ID + "-" + "randsubmissionFIGHTERPATROLRED", "patrols"); // keep sub-missions in subdirectory "patrols" of your main mission directory (FILE_PATH, above)
+     * 
+     * **************************************/
+
+    public bool LoadRandomSubmission(string fileID = "randsubmission", string subdir = "")
     {
         //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
         //GamePlay.gpHUDLogCenter("Respawning AI air groups");
@@ -1335,16 +1347,16 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
         bool ret = false;
 
-        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
+        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
         //if (DEBUG) 
 
 
         //random.Next(100) > XX adjust what percentage of AI aicraft sub-missions are actually loaded
         //random.Next(100) > 85 loads 85% of missions, random.Next(100) > 50 loads 50% of missions, random.Next(100) > 100 loads 100% of missions etc.
-        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && !fileID.StartsWith(MISSION_ID + "-" + "randsubmissionINITIALSHIPS") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD) 
+        if (fileID.StartsWith(MISSION_ID + "-" + "randsubmission") && !fileID.StartsWith(MISSION_ID + "-" + "randsubmissionINITIALSHIPS") && random.Next(100) > PERCENT_SUBMISSIONS_TO_LOAD)
         {
             Console.WriteLine("Skipping load of " + fileID + " to reduce submission files loaded.");
-            return ret; 
+            return ret;
         }
         DebugAndLog("Debug: Choosing from " + RandomMissions.Count + " missions to spawn. " + fileID + " " + CLOD_PATH + FILE_PATH);
         if (RandomMissions.Count > 0)
@@ -1366,6 +1378,17 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
 
 
+    }
+
+    //LOADING OUR RANDOM SUB-MISSIONS//////////////////////////////
+    public List<string> GetFilenamesFromDirectory(string dirPath, string mask = null)
+    {
+        List<string> list = new List<string>();
+        string[] filenames = Directory.GetFiles(dirPath, "*" + mask + "*.mis");
+
+        list = new List<string>(filenames);
+        DebugAndLog("Num matching submissions found in directory: " + list.Count);
+        return list;
     }
     public void logToFile(object data, string messageLogPath)
     {
@@ -1614,6 +1637,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         #endregion
     }
 
+    /************************************************************
+     * ONPLACELEAVE
+     * *********************************************************/
 
     public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
     {
@@ -1646,9 +1672,14 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
     }
 
+    /************************************************************
+    * ONPLACEENTER
+    * *********************************************************/
+
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
         base.OnPlaceEnter(player, actor, placeIndex);
+
         if (player != null)
         {
             setMainMenu(player);
@@ -1673,460 +1704,11 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     }
 
 
-    #region onbuildingkilled
-
-    //OnBuildingKilled only works on offline servers
-    //A few (random?) buildings also report to this routine in the multiplayer/online servers
-    /*
-    public override void OnBuildingKilled(string title, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-    {
-        base.OnBuildingKilled(title, pos, initiator, eventArgInt);
-
-        GamePlay.gpLogServer(null, "BUILDING:", new object[] { });
-        GamePlay.gpLogServer(null, "BUILDING:" + title + " at " + pos.x.ToString() + ".", new object[] { });
-
-        string BuildingName = title;
-        string BuildingArmy = "";
-        string PlayerArmy = "";
-        string sectorTitle = "";
-        string sectorName = GamePlay.gpSectorName(pos.x, pos.y);
-
-        if (GamePlay.gpFrontArmy(pos.x, pos.y) == 1)
-        {
-            BuildingArmy = "England";
-        }
-        else if (GamePlay.gpFrontArmy(pos.x, pos.y) == 2)
-        {
-            BuildingArmy = "France";
-        }
-        else
-        {
-            BuildingArmy = "Neutral";
-        }
-
-        if (initiator.Player.Army() == 1)
-        {
-            PlayerArmy = "RAF";
-        }
-        else if (initiator.Player.Army() == 2)
-        {
-            PlayerArmy = "Luftwaffe";
-        }
-        else
-        {
-            PlayerArmy = "Unknown";
-        }
-
-        GamePlay.gpLogServer(null, "BUILDING:" + BuildingName + " in " + BuildingArmy + " was destroyed in sector " + sectorName + " by " + initiator.Player.Name() + " from the " + PlayerArmy + ".", new object[] { });
-    }
-    */
-
-    #endregion
-
-    #region onstationarykilled
-    /*************************************************
-     * 
-     * Dam bombing objectives explanation
-     * 
-     *************************************************/
-    //OnStationaryKilled includes code to deal with dams that are bombed.  Creating the dams is a multi-step process:
-    //  #1. Generally the main portion of the dam is built with 'buildings' - which includes walls, turrets, and other dam-like objects.  But 'buildings' must be loaded in the main .mis file (not a sub-mission) and do NOT report to onStationaryKilled when they are bombed or killed.
-    //
-    //  #2. So to work around that, we build a portion of the dam using stationary ("static") objects.  Some that work well:
-    //       Static10 Stationary.Industrial.Huge_Factory.Part_C de 269351.97 165975.80 720.00
-    //       Static11 Stationary.Industrial.Huge_Factory.Part_B de 269351.97 165975.80 720.00
-    //       Static12 Stationary.Industrial.Huge_Factory.Part_A de 269351.97 165975.80 720.00
-    // 
-    //  #2. Then select which of those objects (probably all/any of them) to trigger the dam failure, and use that ID in the "if" statement below, e.g.:
-    //
-    //            if (!osk_LeHavreDam_destroyed && (
-    //              stationary.Name == "0:Static41" ||
-    //              stationary.Name == "0:Static42" ||
-    //              stationary.Name == "0:Static43"               
-    //              ))
-    //
-    //  #3. Then enter ALL of the objects in another "if" statement below, which will remove the objects after 60 seconds.  This will make the 'hole' in the dam.  E.G.:
-    //         if (sta.Name == "0:Static10" || sta.Name == "0:Static11" || sta.Name == "0:Static12") //Need to list the name of EACH item that should be removed/destroyed. We'll have trouble here if editing the file renumbers the statics . . .
-    //
-    //  #4. Then to make a deal of smoke and explosions to let bombers know they have successfully hit the dam, it makes sense to load the area under the stationary/static with
-    //     stationary objects that explode nicely.  Adding these also adds to the ground target victory total for the player who destroys the dam. It also makes sense at times
-    //      to hide these objects by putting them a few meters underground -2 meters in this case.  For proper stats reporting, MAKE SURE THE STATIONARY OBJECTS ARE ASSIGNED
-    //     TO THE CORRECT ARMY **AND** TO PROPER COUNTRY DE OR GB:
-    //      Static86 Stationary.Environment.JerryCan_GER1_1 gb 172036.72 46587.18 720.00 /hstart -2  (Static Environment Jerry Can)
-    //      Static17 Stationary.Environment.TelegaBallon_UK1 de 269402.91 166013.78 720.00   (Static Environment Hydrogen Tank Cart)
-    //
-    //     DO NOT use this stationary--or any of the similar fuel drum stationaries (X3, X2, X1):
-    // 
-    //      Static21 Stationary.Environment.FuelDrum_UK1_9 de 269440.16 165939.81 720.00 /hstart -2   (Static Environment British Fuel Drum X9)
-    //
-    //     The problem with the fuel cans is that they explode and they cause other nearby objects to explode.  But when the fuel can causes the explosion, the stationary is killed
-    //     and soon disappears, but it is never sent through OnStationaryKilled.  So if the stationary is destroyed this way we never see it here & cannot register the dam
-    //     as being destroyed.
-    //
-    //     Hydrogen & jerry can seem to create some nice smoke & fire while avoiding this problem.  
-    //
-    //  #5. Another technique for making smoke/explosions is to put an oil bunker inside the static/stationary structure.  This must be in the main .mis file (not a submission) 
-    //     and will not count as a ground kill for the player.  But it makes and excellent explosion etc. (Big, med, small all work--though you may run into the same problems 
-    //     as with fuel drums--more testing required):
-    //
-    //       154_bld buildings.House$Oil_Bunker-Big 1 269059.75 165974.34 720.00  (Buildings - Generic - Fuel Storage - large, medium, or small)
-    //
-    //  #6. You can also load a sub-mission at this point that would include smoke etc all along the dam to indicate that it has failed and is destroyed.   See code below for examples.  It will be something like:
-    //        GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
-    //       Note that you cannot load "BUILDINGS" in sub-missions; they only load in the main .mis file.  But the sub-mission could include various stationaries/static objects, some of which are 'buildlings' (confusing, but that is how CLOD works for now)
-    //
-    //  #7. For each dam you want to handle, you will need a separate "if" section below, within OnStationaryKilled, customized to be triggered by the right staticXX and removing the right staticX1, static X2, etc, and 
-    // a corresponding variable, like osk_LeHavreDam_destroyed, to track whether or not that dam has been destroyed.
-    //
-    //  #8. Buildings MUST be in the main .mis file, or they are not loaded. The statics that we use to detect whether objectives
-    //  have been destroyed, or that we want to destroy via this .cs file, should be in the main .mis file, so that we can easily
-    //  find them via looking for 0:StaticXX.  But it makes sense to move all OTHER statics out of the main .mis file into
-    // a separate initsubmission file.  For example, see TWC M002-initsubmission-LeHavDam.mis & similar.  These stationaries 
-    // will then be loaded at the mission start but don't clutter up the main .mis file, which is already very complex.
-
-    bool osk_MapTurned = false;
-    bool osk_LeHavreDam_destroyed = false;
-    bool osk_LesAndelysDam_destroyed = false;
-    bool osk_OuistrehamDam_destroyed = false;
-    bool osk_SouthamptonDam_destroyed = false;
-    bool osk_HambleDam_destroyed = false;
-    bool osk_CowesDam_destroyed = false;
-    bool osk_LeHavreFuelStorage_destroyed = false;
-    bool osk_PortsmouthFuelStorage_destroyed = false;
-    bool osk_Blue50Kills = false;
-    bool osk_Red50Kills = false;
-    bool osk_Blue10AirKills = false;
-    bool osk_Red10AirKills = false;
-    bool osk_Blue10GroundKills = false;
-    bool osk_Red10GroundKills = false;
-    string osk_RedObjCompleted = "- ";
-    string osk_BlueObjCompleted = "- ";
-    string osk_RedObjDescription = "Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Ouistreham Dam (AN03.8) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills - 10 more Team Kills than Blue";
-    string osk_BlueObjDescription = "Blue Objectives: Portsmouth Fuel Dump (AH-20.3) - Cowes Dam (AG19.8) - Hamble Dam (AG21.1) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills -10 more Team Kills than Red";
-    int osk_RedGroundTargets = 0;
-    int osk_BlueGroundTargets = 0;
-
-
-    public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
-    {
-        base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
-        
-        HashSet<string> targets;
-
-        if (initiator!=null && initiator.Player != null && initiator.Player.Name() != null) GamePlay.gpLogServer(new Player[] { initiator.Player }, "You destroyed a ground target (" + stationary.Name +")", new object[] { });
-        // + " in " + stationary.country + " was destroyed by " + initiator.Player.Name() + " from the " + initiator.Player.Army() + ".", new object[] { });
-
-        /******************************************************************
-         *
-         * Handle Le Havre Dam bombing
-         *
-         ******************************************************************/
- 
-        targets = new HashSet<string>(new string[] { "0:Static41", "0:Static42", "0:Static43" });       
-
-        if (!osk_LeHavreDam_destroyed && targets.Contains(stationary.Name))  //any of these stationaries being killed will kill the dam, but we want to be sure we go through this routine once only, not 2X or 3X
-        {
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Le Havre Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Le Havre Dam has been eliminated. Well done" + name);
-
-            osk_LeHavreDam_destroyed = true;
-            osk_RedObjCompleted += "Le Havre Dam - ";           
-            CampaignMapRedPoints += 20;
-
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LeHavDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears)
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name)) 
-                    {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60 + random.Next(-15,30) , () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                    });
-                }
-            }
-
-        }
-
-        /******************************************************************
-         *
-         * Handle LesAndelys Dam bombing         
-         *
-         ******************************************************************/
-        // 0:Staticxx is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static63", "0:Static65", "0:Static66" });
-
-  
-        if (!osk_LesAndelysDam_destroyed && targets.Contains(stationary.Name))
-        {
-            osk_LesAndelysDam_destroyed = true;
-            //osk_RedObjCompleted += "Les Andelys Dam - ";
-            CampaignMapRedPoints += 10;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Les Andelys Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Les Andelys Dam has been eliminated. Well done" + name);
- 
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-LesAndelysDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
-                {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                    });
-                }
-            }
-
-
-        }
-
-        /******************************************************************
-         *
-         * Handle Ouistreham Dam bombing         
-         *
-         ******************************************************************/
-        // 0:Staticxx is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static680", "0:Static681", "0:Static686" });
-
-        if (!osk_OuistrehamDam_destroyed && targets.Contains(stationary.Name))
-        
-        {
-            osk_OuistrehamDam_destroyed = true;
-            osk_RedObjCompleted += "Ouistreham Dam - ";
-            CampaignMapRedPoints += 20;
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Ouistreham Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Ouistreham Dam has been eliminated. Well done" + name);
-
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID +"-OuistrehamDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
-                {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                    });
-                }
-            }
-
-
-        }
-
-
-        /******************************************************************
-         *
-         *Handle Southampton Dam bombing
-         * - Uses a sub-mission to create smoke effects around the bombed dam, etc
-         *
-         ******************************************************************/
-        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static307", "0:Static309", "0:Static310" });
-
-        if (!osk_SouthamptonDam_destroyed && targets.Contains(stationary.Name))
-
-        {
-
-            osk_SouthamptonDam_destroyed = true;
-            //osk_BlueObjCompleted += "Southampton Dam - ";
-            CampaignMapBluePoints += 10;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Southampton Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Southamtpon Dam has been eliminated. Well done" + name);
-
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-
-            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-SouthamptonDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
-                {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                    });
-                }
-
-                //sta.Destroy();
-            }
-        }
-
-
-        /******************************************************************
-         *
-         *Handle Cowes Dam bombing
-         * - Uses a sub-mission to create smoke effects around the bombed dam, etc
-         *
-         ******************************************************************/
-        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static427", "0:Static429", "0:Static430" });
-
-        if (!osk_CowesDam_destroyed && targets.Contains(stationary.Name))
-
-        {
-            osk_CowesDam_destroyed = true;
-            osk_BlueObjCompleted += "Cowes Dam - ";
-            CampaignMapBluePoints += 20;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Cowes Dam eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Cowes Dam has been eliminated. Well done" + name);
-
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-
-            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-CowesDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
-                {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                            //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                        });
-                }
-
-                //sta.Destroy();
-            }
-
-
-        }
-
-        /******************************************************************
-        *
-        * Handle Hamble Dam bombing  
-        *
-        ******************************************************************/
-        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static68", "0:Static133" });
-
-        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))        
-        {
-            osk_HambleDam_destroyed = true;
-            osk_BlueObjCompleted += "Hamble Dam - ";
-            CampaignMapBluePoints += 20;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "The Hamble Dam has been eliminated. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("Hamble Dam eliminated. Well done" + name);
-
-            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
-
-            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
-            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-HambleDam-inactive.mis");
-
-            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
-            {
-                if (targets.Contains(sta.Name))
-                {
-                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
-                    Timeout(60, () =>
-                    {
-                        sta.Destroy();
-                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
-                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
-                    });
-                }                
-            }
-
-
-        }
-
-        /******************************************************************
-        *
-        * Handle Fuel Dump Objectives
-        *
-        ******************************************************************/
-        // Fuel Dump Objectives are slightly more simple than dams.  Simply put a jerry can inside each (building) fuel storage tank
-        // Select just ONE jerry can (say, one in the middle of your cluster of fuel storage tanks) to use to detect if 
-        // the objective has been destroyed.  Unlike the situation with the dams, the jerry cans seem to be easily destroyed
-        // when the fuel storage tanks explode, and the player always seems to get credit.  So we need to check only one jerry can
-        // to see if the objective has been destroyed.
-
-        targets = new HashSet<string>(new string[] { "0:Static184", "0:Static188", "0:Static190" } );
-
-        if ( !osk_LeHavreFuelStorage_destroyed && targets.Contains(stationary.Name)  ) 
-        {
-            osk_LeHavreFuelStorage_destroyed = true;
-            osk_RedObjCompleted += "Le Havre Fuel Dump - ";
-            CampaignMapRedPoints += 20;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Le Havre Fuel Storage Complex destroyed. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Le Havre Fuel Storage Complex has been destroyed. Well done" + name);
-        }
-
-        targets = new HashSet<string>(new string[] { "0:Static385", "0:Static386", "0:Static388", "0:Static389" } );
-
-        if (!osk_PortsmouthFuelStorage_destroyed && targets.Contains(stationary.Name))
-        {
-            osk_PortsmouthFuelStorage_destroyed = true;
-            osk_BlueObjCompleted += "Portsmouth Fuel Dump - ";
-            CampaignMapBluePoints += 20;
-
-            string name = "!";
-            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
-
-            GamePlay.gpLogServer(null, "Portsmouth Fuel Storage Complex destroyed. Well done" + name, new object[] { });
-            GamePlay.gpHUDLogCenter("The Portsmouth Fuel Storage Complex has been destroyed. Well done" + name);
-        }
-
-    }
-
-    #endregion
+#endregion
+
+    /*************************************************************
+    * CHECKMAPTURNED
+    * ***********************************************************/
 
     //Red & blue point totals transferred from -stats.cs
     //REMEMBER that these are ints and they are percentage X100 (so that we have decimal percentageand so you must DIVIDE BY 100 to get decimal percentage points)
@@ -2273,7 +1855,14 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
     }
 
+    /*************************************************************
+    * END - CHECKMAPTURNED
+    * ***********************************************************/
+
+
     /******************************************************************************
+     * 
+     * LONG-TERM CAMPAIGN METHODS 
      * 
      * Routines dealing with the LONG TERM CAMPAIGN and calculating the points
      * for each team that determine the current campaign status
@@ -2282,7 +1871,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
      ******************************************************************************/
 
     //CalcMapMove - returns a double with DOUBLE the current mission score and STRING the text message detailing the score
-    public Tuple <double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null) {
+    public Tuple<double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null)
+    {
         double MapMove = 0;
         string msg = "";
         string outputmsg = "";
@@ -2327,7 +1917,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
                 outputmsg += msg + Environment.NewLine;
                 if (output) gpLogServerAndLog(recipients, msg, null);
             }
-            if (difference < 0) {
+            if (difference < 0)
+            {
                 msg = "Blue has moved the campaign forward by getting " + (-difference).ToString("n1") + " more total victories than Red!";
                 outputmsg += msg + Environment.NewLine;
                 if (output) gpLogServerAndLog(recipients, msg, null);
@@ -2336,7 +1927,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         }
 
         double air_difference = RedAirF - BlueAirF;
-        
+
         if (Math.Abs(air_difference) >= 5)
         {
             if (air_difference > 0)
@@ -2345,7 +1936,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
                 outputmsg += msg + Environment.NewLine;
                 if (output) gpLogServerAndLog(recipients, msg, null);
             }
-            if (air_difference < 0) {
+            if (air_difference < 0)
+            {
                 msg = "Blue has moved the campaign forward by getting " + (-air_difference).ToString("n1") + " more air victories than Red!";
                 outputmsg += msg + Environment.NewLine;
                 if (output) gpLogServerAndLog(recipients, msg, null);
@@ -2400,7 +1992,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             MapMove += (double)BluePlanesWrittenOffI / 200; //These are LOSSES, so - points for red & + points for blue
         }
 
-        if (final) {
+        if (final)
+        {
 
             double portionComplete = calcProportionTimeComplete(); //0= just start, 1 = complete
             double outside = (random.NextDouble() - 0.5) * portionComplete;  //if a full mission we can get up to +/- 0.5 added by 'outside factors'.  But if we have done only a half mission it would be half that, 1/4 mission = 1/4 that, etc.
@@ -2486,13 +2079,14 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     //saves the current map state to a text file as the first line.  Previous mapstates are in reverse order from the top down, each on one line.
     //Also, saves the previous version of the _MapState file as *_MapState_old.txt
     public bool MapStateSaved = false;
-    public void SaveMapState(string winner, bool intermediateSave=false)
+    public bool MapStateBackedUp = false;
+    public void SaveMapState(string winner, bool intermediateSave = false)
     {
         if (!intermediateSave && MapStateSaved) return; //Due to the way it works (adding a certain value to the value in the file), we can only save map state ONCE per session.  So we can call it a few times near the end to be safe, but it only will save once at most
         try
         {
 
-            Tuple<double, string> res = CalcMapMove(winner,true, true, null);
+            Tuple<double, string> res = CalcMapMove(winner, true, true, null);
             double newMapState = CampaignMapState + res.Item1;
             string outputmsg = res.Item2;
             string msg = "";
@@ -2512,14 +2106,16 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
 
             string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt";
-            string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState_old.txt";
+            string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState_old.txt";            
             string currentContent = String.Empty;
 
+            //Save most recent copy of Campaign Map Score with suffix _old
             try
             {
                 if (File.Exists(filepath_old)) { File.Delete(filepath_old); }
                 File.Copy(filepath, filepath_old);
-            } catch (Exception ex) { Console.WriteLine("MapState Write Inner: " + ex.ToString()); }
+            }
+            catch (Exception ex) { Console.WriteLine("MapState Write Inner: " + ex.ToString()); }
 
             //if (File.Exists(filepath)) { File.Delete(filepath); }
             /*fi = new System.IO.FileInfo(filepath); //file to write to
@@ -2527,7 +2123,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             sw.WriteLine(newMapState.ToString());
             sw.Close(); */
 
-            if (File.Exists(filepath))            
+            if (File.Exists(filepath))
             {
                 currentContent = File.ReadAllText(filepath);
             }
@@ -2538,7 +2134,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(s => s.Trim()).Take(72)); //cut down prev content to max of 20 lines & omit blank lines
             File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + currentContent);
-            MapStateSaved = true;
+            if (!intermediateSave) MapStateSaved = true;
         }
         catch (Exception ex) { Console.WriteLine("MapState Write: " + ex.ToString()); }
 
@@ -2549,7 +2145,7 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         double MapState = GetMapState();
         int MapState_int = Convert.ToInt32(MapState);
         if (MapState_int > CampaignMapMaxRedSuffixMax) MapState_int = CampaignMapMaxRedSuffixMax;
-        if (-MapState_int > CampaignMapMaxBlueSuffixMax) MapState_int = -CampaignMapMaxBlueSuffixMax;               
+        if (-MapState_int > CampaignMapMaxBlueSuffixMax) MapState_int = -CampaignMapMaxBlueSuffixMax;
 
         if (MapState_int == 0) return "-0";
         if (MapState_int > 0) return "-R" + MapState_int.ToString("D3");  //3 digits so that our files will be named ie TWC M001-initairports-R002.mis - 002 is 3 digits
@@ -2560,18 +2156,23 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     {
 
         double MapState = 0;
+        string res = "";
 
         try
         {
             using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt"))
             {
-                MapState = Convert.ToDouble(sr.ReadLine());
+                res = sr.ReadLine();
+                MapState = Convert.ToDouble(res);
             }
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             System.Console.WriteLine("Main mission - read mapstate - Exception: " + ex.ToString());
             MapState = 0;
         }
+
+        Console.WriteLine("Main mission - read mapstate: " + MapState.ToString() + " " + res + " : " + STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt");
 
         if (MapState > 100000 || MapState < -100000) MapState = 0;
         CampaignMapState = MapState;
@@ -2579,6 +2180,16 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
 
     }
+
+    /******************************************************************************
+     * 
+     * END - LONG-TERM CAMPAIGN METHODS 
+     *    
+     ******************************************************************************/
+
+    /*************************
+     * ONACTORDEAD
+     * **********************/
 
     public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
     {
@@ -2639,6 +2250,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         //add your code here
     }
 
+    /*************************
+     * ONPERSONHEALTH
+     * **********************/
     public override void OnPersonHealth(maddox.game.world.AiPerson person, maddox.game.world.AiDamageInitiator initiator, float deltaHealth)
     {
         #region stats
@@ -2720,7 +2334,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     }
 
     //this will destroy ALL ai controlled aircraft on the server
-    public void destroyAIAircraft(Player player) {
+    public void destroyAIAircraft(Player player)
+    {
 
 
         //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
@@ -2778,9 +2393,8 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
     public string posmessage;
     public int poscount;
-    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy) {
-
-
+    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy)
+    {
 
         // int RADAR_REALISM;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
         // realism = -1 gives the lat/long output for radar files.
@@ -3373,7 +2987,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         }
     }//method radar     
 
-
+    /******************************************************************************************************************** 
+    * ****END****RADAR
+    * **********************************************************************************************************************/
 
 
     /////////////On Battle Started, load initial submissions////////////////////////
@@ -3462,6 +3078,14 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         }
     }
 
+    /****************************************
+     * READINITIALSUBMISSIONS
+     * 
+     * Loads any files in the FILE_PATH that match the pattern (anything or nothing) + filenameID + (anything or nothing) + .mis
+     * wait tells how many seconds to wait before starting to load, timespread will spread multiple initialsubmission loads
+     * over a certain time period (seconds)
+     * 
+     * **************************************/
 
     public void ReadInitialSubmissions(string filenameID, int timespread = 60, int wait = 0)
     {
@@ -3476,11 +3100,14 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             //If you make each sub-mission small enough it will load without a noticeable stutter
             //If they are large & make a noticeable stutter, probably best to load them all very near the beginning of the mission
             //so that all the stutters happen at that point
-            if ((timespread == 0) && (wait == 0)) {
+            if ((timespread == 0) && (wait == 0))
+            {
                 GamePlay.gpPostMissionLoad(s);
                 DebugAndLog(s + " file loaded");
                 Console.WriteLine(s + " file loaded");
-            } else {
+            }
+            else
+            {
                 //if (timespread>2 && random.Next(1) == 1) continue; //TESTING, skip 50% of mission loads just to try it
                 Timeout(wait + random.Next(timespread), () => {
 
@@ -3501,11 +3128,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
     }
 
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+    /************************************************************
+     * INIT
+     * *********************************************************/
 
     //Listen to events of every mission
     public override void Init(maddox.game.ABattle battle, int missionNumber)
@@ -3516,9 +3141,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ///MENU SYSTEM////////////////////////////
+    /************************************************************
+     * MENU SYSTEM
+     * *********************************************************/
 
     bool dmgOn = false;
     bool EndMissionSelected = false;
@@ -3805,6 +3430,9 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
 
     }
 
+    /************************************************************
+    * END - MENU SYSTEM
+    * *********************************************************/
 
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
     public override void OnPlayerConnected(Player player) {
@@ -3836,9 +3464,11 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
     }
 
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
-    public override void OnPlayerDisconnected(Player player, string diagnostic) {
+    public override void OnPlayerDisconnected(Player player, string diagnostic)
+    {
         string message;
-        if (MissionNumber > -1) {
+        if (MissionNumber > -1)
+        {
 
             DateTime utcDate = DateTime.UtcNow;
 
@@ -3849,8 +3479,10 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
         }
     }
 
-    public override void OnPlayerArmy(Player player, int Army) {
-        if (MissionNumber > -1) {
+    public override void OnPlayerArmy(Player player, int Army)
+    {
+        if (MissionNumber > -1)
+        {
             /* AiAircraft aircraft = (player.Place() as AiAircraft);
                             string cs = aircraft.CallSign();
                             //int p = part.ParameterTypes.I_VelocityIAS; 
@@ -3867,8 +3499,10 @@ public void displayMessages(int tick = 0, int tickoffset = 0, int respawntick = 
             //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
         }
     }
-    public override void Inited() {
-        if (MissionNumber > -1) {
+    public override void Inited()
+    {
+        if (MissionNumber > -1)
+        {
 
             setMainMenu(GamePlay.gpPlayer());
             GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
@@ -3954,9 +3588,9 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         return msg;
     }
 
-    /////////////////////
-
-    /////////////////////////CHAT COMMANDS//////////////////////////////////////////////////////////////
+    /****************************************
+    * END - CHAT COMMANDS
+    * **************************************/
 
     /* public override void OnBattleStarted()
     {
@@ -4014,6 +3648,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
 
     void Mission_EventChat(IPlayer from, string msg)
     {
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
         string msg_orig = msg;
         msg = msg.ToLower();
         Player player = from as Player;
@@ -4145,6 +3780,55 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         {
             ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
         }
+        else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
+        {
+
+
+            string tr = msg_orig.Substring(8).Trim();
+
+            GamePlay.gpLogServer(new Player[] { player }, "Trying to activate trigger " + tr, new object[] { });
+
+            if (GamePlay.gpGetTrigger(tr) != null)
+            {
+                GamePlay.gpGetTrigger(tr).Enable = true;
+                //GamePlay.gpGetTrigger(tr).Active = true;
+                GamePlay.gpLogServer(new Player[] { player }, "Enabled trigger " + tr, new object[] { });
+            }
+
+            //this.OnTrigger(1, tr, true);
+
+            Battle.OnEventGame(GameEventId.Trigger, tr, true, 1);
+
+            /*
+            AiAction action = GamePlay.gpGetAction("action1");
+
+            if (action != null)
+            {
+                action.Do();
+            }
+            */
+        }
+        else if (msg.StartsWith("<action") && admin_privilege_level(player) >= 2)
+        {
+
+
+            string tr = msg_orig.Substring(7).Trim();
+
+            AiAction action = GamePlay.gpGetAction(tr);
+
+            if (action != null)
+            {
+                action.Do();
+                GamePlay.gpLogServer(new Player[] { player }, "Activating action " + tr, new object[] { });
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Didn't find action " + tr + "! No action taken.", new object[] { });
+            }
+
+
+
+        }
         else if (msg.StartsWith("<debugon") && admin_privilege_level(player) >= 2)
         {
 
@@ -4152,6 +3836,7 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
 
         }
+
         else if (msg.StartsWith("<debugoff") && admin_privilege_level(player) >= 2)
         {
 
@@ -4225,7 +3910,8 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
             //Don't give our help when any of these typical -stats.cs chat commands are entered
             !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
-            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac"))
+            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac")
+            || msg.StartsWith("<net"))
 
             )
         {
@@ -4236,9 +3922,17 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
                 //GamePlay.gp(, from);
             });
         }
-    }  
+    }
+
+    /****************************************
+     * END - CHAT COMMANDS
+     * **************************************/
 
     //Ground objects (except AA Guns) will die after 55 min when counted from their birth
+
+    /*****************************************************
+     * ONACTORCREATED
+     * ***************************************************/
 
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
@@ -4316,15 +4010,15 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
         }
       });
 
-
-
-
     }
 
+    /*****************************************************
+     * END - ONACTORCREATED
+     * ***************************************************/
 
-    
+
     #region Returns whether aircraft is an Ai plane (no humans in any seats)
-     private bool isAiControlledPlane2(AiAircraft aircraft)
+    private bool isAiControlledPlane2(AiAircraft aircraft)
       
       { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
       if (aircraft == null) return false;
@@ -4611,6 +4305,474 @@ AiAircraft Aircraft, AiDamageInitiator DamageFrom, part.NamedDamageTypes WhatDam
             (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + to);
         }
     }
+
+
+
+    #region onbuildingkilled
+
+    //OnBuildingKilled only works on offline servers
+    //A few (random?) buildings also report to this routine in the multiplayer/online servers
+    /*
+    public override void OnBuildingKilled(string title, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+        base.OnBuildingKilled(title, pos, initiator, eventArgInt);
+
+        GamePlay.gpLogServer(null, "BUILDING:", new object[] { });
+        GamePlay.gpLogServer(null, "BUILDING:" + title + " at " + pos.x.ToString() + ".", new object[] { });
+
+        string BuildingName = title;
+        string BuildingArmy = "";
+        string PlayerArmy = "";
+        string sectorTitle = "";
+        string sectorName = GamePlay.gpSectorName(pos.x, pos.y);
+
+        if (GamePlay.gpFrontArmy(pos.x, pos.y) == 1)
+        {
+            BuildingArmy = "England";
+        }
+        else if (GamePlay.gpFrontArmy(pos.x, pos.y) == 2)
+        {
+            BuildingArmy = "France";
+        }
+        else
+        {
+            BuildingArmy = "Neutral";
+        }
+
+        if (initiator.Player.Army() == 1)
+        {
+            PlayerArmy = "RAF";
+        }
+        else if (initiator.Player.Army() == 2)
+        {
+            PlayerArmy = "Luftwaffe";
+        }
+        else
+        {
+            PlayerArmy = "Unknown";
+        }
+
+        GamePlay.gpLogServer(null, "BUILDING:" + BuildingName + " in " + BuildingArmy + " was destroyed in sector " + sectorName + " by " + initiator.Player.Name() + " from the " + PlayerArmy + ".", new object[] { });
+    }
+    */
+
+    #endregion
+
+
+    /*******************************************************************************
+     ******************************************************************************* 
+     * METHODS DIFFERENT FOR DIFFERENT CAMPAIGNS
+     * 
+     * Below we're collecting the methods that are wildly different between different TWC
+     * campaigns so that we can more easily use comparison tools on the similar portions above.
+     * 
+     * *******************************************************************************
+     * *****************************************************************************/
+
+
+    #region onstationarykilled
+    /*************************************************
+     * 
+     * Dam bombing objectives explanation
+     * 
+     *************************************************/
+    //OnStationaryKilled includes code to deal with dams that are bombed.  Creating the dams is a multi-step process:
+    //  #1. Generally the main portion of the dam is built with 'buildings' - which includes walls, turrets, and other dam-like objects.  But 'buildings' must be loaded in the main .mis file (not a sub-mission) and do NOT report to onStationaryKilled when they are bombed or killed.
+    //
+    //  #2. So to work around that, we build a portion of the dam using stationary ("static") objects.  Some that work well:
+    //       Static10 Stationary.Industrial.Huge_Factory.Part_C de 269351.97 165975.80 720.00
+    //       Static11 Stationary.Industrial.Huge_Factory.Part_B de 269351.97 165975.80 720.00
+    //       Static12 Stationary.Industrial.Huge_Factory.Part_A de 269351.97 165975.80 720.00
+    // 
+    //  #2. Then select which of those objects (probably all/any of them) to trigger the dam failure, and use that ID in the "if" statement below, e.g.:
+    //
+    //            if (!osk_LeHavreDam_destroyed && (
+    //              stationary.Name == "0:Static41" ||
+    //              stationary.Name == "0:Static42" ||
+    //              stationary.Name == "0:Static43"               
+    //              ))
+    //
+    //  #3. Then enter ALL of the objects in another "if" statement below, which will remove the objects after 60 seconds.  This will make the 'hole' in the dam.  E.G.:
+    //         if (sta.Name == "0:Static10" || sta.Name == "0:Static11" || sta.Name == "0:Static12") //Need to list the name of EACH item that should be removed/destroyed. We'll have trouble here if editing the file renumbers the statics . . .
+    //
+    //  #4. Then to make a deal of smoke and explosions to let bombers know they have successfully hit the dam, it makes sense to load the area under the stationary/static with
+    //     stationary objects that explode nicely.  Adding these also adds to the ground target victory total for the player who destroys the dam. It also makes sense at times
+    //      to hide these objects by putting them a few meters underground -2 meters in this case.  For proper stats reporting, MAKE SURE THE STATIONARY OBJECTS ARE ASSIGNED
+    //     TO THE CORRECT ARMY **AND** TO PROPER COUNTRY DE OR GB:
+    //      Static86 Stationary.Environment.JerryCan_GER1_1 gb 172036.72 46587.18 720.00 /hstart -2  (Static Environment Jerry Can)
+    //      Static17 Stationary.Environment.TelegaBallon_UK1 de 269402.91 166013.78 720.00   (Static Environment Hydrogen Tank Cart)
+    //
+    //     DO NOT use this stationary--or any of the similar fuel drum stationaries (X3, X2, X1):
+    // 
+    //      Static21 Stationary.Environment.FuelDrum_UK1_9 de 269440.16 165939.81 720.00 /hstart -2   (Static Environment British Fuel Drum X9)
+    //
+    //     The problem with the fuel cans is that they explode and they cause other nearby objects to explode.  But when the fuel can causes the explosion, the stationary is killed
+    //     and soon disappears, but it is never sent through OnStationaryKilled.  So if the stationary is destroyed this way we never see it here & cannot register the dam
+    //     as being destroyed.
+    //
+    //     Hydrogen & jerry can seem to create some nice smoke & fire while avoiding this problem.  
+    //
+    //  #5. Another technique for making smoke/explosions is to put an oil bunker inside the static/stationary structure.  This must be in the main .mis file (not a submission) 
+    //     and will not count as a ground kill for the player.  But it makes and excellent explosion etc. (Big, med, small all work--though you may run into the same problems 
+    //     as with fuel drums--more testing required):
+    //
+    //       154_bld buildings.House$Oil_Bunker-Big 1 269059.75 165974.34 720.00  (Buildings - Generic - Fuel Storage - large, medium, or small)
+    //
+    //  #6. You can also load a sub-mission at this point that would include smoke etc all along the dam to indicate that it has failed and is destroyed.   See code below for examples.  It will be something like:
+    //        GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
+    //       Note that you cannot load "BUILDINGS" in sub-missions; they only load in the main .mis file.  But the sub-mission could include various stationaries/static objects, some of which are 'buildlings' (confusing, but that is how CLOD works for now)
+    //
+    //  #7. For each dam you want to handle, you will need a separate "if" section below, within OnStationaryKilled, customized to be triggered by the right staticXX and removing the right staticX1, static X2, etc, and 
+    // a corresponding variable, like osk_LeHavreDam_destroyed, to track whether or not that dam has been destroyed.
+    //
+    //  #8. Buildings MUST be in the main .mis file, or they are not loaded. The statics that we use to detect whether objectives
+    //  have been destroyed, or that we want to destroy via this .cs file, should be in the main .mis file, so that we can easily
+    //  find them via looking for 0:StaticXX.  But it makes sense to move all OTHER statics out of the main .mis file into
+    // a separate initsubmission file.  For example, see TWC M002-initsubmission-LeHavDam.mis & similar.  These stationaries 
+    // will then be loaded at the mission start but don't clutter up the main .mis file, which is already very complex.
+
+    bool osk_MapTurned = false;
+    bool osk_LeHavreDam_destroyed = false;
+    bool osk_LesAndelysDam_destroyed = false;
+    bool osk_OuistrehamDam_destroyed = false;
+    bool osk_SouthamptonDam_destroyed = false;
+    bool osk_HambleDam_destroyed = false;
+    bool osk_CowesDam_destroyed = false;
+    bool osk_LeHavreFuelStorage_destroyed = false;
+    bool osk_PortsmouthFuelStorage_destroyed = false;
+    bool osk_Blue50Kills = false;
+    bool osk_Red50Kills = false;
+    bool osk_Blue10AirKills = false;
+    bool osk_Red10AirKills = false;
+    bool osk_Blue10GroundKills = false;
+    bool osk_Red10GroundKills = false;
+    string osk_RedObjCompleted = "- ";
+    string osk_BlueObjCompleted = "- ";
+    string osk_RedObjDescription = "Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Ouistreham Dam (AN03.8) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills - 10 more Team Kills than Blue";
+    string osk_BlueObjDescription = "Blue Objectives: Portsmouth Fuel Dump (AH-20.3) - Cowes Dam (AG19.8) - Hamble Dam (AG21.1) - 50 total Team Kills - 10 Air Kills - 10 AA/Naval/Ground Kills -10 more Team Kills than Red";
+    int osk_RedGroundTargets = 0;
+    int osk_BlueGroundTargets = 0;
+
+
+    public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
+
+        HashSet<string> targets;
+
+        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) GamePlay.gpLogServer(new Player[] { initiator.Player }, "You destroyed a ground target (" + stationary.Name + ")", new object[] { });
+        // + " in " + stationary.country + " was destroyed by " + initiator.Player.Name() + " from the " + initiator.Player.Army() + ".", new object[] { });
+
+        /******************************************************************
+         *
+         * Handle Le Havre Dam bombing
+         *
+         ******************************************************************/
+
+        targets = new HashSet<string>(new string[] { "0:Static41", "0:Static42", "0:Static43" });
+
+        if (!osk_LeHavreDam_destroyed && targets.Contains(stationary.Name))  //any of these stationaries being killed will kill the dam, but we want to be sure we go through this routine once only, not 2X or 3X
+        {
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Le Havre Dam eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Le Havre Dam has been eliminated. Well done" + name);
+
+            osk_LeHavreDam_destroyed = true;
+            osk_RedObjCompleted += "Le Havre Dam - ";
+            CampaignMapRedPoints += 20;
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-LeHavDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears)
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60 + random.Next(-15, 30), () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+            }
+
+        }
+
+        /******************************************************************
+         *
+         * Handle LesAndelys Dam bombing         
+         *
+         ******************************************************************/
+        // 0:Staticxx is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static63", "0:Static65", "0:Static66" });
+
+
+        if (!osk_LesAndelysDam_destroyed && targets.Contains(stationary.Name))
+        {
+            osk_LesAndelysDam_destroyed = true;
+            //osk_RedObjCompleted += "Les Andelys Dam - ";
+            CampaignMapRedPoints += 10;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Les Andelys Dam eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Les Andelys Dam has been eliminated. Well done" + name);
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-LesAndelysDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60, () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+            }
+
+
+        }
+
+        /******************************************************************
+         *
+         * Handle Ouistreham Dam bombing         
+         *
+         ******************************************************************/
+        // 0:Staticxx is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static680", "0:Static681", "0:Static686" });
+
+        if (!osk_OuistrehamDam_destroyed && targets.Contains(stationary.Name))
+
+        {
+            osk_OuistrehamDam_destroyed = true;
+            osk_RedObjCompleted += "Ouistreham Dam - ";
+            CampaignMapRedPoints += 20;
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Ouistreham Dam eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Ouistreham Dam has been eliminated. Well done" + name);
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-OuistrehamDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60, () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+            }
+
+
+        }
+
+
+        /******************************************************************
+         *
+         *Handle Southampton Dam bombing
+         * - Uses a sub-mission to create smoke effects around the bombed dam, etc
+         *
+         ******************************************************************/
+        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static307", "0:Static309", "0:Static310" });
+
+        if (!osk_SouthamptonDam_destroyed && targets.Contains(stationary.Name))
+
+        {
+
+            osk_SouthamptonDam_destroyed = true;
+            //osk_BlueObjCompleted += "Southampton Dam - ";
+            CampaignMapBluePoints += 10;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Southampton Dam eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Southamtpon Dam has been eliminated. Well done" + name);
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+
+            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-SouthamptonDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60, () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+
+                //sta.Destroy();
+            }
+        }
+
+
+        /******************************************************************
+         *
+         *Handle Cowes Dam bombing
+         * - Uses a sub-mission to create smoke effects around the bombed dam, etc
+         *
+         ******************************************************************/
+        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static427", "0:Static429", "0:Static430" });
+
+        if (!osk_CowesDam_destroyed && targets.Contains(stationary.Name))
+
+        {
+            osk_CowesDam_destroyed = true;
+            osk_BlueObjCompleted += "Cowes Dam - ";
+            CampaignMapBluePoints += 20;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Cowes Dam eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Cowes Dam has been eliminated. Well done" + name);
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+
+            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-CowesDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60, () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+
+                //sta.Destroy();
+            }
+
+
+        }
+
+        /******************************************************************
+        *
+        * Handle Hamble Dam bombing  
+        *
+        ******************************************************************/
+        // 0:Static10 is the large industrial building the forms the center part of the dam.  When the player hits this part of the dam & blows it up, that will be the trigger to determine that the dam has actually been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static68", "0:Static133" });
+
+        if (!osk_HambleDam_destroyed && targets.Contains(stationary.Name))
+        {
+            osk_HambleDam_destroyed = true;
+            osk_BlueObjCompleted += "Hamble Dam - ";
+            CampaignMapBluePoints += 20;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "The Hamble Dam has been eliminated. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("Hamble Dam eliminated. Well done" + name);
+
+            //you can specify a submission here to load that will create a bunch of smoke and fire or whatever.
+
+            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "LeHavDam-inactive.mis");
+            GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "TWC " + MISSION_ID + "-HambleDam-inactive.mis");
+
+            //Now make the central buildings in the dam disappear (to make the dam appear to have a break in it, once the smoke clears) 
+            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(stationary.pos.x, stationary.pos.y, 500))
+            {
+                if (targets.Contains(sta.Name))
+                {
+                    //Let the fire/explosion get revved up a bit, then destroy/remove the center bit
+                    Timeout(60, () =>
+                    {
+                        sta.Destroy();
+                        DebugAndLog("Dam bombed; destroying stationary " + sta.Name);
+                        //GamePlay.gpLogServer(null, "The bombed dam is disintegrating . . . ", new object[] { });
+                    });
+                }
+            }
+
+
+        }
+
+        /******************************************************************
+        *
+        * Handle Fuel Dump Objectives
+        *
+        ******************************************************************/
+        // Fuel Dump Objectives are slightly more simple than dams.  Simply put a jerry can inside each (building) fuel storage tank
+        // Select just ONE jerry can (say, one in the middle of your cluster of fuel storage tanks) to use to detect if 
+        // the objective has been destroyed.  Unlike the situation with the dams, the jerry cans seem to be easily destroyed
+        // when the fuel storage tanks explode, and the player always seems to get credit.  So we need to check only one jerry can
+        // to see if the objective has been destroyed.
+
+        targets = new HashSet<string>(new string[] { "0:Static184", "0:Static188", "0:Static190" });
+
+        if (!osk_LeHavreFuelStorage_destroyed && targets.Contains(stationary.Name))
+        {
+            osk_LeHavreFuelStorage_destroyed = true;
+            osk_RedObjCompleted += "Le Havre Fuel Dump - ";
+            CampaignMapRedPoints += 20;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Le Havre Fuel Storage Complex destroyed. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Le Havre Fuel Storage Complex has been destroyed. Well done" + name);
+        }
+
+        targets = new HashSet<string>(new string[] { "0:Static385", "0:Static386", "0:Static388", "0:Static389" });
+
+        if (!osk_PortsmouthFuelStorage_destroyed && targets.Contains(stationary.Name))
+        {
+            osk_PortsmouthFuelStorage_destroyed = true;
+            osk_BlueObjCompleted += "Portsmouth Fuel Dump - ";
+            CampaignMapBluePoints += 20;
+
+            string name = "!";
+            if (initiator.Player.Name() != null) name = ", " + initiator.Player.Name() + "!";
+
+            GamePlay.gpLogServer(null, "Portsmouth Fuel Storage Complex destroyed. Well done" + name, new object[] { });
+            GamePlay.gpHUDLogCenter("The Portsmouth Fuel Storage Complex has been destroyed. Well done" + name);
+        }
+
+    }
+
 
 
 } //class mission : amission

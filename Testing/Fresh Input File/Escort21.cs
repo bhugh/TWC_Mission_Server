@@ -5063,7 +5063,8 @@ public class Mission : AMission
                 {
                     //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
-                    GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name + " (" + mo.Pos.x + "," + mo.Pos.y + ")", new object[] { });
+                    // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
+                    GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
 
                 });//timeout      
 

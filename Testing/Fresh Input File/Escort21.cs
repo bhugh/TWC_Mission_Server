@@ -1,4 +1,5 @@
-﻿//$reference parts/core/CLOD_Extensions.dll
+//$reference parts/core/CLOD_Extensions.dll
+///$reference parts/core/TWCStats.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -34,6 +35,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TF_Extensions;
+//using TWCStats;
 
 //////////////////simply change the////////////////////////
 //////////////////GamePlay.gpHUDLogCenter("Do 17's traveling towards Lympne");///////////////
@@ -111,6 +113,8 @@ public class Mission : AMission
     //Constructor
     public Mission()
     {
+        //Console.Write("TYPEOF: " + typeof(string).Assembly.TWCStats);
+        //TWCStats.interop statsMis = new TWCStats.interop();
         random = new Random();
         stb_random = random;
         //constants = new Constants();
@@ -511,7 +515,7 @@ public class Mission : AMission
     * 
     * We give credit (points) for any bomb that hits within the radius of an airfield.
     * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
-    * 
+    *  
     * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
     * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
     * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
@@ -944,6 +948,9 @@ public class Mission : AMission
                         else if (arm == 2) CampaignMapRedPoints += 5;
                         */
 
+                        MO_DestroyObjective(Mission + "_airfield");
+                        /*
+                         * The additional score & adding points for knocking out an airport have been moved to the MissionObjectives section with MO_DestroyObjective
                         //Question: Do we want to keep these objective points for knocking out any airfield?
                         if (arm == 1)
                         {
@@ -957,7 +964,7 @@ public class Mission : AMission
                         }
 
                         Console.WriteLine("Airport destroyed, awarding points to destroying army; airport owned by army: " + arm.ToString());
-
+                        */
 
                         //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
                         //This airport has been destroyed, so remove the spawn point
@@ -2732,7 +2739,7 @@ public class Mission : AMission
                                 {
                                     //Point3d ps = Calcs.Il2Point3dToLongLat(act.Pos());
                                     //pl += " " + ps.y.ToString("n2") + " " + ps.x.ToString("n2");
-                                    pl += " " + act.Pos().y.ToString("n0") + " " + act.Pos().x.ToString("n0");
+                                    pl += " " + act.Pos().x.ToString("n0") + " " + act.Pos().y.ToString("n0");  //2018/09/20 - switching order of x & y & now need to do the same in radar.php
                                 }
 
                             }
@@ -2858,6 +2865,8 @@ public class Mission : AMission
         CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
 
         CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
+        //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
+        SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
         mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
         LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
 
@@ -3527,9 +3536,6 @@ public class Mission : AMission
             setMainMenu(GamePlay.gpPlayer());
             GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
 
-            Timeout(90, () => { SetAirfieldTargets(); });
-
-
         }
     }
 
@@ -3607,6 +3613,12 @@ public class Mission : AMission
             //GamePlay.gp(, from);
 
         }
+        else if (msg.StartsWith("<ne"))
+        {
+          //int v = ver;
+          //Mission m = twcstats_mission;
+          //.stb_StatRecorder.StbSr_Display_SessionStatsAll(player, 0); //display "Netstats" summary of current session stats for all players to this player
+        }                
         else if (msg.StartsWith("<obj"))
         {
 
@@ -4438,8 +4450,9 @@ public class Mission : AMission
         {ArmiesE.Blue, new List<String>() }
     };
 
-    public enum MO_TriggerType { Trigger, Static };
-    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airport, Aircraft, Vehicles, Bridge, Dam, Dock, RRStation, Railroad, Road };
+    public enum MO_TriggerType { Trigger, Static, Airfield };
+    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase };
+    //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
 
     public class MissionObjective
     {
@@ -4452,7 +4465,7 @@ public class Mission : AMission
         public Mission.MO_ObjectiveType MOObjectiveType { get; set; }
         public Mission.MO_TriggerType MOTriggerType { get; set; }
         public bool IsPrimaryTarget { get; set; } //One of the primary/required targets for this mission?
-        public int PrimaryTargetWeight { get; set; } //If we select primary targets randomly etc, is this one that could be selected? Percentage weight 0-100, 0 means never chosen.
+        public double PrimaryTargetWeight { get; set; } //If we select primary targets randomly etc, is this one that could be selected? Percentage weight 0-100, 0 means never chosen.
         public double Points { get; set; }
         public bool Destroyed { get; set; }
         public Point3d Pos { get; set; }
@@ -4470,14 +4483,14 @@ public class Mission : AMission
         public List<string> StaticRemoveNames { get; set; } //what statics to remove when the object is destroyed (allows eg dams to be breached by removal of certain portions)
         public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
         public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
-        public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc
+        public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc, not for display to end users
         public Mission msn;
         public MissionObjective(Mission m)
         {
             msn = m;
         }
         //RADAR TRIGGER initiator
-        public MissionObjective(Mission m, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, double e, bool pt, int ptp, string comment)
+        public MissionObjective(Mission m, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, double e, bool pt, double ptp, string comment)
         {
 
             msn = m;
@@ -4521,8 +4534,49 @@ public class Mission : AMission
             Comment = comment;
         }
 
-        //TRIGGER initiator (for all types except RADAR)
-        public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, int ptp, string comment)
+        //AIRFIELD initiator
+        //public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+        //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+        public MissionObjective(Mission m, double pts, double ptp, AiAirport airport, int arm, Tuple<bool, string, double, double, DateTime, double, Point3d> tup)
+        //            string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, int ptp, string comment)
+        {
+
+            msn = m;
+            MOObjectiveType = MO_ObjectiveType.Airfield ;
+            MOTriggerType = MO_TriggerType.Airfield;           
+            ID = tup.Item2+"_airfield";
+            //Console.WriteLine("New MissionObjective airport: " + ID);
+            Name = tup.Item2 + " Airfield";
+
+            IsEnabled = true;
+
+            Pos = tup.Item7;
+            //OwnerArmy = airport.Army(); OK, this doesn't work as all .Army() for airports is set to 0        
+            OwnerArmy = arm;
+            AttackingArmy = 3 - OwnerArmy;
+            if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+  
+                HUDMessage = null;//hud/log messages are handled by the handle airport bombing routine
+                LOGMessage = null;
+
+            Points = pts;            
+            string keyp = Calcs.doubleKeypad(Pos);
+            /* Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
+            Sector = Sector.Replace(",", ""); // remove the comma     */
+            Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+            
+            Destroyed = false;
+
+
+            IsPrimaryTarget = false;
+            PrimaryTargetWeight = ptp;
+            Comment = "Auto-generated from in-game airports list";
+        }
+
+
+
+        //TRIGGER initiator (for all types except RADAR & AIRFIELD)
+        public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, double ptp, string comment)
         {
 
             msn = m;
@@ -4610,8 +4664,9 @@ public class Mission : AMission
             gp = gameplay;
             RadarPositionTriggersSetup();
             MissionObjectiveTriggersSetup();
+            msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay); //must do this after the Radar & Triggers setup, as it uses info from those objectives
             SelectSuggestedObjectives();
-
+            
             //Get new objectives for winner if they have turned the map OR read in the old objectives if not
             if (msn.MapPrevWinner == "Red")
             {
@@ -4671,14 +4726,14 @@ public class Mission : AMission
 
         }
 
-        public void addRadar(string n, int ownerarmy, double pts, string tn, string t, double p, double x, double y, double d, double e, bool pt, int ptp = 100, string comment = "")
+        public void addRadar(string n, int ownerarmy, double pts, string tn, string t, double p, double x, double y, double d, double e, bool pt, double ptp = 100, string comment = "")
         {            
             if (!MO_SanityChecks(tn, n)) return;
             msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, tn, n, ownerarmy, pts, t, p, x, y, d, e, pt, ptp, comment));
 
         }
 
-        public void addTrigger(MO_ObjectiveType mot, string n, int ownerarmy, double pts, string tn, string t = "", double p = 50, double x = 0, double y = 0, double d = 100, bool pt = false, int ptp = 100, string comment = "")
+        public void addTrigger(MO_ObjectiveType mot, string n, int ownerarmy, double pts, string tn, string t = "", double p = 50, double x = 0, double y = 0, double d = 100, bool pt = false, double ptp = 100, string comment = "")
         {
             if (!MO_SanityChecks(tn, n)) return;
             //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
@@ -4762,7 +4817,7 @@ public class Mission : AMission
 
             //BLUE TARGETS
             addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers",                                  1, 2, "BTarget1",   "TGroundDestroyed",   20,  222303, 221176, 300, false, 100, "");
-            addTrigger(MO_ObjectiveType.Airport,  "Redhill Bomber Base",                                  1, 2, "BTarget2",   "TGroundDestroyed",   20,  143336, 240806, 550, false, 100, "");
+            addTrigger(MO_ObjectiveType.AirfieldComplex,  "Redhill Bomber Base",                                  1, 2, "BTarget2",   "TGroundDestroyed",   20,  143336, 240806, 550, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot",                                  1, 2, "BTarget3",   "TGroundDestroyed",   20,  214639, 235604, 100, false, 100, "");
             addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft",                                     1, 2, "BTarget4",   "TGroundDestroyed",   75,  247462, 259157, 250, false, 100, "");
             addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover",                                1, 2, "BTarget5",   "TGroundDestroyed",   80,  243887, 236956, 200, false, 100, "");
@@ -4804,7 +4859,7 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.Building,  "St. Omer Ball bearing Factory",      2, 2, "RTarget2",               "TGroundDestroyed", 33,  313732, 192700,    50,       false,       100,       "");  //g
             addTrigger(MO_ObjectiveType.Fuel,      "Estree Fuel Depot",                  2, 3, "RTarget3",               "TGroundDestroyed", 40,  280182, 164399,    50,       false,       100,       "");  //g
             addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Synthetic Fuel",            2, 2, "RTarget4",               "TGroundDestroyed", 60,  265005, 190321,    100,      false,      100,       "");  //g
-            addTrigger(MO_ObjectiveType.RRStation, "Calais Rail Yard",                   2, 2, "RTarget5",               "TGroundDestroyed", 60,  283995, 215369,    100,      false,       100,      "");  //g
+            addTrigger(MO_ObjectiveType.RRYard, "Calais Rail Yard",                   2, 2, "RTarget5",               "TGroundDestroyed", 60,  283995, 215369,    100,      false,       100,      "");  //g
             addTrigger(MO_ObjectiveType.Building,  "Calais Hydrogen",                    2, 2, "RTarget6",               "TGroundDestroyed", 60,  284867, 216414,    50,       false,       100,      "");  //g
             addTrigger(MO_ObjectiveType.Fuel,      "Calais Main Fuel",                   2, 2, "RTarget7",               "TGroundDestroyed", 60,  285518, 217456,    100,      false,       100,       ""); //g
             addTrigger(MO_ObjectiveType.Building,  "Calais LOX",                         2, 2, "RTarget8",               "TGroundDestroyed", 60,  285001, 215944,    100,      false,       100,      ""); //g
@@ -4874,11 +4929,50 @@ public class Mission : AMission
                 if (mo.AttackingArmy == 1 || mo.AttackingArmy == 2) msn.MissionObjectivesSuggested[(ArmiesE)mo.AttackingArmy].Add(key);
 
             }
+        }      
+    }
+
+    public void MO_MissionObjectiveAirfieldsSetup(Mission msn, maddox.game.IGamePlay gp)
+    {
+        //public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+        //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+        //TRIGGER initiator (for all types except RADAR)
+        //public MissionObjective(Mission m, MO_ObjectiveType mot, double pts, double ptp, AiAirport airport, Tuple<bool, string, double, double, DateTime, double, Point3d> tup)
+        //            string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, int ptp, string comment)
+
+
+        //int NumNearbyTargets = MissionObjectivesNear();
+
+        int count = AirfieldTargets.Count;
+        double weight = (double)400 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets
+        if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)             
+            {
+                int NumNearbyTargets = MO_MissionObjectivesNear(AirfieldTargets[ap].Item7, 15000);
+                double IndWeight = weight;
+                if (NumNearbyTargets > 0) IndWeight = weight * 2;
+                else if (NumNearbyTargets > 3) IndWeight = weight * 4;
+                else if (NumNearbyTargets > 5) IndWeight = weight * 8;
+                //Console.WriteLine("AP: " + AirfieldTargets[ap].Item2 + "_airfield");
+                Point3d Pos = AirfieldTargets[ap].Item7;
+                int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
+                MissionObjectivesList.Add(AirfieldTargets[ap].Item2 + "_airfield", new MissionObjective(msn, 2, IndWeight, ap, army, AirfieldTargets[ap]));                
+                count++;
+            }
+        Console.WriteLine("Mission Objectives: Added " + count.ToString() + " airports to Mission Objectives, weight " + weight.ToString("N5"));
+
+    }
+
+    public int MO_MissionObjectivesNear(Point3d p, double dist_m)
+    {
+        int total = 0;
+        List<string> keys = new List<string>(MissionObjectivesList.Keys);
+        foreach (var key in keys)
+        {
+            MissionObjective mo = MissionObjectivesList[key];
+            double d_m = Calcs.CalculatePointDistance(mo.Pos, p);
+            if (d_m <= dist_m) total++;
         }
-
-        
-
-
+        return total;
     }
 
     //This creates a randomized list of Blue or Red Primary Objectives totalling (at least) the required point total
@@ -4898,6 +4992,7 @@ public class Mission : AMission
         Console.WriteLine("Selecting new Mission Objectives for " + ArmiesL[army]);
 
         foreach (var a in arms) {
+            int counter = 1;
 
             for (int x = 0; x < 10; x++) //unlikely but possible that we'd need to cycle through the list of targets multiple times to select enough targets to reach the points. Could happen though if PrimaryTargetWeights are set low, or only a few possible objectives available in the list. 
             {
@@ -4906,12 +5001,16 @@ public class Mission : AMission
                     MissionObjective mo = MissionObjectivesList[key];
                     if (mo.AttackingArmy == a && mo.PrimaryTargetWeight > 0 && mo.IsEnabled && !mo.IsPrimaryTarget)
                     {
-                        if (mo.PrimaryTargetWeight < stb_random.Next(1, 101)) continue; //implement weight; if weight is less than the random number then this one is skipped; so 100% is never skipped, 50% skipped half the time, 0% skipped always
+                        double r = stb_random.NextDouble() * 100;
+                        //Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID);
+                        if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 100% is never skipped, 50% skipped half the time, 0% skipped always
                         if (totalPoints < MO_PointsRequired[(ArmiesE)a])
                         {
                             mo.IsPrimaryTarget = true;
                             totalPoints += mo.Points;
                             MissionObjectivesString[(ArmiesE)a] += " - " + mo.Sector + " " + mo.Name;
+                            if (counter % 3 == 0) MissionObjectivesString[(ArmiesE)a] += Environment.NewLine;
+                            counter++;
                         }
                         else
                         {
@@ -4922,7 +5021,10 @@ public class Mission : AMission
 
                 }
             }
+            Console.WriteLine("Selecting new Mission Objectives for " + ArmiesL[army] + ":");
+            Console.WriteLine(MissionObjectivesString[(ArmiesE)a]);
         }
+
     }
 
     //This reads the primary objectives selected from the previous mission
@@ -5107,7 +5209,7 @@ public class Mission : AMission
         }
     }
 
-    public void MO_WriteOutAllMissionObjectives(string filename, bool misformat=true, bool triggersonly=true)
+    public void MO_WriteOutAllMissionObjectives(string filename, bool misformat=true, bool triggersonly=false)
     {
 
 
@@ -5266,8 +5368,9 @@ public class Mission : AMission
         }
 
 
-        GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
-        Timeout(10, () =>
+        if (OldObj.HUDMessage != null && OldObj.HUDMessage.Length>0) GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
+
+        if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) Timeout(10, () =>
         {
             GamePlay.gpLogServer(null, OldObj.LOGMessage, new object[] { });
             MissionObjectivesList[ID] = OldObj;

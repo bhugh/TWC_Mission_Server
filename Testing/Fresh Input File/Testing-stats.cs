@@ -6526,20 +6526,51 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             System.Console.WriteLine("Stats.Stb_changeTargetOneAirgroupToPlayer - Exception: " + ex.ToString());
         }
     }
+    /*
+     *         foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
+        {
+            if (a.Army() != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+            }
+
+        }
+        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
  
+    */
     //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
-    private double Stb_distanceToNearestAirport(AiActor actor) {
+    //In case of birthplace find, get the nearest birthplace regardless of friendly or not
+    private double Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind=false) {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
         double d2Min = d2;
         if (actor == null) return d2Min;
         Point3d pd = actor.Pos();
-        int n = GamePlay.gpAirports().Length;
+
+        int n;
+        if (birthplacefind) n = GamePlay.gpBirthPlaces().Length;
+        else n = GamePlay.gpAirports().Length;
+
         //AiActor[] aMinSaves = new AiActor[n + 1];
         //int j = 0;
         //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
         for (int i = 0; i < n; i++)
         {
-            AiActor a = (AiActor)GamePlay.gpAirports()[i];
+            AiActor a;
+            if (birthplacefind) a = (AiActor)GamePlay.gpBirthPlaces()[i];
+            else a = (AiActor)GamePlay.gpAirports()[i];
+
             if (a == null) continue;
             //if (actor.Army() != a.Army()) continue; //only count friendly airports
             //if (actor.Army() != (a.Pos().x, a.Pos().y)
@@ -6547,7 +6578,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
 
-            if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
+            if (!birthplacefind && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
 
             
             //if (!a.IsAlive()) continue;
@@ -6601,6 +6632,41 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         Point3d pd = actor.Pos();
         return Stb_nearestAirport(pd, army);
     }
+
+    //nearest BIRTHPLACE to a point
+    //army=0 is neutral, meaning found airports of any army
+    //otherwise, find only airports matching that army
+    public AiBirthPlace Stb_nearestBirthPlace(Point3d location, int army = 0)
+    {
+        AiBirthPlace NearestAirfield = null;
+        AiBirthPlace[] airports = GamePlay.gpBirthPlaces();
+        Point3d StartPos = location;
+
+        if (airports != null)
+        {
+            foreach (AiBirthPlace airport in airports)
+            {
+                AiActor a = airport as AiActor;
+                if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
+                if (NearestAirfield != null)
+                {
+                    if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
+                        NearestAirfield = airport;
+                }
+                else NearestAirfield = airport;
+            }
+        }
+        return NearestAirfield;
+    }
+
+    //nearest airport to an actor
+    public AiBirthPlace Stb_nearestBirthPlace(AiActor actor, int army = 0)
+    {
+        if (actor == null) return null;
+        Point3d pd = actor.Pos();
+        return Stb_nearestBirthPlace(pd, army);
+    }
+
 
     #endregion
 
@@ -7092,6 +7158,23 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
              */
             //But I don't know where to GET the current loadout from.
 
+            //OK, here is how to read the loadout per Salmo:
+            //https://theairtacticalassaultgroup.com/forum/showthread.php?t=24310&p=258293&viewfull=1#post258293
+            /*
+             *      AiBirthplace birthplace = somebirthplacereference;
+             *      AiAircraft aircraft = someaircraftreference;
+             *      System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.TypedName());
+             *      
+             *      He also says:
+             *      
+             *      * Serial Number ......................................... string SerialNumber = aircraft.HullNumber();
+             *      * Paint Scheme (ie "Skin") file ......................... Not avalbale via script at runtime
+             *      * Noseart left/right (file) ................................ Not avalbale via script at runtime
+             *      * Whether or not markings are shown ............ Not avalbale via script at runtime
+             *      * Visual Weathering Setting ........................... Not avalbale via script at runtime
+             * */
+
+
             //Also must despawn/destroy current aircraft. Also must figure out how to transfer hull #, serial #, regiment, skin
             //regiment BoB_LW_KuFlGr_706
             //hullNumber FL
@@ -7148,13 +7231,18 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //string fuelStr = msg.Replace("<rr", "");
             string fuelStr = "";
             acType = Calcs.GetAircraftType(aircraft);
+
             //So we can't figure out how to access current serial #, instead make it from their username.  It can be overridden via n: in chat command
+            /*
             serialNumber = player.Name();
             if (serialNumber.Contains("_"))
             {
                 string[] serials = serialNumber.Split('_');
                 if (serials.Length > 1 && serials[0].Length < 8) serialNumber = serials[1];
             }
+            */
+            //2018-09-24 - the new way, using aircraft.HullNumber(); - we'll see if it works
+            serialNumber = aircraft.HullNumber();
             //serialNumber = maddox.game.page.OptionsPlane.textSerialNumber().Text();
 
             //parse the chat message
@@ -7265,12 +7353,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                                  //Also, what about moving any OTHER people in other places in the A/C to the new A/C
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                 player.PlaceLeave(0);
-                Timeout(.4, () =>
+                Timeout(1.4, () =>
                 {
                     stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                     player.PlaceEnter(newActor, 0);
                     stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name());
                 }); //can't wait too long or some of our other .cs files will destroy the plane to prevent ai takeover. 0.5 sec to destroy in ..MAIN.cs, so must be less than that
+                  //Changing this bec in Clod 4.5 the plane warms up real fast if AI are in control.  So leaving it for a second longer gives a more warmed up plane, in theory.
             });
 
         }
@@ -8838,10 +8927,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
                */
 
+            AiAircraft aircraft = actor as AiAircraft;
 
             Timeout(0.1, () =>
             {
-                AiAircraft aircraft = actor as AiAircraft;
+                //AiAircraft aircraft = actor as AiAircraft;
                 double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                 //Console.WriteLine("Checking AirSpawn . . ." + shortName + " " + actor.Name() + " " + Z_AltitudeAGL.ToString("0.0") + " " + aircraft.IsAirborne().ToString());
 
@@ -8851,6 +8941,21 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     Console.WriteLine("AirSpawn!!!!");
                     ProcessAircraftTakeOff(aircraft: aircraft, IsTakeOff: false);
                 }
+
+                //2018-09-24 testing system to find out weapons loadout for <rr
+                if (aircraft != null && !Stb_isAiControlledPlane(aircraft)) //live pilot has spawned in an aircraft
+                {
+                    //AiBirthplace birthplace = somebirthplacereference;
+                    Console.WriteLine("Checking Loadout/weaponsmask . . . ");
+                    AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name());
+                    //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.TypedName());
+                    System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
+
+                    Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
+
+                }
+
             });
        
     }

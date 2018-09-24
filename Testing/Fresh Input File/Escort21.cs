@@ -1,3 +1,4 @@
+//$reference GCVBackEnd.dll
 //$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
 //$reference parts/core/CloDMissionCommunicator.dll
@@ -43,13 +44,15 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Dynamic;
 using TF_Extensions;
-//using TWCStats;
+using GCVBackEnd;
 
 //////////////////simply change the////////////////////////
 //////////////////GamePlay.gpHUDLogCenter("Do 17's traveling towards Lympne");///////////////
 /////////////////into/////////////////////////////
 //////////////////sendScreenMessageTo(1, "Do 17's traveling towards Lympne", null);/////////////////////
 ///////////////////////so only the red pilots get the message./////////////////////////////////
+
+
 namespace coord
 {
     public class Communicate
@@ -80,7 +83,8 @@ namespace coord
     }
 }
 
-public class Mission : AMission
+//public class Mission : AMission
+public class Mission : BaseMission, IMainMission
 {
     Random random, stb_random;
     //Constants constants; 
@@ -150,6 +154,7 @@ public class Mission : AMission
     //Constructor
     public Mission()
     {
+        outPath = "C:\\GoogleDrive\\GCVData";
         //TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
         //Console.Write("TYPEOF: " + typeof(string).Assembly.TWCStats);
         //TWCStats.interop statsMis = new TWCStats.interop();
@@ -236,16 +241,16 @@ public class Mission : AMission
                     if (air != null && air.IsAirborne())
                     {
                         Stb_RemoveAllPlayersFromAircraftandDestroy(air, p, 0, 1.0);
-                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You took off before Mission Start Time.", null);
-                        GamePlay.gpLogServer(new Player[] { p }, "Your aircraft was destroyed.", null);
+                        twcLogServer(new Player[] { p }, "CO-OP START: You took off before Mission Start Time.", null);
+                        twcLogServer(new Player[] { p }, "Your aircraft was destroyed.", null);
                     }
 
                     //If it is too far away from an airport, destroy (this takes care of tanks etc going rogue overland during the coop start period)
                     else if (Stb_distanceToNearestAirport(act) > 2500)
                     {
                         Stb_RemovePlayerFromCart(act as AiCart, p);
-                        GamePlay.gpLogServer(new Player[] { p }, "CO-OP START: You left the airport or spawn point before Mission Start Time; " + Stb_distanceToNearestAirport(act).ToString("n0") + " meters to nearest airport or spawn point", null);
-                        GamePlay.gpLogServer(new Player[] { p }, "You have been removed from your position.", null);
+                        twcLogServer(new Player[] { p }, "CO-OP START: You left the airport or spawn point before Mission Start Time; " + Stb_distanceToNearestAirport(act).ToString("n0") + " meters to nearest airport or spawn point", null);
+                        twcLogServer(new Player[] { p }, "You have been removed from your position.", null);
                     }
                 }
 
@@ -345,6 +350,7 @@ public class Mission : AMission
 
     public override void OnTickGame()
     {
+		base.OnTickGame();
         /* Tick_Mission_Time = 720000 - Time.tickCounter();
         var Mission_Time = Tick_Mission_Time / 2000;
         TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
@@ -407,7 +413,7 @@ public class Mission : AMission
                         {
                             if (admin_privilege_level(p) >= 1) //about once a minute, a message to players who can issue coop commands
                                 {
-                                GamePlay.gpLogServer(new Player[] { p }, "CO-OP MODE CONTROL: Use chat command <coop to start immediately OR extend time", null);
+                                twcLogServer(new Player[] { p }, "CO-OP MODE CONTROL: Use chat command <coop to start immediately OR extend time", null);
                             }
                         }
                     });
@@ -473,7 +479,7 @@ public class Mission : AMission
 
         if ((tickSinceStarted) == 0)
         {
-            GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+            twcLogServer(null, "Mission loaded.", new object[] { });
             WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
             Timeout(188, () => { CheckStatsData(); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
         }
@@ -481,14 +487,14 @@ public class Mission : AMission
         if (tickSinceStarted % 30000 == 1000)
         {
 
-            GamePlay.gpLogServer(null, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
-            GamePlay.gpLogServer(null, MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
+            twcLogServer(null, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
+            twcLogServer(null, MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
             Timeout(10, () =>
-            GamePlay.gpLogServer(null, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
+            twcLogServer(null, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
             Timeout(11, () =>
-            GamePlay.gpLogServer(null, MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { }));
+            twcLogServer(null, MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { }));
             Timeout(12, () =>
-            GamePlay.gpLogServer(null, showTimeLeft(), new object[] { }));
+            twcLogServer(null, showTimeLeft(), new object[] { }));
 
             stopAI();//for testing
         }
@@ -500,7 +506,7 @@ public class Mission : AMission
             WriteResults_Out_File("3");
             Timeout(10, () =>
             {
-                GamePlay.gpLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
+                twcLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
                 GamePlay.gpHUDLogCenter("The match ends in a tie! Objectives still left for both sides!!!");
             });
             EndMission(70, "");
@@ -626,7 +632,7 @@ public class Mission : AMission
                                                                                                                                                                                     //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
 
         }
-        GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
+        twcLogServer(null, "SetAirfieldTargets initialized.", null);
     }
 
     public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
@@ -678,7 +684,7 @@ public class Mission : AMission
                 if (display)
                 {
                     delay += 0.1;
-                    Timeout(delay, () => { GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { }); });
+                    Timeout(delay, () => { twcLogServer(new Player[] { player }, msg, new object[] { }); });
                 }
 
 
@@ -686,7 +692,7 @@ public class Mission : AMission
         if (count == 0)
         {
             string msg = "No airports damaged or destroyed yet";
-            if (display) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+            if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
             returnmsg = ""; //In case of display == false we just don't return any message at all, allowing this bit to simply be omitted
         }
 
@@ -784,18 +790,18 @@ public class Mission : AMission
 
         base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
 
-        //GamePlay.gpLogServer(null, "bombe 1", null);
+        //twcLogServer(null, "bombe 1", null);
         bool ai = true;
         if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
 
-        //GamePlay.gpLogServer(null, "bombe 2", null);
+        //twcLogServer(null, "bombe 2", null);
         int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
         int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
 
-        //GamePlay.gpLogServer(null, "bombe 3", null);
+        //twcLogServer(null, "bombe 3", null);
         if (terr == 00) isEnemy = 2;
         if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
-        //GamePlay.gpLogServer(null, "bombe 4", null);
+        //twcLogServer(null, "bombe 4", null);
 
 
         //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
@@ -806,7 +812,7 @@ public class Mission : AMission
          * 
          *******************/
 
-        //GamePlay.gpLogServer(null, "bombe 5", null);
+        //twcLogServer(null, "bombe 5", null);
 
         var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
         apkeys = AirfieldTargets.Keys.ToList();
@@ -817,7 +823,7 @@ public class Mission : AMission
         //get out of here immediately
         if (landType == maddox.game.LandTypes.WATER) return;
 
-        //GamePlay.gpLogServer(null, "bombe 6", null);
+        //twcLogServer(null, "bombe 6", null);
 
         bool blenheim = false;
         AiAircraft aircraft = initiator.Actor as AiAircraft;
@@ -832,7 +838,7 @@ public class Mission : AMission
             else
             { */
 
-            //GamePlay.gpLogServer(null, "bombe 7", null);
+            //twcLogServer(null, "bombe 7", null);
             double radius = AirfieldTargets[ap].Item6;
             Point3d APPos = AirfieldTargets[ap].Item7;
             string apName = AirfieldTargets[ap].Item2;
@@ -896,7 +902,7 @@ public class Mission : AMission
                 {
                     individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
                                                          //but, still helps destroy that base (for your enemies) as usual
-                                                         //GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                                                         //twcLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
                 }
 
 
@@ -908,7 +914,7 @@ public class Mission : AMission
                 if (stb_random.NextDouble() > 0.25) firetype = "";
                 //todo: finer grained bigger/smaller fire depending on bomb tonnage
 
-                //GamePlay.gpLogServer(null, "bombe 8", null);
+                //twcLogServer(null, "bombe 8", null);
 
                 //set placeholder variables
                 double PointsToKnockOut = AirfieldTargets[ap].Item3;
@@ -933,7 +939,7 @@ public class Mission : AMission
                     if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
                 }
 
-                //GamePlay.gpLogServer(null, "bombe 8", null);
+                //twcLogServer(null, "bombe 8", null);
 
                 individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
 
@@ -960,14 +966,14 @@ public class Mission : AMission
                     timetofix = 24 * 60 * 60; //24 hours to repair . . . 
                 }
                 //Advise player of hit/percent/points
-                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+                //if (!ai) twcLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
 
                 //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
 
                 //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
-                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+                Timeout(3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) twcLogServer(null, Mission + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
 
-                //GamePlay.gpLogServer(null, "bombe 8", null);
+                //twcLogServer(null, "bombe 8", null);
 
                 if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
                 {
@@ -1025,7 +1031,7 @@ public class Mission : AMission
                     AirfieldTargets.Remove(ap);
                     AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
                 }
-                //GamePlay.gpLogServer(null, "bombe 11", null);
+                //twcLogServer(null, "bombe 11", null);
                 break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
             }
         }
@@ -1037,7 +1043,7 @@ public class Mission : AMission
     {
         if (winner == "")
         {
-            GamePlay.gpLogServer(null, "Mission is restarting soon!!!", new object[] { });
+            twcLogServer(null, "Mission is restarting soon!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Mission is restarting soon!!!");
         }
         else
@@ -1046,46 +1052,46 @@ public class Mission : AMission
             {
                 Timeout(endseconds + 40, () =>
                 {
-                    GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                    twcLogServer(null, winner + " has turned the map!", new object[] { });
                     GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
                 });
             }
             Timeout(endseconds / 2, () =>
             {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                twcLogServer(null, winner + " has turned the map!", new object[] { });
                 GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
             });
             Timeout(endseconds + 15, () =>
             {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                twcLogServer(null, winner + " has turned the map!", new object[] { });
                 GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
             });
             Timeout(endseconds + 45, () =>
             {
-                GamePlay.gpLogServer(null, winner + " has turned the map!", new object[] { });
+                twcLogServer(null, winner + " has turned the map!", new object[] { });
                 GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
             });
             Timeout(endseconds + 61, () =>
             {
-                GamePlay.gpLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
+                twcLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
 
             });
         }
         Timeout(endseconds, () =>
         {
-            GamePlay.gpLogServer(null, "Mission is restarting in 1 minute!!!", new object[] { });
+            twcLogServer(null, "Mission is restarting in 1 minute!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Mission is restarting in 1 minute!!!");
         });
         Timeout(endseconds + 30, () =>
         {
-            GamePlay.gpLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
+            twcLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
             SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other
                 CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
             });
         Timeout(endseconds + 60, () =>
         {
-            GamePlay.gpLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
+            twcLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
             DebugAndLog("Mission ended.");
 
@@ -1128,7 +1134,7 @@ public class Mission : AMission
     {
         //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
         //GamePlay.gpHUDLogCenter("Respawning AI air groups");
-        //GamePlay.gpLogServer(null, "RESPAWNING AI AIR GROUPS. AI Aircraft groups re-spawn every " + RESPAWN_MINUTES + " minutes and have a lifetime of " + RESPAWN_MINUTES + "-" + 2*RESPAWN_MINUTES + " minutes. The map restarts every " + Convert.ToInt32((float)END_SESSION_TICK/60/TICKS_PER_MINUTE) + " hours.", new object[] { });
+        //twcLogServer(null, "RESPAWNING AI AIR GROUPS. AI Aircraft groups re-spawn every " + RESPAWN_MINUTES + " minutes and have a lifetime of " + RESPAWN_MINUTES + "-" + 2*RESPAWN_MINUTES + " minutes. The map restarts every " + Convert.ToInt32((float)END_SESSION_TICK/60/TICKS_PER_MINUTE) + " hours.", new object[] { });
 
         bool ret = false;
 
@@ -1321,7 +1327,7 @@ public class Mission : AMission
             }
         }
         if (Players != null && Players.Count > 0)
-            GamePlay.gpLogServer(Players.ToArray(), msg, parms);
+            twcLogServer(Players.ToArray(), msg, parms);
     }
 
     /************************************************************
@@ -1345,7 +1351,8 @@ public class Mission : AMission
 
                     if (isAiControlledPlane2(actor as AiAircraft))
                     {
-                        Timeout(0.5f, () => //5 sec seems too long, the ai vigorously takes control sometimes, and immediately.  Perhaps even 1 second or .5 better than 2.
+                        //Changing from .5 to 1.5 so that we can allow 1.4 secs in -stats.cs on <rr, for AI warmup of aircraft for 1 second longer
+                        Timeout(1.5f, () => //5 sec seems too long, the ai vigorously takes control sometimes, and immediately.  Perhaps even 1 second or .5 better than 2.
                         {
                             if (isAiControlledPlane2(actor as AiAircraft))
                             {
@@ -1480,7 +1487,7 @@ public class Mission : AMission
                 {
                     RedTotalF = Convert.ToDouble(RedTotalS) / 100;
                     BlueTotalF = Convert.ToDouble(BlueTotalS) / 100;
-                    //GamePlay.gpLogServer(null, "Read SessStats.txt: Times MATCH", null);
+                    //twcLogServer(null, "Read SessStats.txt: Times MATCH", null);
                     RedAirF = Convert.ToDouble(RedAirS) / 100;
                     RedAAF = Convert.ToDouble(RedAAS) / 100;
                     RedNavalF = Convert.ToDouble(RedNavalS) / 100;
@@ -1493,9 +1500,9 @@ public class Mission : AMission
                     BluePlanesWrittenOffI = Convert.ToInt32(BluePlanesWrittenOffS);
                 }
 
-                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
+                //twcLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} Time1: {2:R} Time2 {3:R}",
                 //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100, Time.ToUniversalTime(), DateTime.Now.ToUniversalTime()), null);
-                //GamePlay.gpLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} ",
+                //twcLogServer(null, string.Format("RED session total: {0:0.0} BLUE session total: {1:0.0} ",
                 //      (double)(RedTotalF) / 100, (double)(BlueTotalF) / 100), null);
 
             }
@@ -1527,7 +1534,7 @@ public class Mission : AMission
         {
             osk_RedObjCompleted += "50 total Team Kills - ";
             osk_Red50Kills = true;
-            GamePlay.gpLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
+            twcLogServer(null, "RED reached 50 Team Kills. Well done Team Red!", new object[] { });
             GamePlay.gpHUDLogCenter("RED reached 50 Team Kills. Well done Red!");
 
         }
@@ -1535,7 +1542,7 @@ public class Mission : AMission
         {
             osk_BlueObjCompleted += "50 total Team Kills - ";
             osk_Blue50Kills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });
+            twcLogServer(null, "BLUE reached 50 Team Kills. Well done Team Blue!", new object[] { });
             GamePlay.gpHUDLogCenter("BLUE reached 50 Team Kills. Well done Blue!");
         }
 
@@ -1544,28 +1551,28 @@ public class Mission : AMission
         {
             osk_RedObjCompleted += "10 total Air Kills - ";
             osk_Red10AirKills = true;
-            GamePlay.gpLogServer(null, "Red reached 10 total Air Kills. Well done Team Red!", new object[] { });
+            twcLogServer(null, "Red reached 10 total Air Kills. Well done Team Red!", new object[] { });
             GamePlay.gpHUDLogCenter("Red reached 10  total Air Kills. Well done Red!");
         }
         if (!osk_Blue10AirKills && BlueAirF >= 10)
         {
             osk_BlueObjCompleted += "10 total Air Kills - ";
             osk_Blue10AirKills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 10 total Air Kills. Well done Team Blue!", new object[] { });
+            twcLogServer(null, "BLUE reached 10 total Air Kills. Well done Team Blue!", new object[] { });
             GamePlay.gpHUDLogCenter("BLUE reached 10  total Air Kills. Well done Blue!");
         }
         if (!osk_Red10GroundKills && (RedAAF + RedNavalF + RedGroundF) >= 10)
         {
             osk_RedObjCompleted += "10 total AA/Naval/Ground Kills - ";
             osk_Red10GroundKills = true;
-            GamePlay.gpLogServer(null, "Red reached 10 total AA/Naval/Ground Kills. Well done Team Red!", new object[] { });
+            twcLogServer(null, "Red reached 10 total AA/Naval/Ground Kills. Well done Team Red!", new object[] { });
             GamePlay.gpHUDLogCenter("Red reached 10  total AA/Naval/Ground Kills. Well done Red!");
         }
         if (!osk_Blue10GroundKills && (BlueAAF + BlueNavalF + BlueGroundF) >= 10)
         {
             osk_BlueObjCompleted += "10 total AA/Naval/Ground Kills - ";
             osk_Blue10GroundKills = true;
-            GamePlay.gpLogServer(null, "BLUE reached 10 total AA/Naval/Ground Kills. Well done Team Blue!", new object[] { });
+            twcLogServer(null, "BLUE reached 10 total AA/Naval/Ground Kills. Well done Team Blue!", new object[] { });
             GamePlay.gpHUDLogCenter("BLUE reached 10  total AA/Naval/Ground Kills. Well done Blue!");
         }
 
@@ -2085,14 +2092,14 @@ public class Mission : AMission
         base.OnPersonHealth(person, initiator, deltaHealth);
         try
         {
-            //GamePlay.gpLogServer(null, "Health Changed for " + person.Player().Name(), new object[] { });
+            //twcLogServer(null, "Health Changed for " + person.Player().Name(), new object[] { });
             if (person != null)
             {
                 Player player = person.Player();
                 //if (deltaHealth>0 && player != null && player.Name() != null) {
                 if (player != null && player.Name() != null)
                 {
-                    if (DEBUG) GamePlay.gpLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health " + player.PersonPrimary().Health.ToString("F2"), new object[] { });
+                    if (DEBUG) twcLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health " + player.PersonPrimary().Health.ToString("F2"), new object[] { });
                     //if the person is completely dead we are going to force them to leave their place
                     //This prevents zombie dead players from just sitting in their planes interminably, 
                     //which clogs up the airports etc & prevents the planes from dying & de-spawning
@@ -2102,17 +2109,17 @@ public class Mission : AMission
                             || (player.PersonSecondary() != null && player.PersonSecondary().Health == 0)))
                     {
                         //Timeout(300, () =>
-                        if (DEBUG) GamePlay.gpLogServer(null, "Main: 2 OnPersonHealth for " + player.Name(), new object[] { });
+                        if (DEBUG) twcLogServer(null, "Main: 2 OnPersonHealth for " + player.Name(), new object[] { });
                         Timeout(20, () => //testing
                         {
-                            if (DEBUG) GamePlay.gpLogServer(null, "Main: 3 OnPersonHealth for " + player.Name(), new object[] { });
+                            if (DEBUG) twcLogServer(null, "Main: 3 OnPersonHealth for " + player.Name(), new object[] { });
                                 //Checking health a second time gives them a while to switch to a different position if
                                 //it is available
                                 if (player.PersonPrimary() != null && player.PersonPrimary().Health == 0
                                     && (player.PersonSecondary() == null
                                         || (player.PersonSecondary() != null && player.PersonSecondary().Health == 0)))
                             {
-                                if (DEBUG) GamePlay.gpLogServer(null, "Main: 4 OnPersonHealth for " + player.Name(), new object[] { });
+                                if (DEBUG) twcLogServer(null, "Main: 4 OnPersonHealth for " + player.Name(), new object[] { });
 
                                     //Not really sure how this works, but this is a good guess.  
                                     //if (player.PersonPrimary() != null )player.PlaceLeave(0);
@@ -2120,9 +2127,9 @@ public class Mission : AMission
                                     if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
                                 if (player.PersonSecondary() != null) player.PlaceLeave(player.PersonSecondary().Place());
                             }
-                            if (DEBUG) GamePlay.gpLogServer(null, player.Name() + " died and was forced to leave player's current place.", new object[] { });
+                            if (DEBUG) twcLogServer(null, player.Name() + " died and was forced to leave player's current place.", new object[] { });
 
-                            if (DEBUG) GamePlay.gpLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health1 " + player.PersonPrimary().Health.ToString("F2")
+                            if (DEBUG) twcLogServer(null, "Main: OnPersonHealth for " + player.Name() + " health1 " + player.PersonPrimary().Health.ToString("F2")
                                     + " health2 " + player.PersonSecondary().Health.ToString("F2"), new object[] { });
 
                         });
@@ -2185,7 +2192,7 @@ public class Mission : AMission
                                     {
 
 
-                                        /* if (DEBUG) GamePlay.gpLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
+                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
                                          + a.CallSign() + " " 
                                          + a.Type() + " " 
                                          + a.TypedName() + " " 
@@ -2366,7 +2373,7 @@ public class Mission : AMission
             //with special time code -1, which means that radar returns are currently underway; don't give them any more until finished.
             radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(-1, radar_messages);
 
-            if (RADAR_REALISM > 0) GamePlay.gpLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
+            if (RADAR_REALISM > 0) twcLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
 
 
 
@@ -2426,7 +2433,7 @@ public class Mission : AMission
                                         if (type.Contains("Fighter") || type.Contains("fighter")) type = "F";
                                         else if (type.Contains("Bomber") || type.Contains("bomber")) type = "B";
                                         if (a == p && RADAR_REALISM >= 0) type = "Your position";
-                                        /* if (DEBUG) GamePlay.gpLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
+                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
                                          + a.CallSign() + " " 
                                          + a.Type() + " " 
                                          + a.TypedName() + " " 
@@ -2617,7 +2624,7 @@ public class Mission : AMission
                                             Calcs.meters2miles(a.Pos().x).ToString ("F0") + ", " +
                                             Calcs.meters2miles(a.Pos().y).ToString ("F0") + ")";
                                             */
-                                            //GamePlay.gpLogServer(new Player[] { player }, posmessage, new object[] { });
+                                            //twcLogServer(new Player[] { player }, posmessage, new object[] { });
                                         }
                                         else if (RADAR_REALISM > 0)
                                         {
@@ -2689,7 +2696,7 @@ public class Mission : AMission
                                     }
                                 }
                                 //We'll print only one message per Airgroup, to reduce clutter
-                                //GamePlay.gpLogServer(new Player[] { player }, "RPT: " + posmessage + posmessage.Length.ToString(), new object[] { });
+                                //twcLogServer(new Player[] { player }, "RPT: " + posmessage + posmessage.Length.ToString(), new object[] { });
                                 if (posmessage.Length > 0)
                                 {
                                     //gpLogServerAndLog(new Player[] { player }, "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + "" + posmessage, null);
@@ -2708,7 +2715,7 @@ public class Mission : AMission
                                     }
                                     catch (Exception e)
                                     {
-                                        GamePlay.gpLogServer(new Player[] { player }, "RadError: " + e, new object[] { });
+                                        twcLogServer(new Player[] { player }, "RadError: " + e, new object[] { });
                                     }
 
 
@@ -3041,7 +3048,8 @@ public class Mission : AMission
     public override void OnMissionLoaded(int missionNumber)
     {
         base.OnMissionLoaded(missionNumber);
-        if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
+        //if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
+        TWCStatsMission = TWCComms.Communicator.Instance.Stats;
         if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
         //TWCComms.Communicator.Instance.Main = this;
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
@@ -3170,13 +3178,13 @@ public class Mission : AMission
                     if (dmgOn)
                     {
                         GamePlay.gpHUDLogCenter("Will show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
+                        twcLogServer(new Player[] { player }, "Detailed damage reports will be shown for all players", new object[] { });
 
                     }
                     else
                     {
                         GamePlay.gpHUDLogCenter("Will not show damage on all aircraft");
-                        GamePlay.gpLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
+                        twcLogServer(new Player[] { player }, "Detailed damage reports turned off", new object[] { });
                     }
                 }
                 setMainMenu(player);
@@ -3188,7 +3196,7 @@ public class Mission : AMission
                     debugMenu = !debugMenu;
                     if (debugMenu)
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
+                        twcLogServer(new Player[] { player }, "Debug & detailed radar ON for all users - extra debug messages & instant, detailed radar", new object[] { });
                         radar_realismSave = RADAR_REALISM;
                         DEBUG = true;
                         RADAR_REALISM = 0;
@@ -3196,7 +3204,7 @@ public class Mission : AMission
                     }
                     else
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
+                        twcLogServer(new Player[] { player }, "Debug & detailed radar OFF", new object[] { });
                         RADAR_REALISM = radar_realismSave;
                         DEBUG = false;
 
@@ -3217,7 +3225,7 @@ public class Mission : AMission
                     //split msg into a few chunks as gplogserver doesn't like long msgs
                     int maxChunkSize = 100;
                     for (int i = 0; i < str.Length; i += maxChunkSize)
-                        GamePlay.gpLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
+                        twcLogServer(new Player[] { player }, str.Substring(i, Math.Min(maxChunkSize, str.Length - i)), new object[] { });
                 }
 
                 setMainMenu(player);
@@ -3230,7 +3238,7 @@ public class Mission : AMission
                     if (EndMissionSelected == false)
                     {
                         EndMissionSelected = true;
-                        GamePlay.gpLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-9-4 again.  You have 30 seconds to cancel.", new object[] { });
+                        twcLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use Tab-4-9-4 again.  You have 30 seconds to cancel.", new object[] { });
                         Timeout(30, () =>
                         {
                             if (EndMissionSelected)
@@ -3239,8 +3247,8 @@ public class Mission : AMission
                             }
                             else
                             {
-                                GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
-                                GamePlay.gpLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
+                                twcLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
+                                twcLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
                             }
 
                         });
@@ -3248,7 +3256,7 @@ public class Mission : AMission
                     }
                     else
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
+                        twcLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
                         EndMissionSelected = false;
 
                     }
@@ -3267,7 +3275,7 @@ public class Mission : AMission
             //Respawn/rearm   
             else if (menuItemIndex == 9)
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
+                twcLogServer(new Player[] { player }, "Re-spawn: This option not working yet", new object[] { });
                 //Spawn in mission file with 1 copy of any/all needed aircraft included
                 //copy the one matching the player's plane to the player's current spot or nearby
                 //also copy existing plane's position, direction, location etc etc etc
@@ -3286,7 +3294,7 @@ public class Mission : AMission
                 /* if ( player.Name().Substring(0,3) == @"TWC") {
                     setSubMenu2( player );
                   } else {
-                    GamePlay.gpLogServer(new Player[] { player }, player.Name() + " is not authorized", new object[] { }); 
+                    twcLogServer(new Player[] { player }, player.Name() + " is not authorized", new object[] { }); 
                     setSubMenu1( player );
                   }
                  */
@@ -3312,7 +3320,6 @@ public class Mission : AMission
             //Airport damage summary, same as <ap
             else if (menuItemIndex == 1)
             {
-
                 ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
                 setMainMenu(player);
             }
@@ -3322,7 +3329,7 @@ public class Mission : AMission
                 Timeout(0.2, () =>
                 {
                     string msg6 = "Checking your position via radar to find nearest friendly airport. Stand by . . . ";
-                    GamePlay.gpLogServer(new Player[] { player }, msg6, null);
+                    twcLogServer(new Player[] { player }, msg6, null);
                 });
 
 
@@ -3345,7 +3352,7 @@ public class Mission : AMission
                     string message6 = dis_string + bearing_deg10.ToString("N0") + "° to the nearest friendly airport";
                     if (distanceToAirport_m < 2500) message6 = "You are AT the nearest friendly airport";
                     if (distanceToAirport_m > 100000000) message6 = "Nearest friendly airport not found";
-                    GamePlay.gpLogServer(new Player[] { player }, message6, null);
+                    twcLogServer(new Player[] { player }, message6, null);
 
                 });
                 setMainMenu(player);
@@ -3359,7 +3366,7 @@ public class Mission : AMission
                     Timeout(0.2, () =>
                     {
                         string msg6 = "Checking your position via radar. Stand by . . . ";
-                        GamePlay.gpLogServer(new Player[] { player }, msg6, null);
+                        twcLogServer(new Player[] { player }, msg6, null);
                     });
 
                     Timeout(12, () =>
@@ -3368,7 +3375,7 @@ public class Mission : AMission
                         string msg6 = "You are in ENEMY territory";
                         if (terr == 00) msg6 = "You are in NEUTRAL territory";
                         if (player.Army() == terr) msg6 = "You are in FRIENDLY territory";
-                        GamePlay.gpLogServer(new Player[] { player }, msg6, null);
+                        twcLogServer(new Player[] { player }, msg6, null);
                     });
 
                 }
@@ -3404,19 +3411,31 @@ public class Mission : AMission
             //Airport damage summary, same as <ap
             else if (menuItemIndex == 1)
             {
+                /*
+                 * Formerly <rank or <career for player
+                 */
                 setMainMenu(player);
-                if (TWCStatsMission != null) TWCStatsMission.Display_AceAndRank_ByName(player);                
+                //if (TWCStatsMission != null) TWCStatsMission.Display_AceAndRank_ByName(player);
+                TWCStatsMission.Display_AceAndRank_ByName(player);
             }
             else if (menuItemIndex == 2)
             {
+                /*
+                 * Formerly <session for player session stats
+                 */
                 setMainMenu(player);
-                if (TWCStatsMission != null) TWCStatsMission.Display_SessionStats(player);
+                //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStats(player);
+                TWCStatsMission.Display_SessionStats(player);
             }
-            //On Friendly or Enemy territory, same as <ter
+            
             else if (menuItemIndex == 3)
             {
+                /*
+                 * Formerly <net for all player "netstats" 
+                 */
                 setMainMenu(player);
-                if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
+                //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
+                TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
 
             }
             else if (menuItemIndex == 4)  //MORE (next) menu
@@ -3429,6 +3448,21 @@ public class Mission : AMission
                  * Detailed Team Stats for Session
                  */
                 setMainMenu(player);
+                //First objectives completed/Campaign points
+                Timeout(0.2, () =>
+                {
+                    if (player.Army() == 2) twcLogServer(new Player[] { player }, "Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue], new object[] { });
+                    twcLogServer(new Player[] { player }, "Blue Objectives Completed (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { });
+                });
+
+                Timeout(1.2, () =>
+                {
+
+                    if (player.Army() == 1) twcLogServer(new Player[] { player }, "Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red], new object[] { });
+
+                    twcLogServer(new Player[] { player }, "Red Objectives Completed (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
+                });
+                //Then team stats (kills etc)
                 if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsTeam(player);
             }
             else if (menuItemIndex == 6)
@@ -3482,7 +3516,7 @@ public class Mission : AMission
 
                         int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
                         DebugAndLog(totalAircraft.ToString());
-                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
+                        //twcLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
                     }
                 }                
             }
@@ -3499,7 +3533,7 @@ public class Mission : AMission
 
                         int totalAircraft = GamePlay.gpAirGroups(1).Length + GamePlay.gpAirGroups(2).Length;
                         DebugAndLog(totalAircraft.ToString());
-                        //GamePlay.gpLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
+                        //twcLogServer(GamePlay.gpRemotePlayers(), totalAircraft.ToString(), null);
                     }
                 }                
                 //TIME REMAINING ETC//////////////////////////////////  
@@ -3510,8 +3544,8 @@ public class Mission : AMission
                 //int endsessiontick = Convert.ToInt32(ticksperminute*60*HOURS_PER_SESSION); //When to end/restart server session
                 showTimeLeft(player);
                 //Experiment to see if we could trigger chat commands this way; it didn't work
-                //GamePlay.gpLogServer(new Player[] { player }, "<air", new object[] { });
-                //GamePlay.gpLogServer(new Player[] { player }, "<ter", new object[] { });                
+                //twcLogServer(new Player[] { player }, "<air", new object[] { });
+                //twcLogServer(new Player[] { player }, "<ter", new object[] { });                
             }
             else if (menuItemIndex == 5)
             {
@@ -3519,12 +3553,12 @@ public class Mission : AMission
                  * Display objectives completed 
                  */
                 setMainMenu(player);
-                GamePlay.gpLogServer(new Player[] { player }, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
-                GamePlay.gpLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Red]), new object[] { });
+                twcLogServer(new Player[] { player }, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
+                twcLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Red]), new object[] { });
                 Timeout(2, () =>
-                GamePlay.gpLogServer(new Player[] { player }, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
+                twcLogServer(new Player[] { player }, "Completed Blue Objectives (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):", new object[] { }));
                 Timeout(3, () =>
-                GamePlay.gpLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Blue]), new object[] { }));
+                twcLogServer(new Player[] { player }, (MissionObjectivesCompletedString[ArmiesE.Blue]), new object[] { }));
                 stopAI();//for testing                
             }
             else if (menuItemIndex == 6)
@@ -3557,7 +3591,7 @@ public class Mission : AMission
                 if (score > 0) mes += "Red +" + score.ToString("n0");
                 else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
                 else mes += "A tie!";
-                GamePlay.gpLogServer(new Player[] { player }, mes, null);
+                twcLogServer(new Player[] { player }, mes, null);
 
                 double newMapState = CampaignMapState + res.Item1;
                 summarizeCurrentMapstate(newMapState, true, player);              
@@ -3619,8 +3653,8 @@ public class Mission : AMission
         {
             setMainMenu(player);
 
-            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+            twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            //twcLogServer(null, "Mission loaded.", new object[] { });
 
             DateTime utcDate = DateTime.UtcNow;
 
@@ -3662,7 +3696,7 @@ public class Mission : AMission
                             string cs = aircraft.CallSign();
                             //int p = part.ParameterTypes.I_VelocityIAS; 
                             double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                            GamePlay.gpLogServer(new Player[] { player }, "Plane: "  
+                            twcLogServer(new Player[] { player }, "Plane: "  
                             + cs + " " + ias, new object[] { });
             */
             //We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
@@ -3670,8 +3704,8 @@ public class Mission : AMission
             setMainMenu(player);
             if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
             MISSION_STARTED = true;
-            GamePlay.gpLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-            //GamePlay.gpLogServer(null, "Mission loaded.", new object[] { });
+            twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            //twcLogServer(null, "Mission loaded.", new object[] { });
         }
     }
     public override void Inited()
@@ -3680,7 +3714,7 @@ public class Mission : AMission
         {
 
             setMainMenu(GamePlay.gpPlayer());
-            GamePlay.gpLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
+            twcLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
 
         }
     }
@@ -3759,28 +3793,30 @@ public class Mission : AMission
             //GamePlay.gp(, from);
 
         }
-        else if (msg.StartsWith("<net"))
-        {
-            //TWCStatsMission.stb_StatRecorder.StbSr_Display_SessionStatsAll(player, 0); //display "Netstats" summary of current session stats for all players to this player
-            //bool db = TWCStatsMission.stb_Debug; //display "Netstats" summary of current session stats for all players to this player
-            //Console.WriteLine("resuilt " + db.ToString());
-        }
         else if (msg.StartsWith("<obj"))
         {
-
-            Timeout(0.2, () =>
+            //only allow this for admins - mostly so that we can check these items via chat commands @ the console
+            if (admin_privilege_level(player) >= 2)
             {
-                if (player.Army() == 2) GamePlay.gpLogServer(new Player[] { player }, "Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue], new object[] { });
-                GamePlay.gpLogServer(new Player[] { player }, "Blue Objectives Completed (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { });
-            });
 
-            Timeout(1.2, () =>
-              {
+                Timeout(0.2, () =>
+                {
+                    if (player.Army() == 2) twcLogServer(new Player[] { player }, "Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue], new object[] { });
+                    twcLogServer(new Player[] { player }, "Blue Objectives Completed (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { });
+                });
 
-                  if (player.Army() == 1) GamePlay.gpLogServer(new Player[] { player }, "Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red], new object[] { });
+                Timeout(1.2, () =>
+                  {
 
-                  GamePlay.gpLogServer(new Player[] { player }, "Red Objectives Completed (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
-              });
+                      if (player.Army() == 1) twcLogServer(new Player[] { player }, "Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red], new object[] { });
+
+                      twcLogServer(new Player[] { player }, "Red Objectives Completed (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
+                  });
+            }
+            else
+            {
+                twcLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
+            }
 
         }
         else if (msg.StartsWith("<camlong")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far, longer & more detailed analysis
@@ -3798,7 +3834,7 @@ public class Mission : AMission
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
+                twcLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
             }
 
 
@@ -3814,38 +3850,38 @@ public class Mission : AMission
                 if (score > 0) mes += "Red +" + score.ToString("n0");
                 else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
                 else mes += "A tie!";
-                GamePlay.gpLogServer(new Player[] { player }, mes, null);
+                twcLogServer(new Player[] { player }, mes, null);
 
                 double newMapState = CampaignMapState + res.Item1;
                 summarizeCurrentMapstate(newMapState, true, player);
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
+                twcLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
             }
 
         }
         else if (msg.StartsWith("<coop start") && admin_privilege_level(player) >= 1)
         {
-            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX more minutes", null);
-            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            twcLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX more minutes", null);
+            twcLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
             if (COOP_START_MODE)
             {
 
                 COOP_MODE_TIME_SEC = 0;
-                GamePlay.gpLogServer(new Player[] { player }, "CO-OP Mission will START NOW!", null);
+                twcLogServer(new Player[] { player }, "CO-OP Mission will START NOW!", null);
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "<coop start command works only during initial Co-op Start Mode period", null);
+                twcLogServer(new Player[] { player }, "<coop start command works only during initial Co-op Start Mode period", null);
             }
 
         }
 
         else if (msg.StartsWith("<coop") && admin_privilege_level(player) >= 1)
         {
-            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX minutes", null);
-            GamePlay.gpLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
+            twcLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX minutes", null);
+            twcLogServer(new Player[] { player }, "HELP: Use command '<coop start' to start mission immediately", null);
             if (COOP_START_MODE)
             {
                 double time_sec = 5 * 60;
@@ -3858,13 +3894,13 @@ public class Mission : AMission
                 double time_left_sec = COOP_TIME_LEFT_MIN * 60 + time_sec;
 
 
-                GamePlay.gpLogServer(new Player[] { player }, "CO-OP MODE start time added " + ((double)time_sec / 60).ToString("n1") + " minutes; ", null);
-                GamePlay.gpLogServer(new Player[] { player }, (COOP_MODE_TIME_SEC / 60).ToString("n1") + " min. total Co-Op start period; " + (time_left_sec / 60).ToString("n1") + " min. remaining", null);
+                twcLogServer(new Player[] { player }, "CO-OP MODE start time added " + ((double)time_sec / 60).ToString("n1") + " minutes; ", null);
+                twcLogServer(new Player[] { player }, (COOP_MODE_TIME_SEC / 60).ToString("n1") + " min. total Co-Op start period; " + (time_left_sec / 60).ToString("n1") + " min. remaining", null);
                 Stb_Chat("CO-OP START MODE EXTENDED: " + (time_left_sec / 60).ToString("n1") + " min. until co-op start", null);
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "<coop command works only during initial Co-op Start Mode period", null);
+                twcLogServer(new Player[] { player }, "<coop command works only during initial Co-op Start Mode period", null);
             }
 
         }
@@ -3895,7 +3931,7 @@ public class Mission : AMission
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Please use Tab-4 menu to check airport status", new object[] { });
+                twcLogServer(new Player[] { player }, "Please use Tab-4 menu to check airport status", new object[] { });
             }
         }
         else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
@@ -3904,13 +3940,13 @@ public class Mission : AMission
 
             string tr = msg_orig.Substring(8).Trim();
 
-            GamePlay.gpLogServer(new Player[] { player }, "Trying to activate trigger " + tr, new object[] { });
+            twcLogServer(new Player[] { player }, "Trying to activate trigger " + tr, new object[] { });
 
             if (GamePlay.gpGetTrigger(tr) != null)
             {
                 GamePlay.gpGetTrigger(tr).Enable = true;
                 //GamePlay.gpGetTrigger(tr).Active = true;
-                GamePlay.gpLogServer(new Player[] { player }, "Enabled trigger " + tr, new object[] { });
+                twcLogServer(new Player[] { player }, "Enabled trigger " + tr, new object[] { });
             }
 
             //this.OnTrigger(1, tr, true);
@@ -3937,11 +3973,11 @@ public class Mission : AMission
             if (action != null)
             {
                 action.Do();
-                GamePlay.gpLogServer(new Player[] { player }, "Activating action " + tr, new object[] { });
+                twcLogServer(new Player[] { player }, "Activating action " + tr, new object[] { });
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Didn't find action " + tr + "! No action taken.", new object[] { });
+                twcLogServer(new Player[] { player }, "Didn't find action " + tr + "! No action taken.", new object[] { });
             }
 
 
@@ -3951,7 +3987,7 @@ public class Mission : AMission
         {
 
             DEBUG = true;
-            GamePlay.gpLogServer(new Player[] { player }, "Debug is on", new object[] { });
+            twcLogServer(new Player[] { player }, "Debug is on", new object[] { });
 
         }
 
@@ -3959,21 +3995,21 @@ public class Mission : AMission
         {
 
             DEBUG = false;
-            GamePlay.gpLogServer(new Player[] { player }, "Debug is off", new object[] { });
+            twcLogServer(new Player[] { player }, "Debug is off", new object[] { });
 
         }
         else if (msg.StartsWith("<logon") && admin_privilege_level(player) >= 2)
         {
 
             LOG = true;
-            GamePlay.gpLogServer(new Player[] { player }, "Log is on", new object[] { });
+            twcLogServer(new Player[] { player }, "Log is on", new object[] { });
 
         }
         else if (msg.StartsWith("<logoff") && admin_privilege_level(player) >= 2)
         {
 
             LOG = false;
-            GamePlay.gpLogServer(new Player[] { player }, "Log is off", new object[] { });
+            twcLogServer(new Player[] { player }, "Log is off", new object[] { });
 
         }
 
@@ -3987,9 +4023,9 @@ public class Mission : AMission
         {
             Timeout(0.1, () =>
             {
-                GamePlay.gpLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <rad radar", new object[] { });
-                    //GamePlay.gpLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
-                    //GamePlay.gpLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
+                twcLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <rad radar", new object[] { });
+                    //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
+                    //twcLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
                     //GamePlay.gp(, from);
                 });
         }
@@ -4133,7 +4169,7 @@ public class Mission : AMission
         else if (COOP_START_MODE) msg = "Mission " + MISSION_ID + " not yet started - waiting for Co-op Start.";
         */
 
-        if (showMessage && player != null) GamePlay.gpLogServer(new Player[] { player }, msg, new object[] { });
+        if (showMessage && player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
         return msg;
     }
 
@@ -4165,13 +4201,61 @@ public class Mission : AMission
 
     public void DebugAndLog(object data)
     {
-        if (DEBUG) GamePlay.gpLogServer(null, (string)data, new object[] { });
+        if (DEBUG) twcLogServer(null, (string)data, new object[] { });
         if (!DEBUG && LOG) Console.WriteLine((string)data); //We're using the regular logs.txt as the logfile now logToFile (data, LOG_FULL_PATH); 
     }
     public void gpLogServerAndLog(Player[] to, object data, object[] third)
     {
         //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
-        GamePlay.gpLogServer(to, (string)data, third);
+        twcLogServer(to, (string)data, third);
+
+    }
+
+    public Int64 lastGpLogServerMsg_tick = 0;
+    public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
+    public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second    
+
+
+    //Should replace ALL twcLogServer usage with twcLogServer instead to avoid line overflow etc.
+    //wrapper for twcLogServer so that we can do things to it, like log it, suppress all output, delay successive messages etc.
+    public void twcLogServer(Player[] to, object data, object[] third = null)
+    {
+        //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
+        //gpLogServerWithDelay(to, (string)data, third);
+
+        //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
+        string str = (string)data;
+        int maxChunkSize = 200;
+
+        IEnumerable<string> lines = Calcs.SplitToLines(str, maxChunkSize);
+        //for (int i = 0; i < str.Length; i += maxChunkSize)
+        //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
+
+        //foreach (string line in lines) gpLogServerWithDelay(to, line, third);
+        foreach (string line in lines) GamePlay.gpLogServer(to, line, third);
+
+
+    }
+    //This is designed to space out gplogserver calls, as (say) 5-10 of these in a row will cause a very noticeable stutter
+    //It's sort of a stack for gplogserver messages
+    public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
+    {
+        //defined above:
+        //public Int64 lastGpLogServerMsg_tick = 0;
+        //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
+        //public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second
+        DateTime currentDate = DateTime.Now;
+        //currentDate.Ticks
+        Int64 nextMsg_tick = Math.Max(currentDate.Ticks, lastGpLogServerMsg_tick + GpLogServerMsgDelay_tick);
+        Int64 remainder;
+        Int64 roundTo = 500000; //round nextMsg_tick UP to the next 1/10 second.  This is to allow different missions/modules to output at different portions of the 0.1 second interval, with the objective of avoiding stutters when messages from different .mis files or modules pile up
+        nextMsg_tick = (Math.DivRem(nextMsg_tick - 1, roundTo, out remainder) + 1) * roundTo; // -1 handles the specific but common situation where we want a 0.1 sec delay but it always rounds it up to 0.2 sec.  This makes it round up for anything greater than roundTo, rather than greater than OR EQUAL TO roundTo.
+        double nextMsgDelay_sec = (double)(nextMsg_tick - currentDate.Ticks) / 10000000;
+        //string msg = (string)data + "(Delayed: " + nextMsgDelay_sec.ToString("0.00") + ")"; //for testing
+        string msg = (string)data;
+        //twcLogServer(null, nextMsg_tick.ToString() + " " + nextMsgDelay_sec.ToString("0.00"), null); //for debugging
+        Timeout(nextMsgDelay_sec, () => { twcLogServer(to, msg, third); });
+        lastGpLogServerMsg_tick = nextMsg_tick; //Save the time_tick that this message will be displayed; next message will be at least GpLogServerMsgDelay_tick after this
 
     }
 
@@ -4202,7 +4286,7 @@ public class Mission : AMission
 
         Timeout(1.0, () => // wait 1 second for human to load into plane
         {
-                /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGC: Airgroup: " + a.AirGroup() + " " 
+                /* if (DEBUG) twcLogServer(null, "DEBUGC: Airgroup: " + a.AirGroup() + " " 
                   + a.CallSign() + " " 
                   + a.Type() + " " 
                   + a.TypedName() + " " 
@@ -4217,7 +4301,7 @@ public class Mission : AMission
                                                      //int brk=(int)Math.Round(19/20);
 
 
-                    /* if (DEBUG) GamePlay.gpLogServer(null, "DEBUGD: Airgroup: " + a.AirGroup() + " " 
+                    /* if (DEBUG) twcLogServer(null, "DEBUGD: Airgroup: " + a.AirGroup() + " " 
                       + a.CallSign() + " " 
                       + a.Type() + " " 
                       + a.TypedName() + " " 
@@ -4450,7 +4534,7 @@ public class Mission : AMission
         int n = GamePlay.gpAirports().Length;
         //AiActor[] aMinSaves = new AiActor[n + 1];
         //int j = 0;
-        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
+        //twcLogServer(null, "Checking distance to nearest airport", new object[] { });
         for (int i = 0; i < n; i++)
         {
             AiActor a = (AiActor)GamePlay.gpAirports()[i];
@@ -4459,7 +4543,7 @@ public class Mission : AMission
             //if (actor.Army() != (a.Pos().x, a.Pos().y)
             //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
 
-            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+            //twcLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
 
             if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
 
@@ -4474,7 +4558,7 @@ public class Mission : AMission
             if (d2 < d2Min)
             {
                 d2Min = d2;
-                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+                //twcLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
             }
 
         }
@@ -4494,11 +4578,11 @@ public class Mission : AMission
             if (d2 < d2Min)
             {
                 d2Min = d2;
-                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+                //twcLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
             }
 
         }
-        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        //twcLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
         return Math.Sqrt(d2Min);
     }
 
@@ -4905,25 +4989,25 @@ public class Mission : AMission
             addRadar("Ventnor Radar", 1, 1, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 50, "");
             addRadar("Radar Communications HQ", 1, 6, "BTarget28", "TGroundDestroyed", 61, 180207, 288435, 200, 100000, false, 50, "");
 
-            addRadar("Oye Plage Freya Radar", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, 50, "");
-            addRadar("Coquelles Freya Radar", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 35000, false, 50, "");
-            addRadar("Dunkirk Freya Radar", 2, 1, "RTarget38R", "TGroundDestroyed", 86, 339793, 232797, 50, 35000, false, 50, "");
-            addRadar("Herderlot-Plage Freya Radar", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264751, 179006, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Berck Freya Radar", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar Dieppee", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar Le Treport", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531, 50, 35000, false, 50, ""); // Mission in mission file
-            addRadar("Radar Somme River", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar AMBETEUSE", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar BOULOGNE", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 263850, 185400, 50, 35000, false, 50, ""); //Mission in mission file           
-            addRadar("Radar Le Touquet", 2, 1, "RTarget46R", "TGroundDestroyed", 66, 265366, 168937, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar Dieppe", 2, 1, "RTarget47R", "TGroundDestroyed", 100, 232580, 103325, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Veulettes-sur-Mer Radar", 2, 1, "RTarget48R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, 50, "");//Mission in mission file
-            addRadar("Le Havre Freya Radar", 2, 1, "RTarget49R", "TGroundDestroyed", 100, 157636, 60683, 50, 35000, false, 50, "");//Mission in mission file
-            addRadar("Ouistreham Freya Radar", 2, 1, "RTarget50R", "TGroundDestroyed", 100, 135205, 29918, 50, 35000, false, 50, "");// Mission in mission file
-            addRadar("Bayeux Beach Freya Radar", 2, 1, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Beauguillot Beach Freya Radar", 2, 1, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar Tatihou", 2, 1, "RTarget53R", "TGroundDestroyed", 100, 60453, 63873, 50, 35000, false, 50, ""); //Mission in mission file
-            addRadar("Radar Querqueville", 2, 1, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666, 50, 35000, false, 50, ""); // Mission in mission file
+            addRadar("Oye Plage Freya Radar", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, 35, "");
+            addRadar("Coquelles Freya Radar", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 35000, false, 35, "");
+            addRadar("Dunkirk Freya Radar", 2, 1, "RTarget38R", "TGroundDestroyed", 86, 339793, 232797, 50, 35000, false, 35, "");
+            addRadar("Herderlot-Plage Freya Radar", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264751, 179006, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Berck Freya Radar", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppee", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Le Treport", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531, 50, 35000, false, 15, ""); // Mission in mission file
+            addRadar("Radar Somme River", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar AMBETEUSE", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar BOULOGNE", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 263850, 185400, 50, 35000, false, 35, ""); //Mission in mission file           
+            addRadar("Radar Le Touquet", 2, 1, "RTarget46R", "TGroundDestroyed", 66, 265366, 168937, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppe", 2, 1, "RTarget47R", "TGroundDestroyed", 100, 232580, 103325, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Veulettes-sur-Mer Radar", 2, 1, "RTarget48R", "TGroundDestroyed", 61, 294183, 219444, 50, 35000, false, 15, "");//Mission in mission file
+            addRadar("Le Havre Freya Radar", 2, 1, "RTarget49R", "TGroundDestroyed", 100, 157636, 60683, 50, 35000, false, 35, "");//Mission in mission file
+            addRadar("Ouistreham Freya Radar", 2, 1, "RTarget50R", "TGroundDestroyed", 100, 135205, 29918, 50, 35000, false, 35, "");// Mission in mission file
+            addRadar("Bayeux Beach Freya Radar", 2, 1, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Beauguillot Beach Freya Radar", 2, 1, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Tatihou", 2, 1, "RTarget53R", "TGroundDestroyed", 100, 60453, 63873, 50, 35000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Querqueville", 2, 1, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666, 50, 35000, false, 35, ""); // Mission in mission file
 
             /*
             BTarget15R TGroundDestroyed 75 248739 253036 200
@@ -4990,7 +5074,7 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Reading Engine Workshop ", 1, 4, "BTarget32", "TGroundDestroyed", 83, 84241, 267444, 300, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Propeller repair Portsmouth", 1, 2, "BTarget33", "TGroundDestroyed", 81, 76446, 193672, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", 1, 6, "BTarget34", "TGroundDestroyed", 100, 76476, 193844, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", 1, 6, "BTarget34", "TGroundDestroyed", 100, 76476, 193844, 50, false, 100, ""); //This might have wrong location? 9/24
             addTrigger(MO_ObjectiveType.Building, "Boiler Repair Shop Portsmouth", 1, 2, "BTarget35", "TGroundDestroyed", 71, 76317, 193904, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Main Fuel Portsmouth ", 1, 2, "BTarget36", "TGroundDestroyed", 100, 76378, 194163, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Depth Charge Workshop Portsmouth", 1, 2, "BTarget37", "TGroundDestroyed", 83, 76720, 194082, 50, false, 100, "");
@@ -4998,6 +5082,7 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.Building, "Wood Alcohol Fuel Storage Portsmouth", 1, 4, "BTarget39", "TGroundDestroyed", 98, 77392, 193942, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", 1, 4, "BTarget40", "TGroundDestroyed", 95, 77317, 193860, 50, false, 100, ""); //This is in Portsmouth.  
             addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, ""); //This is in Portsmouth.fixed 9/19 fatal
+            addTrigger(MO_ObjectiveType.Fuel, "Gildford High Octane Plant", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 100, ""); //Guildford Target added 9/20
 
 
 
@@ -5032,7 +5117,7 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.Building, "Calais Chemical Storage", 2, 2, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Building, "Calais Rations Storage", 2, 1, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Building, "Gunpowder Facility", 2, 2, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263443, 181488, 0, false, 100, "0_Chief ? Minensuchtboot");   //g
+            addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263443, 181488, 0, false, 100, "0_Chief  Minensuchtboot");   //g
             addTrigger(MO_ObjectiveType.Fuel, "Arras Fuel Storage 2", 2, 3, "RTarget31", "TGroundDestroyed", 100, 351371, 141966, 100, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Building, "Watten Armory", 2, 2, "RTarget32", "TGroundDestroyed", 100, 310395, 200888, 100, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Building, "Half Track Factory", 2, 2, "RTarget33", "TGroundDestroyed", 100, 314794, 224432, 100, false, 100, "");  //g
@@ -5040,7 +5125,7 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.Building, "Brass Smelter Dunkirk", 2, 2, "RTarget35", "TGroundDestroyed", 100, 314832, 223389, 100, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Dunkirk", 2, 2, "RTarget36", "TGroundDestroyed", 100, 314482, 223882, 200, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Dunkirk", 2, 3, "RTarget37", "TGroundDestroyed", 100, 313878, 223421, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Aviation Fuel", 2, 2, "RTarget38", "TGroundDestroyed", 70, 161702, 52073, 100, false, 100, "");  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
+            addTrigger(MO_ObjectiveType.Building,  "Low smoke Diesel Le Havre",          2, 2, "RTarget38",              "TGroundDestroyed",  70, 161702, 52073,     100,      false,       100,       "");  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
             addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "9A", "TGroundDestroyed", 63, 296130, 218469, 50, false, 2, ""); //I think the locations of the AAA batteries are off? Ok, checking with the .mis file, the order was just reversed and the wrong name with the wrong battery. 1A..9A vs 9A..1A.  Now fixed to match .mis file 9/19/2018
             addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "8A", "TGroundDestroyed", 75, 294090, 85100, 100, false, 2, "");
             addTrigger(MO_ObjectiveType.AA, "Calais AAA battery", 2, 1, "7A", "TGroundDestroyed", 66, 293279, 84884, 100, false, 2, "");
@@ -5050,6 +5135,13 @@ public class Mission : AMission
             addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 2", 2, 1, "3A", "TGroundDestroyed", 62, 285982, 216833, 50, false, 2, "");
             addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 1", 2, 1, "2A", "TGroundDestroyed", 54, 283234, 215851, 50, false, 2, "");
             addTrigger(MO_ObjectiveType.AA, "Poix Nord AAA battery 3", 2, 1, "1A", "TGroundDestroyed", 77, 283224, 216619, 50, false, 2, "");
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval1 main facility",            2, 1, "LehavNaval1",          "TGroundDestroyed", 84,  163216, 49915, 50,   false,       100,       "");    //added to targets list in mission and here in CS  fatal 9/22
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval2 Officer mess",            2, 1,  "LehavNaval2",          "TGroundDestroyed", 71,  163447, 49855, 50 ,  false,       100,       "");			
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval3 weapons training",         2, 1, "LehavNaval3",          "TGroundDestroyed", 100, 163313, 50063, 50,   false,       100,       "");			
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval4 Underwater repair training",2, 1,"LehavNaval4",          "TGroundDestroyed", 81,  163039, 49798, 50,   false,       100,       "");			
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval5 Naval Intelligence",        2, 1,"LehavNaval5",          "TGroundDestroyed", 71,  163172, 49816, 50,   false,       100,       "");			
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval6 Meteorolgy",            2, 1,    "LehavNaval6",          "TGroundDestroyed", 89,  163470, 49752, 50,   false,       100,       "");			
+            addTrigger(MO_ObjectiveType.AA,        "LehavNaval7 Naval cryptologic HQ",      2, 1,"LehavNaval7",          "TGroundDestroyed", 100, 162993, 49927, 50,   false,       100,       "");
 
             //*************************
             //Some leftover objectives after last edit 9/19/2018.  Can delete these after a while if not needed.
@@ -5063,7 +5155,16 @@ public class Mission : AMission
                         addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Benzine",                   2, 2, "RTarget13",              "TGroundDestroyed", 52,  284845, 216884,    50,       false,       100,       "");
                         addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Liquid Oxygen",             2, 2, "RTarget14",              "TGroundDestroyed", 50,  285019, 217566,    50,       false,       100,      "");
                         addTrigger(MO_ObjectiveType.Fuel,      "Ethanol Storage Boulogne",           2, 2, "RTarget15",              "TGroundDestroyed", 50,  284153, 216913,    50,       false,      100,       "");
-            */
+                       adding new le havre naval targets
+                               "LehavNaval1", "TGroundDestroyed", 84,  163216, 49915, 50,   false,       100,       "");
+                               "LehavNaval2", "TGroundDestroyed", 71,  163447, 49855, 50 ,  false,       100,       "");
+                               "LehavNaval3", "TGroundDestroyed", 100, 163313, 50063, 50,   false,       100,       "");
+                               "LehavNaval4", "TGroundDestroyed", 81,  163039, 49798, 50,   false,       100,       "");
+                               "LehavNaval5", "TGroundDestroyed", 71,  163172, 49816, 50,   false,       100,       "");
+                               "LehavNaval6", "TGroundDestroyed", 89,  163470, 49752, 50,   false,       100,       "");
+                               "LehavNaval7", "TGroundDestroyed", 100, 162993, 49927, 50,   false,       100,       "");
+						*/
+
         }
         /*
         //This creates a randomized list of Blue & Red objectives.  When asked for potential targets we can check which still have not yet been destroyed & list location, name, etc.
@@ -5080,6 +5181,8 @@ public class Mission : AMission
 
             }
         }*/
+        //This creates a randomized list of Blue & Red objectives.  When asked for potential targets we can check which still have not yet been destroyed & list location, name, etc.
+        //They are, however, weighted by PrimaryTargetWeight field so that we'll end up with a similar distribution of objectives to what we see in the Primary Objectives List
         public void SelectSuggestedObjectives()
         {
 
@@ -5191,7 +5294,7 @@ public class Mission : AMission
                             mo.IsPrimaryTarget = true;
                             totalPoints += mo.Points;
                             MissionObjectivesString[(ArmiesE)a] += " - " + mo.Sector + " " + mo.Name;
-                            if (counter % 3 == 0) MissionObjectivesString[(ArmiesE)a] += Environment.NewLine;
+                            //if (counter % 3 == 0) MissionObjectivesString[(ArmiesE)a] += Environment.NewLine;
                             counter++;
                         }
                         else
@@ -5334,7 +5437,7 @@ public class Mission : AMission
         int numDisplayed = 0;
         double totDelay = 0;
 
-        GamePlay.gpLogServer(new Player[] { player }, "Suggested " + ArmiesL[army] + " Secondary Objectives:", new object[] { });
+        twcLogServer(new Player[] { player }, "Suggested " + ArmiesL[army] + " Secondary Objectives:", new object[] { });
 
         foreach (var key in MissionObjectivesSuggested[(ArmiesE)army])
         {
@@ -5349,7 +5452,7 @@ public class Mission : AMission
                         //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
                         // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
-                        GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
+                        twcLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
 
                 });//timeout      
 
@@ -5368,7 +5471,7 @@ public class Mission : AMission
         int numDisplayed = 0;
         double totDelay = 0;
 
-        GamePlay.gpLogServer(new Player[] { player }, "Remaining " + ArmiesL[army] + " Primary Objectives:", new object[] { });
+        twcLogServer(new Player[] { player }, "Remaining " + ArmiesL[army] + " Primary Objectives:", new object[] { });
 
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
@@ -5382,7 +5485,7 @@ public class Mission : AMission
                 {
 
                         //+ " (" + mo.Pos.x + "," + mo.Pos.y + ")" //to display x,y coordinates
-                        GamePlay.gpLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
+                        twcLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
 
                 });//timeout      
 
@@ -5558,7 +5661,7 @@ public class Mission : AMission
 
         if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) Timeout(10, () =>
         {
-            GamePlay.gpLogServer(null, OldObj.LOGMessage, new object[] { });
+            twcLogServer(null, OldObj.LOGMessage, new object[] { });
             MissionObjectivesList[ID] = OldObj;
         });
 
@@ -5582,7 +5685,7 @@ public class Mission : AMission
             WriteResults_Out_File("2");
             Timeout(10, () =>
             {
-                GamePlay.gpLogServer(null, "Blue has Successfully Turned the Map!!!", new object[] { });
+                twcLogServer(null, "Blue has Successfully Turned the Map!!!", new object[] { });
                 GamePlay.gpHUDLogCenter("Blue has Successfully Turned the Map!!!");
             });
             EndMission(70, "Blue");
@@ -5595,7 +5698,7 @@ public class Mission : AMission
             WriteResults_Out_File("1");
             Timeout(10, () =>
             {
-                GamePlay.gpLogServer(null, "Red has Successfully Turned the Map!!!", new object[] { });
+                twcLogServer(null, "Red has Successfully Turned the Map!!!", new object[] { });
                 GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
             });
             EndMission(70, "Red");
@@ -5790,10 +5893,10 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
-            Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F1e".Equals(shortName) && active && !stopAI())
+        else if ("F1e".Equals(shortName) && active && !stopAI())// Trigger F1e launches escorts to go with Do 17s from trigger F1 above
         {
             AiAction action = GamePlay.gpGetAction("action1e");
 
@@ -5805,7 +5908,7 @@ public class Mission : AMission
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F1c".Equals(shortName) && active && !stopAI())
+        else if ("F1c".Equals(shortName) && active && !stopAI())// Trigger F1c launches escorts to go with escorts from trigger F1e above
         {
             AiAction action = GamePlay.gpGetAction("action1c");
 
@@ -5825,7 +5928,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
+          //  Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("F3".Equals(shortName) && active && !stopAI())
@@ -5836,7 +5939,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
+        //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("F4".Equals(shortName) && active && !stopAI())
@@ -5847,7 +5950,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lypne in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympe at 6000m!!!.", null));
+         //   Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympe at 6000m!!!.", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("F5".Equals(shortName) && active && !stopAI())
@@ -5877,7 +5980,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
+         //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
         }
         else if ("F7".Equals(shortName) && active && !stopAI())
         {
@@ -5887,7 +5990,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "He-111s requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "He-111s have been spotted over Calais @ 14K ft. heading west!", null));
+        //    Timeout(600, () => sendScreenMessageTo(1, "He-111s have been spotted over Calais @ 14K ft. heading west!", null));
         }
         else if ("F7e".Equals(shortName) && active && !stopAI())
         {
@@ -5906,7 +6009,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
+        //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
         }
         else if ("F9".Equals(shortName) && active && !stopAI())
         {
@@ -5916,7 +6019,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
-            Timeout(600, () => sendScreenMessageTo(1, "Second run Do 17s spotted over Calais @ 6000m heading west!!!", null));
+         //   Timeout(600, () => sendScreenMessageTo(1, "Second run Do 17s spotted over Calais @ 6000m heading west!!!", null));
         }
         else if ("F10".Equals(shortName) && active && !stopAI())
         {
@@ -5926,7 +6029,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
+        //    Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
         }
         else if ("F11".Equals(shortName) && active && !stopAI())
         {
@@ -5936,7 +6039,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @20K ft. heading west!", null));
+         //   Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @20K ft. heading west!", null));
         }
         else if ("F12".Equals(shortName) && active && !stopAI())
         {
@@ -5946,7 +6049,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lympne in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
+        //    Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
         }
         else if ("F13".Equals(shortName) && active && !stopAI())
         {
@@ -5956,7 +6059,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "BR.20Ms requesting escort.  Meet at Boulogne @ 6km in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
+        //    Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("F13e".Equals(shortName) && active && !stopAI())
@@ -5998,7 +6101,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
+        //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
         }
         else if ("F15".Equals(shortName) && active && !stopAI())
         {
@@ -6008,7 +6111,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(2, "He-111's requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "He-111's have been spotted over Calais @ 20K ft. heading west!", null));
+         //   Timeout(600, () => sendScreenMessageTo(1, "He-111's have been spotted over Calais @ 20K ft. heading west!", null));
         }
         else if ("F16".Equals(shortName) && active && !stopAI())
         {
@@ -6018,7 +6121,7 @@ public class Mission : AMission
                 action.Do();
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
+         //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
         }
         else if ("F17".Equals(shortName) && active && !stopAI())
         {
@@ -6028,7 +6131,7 @@ public class Mission : AMission
                 action.Do();
             }
             sendScreenMessageTo(1, "Do 17's have been spotted east of Calais @ 20K ft.", null);
-            sendScreenMessageTo(2, " third run Do 17's requesting escort! Meet at Calais at 6000m in 10 minutes", null);
+         //   sendScreenMessageTo(2, " third run Do 17's requesting escort! Meet at Calais at 6000m in 10 minutes", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("F18".Equals(shortName) && active && !stopAI())
@@ -6039,9 +6142,14 @@ public class Mission : AMission
                 action.Do();
             }
             sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null);
-            sendScreenMessageTo(2, "Wellingtons have been spotted west of Dymchurch at 6000m.  Destroy them!", null);
+         //   sendScreenMessageTo(2, "Wellingtons have been spotted west of Dymchurch at 6000m.  Destroy them!", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
+
+
+		// from this point on no messages about triggers should Show Fatal 10/19
+         
+
         else if ("escort1".Equals(shortName) && active && !stopAI())
         {
             AiAction action = GamePlay.gpGetAction("escort1");
@@ -6049,8 +6157,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Escort1 109s launched", null);
-            sendScreenMessageTo(2, "Cover 109s launched for test", null);
+        //    sendScreenMessageTo(1, "Escort1 109s launched", null);
+         //   sendScreenMessageTo(2, "Cover 109s launched for test", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("escort2".Equals(shortName) && active && !stopAI())
@@ -6060,8 +6168,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Escort2 Cover 109s launched", null);
-            sendScreenMessageTo(2, "Secondary Cover 109s launched for test", null);
+            //sendScreenMessageTo(1, "Escort2 Cover 109s launched", null);
+            //sendScreenMessageTo(2, "Secondary Cover 109s launched for test", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("escort3".Equals(shortName) && active && !stopAI())
@@ -6071,7 +6179,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Escort3 Cover 109s launched", null);
+            //sendScreenMessageTo(1, "Escort3 Cover 109s launched", null);
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
@@ -6082,7 +6190,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Spits launched", null);
+         //   sendScreenMessageTo(1, "Spits launched", null);
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
@@ -6093,7 +6201,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Hurricanes launched", null);
+         //   sendScreenMessageTo(1, "Hurricanes launched", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
         else if ("Willmingtondefensered".Equals(shortName) && active && !stopAI())
@@ -6103,13 +6211,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Willmington", null);
-            sendScreenMessageTo(2, "Spits launched launched for yet another  test", null);
+        //    sendScreenMessageTo(1, "Air defense Willmington", null);
+        //    sendScreenMessageTo(2, "Spits launched launched for yet another  test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Willmington(ZD1)30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset Willmington(ZD1)30 min", null);
             });
         }
         else if ("Redhilldefensered2".Equals(shortName) && active && !stopAI())
@@ -6119,13 +6226,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Redhill", null);
-            sendScreenMessageTo(2, "Spits launched Redhill defense test", null);
+          //  sendScreenMessageTo(1, "Air defense Redhill", null);
+         //   sendScreenMessageTo(2, "Spits launched Redhill defense test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Redhill(ZD2)30 min", null);
+             //   sendScreenMessageTo(1, " Trigger reset Redhill(ZD2)30 min", null);
             });
         }
 
@@ -6136,13 +6242,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Calais", null);
-            sendScreenMessageTo(2, "Air defense Calais ", null);
+          //  sendScreenMessageTo(1, "Air defense Calais", null);
+          //  sendScreenMessageTo(2, "Air defense Calais ", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Calais2 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset Calais2 30 min", null);
             });
         }
 
@@ -6153,13 +6258,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense St Omar", null);
-            sendScreenMessageTo(2, "Air defense St Omar test", null);
+         //   sendScreenMessageTo(1, "Air defense St Omar", null);
+        //    sendScreenMessageTo(2, "Air defense St Omar test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset St Omar 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset St Omar 30 min", null);
             });
         }
         else if ("HighAltCalais".Equals(shortName) && active && !stopAI())
@@ -6169,13 +6273,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "HighAltCalais", null);
+         //   sendScreenMessageTo(1, "HighAltCalais", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset HighAltCalais 30 min", null);
+             //   sendScreenMessageTo(1, " Trigger reset HighAltCalais 30 min", null);
             });
         }
         else if ("109Cover3".Equals(shortName) && active && !stopAI())
@@ -6185,8 +6288,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense test of code 3 hr launch", null);
-            sendScreenMessageTo(1, "Mission time should be top of hour4", null);
+         //   sendScreenMessageTo(1, "Air defense test of code 3 hr launch", null);
+         //   sendScreenMessageTo(1, "Mission time should be top of hour4", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6197,13 +6300,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Gladiator intercept Test of trigger", null);
-            sendScreenMessageTo(2, "Gladiator intercept  test", null);
+         //   sendScreenMessageTo(1, "Gladiator intercept Test of trigger", null);
+        //    sendScreenMessageTo(2, "Gladiator intercept  test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(2600, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, "Timer reset Dungeness trigger active", null);
+            //    sendScreenMessageTo(1, "Timer reset Dungeness trigger active", null);
             });
         }
 
@@ -6214,13 +6316,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "A 110 cover Letoquet Test of trigger", null);
-            sendScreenMessageTo(2, "110  test", null);
+         //   sendScreenMessageTo(1, "A 110 cover Letoquet Test of trigger", null);
+        //    sendScreenMessageTo(2, "110  test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, "Timer reset Letoquet(BZ1)trigger active", null);
+            //    sendScreenMessageTo(1, "Timer reset Letoquet(BZ1)trigger active", null);
             });
         }
         else if ("zonedefenseblue2".Equals(shortName) && active && !stopAI())
@@ -6230,13 +6331,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Oye Plague", null);
-            sendScreenMessageTo(2, "Air defense Oye Plague test", null);
+        //    sendScreenMessageTo(1, "Air defense Oye Plague", null);
+        //    sendScreenMessageTo(2, "Air defense Oye Plague test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Oye Plague 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset Oye Plague 30 min", null);
             });
         }
 
@@ -6249,13 +6349,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Wissant", null);
-            sendScreenMessageTo(2, "Air defense Wissant test", null);
+        //    sendScreenMessageTo(1, "Air defense Wissant", null);
+        //    sendScreenMessageTo(2, "Air defense Wissant test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Wissant3 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset Wissant3 30 min", null);
             });
         }
         else if ("zonedefenseblue4".Equals(shortName) && active && !stopAI())
@@ -6265,13 +6364,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Calais", null);
-            sendScreenMessageTo(2, "Air defense Calais test", null);
+         //   sendScreenMessageTo(1, "Air defense Calais", null);
+         //   sendScreenMessageTo(2, "Air defense Calais test", null);
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset Calais offshore 30 min", null);
+             //   sendScreenMessageTo(1, " Trigger reset Calais offshore 30 min", null);
             });
         }
         else if ("London1air".Equals(shortName) && active && !stopAI())
@@ -6281,13 +6379,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense London", null);
+        //    sendScreenMessageTo(1, "Air defense London", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset London 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset London 30 min", null);
             });
         }
         else if ("London2air".Equals(shortName) && active && !stopAI())
@@ -6297,13 +6394,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense London2", null);
+         //   sendScreenMessageTo(1, "Air defense London2", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset London 30 min", null);
+            //    sendScreenMessageTo(1, " Trigger reset London 30 min", null);
             });
         }
         else if ("London3air".Equals(shortName) && active && !stopAI())
@@ -6313,13 +6409,12 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense London3", null);
+        //    sendScreenMessageTo(1, "Air defense London3", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset London 30 min", null);
+             //   sendScreenMessageTo(1, " Trigger reset London 30 min", null);
             });
         }
         else if ("Thems1".Equals(shortName) && active && !stopAI())
@@ -6329,29 +6424,27 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Eastchurch", null);
+        //    sendScreenMessageTo(1, "Air defense Eastchurch", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset North 30 min", null);
+           //     sendScreenMessageTo(1, " Trigger reset North 30 min", null);
             });
         }
-        else if ("Beau11".Equals(shortName) && active && !stopAI())
+        else if ("Beau1".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("Beau11");
+            AiAction action = GamePlay.gpGetAction("Beau1");
             if (action != null)
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Air defense Brookland", null);
+        //    sendScreenMessageTo(1, "Air defense Brookland", null);
 
             GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(1800, () =>
-            {
+            Timeout(3600, () => {
                 GamePlay.gpGetTrigger(shortName).Enable = true;
-                sendScreenMessageTo(1, " Trigger reset North 30 min", null);
+             //   sendScreenMessageTo(1, " Trigger reset North 30 min", null);
             });
         }
         else if ("Fatal1".Equals(shortName) && active && !stopAI())
@@ -6361,8 +6454,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Coastal Patrol 1", null);
-            GamePlay.gpLogServer(null, "Check time for coastal patrol for testing", new object[] { });
+         //   sendScreenMessageTo(1, "Coastal Patrol 1", null);
+            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6373,8 +6466,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Coastal Patrol 2", null);
-            GamePlay.gpLogServer(null, "Check time for coastal patrol for testing", new object[] { });
+         //   sendScreenMessageTo(1, "Coastal Patrol 2", null);
+            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6385,8 +6478,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Coastal Patrol 3", null);
-            GamePlay.gpLogServer(null, "Check time for coastal patrol for testing", new object[] { });
+         //   sendScreenMessageTo(1, "Coastal Patrol 3", null);
+            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6397,8 +6490,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Coastal Patrol 4", null);
-            GamePlay.gpLogServer(null, "Check time for coastal patrol for testing", new object[] { });
+        //    sendScreenMessageTo(1, "Coastal Patrol 4", null);
+            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6409,8 +6502,8 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Northern Patrol 1", null);
-            GamePlay.gpLogServer(null, "Pegwell defense triggered look for aicraft pegwell bay", new object[] { });
+        //    sendScreenMessageTo(1, "Northern Patrol 1", null);
+            twcLogServer(null, "Pegwell defense triggered look for aicraft pegwell bay", new object[] { });
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
@@ -6421,7 +6514,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Northern Patrol 2", null);
+        //    sendScreenMessageTo(1, "Northern Patrol 2", null);
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
@@ -6433,7 +6526,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Northern Patrol 3", null);
+         //   sendScreenMessageTo(1, "Northern Patrol 3", null);
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
@@ -6445,7 +6538,7 @@ public class Mission : AMission
             {
                 action.Do();
             }
-            sendScreenMessageTo(1, "Northern Patrol 4", null);
+         //   sendScreenMessageTo(1, "Northern Patrol 4", null);
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
@@ -6892,6 +6985,35 @@ public static class Calcs
 
     #endregion
 
+    public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
+    {
+        string[] words = stringToSplit.Split(' ');
+        StringBuilder line = new StringBuilder();
+        foreach (string word in words)
+        {
+            if (word.Length + line.Length <= maxLineLength)
+            {
+                line.Append(word + " ");
+            }
+            else
+            {
+                if (line.Length > 0)
+                {
+                    yield return line.ToString().Trim();
+                    line.Clear();
+                }
+                string overflow = word;
+                while (overflow.Length > maxLineLength)
+                {
+                    yield return overflow.Substring(0, maxLineLength);
+                    overflow = overflow.Substring(maxLineLength);
+                }
+                line.Append(overflow + " ");
+            }
+        }
+        yield return line.ToString().Trim();
+    }
+
     //Salmo @ http://theairtacticalassaultgroup.com/forum/archive/index.php/t-4785.html
     public static string GetAircraftType(AiAircraft aircraft)
     { // returns the type of the specified aircraft
@@ -6984,7 +7106,7 @@ public static class Calcs
         int n = GamePlay.gpAirports().Length;
         //AiActor[] aMinSaves = new AiActor[n + 1];
         //int j = 0;
-        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
+        //twcLogServer(null, "Checking distance to nearest airport", new object[] { });
         for (int i = 0; i < n; i++)
         {
             AiActor a = (AiActor)GamePlay.gpAirports()[i];
@@ -6993,7 +7115,7 @@ public static class Calcs
             //if (actor.Army() != (a.Pos().x, a.Pos().y)
             //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
 
-            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+            //twcLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
 
             if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
 
@@ -7008,11 +7130,11 @@ public static class Calcs
             if (d2 < d2Min)
             {
                 d2Min = d2;
-                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+                //twcLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
             }
 
         }
-        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        //twcLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
         return Math.Sqrt(d2Min);
     }
 

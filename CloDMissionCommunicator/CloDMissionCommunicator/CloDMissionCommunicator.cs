@@ -53,7 +53,7 @@ namespace TWCComms
         public IStatsMission Stats { get; set; }
         //public dynamic Main { get; set; }
         //public dynamic Stats { get; set; }
-
+        public string stb_FullPath { get; set; }
         public string string1 { get; set; }
         public string string2 { get; set; }
         public string string3 { get; set; }

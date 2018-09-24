@@ -350,7 +350,7 @@ public class Mission : AMission, IStatsMission
 
     //initializer method
     public Mission () {
-        stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
+        stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
         TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
 
@@ -3149,21 +3149,21 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 Player[] to = null;
                 if (player != null) to = new Player[] { player };
 
-                if ( ( display || new_rank != current_rank ) && ( !stbSr_NoRankMessages && (player != null)) )  //Display when display is forced via display=true, or if rank has changed, but stbSr_NoRankMessages=true shuts off ALL rank/promotion messages regardless, except when specifically requested by the player
-            {
+                if ((display || new_rank != current_rank) && (!stbSr_NoRankMessages && (player != null)))  //Display when display is forced via display=true, or if rank has changed, but stbSr_NoRankMessages=true shuts off ALL rank/promotion messages regardless, except when specifically requested by the player
+                {
                     string posthumously = ""; string congrat = "Congratulations!";
                     if (StbSr_IsInDeadPlayers(entry.Key) != null)
                     {
                         posthumously = "posthumously ";
                         congrat = "With our condolences and gratitude to the late " + rank_names[new_rank] + "'s family and friends.";
                     }
-                    string dir = "been " + posthumously + "promoted from " + rank_names[current_rank] + " to"; 
+                    string dir = "been " + posthumously + "promoted from " + rank_names[current_rank] + " to";
                     if (new_rank < current_rank) { dir = "been " + posthumously + "demoted from " + rank_names[current_rank] + " to"; congrat = "Condolences!"; }
-                    if (new_rank == current_rank) { dir = "reached"; congrat = ""; }                    
+                    if (new_rank == current_rank) { dir = "reached"; congrat = ""; }
                     this.mission.Timeout(2.1, () =>
                     {
                         string pmsg = entry.Key + " has " + dir + " the rank of: " + rank_names[new_rank] + ". " + congrat;
-                        pmsg=pmsg.Replace(@"..", @".");  //Replace any double periods, which can happen if rank ends with Cl. or the like
+                        pmsg = pmsg.Replace(@"..", @".");  //Replace any double periods, which can happen if rank ends with Cl. or the like
                         this.mission.Stb_Message(to, pmsg, null);
                     });
                 }
@@ -3196,7 +3196,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     if (display && ACE_AWARD_NAMES[new_acelevel].Length>0 && vowels.Contains(ACE_AWARD_NAMES[new_acelevel][0].ToString())) m1 +="n";
                     
                     if (ACE_AWARD_NAMES[new_acelevel] != "")
-                        this.mission.Timeout(2.1, () =>
+                        this.mission.Timeout(0.1, () =>
                         {
                            this.mission.Stb_Message(to, entry.Key + " " + m1 + " " + ACE_AWARD_NAMES[new_acelevel] + ". " + congrat_al, null);
                         });
@@ -3205,24 +3205,24 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //Show some stats (if requested)
                 if (display) {
 
-                    this.mission.Timeout(3, () =>
+                    this.mission.Timeout(1, () =>
                     {
                         this.mission.Stb_Message(to, rank_names[new_rank] + " " + entry.Key + " stat summary: " + totalkills.ToString() + " Total Kills (any participation); " + totalacekills.ToString("0.0") + " Total Kills (Ace Formula); " + entry.Value[799].ToString() + "/" + entry.Value[800].ToString() + "/" + entry.Value[801].ToString() + " Full/Shared/Assist Victories; ", null);
                     });
 
 
-                    this.mission.Timeout(4, () => {
+                    this.mission.Timeout(2, () => {
                      this.mission.Stb_Message(to, ((double)entry.Value[802] / 100).ToString("0.0") + "/" + ((double)entry.Value[806] / 100).ToString("0.0") + "/" + ((double)entry.Value[810] / 100).ToString("0.0") + "/" + ((double)entry.Value[814] / 100).ToString("0.0") + " Air/AA/Naval/Ground Kill Points; " + adjustedDamageTotal.ToString()
                         + " Total Damage Hits; " + ((uint)(entry.Value[818])).ToString("N0") + " Total Damage Points; ", null);
                     });
 
-                    this.mission.Timeout(5, () => {
+                    this.mission.Timeout(3, () => {
                      this.mission.Stb_Message(to,flight_time_min.ToString("0.0") + " min. Flight Time; " //casting 818 to uint because it could overflow . . . uint gives us twice the headroom
                        + entry.Value[844].ToString() + " Sorties; " + kps.ToString("F2") + " Kill Points per Sortie; " + entry.Value[779].ToString() + " Continuous Missions; " + kpm.ToString("F2") + " Kill Points per Continuous Mission; " + entry.Value[845].ToString() + " Planes written off; " + pwopm.ToString("F1") + " Planes written off per mission; " + entry.Value[791].ToString() + " Flights Ended by Self-Damage; " + entry.Value[778].ToString()
                        + " Deaths.", null);
                     });
 
-                    this.mission.Timeout(6, () => {
+                    this.mission.Timeout(4, () => {
                      this.mission.Stb_Message(to, "All time: " + (entry.Value[824] + totalkills).ToString() + " Total Kills; Highest Rank: " + this.mission.stb_StatRecorder.StbSr_RankFromName(entry.Key, null, true), null);
                     });
                 }
@@ -6021,7 +6021,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
        {   
            if (stb_AnnounceStatsMessages)         
            {
-               string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Chat Commands <career, <sess, <net";
+               string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Tab-4 menu";
                if (stb_restrictAircraftByRank) msg += ", <ac, <nextac.";
                Stb_Message(null, msg, new object[] { });
                if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(5, () => { Stb_Message(null, stb_iniFileErrorMessages); }); //Also display the error message bec it is quite important & shouldn't even exist under normal circumstances
@@ -6743,7 +6743,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             //Console.WriteLine("STATS: " + Communicate.test.ToString());
             string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
-            stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"
+            stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"            
+            TWCComms.Communicator.Instance.stb_FullPath = stb_FullPath;
             stb_ErrorLogPath = stb_FullPath + stb_ErrorLogPath;
             stb_StatsPathTxt = stb_FullPath + stb_StatsPathTxt;
             stb_StatsPathHtmlLow = stb_FullPath + stb_StatsPathHtmlLow;
@@ -6918,20 +6919,22 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         else if (msg.StartsWith("<car") || msg.StartsWith("<ran"))  //career, rank
         {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
             stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
         }
         else if (msg.StartsWith("<ses"))
         {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
             stb_StatRecorder.StbSr_Display_SessionStats(player);
-
         }
         else if (msg.StartsWith("<net"))
         {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
             stb_StatRecorder.StbSr_Display_SessionStatsAll(player, 0); //display "Netstats" summary of current session stats for all players to this player
         }        
         else if (msg.StartsWith("<obj"))
         {
-            
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
             stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
         }
             
@@ -7291,7 +7294,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             double to = 1; //make sure this comes AFTER the main mission <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5;
 
-            string msg41 = "<car Your current career: rank, ace level, & stats; <ses Current session stats; <net All player stats; <rr Get new a/c; <rrhelp Help for <rr; <air nearest airport; <ter on friendly territory?; <obj team objectives/stats";
+            string msg41 = "<rr Get new a/c; <rrhelp Help for <rr; Use Tab-4 menu for various stats summaries";
             if (stb_restrictAircraftByRank)
             {
                 msg41 += "; <ac check available aircraft at your current rank; <nex list aircraft you can unlock at next promotion";

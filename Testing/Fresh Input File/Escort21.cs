@@ -181,7 +181,9 @@ public class Mission : AMission
         STATS_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + STATS_FILE_NAME;
         LOG_FILE_NAME = MISSION_ID + @"_log_log.txt";
         LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
-        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to             
+        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to  
+        //Will be updated with value from -stats.ini OnMissionLoaded
+                   
         stopwatch = Stopwatch.StartNew();
         RADAR_REALISM = (int)5;
         RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";
@@ -3039,7 +3041,8 @@ public class Mission : AMission
     public override void OnMissionLoaded(int missionNumber)
     {
         base.OnMissionLoaded(missionNumber);
-        TWCStatsMission = TWCComms.Communicator.Instance.Stats; //This will load every time any mission is loaded.  So until the actual -stats.cs is loaded it will just be null & afterwards it will keep loading with the actual -stats.cs THIS instance value, which shouldn't hurt anything
+        if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
+        if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
         //TWCComms.Communicator.Instance.Main = this;
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
         //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
@@ -3054,34 +3057,34 @@ public class Mission : AMission
         //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
         //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
 
-        //Assembly a = new Assembly();
-        //Assembly assembly = typeof(maddox.game.AMission).Assembly;
-        //Assembly assembly = Assembly.GetExecutingAssembly();
-        //Assembly assembly = Assembly.GetCallingAssembly();
-        //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        //var namespaces = assembly.GetTypes().Select(t => t.Namespace).Distinct();
-        /*
-        foreach (var assembly in assemblies)
-        {
-            var namespaces = assembly.GetTypes();
-            foreach (var n in namespaces)
+            //Assembly a = new Assembly();
+            //Assembly assembly = typeof(maddox.game.AMission).Assembly;
+            //Assembly assembly = Assembly.GetExecutingAssembly();
+            //Assembly assembly = Assembly.GetCallingAssembly();
+            //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //var namespaces = assembly.GetTypes().Select(t => t.Namespace).Distinct();
+            /*
+            foreach (var assembly in assemblies)
             {
-                Console.WriteLine("NS " + n.ToString());
+                var namespaces = assembly.GetTypes();
+                foreach (var n in namespaces)
+                {
+                    Console.WriteLine("NS " + n.ToString());
 
-            }
-        }*/
-        //coord.Singleton.Instance.Main = this;
+                }
+            }*/
+            //coord.Singleton.Instance.Main = this;
 
 
-        //String executablePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //Console.WriteLine("NS " + executablePath);
+            //String executablePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //Console.WriteLine("NS " + executablePath);
 
-        //Mission m = Battle.missions[missionNumber];
-        /* if (m.stb_StatsINIFilename !=null & m.stb_StatsINIFilename=="stats.ini")
-        {
-            TWCStatsMission = m;
-            Console.WriteLine("StatsMission! " + m.stb_StatsINIFilename);
-        }*/
+            //Mission m = Battle.missions[missionNumber];
+            /* if (m.stb_StatsINIFilename !=null & m.stb_StatsINIFilename=="stats.ini")
+            {
+                TWCStatsMission = m;
+                Console.WriteLine("StatsMission! " + m.stb_StatsINIFilename);
+            }*/
     }
 
     /************************************************************

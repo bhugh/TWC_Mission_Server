@@ -109,11 +109,13 @@
 // /Strategy.dll & /gamePlay.dll are needed to various parts of CLOD
 //The two $references below + the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 
+//$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
-//$reference System.Core.dll 
+//$reference System.Core.dll
+///$reference Microsoft.csharp.dll 
 //$reference WPF/PresentationFramework.dll
 //$reference WPF/PresentationCore.dll
 //$reference WPF/WindowsBase.dll
@@ -140,12 +142,13 @@ using maddox.game.page;
 using part;
 using Ini;
 using TF_Extensions;  //not working for now?
+using TWCComms;
 
 //test
 
 
 
-public class Mission : AMission
+public class Mission : AMission, IStatsMission
 {
     #region Customizable Variables
     //SERVER NAME & INFO CUSTOMIZATIONS
@@ -163,7 +166,9 @@ public class Mission : AMission
     *                                                                                 *
     ***********************************************************************************
     */
-    public string stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
+    public string stb_LocalMissionIniDirectory { get; set; }
+    
+    //public string stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
     public string stb_StatsINIFilename = "stats.ini";  //If this stats.ini exists in the directory indicated, then all values in that file will be read in & replace the DEFAULT values in the section below
 
     //NOTE: Values below are DEFAULTS and will be OVERWRITTEN by the values in the stats.ini file
@@ -341,8 +346,14 @@ public class Mission : AMission
 
     public ABattle battle = null;
 
+    IMainMission TWCMainMission;    
+
     //initializer method
     public Mission () {
+        stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
+        TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
+        TWCMainMission = TWCComms.Communicator.Instance.Main;
+
         string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
         string stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
         stb_loadINI(stb_FullPath_ini + stb_StatsINIFilename );
@@ -6700,6 +6711,24 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     {
         #region stb
         base.OnMissionLoaded(missionNumber);
+
+        //TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
+
+        //AMission TWCMainMission;
+        //IStatsMission TWCStatsMission;
+
+        //TWCMainMission = TWCComms.Communicator.Instance.Main;
+        //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+        //Console.WriteLine("GetType15: " + (TWCStatsMission.GetType().ToString()));
+        //Console.WriteLine("GetType16: " + TWCStatsMission.stb_ServerName_Public);
+        //Console.WriteLine("GetType17: ");
+        //TWCStatsMission.Inited();
+        //Console.WriteLine("GetType18: ");
+        //TWCMainMission.Inited();
+        //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
+        //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
+
+        
         stb_MissionsCount++;
         stb_lastMissionLoaded = missionNumber;
         #endregion
@@ -6710,6 +6739,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //Wait a while to do it because usually nobody is on right @ the beginning to even see it.  It displays right away in the console anyway.
             //if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(240, () => { Stb_Message(null, stb_iniFileErrorMessages, null); });             
 
+            //Escort21.coord.Communicate coms = new Escort21.coord.Communicate();
+
+            //Console.WriteLine("STATS: " + Communicate.test.ToString());
             string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
             stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"
             stb_ErrorLogPath = stb_FullPath + stb_ErrorLogPath;
@@ -7448,6 +7480,39 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             });
         }
     }
+
+    /***************************************************************
+     * 
+     * Methods for Export
+     * 
+     * Methods that will be included in the CloDMissionCommunicator.dll so that they can be called directly in the -main.cs.
+     *  
+     * CloDMissionCommunicator.dll
+     * 
+     * **************************************************************/
+
+    public void Display_AceAndRank_ByName(Player player)
+    {
+        stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
+    }
+
+    public void Display_SessionStats(Player player)
+    {
+        stb_StatRecorder.StbSr_Display_SessionStats(player);
+    }
+
+    public string Display_SessionStatsAll(Player player, int side = 0, bool display = true)
+    {
+        //Player player = null, int side = 0, bool display=true
+        return stb_StatRecorder.StbSr_Display_SessionStatsAll(player, side, display); //display "Netstats" summary of current session stats for all players to this player
+    }
+
+    //if player sent, displays message to the player, if player==null just return the string (html formatted with <br>)
+    public string Display_SessionStatsTeam(Player player)
+    {
+        return stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
+    }
+        
 
     /***************************************************************
      * Handle Area Bombings

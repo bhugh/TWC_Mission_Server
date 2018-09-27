@@ -3973,7 +3973,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             if (this.mission.stb_ResetPlayerStatsWhenKilled) sw.WriteLine(alive_dead_pilots_line);
 
                             string ms = StbSr_Display_SessionStatsTeam(null) + "<br>" + StbSr_GetCampaignSummary();
-                            ms += StbSr_Display_SessionStatsAll(null, 0, false);
+                            ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
                             sw.WriteLine("<table style=\"width:50%; margin-right:0px; margin-left:auto; float:right;\" border =\"1\" cellpadding=\"0\" cellspacing=\"1\">");
                             sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "TEAM Totals for Current Session" + "</h3></td></tr>");
                             sw.WriteLine("<tr class=\"\"><td class=\"\">" + ms + "</td></tr>");
@@ -4490,6 +4490,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                             ms += "<br>" + StbSr_GetCampaignSummary();
 
+                        }
+                        //Add on the NetStats summary of all player action, but only for the FINAL save of the game
+                        if (immediate_save)
+                        {
+                            ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
                         }
 
                         //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
@@ -7632,7 +7637,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
      ****************************************************************/
 
 
-    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1, string targetType = "Ground Area", double  multiplier = 1, bool blenheim = false, bool crater = false ) //IsEnemy 0=friendly, 1 enemy, 2 neutral, crater = true places a crater instead of the smoke, useful for roads, railroads, etc
+    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1, string targetType = "Ground Area", double  multiplier = 1, double aircraftCorrection = 1, bool crater = false ) //IsEnemy 0=friendly, 1 enemy, 2 neutral, crater = true places a crater instead of the smoke, useful for roads, railroads, etc
     {
         if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
         string playername = "AI";
@@ -7650,7 +7655,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         //double scoreBase = 0.06303;
         double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
-        if (blenheim) scoreBase *= 8; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
+        //if (blenheim) scoreBase *= 4; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
+        scoreBase *= aircraftCorrection; //correcting for lower tonnage carried by Blenheim, HE111, etc
         scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
 
 
@@ -7678,7 +7684,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         }
 
-        GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
+        //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
+        Timeout(0.4 + stb_random.NextDouble() * 5, () =>
+        {
+            GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
+        }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
 
 
         stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
@@ -8122,25 +8132,31 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         if (landType == maddox.game.LandTypes.WATER) return;
 
 
-        bool blenheim = false;
+        //This is to give some score parity to various types of bombers, encouraging pilots to fly them.
+        //The destruction done remains proportional to tonnage of bomb etc, but they multipliers for their personal score that
+        //make up for some planes carrying far less tonnage.
+        //Factor is the max tonnage carried by each a/c under TF 4.5, scaled to JU88==1.  So ie Blenheim carries just 1/4 of that tonnage so gets a score correction factor of 1/(1/4) or 4.
+        double aircraftCorrection = 1;
         AiAircraft aircraft = initiator.Actor as AiAircraft;
         string acType = Calcs.GetAircraftType(aircraft);
-        if (acType.Contains("Blenheim")) blenheim = true;
+        if (acType.Contains("Blenheim")) aircraftCorrection = 4;
+        if (acType.Contains("He-111")) aircraftCorrection = 1.5;
+        if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
-            //for testing
-            //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
+        //for testing
+        //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
 
-            //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
+        //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
 
-            //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
+        //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
 
-            /***************************
-             * 
-             * Handle bombing civilian areas AND area bombing generally
-             * 
-             ***************************/
-            //Give penalties to players if they bomb civilian areas
-            if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
+        /***************************
+         * 
+         * Handle bombing civilian areas AND area bombing generally
+         * 
+         ***************************/
+        //Give penalties to players if they bomb civilian areas
+        if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
             {
                 if (sta == null) continue;
                 //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
@@ -8157,10 +8173,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
                     // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
                     // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
-                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, blenheim); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, blenheim); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, blenheim); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, blenheim); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
                     // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
                     //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
                 }
@@ -8225,7 +8241,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 //double scoreBase = 0.06303;
                 double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-                if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic                
+                //if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic      
+
+                scoreBase *= aircraftCorrection; //Correcting tonnage effect for various types of bombers
 
                 //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
                 //TODO: Could also give more if exactly on the the runway, or near it, or whatever
@@ -8384,13 +8402,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
         {
-            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, blenheim, true);
+            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, aircraftCorrection, true);
             return;
         }
 
         if (landType == maddox.game.LandTypes.RAIL)
         {
-            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, blenheim, true);
+            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, aircraftCorrection, true);
             return;
         }
 
@@ -8733,7 +8751,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 //1. if a/c crashes (ie fireball) CloD pops the pilot out for external view
                 //2. In this case, the pilot MIGHT be dead but (thanks for our merciful calculations above), also maybe not
-                //3. relPosLeave is false when it is just a move within (say) a bomber to a different position
+                //3. realPosLeave is false when it is just a move within (say) a bomber to a different position
                 int oldDeathTime = 0;
                 int currTime = Calcs.TimeSince2016_sec();
                 if (!stb_PlayerDeathAndTime.TryGetValue(player.Name(), out oldDeathTime)) oldDeathTime = 0;
@@ -9218,7 +9236,9 @@ public void stb_setPilotType(Player player, AiActor actor)
         acType = Calcs.GetAircraftType(aircraft);
     }
 
-    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
+    //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
+    //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs.
+    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
     {
         playerBomberFighter = " (bomber)";
 
@@ -9406,7 +9426,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     }
 
     new Dictionary<string, int> stb_PlayerDeathAndTime = new Dictionary<string, int>();
-    new Dictionary<string, int> stb_PlayerParachuteTime = new Dictionary<string, int>();
+    new Dictionary<string, int> stb_PlayerParachute_Crashed_LandedTime = new Dictionary<string, int>();
 
     //returns a double ranging 0 - 1.  0 means NO DEATH at all because it was previously recorded OR we have decided that even though CLOD thinks this is a death, we don't
     //a number BETWEEN 0 and 1 indicates extent of injuries created by this incident, but as long as the return is less than 1 there is no death
@@ -9987,7 +10007,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         {
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
-            string msg = "Stationary " + stationary.Name + " " + stationary.country + " " + stationary.Category + " " + "killed by ";
+            string msg = "Stationary " + stationary.Name + " " + stationary.country + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
+
+            Player player = null;
+            if (initiator != null && initiator.Player != null) player = initiator.Player;
 
 
             /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
@@ -10016,7 +10039,6 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     //designer assigns (and it also doesn't report stationary.army at all, even though FMB allows it to 
                     // be set).  Instead, it reports the country as set internally somehow.  So e.g. in this .mis code:
                     //     Static109 Stationary.Environment.JerryCan_GER1_1 gb 269430.19 165952.20 720.00 /hstart -2
-                    //     Static110 Stationary.Environment.TelegaBallon_UK1  de 269416.38 165967.41 720.00 /hstart -2
                     // Static109 will always be reported as DE even though the mission designer as specified it as gb
                     // And static110 will  always be reported as GB even though the mission designer as specified it as de
                     // Other stationaries are reported as NN or whatever, even though the mission designates them to a certain country/army
@@ -10049,15 +10071,24 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     msg += "nobody/AI  ";
                 }
             }
-            if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, 5, 5, initiator.Tool.Type); //type 4 is any other ground type
+
+            int score = 1;
+
+            if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
+            if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //type 4 is any other ground type
             //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
             //score.  But for these stationaries it just appears to be reported when they are killed, along with the
-            //initiators.  So we are just fabricating a damage.score of 5 here & the complete 5 points goes to the actor reported in 
-            //initiator
-        
-        //Stb_LogError(msg);
-        //if (willReportDead) 
-        //Stb_Message(null, msg);
+            //initiators.  So we are just fabricating a damage.score of 1 here & the complete 1 points goes to the actor reported in 
+            //initiator, resulting in 1 kill pt (100%) per ground target killed.  Special target jerryan, telegaballon (hydrogen tank0 used to designate high-value
+            //targets, get more points
+            //if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, 10, 5, initiator.Tool.Type); //moving it to 2 pts/200% per tround stationary killed
+
+            //Report ground kills but spread them out a bit in case many die @ once
+            Timeout(1 + stb_random.NextDouble() * 5, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+
+            //Stb_LogError(msg);
+            //if (willReportDead) 
+            Console.WriteLine(msg);
 
         }
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
@@ -10093,7 +10124,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             {
                 PlayerName = player.Name();
                 PlayerNameM = stb_StatRecorder.StbSr_MassagePlayername(PlayerName, actor); //Name massaged with (bomber) etc.
-                if (recentlyParachutedOrCrashed(PlayerName)) return;
+                if (recentlyParachutedOrCrashedOrLanded(PlayerName)) return;
             }
 
             if (player != null) // human pilot
@@ -10295,7 +10326,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     public void OnAircraftLanded (AiActor actor, Player player, AiAircraft aircraft = null, double injuries = 0) {
         if (player != null) // human pilot
         {
-            
+
+            //prevent double-counting/messages for a player who landed etc.
+            if (player != null & player.Name() != null && player.Name().Length > 0 && recentlyParachutedOrCrashedOrLanded(player.Name())) return;
+
             if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())    // landed in enemy territory, presumably @ enemy airport or whatever
             {
                 gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { player.Name() });
@@ -10324,6 +10358,9 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             if (injuries >= 0.5 || dist > 2000)
             {
                 stb_recordAircraftWrittenOff(player, actor, injuries, dist);
+            } else
+            {
+                //They have returned the aircraft successfully!  If we were keeping track of aircraft stock etc we would return this aircraft to stock at this point.
             }
         }
 
@@ -10449,14 +10486,14 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
     //Return TRUE if the player has recently been through the Parachute and/or crash-landed routine
     //FALSE if they haven't died recently.
-    public bool recentlyParachutedOrCrashed(string PlayerName)
+    public bool recentlyParachutedOrCrashedOrLanded(string PlayerName)
     {
         //If recently parachuted or crashlanded and decided on an outcome for it, don't do it all again for another 60 seconds . . . 
         int currTime = Calcs.TimeSince2016_sec();
         int oldParachuteTime = 0;
-        if (!stb_PlayerParachuteTime.TryGetValue(PlayerName, out oldParachuteTime)) oldParachuteTime = 0;
+        if (!stb_PlayerParachute_Crashed_LandedTime.TryGetValue(PlayerName, out oldParachuteTime)) oldParachuteTime = 0;
         if (currTime - oldParachuteTime <= 60) return true;
-        stb_PlayerParachuteTime[PlayerName] = currTime; //If we are going through the parachute thing now, save the time so we are stopped from doing it again for 60 seconds (to prevent multiple parachute landing incidents from happening in quick succession, with different outcomes, which has been happening for some unknown reason 
+        stb_PlayerParachute_Crashed_LandedTime[PlayerName] = currTime; //If we are going through the parachute thing now, save the time so we are stopped from doing it again for 60 seconds (to prevent multiple parachute landing incidents from happening in quick succession, with different outcomes, which has been happening for some unknown reason 
         return false;
     }
 
@@ -10466,7 +10503,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         if (player == null || player.Name() == null) return; //no point in doing anything at all here in these cases
         string PlayerName = player.Name();
         string PlayerNameM = stb_StatRecorder.StbSr_MassagePlayername(PlayerName, actor); //Name massaged with (bomber) etc.
-        if (recentlyParachutedOrCrashed(PlayerName)) return;
+        if (recentlyParachutedOrCrashedOrLanded(PlayerName)) return;
 
 
         bool playerDied = false;

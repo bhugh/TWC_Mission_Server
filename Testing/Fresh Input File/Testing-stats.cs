@@ -346,13 +346,15 @@ public class Mission : AMission, IStatsMission
 
     public ABattle battle = null;
 
-    IMainMission TWCMainMission;    
+    public IMainMission TWCMainMission;
+    //public AIniFile TWCIniFile;
 
     //initializer method
     public Mission () {
         stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
         TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
+        //TWCIniFile = TWCComms.Communicator.Instance.Ini;
 
         string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
         string stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
@@ -1612,8 +1614,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //Console.WriteLine( "PosLeave: " + player.Name() + " " + cm.ToString("F0"));
         }
         
+        
         public void StbCmr_SavePositionLeave (Player player, AiActor actor, bool immed=false) 
-        {   
+        {
+          //bool posLeave = false;
           try                                 
           {
             
@@ -1636,14 +1640,18 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                     if (immed) { //call from onBattleStoped or similar where we know this is the end of sortie and don't need to wait/da any calculations to figure it out.  Just save the end-of-sortie stats & get out of here immediately
                         StbCmr_SavePositionLeave_work(player, actor, cm1);
-                        return;
+                        //posLeave = true;
+                        //return posLeave;
                     }
-                    
+
+                    Console.WriteLine("PPI,PPS pre: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
 
-                    mission.Timeout (0.2,  () => {
+                    mission.Timeout (0.1,  () => { //this needs to be less than 0.2 bec that is what onPlaceLeave uses!!!!
                         StbContinueMission cm = new StbContinueMission();
                         bool ret;
+
+                        Console.WriteLine("PPI,PPS post: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
                         ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
                         if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
@@ -1692,7 +1700,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         //Console.WriteLine("PLACE LEAVE: Just a pilot switching positions within an a/c " + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                             cm.isPlaneLeave = false; //not a plane leave, just a position switch.
                             stbCmr_ContinueMissionInfo[player.Name()] = cm;
-                            return; //just a position switch w/in an aircraft, not a "real" position leave
+                            //posLeave = false;
+                            //return posLeave; //just a position switch w/in an aircraft, not a "real" position leave
                         } else {
                              
                                   //Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
@@ -1700,13 +1709,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                         //Ok, so it's a real position leave, now save the stats, do the actual work etc.
                         StbCmr_SavePositionLeave_work(player, actor, cm);
-
-
+                        //posLeave = true;
+                        //return posLeave;                                          
 
                     });
-            }                          
+            }
+                return;
           }
-          catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
+          catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); return; }
+          
         } 
         
         //OK, this one isn't really necessary/somewhat redundant, but if
@@ -6109,7 +6120,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
    }
 
-   private bool Stb_isAiControlledPlane(AiAircraft aircraft)
+   public bool Stb_isAiControlledPlane(AiAircraft aircraft)
    {
        try {   
 
@@ -6126,7 +6137,58 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
    }
 
-   private void Stb_RemovePlayerFromCart(AiCart cart, Player player=null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
+    //Makes sure no other players are in the a/c except for the given player
+    //Note: does not actually check to make sure this player is also in the a/c.  OnPlaceLeave etc the player might be gone already
+    //but we really need to make sure NO ONE ELSE is in there at this point, and the player is not still in TWO positions rather than one or zero.
+    public bool Stb_isLastPlayerInAircraftandOneOrNoPositions(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+ 
+
+            if (aircraft == null)
+                return false;
+
+            //check if player is in any of the "places"
+            //and that this player is the FIRST actual player we encounter.  If so, return true
+            for (int i = 0; i < aircraft.Places(); i++)
+            {
+                if (aircraft.Player(i) == null) continue;
+                if (aircraft.Player(i) != player)
+                    return false;
+            }
+
+            //When player is fully leaving plane this always looks like -1,-1 onPlaceLeave.  Other possibilities if leaving only one position or switching
+            //within the aircraft etc are 0,1 0,-1 -1,1 0,1 0,2 etc.  But -1,-1 seems reliable as far as this person as left the plane entirely.
+            if (player.PlacePrimary() != null && player.PlaceSecondary() != null && player.PlacePrimary() == -1 && player.PlaceSecondary() == -1) return true;
+            else return false;
+
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+    
+    public bool Stb_isPlayerFirstInAircraft(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+
+            if (aircraft == null)
+                return false;
+
+            //check if player is in any of the "places"
+            //and that this player is the FIRST actual player we encounter.  If so, return true
+            for (int i = 0; i < aircraft.Places(); i++)
+                if (aircraft.Player(i) == player)
+                    return true;
+                else if (aircraft.Player(i) == null) continue;
+                else return false;
+
+            return false;
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+    public void Stb_RemovePlayerFromCart(AiCart cart, Player player=null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
    //if player = null then remove ALL players from ALL positions
    {
        try
@@ -6151,7 +6213,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
    }
 
    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
-   private void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+   public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
    {
                Timeout(timeToRemove_sec, () => {
 
@@ -6172,7 +6234,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
    }
 
    //Removes ALL players from an a/c after a specified period of time (seconds)
-   private void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
+   public void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
    {
        Timeout(timeToRemove_sec, () => {
 
@@ -6627,6 +6689,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 else NearestAirfield = airport;
             }
         }
+
+
+        //AirfieldDisable(NearestAirfield); //for testing
+        //Console.WriteLine("Destroying airfield " + NearestAirfield.Name());
         return NearestAirfield;
     }
 
@@ -6730,9 +6796,18 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
         }
         if (Players != null && Players.Count > 0) {
-        
-            foreach ( Player player in Players ) stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
-          
+
+            foreach (Player player in Players)
+            {
+                stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
+
+                //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
+                //However . . . if two players are in the aircraft we only want to return it once, not twice.  So only do this for players #1. In an 
+                //aircraft and #2. The FIRST player we encounter in an aircraft--but not 2nd,3rd, etc
+                AiActor actor = player.Place();
+                if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))                    
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+            }
         }
         
         //More cleanup    
@@ -6777,6 +6852,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
     }
 
+    ISupplyMission TWCSupplyMission;
     int stb_lastMissionLoaded = -1;
     public override void OnMissionLoaded(int missionNumber)
     {
@@ -6789,7 +6865,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         //IStatsMission TWCStatsMission;
 
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
-        //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+        TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
         //Console.WriteLine("GetType15: " + (TWCStatsMission.GetType().ToString()));
         //Console.WriteLine("GetType16: " + TWCStatsMission.stb_ServerName_Public);
         //Console.WriteLine("GetType17: ");
@@ -7075,7 +7151,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             Timeout(12, () =>
             {
 
-                double d = Stb_distanceToNearestAirport(aircraft as AiActor);
+                //double d = Stb_distanceToNearestAirport(aircraft as AiActor);
 
                 AiAirport ap = Stb_nearestAirport(aircraft as AiActor, player.Army());
                 AiActor a = ap as AiActor;
@@ -7685,11 +7761,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         }
 
         //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
-        Timeout(0.4 + stb_random.NextDouble() * 5, () =>
+        ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
+        /*
+        Timeout(0.4 + stb_random.NextDouble() * 25, () =>
         {
             GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
         }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
-
+        */
 
         stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
         //TODO: More/less points depending on bomb tonnage.
@@ -7861,6 +7939,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
+        //
+        /** OK, instead of putting the 'peperoni pizza' pattern of craters to disable an airfield, we're just going to disable the associated spawn point **/
+        /*
         ISectionFile f = GamePlay.gpCreateSectionFile();
         string sect = "Stationary";
 
@@ -7870,21 +7951,35 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         string value = "";
 
 
-        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 80)
+
+        for (double x = pos.x - radius * .6; x < pos.x + radius * .6; x = x + 50)
         {
-            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 80)
+            //for (double y = pos.y - radius * .6; y < pos.y + radius * .6; y = y + 100)
+            for (double y =  pos.y-Math.Abs(x); y <=pos.y+ Math.Abs(x) +1; y = y + Math.Abs(x))
+
             {
+                //if (Math.Abs(x) != Math.Abs(y)) continue;
                 string key = "Static" + count.ToString();
-                value = val1 + ".Environment." + type + " nn " + (x - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                value = val1 + ".Environment." + type + " nn " + (x - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
                 f.add(sect, key, value);
                 count++;
 
             }
+            string key = "Static" + count.ToString();
+            value = val1 + ".Environment." + type + " nn " + (x - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+            f.add(sect, key, value);
+            count++;
 
         }
         f.save(stb_FullPath + "airfielddisable-ISectionFile.txt"); //testing
         GamePlay.gpPostMissionLoad(f);
         //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
+        */
+
+        //Now actually destroy the birthplace so ppl can't spawn in
+        AiBirthPlace bp = Stb_nearestBirthPlace(ap as AiActor, ap.Army());
+        bp.destroy();
+
 
     }
 
@@ -7923,6 +8018,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
     public void loadSmokeOrFire(double x, double y, double z, string type = "", double duration_s = 300, string path = "", string type2 = "")
     {
+        //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
+
+        return;
+
         //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
         // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
         // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
@@ -8086,7 +8185,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
         f.save(path + "smoke-ISectionFile.txt"); //testing
         //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
-        Timeout(stb_random.NextDouble()*8, () => { GamePlay.gpPostMissionLoad(f); });
+        Timeout(stb_random.NextDouble()*28, () => { GamePlay.gpPostMissionLoad(f); });
 
 
         //TODO: The part to delete smokes after a while isn't working; it never finds or stops any of the smokes.   It does delete craters, however.     
@@ -8347,7 +8446,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
                 //Advise player of hit/percent/points
                 //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
-                if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
+
+                //Experiment: removing the message to see if it helps with warps  9/28/2018
+                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
 
                 loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
                 //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
@@ -8493,7 +8594,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             string ground = "ground actor";
             AiGroundActor aga = actor as AiGroundActor;
             if (aga == null) ground = "not a ground actor";
-            Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
+            //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
 
             //Set the player career type (ie bomber, fighter etc)
             //We have a problem in that when a player bails out of an aircraft that triggers OnPlaceEnter (for some reason!?) and in that one case
@@ -8509,6 +8610,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             {
                 //not parachuting out but entering some type of Actor place, so DO set pilot type
                 stb_setPilotType(player, actor);
+
+                //We can send the a/c to -supply.cs as often as we like, it will only register a given a/c once and sending it whenever someone enters a Place ensures we don't accidently overlook it
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, actor);
             }
             //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + placeIndex.ToString());
 
@@ -8737,8 +8841,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
             */
             
+            bool isLastPlayer = Stb_isLastPlayerInAircraftandOneOrNoPositions(actor as AiAircraft,player);
+            if (isLastPlayer) Console.WriteLine("IS last player");
+            else Console.WriteLine("Is NOT last player");
+            //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
+
             //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
-            Timeout(0.2, () =>
+            Timeout(0.2, () => //This Timeout must be LONGER!!! then the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
             {
                 //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
                 //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
@@ -8757,7 +8866,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 if (!stb_PlayerDeathAndTime.TryGetValue(player.Name(), out oldDeathTime)) oldDeathTime = 0;
         
                 bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
+                
                 bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name());
+
+                if (realPosLeave && isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5 )
+                {
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                }
 
                 //if (isPlayerAlreadyDead) Stb_Chat("Checking place leave - player already dead . . . ", player);
                 //if (realPosLeave) Stb_Chat("Checking place leave - realposleave . . . ", player);
@@ -8820,15 +8935,23 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                                 //OnAircraftCrashLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, 
                                 OnAircraftCrashLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, 
+                                                                                                     //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
+                                
+                                //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
+                                if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                             }
                             else
-                            {
+                            {                                
+
                                 //Stb_Chat("Player left plane: Injuries <=0.1; treating as a normal landing", player);
                                 //OnAircraftLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, etc.
                                 string line3 = player.Name() + " landed and left the aircraft.";
                                 //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
                                 Stb_Chat(line3, player);
                                 OnAircraftLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy,
+                                
+                                //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
+                                if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                             }
                         }
                         else
@@ -8860,6 +8983,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         string line2 = player.Name() + " has parachuted from the aircraft.";
                         Stb_Chat(line2, player);
                         OnPersonParachuteLanded(actor, player);
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                     }
 
@@ -8947,7 +9071,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             AiAircraft aircraft = actor as AiAircraft;
 
-            Timeout(0.1, () =>
+            Timeout(0.15, () =>
             {
                 //AiAircraft aircraft = actor as AiAircraft;
                 double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
@@ -8963,6 +9087,21 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //2018-09-24 testing system to find out weapons loadout for <rr
                 if (aircraft != null && !Stb_isAiControlledPlane(aircraft)) //live pilot has spawned in an aircraft
                 {
+
+                    //This seems the best place to detect creation of aircraft to subtract it from supply.
+                    //We already know there is a player in the a/c, but we need to know the player, and should only do this once per a/c
+                    //(ie, for the first player we find)
+                    //need to do it before the weaponsmask stuff bec. it causes an error?
+
+                    for (int i = 0; i < aircraft.Places(); i++)
+                    {
+                        if (aircraft.Player(i) is Player && aircraft.Player(i) != null)
+                        {
+                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(aircraft.Player(i), actor);
+                            //we send it multiple times without concern; -supply.cs makes sure a single a/c is never checked out more than once.
+                            //break; //only do this ONCE although the player will probably be in two places in a multi-player
+                        }
+                    }
                     //AiBirthplace birthplace = somebirthplacereference;
                     Console.WriteLine("Checking Loadout/weaponsmask . . . ");
                     AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
@@ -8971,6 +9110,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
 
                     Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
+
 
                 }
 
@@ -9185,6 +9325,7 @@ public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double in
         if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
         Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });            
     }
+    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
     stb_ACWrittenOffAndTime[player.Name()] = currTime;
 }
@@ -9469,6 +9610,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, actor);
                     stb_StatRecorder.StbSr_EnqueueTask(sst1);
                     stb_PlayerDeathAndTime[playerName] = currTime;
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                     if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death WAS recorded because previous death recorded " + (currTime - oldDeathTime).ToString() + " seconds ago & injuries were severe & both positions were dead");
 
                 }
@@ -9779,7 +9921,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         {
                             //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
                             //msg = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
-                            msg = "Self-kill: " + playerName + ". ";
+                            msg = "Self-kill: " + playerName + ". ";                            
                         }
                         else
                         {
@@ -9808,6 +9950,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         }
 
                         if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
+
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
+
+
 
                         //And now that they have died, they can't continue their mission
                         //for stats purposes
@@ -10084,7 +10230,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             //if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, 10, 5, initiator.Tool.Type); //moving it to 2 pts/200% per tround stationary killed
 
             //Report ground kills but spread them out a bit in case many die @ once
-            Timeout(1 + stb_random.NextDouble() * 5, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            //TESTING: turning off ground target  hit messages to see if that helps our warping problem  9/28/2018
+            //Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
 
             //Stb_LogError(msg);
             //if (willReportDead) 
@@ -10129,6 +10276,9 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
             if (player != null) // human pilot
             {
+
+                //All these result in loss of a/c, even if life saved
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                 //OK, there really isn't ANY neutral water in CLOD, so I'm re-doing this
                 //if (GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) == 0 &&
@@ -10505,6 +10655,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         string PlayerNameM = stb_StatRecorder.StbSr_MassagePlayername(PlayerName, actor); //Name massaged with (bomber) etc.
         if (recentlyParachutedOrCrashedOrLanded(PlayerName)) return;
 
+        //All these result in loss of a/c, even if life saved
+        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
         bool playerDied = false;
         if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // landed in water
@@ -11930,10 +12082,11 @@ Note that as the stats package develops we may add more fields at the end with m
 298	NamedDamageTypes.Eng2IntakeBurnt Damage Count
 299	NamedDamageTypes.Eng2CompressorFailure Damage Count
 300	NamedDamageTypes.Eng2CompressorGovernorFailure Damage Count
+304	NamedDamageTypes.Eng2CarbControlsFailure Damage Count
 301	NamedDamageTypes.Eng2CompressorSeizure Damage Count
 302	NamedDamageTypes.Eng2IntercoolerBurnt Damage Count
 303	NamedDamageTypes.Eng2CarbFailure Damage Count
-304	NamedDamageTypes.Eng2CarbControlsFailure Damage Count
+
 305	NamedDamageTypes.Eng2FuelLinePerforated Damage Count
 306	NamedDamageTypes.Eng2FuelPumpFailure Damage Count
 307	NamedDamageTypes.Eng2FuelSecondariesFire Damage Count

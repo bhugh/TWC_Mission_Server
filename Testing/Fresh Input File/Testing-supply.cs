@@ -308,10 +308,42 @@ public void ReadSupply(string suffix)
 
     }
 
+    //At mission end, anything in the air still is returned to stock
+    //This is usually called at like 30 seconds until the end, giving enough time to wrap things up without panic
+    //If you just wait until the end many of the onPlayerDisconnected and OnPlaceLeave type events are never recorded because the thread has terminated
+    public void ReturnAircraftToSupplyAtMissionEnd()
+    {
+        if (GamePlay != null && GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+        {
+
+            foreach (Player py in GamePlay.gpRemotePlayers())
+            {                
+                string pl = "(none)";
+                if (py.Place() != null)
+                {                  
+                    AiActor act = py.Place();
+                    pl = act.Name();
+
+                    if (act as AiAircraft != null)
+                    {
+                        SupplyOnPlaceLeave(py, act,0,true);
+                        Console.WriteLine("SupplyEnd: Returning to stock " + py.Name() +
+                            " " + pl);
+                    }
+
+                }
+
+
+            }
+
+        }
+    }
+
     public bool SupplyEndMission(double redMult = 1, double blueMult = 1)
     {
-        GamePlay.gpLogServer(null, "Red aircraft resupplied at " + (redMult*100).ToString("n0") + "% normal", new object[] { });
-        Timeout(1.2, () => { GamePlay.gpLogServer(null, "Blue aircraft resupplied at " + (blueMult * 100).ToString("n0") + "% normal", new object[] { }); });
+        ReturnAircraftToSupplyAtMissionEnd();
+        GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult*100).ToString("n1"), new object[] { });
+        GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100).ToString("n1"), new object[] { });
         AddIncrease(ArmiesE.Red, redMult);
         AddIncrease(ArmiesE.Blue, blueMult);
         return WritePrimarySupply(supplySuffix);
@@ -334,7 +366,11 @@ public void ReadSupply(string suffix)
         {
 
             if (AircraftSupply[armE].ContainsKey(current.Key))
+            {
+                Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
                 AircraftSupply[armE][current.Key] += current.Value * mult;
+                Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
+            }
             else AircraftSupply[armE][current.Key] = current.Value * mult;
 
             //can't go below zero
@@ -349,10 +385,11 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
     DateTime dt = DateTime.UtcNow;
     string date = dt.ToString("u");
     bool ret = true;
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("UXX1"); //Testing for potential causes of warping
 
-    //Console.WriteLine("MO_Write #2");
+        //Console.WriteLine("MO_Write #2");
 
-    string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + ".ini";
+        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + ".ini";
     string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + "_old.ini";
     string currentContent = String.Empty;
     if (!quick)
@@ -475,6 +512,8 @@ private bool IsLimitReached(AiActor actor)
             return;
         }
         else aircraftCheckedOut.Add(actor);
+
+        DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
 
         Console.WriteLine("valout1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
         if (cart != null && IsArmy(actor))
@@ -760,10 +799,10 @@ private int NumberPlayerInActor(AiActor actor)
     {
         //base.OnPlaceEnter(player, actor, placeIndex);
         //Console.WriteLine("PlaceEnter " + player.Name() + " " + (actor as AiCart).InternalTypeName());
-        DisplayNumberOfAvailablePlanes(actor);
+        //DisplayNumberOfAvailablePlanes(actor);
 
         CheckActorAvailibility(player, actor, placeIndex);
-        DisplayNumberOfAvailablePlanes(actor);
+        //DisplayNumberOfAvailablePlanes(actor); //don't display it here bec we are sent here any time ie a bomber pilot changes positions.  Instead we'll show it the first time only, at CheckActorOut
         // DebugPrintNumberOfAvailablePlanes(); // for testing
         //DisplayNumberOfAvailablePlanes(0, player, true);
     }

@@ -1109,6 +1109,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 sw.Close();
                 */
                 //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
+                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX10", null); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
                 File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
@@ -1631,10 +1632,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     cm1.posLeftActor = actor;
                     cm1.placeLeaveLoc.x = actor.Pos().x;
                     cm1.placeLeaveLoc.y = actor.Pos().y;
-                    /* Console.WriteLine("PLL: PositionLeave cm1 PELx: " + cm1.placeEnterLoc.x.ToString("N0")
-                    + " PELy: " + cm1.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm1.placeLeaveLoc.x.ToString("N0")
-                    + " PLLy: " + cm1.placeLeaveLoc.y.ToString("N0"));
-                    Console.WriteLine("Pll: "+cm1.ToString()); */
+                    //Console.WriteLine("PLL: PositionLeave cm1 PELx: " + cm1.placeEnterLoc.x.ToString("N0")
+                    //+ " PELy: " + cm1.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm1.placeLeaveLoc.x.ToString("N0")
+                    //+ " PLLy: " + cm1.placeLeaveLoc.y.ToString("N0"));
+                    //Console.WriteLine("Pll: "+cm1.ToString()); 
 
                     stbCmr_ContinueMissionInfo[player.Name()] = cm1;
 
@@ -1651,7 +1652,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         StbContinueMission cm = new StbContinueMission();
                         bool ret;
 
-                        Console.WriteLine("PPI,PPS post: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
+                        Console.WriteLine("PPI,PPS post: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1 or at least -1 0 or 2 -1 or the like
 
                         ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
                         if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
@@ -1701,7 +1702,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             cm.isPlaneLeave = false; //not a plane leave, just a position switch.
                             stbCmr_ContinueMissionInfo[player.Name()] = cm;
                             //posLeave = false;
-                            //return posLeave; //just a position switch w/in an aircraft, not a "real" position leave
+                            //return posLeave; 
+                            return; //just a position switch w/in an aircraft, not a "real" position leave
                         } else {
                              
                                   //Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
@@ -2027,6 +2029,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 sw.Flush();
                 sw.Close();
                 */
+                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11", null); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
                 File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
@@ -2178,6 +2181,18 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //StbSr_LogError((object)str);
         }
 
+        public void StbSr_AlwaysWriteLine(string format, params object[] values)
+        {
+
+            this.mission.Stb_Message(null, format, values); //only for debugging, it's quite verbose & goes to the CloD window, not console
+
+            //FYI the below plan didn't work out
+            //string str = format;
+            //if (values != null) 
+            //string str = String.Format(format, values);
+            //Using logerror doesn't work because of thread conflicts
+            //StbSr_LogError((object)str);
+        }
         //Here we can do tricky things like change the name to reflect whether this is a bomber pilot, red or blue pilot, etc
         //Since the stats are keyed to playerName, putting an addendum to the name essentially creates a new separate career or personality
 
@@ -2588,6 +2603,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     FileInfo fi = new FileInfo(stbSr_PlayerStatsPathTxt);
                     if (fi.Exists)
                     {
+                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX1", null); //testing disk output for warps
                         StreamReader sr = File.OpenText(stbSr_PlayerStatsPathTxt);
                         string s = sr.ReadToEnd();
                         sr.Close();
@@ -3390,17 +3406,17 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
 
                 //Only show IF there is some non-zero stats to show
-                bool report = (0.01 < (double)currSessStat.deaths + (double)currSessStat.planesWrittenOff +
+                double change = (double)currSessStat.deaths + (double)currSessStat.planesWrittenOff +
                     (double)(currSessStat.getSessStat(798)) + (double)(currSessStat.getSessStat(802)) +
                     (double)(currSessStat.getSessStat(806)) + (double)(currSessStat.getSessStat(810)) +
-                    ((double)currSessStat.getSessStat(814)) - currSessStat.getSessStat(847) + currSessStat.bombsHit
-                );
+                    ((double)currSessStat.getSessStat(814)) - currSessStat.getSessStat(847) + currSessStat.bombsHit;                
+                
                 //PlayerStats.getSessStat(778);
 
-                if (report)
+                if (change > 0.01 || change < -0.01)
                 {
                     total++;
-                    string msg1 = string.Format(army + " {0:0} {1:0} {2:0.00} {3:0.00}/{4:0.00}/{5:0.00}/{6:0.00}", (double)currSessStat.deaths,
+                    string msg1 = string.Format(army + " {0:0} {1:0} {2:00.00} {3:00.00}/{4:00.00}/{5:00.00}/{6:00.00}", (double)currSessStat.deaths,
                         (double)currSessStat.planesWrittenOff,
                         (double)(currSessStat.getSessStat(798)) / 100, (double)(currSessStat.getSessStat(802)) / 100, (double)(currSessStat.getSessStat(806)) / 100, (double)(currSessStat.getSessStat(810)) / 100, ((double)currSessStat.getSessStat(814)) / 100);
 
@@ -3476,6 +3492,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //Write out the current Red & Blue TEAM totals so that -main.cs can use them as part of mission objectives etc.
             try
             {
+                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX2", null); //testing disk output for warps
                 using (StreamWriter sw = new StreamWriter(mission.stb_FullPath + "SessStats.txt"))
                 {
 
@@ -3633,6 +3650,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         int StbSr_SPSCount = 0;
         public void StbSr_SavePlayerStats(int[] p) //p[0] is the time delay requested, p[1]=1 means this is end-of-session stats requested, so force immediate save
+            //p[2]=1 means do the uploadsituationmaps bit only, and then exit, if p[2]==1 doesn't exist then DON'T do the uploadsituationmaps
         {
             try
             {
@@ -3640,8 +3658,16 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 //StbSr_Calc_All_AceAndRank(); //OK, we calc ace/rank when we read the file in & at significant events like actor killed etc. Prob. no need to calc them again for every player EVERY TIME the files are saved.  They'll be calc-ed anew @ start of every mission if all else fails.
 
                 //Do the FTP situation map thing 2X, separated by 60 seconds, to double the upload speed.  A Kludge; we should have the time between saves separate from the other things & setable via stats.ini
-                StbSr_UploadSituationMapFilesLowFilter();
-                this.mission.Timeout(60, () => {  StbSr_UploadSituationMapFilesLowFilter();  });
+                //StbSr_UploadSituationMapFilesLowFilter();
+
+                //OK, it looks like doing this via this.mission puts it right back into the main thread?  So, no savings on threading
+                //and causes stutters/warps in the game.  Not good!
+                //this.mission.Timeout(60, () => {  StbSr_UploadSituationMapFilesLowFilter();  });
+                if (p[2] != null && p[2] == 1)
+                {
+                    StbSr_UploadSituationMapFilesLowFilter();
+                    return;
+                }
 
                 StbSr_SavePlayerStatsStringToFileFull(p);
                 StbSr_Display_SessionStatsTeam(null); //need to do this every 2 minutes or so or the -MAIN.cs file complains
@@ -3674,7 +3700,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     //(Two files for each date might be overkill, we can remove one in the future if that turns out to be the case..)
                     //TODO: Delete the older dated backup files after a certain period of time.
 
-                    StbSr_WriteLine("Stats: Making stats file backups.");
+                    StbSr_WriteLine("Stats: Making stats file backups. S12.");
 
 
                     if (!System.IO.File.Exists(stbSr_PlayerStatsPathTxt + ".tmp")) return;
@@ -3805,9 +3831,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     //StbSr_WriteLine("Stats: Writing stats file to hard drive.");
                     
                     int currTime_sec = Calcs.TimeSince2016_sec();
-                    
-                    
 
+
+                    if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX3", null); //testing disk output for warps
                     int numLines = (int)Math.Ceiling((stbSr_numStats / (double)50)); //numStats should be a mult of 50 but we round up here just in case.
                     using (StreamWriter sw = new StreamWriter(stbSr_PlayerStatsPathTxt + ".tmp", false, System.Text.Encoding.UTF8))
                     {
@@ -3930,6 +3956,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 {
                     if (stbSr_LogStatsCreateHtmlLow)
                     {
+                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX4", null); //testing disk output for warps
                         using (StreamWriter sw = new StreamWriter(stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow, false, System.Text.Encoding.UTF8))
                         {
                             sw.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
@@ -4439,6 +4466,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 {
                     if (stbSr_LogStatsCreateHtmlLow)
                     {
+                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX8", null); //testing disk output for warps
                         int save_min = 15;
                         string filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow;
 
@@ -4509,8 +4537,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         }
 
                         //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
-                        if (file_exists && !immediate_save &&  ( lastwrite.AddMinutes(save_min) > now || !changed) ) return;  
+                        if (file_exists && !immediate_save &&  ( lastwrite.AddMinutes(save_min) > now || !changed) ) return;
 
+                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5", null); //testing disk output for warps
                         using (StreamWriter sw = new StreamWriter(filename, append, System.Text.Encoding.UTF8))
                         {                   
                             
@@ -4587,6 +4616,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             string ms = "";
             try
             {
+                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX12", null); //testing disk output for warps
                 string filepath = mission.stb_FullPath + "CampaignSummary.txt";
                 string campaignSummary = "";
                 if (File.Exists(filepath))
@@ -4639,6 +4669,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
                               stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
                               file);
+                            
+                            //Console.WriteLine("DELETING " + file); //delete this line once we're sure it's working
+                            File.Delete(file);  //experimental: once radar files are uploaded, delete them.  Prevents duplicate/problem uploads over time
                         }
 
                     }
@@ -4667,6 +4700,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             try
             {
                 StbSr_WriteLine("Stats: Uploading stats via sftp.");
+                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX14");
                 if (String.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("Source filename missing.");
 
@@ -4682,6 +4716,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 // get the object used to communicate with the server.
                 FtpWebRequest request = CreateFtpRequest(serverUri, WebRequestMethods.Ftp.UploadFile, username, password);
 
+                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX6", null); //testing disk output for warps
                 // read file into byte array
                 StreamReader sourceStream = new StreamReader(filename);
                 byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
@@ -4841,6 +4876,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 sw.Flush();
                 sw.Close();
                 */
+                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX7", null); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
                 File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
@@ -4879,6 +4915,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             sw.Close();
             */
             //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8", null); //testing disk output for warps
             string date = DateTime.UtcNow.ToString("u");
             File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
         }
@@ -5372,6 +5409,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
         //f.save(stb_FullPath + "aircraftSpawn-ISectionFile.txt"); //testing
 
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13", null); //testing disk output for warps
         //load it in
         GamePlay.gpPostMissionLoad(f);
 
@@ -6022,9 +6060,26 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
        {
            if (stb_LogStats)
            {
-               StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0 });
-               stb_StatRecorder.StbSr_EnqueueTask(sst);
                Timeout(stb_LogStatsDelay, Stb_LogStatsRecursive);
+               //Do the regular stats save/upload business.  last "0" of 10,0,0 means do all various stats save EXCEPT the radar upload
+               StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 0 });  //3rd # means 0=no radar upload, 1=radar upload
+               stb_StatRecorder.StbSr_EnqueueTask(sst);
+               
+               //Upload RADAR files (the "1" in 10, 0, 1 indicates to radar upload) waiting 1/4 and 3/4 of the stats upload period.  so if stat save every 2 mins then
+               //radar uploads happen every 1 min but offset from the stats save/upload.  Trying to spread the joy around a bit.
+              
+              Timeout(stb_LogStatsDelay / 4, () =>
+                   {
+                       StbStatTask sst1 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
+                   stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                   });
+              Timeout(stb_LogStatsDelay * 3 / 4, () =>
+                  {
+                      StbStatTask sst2 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
+                   stb_StatRecorder.StbSr_EnqueueTask(sst2);
+                  });          
+
+              
            }
        }
        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
@@ -6158,9 +6213,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     return false;
             }
 
-            //When player is fully leaving plane this always looks like -1,-1 onPlaceLeave.  Other possibilities if leaving only one position or switching
+            //When player is fully leaving plane this often looks like -1,-1 onPlaceLeave.  But also often 2,-1, 0,-1, etc.  Only commonality seems to be   Other possibilities if leaving only one position or switching
             //within the aircraft etc are 0,1 0,-1 -1,1 0,1 0,2 etc.  But -1,-1 seems reliable as far as this person as left the plane entirely.
-            if (player.PlacePrimary() != null && player.PlaceSecondary() != null && player.PlacePrimary() == -1 && player.PlaceSecondary() == -1) return true;
+            if (player.PlacePrimary() != null && player.PlaceSecondary() != null && ( player.PlacePrimary() == -1 || player.PlaceSecondary() == -1)) return true;
             else return false;
 
 
@@ -6777,64 +6832,98 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         #region
         base.OnBattleStoped();
 
-        //Get list of all players, then send them to StbCmr_SavePositionLeave
-        //We don't want ot actually send them to OnPlaceLeave because that may kill them etc depending on where
-        //they are. This will just close out their stats without any chance of killing etc.
-        List<Player> Players = new List<Player>();
-        //Singleplayer or Dedi Server
-        if (GamePlay.gpPlayer() != null)
+        Console.WriteLine("Stats-OnBattleStoped1");
+
+        try
         {
-            
-                Players.Add(GamePlay.gpPlayer());
-        } // Multiplayer
-        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
-        {
-            foreach (Player p in GamePlay.gpRemotePlayers())
+            //Get list of all players, then send them to StbCmr_SavePositionLeave
+            //We don't want ot actually send them to OnPlaceLeave because that may kill them etc depending on where
+            //they are. This will just close out their stats without any chance of killing etc.
+            List<Player> Players = new List<Player>();
+
+            // Multiplayer
+            if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
             {
-                
+                foreach (Player p in GamePlay.gpRemotePlayers())
+                {
+
                     Players.Add(p);
+                }
             }
-        }
-        if (Players != null && Players.Count > 0) {
-
-            foreach (Player player in Players)
+            /*
+            //Singleplayer or Dedi Server
+            if (GamePlay.gpPlayer() != null)
             {
-                stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
 
-                //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
-                //However . . . if two players are in the aircraft we only want to return it once, not twice.  So only do this for players #1. In an 
-                //aircraft and #2. The FIRST player we encounter in an aircraft--but not 2nd,3rd, etc
-                AiActor actor = player.Place();
-                if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))                    
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                Players.Add(GamePlay.gpPlayer());
+            } 
+            */
+            if (Players != null && Players.Count > 0)
+            {
+
+                foreach (Player player in Players)
+                {
+                    stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
+
+                    //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
+                    //we can do this multiple times per aircraft bec. only the first one counts, but we're still going to save by only doing it for the first position encountered
+                    AiActor actor = player.Place();
+                    if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                }
+            }
+        } catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
+
+        Console.WriteLine("Stats-OnBattleStoped2");
+        //More cleanup    
+        try
+        {
+            Stb_destroyAllAIAircraft();
+
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
+        //OK, any aircraft that were previously called via onAircraftKilled, if we haven't given credit for them yet via onActorDead, we will do it now @ the end.
+
+        Console.WriteLine("Stats-OnBattleStoped3");
+
+        try
+        {
+            foreach (string aname in stb_aircraftKilled)
+            {
+                //if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
+                AiActor actor = GamePlay.gpActorByName(aname);
+                if (actor as AiAircraft != null) Stb_KillACNowIfInAircraftKilled(actor as AiAircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
             }
         }
-        
-        //More cleanup    
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR2: " + ex.ToString()); }
 
-        Stb_destroyAllAIAircraft();
+        Console.WriteLine("Stats-OnBattleStoped4");
 
-        //OK, any aircraft that were previously called via onAircraftKilled, if we haven't given credit for them yet via onActorDead, we will do it now @ the end.
-        foreach (string aname in stb_aircraftKilled)
+        try
         {
-            //if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
-            AiActor actor = GamePlay.gpActorByName(aname);
-            Stb_KillACNowIfInAircraftKilled(actor as AiAircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
+            foreach (string aname in stb_deadActors)
+            {
+                if (stb_Debug) Console.WriteLine("Actor killed this battle: " + aname);
+            }
         }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR3: " + ex.ToString()); }
 
-        
-        foreach (string aname in stb_deadActors)
-        {
-            if (stb_Debug) Console.WriteLine("Actor killed this battle: " + aname);
-        }
+        Console.WriteLine("Stats-OnBattleStoped5");
 
-        if (GamePlay is GameDef)
-        {
-            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
-            //If we don't remove the new EventChat when the battle is stopped
-            //we tend to get several copies of it operating, if we're not careful
+        try {
+            if (GamePlay is GameDef)
+            {
+                //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+                (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+                //If we don't remove the new EventChat when the battle is stopped
+                //we tend to get several copies of it operating, if we're not careful
+
+
+            }
         }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR4: " + ex.ToString()); }
+
+        Console.WriteLine("Stats-OnBattleStoped6");
 
         try
         {
@@ -6845,11 +6934,21 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 0, 1 }); //2nd entry "1" means final save of the mission
                 stb_StatRecorder.StbSr_EnqueueTask(sst);
             }
-            stb_StatRecorder.StbSr_FinishWaitingTasks();
         }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        #endregion
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
 
+        Console.WriteLine("Stats-OnBattleStoped7");
+
+        try
+        {
+            stb_StatRecorder.StbSr_FinishWaitingTasks(); //THIS CLOSES THE SECOND THREAD SO STATS WON'T WORK AT ALL AFTER THIS IS CALLED!!!
+
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR: " + ex.ToString()); } //Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
+
+        Console.WriteLine("Stats-OnBattleStoped8");
+
+        #endregion
     }
 
     ISupplyMission TWCSupplyMission;
@@ -8183,6 +8282,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         */
 
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
         f.save(path + "smoke-ISectionFile.txt"); //testing
         //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
         Timeout(stb_random.NextDouble()*28, () => { GamePlay.gpPostMissionLoad(f); });
@@ -8847,7 +8947,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
             //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
-            Timeout(0.2, () => //This Timeout must be LONGER!!! then the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+            Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
             {
                 //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
                 //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
@@ -8869,10 +8969,23 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 
                 bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name());
 
+                
+                if (realPosLeave && (actor as AiAircraft) != null)
+                {
+                    //So if we are here it's a real pos leave & we're in an aircraft.  If we're the LAST PLAYER we're going to call it
+                    //a real aircraft abandon.
+                    //Below, we will also force destruction of the aircraft in certain situations such as big crash.  But this will be our 'main' 
+                    //place to say, "Yes, the final pilot has left the aircraft"
+                    if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                }
+
+                /*
                 if (realPosLeave && isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5 )
                 {
+                    Console.WriteLine("Forcing exit 2");
                     if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                 }
+                */
 
                 //if (isPlayerAlreadyDead) Stb_Chat("Checking place leave - player already dead . . . ", player);
                 //if (realPosLeave) Stb_Chat("Checking place leave - realposleave . . . ", player);
@@ -8881,15 +8994,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 {
 
                     //Stb_Chat("Checking place leave 1 . . . ", player);
-                    /* if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
+                    if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
                     else Console.WriteLine("OnPlaceLeave: place is NULL");
                     if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());
                     else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
                     if (player.PersonPrimary() != null) Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place().ToString());
                     else Console.WriteLine("OnPlaceLeave: primary person is NULL");
 
-                    if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
-                    */
+                    Console.WriteLine("POSLeave: " + realPosLeave.ToString() + " " + isPlayerAlreadyDead.ToString() + " " + currTime.ToString() + " " + oldDeathTime.ToString());                    //if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
 
                     //OK, this is the place we need to deal with: player left a/c mid-flight, player lost internet connection, player landed @ some random spot then left the plane, player used the 'flag screen" to leave the plane mid-flight, etc etc etc
                     //This a bit awkward because we are doing this in StbCmr instead of in mission itself . . . 
@@ -8938,7 +9050,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                                                                                      //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
                                 
                                 //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
-                                if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                             }
                             else
                             {                                
@@ -8951,7 +9063,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                 OnAircraftLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy,
                                 
                                 //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
-                                if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                             }
                         }
                         else
@@ -8960,6 +9072,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             //Stb_Chat("Checking place leave 4 . . . ", player);
                             Stb_Chat("Player left plane: Injuries = 1; player death", player);
                             stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 1, actor, player, false);
+
+                            //Here we are forcing aircraft loss in case of severe injuries.
+                            //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
+                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                         }
                     }
 
@@ -8983,7 +9099,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         string line2 = player.Name() + " has parachuted from the aircraft.";
                         Stb_Chat(line2, player);
                         OnPersonParachuteLanded(actor, player);
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        Console.WriteLine("Forcing exit 3");
+                        if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off, in case they were the last person on board AND they have just parachuted out
 
                     }
 
@@ -9325,7 +9442,8 @@ public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double in
         if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
         Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });            
     }
-    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+        Console.WriteLine("Forcing exit 4");
+        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
     stb_ACWrittenOffAndTime[player.Name()] = currTime;
 }
@@ -9610,6 +9728,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, actor);
                     stb_StatRecorder.StbSr_EnqueueTask(sst1);
                     stb_PlayerDeathAndTime[playerName] = currTime;
+                    Console.WriteLine("Forcing exit 6");
                     if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                     if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death WAS recorded because previous death recorded " + (currTime - oldDeathTime).ToString() + " seconds ago & injuries were severe & both positions were dead");
 
@@ -9889,7 +10008,9 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         stb_StatRecorder.StbSr_EnqueueTask(sst1);
                         */
 
-                        int killType = 1;
+                        bool RPCL = recentlyParachutedOrCrashedOrLanded(playerName);
+
+                            int killType = 1;
                         if (selfKill) killType = 2;
 
                         double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true);
@@ -9903,7 +10024,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                             if (injuriesExtent > .2) severity = "seriously ";
                             if (injuriesExtent >= .5) severity = "very seriously ";
                             string msg4 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible terrible incident, but you somehow survived--for now . . . ";
-                            Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
                             stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
                             OnAircraftLanded(actor, aiAircraft.Player(i));
                             continue;
@@ -9911,7 +10032,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
                         {
                             string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
-                            Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
                             stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
 
                         }
@@ -9931,7 +10052,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         }
                         stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
 
-                        Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+                        if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
 
                         if (stb_ResetPlayerStatsWhenKilled)
                         {
@@ -9946,11 +10067,12 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         if (stb_PlayerTimeoutWhenKilled)
                         {
                             msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + Calcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". Please log off the server to allow others a chance to fly.";
-                            Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
                         }
 
-                        if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
+                        if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
 
+                        Console.WriteLine("Forcing exit 7");
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
 
 
@@ -10041,6 +10163,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                             //System.Console.WriteLine("Person died: " + player.Name());
                             string playerName = person.Player().Name();
 
+                            bool RPCL = recentlyParachutedOrCrashedOrLanded(playerName);
+
                             int selfKillPers = 2;
                             string msg2 = "";
 
@@ -10085,12 +10209,12 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                                         msg2 = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
                                     else msg2 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was killed or captured.";
 
-                                    Stb_Message(new Player[] { player }, msg2, new object[] { });
+                                    if (!RPCL) Stb_Message(new Player[] { player }, msg2, new object[] { });
 
                                     if (stb_PlayerTimeoutWhenKilled)
                                     {
                                         string msg1 = "To encourage a more realistic approach to piloting and battle, players who are killed or captured are restricted from flying for " + Calcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". You could try artillery or a ground vehicle.";
-                                        Stb_Message(new Player[] { player }, msg1, new object[] { });
+                                        if (!RPCL) Stb_Message(new Player[] { player }, msg1, new object[] { });
 
                                         if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { player }, "If you are philosophically opposed to this idea, enter the chat command <override to continue immediately.", null); });
 
@@ -10107,13 +10231,13 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                                     if (injuriesExtent > .2) severity = "seriously ";
                                     if (injuriesExtent >= .5) severity = "very seriously ";
                                     string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.  Your career will continue.";
-                                    Stb_Message(new Player[] { player }, msg3, new object[] { });
+                                    if (!RPCL) Stb_Message(new Player[] { player }, msg3, new object[] { });
                                     stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
                                 }
                                 else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
                                 {
                                     string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
-                                    Stb_Message(new Player[] { player }, msg4, new object[] { });
+                                    if (!RPCL) Stb_Message(new Player[] { player }, msg4, new object[] { });
                                     stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
 
                                 }
@@ -10275,10 +10399,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }
 
             if (player != null) // human pilot
-            {
-
-                //All these result in loss of a/c, even if life saved
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            {                
 
                 //OK, there really isn't ANY neutral water in CLOD, so I'm re-doing this
                 //if (GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) == 0 &&
@@ -10287,6 +10408,11 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 
                 if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // crash-landed in water
                 {
+
+                    //Loss of a/c, even if life saved
+                    Console.WriteLine("Forcing exit 8");
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+
                     double Luck = stb_random.NextDouble();
                     double Luck2 = stb_random.NextDouble();
                     double RescueChance = stb_ASR_RescueChanceRed;
@@ -10334,6 +10460,11 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
                 else if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())    // landed in enemy territory
                 {
+
+                    //Loss of a/c, even if life saved
+                    Console.WriteLine("Forcing exit 8");
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+
                     //Only give consequences if the player leaves the a/c here, OR is injured on landing OR the a/c was killed
                     //Otherwise the pilot might just take off again & escape.
                     if (aircraft == null || injuries >= 0.35 || stb_aircraftKilled.Contains((aircraft as AiActor).Name())) {
@@ -10366,6 +10497,11 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 if (injuries >= 0.5 || stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
                 {
                     stb_recordAircraftWrittenOff(player, actor, injuries, dist);
+                    
+                    //SUPPLY: Loss of a/c, even if life saved
+                    Console.WriteLine("Forcing exit 8");
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+
                 } else if (dist > 2000 && aircraft == null ) //this is the case where we are more than 2000 m from airport AND player has left  the a/c (aircraft == null) so we are being sent through this routine with no a/c attached
                   //Note that we DO NOT write off the a/c if the player has landed and is just sitting in it uninjured.  They might just take off again, which would be AOK if they can successfully do it.
                 {
@@ -10482,6 +10618,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
             if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())    // landed in enemy territory, presumably @ enemy airport or whatever
             {
+                //Here we are forcing aircraft loss in case of landing in enemy territory.
+                //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+
                 gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { player.Name() });
                 double Luck = stb_random.NextDouble();
                 double EscapeChance = stb_POW_EscapeChanceRed;
@@ -10508,6 +10648,11 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             if (injuries >= 0.5 || dist > 2000)
             {
                 stb_recordAircraftWrittenOff(player, actor, injuries, dist);
+
+                //Here we are forcing aircraft loss in case of moderate to severe injuires OR landing away from airport
+                //We'll usually pick this up elsewhere, but in this case we KNOW this airport is written off, so we're forcing it
+                //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
             } else
             {
                 //They have returned the aircraft successfully!  If we were keeping track of aircraft stock etc we would return this aircraft to stock at this point.
@@ -10656,6 +10801,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         if (recentlyParachutedOrCrashedOrLanded(PlayerName)) return;
 
         //All these result in loss of a/c, even if life saved
+        Console.WriteLine("Forcing exit 1");
         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
         bool playerDied = false;
@@ -11508,6 +11654,7 @@ public static class Calcs
         //maybe this part dies silently some times, due to f.save or perhaps section file load?  PRobably needs try/catch
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
         //f.save(path + "smoke-ISectionFile.txt"); //testing
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
         GamePlay.gpPostMissionLoad(f);
 
 

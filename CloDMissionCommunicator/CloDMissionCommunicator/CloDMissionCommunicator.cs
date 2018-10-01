@@ -55,13 +55,13 @@ namespace TWCComms
 
         //public dynamic Main { get; set; }
         //public dynamic Stats { get; set; }
+        public bool WARP_CHECK { get; set; } //show 'warp check' messages, most to console some to screen
         public string stb_FullPath { get; set; }
-        public string string1 { get; set; }
-        public string string2 { get; set; }
-        public string string3 { get; set; }
-        public object object1 { get; set; }
-        public object object2 { get; set; }
-        public object object3 { get; set; }
+        public string[] string1 { get; set; }
+        public object[] object1 { get; set; }
+        public bool[] bool1 { get; set; }
+        public int[] int1 { get; set; }
+        public double[] double1 { get; set; }
     }
 
 }
@@ -94,6 +94,10 @@ public interface IMainMission
     string FILE_PATH { get; set; }
     string STATS_FULL_PATH { get; set; }
     string STATSCS_FULL_PATH { get; set; }
+
+    bool DEBUG { get; set; } //Whether to print debug messages (most to console, some to screen
+    bool LOG { get; set; } //Whether to log debug messages to  a log file.
+
 
 }
 

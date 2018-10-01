@@ -96,8 +96,9 @@ public class Mission : AMission, IMainMission
     public string CLOD_PATH { get; set; }
     public string FILE_PATH { get; set; }
 
-    public bool DEBUG;
-    public bool LOG; //Whether to log debug messages to  a log file.
+    public bool DEBUG { get; set; }
+    public bool LOG { get; set; } //Whether to log debug messages to  a log file.
+    //public bool WARP_CHECK { get; set; }
 
     public string MISSION_FOLDER_PATH;
     public string USER_DOC_PATH;
@@ -159,6 +160,10 @@ public class Mission : AMission, IMainMission
     {
         //outPath = "C:\\GoogleDrive\\GCVData";
         TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
+
+        //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
+        //Also in other submission .cs like -stats.cs you can access the AMission methods of TWCMainMission by eg (TWCMainMission as AMission).OnBattleStopped();
+        
         //TWCComms.Communicator.Instance.Ini = (AIniFile)Ini.IniFile; //allows -stats.cs etc to access this instance of IniFile
         //Console.Write("TYPEOF: " + typeof(string).Assembly.TWCStats);
         //TWCStats.interop statsMis = new TWCStats.interop();
@@ -172,10 +177,11 @@ public class Mission : AMission, IMainMission
         CAMPAIGN_ID = "The Big War"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = false;
+        //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "twc"}, //Red army #1
-            { -2, "twc"}, //Blue, army #2
+            { -1, "north"}, //Red army #1
+            { -2, "gate"}, //Blue, army #2
             { -3, "twc2twc"}, //admin
             //note that passwords are CASEINSENSITIVE
         };
@@ -742,6 +748,7 @@ public class Mission : AMission, IMainMission
             }
 
         }
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7"); //Testing for potential causes of warping
         //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
         GamePlay.gpPostMissionLoad(f);
         //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
@@ -1093,11 +1100,19 @@ public class Mission : AMission, IMainMission
             GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
 
             
+            //All players who are lucky enough to still be in a plane at this point have saved their plane/it's returned to their team's supply
+
 
             //Save map state & data
             double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
             CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+            
+        });
+        Timeout(endseconds + 50, () =>
+        {
+            twcLogServer(null, "Server Restarting in 10 seconds!!!", new object[] { });
+            
         });
         Timeout(endseconds + 60, () =>
         {
@@ -1105,8 +1120,10 @@ public class Mission : AMission, IMainMission
             GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
             DebugAndLog("Mission ended.");
 
-                //OK, trying this for smoother exit (save stats etc)
-                if (GamePlay is GameDef)
+            //OK, trying this for smoother exit (save stats etc)
+            //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+            //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
+            if (GamePlay is GameDef)
             {
                 (GamePlay as GameDef).gameInterface.CmdExec("exit");
             }
@@ -1114,6 +1131,8 @@ public class Mission : AMission, IMainMission
             });
         Timeout(endseconds + 90, () =>  //still doing this as a failsafe but allowing 20 secs to save etc
         {
+            //If the CmdExec("exit") didn't work for some reason, we can call OnBattleStoped manually to clean things up, then kill.  This is just a failsafe
+            (TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
             Process.GetCurrentProcess().Kill();
         });
 
@@ -1478,6 +1497,7 @@ public class Mission : AMission, IMainMission
         //use the victory tallying mechanism in -stats.cs to do the work of keeping track of that
         try
         {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX1"); //Testing for potential causes of warping
             using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + "SessStats.txt"))
             {
                 string RedTotalS = sr.ReadLine();
@@ -1887,6 +1907,7 @@ public class Mission : AMission, IMainMission
         {
 
             //Console.WriteLine("Map Save #1");
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX8"); //Testing for potential causes of warping
 
             //Take care of updating Aircraft Supply here, based on Mission results
             //Also we can use the various failsafes in place to ensure mapsave happens, but no "double mapsave"
@@ -1962,16 +1983,44 @@ public class Mission : AMission, IMainMission
                 try
                 {
                     double pcDone = calcProportionTimeComplete();
+
+                    //This adds supply in based on how many player participated and how long the mission ran (6 hrs generally) as a basis
+                    //then adjusting based on score & whether anyone has turned the map
+                    int netRedCount = 15;
+                    int netBlueCount = 15;
+
+                    if (TWCStatsMission != null)
+                    {
+                        //Counting lines in <netstats summary from -stats.cs to get an approximation of how many active pilots there were in-game
+                        string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false);
+                        string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false);
+                        netRed = netRed.Replace(@"<<<No Netstats to report>>><br>", "");
+                        //netRed.Replace()
+                        netBlue = netBlue.Replace(@"<<<No Netstats to report>>><br>", "");
+                        //netBlue = netBlue.Replace(@"No Nets", "");
+                        string target = "<br>";//Q&D way to count how many pilots active during the mission
+                        Console.WriteLine("NR " + netRed);
+                        Console.WriteLine("NR " + netBlue);
+                        netRedCount = netRed.Select((c, i) => netRed.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
+                        netBlueCount = netBlue.Select((c, i) => netBlue.Substring(i)).Count(sub => sub.StartsWith(target)) - 1 ;
+                    }
+                    if (netRedCount < 0) netRedCount = 0;
+                    if (netBlueCount < 0) netRedCount = 0;
+                    if (netBlueCount > 120) netRedCount = 120;
+                    if (netBlueCount > 120) netRedCount = 120;
                     //Take care of changes to supply
-                    double redMult = pcDone;
-                    double blueMult = pcDone;
+                    double redMult = pcDone / 8 + 7 / 8 * pcDone * netRedCount / 20;
+                    double blueMult = pcDone / 8 + 7 / 8 * pcDone * netBlueCount / 20;
                     if (winner == "Red") { redMult = 2; blueMult = 0.5; }
                     else if (winner == "Blue") { blueMult = 2; redMult = 0.5; }
-                    else if (misResult > 0) redMult = pcDone + misResult / 100.0;
-                    else if (misResult < 0) blueMult = pcDone + (-misResult) / 100.0;
+                    else if (misResult > 0) redMult = redMult + misResult / 100.0;
+                    else if (misResult < 0) blueMult = blueMult + (-misResult) / 100.0;
                     redMult += redMultAdmin;
                     blueMult += blueMultAdmin;
                     if (TWCSupplyMission != null) TWCSupplyMission.SupplyEndMission(redMult, blueMult);
+
+                    Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netRedCount.ToString() + " " + redMult.ToString() + " " + blueMult.ToString() + " "
+                        + redMultAdmin.ToString() + " " + blueMultAdmin.ToString() + " ");
 
                 } catch (Exception ex) { Console.WriteLine("MapState Supply Save ERROR: " + ex.ToString()); }
 
@@ -2028,6 +2077,7 @@ public class Mission : AMission, IMainMission
 
         try
         {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX2"); //Testing for potential causes of warping
             using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt"))
             {
                 res = sr.ReadLine();
@@ -2780,6 +2830,7 @@ public class Mission : AMission, IMainMission
             {
                 try
                 {
+                    if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX9"); //Testing for potential causes of warping
                     string typeSuff = "";
                     if (playerArmy == -3) typeSuff = "_ADMIN";
                     if (playerArmy == -1) typeSuff = "_RED";
@@ -3853,13 +3904,14 @@ public class Mission : AMission, IMainMission
         }
         else if (msg.StartsWith("<stock"))
         {
-            if ( admin_privilege_level(player) < 2) {
-                if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(player.Army(), player, true);
+            string m = msg.Substring(6).Trim();
+            if (admin_privilege_level(player) < 2) {
+                if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(player.Army(), player, true, false, m);
             } else {
-                if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(0, player, true);
+                if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(0, player, true, false, m);
             }
         }
-        
+
         else if (msg.StartsWith("<redstock") && admin_privilege_level(player) >= 2)
         {
             double md = redMultAdmin;
@@ -3870,7 +3922,7 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "RedStock admin multiplier set to " + md.ToString("n2") + ". Will add " + md.ToString("n2") + "X the regular mission aircraft stock increase at the end of this mission, plus any stock additions regularly due from mission success", null);
             twcLogServer(new Player[] { player }, "To change this value, just re-enter <redstock XX before the mission is over.", null);
             twcLogServer(new Player[] { player }, "To reset the value, enter <redstock 0", null);
-            redMultAdmin = md;            
+            redMultAdmin = md;
 
         }
         else if (msg.StartsWith("<bluestock") && admin_privilege_level(player) >= 2)
@@ -3886,7 +3938,7 @@ public class Mission : AMission, IMainMission
             redMultAdmin = md;
 
         }
-        else if (msg.StartsWith("<obj"))         
+        else if (msg.StartsWith("<obj"))
         {
             //only allow this for admins - mostly so that we can check these items via chat commands @ the console
             if (admin_privilege_level(player) >= 2)
@@ -4076,6 +4128,24 @@ public class Mission : AMission, IMainMission
 
 
         }
+        else if (msg.StartsWith("<warp") && admin_privilege_level(player) >= 2)
+        {
+
+            TWCComms.Communicator.Instance.WARP_CHECK = !TWCComms.Communicator.Instance.WARP_CHECK;
+            twcLogServer(new Player[] { player }, "WARP_CHECK is set to " + TWCComms.Communicator.Instance.WARP_CHECK.ToString(), new object[] { });
+
+        }
+
+        else if (msg.StartsWith("<testend") && admin_privilege_level(player) >= 2)
+        {
+
+            SaveMapState("", false); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
+
+            CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+            //(TWCStatsMission as AMission).OnBattleStoped();  This works but we don't want to do it, everything breaks afterwards!
+            twcLogServer(new Player[] { player }, "End test complete savemapstate", new object[] { });
+
+        }
         else if (msg.StartsWith("<debugon") && admin_privilege_level(player) >= 2)
         {
 
@@ -4105,6 +4175,35 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "Log is off", new object[] { });
 
         }
+        else if (msg.StartsWith("<endm") && admin_privilege_level(player) >= 2)
+        {
+            if (EndMissionSelected == false)
+            {
+                EndMissionSelected = true;
+                twcLogServer(new Player[] { player }, "ENDING MISSION!! If you want to cancel the End Mission command, use <endm again.  You have 10 seconds to cancel.", new object[] { });
+                Timeout(10, () =>
+                {
+                    if (EndMissionSelected)
+                    {
+                        EndMission(0);
+                    }
+                    else
+                    {
+                        twcLogServer(new Player[] { player }, "End Mission CANCELLED; Mission continuing . . . ", new object[] { });
+                        twcLogServer(new Player[] { player }, "If you want to end the mission, you can use the menu to select Mission End again now.", new object[] { });
+                    }
+
+                });
+
+            }
+            else
+            {
+                twcLogServer(new Player[] { player }, "End Mission CANCELLED; Mission will continue", new object[] { });
+                EndMissionSelected = false;
+
+            }
+        }
+    
         else if (msg.StartsWith("<test") && admin_privilege_level(player) >= 2)
         {
             var radar_messages = new Dictionary<string, string> {
@@ -4128,7 +4227,7 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<admin") && admin_privilege_level(player) >= 2)
         {
 
-            twcLogServer(new Player[] { player }, "Admin commands: <stock <bluestock <redstock <coop <trigger <action <debugon <debugoff <logon <logoff ", new object[] { });
+            twcLogServer(new Player[] { player }, "Admin commands: <stock <bluestock <redstock <coop <trigger <action <debugon <debugoff <logon <logoff <endmission", new object[] { });
 
         }
         else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
@@ -4298,6 +4397,7 @@ public class Mission : AMission, IMainMission
     {
         try
         {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX3"); //Testing for potential causes of warping
             FileInfo fi = new FileInfo(messageLogPath);
             StreamWriter sw;
             if (fi.Exists) { sw = new StreamWriter(messageLogPath, true, System.Text.Encoding.UTF8); }
@@ -5548,6 +5648,7 @@ public class Mission : AMission, IMainMission
         string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapObjectives_old.ini";
         string currentContent = String.Empty;
 
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX5"); //Testing for potential causes of warping
         //Save most recent copy of Campaign Map Score with suffix _old
         try
         {
@@ -5702,6 +5803,7 @@ public class Mission : AMission, IMainMission
 
         }
 
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX6"); //Testing for potential causes of warping
         try
         {
             string filepath = CLOD_PATH + FILE_PATH + @"/" + filename;
@@ -6747,6 +6849,7 @@ public class Mission : AMission, IMainMission
     {
         try
         {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX4"); //Testing for potential causes of warping
             using (StreamWriter file = new StreamWriter(RESULTS_OUT_FILE, false))
             {
                 file.WriteLine(result);

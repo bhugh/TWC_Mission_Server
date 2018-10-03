@@ -89,7 +89,7 @@ public class Mission : AMission, ISupplyMission
     {
         ReadSupply(supplySuffix);
         SaveSupplyRecursive(true);
-        Console.WriteLine("D: " + DisplayNumberOfAvailablePlanes(0, null, false));
+        Console.WriteLine(DisplayNumberOfAvailablePlanes(0, null, false).Replace(Environment.NewLine, ", "));
     }
 
 
@@ -241,7 +241,7 @@ public class Mission : AMission, ISupplyMission
         } },
         { ArmiesE.Blue, new Dictionary <string,double>(){
         {"bob:Aircraft.Bf-109E-1",5},
-        {"bob:Aircraft.Bf-109E-1B",30},
+        {"bob:Aircraft.Bf-109E-1B",3},
         {"bob:Aircraft.Bf-109E-3",6},
         {"bob:Aircraft.Bf-109E-3B",3},
         {"bob:Aircraft.Bf-109E-4",4},
@@ -367,14 +367,18 @@ public void ReadSupply(string suffix)
 
             if (AircraftSupply[armE].ContainsKey(current.Key))
             {
+                if (AircraftSupply[armE][current.Key] < 0) AircraftSupply[armE][current.Key] = 0;  //If you start out with say 0.6 in supply & lose one you can actually go to negative value; we'll say that's not physically possible.  This actually gives armies a little break on getting that first a/c back after they have lost them all
                 //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
                 AircraftSupply[armE][current.Key] += current.Value * mult;
                 //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
             }
             else AircraftSupply[armE][current.Key] = current.Value * mult;
 
-            //can't go below zero
+            //can't go below zero.  With a negative mult we could actually end up with -number even if we started out positive.
             if (AircraftSupply[armE][current.Key]<0) AircraftSupply[armE][current.Key] = 0;
+
+            //we'll say that max # of inventory of any aircraft is 250.  After that we run out of storage space or something.
+            if (AircraftSupply[armE][current.Key] > 250) AircraftSupply[armE][current.Key] = 250;
         }      
 
     }
@@ -515,7 +519,7 @@ private bool IsLimitReached(AiActor actor)
 
         DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
 
-        Console.WriteLine("valout1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+        //Console.WriteLine("valout1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
         if (cart != null && IsArmy(actor))
             if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
             {
@@ -527,7 +531,7 @@ private bool IsLimitReached(AiActor actor)
                         + ParseTypeName(cart.InternalTypeName())  + " remain in reserve", null);
                 });
 
-                Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                //Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                 if (Force) Console.WriteLine("valout2= FORCED!");
             }
     }
@@ -536,7 +540,7 @@ private bool IsLimitReached(AiActor actor)
     private void CheckActorIn(AiActor actor, Player player = null)
     {
         AiCart cart = actor as AiCart;
-        Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+        //Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
 
         if (aircraftCheckedIn.Contains(actor))
         {
@@ -555,7 +559,7 @@ private bool IsLimitReached(AiActor actor)
             if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
             {
                 AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] += 1;
-                Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());                                
+                //Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());                                
                     Timeout(3.33, () =>
                     {
                         GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned safely and added to stock; " 
@@ -764,13 +768,13 @@ private int NumberPlayerInActor(AiActor actor)
                         Timeout(3.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, "Stock of {0} depleted - This aircraft not available", new object[] { ParseTypeName(cart.InternalTypeName()) }); });
                         GamePlay.gpLogServer(new Player[] { player }, ">>>>>No stock of {0} remaining - please choose another aircraft. Check Mission Briefing, chat command <stock, Tab-4 menu for details.", new object[] { ParseTypeName(cart.InternalTypeName()) });
 
-                        Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        //Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                         if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
                             AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1; // We somehow end up -2 stock lower than we started, so trying add 1 here to correct.
 
                         TWCStatsMission.Stb_RemovePlayerFromAircraftandDestroy(actor as AiAircraft, player);
 
-                        Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        //Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                         /*
                          * We'll use ours here
                         player.PlaceLeave(placeIndex); // does not work on Dedi correctly

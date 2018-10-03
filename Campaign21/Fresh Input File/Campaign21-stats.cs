@@ -3371,7 +3371,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
         //Display summary of kill point stats for ALL players to a certain player; Display only those on a certain side if side > 0.  Display to all players if player == null
-        public string StbSr_Display_SessionStatsAll(Player player = null, int side = 0, bool display=true)
+        public string StbSr_Display_SessionStatsAll(Player player = null, int side = 0, bool display=true, bool html = true)
         {
 
             //playerName = StbSr_MassagePlayername(player.Name(), player as AiActor);
@@ -3380,11 +3380,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             double delay_interval = 0.1;
             int total = 0;
             string res = "";
+            string newline = Environment.NewLine;
+            if (html) newline = "<br>" + Environment.NewLine;
 
 
             string msg = "A DE PL TotalK Air/AA/Naval/Ground(/Penalty) (KgOnTarget) Name";
             if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg, null); });
-            else res += msg +"<br>" + Environment.NewLine;
+            else res += msg + newline;
 
 
 
@@ -3514,15 +3516,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, entry.Item3, null); });
 
-                res += entry.Item3 + "<br>" + Environment.NewLine;
+                res += entry.Item3 + newline;
             }
 
 
 
             if (total == 0) {
-                string msg2 = "<<<No Netstats to report>>>";
+                string msg2 = "***No Netstats to report***";
                 if (display) mission.Timeout(delay, () => { this.mission.Stb_Message(new Player[] { player }, msg2, null); });
-                else res += msg2 + "<br>" + Environment.NewLine;
+                else res += msg2 + newline;
             }
 
             return res;
@@ -4605,7 +4607,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         //if (immediate_save)
                         {
 
-                            ms += "<br>" + StbSr_GetCampaignSummary();
+                            ms += "<br><br>" + StbSr_GetCampaignSummary();
 
                         }
                         //Add on the NetStats summary of all player action, but only for the FINAL save of the game
@@ -6719,6 +6721,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
 
                 if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: " + Calcs.GetAircraftType(aircraft) + " to " + player.Name(), new object[] { });
+                string playername = "unknown/AI";
+                if (player != null) playername = player.Name();
+                Console.WriteLine("CHANGETARGET: " + Calcs.GetAircraftType(aircraft) + " to " + playername);
             }
         }
         catch (Exception ex)
@@ -7851,10 +7856,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         stb_StatRecorder.StbSr_Display_SessionStats(player);
     }
 
-    public string Display_SessionStatsAll(Player player, int side = 0, bool display = true)
+    public string Display_SessionStatsAll(Player player, int side = 0, bool display = true, bool html = true)
     {
         //Player player = null, int side = 0, bool display=true
-        return stb_StatRecorder.StbSr_Display_SessionStatsAll(player, side, display); //display "Netstats" summary of current session stats for all players to this player
+        return stb_StatRecorder.StbSr_Display_SessionStatsAll(player, side, display, html); //display "Netstats" summary of current session stats for all players to this player
     }
 
     //if player sent, displays message to the player, if player==null just return the string (html formatted with <br>)

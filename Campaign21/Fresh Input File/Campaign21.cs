@@ -1107,7 +1107,7 @@ public class Mission : AMission, IMainMission
             //Save map state & data
             double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
-            CheckStatsData(); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+            CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
             
         });
         Timeout(endseconds + 50, () =>
@@ -1480,7 +1480,8 @@ public class Mission : AMission, IMainMission
     double BlueNavalF = 0;
     double BlueGroundF = 0;
     double BluePlanesWrittenOffI = 0;
-    public void CheckStatsData()
+
+    public void CheckStatsData(string winner = "")
     {
         /************************************************
          * 
@@ -1542,7 +1543,7 @@ public class Mission : AMission, IMainMission
         catch (Exception ex) { System.Console.WriteLine("Main mission - read sessstats.txt - Exception: " + ex.ToString()); }
 
         //Get the current campaign state
-        Tuple<double, string> res = CalcMapMove("", false, false, null);
+        Tuple<double, string> res = CalcMapMove(winner, false, false, null);
         //sw.Write(res.Item2); //Item2 is a detail breakout of current campaign score.  Could be included in final stats for the mission, perhaps
         double newMapState = CampaignMapState + res.Item1;
         string campaign_summary = summarizeCurrentMapstate(newMapState, false, null);
@@ -1550,9 +1551,25 @@ public class Mission : AMission, IMainMission
         //Write the campaign summary text with current score etc.; this will go on the TEAM STATS page of the stats page
         try
         {
-            string outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine;
+            string outputmsg = "";
+            if (RedPlanesWrittenOffI >= 2)
+            {
+                string msg = "Red has lost " + RedPlanesWrittenOffI.ToString() + " aircraft in battle.";
+                outputmsg += msg + "<br>" + Environment.NewLine;
+            }
+            if (BluePlanesWrittenOffI >= 2)
+            {
+                string msg = "Blue has lost " + BluePlanesWrittenOffI.ToString() + " aircraft in battle.";
+                outputmsg += msg + "<br>" + Environment.NewLine;
+            }
+            if (BluePlanesWrittenOffI >= 2 || RedPlanesWrittenOffI >= 2) outputmsg += "<br>" + Environment.NewLine;
+
+            outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine;
             outputmsg += "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]) + "<br>" + Environment.NewLine;
+
+            outputmsg += "<br>" + Environment.NewLine;
             outputmsg += campaign_summary;
+            if (winner != "") outputmsg += winner.ToUpper() + "HAS TURNED THE MAP! Congratulations, " + winner + "<br>" + Environment.NewLine;
 
             File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
         }
@@ -1989,11 +2006,11 @@ public class Mission : AMission, IMainMission
                     if (TWCStatsMission != null)
                     {
                         //Counting lines in <netstats summary from -stats.cs to get an approximation of how many active pilots there were in-game
-                        string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false);
-                        string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false);
-                        netRed = netRed.Replace(@"<<<No Netstats to report>>><br>", "");
+                        string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, true); //last true = NEED html version bec we're counting <br>s
+                        string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, true);
+                        netRed = netRed.Replace(@"***No Netstats to report***<br>", "");
                         //netRed.Replace()
-                        netBlue = netBlue.Replace(@"<<<No Netstats to report>>><br>", "");
+                        netBlue = netBlue.Replace(@"***No Netstats to report***<br>", "");
                         //netBlue = netBlue.Replace(@"No Nets", "");
                         string target = "<br>";//Q&D way to count how many pilots active during the mission
                         Console.WriteLine("NR " + netRed);
@@ -2685,8 +2702,8 @@ public class Mission : AMission, IMainMission
                                             //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
                                             //are etc
                                             if ((playerArmy == -1 || playerArmy == -2) && (
-                                                           (altAGL_ft < 300 && altAGL_ft - 100 < random.Next(400)) || //Less then 300 ft AGL they start to phase out from radar
-                                                           (altAGL_ft < 200) || //And, if they are less than 200 feet AGL, they are gone from radar                                                     
+                                                           (altAGL_ft < 400 && altAGL_ft - 225 < random.Next(175)) || //Less then 300 ft AGL they start to phase out from radar
+                                                           (altAGL_ft < 250) || //And, if they are less than 200 feet AGL, they are gone from radar                                                     
                                                            ((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(3) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
                                                                                                                                  //However if the player heavy bombers group up they are MUCH more likely to show up on radar.  But they will still be harder than usual to track because each individual bomber will phase in/out quite often
 
@@ -2931,19 +2948,27 @@ public class Mission : AMission, IMainMission
                     double newMapState = CampaignMapState + res.Item1;
                     sw.Write(summarizeCurrentMapstate(newMapState, false, null));
 
-                    sw.WriteLine();
-                    if (msg.Length > 0) sw.WriteLine("PLAYER SUMMARY");
-                    sw.WriteLine(msg);
 
-                    sw.WriteLine();
+                    if (msg.Length > 0)
+                    {
+                        sw.WriteLine();
+                        sw.WriteLine("PLAYER SUMMARY");
+                        sw.WriteLine(msg);
+                    }
+
+
                     msg = ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
-                    if (msg.Length > 0) sw.WriteLine("AIRFIELD CONDITION SUMMARY");
-                    sw.WriteLine(msg);
+                    if (msg.Length > 0)
+                    {
+                        sw.WriteLine();
+                        sw.WriteLine("AIRFIELD CONDITION SUMMARY");
+                        sw.WriteLine(msg);
+                    }
 
                     sw.WriteLine();                    
-                    string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false);
-                    string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false);
-                    if (msg.Length > 0) sw.WriteLine("PLAYER ACTIVITY SUMMARY");
+                    string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
+                    string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
+                    sw.WriteLine("PLAYER ACTIVITY SUMMARY");
                     sw.WriteLine(netBlue);
                     sw.WriteLine(netRed);
 
@@ -3554,7 +3579,7 @@ public class Mission : AMission, IMainMission
                  */
                 setMainMenu(player);
                 //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
-                TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
+                TWCStatsMission.Display_SessionStatsAll(player, 0, true, false); //player, army (0=all), display or not
 
             }
             else if (menuItemIndex == 4)  //MORE (next) menu

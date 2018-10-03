@@ -74,7 +74,7 @@ public interface IStatsMission
     int ot_GetCivilianBombings(string name);
     void Display_AceAndRank_ByName(Player player); // <career
     void Display_SessionStats(Player player); // <ses
-    string Display_SessionStatsAll(Player player, int side = 0, bool display = false); // <net
+    string Display_SessionStatsAll(Player player, int side = 0, bool display = false, bool html = true); // <net
     //if player sent, displays message to the player, if player==null just return the string (html formatted with <br>)
     string Display_SessionStatsTeam(Player player); // <obj
     bool Stb_isAiControlledPlane(AiAircraft aircraft);

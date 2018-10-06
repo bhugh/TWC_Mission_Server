@@ -818,7 +818,7 @@ private int NumberPlayerInActor(AiActor actor)
 
         if (actor != null)
         {
-            //Console.WriteLine("PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+            Console.WriteLine("PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
             DisplayNumberOfAvailablePlanes(actor);
             AiAircraft aircraft = actor as AiAircraft;
 
@@ -828,6 +828,7 @@ private int NumberPlayerInActor(AiActor actor)
             //Later we could force partial damage also with forceDamage between 0 & 1.
             if (forceDamage >= 1 && aircraftCheckedIn.Contains(actor) && !aircraftCheckedInButLaterKilled.Contains(actor))
             {
+                Console.WriteLine("SupOPL: Forcing check-out");
                 CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
                 aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only
             }
@@ -836,8 +837,10 @@ private int NumberPlayerInActor(AiActor actor)
             if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
             //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
             //We could add in some scheme for damage later
-            if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTeritory(actor) /*&& !IsActorDamaged(actor)*/)
+            if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTeritory(actor)
+                && forceDamage<1 /*&& !IsActorDamaged(actor)*/)
             {
+                Console.WriteLine("SupOPL: Check-in");
                 CheckActorIn(actor, player);
             }
             else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.

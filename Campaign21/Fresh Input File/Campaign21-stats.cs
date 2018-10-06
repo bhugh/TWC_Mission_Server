@@ -122,6 +122,7 @@
 //$reference System.Xaml.dll
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -4090,7 +4091,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                             string alive_dead_pilots_line = "<p><i><b>Click for " + this.mission.stb_ServerName_Public + ":</b> <a href=\"" + stbSr_LogStatsUploadFilenameLow + "\">Current ALIVE pilots stats list</a> - <a href=\"" + stbSr_LogStatsUploadFilenameDeadPilotsLow + "\">DEAD pilots stats list (archive)</a></i></p>";
                             if (this.mission.stb_ResetPlayerStatsWhenKilled) sw.WriteLine(alive_dead_pilots_line);
 
-                            string ms = StbSr_Display_SessionStatsTeam(null) + "<br>" + StbSr_GetCampaignSummary();
+                            string ms = StbSr_Display_SessionStatsTeam(null) + "<br><br>" + StbSr_GetCampaignSummary();
                             ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
                             sw.WriteLine("<table style=\"width:50%; margin-right:0px; margin-left:auto; float:right;\" border =\"1\" cellpadding=\"0\" cellspacing=\"1\">");
                             sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "TEAM Totals for Current Session" + "</h3></td></tr>");
@@ -5537,14 +5538,26 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
             f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10");
-            if (weapons.Length == 0) weapons = "1"; //default
+            if (type.Contains("HurricaneMkI_FB"))
+            {
+                if (weapons.Length == 0) weapons = "1 2"; //default
+                if (fighterbomber == "f") weapons = "1 0";
+                f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 3 0 " + delay_sec);
+            }
+            else
+            {
+                if (weapons.Length == 0) weapons = "1"; //default
+                if (fighterbomber == "b") weapons = "1 2";
+            }
+            
             if (fuel == 0) fuel = 100;
 
         }
         else if (type==("BlenheimMkIV")) 
         {
             f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 10 12 9 10 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 10 9 11 10 11 2 10");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
             f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
             if (weapons.Length == 0)
@@ -5552,38 +5565,75 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 weapons = "1 1 5 0 2"; //default (updated for 4.53
                 if (fighterbomber=="f") weapons = "1 1 0 0 0"; 
             }
-            if (fuel == 0) fuel = 30;
+            if (fuel == 0) fuel = 35;
         }
-        else if (type == ("BlenheimMkIVF")) 
+        else if (type == ("BlenheimMkIV_Late"))
         {
-            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MMainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");            
-            f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);             
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
             if (weapons.Length == 0)
             {
-                    weapons = "1 1 1 1 1 1"; //default
+                weapons = "1 1 2 1 2"; //default
+                if (fighterbomber == "f") weapons = "1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 35;
+        }
+        else if (type == ("BlenheimMkIVF") || type == "BlenheimMkIVNF" ) 
+        {
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                    weapons = "1 1 1 0 0 2"; //default
                     if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
             }
 
             if (fuel == 0) fuel = 30;
         }
-        else if (type == ("BlenheimMkIVNF")) 
+        else if (type == ("BlenheimMkIVF_Late") || type == "BlenheimMkIVNF_Late" )  //still needs update 4.5 
         {
-            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MMainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
-            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
             if (weapons.Length == 0)
             {
                 weapons = "1 1 1 1 1 1"; //default
                 if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 30;
+        }
+        else if (type == ("BeaufighterMkIF") || type == "BeaufighterMkINF")  //could add residuals
+        {
+
+            f.add(s, "Belt", "_Gun01 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun03 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun09 Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun08 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun00 Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");            
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1"; //default                
             }
             if (fuel == 0) fuel = 30;
         }
@@ -6283,12 +6333,12 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             if (aircraft == null)
                 return false;
-
-            //check if player is in any of the "places"
-            //and that this player is the FIRST actual player we encounter.  If so, return true
+            int count = 0;
             for (int i = 0; i < aircraft.Places(); i++)
             {
-                if (aircraft.Player(i) == null) continue;
+                if (aircraft.Player(i) == null) {
+                    count++;
+                    continue; }
                 if (aircraft.Player(i) != player)
                     return false;
             }
@@ -6296,7 +6346,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //When player is fully leaving plane this often looks like -1,-1 onPlaceLeave.  But also often 2,-1, 0,-1, etc.  Only commonality seems to be   Other possibilities if leaving only one position or switching
             //within the aircraft etc are 0,1 0,-1 -1,1 0,1 0,2 etc.  But -1,-1 seems reliable as far as this person as left the plane entirely.
             if (player.PlacePrimary() != null && player.PlaceSecondary() != null && ( player.PlacePrimary() == -1 || player.PlaceSecondary() == -1)) return true;
-            else return false;
+            if (aircraft.Places() == count) return true; //Case of NO live players left in plane
+            return false;
 
 
         }
@@ -7114,9 +7165,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             SetAirfieldTargets();
 
 
-        } 
+        }
 
-    }
+        
+
+    }    
 
     void Mission_EventChat(Player from, string msg)
     {
@@ -7431,6 +7484,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
              *      He also says:
              *      
              *      * Serial Number ......................................... string SerialNumber = aircraft.HullNumber();
+             *         -->> Actually this is the "Tail Number" as identified in the CloD loadout screen.  One letter.
              *      * Paint Scheme (ie "Skin") file ......................... Not avalbale via script at runtime
              *      * Noseart left/right (file) ................................ Not avalbale via script at runtime
              *      * Whether or not markings are shown ............ Not avalbale via script at runtime
@@ -7496,16 +7550,17 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             acType = Calcs.GetAircraftType(aircraft);
 
             //So we can't figure out how to access current serial #, instead make it from their username.  It can be overridden via n: in chat command
-            /*
+            
             serialNumber = player.Name();
             if (serialNumber.Contains("_"))
             {
                 string[] serials = serialNumber.Split('_');
                 if (serials.Length > 1 && serials[0].Length < 8) serialNumber = serials[1];
             }
-            */
+            
             //2018-09-24 - the new way, using aircraft.HullNumber(); - we'll see if it works
-            serialNumber = aircraft.HullNumber();
+            //serialNumber = aircraft.HullNumber();
+            //hullNumber = aircraft.HullNumber();
             //serialNumber = maddox.game.page.OptionsPlane.textSerialNumber().Text();
 
             //parse the chat message
@@ -7593,6 +7648,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             //put the player in the new a/c
             Timeout(3.05, () =>
+            //Timeout(0.15, () =>
             {
                 AiActor newActor = GamePlay.gpActorByName(newACActorName);
 
@@ -7616,13 +7672,18 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                                  //Also, what about moving any OTHER people in other places in the A/C to the new A/C
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                 player.PlaceLeave(0);
-                Timeout(1.4, () =>
+                Timeout(0.4, () =>
                 {
                     stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                     player.PlaceEnter(newActor, 0);
+
+                
                     stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name());
+
+                
                 }); //can't wait too long or some of our other .cs files will destroy the plane to prevent ai takeover. 0.5 sec to destroy in ..MAIN.cs, so must be less than that
                   //Changing this bec in Clod 4.5 the plane warms up real fast if AI are in control.  So leaving it for a second longer gives a more warmed up plane, in theory.
+                  
             });
 
         }
@@ -7633,6 +7694,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             gpLogServerAndLog(new Player[] { player }, "Put: Putting you into " + newACActorName, new object[] { });
             AiActor newActor = GamePlay.gpActorByName(newACActorName);
             player.PlaceEnter(newActor, 0);
+        }
+        else if (msg.StartsWith("<land") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+
+            OnAircraftLanded(player.Place() as AiActor, player, player.Place() as AiAircraft, 0);
         }
         else if (msg.StartsWith("<admin") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
         {
@@ -9066,7 +9132,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         
                 bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
                 
-                bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name());
+                bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
 
                 
                 if (realPosLeave && (actor as AiAircraft) != null)
@@ -9086,8 +9152,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
                 */
 
-                //if (isPlayerAlreadyDead) Stb_Chat("Checking place leave - player already dead . . . ", player);
-                //if (realPosLeave) Stb_Chat("Checking place leave - realposleave . . . ", player);
+                if (isPlayerAlreadyDead) Console.WriteLine("Checking place leave - player already dead . . . ", player);
+                if (realPosLeave) Console.WriteLine("Checking place leave - realposleave . . . ", player);
 
                 if (realPosLeave && !isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5) // && player.PlacePrimary() != -1)  // PlacePrimary==-1 means parachuting.  If they are doing that we just let them go
                 {
@@ -9320,13 +9386,28 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     }
                     //This is an idea about how to load aircraft loadout, however it isnt working 2018/09 flug
                     //AiBirthplace birthplace = somebirthplacereference;
-                    //Console.WriteLine("Checking Loadout/weaponsmask . . . ");
-                    //AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
-                    //Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name());
-                    //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.TypedName());
+                    Console.WriteLine("Checking Loadout/weaponsmask . . . ");
+                    AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
+                         + " " + aircraft.HullNumber() 
+                         + " " + aircraft.CallSignNumber());
+                    System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.InternalTypeName());
                     //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
-
+                    Console.WriteLine("Got loadout/weaponsmask");
                     //Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
+                    if (weaponsmask != null) Console.WriteLine("not null");
+                    else Console.WriteLine("null");
+                    if (weaponsmask.Count>2) Console.WriteLine("2");
+                    else Console.WriteLine("3");
+                    if (weaponsmask.Length > 2) Console.WriteLine("2");
+                    else Console.WriteLine("3");
+                    Console.WriteLine("weaponsmask  info:");
+                    Console.WriteLine("   Count:    {0}", weaponsmask.Count);
+                    Console.WriteLine("   Length:   {0}", weaponsmask.Length);
+                    Console.WriteLine("   Values:");
+                    Calcs.PrintValues(weaponsmask, 8);
+
+
 
 
                 }
@@ -9529,23 +9610,27 @@ public override void OnAircraftCutLimb(int missionNumber, string shortName, AiAi
 //prior to the write-off.  Not sure how to fix this . . . 
 new Dictionary<string, int> stb_ACWrittenOffAndTime = new Dictionary<string, int>();
 
-public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double injuries = 0 , double distance = 0)
+public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double injuries = 0, double distance = 0)
 {
     int oldWrittenOffTime = 0;
     int currTime = Calcs.TimeSince2016_sec();
     if (!stb_ACWrittenOffAndTime.TryGetValue(player.Name(), out oldWrittenOffTime)) oldWrittenOffTime = 0;
-    if (currTime - oldWrittenOffTime > 30 ) {  //prevents dup write-offs for same plane    
+    if (currTime - oldWrittenOffTime > 30)
+    {  //prevents dup write-offs for same plane    
         stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, actor));
         stb_SaveIPlayerStat.StbSis_AddSessStat(player, 845, 1);//Also save this for current session stats
 
         string reason = ". Distance to nearest friendly airport: " + distance.ToString("N0") + " meters.";
         if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
-        Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });            
-    }
+        Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });
         Console.WriteLine("Forcing exit 4");
         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+        Console.WriteLine("Forcing exit 4a");
+    }
 
+    Console.WriteLine("Forcing exit 4b");
     stb_ACWrittenOffAndTime[player.Name()] = currTime;
+    Console.WriteLine("Forcing exit 4c");
 }
 
 
@@ -9957,22 +10042,25 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     {
         #region stb
         base.OnActorDead(missionNumber, shortName, actor, damages);
-        try
+        //try
         {
             //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
+            Console.WriteLine("OnActorDead: 1");
             if (stb_deadActors.Contains(actor.Name())) {
                 //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
                 return; //This is an actor we've already 'killed' therefore we won't double count it.
                         //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
             } else {
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 2");
+                //if (stb_Debug) 
+                Console.WriteLine("OnActorDead: 2");
                 //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
                 //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
                 stb_deadActors.Add(actor.Name());
                 //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
             }
 
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 3");
+            //if (stb_Debug) 
+            Console.WriteLine("OnActorDead: 3");
             //stb_KilledActors.Add(actor, damages); // sav
             AiAircraft aircraft1 = null;
             if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
@@ -9982,7 +10070,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 if (place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
             }
 
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 4");
+            //if (stb_Debug) 
+            Console.WriteLine("OnActorDead: 4");
             if (aircraft1 != null)
             {
                 //AiAircraft aircraft = actor as AiAircraft;
@@ -10001,7 +10090,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }
 
 
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 5");
+            //if (stb_Debug) 
+            Console.WriteLine("OnActorDead: 5");
             string msg = "killed by ";
             bool selfKill=true; 
             List<string> deadPlayerNames = new List <string>();
@@ -10054,7 +10144,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 //So, this reports 1 kill for everyone who had any damage at all on the kill. "Any Kill Participation" stat.
                 // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
 
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 8");
+                //if (stb_Debug) 
+                Console.WriteLine("OnActorDead: 8");
                 foreach (DamagerScore ds in damages)
                 {
                     bool willReportDead = false;
@@ -10108,13 +10199,14 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         stb_StatRecorder.StbSr_EnqueueTask(sst1);
                         */
 
-                        bool RPCL = recentlyParachutedOrCrashedOrLanded(playerName);
 
                             int killType = 1;
                         if (selfKill) killType = 2;
 
                         double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true);
 
+                        bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
+                        
                         //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
                         //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
                         if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
@@ -10135,7 +10227,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                             if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
                             stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
 
-                        }
+                        } else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
+
 
                         msg = "";
                         if (selfKill)
@@ -10191,7 +10284,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }
             else
             {
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 10");
+                //if (stb_Debug) 
+                Console.WriteLine("OnActorDead: 10");
                 AiGroundActor aiGroundActor = actor as AiGroundActor;
                 if (aiGroundActor != null)
                 {
@@ -10247,7 +10341,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 else
                 {
 
-                    //if (stb_Debug) Console.WriteLine("OnActorDead: 12");
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnActorDead: 12");
                     //TODO: we need to do all the self-kill checking here as well; sometimes you can PK yourself . . . 
                     AiPerson person = actor as AiPerson;
                     Player player2 = actor as Player;
@@ -10361,7 +10456,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }                
 
         }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
         #endregion
         //add your code here
     }
@@ -10491,12 +10586,19 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             string PlayerName = "";
             string PlayerNameM = "";
 
+            Console.WriteLine("OACL starting: " + PlayerNameM);
+
             if (player != null && player.Name() != null)
             {
                 PlayerName = player.Name();
                 PlayerNameM = stb_StatRecorder.StbSr_MassagePlayername(PlayerName, actor); //Name massaged with (bomber) etc.
                 if (recentlyParachutedOrCrashedOrLanded(PlayerName)) return;
             }
+
+            /*Point3d pos;
+            if (actor != null) pos = actor.Pos();
+            else pos = player.Pos(); */
+            Console.WriteLine("OACL not recentlyPCL: " + PlayerNameM);
 
             if (player != null) // human pilot
             {                
@@ -10713,51 +10815,76 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         if (player != null) // human pilot
         {
 
-            //prevent double-counting/messages for a player who landed etc.
-            if (player != null & player.Name() != null && player.Name().Length > 0 && recentlyParachutedOrCrashedOrLanded(player.Name())) return;
+            Console.WriteLine("On aircraft landed (stats).");
+
+            if (player == null || player.Name() == null) return; //no point in doing anything at all here in these cases
+            string PlayerName = player.Name();
+            string PlayerNameM = stb_StatRecorder.StbSr_MassagePlayername(PlayerName, actor); //Name massaged with (bomber) etc.
 
             if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())    // landed in enemy territory, presumably @ enemy airport or whatever
             {
+                Console.WriteLine("On aircraft landed (stats), enemy land.");
                 //Here we are forcing aircraft loss in case of landing in enemy territory.
                 //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
                 if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
-                gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { player.Name() });
+                Console.WriteLine("On aircraft landed (stats), enemy land2.");
+                //gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
                 double Luck = stb_random.NextDouble();
                 double EscapeChance = stb_POW_EscapeChanceRed;
                 if (actor.Army() == 2) EscapeChance = stb_POW_EscapeChanceBlue;
 
                 if (Luck < EscapeChance)
                 {   // player escaped capture
-                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_ESCAPED_MSG), new object[] { player.Name() });
+                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_ESCAPED_MSG), new object[] { PlayerNameM });
+                    Console.WriteLine("On aircraft landed (stats), enemy land3.");
                 }
                 else
                 {   // player captured
-                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { player.Name() });
-                    if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false);
+                    Console.WriteLine("On aircraft landed (stats), enemy land4.");
+                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
+                    if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false);
                     else Stb_killActor(actor, 0);
+                    Console.WriteLine("On aircraft landed (stats), enemy land4a.");
+                    //prevent double-counting/messages for a player who landed etc.
+                    if (recentlyParachutedOrCrashedOrLanded(PlayerName))
+                    {
+                        Console.WriteLine("HI!");
+                        return;
+                    }
+                    Console.WriteLine("On aircraft landed (stats), enemy land4b.");
                 }
 
             }
             else   // landed in friendly territory
             {
-                if (player.Name() != null && !stb_ContinueMissionRecorder.StbCmr_IsForcedPlaceMove(player.Name()) ) gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_OK_MSG), new object[] { player.Name() });
+                Console.WriteLine("On aircraft landed (stats), friendly land");
+                if (player.Name() != null && !stb_ContinueMissionRecorder.StbCmr_IsForcedPlaceMove(player.Name()) ) gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_OK_MSG), new object[] { PlayerNameM });
             }
 
             double dist = Stb_distanceToNearestAirport(actor);
             if (injuries >= 0.5 || dist > 2000)
             {
+
+                Console.WriteLine("On aircraft landed (stats), injuries or far from friendly a/p");
+
                 stb_recordAircraftWrittenOff(player, actor, injuries, dist);
 
                 //Here we are forcing aircraft loss in case of moderate to severe injuires OR landing away from airport
                 //We'll usually pick this up elsewhere, but in this case we KNOW this airport is written off, so we're forcing it
                 //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                Console.WriteLine("On aircraft landed (stats), injuries or far from friendly a/p2");
+                recentlyParachutedOrCrashedOrLanded(PlayerName);
+                Console.WriteLine("On aircraft landed (stats), injuries or far from friendly a/p3");
             } else
             {
                 //They have returned the aircraft successfully!  If we were keeping track of aircraft stock etc we would return this aircraft to stock at this point.
             }
+
+            Console.WriteLine("On aircraft landed (stats), exit 1");
         }
+        Console.WriteLine("On aircraft landed (stats), exit 2");
 
     }
 
@@ -10880,19 +11007,36 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     }
 
     //Return TRUE if the player has recently been through the Parachute and/or crash-landed routine
-    //FALSE if they haven't died recently.
+    //FALSE if they haven't died recently.  Also save the fact that they have recently done this, along with the time.
     public bool recentlyParachutedOrCrashedOrLanded(string PlayerName)
+    {
+        //If recently parachuted or crashlanded and decided on an outcome for it, don't do it all again for another 60 seconds . . . 
+        Console.WriteLine("recentlyParachCrLanded: 1 " + PlayerName);
+        int currTime = Calcs.TimeSince2016_sec();
+        int oldParachuteTime = 0;
+        if (stb_PlayerParachute_Crashed_LandedTime.ContainsKey(PlayerName)) oldParachuteTime = stb_PlayerParachute_Crashed_LandedTime[PlayerName];
+        //if (!stb_PlayerParachute_Crashed_LandedTime.TryGetValue(PlayerName, out oldParachuteTime)) oldParachuteTime = 0;
+        if (currTime - oldParachuteTime <= 60) {
+            Console.WriteLine("recentlyParachCrLanded: YES for " + PlayerName);
+            return true; }
+        Console.WriteLine("recentlyParachCrLanded: 2 " + PlayerName);
+        stb_PlayerParachute_Crashed_LandedTime[PlayerName] = currTime; //If we are going through the parachute thing now, save the time so we are stopped from doing it again for 60 seconds (to prevent multiple parachute landing incidents from happening in quick succession, with different outcomes, which has been happening for some unknown reason 
+        return false;
+    }
+
+    //Return TRUE if the player has recently been through the Parachute and/or crash-landed routine
+    //FALSE if they haven't died recently.  But DON'T save the fact for later.
+    public bool recentlyParachutedOrCrashedOrLanded_RO(string PlayerName)
     {
         //If recently parachuted or crashlanded and decided on an outcome for it, don't do it all again for another 60 seconds . . . 
         int currTime = Calcs.TimeSince2016_sec();
         int oldParachuteTime = 0;
         if (!stb_PlayerParachute_Crashed_LandedTime.TryGetValue(PlayerName, out oldParachuteTime)) oldParachuteTime = 0;
-        if (currTime - oldParachuteTime <= 60) return true;
-        stb_PlayerParachute_Crashed_LandedTime[PlayerName] = currTime; //If we are going through the parachute thing now, save the time so we are stopped from doing it again for 60 seconds (to prevent multiple parachute landing incidents from happening in quick succession, with different outcomes, which has been happening for some unknown reason 
+        if (currTime - oldParachuteTime <= 60) return true;    
         return false;
     }
 
-    public void OnPersonParachuteLanded(AiActor actor, Player player, maddox.game.world.AiPerson person = null)
+public void OnPersonParachuteLanded(AiActor actor, Player player, maddox.game.world.AiPerson person = null)
     {
         
         if (player == null || player.Name() == null) return; //no point in doing anything at all here in these cases
@@ -11763,6 +11907,22 @@ public static class Calcs
 
 
         
+    }
+
+    public static void PrintValues(IEnumerable myList, int myWidth)
+    {
+        int i = myWidth;
+        foreach (Object obj in myList)
+        {
+            if (i <= 0)
+            {
+                i = myWidth;
+                Console.WriteLine();
+            }
+            i--;
+            Console.Write("{0,8}", obj);
+        }
+        Console.WriteLine();
     }
 
 

@@ -1567,9 +1567,9 @@ public class Mission : AMission, IMainMission
             outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine;
             outputmsg += "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]) + "<br>" + Environment.NewLine;
 
-            outputmsg += "<br>" + Environment.NewLine;
-            outputmsg += campaign_summary;
-            if (winner != "") outputmsg += winner.ToUpper() + "HAS TURNED THE MAP! Congratulations, " + winner + "<br>" + Environment.NewLine;
+            outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+            outputmsg += campaign_summary; //note: this include .NewLine but not <br>
+            if (winner != "") outputmsg += "<br>" + winner.ToUpper() + " HAS TURNED THE MAP! Congratulations, " + winner + "<br>" + Environment.NewLine;
 
             File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
         }
@@ -1725,14 +1725,14 @@ public class Mission : AMission, IMainMission
             msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove += RedTotalF / 1000;
+            MapMove += RedTotalF / 2000;
         }
         if (BlueTotalF > 3)
         {
             msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove -= BlueTotalF / 1000;
+            MapMove -= BlueTotalF / 2000;
         }
 
         /*
@@ -2031,8 +2031,10 @@ public class Mission : AMission, IMainMission
                     Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netBlueCount.ToString() + " " + redMult.ToString() + " " + blueMult.ToString() + " "
                         + redMultAdmin.ToString() + " " + blueMultAdmin.ToString() + " ");
 
-                    if (winner == "Red") { redMult = 2; blueMult = 0.5; }
-                    else if (winner == "Blue") { blueMult = 2; redMult = 0.5; }
+                    //if one side turns the map they get a large increase in aircraft supply while the other side gets little or nothing
+                    //if they don't turn the map there is still a slight tweak give the side with more overall victories a few more aircraft 
+                    if (winner == "Red") { redMult = 3; blueMult = 0.01; }
+                    else if (winner == "Blue") { blueMult = 3; redMult = 0.01; }
                     else if (misResult > 0) redMult +=  misResult / 100.0;
                     else if (misResult < 0) blueMult +=  (-misResult) / 100.0;
                     redMult += redMultAdmin;
@@ -2423,11 +2425,12 @@ public class Mission : AMission, IMainMission
             if (playertype.Contains("Fighter") || playertype.Contains("fighter")) playertype = "F";
             else if (playertype.Contains("Bomber") || playertype.Contains("bomber")) playertype = "B";
             else playertype = "U";
+            string posmessageCSP;
 
-            posmessage = "Radar intercepts are based on your current speed/position: " +
+            posmessageCSP = "Radar intercepts are based on your current speed/position: " +
                         player_vel_mph.ToString("F0") + "mph " +
                         player_sector.ToString();
-            gpLogServerAndLog(new Player[] { player }, posmessage, null);
+            gpLogServerAndLog(new Player[] { player }, posmessageCSP, null);
 
 
         }
@@ -2450,9 +2453,10 @@ public class Mission : AMission, IMainMission
             radar_messages = message_data.Item2;
             if (time_elapsed_ms < refreshtime_ms || message_data.Item1 == -1)
             {
-                if (message_data.Item1 == -1) posmessage = "New radar returns are in process.  Your previous radar return:";
-                else posmessage = time_until_new_s.ToString("F0") + "s until " + playername + " can receive a new radar return.  Your previous radar return:";
-                gpLogServerAndLog(new Player[] { player }, posmessage, null);
+                string posmessageIP;
+                if (message_data.Item1 == -1) posmessageIP = "New radar returns are in process.  Your previous radar return:";
+                else posmessageIP = time_until_new_s.ToString("F0") + "s until " + playername + " can receive a new radar return.  Your previous radar return:";
+                gpLogServerAndLog(new Player[] { player }, posmessageIP, null);
 
                 wait_s = 0;
                 storedtime_ms = message_data.Item1;
@@ -2768,11 +2772,13 @@ public class Mission : AMission, IMainMission
                                                      (dis_mi >= 70 && altAGL_ft < 4500) || //chain home only worked above ~4500 ft & Chain Home Low had effective distance only 35 miles
                                                                                            //however, to implement this we really need the distance of the target from the CHL stations, not the current aircraft
                                                                                            //We'll approximate it by eliminating low contacts > 70 miles away from current a/c 
-                                                     (dis_mi >= 10 && altAGL_ft < 500 && altAGL_ft < random.Next(500)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
+                                                     (dis_mi >= 10 && altAGL_ft < 650 && altAGL_ft < random.Next(500)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
                                                                                                                           //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
                                                                                                                           //phasing out targets below 250 feet.
-                                                     (dis_mi < 10 && altAGL_ft < 250 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
-                                                     (altAGL_ft < 175) || //And, if they are less than 175 feet AGL, they are gone from radar
+
+                                                     (altAGL_ft < 400 && altAGL_ft - 225 < random.Next(175)) || //Less then 300 ft AGL they start to phase out from radar     
+                                                     //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
+                                                     (altAGL_ft < 250) || //And, if they are less than 175 feet AGL, they are gone from radar
                                                      ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi > 11 && poscount <= 2 && random.Next(4) <= 2) || // Breather bombers have a higher chance of being overlooked/dropping out, especially when further away.  3/4 times it doesn't show up on radar.
                                                      ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi <= 11 && poscount <= 2 && random.Next(5) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out when close (this is close enough it should be visual range, so we're not going to help them via radar)
                                                                                                                                                                  //((!isAI && type == "B" && army != playerArmy) && random.Next(5) > 0) || // Enemy bombers don't show up on your radar screen if less than 7 miles away as a rule - just once in a while.  You'll have to spot them visually instead at this distance!
@@ -4163,6 +4169,12 @@ public class Mission : AMission, IMainMission
 
 
         }
+        else if (msg.StartsWith("<nump") && admin_privilege_level(player) >= 2)
+        {
+            int nump = Calcs.gpNumberOfPlayers(GamePlay);            
+            twcLogServer(new Player[] { player }, "stopAI: " + nump.ToString() + " players currently online", new object[] { });
+
+        }
         else if (msg.StartsWith("<warp") && admin_privilege_level(player) >= 2)
         {
 
@@ -5351,8 +5363,12 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 77317, 193860, 50, false, 100, ""); //This is in Portsmouth    .  
             addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", "Port", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, ""); //This is in Portsmouth.fixed 9/19 fatal
             addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 100, ""); //Guildford Target added 9/20
-
-
+            addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 2,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 100, "");//Sheerness Diesel Fuel Storage
+            addTrigger(MO_ObjectiveType.Building,"Queensborough Navigational jamming facilities", "Quee",1,2,  "BTarget44", "TGroundDestroyed", 74, 204638, 265195, 50, false, 100,""); // "Queensborough Navigational jamming facilities"
+			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,2,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 50, false, 100,"");  // "Queensborough Radio communications center"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough radio tramsmission booster" ,     "Quee",1,2,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 50,  false, 100,""); //  "Queensborough radio tramsmission booster"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,2,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 50, false, 100,""); //  "Queensborough Electrical Research Facility"
+			
             /*
               BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "
               BTarget7S TGroundDestroyed 80 155050 273258 50      "Hydrogen Storage @ London south docks", 
@@ -5362,6 +5378,12 @@ public class Mission : AMission, IMainMission
               BTarget11S TGroundDestroyed 80 158192 274864 50     "High Octane aircraft fuel @ Beckton
               BTarget12S TGroundDestroyed 63 157899 275256 50     "87 octane fuelstorage @ Beckton", 1
               BTarget13S TGroundDestroyed 66 157092 275312 50     "Peroxide Storage @ Beckton", 1, 2, 
+			  
+			    BTarget43 TGroundDestroyed 63 204654 268378 50    "Sheerness Diesel Fuel Storage"
+                BTarget44 TGroundDestroyed 74 204638 265195 50    "Queensborough Navigational jamming facilities"
+                Btarget45 TGroundDestroyed 74 204722 265252 50     "Queensborough Radio communications center"
+                BTarget46 TGroundDestroyed 74 204570 265131 50     "Queensborough radio tramsmission booster"
+                BTarget47 TGroundDestroyed 74 204716 265140 50     "Queensborough Electrical Research Facility"
             */
 
 
@@ -5483,6 +5505,7 @@ public class Mission : AMission, IMainMission
                     { "Swin", "/Flak areas/Swindonflak.mis" },
                     { "Tunb", "/Flak areas/Tunbridgeflak.mis" },
                     { "Watt", "/Flak areas/Wattenflak.mis" },
+					{ "Quee", "/Flak areas/Queeflak.mis" },//Queensborough Flak
 					// Radar flak added for radar instalations 
 					{ "AmbR", "/Flak areas/AmbRflak.mis" },//Radar AMBETEUSE
                     { "LeHR", "/Flak areas/LeHavreflak.mis" },//Le Havre Freya Radar
@@ -5508,6 +5531,7 @@ public class Mission : AMission, IMainMission
 					//{ "DunR", "/Flak areas/DunRflak.mis" },//Dunkirk Freya Radar //dup so removing for now
 					{ "PooR", "/Flak areas/PooRflak.mis" },//Poole English Radar
 					{ "LitR", "/Flak areas/LitRflak.mis" },// Littlehampton Radar
+					
 				/*	
 				 	
 				Oye Plage Freya Radar",    	
@@ -6198,15 +6222,15 @@ public class Mission : AMission, IMainMission
     {
 
         int nump = Calcs.gpNumberOfPlayers(GamePlay);
-        //Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
+        Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
         if (nump > 50 || (nump > 40 && random.NextDouble() > 0.5))
         {
-            //Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
+            Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
             return true;
         }
         else
         {
-            //Console.WriteLine("stopAI: NOT stopping AI Trigger/too few players online");
+            Console.WriteLine("stopAI: NOT stopping AI Trigger/too few players online");
             return false;
         }
     }
@@ -6250,7 +6274,8 @@ public class Mission : AMission, IMainMission
      * the action wont activate if you call it.
      * 
      *  [Action]
-     *    action1 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+     *    action1 ASpawnGroup 1 BoB_LW_KuFlGr_706.03    <--- WILL RUN
+     *    action2 ASpawnGroup 0 BoB_LW_KuFlGr_706.04    <--- WILL ***NOT*** RUN!!!!
      * 
      * In OnTrigger, we can trigger any action if we know its name via action.Do() - it doesn't need to be the associated action in the .mis file
      * 
@@ -6303,8 +6328,11 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
+
+            
         //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
@@ -6316,6 +6344,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
@@ -6328,6 +6357,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
@@ -6338,6 +6368,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
           //  Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
@@ -6349,6 +6380,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
@@ -6360,6 +6392,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lypne in 10 minutes.", null));
          //   Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympe at 6000m!!!.", null));
@@ -6371,6 +6404,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "BR.20Ms requesting escort.  Meet at Boulogne @ 6km in 10 minutes.", null));
             Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 12000 ft. heading west! with escorts", null));
@@ -6381,6 +6415,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
         }
@@ -6390,6 +6425,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
          //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
@@ -6400,6 +6436,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "He-111s requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(1, "He-111s have been spotted over Calais @ 14K ft. heading west!", null));
@@ -6410,6 +6447,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
         }
@@ -6419,6 +6457,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
@@ -6429,6 +6468,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
          //   Timeout(600, () => sendScreenMessageTo(1, "Second run Do 17s spotted over Calais @ 6000m heading west!!!", null));
@@ -6439,6 +6479,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
@@ -6449,6 +6490,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
          //   Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @20K ft. heading west!", null));
@@ -6459,6 +6501,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lympne in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
@@ -6469,6 +6512,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "BR.20Ms requesting escort.  Meet at Boulogne @ 6km in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
@@ -6480,6 +6524,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
@@ -6490,6 +6535,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
@@ -6500,6 +6546,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
 
             Timeout(600, () => sendScreenMessageTo(1, "testing Escorts", null));
@@ -6511,6 +6558,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
@@ -6521,6 +6569,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(2, "He-111's requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
          //   Timeout(600, () => sendScreenMessageTo(1, "He-111's have been spotted over Calais @ 20K ft. heading west!", null));
@@ -6531,6 +6580,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
          //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
@@ -6541,6 +6591,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             sendScreenMessageTo(1, "Do 17's have been spotted east of Calais @ 20K ft.", null);
          //   sendScreenMessageTo(2, " third run Do 17's requesting escort! Meet at Calais at 6000m in 10 minutes", null);
@@ -6552,6 +6603,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null);
          //   sendScreenMessageTo(2, "Wellingtons have been spotted west of Dymchurch at 6000m.  Destroy them!", null);
@@ -6568,6 +6620,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Escort1 109s launched", null);
          //   sendScreenMessageTo(2, "Cover 109s launched for test", null);
@@ -6579,6 +6632,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             //sendScreenMessageTo(1, "Escort2 Cover 109s launched", null);
             //sendScreenMessageTo(2, "Secondary Cover 109s launched for test", null);
@@ -6590,6 +6644,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
             //sendScreenMessageTo(1, "Escort3 Cover 109s launched", null);
 
@@ -6601,6 +6656,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Spits launched", null);
 
@@ -6612,6 +6668,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Hurricanes launched", null);
             //GamePlay.gpGetTrigger(shortName).Enable = false;
@@ -6622,6 +6679,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense Willmington", null);
         //    sendScreenMessageTo(2, "Spits launched launched for yet another  test", null);
@@ -6637,6 +6695,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
           //  sendScreenMessageTo(1, "Air defense Redhill", null);
          //   sendScreenMessageTo(2, "Spits launched Redhill defense test", null);
@@ -6653,6 +6712,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
           //  sendScreenMessageTo(1, "Air defense Calais", null);
           //  sendScreenMessageTo(2, "Air defense Calais ", null);
@@ -6669,6 +6729,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Air defense St Omar", null);
         //    sendScreenMessageTo(2, "Air defense St Omar test", null);
@@ -6684,6 +6745,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "HighAltCalais", null);
 
@@ -6699,6 +6761,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Air defense test of code 3 hr launch", null);
          //   sendScreenMessageTo(1, "Mission time should be top of hour4", null);
@@ -6711,6 +6774,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Gladiator intercept Test of trigger", null);
         //    sendScreenMessageTo(2, "Gladiator intercept  test", null);
@@ -6727,6 +6791,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "A 110 cover Letoquet Test of trigger", null);
         //    sendScreenMessageTo(2, "110  test", null);
@@ -6742,6 +6807,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense Oye Plague", null);
         //    sendScreenMessageTo(2, "Air defense Oye Plague test", null);
@@ -6760,6 +6826,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense Wissant", null);
         //    sendScreenMessageTo(2, "Air defense Wissant test", null);
@@ -6775,6 +6842,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Air defense Calais", null);
          //   sendScreenMessageTo(2, "Air defense Calais test", null);
@@ -6790,6 +6858,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense London", null);
 
@@ -6805,6 +6874,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Air defense London2", null);
 
@@ -6820,6 +6890,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense London3", null);
 
@@ -6835,6 +6906,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense Eastchurch", null);
 
@@ -6850,6 +6922,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Air defense Brookland", null);
 
@@ -6865,6 +6938,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Coastal Patrol 1", null);
             twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
@@ -6877,6 +6951,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Coastal Patrol 2", null);
             twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
@@ -6889,6 +6964,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Coastal Patrol 3", null);
             twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
@@ -6901,6 +6977,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Coastal Patrol 4", null);
             twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
@@ -6913,6 +6990,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Northern Patrol 1", null);
             twcLogServer(null, "Pegwell defense triggered look for aicraft pegwell bay", new object[] { });
@@ -6925,6 +7003,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
         //    sendScreenMessageTo(1, "Northern Patrol 2", null);
 
@@ -6937,6 +7016,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Northern Patrol 3", null);
 
@@ -6949,6 +7029,7 @@ public class Mission : AMission, IMainMission
             if (action != null)
             {
                 action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
             }
          //   sendScreenMessageTo(1, "Northern Patrol 4", null);
 

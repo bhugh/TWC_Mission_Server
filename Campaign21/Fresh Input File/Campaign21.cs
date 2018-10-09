@@ -37,6 +37,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Linq;
@@ -531,9 +532,12 @@ public class Mission : AMission, IMainMission
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
                                              //Console.WriteLine("Writing current radar returns to file");
+
+            //Timeout(188, () => { var t = Task.Run(() => CheckStatsData()); });
             RADAR_REALISM = -1;
             listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
                                                                      //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+
             RADAR_REALISM = saveRealism;
 
         }
@@ -1488,7 +1492,9 @@ public class Mission : AMission, IMainMission
          * Check/download/transfer stats data
          * Recursive function called every X seconds
          ************************************************/
-        Timeout(188, () => { CheckStatsData(); });
+        //Timeout(188, () => { CheckStatsData(); });
+
+        Timeout(188, () => { var t = Task.Run(() => CheckStatsData()); });        
 
         // Read the stats file where we tally red & blue victories for the session
         //This allows us to make red/blue victories part of our mission objectives &
@@ -2334,7 +2340,7 @@ public class Mission : AMission, IMainMission
     // playerArmy -2 is for TOPHAT & will list all a/c but with the blue TOPHAT slant
     // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
     
-    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy)
+    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = RADAR_REALISM)
     {
 
         DateTime d = DateTime.Now;

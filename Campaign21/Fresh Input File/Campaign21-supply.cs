@@ -177,7 +177,9 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.Ju-87B-2",20},
         {"bob:Aircraft.Ju-88A-1",50},
         {"bob:Aircraft.Bf-109E-4B",5},
+        {"bob:Aircraft.Bf-109E-4B_Late",5},
         {"bob:Aircraft.Bf-109E-4N",6},
+        {"bob:Aircraft.Bf-109E-4N_Late",6},
         }
         }
 
@@ -263,7 +265,9 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.Ju-87B-2",3},
         {"bob:Aircraft.Ju-88A-1",4},
         {"bob:Aircraft.Bf-109E-4B",0.25},
+        {"bob:Aircraft.Bf-109E-4B_Late",0.25},
         {"bob:Aircraft.Bf-109E-4N",0.25},
+        {"bob:Aircraft.Bf-109E-4N_Late",0.25},
 
         }
         }

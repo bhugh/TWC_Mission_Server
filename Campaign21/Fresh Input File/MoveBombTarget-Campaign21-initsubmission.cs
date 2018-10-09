@@ -13,7 +13,7 @@ public struct changeLimit
     public double alt_m;
     public double alt_percent;
     public double speed_percent;
-    public double airport_m;
+    public double airport_m;  //Not used yet?
     public changeLimit(double xy =0 , double alt = 0, double altp = 25, double spdp = 10, double ap = 0)
     {
         XY_m = xy;
@@ -56,8 +56,8 @@ public class Mission : AMission
             { AiAirWayPointType.NORMFLY, new changeLimit (7000, 700, 30, 10) },
             { AiAirWayPointType.HUNTING, new changeLimit (7000, 700, 30, 10) },
             { AiAirWayPointType.RECON, new changeLimit (4000, 1000, 50, 10) },
-            { AiAirWayPointType.GATTACK_POINT, new changeLimit (1500, 0, 0, 10, 15000) },
-            { AiAirWayPointType.GATTACK_TARG, new changeLimit (1500, 0, 0, 10, 15000) },
+            { AiAirWayPointType.GATTACK_POINT, new changeLimit (700, 0, 0, 10, 15000) },
+            { AiAirWayPointType.GATTACK_TARG, new changeLimit (700, 0, 0, 10, 15000) },
             { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (5500, 800, 25, 10) },
             { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (5500, 800, 25, 10) },
         };
@@ -540,11 +540,11 @@ public class Mission : AMission
                             GroundStationary[] stationaries2 = GamePlay.gpGroundStationarys(pos.x, pos.y, 3*changeL.XY_m);
                             for (int i = 1; i < 20; i++)
                             {
-                                if (stationaries.Length == 0) break;
+                                if (stationaries2.Length == 0) break;
                                 int newStaIndex = ran.Next(stationaries2.Length - 1);
                                 if (stationaries2[newStaIndex] != null && stationaries2[newStaIndex].IsAlive &&
-                                (stationaries[newStaIndex].pos.x != pos.x ||
-                                stationaries[newStaIndex].pos.y != pos.y))
+                                (stationaries2[newStaIndex].pos.x != pos.x ||
+                                stationaries2[newStaIndex].pos.y != pos.y))
                                 {
                                     newTarget = stationaries2[newStaIndex];
                                     break;

@@ -2333,15 +2333,17 @@ public class Mission : AMission, IMainMission
     // playerArmy -1 is for TOPHAT & will list all a/c but with the red TOPHAT slant
     // playerArmy -2 is for TOPHAT & will list all a/c but with the blue TOPHAT slant
     // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
-    public string posmessage;
-    public int poscount;
+    
     public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy)
     {
 
         DateTime d = DateTime.Now;
         // int RADAR_REALISM;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
         // realism = -1 gives the lat/long output for radar files.
+        string posmessage = "";
+        int poscount = 0;
         AiAircraft p = null;
+
         Point3d pos1;
         Point3d pos2;
         Point3d VwldP, intcpt, longlat;
@@ -2719,7 +2721,7 @@ public class Mission : AMission, IMainMission
                                         }
                                         else if (RADAR_REALISM == 0)
                                         {
-                                            posmessage = type + " " +
+                                            posmessage = poscount.ToString() + type + " " +
 
                                               mi +
                                               bearing.ToString("F0") + "°" +
@@ -2925,11 +2927,18 @@ public class Mission : AMission, IMainMission
 
                     sw.WriteLine("MISSION SUMMARY");
 
-                    if (playerArmy == -2 || playerArmy == -3) sw.WriteLine("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]);
-                    sw.WriteLine("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]));
+                    sw.WriteLine(string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
+  BlueAirF, BlueAAF, BlueNavalF, BlueGroundF));
+                    sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
+  RedAirF, RedAAF, RedNavalF, RedGroundF));
+                    sw.WriteLine();
 
-                    if (playerArmy == -1 || playerArmy == -3) sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+                    sw.WriteLine("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]));
+                    if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue,numToDisplay:50, delay: 0, display: false, html:false));//sw.WriteLine("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]);
+
                     sw.WriteLine("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]));
+                    if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html:false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+                    
                     /***TODO: Need to include some kind of current mission & campaign summary here
                      * 
                      */
@@ -2941,11 +2950,6 @@ public class Mission : AMission, IMainMission
                     sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
                     //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
                     */
-                    sw.WriteLine(string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
-  BlueAirF, BlueAAF, BlueNavalF, BlueGroundF));
-                    sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
-  RedAirF, RedAAF, RedNavalF, RedGroundF));
-                    sw.WriteLine();
 
                     sw.WriteLine("CAMPAIGN SUMMARY");
 
@@ -3286,7 +3290,7 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu3(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Airport damage summary", "Nearest friendly airport", "On friendly territory?", "Back...", "Aircraft Supply" }, new bool[] { false, false, false, true, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Airport damage summary", "Nearest friendly airport", "On friendly territory?", "Back...", "Aircraft Supply", "Aircraft available to you" }, new bool[] { false, false, false, true, false, false });
     }
 
     //object plnameo= GamePlay.gpPlayer().Name();  
@@ -3535,6 +3539,25 @@ public class Mission : AMission, IMainMission
                 if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(player.Army(), player, true);
                 setMainMenu(player);
             }
+            else if (menuItemIndex == 6)
+            {
+                //public string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false)
+                if (TWCStatsMission != null) {
+                    TWCStatsMission.Display_AircraftAvailable_ByName(player, nextAC: false, display: true, html: false);
+                    Timeout(2.1, () =>
+                    {
+                        TWCStatsMission.Display_AircraftAvailable_ByName(player, nextAC: true, display: true, html: false);
+                    });
+                    Timeout(5.0, () =>
+                    {
+                        twcLogServer(new Player[] { player }, "Note that fighter & bomber pilot careers are separate & aircraft actually available depends on the ace & rank levels in the relevant career for that aircraft", null);
+                    });
+
+
+                }
+                setMainMenu(player);
+            }
+            
 
             else
             { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
@@ -5348,7 +5371,8 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery", "Ditt", 1, 2, "BTarget24", "TGroundDestroyed", 75, 185027, 252619, 100, false, 100, "");// fixed triggers missing
             addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage", "Ditt", 1, 2, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", "Ditt", 1, 2, "BTarget26", "TGroundDestroyed", 85, 189262, 249274, 100, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, ""); //In the                  .mis file this was also included as BTarget28, basically duplicating this BTarget27, so I just removed BTarget28 from the .mis and .cs 9/19/2018            
+            //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, ""); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
+            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 2, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 100, ""); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
             addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bulf", 1, 4, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 2, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 100, "");
@@ -5866,13 +5890,20 @@ public class Mission : AMission, IMainMission
     }
 
 
-    public void MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 10, double delay = 0.2)
+    public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 10, double delay = 0.2, bool display = true, bool html = false)
     {
+
+        string newline = Environment.NewLine;
+        if (html) newline = "<br>" + Environment.NewLine;
+        string retmsg = "";
+        string msg = "";
 
         int numDisplayed = 0;
         double totDelay = 0;
+        msg = "Remaining " + ArmiesL[army] + " Primary Objectives:";
+        retmsg = msg + newline;
 
-        twcLogServer(new Player[] { player }, "Remaining " + ArmiesL[army] + " Primary Objectives:", new object[] { });
+        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
 
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
@@ -5881,19 +5912,26 @@ public class Mission : AMission, IMainMission
             MissionObjective mo = entry.Value;
             if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsPrimaryTarget && mo.IsEnabled)
             {
+                string msg1 = mo.Sector + " " + mo.Name;
+                retmsg += msg1 + newline;
                 totDelay += delay;
-                Timeout(totDelay, () =>
+                if (display)
                 {
+                    Timeout(totDelay, () =>
+                    {
 
-                        //+ " (" + mo.Pos.x + "," + mo.Pos.y + ")" //to display x,y coordinates
-                        twcLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
+                    //+ " (" + mo.Pos.x + "," + mo.Pos.y + ")" //to display x,y coordinates
+                    twcLogServer(new Player[] { player }, msg1, new object[] { });
 
-                });//timeout      
+                    });//timeout      
+                }
 
                 numDisplayed++;
 
             }
         }
+
+        return retmsg;
     }
 
     public void MO_WriteOutAllMissionObjectives(string filename, bool misformat = true, bool triggersonly = false)

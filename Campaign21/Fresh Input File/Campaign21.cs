@@ -219,7 +219,8 @@ public class Mission : AMission, IMainMission
 
         Timeout(1800, () => { SaveCampaignStateIntermediate(); });
         if (!MISSION_STARTED) return;
-        SaveMapState("", true);
+        Task.Run(() => SaveMapState("", true));
+        //SaveMapState("", true);
     }
 
     public void CheckCoop()
@@ -479,11 +480,11 @@ public class Mission : AMission, IMainMission
             if (LOG)
             {
                 DebugAndLog(calcTimeLeft() + " left in mission " + MISSION_ID);
-                int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-                RADAR_REALISM = 0;
-                listPositionAllAircraft(GamePlay.gpPlayer(), 1, true);
-                listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-                RADAR_REALISM = saveRealism;
+                //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+                //RADAR_REALISM = 0;
+                listPositionAllAircraft(GamePlay.gpPlayer(), 1, true, radar_realism: 0);
+                listPositionAllAircraft(GamePlay.gpPlayer(), 1, false, radar_realism: 0);
+                //RADAR_REALISM = saveRealism;
             }
 
         }
@@ -491,8 +492,10 @@ public class Mission : AMission, IMainMission
         if ((tickSinceStarted) == 0)
         {
             twcLogServer(null, "Mission loaded.", new object[] { });
-            WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
-            Timeout(188, () => { CheckStatsData(); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
+
+            //WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
+            Task.Run(() => WriteResults_Out_File("3"));
+            Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
         }
 
         if (tickSinceStarted % 30000 == 1000)
@@ -514,7 +517,8 @@ public class Mission : AMission, IMainMission
                                                  //if (Time.tickCounter() == 720)// Red battle Success.  //For testing/very short mission
         {
 
-            WriteResults_Out_File("3");
+            //WriteResults_Out_File("3");
+            Task.Run(() => WriteResults_Out_File("3"));
             Timeout(10, () =>
             {
                 twcLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
@@ -530,26 +534,28 @@ public class Mission : AMission, IMainMission
         if ((Time.tickCounter()) % 1000 == 0)
         {
             ///////////////////////////////////////////    
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
                                              //Console.WriteLine("Writing current radar returns to file");
 
             //Timeout(188, () => { var t = Task.Run(() => CheckStatsData()); });
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -1, false); //-1 & false will list ALL aircraft of either army
-                                                                     //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            //RADAR_REALISM = -1;
+            //listPositionAllAircraft(GamePlay.gpPlayer(), -1, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army        
+                                                                                        //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
 
-            RADAR_REALISM = saveRealism;
+            Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -1, false, radar_realism: -1));
+            //RADAR_REALISM = saveRealism;
 
         }
         if ((Time.tickCounter()) % 1000 == 334)
         {
             ///////////////////////////////////////////    
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-                                             //Console.WriteLine("Writing current radar returns to file");
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -2, false); //-1 & false will list ALL aircraft of either army
-                                                                     //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-            RADAR_REALISM = saveRealism;
+            //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //Console.WriteLine("Writing current radar returns to file");
+            //RADAR_REALISM = -1;
+            //listPositionAllAircraft(GamePlay.gpPlayer(), -2, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+            Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -2, false, radar_realism: -1));
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            //RADAR_REALISM = saveRealism;
 
         }
         if ((Time.tickCounter()) % 1000 == 666)
@@ -557,10 +563,11 @@ public class Mission : AMission, IMainMission
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
                                              //Console.WriteLine("Writing current radar returns to file");
-            RADAR_REALISM = -1;
-            listPositionAllAircraft(GamePlay.gpPlayer(), -3, false); //-1 & false will list ALL aircraft of either army
-                                                                     //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-            RADAR_REALISM = saveRealism;
+            //RADAR_REALISM = -1;
+            //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+            Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1));
+            //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
+            //RADAR_REALISM = saveRealism;
 
         }
 
@@ -804,6 +811,12 @@ public class Mission : AMission, IMainMission
     {
 
         base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+
+        Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt));
+    }
+
+    public void OnBombExplosion_DoWork (string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    { 
 
         //twcLogServer(null, "bombe 1", null);
         bool ai = true;
@@ -1494,7 +1507,7 @@ public class Mission : AMission, IMainMission
          ************************************************/
         //Timeout(188, () => { CheckStatsData(); });
 
-        Timeout(188, () => { var t = Task.Run(() => CheckStatsData()); });        
+        Timeout(188, () => { Task.Run(() => CheckStatsData()); });        
 
         // Read the stats file where we tally red & blue victories for the session
         //This allows us to make red/blue victories part of our mission objectives &
@@ -2340,11 +2353,12 @@ public class Mission : AMission, IMainMission
     // playerArmy -2 is for TOPHAT & will list all a/c but with the blue TOPHAT slant
     // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
     
-    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = RADAR_REALISM)
+    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = -10000000)
     {
 
+        if (radar_realism == -10000000) radar_realism = RADAR_REALISM;
         DateTime d = DateTime.Now;
-        // int RADAR_REALISM;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
+        // int radar_realism;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
         // realism = -1 gives the lat/long output for radar files.
         string posmessage = "";
         int poscount = 0;
@@ -2395,14 +2409,14 @@ public class Mission : AMission, IMainMission
         //string [] radar_messages, radar_messages_index;             
         int wait_s = 0;
         long refreshtime_ms = 0;
-        if (RADAR_REALISM >= 1) { wait_s = 5; refreshtime_ms = 60 * 1000; }
-        if (RADAR_REALISM >= 5) { wait_s = 20; refreshtime_ms = 2 * 60 * 1000; }
-        if (RADAR_REALISM >= 9) { wait_s = 60; refreshtime_ms = 5 * 60 * 1000; }
+        if (radar_realism >= 1) { wait_s = 5; refreshtime_ms = 60 * 1000; }
+        if (radar_realism >= 5) { wait_s = 20; refreshtime_ms = 2 * 60 * 1000; }
+        if (radar_realism >= 9) { wait_s = 60; refreshtime_ms = 5 * 60 * 1000; }
 
         //if admin==true we'll list ALL aircraft regardless of position, radars out et.
         //admin==false we start filtering out depending on whether a radar station has been knocked out etc
         bool admin = false;
-        if ((RADAR_REALISM == 0) || (RADAR_REALISM == -1 && playerArmy == -3)) admin = true;
+        if ((radar_realism == 0) || (radar_realism == -1 && playerArmy == -3)) admin = true;
 
         //RadarArmy is the army/side for which the radar is being generated.
         //Some radar areas will be out for Red but still active for Blue.  Blue radar might have some inherent restrictions Red radar doesn't, etc. 
@@ -2444,7 +2458,7 @@ public class Mission : AMission, IMainMission
         }
         playername_index = playername + "_0";
         if (inOwnArmy) playername_index = playername + "_1";
-        playername_index = playername_index + "_" + RADAR_REALISM.ToString();
+        playername_index = playername_index + "_" + radar_realism.ToString();
 
         savenewmessages = true; //save the messages that are generated
         currtime_ms = stopwatch.ElapsedMilliseconds;
@@ -2483,7 +2497,7 @@ public class Mission : AMission, IMainMission
                         delay += 0.2;
                         Timeout(delay, () =>
                         {
-                            if (RADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                            if (radar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
                             else gpLogServerAndLog(new Player[] { player }, mess.Value, null);
                         });
 
@@ -2500,7 +2514,7 @@ public class Mission : AMission, IMainMission
             //with special time code -1, which means that radar returns are currently underway; don't give them any more until finished.
             radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(-1, radar_messages);
 
-            if (RADAR_REALISM > 0) twcLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
+            if (radar_realism > 0) twcLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
 
 
 
@@ -2508,8 +2522,8 @@ public class Mission : AMission, IMainMission
             radar_messages = new SortedDictionary<string, string>(new ReverseComparer<string>());//clear it out before starting anew . . .           
             radar_messages.Add("9999999999", " >>> " + enorfriend + " RADAR CONTACTS <<< ");
 
-            if (RADAR_REALISM < 0) radar_messages.Add("9999999998", "p" + Calcs.GetMD5Hash(radarpasswords[playerArmy].ToUpper())); //first letter 'p' indicates passward & next characters up to space or EOL are the password.  Can customize this per  type of return, randomize each mission, or whatever.
-                                                                                                                                   //RADAR_REALISM < 0 is our returns for the online radar screen, -1 = red returns, -2 = blue returns, -3 = admin (ALL SEEING EYE) returns
+            if (radar_realism < 0) radar_messages.Add("9999999998", "p" + Calcs.GetMD5Hash(radarpasswords[playerArmy].ToUpper())); //first letter 'p' indicates passward & next characters up to space or EOL are the password.  Can customize this per  type of return, randomize each mission, or whatever.
+                                                                                                                                   //radar_realism < 0 is our returns for the online radar screen, -1 = red returns, -2 = blue returns, -3 = admin (ALL SEEING EYE) returns
                                                                                                                                    //passwords are CASEINSENSITIVE and the MD5 of the password is saved in the -radar.txt file for red, blue, and admin respectively
 
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
@@ -2559,7 +2573,7 @@ public class Mission : AMission, IMainMission
                                         type = a.Type().ToString();
                                         if (type.Contains("Fighter") || type.Contains("fighter")) type = "F";
                                         else if (type.Contains("Bomber") || type.Contains("bomber")) type = "B";
-                                        if (a == p && RADAR_REALISM >= 0) type = "Your position";
+                                        if (a == p && radar_realism >= 0) type = "Your position";
                                         /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
                                          + a.CallSign() + " " 
                                          + a.Type() + " " 
@@ -2640,7 +2654,7 @@ public class Mission : AMission, IMainMission
                                         //shown as text radar in-mission
                                         //TODO: 
                                         //We could give Blue tophat measurements in metric units, maybe
-                                        if (RADAR_REALISM < 0)
+                                        if (radar_realism < 0)
                                         {
 
                                             string numContacts = poscount.ToString();
@@ -2725,7 +2739,7 @@ public class Mission : AMission, IMainMission
 
 
                                         }
-                                        else if (RADAR_REALISM == 0)
+                                        else if (radar_realism == 0)
                                         {
                                             posmessage = poscount.ToString() + type + " " +
 
@@ -2753,7 +2767,7 @@ public class Mission : AMission, IMainMission
                                             */
                                             //twcLogServer(new Player[] { player }, posmessage, new object[] { });
                                         }
-                                        else if (RADAR_REALISM > 0)
+                                        else if (radar_realism > 0)
                                         {
 
                                             //Trying to give at least some semblance of reality based on capabilities of Chain Home & Chain Home Low
@@ -2836,7 +2850,7 @@ public class Mission : AMission, IMainMission
                                     try
                                     {
                                         string addMess = posmessage;
-                                        if (RADAR_REALISM > 0) addMess = "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage;
+                                        if (radar_realism > 0) addMess = "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage;
                                         radar_messages.Add(
                                            ((int)intcpt_time_index).ToString("D2") + ((int)dis_mi).ToString("D3") + aigroup_count.ToString("D5"), //adding aigroup ensure uniqueness of index
                                            addMess
@@ -2860,7 +2874,7 @@ public class Mission : AMission, IMainMission
             if (radar_messages.Count == 1) radar_messages.Add("0000000000", "<NO TRADE>");
 
 
-            if (RADAR_REALISM < 0)
+            if (radar_realism < 0)
             {
                 try
                 {
@@ -2997,7 +3011,7 @@ public class Mission : AMission, IMainMission
 
             TimeSpan timeDiff = DateTime.Now.Subtract(d);
 
-            var saveRADAR_REALISM = RADAR_REALISM;
+            var saveradar_realism = radar_realism;
             Timeout(wait_s, () =>
             {
                     //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
@@ -3008,8 +3022,8 @@ public class Mission : AMission, IMainMission
                     delay += 0.2;
                     Timeout(delay, () =>
                        {
-                           if (saveRADAR_REALISM == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                           else if (saveRADAR_REALISM >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                           if (saveradar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                           else if (saveradar_realism >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
                        });
 
                 }
@@ -3473,7 +3487,8 @@ public class Mission : AMission, IMainMission
             //Airport damage summary, same as <ap
             else if (menuItemIndex == 1)
             {
-                ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
+                //ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
+                Task.Run(() => ListAirfieldTargetDamage(player, -1));
                 setMainMenu(player);
             }
             //Directions to nearest friendly airport
@@ -3686,7 +3701,7 @@ public class Mission : AMission, IMainMission
             {
                 setMainMenu(player);
                 Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
+                listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); //enemy a/c  
                 if (DEBUG)
                 {
                     DebugAndLog("Total number of AI aircraft groups currently active:");
@@ -3703,7 +3718,7 @@ public class Mission : AMission, IMainMission
             {
                 setMainMenu(player);
                 Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), true); //friendly a/c           
+                listPositionAllAircraft(player, player.Army(), true, radar_realism: RADAR_REALISM); //friendly a/c           
                 if (DEBUG)
                 {
                     DebugAndLog("Total number of AI aircraft groups currently active:");
@@ -4121,16 +4136,16 @@ public class Mission : AMission, IMainMission
         }
         else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
         {
-            int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
-            RADAR_REALISM = 0;
-            listPositionAllAircraft(player, player.Army(), true);
-            listPositionAllAircraft(player, player.Army(), false);
-            RADAR_REALISM = saveRealism;
+            //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
+            //RADAR_REALISM = 0;
+            listPositionAllAircraft(player, player.Army(), true, radar_realism: 0);
+            listPositionAllAircraft(player, player.Army(), false, radar_realism: 0);
+            //RADAR_REALISM = saveRealism;
 
         }
         else if (msg.StartsWith("<rad") && admin_privilege_level(player) >= 2)
         {
-            listPositionAllAircraft(player, player.Army(), false); //enemy a/c  
+            listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); //enemy a/c  
         }
         else if (msg.StartsWith("<apall") && admin_privilege_level(player) >= 2)
         {
@@ -4488,12 +4503,15 @@ public class Mission : AMission, IMainMission
 
     public void logMessage(object data)
     {
-        logToFile(data, MESSAGE_FULL_PATH);
+        Task.Run(() => logToFile(data, MESSAGE_FULL_PATH));
+        //logToFile(data, MESSAGE_FULL_PATH);
     }
 
     public void logStats(object data)
     {
-        logToFile(data, STATS_FULL_PATH);
+        //logToFile(data, STATS_FULL_PATH);
+        Task.Run(() => logToFile(data, STATS_FULL_PATH));
+
     }
 
     public void DebugAndLog(object data)
@@ -6162,7 +6180,8 @@ public class Mission : AMission, IMainMission
             || bp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MissionObjectiveScore[ArmiesE.Blue] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Blue])// Blue battle Success
 
         {
-            WriteResults_Out_File("2");
+            //WriteResults_Out_File("2");
+            Task.Run(() => WriteResults_Out_File("2"));
             Timeout(10, () =>
             {
                 twcLogServer(null, "Blue has Successfully Turned the Map!!!", new object[] { });
@@ -6175,7 +6194,8 @@ public class Mission : AMission, IMainMission
         if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequired[ArmiesE.Red] && bp > 99)
             || rp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Red])// Blue battle Success
         {
-            WriteResults_Out_File("1");
+            //WriteResults_Out_File("1");
+            Task.Run(() => WriteResults_Out_File("1"));
             Timeout(10, () =>
             {
                 twcLogServer(null, "Red has Successfully Turned the Map!!!", new object[] { });

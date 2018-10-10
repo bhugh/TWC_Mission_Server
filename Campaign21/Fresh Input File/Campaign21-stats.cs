@@ -127,6 +127,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1712,7 +1713,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 */
                 if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11", null); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
-                File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
+                Task.Run(() => File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data));
+                //File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
             //catch (Exception ex) { Console.WriteLine(ex.Message); };
             catch (Exception ex) { Console.WriteLine(ex.ToString()); };
@@ -1788,7 +1790,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8", null); //testing disk output for warps
             string date = DateTime.UtcNow.ToString("u");
-            File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
+            Task.Run(() => File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data));
+            //File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
         }
         //catch (Exception ex) { Console.WriteLine(ex.Message); };
         catch (Exception ex) { Console.WriteLine(ex.ToString()); };
@@ -4753,7 +4756,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
      * "Live" areas for bombing, such as industrial or military areas.
      * 
      * We set up jerrycans to designate the bombable areas.  These are detected
-     * below in OnBombExplosion, then sent here to be handle.
+     * below in OnBombExplosion, then sent here to be handled.
      * 
      *    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
      *    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
@@ -5270,6 +5273,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
 
+        Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt));
+    }
+
+    public void OnBombExplosion_DoWork (string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
         //GamePlay.gpLogServer(null, "bombe 1", null);
         bool ai = true;
         if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
@@ -8651,7 +8659,8 @@ public class StbRankToAllowedAircraft
             //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX10", null); //testing disk output for warps
             string date = DateTime.UtcNow.ToString("u");
-            File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data);
+            Task.Run(() => File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data));
+            //File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data);
         }
         //catch (Exception ex) { Console.WriteLine(ex.Message); };
         catch (Exception ex) { Console.WriteLine(ex.ToString(), "stbRAA_LE"); };
@@ -11657,7 +11666,8 @@ public class StbStatRecorder
             */
             if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX7", null); //testing disk output for warps
             string date = DateTime.UtcNow.ToString("u");
-            File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data);
+
+            Task.Run(() => File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data));
         }
         //catch (Exception ex) { StbSr_WriteLine(ex.Message); };
         catch (Exception ex) { Console.WriteLine(ex.ToString()); };

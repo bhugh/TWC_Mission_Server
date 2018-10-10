@@ -15,6 +15,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -278,7 +279,9 @@ public class Mission : AMission, ISupplyMission
     public void SaveSupplyRecursive(bool firstTime=false)
     {
         Timeout(33.33, () => { SaveSupplyRecursive(false); } );
-        WritePrimarySupply(supplySuffix, false, firstTime);
+        //WritePrimarySupply(supplySuffix, false, firstTime);
+
+        Task.Run(() => WritePrimarySupply(supplySuffix, false, firstTime));
     }
 
     

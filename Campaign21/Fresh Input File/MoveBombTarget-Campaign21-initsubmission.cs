@@ -100,7 +100,8 @@ public class Mission : AMission
         Point3d CurrentPos = airGroup.Pos();
 
         aaWP = new AiAirWayPoint(ref CurrentPos, speed);
-        aaWP.Action = AiAirWayPointType.NORMFLY;
+        //aaWP.Action = AiAirWayPointType.NORMFLY;
+        aaWP.Action = aawpt;
 
         return aaWP;
     }

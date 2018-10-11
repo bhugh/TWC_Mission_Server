@@ -376,7 +376,7 @@ public class Mission : AMission
         //if (nearestAirfield.Pos().distance(ref p) > nearestAirfield.FieldR() * 1.25)
         if (Calcs.CalculatePointDistance(nearestAirfield.Pos(), p) > 2000) //The GATTACK_POINT distance is often quite far from the target itself
         {
-            Console.WriteLine("MBT: Attack point NOT within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p));
+            //Console.WriteLine("MBT: Attack point NOT within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p));
             return null;
         }
 
@@ -386,7 +386,7 @@ public class Mission : AMission
         //Get the random airport within the given radius
         AiAirport ap = GetRandomAirfieldNear(p, moveAirportsDistance_m);
 
-        Console.WriteLine("MBT: Attack point IS within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p), nearestAirfield.Name(), ap.Name());
+        //Console.WriteLine("MBT: Attack point IS within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p), nearestAirfield.Name(), ap.Name());
 
         if (ap != null)
         {
@@ -416,15 +416,18 @@ public class Mission : AMission
     public bool updateAirWaypoints (AiAirGroup airGroup)
     {
         if (airGroup == null || airGroup.GetWay() == null || !isAiControlledAirGroup(airGroup)) return false;
+        if (ran.Next(10) == 1) return false; //Just leave it as originally written sometimes
 
         AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
 
+        /* //for testing
         foreach (AiWayPoint wp in CurrentWaypoints)
         {
             AiWayPoint nextWP = wp;
             //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
+        */
         int currWay = airGroup.GetCurrentWayPoint();
         double speedDiff = 0;
         double altDiff_m = 0;
@@ -521,7 +524,7 @@ public class Mission : AMission
                         GroundStationary newTarget = null;
                         //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
                         GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, changeL.XY_m);
-                        Console.WriteLine("MBT: Looking for nearby stationary");
+                        //Console.WriteLine("MBT: Looking for nearby stationary");
                         for (int i = 1; i < 20; i++)
                         {
                             
@@ -532,14 +535,14 @@ public class Mission : AMission
                                 stationaries[newStaIndex].pos.y != pos.y ))
                             {                              
                                 newTarget = stationaries[newStaIndex];
-                                Console.WriteLine("MBT: FOUND a stationary");
+                                //Console.WriteLine("MBT: FOUND a stationary");
                                 break;
                             }                            
                         }
                         //In case we didn't find a ground target there, expand the search radius a bit & try again
                         if (newTarget == null)
                         {
-                            Console.WriteLine("MBT: Looking for further afield stationaries");
+                            //Console.WriteLine("MBT: Looking for further afield stationaries");
                             GroundStationary[] stationaries2 = GamePlay.gpGroundStationarys(pos.x, pos.y, 3*changeL.XY_m);
                             for (int i = 1; i < 20; i++)
                             {
@@ -559,14 +562,14 @@ public class Mission : AMission
                         //Use the position of the newly found ground actor as the new attack position, IF the actor exists/was found
                         if (newTarget != null)
                         {
-                            Console.WriteLine("MBT: Found a stationary, updating attack position");
+                            //Console.WriteLine("MBT: Found a stationary, updating attack position");
                             newPos.x = newTarget.pos.x;
                             newPos.y = newTarget.pos.y;
                         }
                         //3rd approach, just move the attack point by our usual amount
                         else
                         {
-                            Console.WriteLine("MBT: No stationary found, updating attack position");
+                            //Console.WriteLine("MBT: No stationary found, updating attack position");
                             newPos.x = pos.x + ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
                             newPos.y = pos.y + ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
 
@@ -585,8 +588,8 @@ public class Mission : AMission
                                                                                                                       //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
                         string nm = "(null)";
                         //if (((wp as AiAirWayPoint).Target as AiActor) != null) nm = ((wp as AiAirWayPoint).Target as AiActor).Name(); //doesn't work bec. grounstationaries are never AiActors.  We could try looking for AiGroundActors AiGroundGroups, or even AirGroups instead, maybe.  
-                        Console.WriteLine("Old Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (wp as AiAirWayPoint).P.x, (wp as AiAirWayPoint).P.y, (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType });
-                        Console.WriteLine ("New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType });
+                        //Console.WriteLine("Old Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (wp as AiAirWayPoint).P.x, (wp as AiAirWayPoint).P.y, (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType });
+                        //Console.WriteLine ("New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType });
                         /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
                         
                         update = true;
@@ -603,7 +606,7 @@ public class Mission : AMission
 
                         if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newAirportPosition != null)
                         {
-                            Console.WriteLine("MBT: Moving airport of attack!");
+                            //Console.WriteLine("MBT: Moving airport of attack!");
                             pos = (Point3d)newAirportPosition;
                             pos.z = wp.P.z;
                         }
@@ -678,7 +681,7 @@ public class Mission : AMission
 
         if (update)
         {
-            Console.WriteLine("MBTITG: Updating this course");
+            //Console.WriteLine("MBTITG: Updating this course");
             airGroup.SetWay(NewWaypoints.ToArray());
             return true;
         } else

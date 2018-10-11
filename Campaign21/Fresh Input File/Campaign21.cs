@@ -2784,7 +2784,7 @@ public class Mission : AMission, IMainMission
                         HashSet<AiAirGroup> nb = airGroupInfoDict[airGroup].nearbyAirGroups;
                         airGroupInfoDict[airGroup].groupedAirGroups = nb;  //we start off with the a/c that are nearby us now
 
-                        Console.WriteLine("Grouping: Leader {0} started with {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count);
+                        //Console.WriteLine("Grouping: Leader {0} started with {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count);
                         //We are intersecting here, so if the 2nd hashset is EMPTY or DOESN'T EXIST
                         //we'll end up with a grouping with 0 elements, not even the original a/c.
                         //So we check to make sure the airGroupInfoDict from previous runs exists, and then
@@ -2795,7 +2795,7 @@ public class Mission : AMission, IMainMission
                             nba = a1[airGroup].nearbyAirGroups;
                             //if (nba != null)
                             if (nba.Count > 0) airGroupInfoDict[airGroup].groupedAirGroups.IntersectWith(nba);  //Now we eliminate any that were NOT nearby last run
-                            Console.WriteLine("Grouping: Leader {0} step2: {1} groups of {2} possible ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count, nba.Count);
+                            //Console.WriteLine("Grouping: Leader {0} step2: {1} groups of {2} possible ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count, nba.Count);
                         }                        
 
 
@@ -2805,13 +2805,13 @@ public class Mission : AMission, IMainMission
                             nbb = a2[airGroup].nearbyAirGroups;
                             //if (set && nbb != null)
                             if (nbb.Count > 0) airGroupInfoDict[airGroup].groupedAirGroups.IntersectWith(nbb);  //Eliminate any NOT nearby two runs ago
-                            Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} possible ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count, nbb.Count);
+                            //Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} possible ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[airGroup].groupedAirGroups.Count, nbb.Count);
                         }
 
                         HashSet<AiAirGroup> gag = new HashSet<AiAirGroup> ( airGroupInfoDict[airGroup].groupedAirGroups);
                         HashSet<AiAirGroup> toremovefrom_gag = new HashSet<AiAirGroup>();
 
-                        Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), gag.Count);
+                        //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), gag.Count);
 
                         //Console.WriteLine("groupAllAircraft: a4.3");
                         if (gag != null) foreach (AiAirGroup ag in gag)
@@ -2834,7 +2834,7 @@ public class Mission : AMission, IMainMission
                                         continue;
                                     }
                                     complete = false;
-                                    Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[ag].actor.Name());
+                                    //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[ag].actor.Name());
                                     airGroupInfoDict[ag].groupedAirGroups = gag;  //the airgroups in this grouping
                                     //Console.WriteLine("groupAllAircraft: a4.5");
                                     if (ag != airGroup)
@@ -2968,7 +2968,7 @@ public class Mission : AMission, IMainMission
                                 Point3d p2 = agid.AGGavePos;
                                 double timeDiff = Time.current() - a3[airGroup].time;
                                 Point3d vel2 = new Point3d ((p2.x-p1.x)/timeDiff, (p2.y - p1.y) / timeDiff, 0 );
-                                Console.WriteLine("AveVel vs Vel2: {0:0} {1:0} {2:0} {3:0} {4:0} {5:0} ", agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z, vel2.x, vel2.y, vel2.z);
+                                //Console.WriteLine("AveVel vs Vel2: {0:0} {1:0} {2:0} {3:0} {4:0} {5:0} ", agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z, vel2.x, vel2.y, vel2.z);
                                 agid.AGGvel = vel2;                                
                             }
 
@@ -2990,7 +2990,7 @@ public class Mission : AMission, IMainMission
 
                             airGroupInfoDict[airGroup] = agid;
 
-                            Console.WriteLine("Airgroup Grouping: {0} {1} {2} {3:0} {4:0} {5:0} ", agid.actor.Name(), agid.count, agid.AGGcount, agid.AGGcountAboveRadar, agid.AGGcountBelowRadar, agid.AGGids);
+                            //Console.WriteLine("Airgroup Grouping: {0} {1} {2} {3:0} {4:0} {5:0} ", agid.actor.Name(), agid.count, agid.AGGcount, agid.AGGcountAboveRadar, agid.AGGcountBelowRadar, agid.AGGids);
                             //agid.AGGpos.x, agid.AGGpos.y, agid.AGGpos.z, agid.AGGtype, ah, agid.AGGisHeavyBomber, agid.AGGavePos.x, agid.AGGavePos.y,agid.AGGaveAlt_m, agid.AGGmaxAlt_m, agid.AGGids, agid.AGGplayerNames, agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
                     }
 
@@ -3100,7 +3100,7 @@ public class Mission : AMission, IMainMission
             //to be stale--they're ALREADY stale!  Plus, we use the player's position, velocity, etc
             //from the radar DB as well as other a/c location/velocity, so it' ALL somewhat stale.
             if (radar_realism >= 1) { wait_s = 1; refreshtime_ms = 60 * 1000; }
-            if (radar_realism >= 5) { wait_s = 5; refreshtime_ms = 2 * 60 * 1000; }
+            if (radar_realism >= 5) { wait_s = 10; refreshtime_ms = 2 * 60 * 1000; }
             //if (radar_realism >= 5) { wait_s = 5; refreshtime_ms = Convert.ToInt32 (0.02 * 60 * 1000); } //FOR TESTING - MUCH FASTER
             if (radar_realism >= 9) { wait_s = 30; refreshtime_ms = 5 * 60 * 1000; }
 
@@ -4506,20 +4506,40 @@ public class Mission : AMission, IMainMission
                 var saveradar_realism = radar_realism;
                 Timeout(wait_s, () =>
                 {
-                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
+                    //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
+                    //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
+                    //Maybe should be even shorter?
+                    SortedDictionary<string, string> radar_messages_trim = new SortedDictionary<string, string>(new ReverseComparer<string>());
+                    int trim = 0;
+                    int c = 0;
+                    if (!admin && playerArmy >=0 && radar_messages.Count > 12) trim = radar_messages.Count - 12;
+                    //Console.WriteLine("RadTrim: {0} {1} {2}", trim, c, radar_messages.Count);
+                
+
+                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
                     double delay = 0;
                     foreach (var mess in radar_messages)
                     {
+                        if (c > 0 && c <= trim)
+                        {
+                            c++; 
+                            // Console.WriteLine("RadTrim: Trimming {0} {1} {2}", trim, c, radar_messages.Count);
+                            continue;
+                        }
+                        //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
+                        c++;
+                        radar_messages_trim.Add(mess.Key,mess.Value);
                         delay += 0.2;
                         Timeout(delay, () =>
                            {
                                if (saveradar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
                                else if (saveradar_realism >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
                            });
+                        
 
                     }
-                    radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages);
+                    radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages_trim);
 
                 });//timeout      
 
@@ -6837,17 +6857,17 @@ public class Mission : AMission, IMainMission
             addRadar("Radar Poole",             "PooR", 1, 2, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 25000,  false, 50, "");
 
 
-            addRadar("Oye Plage Freya Radar",         "OypR", 2, 1, "RTarget28R", "TGroundDestroyed", 61,294183, 219444,  50, 15000, false, 35, "");
-            addRadar("Coquelles Freya Radar",         "CoqR", 2, 1, "RTarget29R", "TGroundDestroyed", 63,276566, 214150,  50, 15000, false, 35, "");
-            addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77,341887, 232695,  100, 15000, false, 35, "");
-            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85,341866, 232710,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86,263234, 153713,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85,232576, 103318,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86,250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
-            addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86,262560, 133020,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar AMBETEUSE",               "AmbR", 2, 1, "RTarget44R", "TGroundDestroyed", 86,266788, 197956,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar BOULOGNE",                "BlgR", 2, 1, "RTarget45R", "TGroundDestroyed", 85,264266, 188554,  50, 15000, false, 35, ""); //Mission in mission file           
-            addRadar("Radar Le Touquet",              "L2kR", 2, 1, "RTarget46R", "TGroundDestroyed", 66,266625, 169936,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Oye Plage Freya Radar",         "OypR", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 15000, false, 35, "");
+            addRadar("Coquelles Freya Radar",         "CoqR", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 15000, false, 35, "");
+            addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 341887, 232695,  100, 15000, false, 35, "");
+            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232576, 103318,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
+            addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 262560, 133020,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar AMBETEUSE",               "AmbR", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar BOULOGNE",                "BlgR", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 264266, 188554,  50, 15000, false, 35, ""); //Mission in mission file           
+            addRadar("Radar Le Touquet",              "L2kR", 2, 1, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar Dieppe",                  "FreR", 2, 1, "RTarget47R", "TGroundDestroyed", 99, 185931, 88085, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 1, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 15000, false, 15, "");//Mission in mission file
             addRadar("Le Havre Freya Radar",          "LhvR", 2, 1, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 15000, false, 35, "");//Mission in mission file

@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -420,7 +422,7 @@ public class Mission : AMission
         foreach (AiWayPoint wp in CurrentWaypoints)
         {
             AiWayPoint nextWP = wp;
-            Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+            //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
         int currWay = airGroup.GetCurrentWayPoint();
@@ -664,7 +666,7 @@ public class Mission : AMission
         foreach (AiWayPoint wp in NewWaypoints)
         {
             AiWayPoint nextWP = wp;
-            Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+            //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
 
@@ -683,6 +685,22 @@ public class Mission : AMission
         { return false; }
     }
 
+    public void checkNewAirgroups()
+    {
+        GetCurrentAiAirgroups();
+        foreach (AiAirGroup airGroup in airGroups)
+        {
+
+            if (AirgroupsWayPointProcessed.Contains(airGroup)) continue;
+
+            AirgroupsWayPointProcessed.Add(airGroup);
+
+            if (!isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
+
+            updateAirWaypoints(airGroup);
+        }
+    }
+
     Random ran = new Random();
     public override void OnTickGame()
     {
@@ -690,18 +708,7 @@ public class Mission : AMission
 
         if (Time.tickCounter() % 305 == 41)
         {
-            GetCurrentAiAirgroups();
-            foreach (AiAirGroup airGroup in airGroups)
-            {
-
-                if (AirgroupsWayPointProcessed.Contains(airGroup)) continue;
-
-                AirgroupsWayPointProcessed.Add(airGroup);
-
-                if (!isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
-
-                updateAirWaypoints(airGroup);
-            }
+            Task.Run(() => checkNewAirgroups());
         }
     }
 

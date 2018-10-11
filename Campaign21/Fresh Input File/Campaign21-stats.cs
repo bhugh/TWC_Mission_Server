@@ -762,7 +762,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
 
-            return apa.GetStack(index);
+            //return apa.GetStack(index); //Note - 10/2018 - I belive the GetStack is incorrect for this purpose & that GetStack will return the OLDEST param in the bin
+            return apa.Get(index);  //Get will return the NEWEST item, the one most recently pushed  on.  
+            //This doesn't seem to vital as this function is never used (?)
 
         }
 
@@ -5542,10 +5544,12 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
                     Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
 
+                    loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+                    //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
+
                 });
 
-                loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
-                //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
+                
 
                 if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
                 {
@@ -12181,6 +12185,7 @@ public class CircularArray<T>
     }
 
     //Gets end of queue (ie, the first value entered) if 0 or 2nd, 3rd, etc value entered if index 1, 2, 3 etc
+    //10/2018 - this seems incorrect. This gets the last value pushed onto the array if 0, 2nd to last if 1, etc.
     public T Get(int indexBackFromHead)
     {
         int pos = _head - indexBackFromHead - 1;
@@ -12190,6 +12195,7 @@ public class CircularArray<T>
     }
 
     //Gets top of the stack (ie, the last value entered) if 0 or 2nd to last, 3rd to last, etc if index 1, 2, 3 etc 
+    ////10/2018 - this seems incorrect. This gets the tail of the array, ie the first value pushed onto the array (that still remains), ie the oldest value in the array, if 0, 2nd to last if 1, etc.
     public T GetStack(int indexForwardFromHead)
     {
         int pos = _head + indexForwardFromHead;

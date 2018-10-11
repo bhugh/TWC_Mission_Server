@@ -5273,7 +5273,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
         base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
 
-        Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt));
+        //Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)); //OK, don't do this as when many bombs explode it also explodes the CPU with way too many threads at once.
+
+        //Spread them out a little over time
+        //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
+        double wait = stb_random.NextDouble() * 10;
+        Timeout(wait, () =>
+            OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
+        );
     }
 
     public void OnBombExplosion_DoWork (string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)

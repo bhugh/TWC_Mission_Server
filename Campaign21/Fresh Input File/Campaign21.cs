@@ -4666,8 +4666,8 @@ public class Mission : AMission, IMainMission
             if ((timespread == 0) && (wait == 0))
             {
                 GamePlay.gpPostMissionLoad(s);
-                DebugAndLog(s + " file loaded");
-                Console.WriteLine(s + " file loaded");
+                DebugAndLog(s.Replace(CLOD_PATH + FILE_PATH,"") + " file loaded");
+                Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
             }
             else
             {
@@ -4683,8 +4683,8 @@ public class Mission : AMission, IMainMission
                         //GamePlay.gpPostMissionLoad(s2);
                         //if (DEBUG)
                         //{
-                        DebugAndLog(s + " file loaded");
-                    Console.WriteLine(s + " file loaded");
+                        DebugAndLog(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
+                    Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
                         //}
                     });
             }
@@ -6859,21 +6859,22 @@ public class Mission : AMission, IMainMission
 
             addRadar("Oye Plage Freya Radar",         "OypR", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 15000, false, 35, "");
             addRadar("Coquelles Freya Radar",         "CoqR", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 15000, false, 35, "");
-            addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 341887, 232695,  100, 15000, false, 35, "");
+            addRadar("Dunkirk Radar #2",              "DuRN", 2, 1, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 15000, false, 35, "");
+            addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 15000, false, 35, "");
             addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232576, 103318,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
-            addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 262560, 133020,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar AMBETEUSE",               "AmbR", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar BOULOGNE",                "BlgR", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 264266, 188554,  50, 15000, false, 35, ""); //Mission in mission file           
+            addRadar("Radar BOULOGNE",                "BlgR", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674,  50, 15000, false, 35, ""); //Mission in mission file           
             addRadar("Radar Le Touquet",              "L2kR", 2, 1, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppe",                  "FreR", 2, 1, "RTarget47R", "TGroundDestroyed", 99, 185931, 88085, 50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppe",                  "FreR", 2, 1, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 1, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 15000, false, 15, "");//Mission in mission file
             addRadar("Le Havre Freya Radar",          "LhvR", 2, 1, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 15000, false, 35, "");//Mission in mission file
             addRadar("Ouistreham Freya Radar",        "OuiR", 2, 1, "RTarget50R", "TGroundDestroyed", 100, 135205,29918,  50, 15000, false, 35, "");// Mission in mission file
-            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 1, "RTarget51R", "TGroundDestroyed", 100, 103641,36893,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 1, "RTarget52R", "TGroundDestroyed", 100, 65637, 44013,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 1, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 1, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580,  50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar Tatihou",                 "TatR", 2, 1, "RTarget53R", "TGroundDestroyed", 77, 60453,  63873,  50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar Querqueville",            "QueR", 2, 1, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666,  50, 15000, false, 35, ""); // Mission in mission file
 
@@ -6939,7 +6940,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", "Ditt", 1, 2, "BTarget26", "TGroundDestroyed", 85, 189262, 249274, 100, false, 100, "");
             //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, ""); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
             addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 2, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 100, ""); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
-            addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bulf", 1, 4, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bult", 1, 4, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 2, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Reading Engine Workshop ", "Read", 1, 4, "BTarget32", "TGroundDestroyed", 83, 84241, 267444, 300, false, 100, "");
@@ -6980,7 +6981,7 @@ public class Mission : AMission, IMainMission
             //RED TARGETS
             addTrigger(MO_ObjectiveType.Vehicles, "Bapaume Rail Transit Station", "Bapu", 1, 2, "RTarget0", "TGroundDestroyed", 83, 354623, 121058, 100, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Vehicles, "Motorpool near Grand-Fort Philippe", "MPGP", 2, 2, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "St. Omer Ball bearing Factory", "Stom", 2, 2, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 100, "");  //g
+            addTrigger(MO_ObjectiveType.Building, "St. Omer Ball bearing Factory", "Omar", 2, 2, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Fuel, "Estree Fuel Depot", "Estr", 2, 3, "RTarget3", "TGroundDestroyed", 40, 280182, 164399, 50, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.Fuel, "Boulogne Synthetic Fuel", "Boul", 2, 2, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 100, "");  //g
             addTrigger(MO_ObjectiveType.RRYard, "Calais Rail Yard", "Cala", 2, 2, "RTarget5", "TGroundDestroyed", 60, 283995, 215369, 100, false, 100, "");  //g
@@ -7562,8 +7563,8 @@ public class Mission : AMission, IMainMission
 
                 if (File.Exists(CLOD_PATH + FILE_PATH + flakMission)) { 
                     GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + flakMission);                    
-                    DebugAndLog(CLOD_PATH + FILE_PATH + flakMission + " file loaded");
-                    Console.WriteLine(CLOD_PATH + FILE_PATH + flakMission + " file loaded");
+                    DebugAndLog(flakMission + " file loaded");
+                    Console.WriteLine(flakMission + " file loaded");
                     
                 } else
                 {

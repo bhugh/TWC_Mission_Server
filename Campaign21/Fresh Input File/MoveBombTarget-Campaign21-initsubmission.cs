@@ -58,8 +58,8 @@ public class Mission : AMission
             { AiAirWayPointType.NORMFLY, new changeLimit (7000, 700, 30, 10) },
             { AiAirWayPointType.HUNTING, new changeLimit (7000, 700, 30, 10) },
             { AiAirWayPointType.RECON, new changeLimit (4000, 1000, 50, 10) },
-            { AiAirWayPointType.GATTACK_POINT, new changeLimit (700, 0, 0, 10, 15000) },
-            { AiAirWayPointType.GATTACK_TARG, new changeLimit (700, 0, 0, 10, 15000) },
+            { AiAirWayPointType.GATTACK_POINT, new changeLimit (450, 0, 0, 10, 15000) },
+            { AiAirWayPointType.GATTACK_TARG, new changeLimit (450, 0, 0, 10, 15000) },
             { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (5500, 800, 25, 10) },
             { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (5500, 800, 25, 10) },
         };

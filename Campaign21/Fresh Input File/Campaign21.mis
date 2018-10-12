@@ -1,4 +1,4 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -3926,7 +3926,7 @@
   BTarget24 TGroundDestroyed 75 185027 252619 100
   BTarget25 TGroundDestroyed 80 186057 251745 100
   BTarget26 TGroundDestroyed 85 189262 249274 100
-  BTarget27 TGroundDestroyed 85 180141 288423 150
+  BTarget27 TGroundDestroyed 85 173778 233407 150
   BTarget28 TGroundDestroyed 61 180207 288435 200
   BTarget29 TGroundDestroyed 75 35876 236706 150
   BTarget30 TGroundDestroyed 81 56990 203737 50
@@ -4012,7 +4012,7 @@
   LehavNaval7 TGroundDestroyed 100 162993 49927 50
   9A TGroundDestroyed 63 296130 218469 50
   8A TGroundDestroyed 75 294090 85100 100
-  7A TGroundDestroyed 66 264696 189716 50
+  7A TGroundDestroyed 66 293279 84884 100
   1B TGroundDestroyed 70 264252 189991 50
   2B TGroundDestroyed 47 265063 190506 50
   3B TGroundDestroyed 51 265251 190259 50

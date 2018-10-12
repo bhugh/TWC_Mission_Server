@@ -6876,14 +6876,14 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         //try
         {
             //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
-            Console.WriteLine("OnActorDead: 1");
+            // Console.WriteLine("OnActorDead: 1");
             if (stb_deadActors.Contains(actor.Name())) {
                 //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
                 return; //This is an actor we've already 'killed' therefore we won't double count it.
                         //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
             } else {
                 //if (stb_Debug) 
-                Console.WriteLine("OnActorDead: 2");
+                // Console.WriteLine("OnActorDead: 2");
                 //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
                 //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
                 stb_deadActors.Add(actor.Name());
@@ -6891,7 +6891,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }
 
             //if (stb_Debug) 
-            Console.WriteLine("OnActorDead: 3");
+            //Console.WriteLine("OnActorDead: 3");
             //stb_KilledActors.Add(actor, damages); // sav
             AiAircraft aircraft1 = null;
             if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
@@ -6902,7 +6902,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             }
 
             //if (stb_Debug) 
-            Console.WriteLine("OnActorDead: 4");
+            //Console.WriteLine("OnActorDead: 4");
             if (aircraft1 != null)
             {
                 //AiAircraft aircraft = actor as AiAircraft;
@@ -6922,7 +6922,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
 
             //if (stb_Debug) 
-            Console.WriteLine("OnActorDead: 5");
+            //Console.WriteLine("OnActorDead: 5");
             string msg = "killed by ";
             bool selfKill=true; 
             List<string> deadPlayerNames = new List <string>();
@@ -6976,7 +6976,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
 
                 //if (stb_Debug) 
-                Console.WriteLine("OnActorDead: 8");
+                //Console.WriteLine("OnActorDead: 8");
                 foreach (DamagerScore ds in damages)
                 {
                     bool willReportDead = false;
@@ -7116,7 +7116,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             else
             {
                 //if (stb_Debug) 
-                Console.WriteLine("OnActorDead: 10");
+                //Console.WriteLine("OnActorDead: 10");
                 AiGroundActor aiGroundActor = actor as AiGroundActor;
                 if (aiGroundActor != null)
                 {
@@ -7173,7 +7173,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 {
 
                     //if (stb_Debug) 
-                    Console.WriteLine("OnActorDead: 12");
+                    //Console.WriteLine("OnActorDead: 12");
                     //TODO: we need to do all the self-kill checking here as well; sometimes you can PK yourself . . . 
                     AiPerson person = actor as AiPerson;
                     Player player2 = actor as Player;

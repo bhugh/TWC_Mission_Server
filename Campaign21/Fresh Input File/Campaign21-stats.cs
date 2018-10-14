@@ -3880,7 +3880,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         #endregion
     }
 
-    ISupplyMission TWCSupplyMission;
+    public ISupplyMission TWCSupplyMission;
     int stb_lastMissionLoaded = -1;
     public override void OnMissionLoaded(int missionNumber)
     {
@@ -11330,6 +11330,9 @@ public class StbStatRecorder
                     if (immediate_save)
                     {
                         ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
+
+                        if (mission.TWCSupplyMission != null) ms += "<br>" + "<br>" + mission.TWCSupplyMission.ListAircraftLost(0, null, false, true);
+                       
                     }
 
                     //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save

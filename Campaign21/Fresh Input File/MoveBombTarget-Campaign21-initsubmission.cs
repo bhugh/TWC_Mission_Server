@@ -403,8 +403,11 @@ public class Mission : AMission
                */
             //return the SAME relative position to this new airfield as we had with the old airfield
             //This is important because the attack point is often quite distant from the airfield itself, in order to actually hit the airfield accurately
-            retPos.x = p.x - nearestAirfield.Pos().x + ap.Pos().x;
-            retPos.y = p.y - nearestAirfield.Pos().y + ap.Pos().y;
+            //retPos.x = p.x - nearestAirfield.Pos().x + ap.Pos().x;
+            //retPos.y = p.y - nearestAirfield.Pos().y + ap.Pos().y;
+            //Ok, we're going to make the airport attacks more effective by just centering them more on the new airport (plus/minus the radius defined above, of course)
+            retPos.x = ap.Pos().x;
+            retPos.y = ap.Pos().y;
             retPos.z = 0;
             Console.WriteLine("MBT: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
             return retPos;

@@ -337,18 +337,36 @@ public void ReadSupply(string suffix)
                         Console.WriteLine("SupplyEnd: Returning to stock " + py.Name() +
                             " " + pl);
                     }
-
                 }
-
-
             }
-
         }
+    }
+    public HashSet<AiActor> AircraftActorsCurrentlyInAir()
+    {
+        HashSet<AiActor> retHS = new HashSet<AiActor>();
+        if (GamePlay != null && GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+        {
+
+            foreach (Player py in GamePlay.gpRemotePlayers())
+            {                
+                if (py.Place() != null)
+                {
+                    AiActor act = py.Place();
+                    
+                    if (act as AiAircraft != null)
+                    {
+                        retHS.Add(act);
+                    }
+                }
+            }
+        }
+        return retHS;
     }
 
     public bool SupplyEndMission(double redMult = 1, double blueMult = 1)
     {
         ReturnAircraftToSupplyAtMissionEnd();
+        ListAircraftLost(0, null, true, false, match: "");
         GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult*100).ToString("n1"), new object[] { });
         GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100).ToString("n1"), new object[] { });
         AddIncrease(ArmiesE.Red, redMult);
@@ -507,8 +525,129 @@ private bool IsLimitReached(AiActor actor)
     //are done only when the aircraft is created with a player in it) but then leaves it, checking it back in & getting an extra aircraft
     //Also, we can warrantee that no aircraft is checked back in unless it was checked out first.
     HashSet<AiActor> aircraftCheckedOut = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked out ONCE ONLY
+    Dictionary<AiActor, Tuple<int, string, string, DateTime>> aircraftCheckedOutInfo = new Dictionary<AiActor, Tuple<int, string, string, DateTime>>(); //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type>
     HashSet<AiActor> aircraftCheckedIn = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked IN once only
     HashSet<AiActor> aircraftCheckedInButLaterKilled = new HashSet<AiActor>(); //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
+
+    private void aircraftCheckOut_add (AiActor actor)
+    {
+        string pilotNames = "";
+        string aircraftTy8pe = "";
+        AiAircraft ac = actor as AiAircraft;
+        AiCart cart = actor as AiCart;
+        if (ac != null)
+        {
+            //get name(s) of any pilot(s) in the aircraft
+            HashSet<string> namesHS = new HashSet<string>();
+            bool first = true;
+            for (int i = 0; i < ac.Places(); i++)
+            {
+                if (ac.Player(i) != null && ac.Player(i).Name() != null && !namesHS.Contains(ac.Player(i).Name()))
+                {
+                    if (!first) pilotNames += " - ";
+                    pilotNames += ac.Player(i).Name();
+                    namesHS.Add(ac.Player(i).Name());
+                    first = false;
+
+                }
+            }
+            
+
+            //(AircraftSupply[(ArmiesE)(actor.Army())][cart.InternalTypeName()]
+            
+
+
+        }
+        if (pilotNames == "") pilotNames = "(AI/No Pilot Listed)";
+        aircraftCheckedOut.Add(actor);
+        aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
+    }
+
+    public string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "")
+    {
+        try
+        {
+
+            HashSet<AiActor> actorsNotCheckedInorInAir = new HashSet<AiActor>(aircraftCheckedOut);
+            HashSet<AiActor> aCIA = AircraftActorsCurrentlyInAir();
+
+            actorsNotCheckedInorInAir.ExceptWith(aircraftCheckedIn); //remove all a/c that have been checked in
+            actorsNotCheckedInorInAir.ExceptWith(aCIA); //remove all a/c still in the air
+
+            double delay = 0;
+            double add = 0;
+            if (display) add = 0.2;
+            string returnmsg = "";
+            Player[] playerL = null;
+            if (GamePlay != null) playerL = new Player[] { GamePlay.gpPlayer() }; //displays to SERVER only
+            if (player != null) playerL = new Player[] { player };
+            else display = false;
+            
+
+            string nl = Environment.NewLine;
+            if (html) nl = "<br>" + nl;
+
+            
+            int low = 1;
+            int high = 2;
+            if (army == 1 || army == 2) { low = army; high = army; }
+            for (int x = low; x <= high; x++)
+            {
+                bool haveRetForArmy = false;
+                string msg = ">>>>" + ArmiesL[x] + "  Aircraft Destroyed or Lost This Session";
+                if (display)
+                {
+                    delay += add;
+                    if (GamePlay != null) Timeout(delay, () => { GamePlay.gpLogServer(playerL, msg, null); });
+                }
+                returnmsg += msg + nl;
+
+                foreach (AiActor actor in actorsNotCheckedInorInAir)
+                {
+                    if (!aircraftCheckedOutInfo.ContainsKey(actor)) continue;
+                    Tuple<int, string, string, DateTime> entry = aircraftCheckedOutInfo[actor];
+                    if (entry.Item1 != x) continue;
+
+                    if (match.Length > 0 && !entry.Item3.ToLowerInvariant().Contains(match.Trim().ToLowerInvariant())) continue; //implement substring matching "<lost hurri" etc
+
+                    if (playerNameMatch.Length > 0 && !entry.Item2.ToLowerInvariant().Contains(playerNameMatch.Trim().ToLowerInvariant())) continue; //implement substring matching for match by player name
+
+                    string msg1 = ParseTypeName(entry.Item3) + " " + entry.Item2 + " " + entry.Item4.ToString("u");
+                    //string msg1 = current.Key + ": " + current.Value.ToString("n1");
+                    if (display && GamePlay != null)
+                    {
+                        delay += add;
+                        Timeout(delay, () => { GamePlay.gpLogServer(playerL, msg1, null); });
+                    }
+                    returnmsg += msg1 + nl;
+                    haveRetForArmy = true;
+
+                }
+
+                if (!haveRetForArmy)
+                {
+                    returnmsg += "(none)" + nl;
+                    delay += add;
+                    if (display && GamePlay != null) Timeout(delay, () => { GamePlay.gpLogServer(playerL, "(none)", null); });
+                }
+
+                if (army == 0 && x == 1) returnmsg += nl; //add a space in between the two lists, for text or html purposes
+
+                //(AircraftSupply[(ArmiesE)(actor.Army())][cart.InternalTypeName()]
+
+
+
+            }
+
+            return returnmsg;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Supply ListAircraftLost ERROR: " + ex.ToString());
+            return "";
+        }
+       
+    }
 
     private void CheckActorOut(AiActor actor, Player player = null, bool Force = false)
     {
@@ -522,7 +661,7 @@ private bool IsLimitReached(AiActor actor)
             Console.WriteLine("Supply: This aircraft has already been checked OUT before: " + cart.InternalTypeName()); 
             return;
         }
-        else aircraftCheckedOut.Add(actor);
+        else aircraftCheckOut_add(actor);
 
         DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
 
@@ -765,7 +904,7 @@ private int NumberPlayerInActor(AiActor actor)
                     CheckActorOut(actor, player);
                 else
                 {
-                    aircraftCheckedOut.Add(actor);//Being rejected amounts to the same thing as being checked out, so we add the actor to the list for two reasons:
+                    aircraftCheckOut_add(actor);//Being rejected amounts to the same thing as being checked out, so we add the actor to the list for two reasons:
                     // #1. avoid double processing here or in CheckActorOut #2. CheckActorIn won't process the plane when the player is rejected, unless they are added to the aircraftCheckedOut list.
                     AiCart cart = actor as AiCart;
 

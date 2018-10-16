@@ -1,3 +1,5 @@
+#define DEBUG  
+#define TRACE  
 ////$reference GCVBackEnd.dll
 //$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
@@ -138,6 +140,7 @@ public class Mission : AMission, IMainMission
 
     Stopwatch stopwatch;
     Dictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
+    public Dictionary<AiAirGroup, SortedDictionary<string,IAiAirGroupRadarInfo>> ai_radar_info_store { get; set; }
 
     //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
     //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
@@ -166,7 +169,7 @@ public class Mission : AMission, IMainMission
 
         //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
         //Also in other submission .cs like -stats.cs you can access the AMission methods of TWCMainMission by eg (TWCMainMission as AMission).OnBattleStopped();
-        
+
         //TWCComms.Communicator.Instance.Ini = (AIniFile)Ini.IniFile; //allows -stats.cs etc to access this instance of IniFile
         //Console.Write("TYPEOF: " + typeof(string).Assembly.TWCStats);
         //TWCStats.interop statsMis = new TWCStats.interop();
@@ -201,17 +204,18 @@ public class Mission : AMission, IMainMission
         LOG_FILE_NAME = MISSION_ID + @"_log_log.txt";
         LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
         STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to  
-        //Will be updated with value from -stats.ini OnMissionLoaded
-                   
+                                                                                                                   //Will be updated with value from -stats.ini OnMissionLoaded
+
         stopwatch = Stopwatch.StartNew();
         RADAR_REALISM = (int)5;
         RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
+        ai_radar_info_store = new Dictionary<AiAirGroup, SortedDictionary<string,IAiAirGroupRadarInfo>>();
 
         //initialize giant sector overview, which gives a quick total of airgroups (ind=0) and aircraft (ind=1) for the entire map.
-        GiantSectorOverview[0] = new int[10,2]; //army = 0 is ie admins
-        GiantSectorOverview[1] = new int[10,2];
-        GiantSectorOverview[2] = new int[10,2];
+        GiantSectorOverview[0] = new int[10, 2]; //army = 0 is ie admins
+        GiantSectorOverview[1] = new int[10, 2];
+        GiantSectorOverview[2] = new int[10, 2];
 
     }
 
@@ -371,7 +375,7 @@ public class Mission : AMission, IMainMission
 
     public override void OnTickGame()
     {
-		base.OnTickGame();
+        base.OnTickGame();
         /* Tick_Mission_Time = 720000 - Time.tickCounter();
         var Mission_Time = Tick_Mission_Time / 2000;
         TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
@@ -433,7 +437,7 @@ public class Mission : AMission, IMainMission
                         foreach (Player p in GamePlay.gpRemotePlayers())
                         {
                             if (admin_privilege_level(p) >= 1) //about once a minute, a message to players who can issue coop commands
-                                {
+                            {
                                 twcLogServer(new Player[] { p }, "CO-OP MODE CONTROL: Use chat command <coop to start immediately OR extend time", null);
                             }
                         }
@@ -510,6 +514,8 @@ public class Mission : AMission, IMainMission
             Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
 
             Timeout(10, () => { groupAllAircraft_recurs(); });
+            Timeout(43, () => { aiAirGroupRadarReturns_recurs(); });
+            
         }
 
         if (tickSinceStarted % 30000 == 1000)
@@ -579,8 +585,8 @@ public class Mission : AMission, IMainMission
             ///////////////////////////////////////////    
             int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
                                              //Console.WriteLine("Writing current radar returns to file");
-            //RADAR_REALISM = -1;
-            //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+                                             //RADAR_REALISM = -1;
+                                             //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
             Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1));
             //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1);
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -852,8 +858,8 @@ public class Mission : AMission, IMainMission
         );
     }
 
-    public void OnBombExplosion_DoWork (string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-    { 
+    public void OnBombExplosion_DoWork(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
 
         //twcLogServer(null, "bombe 1", null);
         bool ai = true;
@@ -1154,7 +1160,7 @@ public class Mission : AMission, IMainMission
             twcLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
 
-            
+
             //All players who are lucky enough to still be in a plane at this point have saved their plane/it's returned to their team's supply
 
 
@@ -1162,12 +1168,12 @@ public class Mission : AMission, IMainMission
             double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
             CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
-            
+
         });
         Timeout(endseconds + 50, () =>
         {
             twcLogServer(null, "Server Restarting in 10 seconds!!!", new object[] { });
-            
+
         });
         Timeout(endseconds + 60, () =>
         {
@@ -1182,8 +1188,8 @@ public class Mission : AMission, IMainMission
             {
                 (GamePlay as GameDef).gameInterface.CmdExec("exit");
             }
-                //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
-            });
+            //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
+        });
         Timeout(endseconds + 90, () =>  //still doing this as a failsafe but allowing 20 secs to save etc
         {
             //If the CmdExec("exit") didn't work for some reason, we can call OnBattleStoped manually to clean things up, then kill.  This is just a failsafe
@@ -1273,10 +1279,10 @@ public class Mission : AMission, IMainMission
              if (aircraft != null)
              {
 
-                     //if (!aircraft.IsAirborne())
-                     //{
+                 //if (!aircraft.IsAirborne())
+                 //{
 
-                     aircraft.cutLimb(part.LimbNames.AileronL0);
+                 aircraft.cutLimb(part.LimbNames.AileronL0);
                  aircraft.cutLimb(part.LimbNames.AileronR0);
 
                  aircraft.cutLimb(part.LimbNames.ElevatorL0);
@@ -1285,63 +1291,63 @@ public class Mission : AMission, IMainMission
                  aircraft.cutLimb(part.LimbNames.Rudder0);
 
 
-                     //aircraft.cutLimb(part.LimbNames.WingL0); 
-                     //aircraft.cutLimb(part.LimbNames.WingR0);
-                     //aircraft.cutLimb(part.LimbNames.WingL2); // Spit2a 
-                     //aircraft.cutLimb(part.LimbNames.WingR2);
+                 //aircraft.cutLimb(part.LimbNames.WingL0); 
+                 //aircraft.cutLimb(part.LimbNames.WingR0);
+                 //aircraft.cutLimb(part.LimbNames.WingL2); // Spit2a 
+                 //aircraft.cutLimb(part.LimbNames.WingR2);
 
-                     //aircraft.cutLimb(part.LimbNames.AileronL0);
-                     //aircraft.cutLimb(part.LimbNames.AileronR1);
+                 //aircraft.cutLimb(part.LimbNames.AileronL0);
+                 //aircraft.cutLimb(part.LimbNames.AileronR1);
 
-                     //aircraft.cutLimb(part.LimbNames.ElevatorL0);
-                     //aircraft.cutLimb(part.LimbNames.ElevatorR1);
+                 //aircraft.cutLimb(part.LimbNames.ElevatorL0);
+                 //aircraft.cutLimb(part.LimbNames.ElevatorR1);
 
-                     //aircraft.cutLimb(part.LimbNames.Engine0);
-                     //aircraft.cutLimb(part.LimbNames.Engine7);
-
-
-                     //part.LimbNames.ElevatorL0
-                     //part.LimbNames.ElevatorL1
-                     //part.LimbNames.ElevatorR0
-                     //part.LimbNames.ElevatorR1
-
-                     //part.LimbNames.Engine0 - 7
+                 //aircraft.cutLimb(part.LimbNames.Engine0);
+                 //aircraft.cutLimb(part.LimbNames.Engine7);
 
 
-                     //part.LimbNames.AileronL0
-                     //part.LimbNames.AileronL1
-                     //part.LimbNames.AileronR0
-                     //part.LimbNames.AileronR1
+                 //part.LimbNames.ElevatorL0
+                 //part.LimbNames.ElevatorL1
+                 //part.LimbNames.ElevatorR0
+                 //part.LimbNames.ElevatorR1
+
+                 //part.LimbNames.Engine0 - 7
 
 
-                     //aircraft.cutLimb(part.LimbNames.WingL1);
-                     //aircraft.cutLimb(part.LimbNames.WingL3);
-                     //aircraft.cutLimb(part.LimbNames.WingL4);
-                     //aircraft.cutLimb(part.LimbNames.WingL5);
-                     //aircraft.cutLimb(part.LimbNames.WingL6);
-                     //aircraft.cutLimb(part.LimbNames.WingL7);
+                 //part.LimbNames.AileronL0
+                 //part.LimbNames.AileronL1
+                 //part.LimbNames.AileronR0
+                 //part.LimbNames.AileronR1
 
-                     //aircraft.cutLimb(part.LimbNames.WingR1);
 
-                     //aircraft.cutLimb(part.LimbNames.WingR3);
-                     //aircraft.cutLimb(part.LimbNames.WingR4); // 109
-                     //aircraft.cutLimb(part.LimbNames.WingR5);
-                     //aircraft.cutLimb(part.LimbNames.WingR6);
-                     //aircraft.cutLimb(part.LimbNames.WingR7);
-                     ////}
-                     ////else
-                     ////{
-                     ////    // plane in Air Tail cut off
-                     //aircraft.cutLimb(part.LimbNames.Tail0);
-                     //aircraft.cutLimb(part.LimbNames.Tail1);
-                     //aircraft.cutLimb(part.LimbNames.Tail2);
-                     //aircraft.cutLimb(part.LimbNames.Tail3);
-                     //aircraft.cutLimb(part.LimbNames.Tail4);
-                     //aircraft.cutLimb(part.LimbNames.Tail5);
-                     //aircraft.cutLimb(part.LimbNames.Tail6);
-                     //aircraft.cutLimb(part.LimbNames.Tail7);
-                     ////}
-                 }
+                 //aircraft.cutLimb(part.LimbNames.WingL1);
+                 //aircraft.cutLimb(part.LimbNames.WingL3);
+                 //aircraft.cutLimb(part.LimbNames.WingL4);
+                 //aircraft.cutLimb(part.LimbNames.WingL5);
+                 //aircraft.cutLimb(part.LimbNames.WingL6);
+                 //aircraft.cutLimb(part.LimbNames.WingL7);
+
+                 //aircraft.cutLimb(part.LimbNames.WingR1);
+
+                 //aircraft.cutLimb(part.LimbNames.WingR3);
+                 //aircraft.cutLimb(part.LimbNames.WingR4); // 109
+                 //aircraft.cutLimb(part.LimbNames.WingR5);
+                 //aircraft.cutLimb(part.LimbNames.WingR6);
+                 //aircraft.cutLimb(part.LimbNames.WingR7);
+                 ////}
+                 ////else
+                 ////{
+                 ////    // plane in Air Tail cut off
+                 //aircraft.cutLimb(part.LimbNames.Tail0);
+                 //aircraft.cutLimb(part.LimbNames.Tail1);
+                 //aircraft.cutLimb(part.LimbNames.Tail2);
+                 //aircraft.cutLimb(part.LimbNames.Tail3);
+                 //aircraft.cutLimb(part.LimbNames.Tail4);
+                 //aircraft.cutLimb(part.LimbNames.Tail5);
+                 //aircraft.cutLimb(part.LimbNames.Tail6);
+                 //aircraft.cutLimb(part.LimbNames.Tail7);
+                 ////}
+             }
          });
     }
     private void destroyPlayerPlane(AiAircraft aircraft)
@@ -1438,7 +1444,7 @@ public class Mission : AMission, IMainMission
                             {
                                 damageAiControlledPlane(actor);
                                 Console.WriteLine("Player has left plane; damaged aircraft so that AI cannot assume control " + pName + " " + (actor as AiAircraft).Type());
-                                    //check limited aircraft
+                                //check limited aircraft
 
                                 /* this is now handled by -supply.cs system
                                     switch ((actor as AiAircraft).InternalTypeName())
@@ -1460,8 +1466,8 @@ public class Mission : AMission, IMainMission
                     }
                 }
                 DateTime utcDate = DateTime.UtcNow;
-                    //logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));
-                }
+                //logStats(utcDate.ToString("u") + " " + player.Name() + " " + WritePlayerStat(player));
+            }
             );
 
         }
@@ -1544,7 +1550,7 @@ public class Mission : AMission, IMainMission
          ************************************************/
         //Timeout(188, () => { CheckStatsData(); });
 
-        Timeout(188, () => { Task.Run(() => CheckStatsData()); });        
+        Timeout(188, () => { Task.Run(() => CheckStatsData()); });
 
         // Read the stats file where we tally red & blue victories for the session
         //This allows us to make red/blue victories part of our mission objectives &
@@ -2072,10 +2078,10 @@ public class Mission : AMission, IMainMission
                         Console.WriteLine("NR " + netRed);
                         Console.WriteLine("NR " + netBlue);
                         netRedCount = netRed.Select((c, i) => netRed.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
-                        netBlueCount = netBlue.Select((c, i) => netBlue.Substring(i)).Count(sub => sub.StartsWith(target)) - 1 ;
+                        netBlueCount = netBlue.Select((c, i) => netBlue.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
                     }
 
-                    Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netBlueCount.ToString() );
+                    Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netBlueCount.ToString());
                     if (netRedCount < 0) netRedCount = 0;
                     if (netBlueCount < 0) netBlueCount = 0;
                     if (netRedCount > 120) netRedCount = 120;
@@ -2091,8 +2097,8 @@ public class Mission : AMission, IMainMission
                     //if they don't turn the map there is still a slight tweak give the side with more overall victories a few more aircraft 
                     if (winner == "Red") { redMult = 3; blueMult = 0.01; }
                     else if (winner == "Blue") { blueMult = 3; redMult = 0.01; }
-                    else if (misResult > 0) redMult +=  misResult / 100.0;
-                    else if (misResult < 0) blueMult +=  (-misResult) / 100.0;
+                    else if (misResult > 0) redMult += misResult / 100.0;
+                    else if (misResult < 0) blueMult += (-misResult) / 100.0;
                     redMult += redMultAdmin;
                     blueMult += blueMultAdmin;
                     if (TWCSupplyMission != null) TWCSupplyMission.SupplyEndMission(redMult, blueMult);
@@ -2205,21 +2211,21 @@ public class Mission : AMission, IMainMission
                     //Timeout(300, () =>
                     Timeout(20, () => //testing
                     {
-                            //Force a player into a certain place:
-                            //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
-                            for (int i = 0; i < aircraft.Places(); i++)
+                        //Force a player into a certain place:
+                        //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
+                        for (int i = 0; i < aircraft.Places(); i++)
                         {
-                                //aircraft.Player(i).Place() = null;
-                                //aircraft.Player(i).PlaceEnter(null,0);
-                                aircraft.Player(i).PlaceLeave(i);
+                            //aircraft.Player(i).Place() = null;
+                            //aircraft.Player(i).PlaceEnter(null,0);
+                            aircraft.Player(i).PlaceLeave(i);
                         }
 
-                            //Wait 0.5 second for player(s) to leave, then destroy
-                            Timeout(0.5, () =>
-                            {
-                                destroyPlane(aircraft);  //Destroy completely when dead, after a reasonable time period.
-                                    Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
-                            });
+                        //Wait 0.5 second for player(s) to leave, then destroy
+                        Timeout(0.5, () =>
+                        {
+                            destroyPlane(aircraft);  //Destroy completely when dead, after a reasonable time period.
+                                Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
+                        });
 
                     });
                 }
@@ -2277,18 +2283,18 @@ public class Mission : AMission, IMainMission
                         Timeout(20, () => //testing
                         {
                             if (DEBUG) twcLogServer(null, "Main: 3 OnPersonHealth for " + player.Name(), new object[] { });
-                                //Checking health a second time gives them a while to switch to a different position if
-                                //it is available
-                                if (player.PersonPrimary() != null && player.PersonPrimary().Health == 0
-                                    && (player.PersonSecondary() == null
-                                        || (player.PersonSecondary() != null && player.PersonSecondary().Health == 0)))
+                            //Checking health a second time gives them a while to switch to a different position if
+                            //it is available
+                            if (player.PersonPrimary() != null && player.PersonPrimary().Health == 0
+                                && (player.PersonSecondary() == null
+                                    || (player.PersonSecondary() != null && player.PersonSecondary().Health == 0)))
                             {
                                 if (DEBUG) twcLogServer(null, "Main: 4 OnPersonHealth for " + player.Name(), new object[] { });
 
-                                    //Not really sure how this works, but this is a good guess.  
-                                    //if (player.PersonPrimary() != null )player.PlaceLeave(0);
-                                    //if (player.PersonSecondary() != null) player.PlaceLeave(1);
-                                    if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
+                                //Not really sure how this works, but this is a good guess.  
+                                //if (player.PersonPrimary() != null )player.PlaceLeave(0);
+                                //if (player.PersonSecondary() != null) player.PlaceLeave(1);
+                                if (player.PersonPrimary() != null) player.PlaceLeave(player.PersonPrimary().Place());
                                 if (player.PersonSecondary() != null) player.PlaceLeave(player.PersonSecondary().Place());
                             }
                             if (DEBUG) twcLogServer(null, player.Name() + " died and was forced to leave player's current place.", new object[] { });
@@ -2378,13 +2384,13 @@ public class Mission : AMission, IMainMission
 
     double nearAirGroupThreshhold_m = 7500;
     double nearAirGroupAltThreshhold_m = 2000;
-    public enum aiorhuman { AI, Mixed, Human };
+    //public enum aiorhuman { AI, Mixed, Human };
 
-    public class AirGroupInfo
+    public class AirGroupInfo : IAirGroupInfo
     {
-        public double time; //Battle.time.current;
-        public HashSet<AiAirGroup> nearbyAirGroups = new HashSet<AiAirGroup>();  // { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
-        public HashSet<AiAirGroup> groupedAirGroups = new HashSet<AiAirGroup>(); //{ get; set; } //groups that have been nearby for that past X iterations, thus counting as part of the same Group
+        public double time { get; set; } //Battle.time.current;
+        public HashSet<AiAirGroup> nearbyAirGroups { get; set; }// = new HashSet<AiAirGroup>();  // { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
+        public HashSet<AiAirGroup> groupedAirGroups { get; set; } // = new HashSet<AiAirGroup>(); //{ get; set; } //groups that have been nearby for that past X iterations, thus counting as part of the same Group
         public Point3d pos { get; set; }
         public Point3d vel { get; set; }
         public bool belowRadar { get; set; }
@@ -2415,7 +2421,7 @@ public class Mission : AMission, IMainMission
         public Point3d AGGvel { get; set; }
         public int AGGcount { get; set; } //total # in group, including all above & below radar
         public int AGGcountAboveRadar { get; set; } //if countAboveRadar is 0 this group won't show up at all.  This is the count that shows to ordinary players
-        public int AGGcountBelowRadar { get; set; } 
+        public int AGGcountBelowRadar { get; set; }
         public bool AGGradarDropout { get; set; }
         public double AGGminAlt_m { get; set; }
         public double AGGmaxAlt_m { get; set; }
@@ -2427,8 +2433,8 @@ public class Mission : AMission, IMainMission
         public aiorhuman AGGAIorHuman { get; set; }
         public string AGGtype { get; set; }    //the actual type: "F" or "B".
         public string AGGmixupType { get; set; } //the type that will actually display on user radar, which is sometimes/often "mixed up".  "F" "B" or "U" for unknown
-        public bool AGGisHeavyBomber { get; set; }                        
-        public Mission mission;
+        public bool AGGisHeavyBomber { get; set; }
+        public AMission mission { get; set; }
 
 
 
@@ -2454,7 +2460,10 @@ public class Mission : AMission, IMainMission
         {
             //Console.WriteLine("AGI 1");
 
-            AiAircraft a = act as AiAircraft;
+            nearbyAirGroups = new HashSet<AiAirGroup>();  // { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
+            groupedAirGroups = new HashSet<AiAirGroup>(); //{ get; set; } //groups that have been nearby for that past X iterations, thus 
+
+        AiAircraft a = act as AiAircraft;
             actor = act;
             airGroup = ag;
             //Console.WriteLine("AGI 2");
@@ -2469,9 +2478,9 @@ public class Mission : AMission, IMainMission
             mission = msn;
             if (isAI)
             {
-                playerNames = actor.Name(); 
+                playerNames = actor.Name();
                 AGGplayerNames = actor.Name();
-            } 
+            }
             else
             {
                 bool first = true;
@@ -2497,7 +2506,7 @@ public class Mission : AMission, IMainMission
             }
 
             AGGtypeNames = Calcs.GetAircraftType(actor as AiAircraft);
-            
+
 
 
             //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
@@ -2521,11 +2530,11 @@ public class Mission : AMission, IMainMission
              + a.TypedName() + " " 
              +  a.AirGroup().ID(), new object[] { });
             */
-            pos = a.Pos();            
+            pos = a.Pos();
             AGGpos = pos;
-            sector = Calcs.correctedSectorName(mission, pos);
+            sector = Calcs.correctedSectorName(mission as Mission, pos);
             AGGsector = sector;
-            sectorKeyp = Calcs.correctedSectorNameKeypad(mission, pos);
+            sectorKeyp = Calcs.correctedSectorNameKeypad(mission as Mission, pos);
             AGGsectorKeyp = sectorKeyp;
             giantKeypad = Calcs.giantkeypad(pos);
             AGGgiantKeypad = giantKeypad;
@@ -2534,17 +2543,17 @@ public class Mission : AMission, IMainMission
             AGGaveAlt_m = pos.z;
             altAGL_m = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
             altAGL_ft = Calcs.meters2feet(altAGL_m);
-            belowRadar = mission.belowRadar(altAGL_ft);
+            belowRadar = (mission as Mission).belowRadar(altAGL_ft);
             AGGavealtAGL_ft = altAGL_ft;
 
-            if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1;}
+            if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1; }
             else { AGGcountAboveRadar = 1; AGGcountBelowRadar = 0; }
             AGGradarDropout = false;
 
-        //Thread.Sleep(100);
-        //pos2=a.Pos();
-        //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
-        Vector3d Vwld = ag.Vwld();
+            //Thread.Sleep(100);
+            //pos2=a.Pos();
+            //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
+            Vector3d Vwld = ag.Vwld();
             /*
             vel_mps = Calcs.CalculatePointDistance(Vwld);
             vel_mph = Calcs.meterspsec2milesphour(vel_mps);
@@ -2587,7 +2596,7 @@ public class Mission : AMission, IMainMission
         public void checkIfNearbyAndAdd(AirGroupInfo agi2)
         {
             Point3d tempos = agi2.pos;
-            if (agi2.type == type && pos.distance(ref tempos) <= mission.nearAirGroupThreshhold_m && (Math.Abs(agi2.pos.z-pos.z)<= mission.nearAirGroupAltThreshhold_m ))
+            if (agi2.type == type && pos.distance(ref tempos) <= (mission as Mission).nearAirGroupThreshhold_m && (Math.Abs(agi2.pos.z - pos.z) <= (mission as Mission).nearAirGroupAltThreshhold_m))
             {
                 addAG(agi2.airGroup);
                 agi2.addAG(airGroup);
@@ -2599,9 +2608,9 @@ public class Mission : AMission, IMainMission
         public void mutuallyAddNearbyAirgroups(AirGroupInfo agi2)
         {
 
-                addAGs(agi2.nearbyAirGroups);
-                agi2.addAGs(nearbyAirGroups);
-                //Console.WriteLine("AGI: Adding {0} {1} 2nd: {2} {3}", playerNames, nearbyAirGroups.Count, agi2.nearbyAirGroups.Count, agi2.playerNames);
+            addAGs(agi2.nearbyAirGroups);
+            agi2.addAGs(nearbyAirGroups);
+            //Console.WriteLine("AGI: Adding {0} {1} 2nd: {2} {3}", playerNames, nearbyAirGroups.Count, agi2.nearbyAirGroups.Count, agi2.playerNames);
 
 
         }
@@ -2616,7 +2625,7 @@ public class Mission : AMission, IMainMission
                 count,
                 type,
                 isHeavyBomber,
-                isAI,                
+                isAI,
                 airGroup,
                 isLeader,
                 leader,
@@ -2637,11 +2646,11 @@ public class Mission : AMission, IMainMission
                 AGGtype,
                 AGGisHeavyBomber);
         }
-    
+
     }
 
-    CircularArray<Dictionary<AiAirGroup, AirGroupInfo>> airGroupInfoCircArr = new CircularArray<Dictionary<AiAirGroup, AirGroupInfo>>(6);
-    
+    public CircularArray<Dictionary<AiAirGroup, AirGroupInfo>> airGroupInfoCircArr = new CircularArray<Dictionary<AiAirGroup, AirGroupInfo>>(6);
+
     HashSet<AiAirGroup>[] CurrentAG = new HashSet<AiAirGroup>[3]; //array with all current AirGroups, which Radar can easily loop through, for each army
     HashSet<AiAirGroup>[] CurrentAGGroupLeaders = new HashSet<AiAirGroup>[3]; //array with ONLY thos airgroups that are currently the prime lead member of a grouping
 
@@ -2664,11 +2673,11 @@ public class Mission : AMission, IMainMission
         Task.Run(() => groupAllAircraft());
     }
 
-    
+
 
     public void groupAllAircraft()
     {
-       try
+        try
         {
             Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = new Dictionary<AiAirGroup, AirGroupInfo>();
 
@@ -2733,7 +2742,7 @@ public class Mission : AMission, IMainMission
                                                 if (actor2 is AiAircraft)
                                                 {
                                                     //Console.WriteLine("groupAllAircraft: 1.7");
-                                                    if (!airGroupInfoDict.ContainsKey(airGroup2)) airGroupInfoDict[airGroup2]=new AirGroupInfo(actor2, airGroup2, this, Time.current());
+                                                    if (!airGroupInfoDict.ContainsKey(airGroup2)) airGroupInfoDict[airGroup2] = new AirGroupInfo(actor2, airGroup2, this, Time.current());
                                                     /*
                                                     AirGroupInfo tmp1 = new AirGroupInfo();
                                                     if (!airGroupInfoDict.TryGetValue(airGroup2, out tmp1))
@@ -2745,7 +2754,7 @@ public class Mission : AMission, IMainMission
                                                     //Console.WriteLine("groupAllAircraft: 1.8");
                                                     airGroupInfoDict[airGroup2].checkIfNearbyAndAdd(airGroupInfoDict[airGroup]);
                                                     break;  //we only need the first one of each AI group
-                                                    
+
 
                                                 }
                                             }
@@ -2783,24 +2792,24 @@ public class Mission : AMission, IMainMission
                             HashSet<AiAirGroup> nb = new HashSet<AiAirGroup>(airGroupInfoDict[airGroup].nearbyAirGroups);
                             //HashSet <AiAirGroup> nb = ;
                             //Console.WriteLine("groupAllAircraft: 4.3");
-                            if (nb !=null) foreach (AiAirGroup ag in nb)
-                            {
-                                //Console.WriteLine("groupAllAircraft: 4.35");
-                                if (DoneAGnearby.Contains(ag)) continue;
-
-                                //Console.WriteLine("groupAllAircraft: 4.4");
-                                if (airGroupInfoDict.ContainsKey(ag))
+                            if (nb != null) foreach (AiAirGroup ag in nb)
                                 {
-                                    complete = false;
-                                    airGroupInfoDict[airGroup].mutuallyAddNearbyAirgroups(airGroupInfoDict[ag]);  //any a/c that is close an a/c close to the leader, is close to & grouped with the leader.  A "greedy" algorithm.
-                                    //Console.WriteLine("groupAllAircraft: 4.5");
-                                    airGroupInfoDict[ag].leader = airGroup;
-                                    airGroupInfoDict[ag].isLeader = false;
+                                    //Console.WriteLine("groupAllAircraft: 4.35");
+                                    if (DoneAGnearby.Contains(ag)) continue;
+
+                                    //Console.WriteLine("groupAllAircraft: 4.4");
+                                    if (airGroupInfoDict.ContainsKey(ag))
+                                    {
+                                        complete = false;
+                                        airGroupInfoDict[airGroup].mutuallyAddNearbyAirgroups(airGroupInfoDict[ag]);  //any a/c that is close an a/c close to the leader, is close to & grouped with the leader.  A "greedy" algorithm.
+                                                                                                                      //Console.WriteLine("groupAllAircraft: 4.5");
+                                        airGroupInfoDict[ag].leader = airGroup;
+                                        airGroupInfoDict[ag].isLeader = false;
+                                    }
+                                    //Console.WriteLine("groupAllAircraft: 4.6");
+                                    DoneAGnearby.Add(ag);
+                                    //Console.WriteLine("groupAllAircraft: 4.7");
                                 }
-                                //Console.WriteLine("groupAllAircraft: 4.6");
-                                DoneAGnearby.Add(ag);
-                                //Console.WriteLine("groupAllAircraft: 4.7");
-                            }
                             //Console.WriteLine("groupAllAircraft: 4.8");
                         }
 
@@ -2843,7 +2852,7 @@ public class Mission : AMission, IMainMission
 
                         int maxStack = 6;//We are saving 6 of the aiGroupInfoCircArr; we save a new one every 30 seconds approx.  So 6 means the a/c have been flying together for about 3 minutes
                         if (aGICA.Length < maxStack) maxStack = aGICA.Length;
-                        
+
                         for (i = 0; i < maxStack; i++) {
                             //aGICA
 
@@ -2896,12 +2905,12 @@ public class Mission : AMission, IMainMission
                         //HashSet<AiAirGroup> gag = new HashSet<AiAirGroup> ( airGroupInfoDict[airGroup].groupedAirGroups);
                         HashSet<AiAirGroup> toremovefrom_gag = new HashSet<AiAirGroup>();
 
-                        Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].playerNames, grouped.Count);
+                        //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].playerNames, grouped.Count);
 
                         //Console.WriteLine("groupAllAircraft: a4.3");
                         if (grouped != null) foreach (AiAirGroup ag in grouped)
                             {
-                                
+
 
                                 //Console.WriteLine("groupAllAircraft: a4.4");
                                 if (airGroupInfoDict.ContainsKey(ag))
@@ -2956,169 +2965,169 @@ public class Mission : AMission, IMainMission
                     //Now go through each group & calculate needed info such as # of aircraft in group.  Later we can add fancier ways of figuring group velocity, direction, altitude etc but for now we're
                     //just using the values from the primary aircraft of the group
                     if (CurrentAGGroupLeaders[army] != null) foreach (AiAirGroup airGroup in CurrentAGGroupLeaders[army])
-                    {
-                        //Console.WriteLine("groupAllAircraft: 6");
-                        AirGroupInfo agid = airGroupInfoDict[airGroup];
-                        int c = 0;
+                        {
+                            //Console.WriteLine("groupAllAircraft: 6");
+                            AirGroupInfo agid = airGroupInfoDict[airGroup];
+                            int c = 0;
                             int cAboveRadar = 0;
                             int cBelowRadar = 0;
                             double aveAltAGL_ft = 0;
-                        aiorhuman ah = aiorhuman.Human;
-                        if (agid.isAI) ah = aiorhuman.AI;
-                        double minAlt = agid.pos.z;
-                        double maxAlt = agid.pos.z;
-                        double aveAlt = 0;
-                        Point3d avePos = new Point3d(0, 0, 0);
-                        Point3d vwld = new Point3d(0, 0, 0);
-                        string typeName = "";
-                        string playerNames = "";
-                        bool first = true;
-                        string ids = "";
+                            aiorhuman ah = aiorhuman.Human;
+                            if (agid.isAI) ah = aiorhuman.AI;
+                            double minAlt = agid.pos.z;
+                            double maxAlt = agid.pos.z;
+                            double aveAlt = 0;
+                            Point3d avePos = new Point3d(0, 0, 0);
+                            Point3d vwld = new Point3d(0, 0, 0);
+                            string typeName = "";
+                            string playerNames = "";
+                            bool first = true;
+                            string ids = "";
 
 
 
-                        if (airGroupInfoDict[airGroup].groupedAirGroups != null) foreach(AiAirGroup ag in airGroupInfoDict[airGroup].groupedAirGroups)
-                        {
-                            if (!airGroupInfoDict.ContainsKey(ag)) continue;
-                            AirGroupInfo agid2 = airGroupInfoDict[ag];
-                            c += airGroupInfoDict[ag].count;
-                            if (agid2.belowRadar) cBelowRadar += airGroupInfoDict[ag].count;
-                            else cAboveRadar += airGroupInfoDict[ag].count;
-                            if (agid2.pos.z > maxAlt) maxAlt = agid2.pos.z;
-                            if (agid2.pos.z < minAlt) minAlt = agid2.pos.z;
-                            aveAlt += agid2.pos.z * agid2.count;
-                            aveAltAGL_ft += agid2.altAGL_ft * agid2.count;
+                            if (airGroupInfoDict[airGroup].groupedAirGroups != null) foreach (AiAirGroup ag in airGroupInfoDict[airGroup].groupedAirGroups)
+                                {
+                                    if (!airGroupInfoDict.ContainsKey(ag)) continue;
+                                    AirGroupInfo agid2 = airGroupInfoDict[ag];
+                                    c += airGroupInfoDict[ag].count;
+                                    if (agid2.belowRadar) cBelowRadar += airGroupInfoDict[ag].count;
+                                    else cAboveRadar += airGroupInfoDict[ag].count;
+                                    if (agid2.pos.z > maxAlt) maxAlt = agid2.pos.z;
+                                    if (agid2.pos.z < minAlt) minAlt = agid2.pos.z;
+                                    aveAlt += agid2.pos.z * agid2.count;
+                                    aveAltAGL_ft += agid2.altAGL_ft * agid2.count;
 
-                                    if (!first )
-                            {
-                                playerNames += " - ";
-                                typeName += " - ";
-                                ids += " - ";
-                            }
-                            else first = false;
+                                    if (!first)
+                                    {
+                                        playerNames += " - ";
+                                        typeName += " - ";
+                                        ids += " - ";
+                                    }
+                                    else first = false;
 
 
-                            playerNames += agid.playerNames;
-                            typeName += Calcs.GetAircraftType(agid2.actor as AiAircraft);
-                            ids += agid2.actor.Name();
-                            if (!agid2.isAI && (agid2.actor as AiAircraft).Player(0) != null) playerNames += (agid2.actor as AiAircraft).Player(0).Name() + " - ";
-                            vwld = new Point3d (vwld.x+(double)agid2.count*agid2.vel.x,vwld.y + (double)agid2.count * agid2.vel.y, vwld.z + (double)agid2.count * agid2.vel.z ); //weight the direction vector by the # of aircraft in this airgroup
-                            avePos = new Point3d(avePos.x + (double)agid2.count * agid2.pos.x, avePos.y + (double)agid2.count * agid2.pos.y, avePos.z + (double)agid2.count * agid2.pos.z); //weight the direction vector by the # of aircraft in this airgroup
+                                    playerNames += agid.playerNames;
+                                    typeName += Calcs.GetAircraftType(agid2.actor as AiAircraft);
+                                    ids += agid2.actor.Name();
+                                    if (!agid2.isAI && (agid2.actor as AiAircraft).Player(0) != null) playerNames += (agid2.actor as AiAircraft).Player(0).Name() + " - ";
+                                    vwld = new Point3d(vwld.x + (double)agid2.count * agid2.vel.x, vwld.y + (double)agid2.count * agid2.vel.y, vwld.z + (double)agid2.count * agid2.vel.z); //weight the direction vector by the # of aircraft in this airgroup
+                                    avePos = new Point3d(avePos.x + (double)agid2.count * agid2.pos.x, avePos.y + (double)agid2.count * agid2.pos.y, avePos.z + (double)agid2.count * agid2.pos.z); //weight the direction vector by the # of aircraft in this airgroup
 
 
 
                                     if (airGroupInfoDict[ag].isAI)
-                            {
-                                if (ah == aiorhuman.Human) ah = aiorhuman.Mixed;
+                                    {
+                                        if (ah == aiorhuman.Human) ah = aiorhuman.Mixed;
+                                    }
+                                    else if (ah == aiorhuman.AI) ah = aiorhuman.Mixed;
+
+                                    //can do other calculations here such as averaging speed, altitude, direction, whatever
+                                    //Figure out speed & direction  from actual travel time over last two radar measurements, etc.
+
+                                }
+                            agid.AGGcount = c;
+                            agid.AGGisHeavyBomber = agid.isHeavyBomber;
+                            agid.AGGpos = agid.pos;
+                            agid.AGGtype = agid.type;
+                            //agid.AGGvel = agid.vel;
+                            agid.AGGvel = new Point3d(vwld.x / (double)c, vwld.y / (double)c, vwld.z / (double)c);  //The 'average' of the direction vectors
+                            agid.AGGavePos = new Point3d(avePos.x / (double)c, avePos.y / (double)c, avePos.z / (double)c);  //The 'average' of the position vectors
+                            agid.AGGminAlt_m = minAlt;
+                            agid.AGGmaxAlt_m = maxAlt;
+                            agid.AGGaveAlt_m = aveAlt / (double)c;
+                            agid.AGGavealtAGL_ft = aveAltAGL_ft / (double)c;
+                            agid.AGGcountBelowRadar = cBelowRadar;
+                            agid.AGGcountAboveRadar = cAboveRadar;
+                            agid.AGGtypeNames = typeName;
+                            agid.AGGplayerNames = playerNames;
+                            agid.AGGids = ids;
+                            agid.AGGAIorHuman = ah;
+
+                            agid.AGGmixupType = agid.AGGtype;
+
+                            if (random.Next(21) == 1)
+                            { //oops, sometimes we get mixed up on the type.  So sad . . .  See notes below about relative inaccuracy of early radar.
+                                agid.AGGmixupType = "U";
+                                //if (random.Next(3) == 1) agid.AGGmixupType = "B";
                             }
-                            else if (ah == aiorhuman.AI) ah = aiorhuman.Mixed;
 
-                            //can do other calculations here such as averaging speed, altitude, direction, whatever
-                            //Figure out speed & direction  from actual travel time over last two radar measurements, etc.
-
-                        }
-                        agid.AGGcount = c;
-                        agid.AGGisHeavyBomber = agid.isHeavyBomber;
-                        agid.AGGpos = agid.pos;
-                        agid.AGGtype = agid.type;
-                        //agid.AGGvel = agid.vel;
-                        agid.AGGvel = new Point3d (vwld.x/(double)c, vwld.y/ (double)c, vwld.z/ (double)c);  //The 'average' of the direction vectors
-                        agid.AGGavePos = new Point3d(avePos.x / (double)c, avePos.y / (double)c, avePos.z / (double)c);  //The 'average' of the position vectors
-                        agid.AGGminAlt_m = minAlt;
-                        agid.AGGmaxAlt_m = maxAlt;
-                        agid.AGGaveAlt_m = aveAlt / (double)c;
-                        agid.AGGavealtAGL_ft = aveAltAGL_ft / (double)c;
-                        agid.AGGcountBelowRadar = cBelowRadar;
-                        agid.AGGcountAboveRadar = cAboveRadar;
-                        agid.AGGtypeNames = typeName;
-                        agid.AGGplayerNames = playerNames;
-                        agid.AGGids = ids;
-                        agid.AGGAIorHuman = ah;
-
-                        agid.AGGmixupType = agid.AGGtype;
-
-                        if (random.Next(21) == 1)
-                        { //oops, sometimes we get mixed up on the type.  So sad . . .  See notes below about relative inaccuracy of early radar.
-                            agid.AGGmixupType = "U";
-                            //if (random.Next(3) == 1) agid.AGGmixupType = "B";
-                        }
-
-                        //So if we have the old mixupType, and it actually WAS mixed up, then it will have a high probability of staying mixed up for several cycles
-                        if (aGICA[0] != null && aGICA[0].ContainsKey(airGroup))
-                        {
-                            AiAirGroup oldLeader = aGICA[0][airGroup].leader;
-                            if (aGICA[0].ContainsKey(oldLeader)) {
+                            //So if we have the old mixupType, and it actually WAS mixed up, then it will have a high probability of staying mixed up for several cycles
+                            if (aGICA[0] != null && aGICA[0].ContainsKey(airGroup))
+                            {
+                                AiAirGroup oldLeader = aGICA[0][airGroup].leader;
+                                if (aGICA[0].ContainsKey(oldLeader)) {
                                     if (agid.AGGtype != aGICA[0][oldLeader].AGGmixupType && random.Next(4) < 3)
                                     {
                                         agid.AGGmixupType = aGICA[0][oldLeader].AGGmixupType;
                                     }
 
 
-                            }
-                        }
-
-                        //Calculate average speed based on actual movement over time rather than instantaneous current movement, if possible
-                        //Only do this in the case the current AG leader was also leader for the past three periods  
-                        //using index 4 seems too much, results are quite discrepant from the 'old' style plotting table.  Maybe just use the one a/c's vel, or the average vel
-                        /*
-                        int aGICAindex = 4;
-                        bool useAGICA = false;
-                        for (int i = 0; i <= aGICAindex; i++)
-                            {
-                                if (aGICA[i] != null && aGICA[i].ContainsKey(airGroup) && aGICA[i][airGroup].leader == airGroup) useAGICA = true;
-                                else
-                                {
-                                    useAGICA = false;
-                                    break;
                                 }
-                            }                      
-                        //if (a3 != null && a3.ContainsKey(airGroup) && a2 != null && a2.ContainsKey(airGroup) && a1 != null && a1.ContainsKey(airGroup) &&
-                                 a1[airGroup].leader == airGroup && a2[airGroup].leader == airGroup && a3[airGroup].leader == airGroup) 
-                        if (useAGICA)
-                            {
-                                //Point3d p1 = aGICA[aGICAindex][airGroup].AGGavePos; //This would be using the average position of the entire airgroup
-                                //Point3d p2 = agid.AGGavePos; 
-                                Point3d p1 = aGICA[aGICAindex][airGroup].pos; //instead we'll use this one aircraft's ACTUAL position, which might be more consistent
-                                Point3d p2 = agid.pos; 
-                                double timeDiff = Time.current() - aGICA[aGICAindex][airGroup].time;
-                                Point3d vel2 = new Point3d ((p2.x-p1.x)/timeDiff, (p2.y - p1.y) / timeDiff, 0 );
-                                //Console.WriteLine("AveVel vs Vel2: {0:0} {1:0} {2:0} {3:0} {4:0} {5:0} ", agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z, vel2.x, vel2.y, vel2.z);
-                                agid.AGGvel = vel2;                                
                             }
-                    */
+
+                            //Calculate average speed based on actual movement over time rather than instantaneous current movement, if possible
+                            //Only do this in the case the current AG leader was also leader for the past three periods  
+                            //using index 4 seems too much, results are quite discrepant from the 'old' style plotting table.  Maybe just use the one a/c's vel, or the average vel
+                            /*
+                            int aGICAindex = 4;
+                            bool useAGICA = false;
+                            for (int i = 0; i <= aGICAindex; i++)
+                                {
+                                    if (aGICA[i] != null && aGICA[i].ContainsKey(airGroup) && aGICA[i][airGroup].leader == airGroup) useAGICA = true;
+                                    else
+                                    {
+                                        useAGICA = false;
+                                        break;
+                                    }
+                                }                      
+                            //if (a3 != null && a3.ContainsKey(airGroup) && a2 != null && a2.ContainsKey(airGroup) && a1 != null && a1.ContainsKey(airGroup) &&
+                                     a1[airGroup].leader == airGroup && a2[airGroup].leader == airGroup && a3[airGroup].leader == airGroup) 
+                            if (useAGICA)
+                                {
+                                    //Point3d p1 = aGICA[aGICAindex][airGroup].AGGavePos; //This would be using the average position of the entire airgroup
+                                    //Point3d p2 = agid.AGGavePos; 
+                                    Point3d p1 = aGICA[aGICAindex][airGroup].pos; //instead we'll use this one aircraft's ACTUAL position, which might be more consistent
+                                    Point3d p2 = agid.pos; 
+                                    double timeDiff = Time.current() - aGICA[aGICAindex][airGroup].time;
+                                    Point3d vel2 = new Point3d ((p2.x-p1.x)/timeDiff, (p2.y - p1.y) / timeDiff, 0 );
+                                    //Console.WriteLine("AveVel vs Vel2: {0:0} {1:0} {2:0} {3:0} {4:0} {5:0} ", agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z, vel2.x, vel2.y, vel2.z);
+                                    agid.AGGvel = vel2;                                
+                                }
+                        */
 
 
-                        
 
-                        agid.AGGradarDropout = false;
 
-                        int dropoutValue = 14;
-                        if (agid.AGGcount > 5) dropoutValue = Convert.ToInt32(11 * agid.AGGcount * agid.AGGcount / 25);
-                        //Some radar returns vanish for no particular reason.  Random bug in the system, flock of seagulls, whatever
-                        if (random.Next(dropoutValue) == 1)
-                        {
-                            agid.AGGradarDropout = true;
-                            //Console.WriteLine("RG: AGGradarDropout due to random 1/7 {0} {1} {2}", agid.actor.Name(), agid.AGGcount, dropoutValue);
+                            agid.AGGradarDropout = false;
+
+                            int dropoutValue = 14;
+                            if (agid.AGGcount > 5) dropoutValue = Convert.ToInt32(11 * agid.AGGcount * agid.AGGcount / 25);
+                            //Some radar returns vanish for no particular reason.  Random bug in the system, flock of seagulls, whatever
+                            if (random.Next(dropoutValue) == 1)
+                            {
+                                agid.AGGradarDropout = true;
+                                //Console.WriteLine("RG: AGGradarDropout due to random 1/7 {0} {1} {2}", agid.actor.Name(), agid.AGGcount, dropoutValue);
+                            }
+
+                            //Small groups of human heavy bombers are more likely to disappear from radar, in order to give them more of a fighting chance
+                            //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
+                            //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
+                            //show up like 40% of the time?
+                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 45)
+                            {
+                                agid.AGGradarDropout = true;
+                                //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
+                            }
+
+
+
+
+                            airGroupInfoDict[airGroup] = agid;
+
+                            //Console.WriteLine("Airgroup Grouping: {0} {1} {2} {3:0} {4:0} {5:0} ", agid.actor.Name(), agid.count, agid.AGGcount, agid.AGGcountAboveRadar, agid.AGGcountBelowRadar, agid.AGGids);
+                            //agid.AGGpos.x, agid.AGGpos.y, agid.AGGpos.z, agid.AGGtype, ah, agid.AGGisHeavyBomber, agid.AGGavePos.x, agid.AGGavePos.y,agid.AGGaveAlt_m, agid.AGGmaxAlt_m, agid.AGGids, agid.AGGplayerNames, agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
                         }
-
-                        //Small groups of human heavy bombers are more likely to disappear from radar, in order to give them more of a fighting chance
-                        //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
-                        //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
-                        //show up like 40% of the time?
-                        if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 45)
-                        {
-                            agid.AGGradarDropout = true;
-                            //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
-                        }
-
-
-
-
-                        airGroupInfoDict[airGroup] = agid;
-
-                        //Console.WriteLine("Airgroup Grouping: {0} {1} {2} {3:0} {4:0} {5:0} ", agid.actor.Name(), agid.count, agid.AGGcount, agid.AGGcountAboveRadar, agid.AGGcountBelowRadar, agid.AGGids);
-                        //agid.AGGpos.x, agid.AGGpos.y, agid.AGGpos.z, agid.AGGtype, ah, agid.AGGisHeavyBomber, agid.AGGavePos.x, agid.AGGavePos.y,agid.AGGaveAlt_m, agid.AGGmaxAlt_m, agid.AGGids, agid.AGGplayerNames, agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
-                    }
 
 
 
@@ -3127,7 +3136,7 @@ public class Mission : AMission, IMainMission
             }
             //Console.WriteLine("groupAllAircraft: 7");
             airGroupInfoCircArr.Push(airGroupInfoDict);  //We save the last ~4 iterations of infodict on a circular array, so that we can go back & look @ what airgroups/leaders were doing in the last few minutes
-        } catch (Exception ex )
+        } catch (Exception ex)
         { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
     }
 
@@ -3138,7 +3147,7 @@ public class Mission : AMission, IMainMission
 
         Player[] to = null;
         if (player != null) to = new Player[] { player };
-   
+
         string newline = Environment.NewLine;
         if (html) newline = "<br>" + Environment.NewLine;
         string retmsg = "";
@@ -3148,15 +3157,15 @@ public class Mission : AMission, IMainMission
 
         string msg = "***Schematic Map Overview of Enemy Activity***";
         retmsg += msg + newline;
-        
+
 
         string msg2 = "Airgroups:Aircraft in each Large Map Keypad Area";
         retmsg += msg2 + newline;
-        
+
 
         string msg3 = "For more details, ask your Commander or Radar Operator to consult the Contact Plotting Table - or simply patrol the area, use Tab-4-1";
         retmsg += msg3 + newline;
-        
+
         /*for (int i = 1; i < 10; i++)
         {
             string tild = "~";
@@ -3171,8 +3180,8 @@ public class Mission : AMission, IMainMission
             {
                 twcLogServer(to, msg, null);
                 twcLogServer(to, msg2, null);
-                twcLogServer(to, msg3, null);             
-            }            
+                twcLogServer(to, msg3, null);
+            }
             for (int i = 2; i > -1; i--)
             {
                 string msg4 = string.Format("{0:D3}:{1:D3} {2:D3}:{3:D3} {4:D3}:{5:D3} ",
@@ -3180,7 +3189,7 @@ public class Mission : AMission, IMainMission
                     GiantSectorOverview[army][i * 3 + 2, 0], GiantSectorOverview[army][i * 3 + 2, 1],
                     GiantSectorOverview[army][i * 3 + 3, 0], GiantSectorOverview[army][i * 3 + 3, 1]
                     );
-                
+
                 retmsg += msg4 + newline;
                 if (display) twcLogServer(to, msg4, null);
             }
@@ -3188,7 +3197,68 @@ public class Mission : AMission, IMainMission
         return retmsg;
     }
 
-    //unified location to determine if an a/c is low enough to drop off the radar
+    /************************************************
+         * Get radar returns for each AI aircraft group
+         * Can be used to, ie, reprogram the flight plans for aiairgroups so they intercept any
+         * enemies in their area
+         * Recursive function called every X seconds
+         ************************************************/
+
+
+    public void aiAirGroupRadarReturns_recurs()
+    {
+        
+        
+        Timeout(127, () => {  aiAirGroupRadarReturns_recurs(); });
+        //Console.WriteLine("groupAllAircraft: -1");
+        Task.Run(() => aiAirGroupRadarReturns());
+        //aiAirGroupRadarReturns();
+
+
+    }
+
+    public void aiAirGroupRadarReturns()
+    {
+        Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = airGroupInfoCircArr.Get(0); //Most recent iteration of airgroup groupings
+        Console.WriteLine("AIAGRR: Checking radar returns for AI groups");
+
+        if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
+            {
+                AirGroupInfo agi = airGroupInfoDict[airGroup];
+                if (!agi.isAI || agi.type != "F") continue; //we're only doing aiaircraft here, and fighters
+
+                Console.WriteLine("AIAGRR: Checking radar returns for" + agi.playerNames);
+                listPositionAllAircraft(player: null, playerArmy: airGroup.getArmy(), inOwnArmy: false, radar_realism: RADAR_REALISM, aiairgroup: airGroup);
+            }
+
+    }
+
+    public class AiAirGroupRadarInfo : IAiAirGroupRadarInfo
+    {
+        public double time { get; set; } //Battle.time.current;
+        //public SortedDictionary<string, AirGroupInfo> interceptList {get; set;}
+        public IAirGroupInfo agi { get; set; } //airgroup info for TARGET airgroup
+        public IAirGroupInfo pagi { get; set; } //airgroup info for SOURCE airgroup (ie the 'player' or the one that will be targeting the TARGET
+        public Point3d interceptPoint { get; set; } //intcpt, with x,y as location and z as intcpt time in seconds
+        public bool climbPossible { get; set; } //climb_possible
+        public AMission mission { get; set; }
+
+
+    public AiAirGroupRadarInfo (Mission msn, IAirGroupInfo AGI, IAirGroupInfo PAGI, Point3d InterceptPoint, bool ClimbPossible, double tm = 0)
+        {
+            //interceptList = InterceptList;
+            mission = msn;
+            if (tm != 0) time = tm;            
+            else time = mission.Time.current();
+            interceptPoint = InterceptPoint;
+            climbPossible = ClimbPossible;
+            agi = AGI;
+            pagi = PAGI;
+        }
+    }
+    
+
+//unified location to determine if an a/c is low enough to drop off the radar
     //TRUE if off the radar, false otherwise
     public bool belowRadar(double altAGL_ft) {
 
@@ -3212,11 +3282,11 @@ public class Mission : AMission, IMainMission
     // playerArmy -3 is for TOPHAT & will list all a/c but is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
     // playerArmy -4 is for TOPHAT BUT GROUPED & will also list all a/c but shown as grouped and is for ADMINS listing all kinds of details etc vs the red/blue TOPHAT which is more filtered to simulate real WWII radar
 
-    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = -10000000)
+    public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = -10000000, AiAirGroup aiairgroup = null, bool disp = true )
     {
         try
         {
-
+           
             if (radar_realism == -10000000) radar_realism = RADAR_REALISM;
             DateTime d = DateTime.Now;
             // int radar_realism;     //realism = 0 gives exact position, bearing, velocity of each a/c.  We plan to make various degrees of realism ranging from 0 to 10.  Implemented now is just 0=exact, >0 somewhat more realistic    
@@ -3224,12 +3294,18 @@ public class Mission : AMission, IMainMission
 
             Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = airGroupInfoCircArr.Get(0); //Most recent iteration of airgroup groupings
 
+            bool display = true;
+
+            if (disp == false || (player == null && aiairgroup != null)) display = false; //don't display for aiairgroup calcs
+
             string posmessage = "";
-            int poscount = 0;
+            int poscount = 0; 
             int totalcount = 0;
             int belowradarcount = 0;
             AiAircraft p = null;
             AiActor pa = null;
+
+            AirGroupInfo padig = null;
 
             Point3d pos1;
             Point3d pos2;
@@ -3273,7 +3349,9 @@ public class Mission : AMission, IMainMission
             bool savenewmessages = true;
             Tuple<long, SortedDictionary<string, string>> message_data;
             SortedDictionary<string, string> radar_messages =
-                new SortedDictionary<string, string>(new ReverseComparer<string>());
+                new SortedDictionary<string, string>(new ReverseComparer<string>()); //reverse sorted so "best" messages come last on the list players receive
+            SortedDictionary<string, IAiAirGroupRadarInfo> ai_radar_info =
+                new SortedDictionary<string, IAiAirGroupRadarInfo>(); //NOT reverse sorted so on the list of AI radar returns, the best messages come first
             //string [] radar_messages, radar_messages_index;             
             int wait_s = 0;
             long refreshtime_ms = 0;
@@ -3308,59 +3386,95 @@ public class Mission : AMission, IMainMission
             if (inOwnArmy) enorfriend = "FRIENDLY";
             if (playerArmy < 0) enorfriend = "BOTH ARMIES";
 
-            if (player != null && (player.Place() is AiAircraft))
-            {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
-                p = player.Place() as AiAircraft;
-                pa = player.Place();
 
-                if (airGroupInfoDict != null & airGroupInfoDict.ContainsKey(p.AirGroup()))
-                {
-                    AirGroupInfo padig = airGroupInfoDict[p.AirGroup()];
-                    player_Vwld = new Vector3d( padig.vel.x, padig.vel.y, padig.vel.z);
-                    player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
-                    player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
-                    player_alt_m = padig.pos.z;
-                    // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
-                    //player_sector = player_sector.Replace(",", ""); // remove the comma 
-                    player_sector = Calcs.correctedSectorName(this, padig.pos);
-                    player_place_set = true;
-                    playername = player.Name();
-                    playertype = padig.type;
+            try
+            {
+                if (player != null && (player.Place() is AiAircraft))
+                {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
+                    p = player.Place() as AiAircraft;
+                    pa = player.Place();
 
-                    ppos = padig.pos;
+                    if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(p.AirGroup()))
+                    {
+                        padig = airGroupInfoDict[p.AirGroup()];
+                        player_Vwld = new Vector3d(padig.vel.x, padig.vel.y, padig.vel.z);
+                        player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
+                        player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+                        player_alt_m = padig.pos.z;
+                        // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+                        //player_sector = player_sector.Replace(",", ""); // remove the comma 
+                        player_sector = Calcs.correctedSectorName(this, padig.pos);
+                        player_place_set = true;
+                        playername = player.Name();
+                        playertype = padig.type;
+
+                        ppos = padig.pos;
+
+                    }
+                    else
+                    {
+
+
+                        player_Vwld = p.AirGroup().Vwld();
+                        player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
+                        player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+                        player_alt_m = p.Pos().z;
+                        // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+                        //player_sector = player_sector.Replace(",", ""); // remove the comma 
+                        player_sector = Calcs.correctedSectorName(this, p.Pos());
+                        player_place_set = true;
+                        playername = player.Name();
+                        playertype = p.Type().ToString();
+                        if (playertype.Contains("Fighter") || playertype.Contains("fighter")) playertype = "F";
+                        else if (playertype.Contains("Bomber") || playertype.Contains("bomber")) playertype = "B";
+                        else playertype = "U";
+
+                        ppos = p.Pos();
+                    }
+
+                    string posmessageCSP;
+
+                    posmessageCSP = "Radar intercepts are based on your speed/position as last detected at the command center: " +
+                                player_vel_mph.ToString("F0") + "mph " +
+                                player_sector.ToString();
+                    gpLogServerAndLog(new Player[] { player }, posmessageCSP, null);
+
+
 
                 }
-                else
+                else if (player == null && aiairgroup != null) //The case where we are asking for radar returns for an AIAirgroup
                 {
+                    if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(aiairgroup))
+                    {
+                        pa = aiairgroup.GetItems()[0];
+                        p = pa as AiAircraft;
+                        padig = airGroupInfoDict[aiairgroup];
+                        player_Vwld = new Vector3d(padig.vel.x, padig.vel.y, padig.vel.z);
+                        player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
+                        player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+                        player_alt_m = padig.pos.z;
+                        // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+                        //player_sector = player_sector.Replace(",", ""); // remove the comma 
+                        player_sector = Calcs.correctedSectorName(this, padig.pos);
+                        player_place_set = true;
+                        playername = padig.playerNames; //the actor.Name() in case of ai groups
+                        playertype = padig.type;
 
+                        ppos = padig.pos;
 
-                    player_Vwld = p.AirGroup().Vwld();
-                    player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
-                    player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
-                    player_alt_m = p.Pos().z;
-                    // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
-                    //player_sector = player_sector.Replace(",", ""); // remove the comma 
-                    player_sector = Calcs.correctedSectorName(this, p.Pos());
-                    player_place_set = true;
-                    playername = player.Name();
-                    playertype = p.Type().ToString();
-                    if (playertype.Contains("Fighter") || playertype.Contains("fighter")) playertype = "F";
-                    else if (playertype.Contains("Bomber") || playertype.Contains("bomber")) playertype = "B";
-                    else playertype = "U";
+                    }
+                    else
+                    {
+                        return;  //if we're requesting aiairgroup contacts & they're not in the aiGroupInfoDict yet, we'll just skip it
+                    }
 
-                    ppos = p.Pos();
                 }
-
-
-                string posmessageCSP;
-
-                posmessageCSP = "Radar intercepts are based on your speed/position as last detected at the command center: " +
-                            player_vel_mph.ToString("F0") + "mph " +
-                            player_sector.ToString();
-                gpLogServerAndLog(new Player[] { player }, posmessageCSP, null);
-
-
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Radar ERROR5: " + ex.ToString());
+            }
+
             playername_index = playername + "_0";
             if (inOwnArmy) playername_index = playername + "_1";
             playername_index = playername_index + "_" + radar_realism.ToString();
@@ -3368,51 +3482,58 @@ public class Mission : AMission, IMainMission
 
             savenewmessages = true; //save the messages that are generated
             currtime_ms = stopwatch.ElapsedMilliseconds;
-            //If the person has requested a new radar return too soon, just repeat the old return verbatim
-            //We have 3 cases:
-            // #1. ok to give new radar return
-            // #2. Too soon since last radar return to give a new one
-            // #3. New radar return is underway but not finished, so don't give them a new one. 
-            if (radar_realism > 0 && radar_messages_store.TryGetValue(playername_index, out message_data))
-            {
-                long time_elapsed_ms = currtime_ms - message_data.Item1;
-                long time_until_new_s = (long)((refreshtime_ms - time_elapsed_ms) / 1000);
-                long time_elapsed_s = (long)time_elapsed_ms / 1000;
-                radar_messages = message_data.Item2;
-                if (time_elapsed_ms < refreshtime_ms || message_data.Item1 == -1)
+
+            try { 
+                //If the person has requested a new radar return too soon, just repeat the old return verbatim
+                //We have 3 cases:
+                // #1. ok to give new radar return
+                // #2. Too soon since last radar return to give a new one
+                // #3. New radar return is underway but not finished, so don't give them a new one. 
+                if (radar_realism > 0 && radar_messages_store.TryGetValue(playername_index, out message_data) && display && player != null)
                 {
-                    string posmessageIP;
-                    if (message_data.Item1 == -1) posmessageIP = "New radar returns are in process.  Your previous radar return:";
-                    else posmessageIP = time_until_new_s.ToString("F0") + "s until " + playername + " can receive a new radar return.  Your previous radar return:";
-                    gpLogServerAndLog(new Player[] { player }, posmessageIP, null);
-
-                    Console.WriteLine("RAD: Giving old message to " + playername_index);
-
-                    wait_s = 0;
-                    storedtime_ms = message_data.Item1;
-                    savenewmessages = false; //don't save the messages again because we aren't generating anything new
-
-
-                    //Wait just 2 seconds, which gives people a chance to see the message about how long until they can request a new radar return.
-                    Timeout(2, () =>
+                    long time_elapsed_ms = currtime_ms - message_data.Item1;
+                    long time_until_new_s = (long)((refreshtime_ms - time_elapsed_ms) / 1000);
+                    long time_elapsed_s = (long)time_elapsed_ms / 1000;
+                    radar_messages = message_data.Item2;
+                    if (time_elapsed_ms < refreshtime_ms || message_data.Item1 == -1)
                     {
-                        double delay = 0;
-                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
-                    foreach (var mess in message_data.Item2)
+                        string posmessageIP;
+                        if (message_data.Item1 == -1) posmessageIP = "New radar returns are in process.  Your previous radar return:";
+                        else posmessageIP = time_until_new_s.ToString("F0") + "s until " + playername + " can receive a new radar return.  Your previous radar return:";
+                        gpLogServerAndLog(new Player[] { player }, posmessageIP, null);
+
+                        Console.WriteLine("RAD: Giving old message to " + playername_index);
+
+                        wait_s = 0;
+                        storedtime_ms = message_data.Item1;
+                        savenewmessages = false; //don't save the messages again because we aren't generating anything new
+
+
+                        //Wait just 2 seconds, which gives people a chance to see the message about how long until they can request a new radar return.
+                        Timeout(2, () =>
                         {
-
-
-                            delay += 0.2;
-                            Timeout(delay, () =>
+                            double delay = 0;
+                        //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+                        foreach (var mess in message_data.Item2)
                             {
-                                if (radar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                                else gpLogServerAndLog(new Player[] { player }, mess.Value, null);
-                            });
 
-                        }
-                    });
+
+                                delay += 0.2;
+                                Timeout(delay, () =>
+                                {
+                                    if (radar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                                    else gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                                });
+
+                            }
+                        });
+                    }
+
                 }
-
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Radar ERROR4: " + ex.ToString());
             }
 
             //If they haven't requested a return before, or enough time has elapsed, give them a new return  
@@ -3422,7 +3543,7 @@ public class Mission : AMission, IMainMission
                 //with special time code -1, which means that radar returns are currently underway; don't give them any more until finished.
                 radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(-1, radar_messages);
 
-                if (radar_realism > 0) twcLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
+                if (radar_realism > 0 && display ) twcLogServer(new Player[] { player }, "Fetching radar contacts, please stand by . . . ", null);
 
 
 
@@ -3795,7 +3916,7 @@ public class Mission : AMission, IMainMission
                                             }
                                             catch (Exception e)
                                             {
-                                                twcLogServer(new Player[] { player }, "RadError: " + e, new object[] { });
+                                                Console.WriteLine("RadError: " + e);
                                             }
 
                                         }
@@ -3807,417 +3928,437 @@ public class Mission : AMission, IMainMission
                         //Using our GROUPED AirGroups instead of chunking through each individual aircraft
                         //This should apply to Red & Blue TOPHAT plus all in-game player radar (tab-7-1 etc)
                         else
-                        {                            
-
-                            //List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
-                            if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0 && (!inOwnArmy ^ (army == playerArmy)))
+                        {
+                            try
                             {
-                                //if (CurrentAGGroupLeaders[army] != null) foreach (AiAirGroup airGroup in CurrentAGGroupLeaders[army])
-                                if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
-                                    {
-                                        posmessage = "";
-
-                                        //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
-                                        AirGroupInfo agid = airGroupInfoDict[airGroup];
-                                        if (agid.actor.Army() != army) continue;
-                                        if (!agid.isLeader) continue;
-
-                                        //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, agid.actor.Army(), agid.actor.Name());
-
-                                        aigroup_count++;
-                                        /*
-                                        AirGroupInfo agid = new AirGroupInfo();
-                                        if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(airGroup))
+                                //List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
+                                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0 && (!inOwnArmy ^ (army == playerArmy)))
+                                {
+                                    //if (CurrentAGGroupLeaders[army] != null) foreach (AiAirGroup airGroup in CurrentAGGroupLeaders[army])
+                                    if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
                                         {
-                                            agid = airGroupInfoDict[airGroup];
-                                        }
-                                        else continue; //this shouldn't happen except at startup etc.  If it does we want to continue to try each succeeding airgroup, hopefully some of them will work
-                                        */
+                                            posmessage = "";
 
-                                        AiActor actor = agid.actor;
-                                        AiAircraft a = actor as AiAircraft;
-                                        //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
-                                        totalcount = agid.AGGcount;
-                                        poscount = agid.AGGcountAboveRadar;
-                                        belowradarcount = agid.AGGcountBelowRadar;
+                                            //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
+                                            AirGroupInfo agid = airGroupInfoDict[airGroup];
+                                            if (agid.actor.Army() != army) continue;
+                                            if (!agid.isLeader) continue;
 
-                                        //Check on any radar outages or restrictions for each army, and remove any radar returns from areas where radar is restricted or inoperative
-                                        if (!MO_isRadarEnabledByArea(agid.AGGavePos, admin, radarArmy)) continue;
+                                            //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, agid.actor.Army(), agid.actor.Name());
 
-                                        //Console.WriteLine("LPAA: Processing ag2: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
-
-                                        if (!player_place_set)
-                                        {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"                                                                        
-                                            p = actor as AiAircraft;
-                                            player_Vwld = p.AirGroup().Vwld();
-                                            player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
-                                            player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
-                                            player_alt_m = p.Pos().z;
-                                            /* player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
-                                            player_sector = player_sector.Replace(",", ""); // remove the comma */
-                                            player_sector = Calcs.correctedSectorName(this, p.Pos());
-
-                                            ppos = p.Pos();
-
-                                            player_place_set = true;
-                                        }
-
-                                        bool isAI = (agid.AGGAIorHuman == aiorhuman.AI);
-
-                                        string acType = agid.AGGtypeNames;
-                                        isHeavyBomber = agid.AGGisHeavyBomber;
-
-
-                                        type = agid.AGGtype;
-                                        
-                                        //if (a == p && radar_realism >= 0) type = "Your position";
-                                        if (a == p && radar_realism >= 0) continue; //the player is in the DB and we don't want/need to give an intercept to self-location a while ago, as shown in the DB.
-                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                         + a.CallSign() + " " 
-                                         + a.Type() + " " 
-                                         + a.TypedName() + " " 
-                                         +  a.AirGroup().ID(), new object[] { });
-                                        */
-                                        pos1 = agid.AGGavePos;
-                                        //Thread.Sleep(100);
-                                        //pos2=a.Pos();
-                                        //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
-                                        Vwld = new Vector3d(agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
-                                        vel_mps = Calcs.CalculatePointDistance(Vwld);
-                                        vel_mph = Calcs.meterspsec2milesphour(vel_mps);
-                                        vel_mph_10 = Calcs.RoundInterval(vel_mph, 10);
-                                        heading = (Calcs.CalculateBearingDegree(Vwld));
-                                        heading_10 = Calcs.GetDegreesIn10Step(heading);
-                                        dis_m = Calcs.CalculatePointDistance(agid.AGGavePos, p.Pos());
-                                        dis_mi = Calcs.meters2miles(dis_m);
-                                        dis_10 = (int)dis_mi;
-                                        if (dis_mi > 20) dis_10 = Calcs.RoundInterval(dis_mi, 10);
-                                        bearing = Calcs.CalculateGradientAngle(p.Pos(), agid.AGGavePos);
-                                        bearing_10 = Calcs.GetDegreesIn10Step(bearing);
-
-                                        longlat = Calcs.Il2Point3dToLongLat(agid.AGGavePos);
-
-                                        //alt_km = agid.AGGavePos.z / 1000;
-                                        //alt_ft = Calcs.meters2feet(agid.AGGavePos.z);
-                                        alt_km = agid.AGGmaxAlt_m / 1000; //So rather than using average altitude, I think we must use MAX altitude of the group here. If not that, we should indicate a range or something
-                                        alt_ft = Calcs.meters2feet(agid.AGGmaxAlt_m);
-                                        //altAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
-
-                                        //We're using group leaders alt & AGL to get aveAGL for the entire group. Formula: AveAlt - (alt-AGL) = AveAGL
-                                        //altAGL_m = agid.AGGaveAlt - (agid.pos.z - (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0)); // I THINK (?) that Z_AltitudeAGL is in meters?
-                                        //altAGL_ft = Calcs.meters2feet(altAGL_m);
-                                        altAGL_ft = agid.AGGavealtAGL_ft;
-                                        altAGL_m = Calcs.feet2meters(altAGL_ft);
-                                        
-                                        alt_angels = Calcs.Feet2Angels(alt_ft);
-                                        sector = GamePlay.gpSectorName(agid.AGGavePos.x, agid.AGGavePos.y).ToString();
-                                        sector = sector.Replace(",", ""); // remove the comma
-                                        VwldP = new Point3d(agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
-
-                                        intcpt = Calcs.calculateInterceptionPoint(agid.AGGavePos, VwldP, ppos, player_vel_mps);
-                                        intcpt_heading = (Calcs.CalculateGradientAngle(ppos, intcpt));
-                                        intcpt_time_min = intcpt.z / 60;
-                                        /* intcpt_sector = GamePlay.gpSectorName(intcpt.x, intcpt.y).ToString();
-                                        intcpt_sector = intcpt_sector.Replace(",", ""); // remove the comma */
-                                        intcpt_sector = Calcs.correctedSectorName(this, intcpt);
-                                        intcpt_reasonable_time = (intcpt_time_min >= 0.02 && intcpt_time_min < 25);
-
-                                        climb_possible = true;
-                                        if (player_alt_m <= agid.AGGminAlt_m && intcpt_time_min > 1)
-                                        {
-                                            double altdiff_m = agid.AGGminAlt_m - player_alt_m;
-                                            if (intcpt_time_min > 3 && altdiff_m / intcpt_time_min > 1300) { climb_possible = false; } //109 can climb @ a little over 1000 meters per minute in a sustained way.  So anything that requires more climb than that we exclude from the listing
-                                            else if (altdiff_m / intcpt_time_min > 2500) climb_possible = false; //We allow for the possibility of more climb for a brief time, less then 3 minutes
-
-                                        }
-
-                                        string mi = dis_mi.ToString("F0") + "mi";
-                                        string mi_10 = dis_10.ToString("F0") + "mi";
-                                        string ft = alt_ft.ToString("F0") + "ft ";
-                                        string ftAGL = altAGL_ft.ToString("F0") + "ftAGL ";
-                                        string mph = vel_mph.ToString("F0") + "mph";
-                                        string ang = "A" + alt_angels.ToString("F0") + " ";
-
-                                        if (playerArmy == 2) //metric for the Germanos . . . 
-                                        {
-                                            mi = (dis_m / 1000).ToString("F0") + "k";
-                                            mi_10 = mi;
-                                            if (dis_m > 30000) mi_10 = ((double)(Calcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
-
-                                            ft = alt_km.ToString("F2") + "k ";
-                                            ftAGL = altAGL_m.ToString("F0") + "mAGL ";
-                                            mph = (Calcs.RoundInterval(vel_mps * 3.6, 10)).ToString("F0") + "k/h";
-                                            ang = ((double)(Calcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
-                                        }
-                                        //comprehensive radar returns for tophat/sysadmin purposes
-                                        //TODO:
-                                        //Add strong server-generated password for each session that can be communicated to admins etc
-                                        //Make a more filtered "TopHat" version that could be actually used by a commander/mission 
-                                        //control during missions, and also broadcast instructions & password for one person
-                                        //(or maybe a couple of people, or maybe everyone ? ) from each side to be able to use
-                                        //the more filtered version that is pretty comparable to what is already 
-                                        //shown as text radar in-mission
-                                        //TODO: 
-                                        //We could give Blue tophat measurements in metric units, maybe
-                                        if (radar_realism < 0) //This applies to Red & Blue tophat, and Admin-Grouped Tophat which uses groupings.  Admin-regular tophat still uses individual per aircraft returns.
-                                        {
-
-                                            string numContacts = poscount.ToString();
-                                            if (playerArmy == -4 && belowradarcount>0) numContacts = poscount.ToString() + "+" + belowradarcount.ToString() ;  //for admin-grouping radar
-                                            string aircraftType = agid.AGGtypeNames;
-                                            string vel = vel_mph.ToString("n0");
-                                            string alt = alt_angels.ToString("n0");
-                                            string he = heading.ToString("F0");
-
-                                            string aplayername = agid.AGGplayerNames;
-                                            //if (isAI) aplayername = agid.AGGids;
-
-                                            //red & blue tophat operators only get an approximation of how many a/c in each group and also
-                                            //don't get perfect information about whether fighters or bombers or unknown
-                                            //and also don't get the EXACT type of a/c or the name of the player
-                                            if (playerArmy == -1 || playerArmy == -2)
+                                            aigroup_count++;
+                                            /*
+                                            AirGroupInfo agid = new AirGroupInfo();
+                                            if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(airGroup))
                                             {
-                                                numContacts = "~" + Calcs.NoOfAircraft(poscount).ToString("F0");
- 
-                                                aircraftType = "";
-                                                aplayername = "";
-
-                                                vel = vel_mph_10.ToString("n0");
-                                                alt = alt_angels.ToString("n0");
-                                                he = heading_10.ToString("F0");
-
+                                                agid = airGroupInfoDict[airGroup];
                                             }
-
-
-                                            posmessage =
-                                            agid.AGGavePos.x.ToString()
-                                            + "," + agid.AGGavePos.y.ToString() + "," +
-                                            longlat.y.ToString()
-                                            + "," + longlat.x.ToString() + "," +
-                                            army.ToString() + "," +
-                                            agid.AGGmixupType + "," + //We use this to keep the (possibly mixed-up) a/c type standard among all types of radar, it is set once for all in agid instead of randomly set here for each individual radar sweep
-                                            he + "," +
-                                            vel + "," +
-                                            alt + "," +
-                                            sector.ToString() + "," +
-                                            numContacts + "," +
-                                            aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
-                                            + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
-                                            + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
-
-                                            if (playerArmy == -4)
-                                            {
-                                                GiantSectorOverview[0][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
-                                                GiantSectorOverview[0][agid.AGGgiantKeypad, 1] += poscount; //A simple count of how many enemy aircraft (index =1) in this sector
-                                            }
-
-                                            //-radar.txt data file structure is:
-                                            //First line header info - just ignore it
-                                            //Each succeeding line is comma delimited, no quotation marks:
-                                            //0 & 1 - posx & posy (meters), 2 & 3 - lat & long (approximate & not too accurate) 
-                                            //4 - army (int), 5 type (string, F or B), 6 Heading (degrees), 7 vel (int, MPH), 
-                                            //8 - altitude (int, Angels, 1000s of feet), 9 - IL2 CloD sector (string)
-                                            //10 - how many in this formation (int, exact)
-                                            //11 - aircraft type (string, exact type & CloD a/c name)
-                                            //12 - unique hashcode (int) for this actor (not actually 100% guaranteed to be unique but fast & probably good enough for our simple purposes)
-                                            //13 - player steam name (string) if it exists
-
-                                            //dropoutValue used below to randomly drop some readings from the radar.  As group gets larger the chance of dropouts goes to nil.
-                                            //int dropoutValue = 7;
-                                            //if (poscount > 5) dropoutValue = Convert.ToInt32(7 * poscount ^ 2 / 25);
-
-                                            //For red & blue TopHot operators we give a slightly filtered view of the contacts,
-                                            //simulating what actual WWII radar could see
-                                            //For example contacts low to the ground fade out.
-                                            //TODO: We could set up radar towers & contacts could be seen better if closer to the 
-                                            //tower (ie, lower to the ground.  But then if the enemy destroys your tower you lose
-                                            //that & can only see what your remaining towers can see (which will likely be contacts only quite high in altitude)
-                                            //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
-                                            //are etc
-                                            if ((playerArmy == -1 || playerArmy == -2) && (
-                                                           belowRadar(altAGL_ft) || //unified method for deciding below radar or not    
-                                                           poscount == 0 || //this happens if all a/c in a group are belowRadar
-                                                           agid.AGGradarDropout 
-                                                           //((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(3) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
-                                                                                                                                 //However if the player heavy bombers group up they are MUCH more likely to show up on radar.  But they will still be harder than usual to track because each individual bomber will phase in/out quite often
-
-                                                           //(random.Next(dropoutValue) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
-                                                           )
-                                           ) {
-                                                //Console.WriteLine("Radar: Dropping contact {5} from map {0} bec agl {1:0} bR {2} ct {3} AGGrD {4}", playerArmy, altAGL_ft, belowRadar(altAGL_ft), poscount, agid.AGGradarDropout, a.Name());
-
-                                                posmessage = "";
-                                            }
-
-                                            
-                                            //add to the GiantSectorOverview ONLY IF their is a radar return for this airgroup
-                                            if ((playerArmy == -1 || playerArmy == -2) && posmessage.Length > 0 )
-                                            {
-                                                //we put this here bec. we want to tally only those ag & a/c that show in that side's radar display
-                                                if ((-playerArmy) != army)
-                                                {
-                                                    GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
-                                                    GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 1] += Calcs.NoOfAircraft(poscount); //A simple count of how many enemy aircraft (index =1) in this sector
-                                                    //Console.WriteLine("RADadding: " + agid.AGGgiantKeypad.ToString() + " " + (-playerArmy).ToString() + " " + GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 0].ToString() + " " + posmessage);
-                                                         
-                                                } else
-                                                {
-                                                    //Console.WriteLine("RADNOTadding: " + agid.AGGgiantKeypad.ToString() + " " + (-playerArmy).ToString() + " " + posmessage);
-                                                }
-                                                
-                                            }
-
-
-                                        }
-
-
-                                        else if (radar_realism == 1)
-                                        {
-                                            posmessage = poscount.ToString() + type + " " +
-
-                                              mi +
-                                              bearing.ToString("F0") + "°" +
-                                              ft +
-                                              ftAGL +
-                                              mph +
-                                              heading.ToString("F0") + "° " +
-                                              sector.ToString() + " " +
-                                              Calcs.GetAircraftType(a);
-                                            if (intcpt_time_min > 0.02)
-                                            {
-                                                posmessage +=
-                                                   " Intcpt: " +
-                                                   intcpt_heading.ToString("F0") + "°" +
-                                                   intcpt_time_min.ToString("F0") + "min " +
-                                                   intcpt_sector + " " +
-                                                   intcpt.x.ToString("F0") + " " + intcpt.y.ToString("F0");
-                                            }
-
-                                            /* "(" + 
-                                            Calcs.meters2miles(a.Pos().x).ToString ("F0") + ", " +
-                                            Calcs.meters2miles(a.Pos().y).ToString ("F0") + ")";
+                                            else continue; //this shouldn't happen except at startup etc.  If it does we want to continue to try each succeeding airgroup, hopefully some of them will work
                                             */
-                                            //twcLogServer(new Player[] { player }, posmessage, new object[] { });
-                                        }
-                                        else if (radar_realism > 0)
-                                        {
 
-                                            //Trying to give at least some semblance of reality based on capabilities of Chain Home & Chain Home Low
-                                            //https://en.wikipedia.org/wiki/Chain_Home
-                                            //https://en.wikipedia.org/wiki/Chain_Home_Low
-                                            
-                                            //dropoutValue used below to randomly drop some readings from the radar.  As group gets larger the chance of dropouts goes to nil.
-                                            int dropoutValue = 7;
-                                            if (poscount > 5) { dropoutValue = Convert.ToInt32(7 * poscount ^ 2 / 25); }
+                                            AiActor actor = agid.actor;
+                                            AiAircraft a = actor as AiAircraft;
+                                            //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
+                                            totalcount = agid.AGGcount;
+                                            poscount = agid.AGGcountAboveRadar;
+                                            belowradarcount = agid.AGGcountBelowRadar;
 
-                                            if (dis_mi <= 2 && a != p && Math.Abs(player_alt_m - agid.AGGaveAlt_m) < 5000)
+                                            //Check on any radar outages or restrictions for each army, and remove any radar returns from areas where radar is restricted or inoperative
+                                            if (!MO_isRadarEnabledByArea(agid.AGGavePos, admin, radarArmy)) continue;
+
+                                            //Console.WriteLine("LPAA: Processing ag2: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
+
+                                            if (!player_place_set)
+                                            {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"                                                                        
+                                                p = actor as AiAircraft;
+                                                player_Vwld = p.AirGroup().Vwld();
+                                                player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
+                                                player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
+                                                player_alt_m = p.Pos().z;
+                                                /* player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
+                                                player_sector = player_sector.Replace(",", ""); // remove the comma */
+                                                player_sector = Calcs.correctedSectorName(this, p.Pos());
+
+                                                ppos = p.Pos();
+
+                                                player_place_set = true;
+                                            }
+
+                                            bool isAI = (agid.AGGAIorHuman == aiorhuman.AI);
+
+                                            string acType = agid.AGGtypeNames;
+                                            isHeavyBomber = agid.AGGisHeavyBomber;
+
+
+                                            type = agid.AGGtype;
+
+                                            //if (a == p && radar_realism >= 0) type = "Your position";
+                                            if (a == p && radar_realism >= 0) continue; //the player is in the DB and we don't want/need to give an intercept to self-location a while ago, as shown in the DB.
+                                                                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
+                                                                                         + a.CallSign() + " " 
+                                                                                         + a.Type() + " " 
+                                                                                         + a.TypedName() + " " 
+                                                                                         +  a.AirGroup().ID(), new object[] { });
+                                                                                        */
+                                            pos1 = agid.AGGavePos;
+                                            //Thread.Sleep(100);
+                                            //pos2=a.Pos();
+                                            //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
+                                            Vwld = new Vector3d(agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
+                                            vel_mps = Calcs.CalculatePointDistance(Vwld);
+                                            vel_mph = Calcs.meterspsec2milesphour(vel_mps);
+                                            vel_mph_10 = Calcs.RoundInterval(vel_mph, 10);
+                                            heading = (Calcs.CalculateBearingDegree(Vwld));
+                                            heading_10 = Calcs.GetDegreesIn10Step(heading);
+                                            dis_m = Calcs.CalculatePointDistance(agid.AGGavePos, p.Pos());
+                                            dis_mi = Calcs.meters2miles(dis_m);
+                                            dis_10 = (int)dis_mi;
+                                            if (dis_mi > 20) dis_10 = Calcs.RoundInterval(dis_mi, 10);
+                                            bearing = Calcs.CalculateGradientAngle(p.Pos(), agid.AGGavePos);
+                                            bearing_10 = Calcs.GetDegreesIn10Step(bearing);
+
+                                            longlat = Calcs.Il2Point3dToLongLat(agid.AGGavePos);
+
+                                            //alt_km = agid.AGGavePos.z / 1000;
+                                            //alt_ft = Calcs.meters2feet(agid.AGGavePos.z);
+                                            alt_km = agid.AGGmaxAlt_m / 1000; //So rather than using average altitude, I think we must use MAX altitude of the group here. If not that, we should indicate a range or something
+                                            alt_ft = Calcs.meters2feet(agid.AGGmaxAlt_m);
+                                            //altAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
+
+                                            //We're using group leaders alt & AGL to get aveAGL for the entire group. Formula: AveAlt - (alt-AGL) = AveAGL
+                                            //altAGL_m = agid.AGGaveAlt - (agid.pos.z - (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0)); // I THINK (?) that Z_AltitudeAGL is in meters?
+                                            //altAGL_ft = Calcs.meters2feet(altAGL_m);
+                                            altAGL_ft = agid.AGGavealtAGL_ft;
+                                            altAGL_m = Calcs.feet2meters(altAGL_ft);
+
+                                            alt_angels = Calcs.Feet2Angels(alt_ft);
+                                            sector = GamePlay.gpSectorName(agid.AGGavePos.x, agid.AGGavePos.y).ToString();
+                                            sector = sector.Replace(",", ""); // remove the comma
+                                            VwldP = new Point3d(agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
+
+                                            intcpt = Calcs.calculateInterceptionPoint(agid.AGGavePos, VwldP, ppos, player_vel_mps);
+                                            intcpt_heading = (Calcs.CalculateGradientAngle(ppos, intcpt));
+                                            intcpt_time_min = intcpt.z / 60;
+                                            /* intcpt_sector = GamePlay.gpSectorName(intcpt.x, intcpt.y).ToString();
+                                            intcpt_sector = intcpt_sector.Replace(",", ""); // remove the comma */
+                                            intcpt_sector = Calcs.correctedSectorName(this, intcpt);
+                                            intcpt_reasonable_time = (intcpt_time_min >= 0.02 && intcpt_time_min < 25);
+
+                                            climb_possible = true;
+                                            if (player_alt_m <= agid.AGGminAlt_m && intcpt_time_min > 1)
                                             {
-                                                posmessage = agid.AGGmixupType + " nearby";
-                                            }                                            
-                                            //Below conditions are situations where radar doesn't work/fails, working to integrate realistic conditions for radar
-                                            //To do this in full realism we'd need the full locations of Chain Home & Chain Home Low stations & exact capabilities
-                                            //As an approximation we're using distance from the current aircraft, altitude, etc.
-                                            /* wikipedia gives an idea of how rough early CH output & methods were: CH output was read with an oscilloscope. When a pulse was sent from the broadcast towers, a visible line travelled horizontally across the screen very rapidly. The output from the receiver was amplified and fed into the vertical axis of the scope, so a return from an aircraft would deflect the beam upward. This formed a spike on the display, and the distance from the left side – measured with a small scale on the bottom of the screen – would give target range. By rotating the receiver goniometer connected to the antennas, the operator could estimate the direction to the target (this was the reason for the cross shaped antennas), while the height of the vertical displacement indicated formation size. By comparing the strengths returned from the various antennas up the tower, altitude could be gauged with some accuracy.
-                                             * Upshot is, exact #, position, no of aircraft, type of aircraft, altitude etc were NOT that precisely known.  Rather they were estimates/guesstimates based on strength of pulse of the radar return as viewed on an oscilliscope etc.
-                                             * ******************/
-                                            else if ((dis_mi >= 50 && poscount < 8 && random.Next(15) > 1 && !intcpt_reasonable_time) ||  //don't show enemy groups too far away, unless they are quite large, or can be intercepted in reasonable time.  Except once in a while randomly show one.
-                                                     (dis_mi >= 25 && poscount < 4 && random.Next(12) > 1 && !intcpt_reasonable_time) ||
-                                                     (dis_mi >= 15 && poscount <= 2 && random.Next(8) > 1 && !intcpt_reasonable_time) ||
-                                                     (!climb_possible && playertype != "B" && army != playerArmy) ||  //If the aircraft is too high for us to be able to climb to, we exclude it from the listing, unless the player is a bomber pilot (who is going to be interested in which planes are above in attack position) OR we are getting a listing of our own army, in which case we want all nearby a/c not just ones we can attack
-                                                     (dis_mi >= 70 && altAGL_ft < 4500) || //chain home only worked above ~4500 ft & Chain Home Low had effective distance only 35 miles
-                                                                                           //however, to implement this we really need the distance of the target from the CHL stations, not the current aircraft
-                                                                                           //We'll approximate it by eliminating low contacts > 70 miles away from current a/c 
-                                                     (dis_mi >= 10 && altAGL_ft < 650 && altAGL_ft < random.Next(500)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
-                                                                                                                          //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
-                                                                                                                          //phasing out targets below 250 feet.
+                                                double altdiff_m = agid.AGGminAlt_m - player_alt_m;
+                                                if (intcpt_time_min > 3 && altdiff_m / intcpt_time_min > 1300) { climb_possible = false; } //109 can climb @ a little over 1000 meters per minute in a sustained way.  So anything that requires more climb than that we exclude from the listing
+                                                else if (altdiff_m / intcpt_time_min > 2500) climb_possible = false; //We allow for the possibility of more climb for a brief time, less then 3 minutes
 
-                                                     belowRadar(altAGL_ft) || //unified method for deciding below radar or not
+                                            }
 
-                                                     poscount == 0 || //this happens if all a/c in a group are belowRadar
-                                                     agid.AGGradarDropout && random.Next(3) == 1 || //For Tab-4-1 listings we honor the heavy bomber radar dropout only 33% of the time.  This is bec. the radar screen operators have ways of picking up tracks even if they appear just once in a while, but Tab-4-1 folks less so.
+                                            string mi = dis_mi.ToString("F0") + "mi";
+                                            string mi_10 = dis_10.ToString("F0") + "mi";
+                                            string ft = alt_ft.ToString("F0") + "ft ";
+                                            string ftAGL = altAGL_ft.ToString("F0") + "ftAGL ";
+                                            string mph = vel_mph.ToString("F0") + "mph";
+                                            string ang = "A" + alt_angels.ToString("F0") + " ";
 
-                                                     //((!isAI && isHeavyBomber && army != playerArmy) && dis_mi > 11 && poscount <= 2 && random.Next(4) <= 2) || // Breather bombers have a higher chance of being overlooked/dropping out, especially when further away.  3/4 times it doesn't show up on radar.
+                                            if (playerArmy == 2) //metric for the Germanos . . . 
+                                            {
+                                                mi = (dis_m / 1000).ToString("F0") + "k";
+                                                mi_10 = mi;
+                                                if (dis_m > 30000) mi_10 = ((double)(Calcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
 
-                                                     ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi <= 4 && poscount <= 2 && random.Next(5) <= 3) // Breather bombers have a much higher chance of being overlooked/dropping out when close (this is close enough it should be visual range, so we're not going to help them via radar)
+                                                ft = alt_km.ToString("F2") + "k ";
+                                                ftAGL = altAGL_m.ToString("F0") + "mAGL ";
+                                                mph = (Calcs.RoundInterval(vel_mps * 3.6, 10)).ToString("F0") + "k/h";
+                                                ang = ((double)(Calcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
+                                            }
+                                            //comprehensive radar returns for tophat/sysadmin purposes
+                                            //TODO:
+                                            //Add strong server-generated password for each session that can be communicated to admins etc
+                                            //Make a more filtered "TopHat" version that could be actually used by a commander/mission 
+                                            //control during missions, and also broadcast instructions & password for one person
+                                            //(or maybe a couple of people, or maybe everyone ? ) from each side to be able to use
+                                            //the more filtered version that is pretty comparable to what is already 
+                                            //shown as text radar in-mission
+                                            //TODO: 
+                                            //We could give Blue tophat measurements in metric units, maybe
+                                            if (radar_realism < 0) //This applies to Red & Blue tophat, and Admin-Grouped Tophat which uses groupings.  Admin-regular tophat still uses individual per aircraft returns.
+                                            {
+
+                                                string numContacts = poscount.ToString();
+                                                if (playerArmy == -4 && belowradarcount > 0) numContacts = poscount.ToString() + "+" + belowradarcount.ToString();  //for admin-grouping radar
+                                                string aircraftType = agid.AGGtypeNames;
+                                                string vel = vel_mph.ToString("n0");
+                                                string alt = alt_angels.ToString("n0");
+                                                string he = heading.ToString("F0");
+
+                                                string aplayername = agid.AGGplayerNames;
+                                                //if (isAI) aplayername = agid.AGGids;
+
+                                                //red & blue tophat operators only get an approximation of how many a/c in each group and also
+                                                //don't get perfect information about whether fighters or bombers or unknown
+                                                //and also don't get the EXACT type of a/c or the name of the player
+                                                if (playerArmy == -1 || playerArmy == -2)
+                                                {
+                                                    numContacts = "~" + Calcs.NoOfAircraft(poscount).ToString("F0");
+
+                                                    aircraftType = "";
+                                                    aplayername = "";
+
+                                                    vel = vel_mph_10.ToString("n0");
+                                                    alt = alt_angels.ToString("n0");
+                                                    he = heading_10.ToString("F0");
+
+                                                }
+
+
+                                                posmessage =
+                                                agid.AGGavePos.x.ToString()
+                                                + "," + agid.AGGavePos.y.ToString() + "," +
+                                                longlat.y.ToString()
+                                                + "," + longlat.x.ToString() + "," +
+                                                army.ToString() + "," +
+                                                agid.AGGmixupType + "," + //We use this to keep the (possibly mixed-up) a/c type standard among all types of radar, it is set once for all in agid instead of randomly set here for each individual radar sweep
+                                                he + "," +
+                                                vel + "," +
+                                                alt + "," +
+                                                sector.ToString() + "," +
+                                                numContacts + "," +
+                                                aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
+                                                + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
+                                                + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
+
+                                                if (playerArmy == -4)
+                                                {
+                                                    GiantSectorOverview[0][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
+                                                    GiantSectorOverview[0][agid.AGGgiantKeypad, 1] += poscount; //A simple count of how many enemy aircraft (index =1) in this sector
+                                                }
+
+                                                //-radar.txt data file structure is:
+                                                //First line header info - just ignore it
+                                                //Each succeeding line is comma delimited, no quotation marks:
+                                                //0 & 1 - posx & posy (meters), 2 & 3 - lat & long (approximate & not too accurate) 
+                                                //4 - army (int), 5 type (string, F or B), 6 Heading (degrees), 7 vel (int, MPH), 
+                                                //8 - altitude (int, Angels, 1000s of feet), 9 - IL2 CloD sector (string)
+                                                //10 - how many in this formation (int, exact)
+                                                //11 - aircraft type (string, exact type & CloD a/c name)
+                                                //12 - unique hashcode (int) for this actor (not actually 100% guaranteed to be unique but fast & probably good enough for our simple purposes)
+                                                //13 - player steam name (string) if it exists
+
+                                                //dropoutValue used below to randomly drop some readings from the radar.  As group gets larger the chance of dropouts goes to nil.
+                                                //int dropoutValue = 7;
+                                                //if (poscount > 5) dropoutValue = Convert.ToInt32(7 * poscount ^ 2 / 25);
+
+                                                //For red & blue TopHot operators we give a slightly filtered view of the contacts,
+                                                //simulating what actual WWII radar could see
+                                                //For example contacts low to the ground fade out.
+                                                //TODO: We could set up radar towers & contacts could be seen better if closer to the 
+                                                //tower (ie, lower to the ground.  But then if the enemy destroys your tower you lose
+                                                //that & can only see what your remaining towers can see (which will likely be contacts only quite high in altitude)
+                                                //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
+                                                //are etc
+                                                if ((playerArmy == -1 || playerArmy == -2) && (
+                                                               belowRadar(altAGL_ft) || //unified method for deciding below radar or not    
+                                                               poscount == 0 || //this happens if all a/c in a group are belowRadar
+                                                               agid.AGGradarDropout
+                                                               //((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(3) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
+                                                               //However if the player heavy bombers group up they are MUCH more likely to show up on radar.  But they will still be harder than usual to track because each individual bomber will phase in/out quite often
+
+                                                               //(random.Next(dropoutValue) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
+                                                               )
+                                               )
+                                                {
+                                                    //Console.WriteLine("Radar: Dropping contact {5} from map {0} bec agl {1:0} bR {2} ct {3} AGGrD {4}", playerArmy, altAGL_ft, belowRadar(altAGL_ft), poscount, agid.AGGradarDropout, a.Name());
+
+                                                    posmessage = "";
+                                                }
+
+
+                                                //add to the GiantSectorOverview ONLY IF their is a radar return for this airgroup
+                                                if ((playerArmy == -1 || playerArmy == -2) && posmessage.Length > 0)
+                                                {
+                                                    //we put this here bec. we want to tally only those ag & a/c that show in that side's radar display
+                                                    if ((-playerArmy) != army)
+                                                    {
+                                                        GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
+                                                        GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 1] += Calcs.NoOfAircraft(poscount); //A simple count of how many enemy aircraft (index =1) in this sector
+                                                                                                                                                    //Console.WriteLine("RADadding: " + agid.AGGgiantKeypad.ToString() + " " + (-playerArmy).ToString() + " " + GiantSectorOverview[(-playerArmy)][agid.AGGgiantKeypad, 0].ToString() + " " + posmessage);
+
+                                                    }
+                                                    else
+                                                    {
+                                                        //Console.WriteLine("RADNOTadding: " + agid.AGGgiantKeypad.ToString() + " " + (-playerArmy).ToString() + " " + posmessage);
+                                                    }
+
+                                                }
+
+
+                                            }
+
+
+                                            else if (radar_realism == 1)
+                                            {
+                                                posmessage = poscount.ToString() + type + " " +
+
+                                                  mi +
+                                                  bearing.ToString("F0") + "°" +
+                                                  ft +
+                                                  ftAGL +
+                                                  mph +
+                                                  heading.ToString("F0") + "° " +
+                                                  sector.ToString() + " " +
+                                                  Calcs.GetAircraftType(a);
+                                                if (intcpt_time_min > 0.02)
+                                                {
+                                                    posmessage +=
+                                                       " Intcpt: " +
+                                                       intcpt_heading.ToString("F0") + "°" +
+                                                       intcpt_time_min.ToString("F0") + "min " +
+                                                       intcpt_sector + " " +
+                                                       intcpt.x.ToString("F0") + " " + intcpt.y.ToString("F0");
+                                                }
+
+                                                /* "(" + 
+                                                Calcs.meters2miles(a.Pos().x).ToString ("F0") + ", " +
+                                                Calcs.meters2miles(a.Pos().y).ToString ("F0") + ")";
+                                                */
+                                                //twcLogServer(new Player[] { player }, posmessage, new object[] { });
+                                            }
+                                            else if (radar_realism > 0)
+                                            {
+
+                                                //Trying to give at least some semblance of reality based on capabilities of Chain Home & Chain Home Low
+                                                //https://en.wikipedia.org/wiki/Chain_Home
+                                                //https://en.wikipedia.org/wiki/Chain_Home_Low
+
+                                                //dropoutValue used below to randomly drop some readings from the radar.  As group gets larger the chance of dropouts goes to nil.
+                                                int dropoutValue = 7;
+                                                if (poscount > 5) { dropoutValue = Convert.ToInt32(7 * poscount ^ 2 / 25); }
+
+                                                if (dis_mi <= 2 && a != p && Math.Abs(player_alt_m - agid.AGGaveAlt_m) < 5000)
+                                                {
+                                                    posmessage = agid.AGGmixupType + " nearby";
+                                                }
+                                                //Below conditions are situations where radar doesn't work/fails, working to integrate realistic conditions for radar
+                                                //To do this in full realism we'd need the full locations of Chain Home & Chain Home Low stations & exact capabilities
+                                                //As an approximation we're using distance from the current aircraft, altitude, etc.
+                                                /* wikipedia gives an idea of how rough early CH output & methods were: CH output was read with an oscilloscope. When a pulse was sent from the broadcast towers, a visible line travelled horizontally across the screen very rapidly. The output from the receiver was amplified and fed into the vertical axis of the scope, so a return from an aircraft would deflect the beam upward. This formed a spike on the display, and the distance from the left side – measured with a small scale on the bottom of the screen – would give target range. By rotating the receiver goniometer connected to the antennas, the operator could estimate the direction to the target (this was the reason for the cross shaped antennas), while the height of the vertical displacement indicated formation size. By comparing the strengths returned from the various antennas up the tower, altitude could be gauged with some accuracy.
+                                                 * Upshot is, exact #, position, no of aircraft, type of aircraft, altitude etc were NOT that precisely known.  Rather they were estimates/guesstimates based on strength of pulse of the radar return as viewed on an oscilliscope etc.
+                                                 * ******************/
+                                                else if ((dis_mi >= 50 && poscount < 8 && random.Next(15) > 1 && !intcpt_reasonable_time) ||  //don't show enemy groups too far away, unless they are quite large, or can be intercepted in reasonable time.  Except once in a while randomly show one.
+                                                         (dis_mi >= 25 && poscount < 4 && random.Next(12) > 1 && !intcpt_reasonable_time) ||
+                                                         (dis_mi >= 15 && poscount <= 2 && random.Next(8) > 1 && !intcpt_reasonable_time) ||
+                                                         (!climb_possible && playertype != "B" && army != playerArmy) ||  //If the aircraft is too high for us to be able to climb to, we exclude it from the listing, unless the player is a bomber pilot (who is going to be interested in which planes are above in attack position) OR we are getting a listing of our own army, in which case we want all nearby a/c not just ones we can attack
+                                                         (dis_mi >= 70 && altAGL_ft < 4500) || //chain home only worked above ~4500 ft & Chain Home Low had effective distance only 35 miles
+                                                                                               //however, to implement this we really need the distance of the target from the CHL stations, not the current aircraft
+                                                                                               //We'll approximate it by eliminating low contacts > 70 miles away from current a/c 
+                                                         (dis_mi >= 10 && altAGL_ft < 650 && altAGL_ft < random.Next(500)) || //low contacts become less likely to be seen the lower they go.  Chain Low could detect only to about 4500 ft, though that improved as a/c came closer to the radar facility.
+                                                                                                                              //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
+                                                                                                                              //phasing out targets below 250 feet.
+
+                                                         belowRadar(altAGL_ft) || //unified method for deciding below radar or not
+
+                                                         poscount == 0 || //this happens if all a/c in a group are belowRadar
+                                                         agid.AGGradarDropout && random.Next(3) == 1 || //For Tab-4-1 listings we honor the heavy bomber radar dropout only 33% of the time.  This is bec. the radar screen operators have ways of picking up tracks even if they appear just once in a while, but Tab-4-1 folks less so.
+
+                                                         //((!isAI && isHeavyBomber && army != playerArmy) && dis_mi > 11 && poscount <= 2 && random.Next(4) <= 2) || // Breather bombers have a higher chance of being overlooked/dropping out, especially when further away.  3/4 times it doesn't show up on radar.
+
+                                                         ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi <= 4 && poscount <= 2 && random.Next(5) <= 3) // Breather bombers have a much higher chance of being overlooked/dropping out when close (this is close enough it should be visual range, so we're not going to help them via radar)
                                                                                                                                                                  //((!isAI && type == "B" && army != playerArmy) && random.Next(5) > 0) || // Enemy bombers don't show up on your radar screen if less than 7 miles away as a rule - just once in a while.  You'll have to spot them visually instead at this distance!
                                                                                                                                                                  //We're always showing breather FIGHTERS here (ie, they are not included in isAI || type == "B"), because they always show up as a group of 1, and we'd like to help them find each other & fight it out
-                                                       //(random.Next(dropoutValue) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
-                                                     )
-                                            {
-                                                posmessage = ""; 
-                                                //posmessage = string.Format (dis_mi, )
-
-                                                /*
-                                                posmessage = type + " " +
-                                                                mi_10 +
-                                                                bearing_10.ToString("F0") + "°" +
-                                                                ang +
-                                                                mph +
-                                                                heading_10.ToString("F0") + "° " + sector.ToString();
-
-                                                if (intcpt_time_min >= 0.02)
+                                                                                                                                                                 //(random.Next(dropoutValue) == 1)  //it just malfunctions & shows nothing 1/7 of the time, for no reason, because. Early radar wasn't 100% reliable at all
+                                                         )
                                                 {
-                                                    posmessage +=
-                                                       " Intcpt: " +
-                                                       intcpt_heading.ToString("F0") + "°" +
-                                                       intcpt_time_min.ToString("F0") + "min ";
-                                                    //+ intcpt_sector + " ";
-                                                }
-                                                */
-                                            }
-                                            else
-                                            {
-                                                posmessage = agid.AGGmixupType + " " +
-                                                   mi_10 +
-                                                   bearing_10.ToString("F0") + "°" +
-                                                   ang +
-                                                   mph +
-                                                   heading_10.ToString("F0") + "° ";
-                                                   //+ sector.ToString();
+                                                    posmessage = "";
+                                                    //posmessage = string.Format (dis_mi, )
 
-                                                if (intcpt_time_min >= 0.02)
+                                                    /*
+                                                    posmessage = type + " " +
+                                                                    mi_10 +
+                                                                    bearing_10.ToString("F0") + "°" +
+                                                                    ang +
+                                                                    mph +
+                                                                    heading_10.ToString("F0") + "° " + sector.ToString();
+
+                                                    if (intcpt_time_min >= 0.02)
+                                                    {
+                                                        posmessage +=
+                                                           " Intcpt: " +
+                                                           intcpt_heading.ToString("F0") + "°" +
+                                                           intcpt_time_min.ToString("F0") + "min ";
+                                                        //+ intcpt_sector + " ";
+                                                    }
+                                                    */
+                                                }
+                                                else
                                                 {
-                                                    posmessage +=
-                                                       " Intcpt: " +
-                                                       intcpt_heading.ToString("F0") + "°" +
-                                                       intcpt_time_min.ToString("F0") + "min ";
-                                                    //+ intcpt_sector + " ";
+                                                    posmessage = agid.AGGmixupType + " " +
+                                                       mi_10 +
+                                                       bearing_10.ToString("F0") + "°" +
+                                                       ang +
+                                                       mph +
+                                                       heading_10.ToString("F0") + "° ";
+                                                    //+ sector.ToString();
+
+                                                    if (intcpt_time_min >= 0.02)
+                                                    {
+                                                        posmessage +=
+                                                           " Intcpt: " +
+                                                           intcpt_heading.ToString("F0") + "°" +
+                                                           intcpt_time_min.ToString("F0") + "min ";
+                                                        //+ intcpt_sector + " ";
+                                                    }
+
                                                 }
 
                                             }
 
+
+                                            //Console.WriteLine("Rad: pos " + posmessage);
+
+                                            //We'll print only one message per Airgroup, to reduce clutter
+                                            //twcLogServer(new Player[] { player }, "RPT: " + posmessage + posmessage.Length.ToString(), new object[] { });
+                                            if (posmessage.Length > 0)
+                                            {
+                                                //gpLogServerAndLog(new Player[] { player }, "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + "" + posmessage, null);
+                                                //Console.WriteLine("NON-ADMIN: ~" + Calcs.NoOfAircraft(poscount).ToString("F0") + "" + posmessage, null);
+                                                //We add the message to the list along with an index that will allow us to reverse sort them in a logical/useful order                               
+                                                int intcpt_time_index = (int)intcpt_time_min;
+                                                if (intcpt_time_min <= 0 || intcpt_time_min > 99) intcpt_time_index = 99;
+
+                                                try
+                                                {
+                                                    string addMess = posmessage;
+                                                    if (radar_realism > 0) addMess = "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage;
+                                                    radar_messages.Add(
+                                                       ((int)intcpt_time_index).ToString("D2") + ((int)dis_mi).ToString("D3") + aigroup_count.ToString("D5"), //adding aigroup ensure uniqueness of index
+                                                       addMess
+                                                    );
+
+
+                                                    if (aiairgroup != null)
+                                                    {
+                                                        ai_radar_info.Add(
+                                 ((int)intcpt_time_index).ToString("D2") + ((int)dis_mi).ToString("D3") + aigroup_count.ToString("D5"), //adding aigroup ensure uniqueness of index
+                                 new AiAirGroupRadarInfo(this, agid, padig, intcpt, climb_possible)
+                              );
+                                                        //Console.WriteLine("Adding ai_radar_info: {0} {1} {2} {3} {4}", intcpt.x, intcpt.y, intcpt.z, agid.playerNames, padig.playerNames);
+                                                    }
+
+                                                    
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    Console.WriteLine("RadErrorAdd: " + e);
+                                                }
+
+                                            }
                                         }
 
-
-                                        //Console.WriteLine("Rad: pos " + posmessage);
-
-                                        //We'll print only one message per Airgroup, to reduce clutter
-                                        //twcLogServer(new Player[] { player }, "RPT: " + posmessage + posmessage.Length.ToString(), new object[] { });
-                                        if (posmessage.Length > 0)
-                                        {
-                                            //gpLogServerAndLog(new Player[] { player }, "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + "" + posmessage, null);
-                                            //Console.WriteLine("NON-ADMIN: ~" + Calcs.NoOfAircraft(poscount).ToString("F0") + "" + posmessage, null);
-                                            //We add the message to the list along with an index that will allow us to reverse sort them in a logical/useful order                               
-                                            int intcpt_time_index = (int)intcpt_time_min;
-                                            if (intcpt_time_min <= 0 || intcpt_time_min > 99) intcpt_time_index = 99;
-
-                                            try
-                                            {
-                                                string addMess = posmessage;
-                                                if (radar_realism > 0) addMess = "~" + Calcs.NoOfAircraft(poscount).ToString("F0") + posmessage;
-                                                radar_messages.Add(
-                                                   ((int)intcpt_time_index).ToString("D2") + ((int)dis_mi).ToString("D3") + aigroup_count.ToString("D5"), //adding aigroup ensure uniqueness of index
-                                                   addMess
-                                                );
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                twcLogServer(new Player[] { player }, "RadError: " + e, new object[] { });
-                                            }
-
-                                        }
-                                    }
-
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Radar ERROR2: " + ex.ToString());
                             }
                         }
                     }
@@ -4747,40 +4888,48 @@ public class Mission : AMission, IMainMission
                 var saveradar_realism = radar_realism;
                 Timeout(wait_s, () =>
                 {
-
-                    //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
-                    //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
-                    //Maybe should be even shorter?
-                    SortedDictionary<string, string> radar_messages_trim = new SortedDictionary<string, string>(new ReverseComparer<string>());
-                    int trim = 0;
-                    int c = 0;
-                    if (!admin && playerArmy >=0 && radar_messages.Count > 12) trim = radar_messages.Count - 12;
-                    //Console.WriteLine("RadTrim: {0} {1} {2}", trim, c, radar_messages.Count);
-                
-
-                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
-                    double delay = 0;
-                    foreach (var mess in radar_messages)
+                    try
                     {
-                        if (c > 0 && c <= trim)
-                        {
-                            c++; 
-                            // Console.WriteLine("RadTrim: Trimming {0} {1} {2}", trim, c, radar_messages.Count);
-                            continue;
-                        }
-                        //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
-                        c++;
-                        radar_messages_trim.Add(mess.Key,mess.Value);
-                        delay += 0.2;
-                        Timeout(delay, () =>
-                           {
-                               if (saveradar_realism == 0) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                               else if (saveradar_realism >= 0) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
-                           });
-                        
+                        //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
+                        //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
+                        //Maybe should be even shorter?
+                        SortedDictionary<string, string> radar_messages_trim = new SortedDictionary<string, string>(new ReverseComparer<string>());
+                        int trim = 0;
+                        int c = 0;
+                        if (!admin && playerArmy >= 0 && radar_messages.Count > 12) trim = radar_messages.Count - 12;
+                        //Console.WriteLine("RadTrim: {0} {1} {2}", trim, c, radar_messages.Count);
 
+
+                        //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+                        double delay = 0;
+                        foreach (var mess in radar_messages)
+                        {
+                            if (c > 0 && c <= trim)
+                            {
+                                c++;
+                                // Console.WriteLine("RadTrim: Trimming {0} {1} {2}", trim, c, radar_messages.Count);
+                                continue;
+                            }
+                            //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
+                            c++;
+                            radar_messages_trim.Add(mess.Key, mess.Value);
+                            delay += 0.2;
+                            Timeout(delay, () =>
+                               {
+                                   if (saveradar_realism == 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                                   else if (saveradar_realism >= 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                                   //if (!display && aiairgroup != null) Console.WriteLine("AiAirgroup radar return: " + mess.Value); //for testing
+                           });
+
+
+                        }
+                        radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages_trim);
+                        if (aiairgroup != null) ai_radar_info_store[aiairgroup] = ai_radar_info;
                     }
-                    radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages_trim);
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Radar ERROR1: " + ex.ToString());
+                    }
 
                 });//timeout      
 
@@ -6527,10 +6676,13 @@ public class Mission : AMission, IMainMission
     {
         int numremoved = 0;
         //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
-        double minX = 8200;
-        double minY = 14500;
+        //This should match the values in your .mis file, like
+        //BattleArea 10000 10000 350000 310000 10000
+        //TODO: There is probably some way to access the size of the battle area programmatically
+        double minX = 10000;
+        double minY = 10000;
         double maxX = 350000;
-        double maxY = 307500;
+        double maxY = 310000;
         //////////////Comment this out as we don`t have Your Debug mode  
         DebugAndLog("Checking for AI Aircraft off map, to despawn");
         if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
@@ -7158,7 +7310,7 @@ public class Mission : AMission, IMainMission
             addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 15000, false, 35, "");
             addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 15000, false, 15, ""); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
             addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
             addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar AMBETEUSE",               "AmbR", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 15000, false, 15, ""); //Mission in mission file
@@ -9325,9 +9477,27 @@ public static class Calcs
 
     }
 
-    //So, for whatever reason the gpSectorName puts out a section that is one off in both X & Y from
-    //the sectors shown on the map.  So . . . subtracting 10000km from both x & y corrects this.  I guess?
-    //Maybe a bug in 4.5?
+    //OK, so in order for the sector # to match up with the TWC map, and
+    //to work with our "double keypad" routines listed here,
+    //And (most important!) in order to make the sectors match up with EASY SIMPLE
+    //squares of side 10000m in the in-game coordinate system, you must use this battle area
+    //in the .mis file:
+    //
+    //BattleArea 10000 10000 350000 310000 10000
+    //
+    //Key here is the 10000,10000 which makes the origin of the battle area line up with the origin of the 
+    //in-game coordinate system.
+    //
+    //If you wanted to change this & make the battle area smaller or something, you could just increase
+    //the #s in increments of 100000.
+    //The 350000 310000 is important only in that it EXACTLY matches the size of the map available in CLOD 
+    //in FMB etc.  So 0 0 350000 310000 10000 exactly matches the full size of the Channel Map in CloD,
+    //uses the full extent of the map, and makes the sector calculations exactly match in 10,000x10,000 meter 
+    //increments.
+
+    //This is also the way the TWC online radar map works, so if you do it that way the in-game map & offline 
+    //radar map will match.
+
     public static string correctedSectorName(Mission msn, Point3d p)
     {
 

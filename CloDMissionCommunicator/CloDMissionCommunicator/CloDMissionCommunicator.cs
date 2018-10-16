@@ -22,7 +22,7 @@ using System.ComponentModel;
 using System.Linq;
 using maddox.GP;
 using maddox.game;
-using maddox.game.world;
+using maddox.game.world; 
 using maddox.game.play;
 using maddox.game.page;
 using part;
@@ -99,12 +99,82 @@ public interface IMainMission
     bool DEBUG { get; set; } //Whether to print debug messages (most to console, some to screen
     bool LOG { get; set; } //Whether to log debug messages to  a log file.
 
+    Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> ai_radar_info_store { get; set; }
+    //CircularArray<Dictionary<AiAirGroup, IAirGroupInfo>> airGroupInfoCircArr { get; set; }
+
+}
+
+public interface IAiAirGroupRadarInfo
+{
+    double time { get; set; } //Battle.time.current;
+                                     //public SortedDictionary<string, AirGroupInfo> interceptList {get; set;}
+    IAirGroupInfo agi { get; set; }  //airgroup for TARGET airgroup
+    IAirGroupInfo pagi { get; set; } //airgroup info for SOURCE airgroup (ie the 'player' or the one that will be targeting the TARGET
+    Point3d interceptPoint { get; set; } //intcpt, with x,y as location and z as intcpt time in seconds
+    bool climbPossible { get; set; } //climb_possible        
+    AMission mission { get; set; }
+
+
+}
+
+public enum aiorhuman { AI, Mixed, Human };
+
+public interface IAirGroupInfo
+{
+    double time { get; set; } //Battle.time.current;
+    HashSet<AiAirGroup> nearbyAirGroups { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
+    HashSet<AiAirGroup> groupedAirGroups { get; set; } //groups that have been nearby for that past X iterations, thus counting as part of the same Group
+    Point3d pos { get; set; }
+    Point3d vel { get; set; }
+    bool belowRadar { get; set; }
+    double altAGL_ft { get; set; }
+    double altAGL_m { get; set; }
+    int count { get; set; }
+    string type { get; set; }
+    bool isHeavyBomber { get; set; }
+    bool isAI { get; set; }
+    string playerNames { get; set; }
+    AiActor actor { get; set; }
+    AiAirGroup airGroup { get; set; }
+    bool isLeader { get; set; }
+    AiAirGroup leader { get; set; }
+    string sector { get; set; }
+    string sectorKeyp { get; set; }
+    int giantKeypad { get; set; }
+
+
+
+
+    //Above are individual airgroup/aircraft values - below are the composite values for the entire airgroup ("Air Group Grouping" - AGG) - in case this is the leader of the grouping.  Otherwise blank/default
+    Point3d AGGpos { get; set; }    //exact loc of the primary a/c
+    Point3d AGGavePos { get; set; } //average loc of all a/c      
+    string AGGsector { get; set; }
+    string AGGsectorKeyp { get; set; }
+    int AGGgiantKeypad { get; set; }
+    Point3d AGGvel { get; set; }
+    int AGGcount { get; set; } //total # in group, including all above & below radar
+    int AGGcountAboveRadar { get; set; } //if countAboveRadar is 0 this group won't show up at all.  This is the count that shows to ordinary players
+    int AGGcountBelowRadar { get; set; }
+    bool AGGradarDropout { get; set; }
+    double AGGminAlt_m { get; set; }
+    double AGGmaxAlt_m { get; set; }
+    double AGGaveAlt_m { get; set; }
+    double AGGavealtAGL_ft { get; set; }
+    string AGGtypeNames { get; set; }
+    string AGGplayerNames { get; set; }
+    string AGGids { get; set; }  //the actor.Name()s compiled into a string
+    aiorhuman AGGAIorHuman { get; set; }
+    string AGGtype { get; set; }    //the actual type: "F" or "B".
+    string AGGmixupType { get; set; } //the type that will actually display on user radar, which is sometimes/often "mixed up".  "F" "B" or "U" for unknown
+    bool AGGisHeavyBomber { get; set; }
+    AMission mission { get; set; }
 
 }
 
 public interface ISupplyMission
 {
     string DisplayNumberOfAvailablePlanes(int army = 0, Player player = null, bool display = false, bool html = false, string match = "");
+    string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "");
     void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex = 0 );
     void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0);
     bool SupplyEndMission(double redMult = 1, double blueMult = 1);

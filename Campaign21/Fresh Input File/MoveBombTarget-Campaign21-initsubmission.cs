@@ -1,4 +1,5 @@
 //$reference System.Core.dll
+//$reference parts/core/CloDMissionCommunicator.dll
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using maddox.game;
 using maddox.game.world;
 using maddox.GP;
 using System.Text;
+using TWCComms;
 
 public struct changeLimit
 {
@@ -40,8 +42,12 @@ public class Mission : AMission
     AiAirGroup airGroup;
     AiAirport AirGroupAirfield;
     bool toHome = false;
+
+    public IMainMission TWCMainMission;
+
     public Mission ()
     {
+        TWCMainMission = TWCComms.Communicator.Instance.Main;
 
         moveAirports = true; //whether or not to move targets to a different/nearby airport
         moveAirportsDistance_m = 40000; //max distance to move airports if you choose that option
@@ -76,6 +82,9 @@ public class Mission : AMission
         };
         */
 
+        //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
+        
+        Console.WriteLine("-MoveBombTarget.cs successfully inited");
     }
 
     private bool isAiControlledAirGroup(AiAirGroup airGroup) {
@@ -254,19 +263,20 @@ public class Mission : AMission
         }
     }
 
-/*
+
     public override void OnMissionLoaded(int missionNumber)
     {
         base.OnMissionLoaded(missionNumber);
 
         if (missionNumber != MissionNumber) return; //only do this when this particular mission is loaded.
-
-        GetCurrentAiAirgroups();
+        checkAirgroupsIntercept_recur();
+        Console.WriteLine("-MoveBombTarget.cs successfully loaded");
+        //GetCurrentAiAirgroups();
 
         //airGroup = GamePlay.gpActorByName("0:BoB_LW_StG2_II.07") as AiAirGroup;
 
     }
-    */
+    
                         //AirGroupAirfield = GetAirfieldAt(airGroup.Pos());
                     
 
@@ -705,6 +715,279 @@ public class Mission : AMission
 
             updateAirWaypoints(airGroup);
         }
+    }
+
+
+    public void checkAirgroupsIntercept_recur()
+    {
+        /************************************************
+         * 
+         * Change airgroups to intercept nearest interesting enemy
+         * Recursive function called every X seconds
+         ************************************************/
+
+        //Timeout(187, () => { checkAirgroupsIntercept_recur(); });
+
+        Timeout(27, () => { checkAirgroupsIntercept_recur(); }); //for testing
+        
+        Task.Run(() => checkAirgroupsIntercept());
+        //checkAirgroupsIntercept();
+    }
+
+    public void checkAirgroupsIntercept()
+    {
+        Console.WriteLine("MoveBomb: Checking airgroups intercepts");
+        foreach (AiAirGroup airGroup in airGroups)
+        {
+
+            if (!isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
+            Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup");
+            interceptNearestEnemyOnRadar(airGroup);
+        }
+    }
+
+    //So each attacking a/g can only do one intercept until it is complete, plus some extra time
+    //Also each target a/g can only have one attacking a/g going to intercept it, until that interception is complete + maybe some extra time
+    Dictionary<AiAirGroup, double> attackingAirgroupTimeToIntercept = new Dictionary<AiAirGroup, double>();
+    Dictionary<AiAirGroup, double> targetAirgroupTimeToIntercept = new Dictionary<AiAirGroup, double>();
+
+
+
+    public bool interceptNearestEnemyOnRadar(AiAirGroup airGroup)
+    {
+
+        if (airGroup == null || !isAiControlledAirGroup(airGroup))
+        {
+            Console.WriteLine("MoveBomb:airGroup is null or not AI, exiting");
+            return false;
+        }
+        AiActor agActor = airGroup.GetItems()[0];
+        AiAircraft agAircraft = agActor as AiAircraft;
+
+        if (airGroup.GetWay() == null)
+        {
+            Console.WriteLine("MoveBomb:airGroup.GetWay() is null for "+ agActor.Name());
+        }
+
+        Dictionary <AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
+        if (TWCMainMission != null) aris = TWCMainMission.ai_radar_info_store;
+        else
+        {
+            Console.WriteLine("MoveBomb: No TWCMainMission connected, returning" );
+            return false;
+        }
+
+        if (!aris.ContainsKey(airGroup))
+        {
+            Console.WriteLine("MoveBomb: No radar returns exist for this group, returning: " + agActor.Name());
+            return false;
+        }
+
+
+        SortedDictionary<string, IAiAirGroupRadarInfo> ai_radar_info = aris[airGroup];
+        IAiAirGroupRadarInfo aagri = null;
+        IAiAirGroupRadarInfo bestNoninterceptAagri = null;
+        Point3d iPoint = new Point3d(0, 0, 0);
+
+        if (ai_radar_info.Count == 0)
+        {
+            Console.WriteLine("MoveBomb:No radar returns exist for this airGroup, exiting: " + agActor.Name());
+            return false;
+        }
+
+        bool goodintercept = false;
+        foreach (string key in ai_radar_info.Keys)
+        {
+            if (ai_radar_info[key] != null)
+            {
+                aagri = ai_radar_info[key];
+
+                //So, because of the radar grouping system we should get ONLY grouped AirGroups & we can always plan on the one we get being the leader & we can/should use the AGG side of position, velocity, etc rather than the ag side.
+                if (aagri.agi.AGGAIorHuman == aiorhuman.AI)
+                {
+                    Console.WriteLine("MoveBomb: Skipping because 100% AI airgroup {}0", aagri.agi.AGGAIorHuman);
+                    continue; //we don't make AI attack other ai - that would be . . . futile plus waste CPU cycles
+                }
+                //If anything we should incorporate a scheme here to encourage AI to **avoid** attacking each other if possible
+                
+                if (aagri.interceptPoint.x == null || aagri.interceptPoint.x == 0 || aagri.interceptPoint.y == 0 || aagri.interceptPoint.z > 10 * 60 || 
+                    (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup] > Time.current()) ||  // In case this target already has an a/g attacking it, skip
+                    (attackingAirgroupTimeToIntercept.ContainsKey(airGroup) && attackingAirgroupTimeToIntercept[airGroup] > Time.current())  //In case this a/g already has an existing intercept, skip
+                    )
+                {
+                    Console.WriteLine("MoveBomb: Skipping {0} to intercept {1} {2} {3} " + agActor.Name(), ai_radar_info[key].agi.playerNames, ai_radar_info[key].interceptPoint.x, ai_radar_info[key].interceptPoint.y, ai_radar_info[key].interceptPoint.z);
+
+                    if (attackingAirgroupTimeToIntercept.ContainsKey(airGroup) && attackingAirgroupTimeToIntercept[airGroup] > Time.current()) Console.WriteLine("MoveBomb: Skipping because attacker already has an existing intercept " + attackingAirgroupTimeToIntercept[airGroup].ToString("N0"));
+                    if (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup] > Time.current()) Console.WriteLine("MoveBomb: Skipping because target already has an existing intercept " + targetAirgroupTimeToIntercept[airGroup].ToString("N0"));
+
+                    if (bestNoninterceptAagri == null) bestNoninterceptAagri = aagri;
+                    continue; //skip this one if there is no intcpt point OR the intcpt time is longer than 5*60 seconds
+                    //TODO: also need to skip if AI group is target && if altitude difference is too great
+                    //Also check whether they are already on an intercept and whether the target group is already being intercepted by some other group
+                    //if ()
+
+                    //Also, can check whether the group is already engaged with some target?
+
+
+                }
+                else
+                {
+                    Console.WriteLine("MoveBomb: Moving {0} to intercept {1:N0} {2:N0} {3:N0} {4}" + agActor.Name(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask());
+                    goodintercept = true;
+                    iPoint = aagri.interceptPoint;
+                    break;
+                }
+
+                //TODO: Check appropriate altitude, whether or not near enough, inctp time (intcp.z) short enough, whether we've recently chased another different airgrouop, etc etc etc
+            }
+        }
+
+        if (!goodintercept && bestNoninterceptAagri != null)
+        {
+            //if there is no 'good' intercept we'll still make them chase if they are within about 7 miles and reasonable altitude difference
+            //(less than 1700m to climb or 4000m to dive
+            double dis_m = Calcs.CalculatePointDistance(bestNoninterceptAagri.agi.AGGpos, bestNoninterceptAagri.pagi.pos);
+            if (dis_m<12000 && (Math.Abs(bestNoninterceptAagri.agi.AGGaveAlt_m - bestNoninterceptAagri.pagi.pos.z) < 1700 || bestNoninterceptAagri.pagi.pos.z > bestNoninterceptAagri.agi.AGGmaxAlt_m && bestNoninterceptAagri.pagi.pos.z - bestNoninterceptAagri.agi.AGGmaxAlt_m < 4000 ))
+            {
+                aagri = bestNoninterceptAagri;
+                iPoint = aagri.agi.AGGpos; //x,y is x/y pos, z is time to intercept in seconds  (only leaders here, should use AGG data)
+                iPoint.z = 6 * 60 + ran.NextDouble()*240-120; //so we have to manually fillin the time here, we'll say they chase it for 6 minutes +/- 120 seconds
+            }
+        }
+
+
+
+        if (aagri.interceptPoint.x == 0 || aagri.interceptPoint.y == 0 || aagri.interceptPoint.z > 5 * 60)
+        {
+            Console.WriteLine("MoveBombINER: Returning - no good intercept found for airgroup: " +agActor.Name());
+
+            return false;
+        }
+
+        Console.WriteLine("MoveBombINER: Making new intercept for " + aagri.pagi.playerNames);
+
+        targetAirgroupTimeToIntercept.Add(aagri.agi.airGroup, Time.current() + aagri.interceptPoint.z + 125.0 + ran.NextDouble() * 240.0 - 120.0);  //can't get another interceptor assigned untilhis time is up, the actual time to the intercept plus 2 mins +/- 2 mins
+        attackingAirgroupTimeToIntercept.Add(aagri.pagi.airGroup, Time.current() + aagri.interceptPoint.z + 125.0 + ran.NextDouble() * 240.0 - 120.0);  //can't get another intercept unti lthis time is up, the actual time to the intercept plus 2 mins +/- 2 mins
+
+        AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+
+        /* //for testing
+        foreach (AiWayPoint wp in CurrentWaypoints)
+        {
+            AiWayPoint nextWP = wp;
+            //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+        }
+        */
+        int currWay = airGroup.GetCurrentWayPoint();
+        double speedDiff = 0;
+        double altDiff_m = 0;
+
+        //Console.WriteLine("MBTITG: 2");
+        if (currWay< CurrentWaypoints.Length) Console.WriteLine( "IntcpCalc: {0}", new object[] { CurrentWaypoints[currWay] });
+        //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay].Speed });
+        //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { (CurrentWaypoints[currWay] as AiAirWayPoint).Action });
+
+        List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
+        int count = 0;
+        //Console.WriteLine("MBTITG: 3");
+
+        bool update = false;
+
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action)); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+
+        foreach (AiWayPoint wp in CurrentWaypoints)
+        {
+            AiWayPoint nextWP = wp;
+            //Console.WriteLine( "Target: {0}", new object[] { wp });
+
+            if ((wp as AiAirWayPoint).Action == null) return false;
+
+  
+            if (count == currWay)
+            {
+                Point3d pos;
+                double speed;
+
+                switch ((wp as AiAirWayPoint).Action)
+                {
+
+                    case AiAirWayPointType.GATTACK_TARG:                        
+                    case AiAirWayPointType.GATTACK_POINT:
+                    case AiAirWayPointType.COVER:
+                    case AiAirWayPointType.ESCORT:
+                    case AiAirWayPointType.FOLLOW:
+                        break; //THESE types do nothing, no reconfiguration of route for intercept
+                    case AiAirWayPointType.HUNTING:
+                    case AiAirWayPointType.NORMFLY:
+                    case AiAirWayPointType.RECON:
+                    case AiAirWayPointType.AATTACK_FIGHTERS:
+                    case AiAirWayPointType.AATTACK_BOMBERS:
+                        //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
+                        //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
+                        Console.WriteLine("WP before{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, wp.Speed, wp.P.x, wp.P.y, wp.P.z });
+                        pos = wp.P;
+
+                        speed = wp.Speed;
+
+                        double zSave = pos.z;
+
+                        //Go to intercept point given, generally higher than the intercepting a/c and also +/- a few km in x,y, and alt
+                        pos = new Point3d(aagri.interceptPoint.x + ran.NextDouble()*3000-1500, aagri.interceptPoint.y + ran.NextDouble() * 3000 - 1500, aagri.agi.pos.z + 2000 + ran.NextDouble() * 3000 - 1500);                      
+                        
+                        nextWP = new AiAirWayPoint(ref pos, speed);
+                        if (aagri.agi.type == "F") (nextWP as AiAirWayPoint).Action = AiAirWayPointType.AATTACK_FIGHTERS;
+                        else if (aagri.agi.type == "B") (nextWP as AiAirWayPoint).Action = AiAirWayPointType.AATTACK_BOMBERS;
+                        else (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                        //Console.WriteLine( "Target after: {0}", new object[] { nextWP });
+                        Console.WriteLine("Added{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, nextWP.Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z });
+                        //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                        update = true;
+                        break;
+
+
+                }
+            }
+            if (count >= currWay)
+            {
+                NewWaypoints.Add(nextWP);
+
+                if (update)
+                {
+                    //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                    //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                }
+
+            }
+
+            //Console.WriteLine("MBTITG: 4");
+            count++;
+
+
+
+        }
+
+        foreach (AiWayPoint wp in NewWaypoints)
+        {
+            AiWayPoint nextWP = wp;
+            //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+        }
+
+
+        //NewWaypoints.Add(CurrentPosWaypoint(airGroup));
+        //NewWaypoints.AddRange(SetWaypointBetween(airGroup.Pos(), AirGroupAirfield.Pos(), 4000, 90.0));
+        //NewWaypoints.Add(GetLandingWaypoint(AirGroupAirfield, 1000.0));
+
+
+        if (update)
+        {
+            //Console.WriteLine("MBTITG: Updating this course");
+            airGroup.SetWay(NewWaypoints.ToArray());
+            return true;
+        }
+        else
+        { return false; }
     }
 
     Random ran = new Random();

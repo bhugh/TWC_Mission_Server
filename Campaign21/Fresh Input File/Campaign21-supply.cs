@@ -91,6 +91,17 @@ public class Mission : AMission, ISupplyMission
         ReadSupply(supplySuffix);
         SaveSupplyRecursive(true);
         Console.WriteLine(DisplayNumberOfAvailablePlanes(0, null, false).Replace(Environment.NewLine, ", "));
+
+    }
+
+    public override void OnMissionLoaded(int missionNumber)
+    {
+        base.OnMissionLoaded(missionNumber);
+
+        if (missionNumber != MissionNumber) return; //only do this when this particular mission is loaded.
+
+        Console.WriteLine("-supply.cs successfully loaded");
+
     }
 
 

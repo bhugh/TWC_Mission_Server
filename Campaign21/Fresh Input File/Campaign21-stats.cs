@@ -3959,6 +3959,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive();}
             SetAirfieldTargets();
 
+            Console.WriteLine("-stats.cs successfully loaded");
+
 
         }
 

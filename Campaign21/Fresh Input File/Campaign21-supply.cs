@@ -972,49 +972,51 @@ private int NumberPlayerInActor(AiActor actor)
     public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0)
     {
         //base.OnPlaceLeave(player, actor, placeIndex);
-
-        if (actor != null)
+        try
         {
-            Console.WriteLine("PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
-            DisplayNumberOfAvailablePlanes(actor);
-            AiAircraft aircraft = actor as AiAircraft;
-
-            //So, sometimes we get an "all clear" onplaceleave but then a moment or two later realize, oh yeah the person actually died a horrible death.
-            //-stats.cs figures things like that out and sends us a message.  We want to allow this "takeback" of the Check-in, but obviously
-            //only do so one time per actor
-            //Later we could force partial damage also with forceDamage between 0 & 1.
-            if (forceDamage >= 1 && aircraftCheckedIn.Contains(actor) && !aircraftCheckedInButLaterKilled.Contains(actor))
+            if (actor != null)
             {
-                Console.WriteLine("SupOPL: Forcing check-out");
-                CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
-                aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only
+                Console.WriteLine("PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+                DisplayNumberOfAvailablePlanes(actor);
+                AiAircraft aircraft = actor as AiAircraft;
+
+                //So, sometimes we get an "all clear" onplaceleave but then a moment or two later realize, oh yeah the person actually died a horrible death.
+                //-stats.cs figures things like that out and sends us a message.  We want to allow this "takeback" of the Check-in, but obviously
+                //only do so one time per actor
+                //Later we could force partial damage also with forceDamage between 0 & 1.
+                if (forceDamage >= 1 && aircraftCheckedIn.Contains(actor) && !aircraftCheckedInButLaterKilled.Contains(actor))
+                {
+                    Console.WriteLine("SupOPL: Forcing check-out");
+                    CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
+                    aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only
+                }
+
+                double Z_AltitudeAGL = 0;
+                if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
+                //We could add in some scheme for damage later
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTeritory(actor)
+                    && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
+                {
+                    Console.WriteLine("SupOPL: Check-in");
+                    CheckActorIn(actor, player);
+                }
+                else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
+
+                //DisplayNumberOfAvailablePlanes(actor);
+
+                /*
+                 * We already do this elsewhere
+                if (NumberPlayerInActor(actor) == 0)
+                    if (actor is AiCart)
+                        Timeout(5, () =>
+                        {
+                            if (actor as AiCart != null)
+                                (actor as AiCart).Destroy();
+                        });
+                */
             }
-
-            double Z_AltitudeAGL = 0;
-            if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-            //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
-            //We could add in some scheme for damage later
-            if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTeritory(actor)
-                && forceDamage<1 /*&& !IsActorDamaged(actor)*/)
-            {
-                Console.WriteLine("SupOPL: Check-in");
-                CheckActorIn(actor, player);
-            }
-            else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
-
-            //DisplayNumberOfAvailablePlanes(actor);
-
-            /*
-             * We already do this elsewhere
-            if (NumberPlayerInActor(actor) == 0)
-                if (actor is AiCart)
-                    Timeout(5, () =>
-                    {
-                        if (actor as AiCart != null)
-                            (actor as AiCart).Destroy();
-                    });
-            */
-        }
+        } catch (Exception ex) { Console.WriteLine("SupplyOnPlaceLeave: " + ex.ToString()); }
     }
 
 

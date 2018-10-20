@@ -312,6 +312,8 @@ public class Mission : AMission, IStatsMission
     double stb_ParachuteFailureRecoveryChance = .99; //If CloD decides your "parachute failed" what is your chance of being able to deploy your reserve chute? 
                                                      //CloD does something like 20-50% parachute failure rate. Wherease US AF in training in WWII found one main chute failure PER WEEK in a large training facility, so that is one per hundreds of jumps.  And that is the main chute. The reserve shoot fails maybe 1% of the time or less also.  So even .99 here is probably too LOW, certainly not too high.
                                                      //In reality in combat it might have been somewhat less than that, but still . . . 
+    bool stb_AllowJumpIntoAIAircraft = false; //Players can jump into an already-existing AI aircraft in certain situations, such as 
+
 
 
     #endregion
@@ -383,7 +385,7 @@ public class Mission : AMission, IStatsMission
 
         stb_ChangeAttackProb = (stb_ChangeAttackProbHigh - stb_ChangeAttackProbLow) * stb_random.NextDouble() + stb_ChangeAttackProbLow;
         stb_ChangeBomberAttackProb = (stb_ChangeBomberAttackProbHigh - stb_ChangeBomberAttackProbLow) * stb_random.NextDouble() + stb_ChangeBomberAttackProbLow;
-        stb_ChangeAttackProb_SmallGroup = (stb_ChangeAttackProb_SmallGroupHigh - stb_ChangeAttackProb_SmallGroupLow) * stb_random.NextDouble() + stb_ChangeAttackProb_SmallGroupLow;            
+        stb_ChangeAttackProb_SmallGroup = (stb_ChangeAttackProb_SmallGroupHigh - stb_ChangeAttackProb_SmallGroupLow) * stb_random.NextDouble() + stb_ChangeAttackProb_SmallGroupLow;
 
         //if (stb_Debug) Console.WriteLine("stb_ChangeAttackProb: " + stb_ChangeAttackProb + " stb_ChangeBomberAttackProb:" + stb_ChangeBomberAttackProb);
 
@@ -438,6 +440,7 @@ private void stb_loadINI(string file)
         stb_ASR_RescueChanceFriendly = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceFriendly", stb_ASR_RescueChanceFriendly);
         stb_ASR_RescueChanceEnemy = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceEnemy", stb_ASR_RescueChanceEnemy);
         stb_ParachuteFailureRecoveryChance = ini.IniReadValue("FUNCTIONALITY", "stb_ParachuteFailureRecoveryChance", stb_ParachuteFailureRecoveryChance);
+        stb_AllowJumpIntoAIAircraft = ini.IniReadValue("FUNCTIONALITY", "stb_AllowJumpIntoAIAircraft", stb_AllowJumpIntoAIAircraft);
 
 
         stb_LogStatsDelay = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsDelay", stb_LogStatsDelay);
@@ -3148,7 +3151,35 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         }
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
     }
-    
+
+    //true if player is one & only player in a/c, false if more than the player in a/c, NULL in case of AI-controlled aircraft (no players)s
+    public bool? Stb_isOnlyPlayerInAircraft(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+
+
+            if (aircraft == null)
+                return null;
+            int count = 0;
+            for (int i = 0; i < aircraft.Places(); i++)
+            {
+                if (aircraft.Player(i) == null)
+                {
+                    count++;
+                    continue;
+                }
+                if (aircraft.Player(i) != player)
+                    return false;
+            }
+
+            if (aircraft.Places() == count) return null; //Case of NO live players in plane, ie, ai-controlled aircraft
+            return true;
+
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
     public bool Stb_isPlayerFirstInAircraft(AiAircraft aircraft, Player player)
     {
         try
@@ -3435,11 +3466,128 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         return false;
     }
 
+    public void Stb_RemoveOffMapPlayers_recurs()
+    {
+        Timeout(33, () => { Stb_RemoveOffMapPlayers_recurs(); });
+        //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
+        Task.Run(() => Stb_RemoveOffMapPlayers());
+        //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+    }
+
+    //Removes player aircraft if they are off the map    
+    public void Stb_RemoveOffMapPlayers()
+    {
+        try
+        {
+            //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
+            //This should match the values in your .mis file, like
+            //BattleArea 10000 10000 350000 310000 10000
+            //TODO: There is probably some way to access the size of the battle area programmatically
+            // Players are warned when they go one square off the map & destroyed if they go 2 squares off
+            if (GamePlay == null) return;
+            double minX = 10000;
+            double minY = 10000;
+            double maxX = 350000;
+            double maxY = 310000;
+            //////////////Comment this out as we don`t have Your Debug mode  
+            Console.WriteLine("Checking for Players off map, to despawn");
+            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            {
+                foreach (int army in GamePlay.gpArmies())
+                {
+                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                        {
+                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            {
+                                //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                                foreach (AiActor actor in airGroup.GetItems())
+                                {
+                                    if (actor != null && actor is AiAircraft)
+                                    {
+                                        AiAircraft a = actor as AiAircraft;
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
+                                           //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
+                                           //+ a.Type() + " " 
+                                           //+ a.TypedName() + " " 
+                                           +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                          );
+                                        */
+                                        if (a != null && !Stb_isAiControlledPlane(a) &&
+                                              (a.Pos().x <= minX ||
+                                                a.Pos().x >= maxX ||
+                                                a.Pos().y <= minY ||
+                                                a.Pos().y >= maxY
+                                              )
+
+                                        )   // player/non-ai aircraft only
+                                        {
+                                            HashSet<Player> players = new HashSet<Player>();
+
+                                            string direction = "";
+
+                                            
+                                            if (a.Pos().y <= minY) direction += "north";
+                                            if (a.Pos().y >= maxY) direction += "south";
+                                            if (a.Pos().x <= minX) direction += "east";
+                                            if (a.Pos().x >= maxX) direction += "west";
+
+
+                                            for (int i = 0; i < a.Places(); i++)
+                                                if (a.Player(i) != null) players.Add(a.Player(i));
+
+                                            string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
+                                            GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
+
+
+
+                                            if (a.Pos().x <= minX - 10000 ||
+                                                    a.Pos().x >= maxX + 10000 ||
+                                                    a.Pos().y <= minY - 10000 ||
+                                                    a.Pos().y >= maxY + 10000
+                                                )
+                                            {
+                                                foreach (Player player in players)
+                                                {
+                                                    //Stb_RemovePlayerFromAircraftandDestroy(a, player);
+                                                    //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                                                    //2 = self-kill
+                                                    stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+                                                    //stbSr_PlayerDeath_penaltylist[playername]
+                                                    stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                                                    Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+
+
+                                                    gpLogServerAndLog(null, "{0} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), a.InternalTypeName() });
+                                                    gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name(), a.InternalTypeName() });
+                                                    gpLogServerAndLog(null, "{0}'s aircraft was lost.", new object[] { player.Name(), a.InternalTypeName() });
+
+                                                }
+
+                                            }
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString());}
+        // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
+    } //method removeoffmapaiaircraft
+
+
+
+
     //Experiment with changingn the airgroup target to player, seeing if they will attack better
+    //Not actually used for now
     public void Stb_changeTargetToPlayerRecurs(Player player) {
         Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
         Timeout (5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-        Stb_changeTargetAllAIAircraft(player);
+        Task.Run(() => Stb_changeTargetAllAIAircraft(player));
         //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
     }
 
@@ -3693,32 +3841,43 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     //otherwise, find only airports matching that army
     public AiBirthPlace Stb_nearestBirthPlace(Point3d location, int army = 0)
     {
-        AiBirthPlace NearestAirfield = null;
-        AiBirthPlace[] airports = GamePlay.gpBirthPlaces();
-        Point3d StartPos = location;
-
-        if (airports != null)
+        try
         {
-            foreach (AiBirthPlace airport in airports)
+            AiBirthPlace NearestAirfield = null;
+            AiBirthPlace[] airports;
+            if (GamePlay != null)  airports = GamePlay.gpBirthPlaces();
+            else return null;
+            Point3d StartPos = location;
+
+            if (airports != null)
             {
-                AiActor a = airport as AiActor;
-                if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
-                if (NearestAirfield != null)
+                foreach (AiBirthPlace airport in airports)
                 {
-                    if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
-                        NearestAirfield = airport;
+                    try
+                    {
+                        AiActor a = airport as AiActor;
+                        if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
+                        if (NearestAirfield != null)
+                        {
+                            if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
+                                NearestAirfield = airport;
+                        }
+                        else NearestAirfield = airport;
+                    }
+                    catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR1: " + ex.ToString()); return null; }
                 }
-                else NearestAirfield = airport;
             }
-        }
-        return NearestAirfield;
+            return NearestAirfield;
+        }catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR: " + ex.ToString()); return null; }
     }
 
     //nearest airport to an actor
     public AiBirthPlace Stb_nearestBirthPlace(AiActor actor, int army = 0)
     {
         if (actor == null) return null;
+        if (army == null) return null;
         Point3d pd = actor.Pos();
+        //return null; //for testing
         return Stb_nearestBirthPlace(pd, army);
     }
 
@@ -3958,6 +4117,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (stb_LogStats) { Stb_LogStatsRecursive(); }
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive();}
             SetAirfieldTargets();
+
+            Stb_RemoveOffMapPlayers_recurs();
 
             Console.WriteLine("-stats.cs successfully loaded");
 
@@ -5781,6 +5942,53 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
             }
 
+            if (aircraft != null && player != null && !stb_AllowJumpIntoAIAircraft)
+            {
+                //Here we have to wait for results from OnPlaceLeave which takes like 0.1 seconds.  Otherwise we don't get a good result for StbCmr_HasPlayerLeftPlane
+                Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+                {
+                    Console.WriteLine("Checking for ai jump-in");
+                    bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
+                    bool? onlyPlayer = Stb_isOnlyPlayerInAircraft(aircraft, player);
+                    double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    Vector3d Vwld = aircraft.AirGroup().Vwld();
+                    double vel_mps = Calcs.CalculatePointDistance(Vwld);
+                    double vel_mph = Calcs.meterspsec2milesphour(vel_mps);
+
+                    AiBirthPlace birthPlace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    Point3d bpLoc = new Point3d(0, 0, 0);
+                    if (birthPlace != null) bpLoc = birthPlace.Pos();
+                    double dist = Calcs.CalculatePointDistance(bpLoc, (aircraft as AiActor).Pos());
+                    double deltaAlt_m = Math.Abs(bpLoc.z - (aircraft as AiActor).Pos().z);
+                    Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
+                    if (realPosLeave && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
+                    {
+                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
+                        
+
+                        //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                        //2 = self-kill
+                        stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                        Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+                        stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+
+                        string pe3Hud_message = "Jumping into AI aircraft is not allowed; Career & Aircraft lost";
+                        GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
+                        Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+
+                        gpLogServerAndLog(null, "{0} just tried to jump into an AI aircraft in contravention of the Rules of War and the Geneva Convention.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(null, "{0} reported for court martial, convicted, and sentenced to 20 years hard labor in the brig.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(null, "The stolen aircraft was destroyed at a loss to the team.", new object[] { player.Name(), aircraft.InternalTypeName() });
+
+                        return; //and . . . don't save new mission/sortie etc etc etc
+
+                    }
+                });
+
+            }
+
             //Stb_Message(null, "Aircraft" + aircraft.TypedName() + aircraft.Type().ToString() + aircraft.Name(), null);
 
             //if (aircraft.Type()=AircraftType.SpitfireMkI_100oct) Stb_Message(null, "Your a/c is a spitfire", null);
@@ -5879,7 +6087,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
             */
         }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        catch (Exception ex) { Console.WriteLine("OnPlaceEnter ERROR: " + ex.ToString()); }
         #endregion
         //add your code here
     }
@@ -6710,7 +6919,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     //Note that if actor is NOT an AiAircraft (ie, a Player or Person or whatever) then this will ALWAYS record a kill and not 
     //make any sort of determination about how hard or fatal the crash was.  This is a pretty important side effect that is used
     //in several places (player as AiActor)
-    public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack=false)
+    //killType: 2=self-kill, 1 = regular kill; we're going to say parachuting death is never a self-kill as you were
+    //PPl have been taking advantage of the fact that you can't die more than 1x in 60 seconds to do certain illegal things, so we 
+    //reduce the time to 10 sec and also allow an override of the pause on deaths via ignoreDeathLimit
+    public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack=false, bool ignoreDeathLimit = false)
     {
         try
         {
@@ -6718,8 +6930,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             int oldDeathTime = 0;
             int currTime = Calcs.TimeSince2016_sec();
             if (!stb_PlayerDeathAndTime.TryGetValue(playerName, out oldDeathTime)) oldDeathTime = 0;
-            if (currTime - oldDeathTime > 60)
-            { //This keeps you from killing yourself more than 1X per 60 seconds, more particularly avoids recording the same death more than once.
+            if (currTime - oldDeathTime > 10 || ignoreDeathLimit)
+            { //This keeps you from killing yourself more than 1X per 10 seconds, more particularly avoids recording the same death more than once.
                 recordedInjuries = stb_CalcExtentOfInjuriesOnActorDead(playerName, killType, actor, player, allowTakeBack);
                 bool bothPositionsDead = true;
 
@@ -9367,7 +9579,9 @@ public class StbStatRecorder
         catch (Exception ex) { StbSr_PrepareErrorMessage(ex); }
     }
 
-    HashSet<string> stbSr_PlayerTimedOutDueToDeath_overridelist = new HashSet<string>();
+    HashSet<string> stbSr_PlayerTimedOutDueToDeath_overridelist = new HashSet<string>(); //if the player has requested <override
+    public Dictionary<string, int> stbSr_PlayerDeath_penaltylist = new Dictionary<string,int>(); //if the player has an extra long death penalty invoked.  This stays in place for this whole session.
+
 
     //override - allows this player to override the timeout
     public void StbSr_PlayerTimedOutDueToDeath_override(string playername)
@@ -9427,10 +9641,13 @@ public class StbStatRecorder
     public int StbSr_IsPlayerTimedOutDueToDeath(string playername)
     {
         if (!stbSr_PlayerTimeoutWhenKilled || StbSr_PlayerTimedOutDueToDeath_IsPlayerOnOverrideList(playername)) return 0;
+        int penaltytime = 0;
+        if (stbSr_PlayerDeath_penaltylist.ContainsKey(playername)) penaltytime = stbSr_PlayerDeath_penaltylist[playername];
+
         int timeSinceDied_seconds = this.StbSr_TimeSincePlayerLastDied_seconds(playername);
         //StbSr_WriteLine ("Died values: " + timeSinceDied_seconds.ToString() + " " + ((int)(stbSr_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)).ToString() + " " + stbSr_PlayerTimeoutWhenKilledDuration_hours.ToString() + " " + Calcs.TimeSince2016_sec().ToString());
         if (timeSinceDied_seconds < 0) return 0;
-        int timeUntilTimeoutExpires_seconds = (int)(stbSr_PlayerTimeoutWhenKilledDuration_hours * 60 * 60) - timeSinceDied_seconds;
+        int timeUntilTimeoutExpires_seconds = (int)(stbSr_PlayerTimeoutWhenKilledDuration_hours * 60 * 60) - timeSinceDied_seconds + penaltytime;
         if (timeUntilTimeoutExpires_seconds < 0) timeUntilTimeoutExpires_seconds = 0;
         return timeUntilTimeoutExpires_seconds;
         //public bool stb_PlayerTimeoutWhenKilledDuration_hours = 0.05; //Time (in hours) for the player timeout on death. Only active if stb_PlayerTimeoutWhenKilled

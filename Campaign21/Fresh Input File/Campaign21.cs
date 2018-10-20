@@ -1,5 +1,6 @@
-#define DEBUG  
-#define TRACE  
+//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
+/////#define DEBUG  
+/////#define TRACE  
 ////$reference GCVBackEnd.dll
 //$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
@@ -195,7 +196,7 @@ public class Mission : AMission, IMainMission
 
         USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
         CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/";  // DO NOT CHANGE
-        FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/Fresh input file";   // mission install directory (CHANGE AS NEEDED)   
+        FILE_PATH = @"missions/Multi/Fatal/" + MISSION_ID + "/Fresh input file";   // mission install directory (CHANGE AS NEEDED); where we save things relevant to THIS SPECIFIC MISSION
         stb_FullPath = CLOD_PATH + FILE_PATH;
         MESSAGE_FILE_NAME = MISSION_ID + @"_message_log.txt";
         MESSAGE_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + MESSAGE_FILE_NAME;
@@ -203,7 +204,9 @@ public class Mission : AMission, IMainMission
         STATS_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + STATS_FILE_NAME;
         LOG_FILE_NAME = MISSION_ID + @"_log_log.txt";
         LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
-        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Must match location -stats.cs is saving SessStats.txt to  
+        STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Where we save things RELEVANT TO THE ENTIRE CAMPAIGN AS A WHOLE 
+                                                                                                                   //(Note that a campaign may have several missions, each in their own FILE_PATH folder; this is the main folder that holds stats files, team stats, player registration lists, etc that are all relevant to the Campaign as a whole
+                                                                                                                   // Must match location -stats.cs is saving SessStats.txt to  
                                                                                                                    //Will be updated with value from -stats.ini OnMissionLoaded
 
         stopwatch = Stopwatch.StartNew();
@@ -514,7 +517,7 @@ public class Mission : AMission, IMainMission
             Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
 
             Timeout(10, () => { groupAllAircraft_recurs(); });
-            Timeout(43, () => { aiAirGroupRadarReturns_recurs(); });
+            Timeout(15, () => { aiAirGroupRadarReturns_recurs(); });
             
         }
 
@@ -1109,11 +1112,14 @@ public class Mission : AMission, IMainMission
         }
     }
 
-
+    int currentEndMission = 0;
     //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
     //string winner should be "Red" or "Blue" exactly and only!!!
     public void EndMission(int endseconds = 0, string winner = "")
     {
+        currentEndMission++;
+        int thisEndMission = currentEndMission; //Allows possibility to cancel/abort EndMission by incrementing currentEndMission, or, more importantly, if EndMission is called 2X (specifically if one side turns the map after EndMission has already started but before the mission has actually closed down) the 2nd time will supersede.
+
         if (winner == "")
         {
             twcLogServer(null, "Mission is restarting soon!!!", new object[] { });
@@ -1125,28 +1131,43 @@ public class Mission : AMission, IMainMission
             {
                 Timeout(endseconds + 40, () =>
                 {
-                    twcLogServer(null, winner + " has turned the map!", new object[] { });
-                    GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                    if (currentEndMission == thisEndMission)
+                    {
+                        twcLogServer(null, winner + " has turned the map!", new object[] { });
+                        GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                    }
                 });
             }
             Timeout(endseconds / 2, () =>
             {
-                twcLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                if (currentEndMission == thisEndMission)
+                {
+                    twcLogServer(null, winner + " has turned the map!", new object[] { });
+                    GamePlay.gpHUDLogCenter(winner + " has turned the map. Congratulations, " + winner + "!");
+                }
             });
             Timeout(endseconds + 15, () =>
             {
-                twcLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+                if (currentEndMission == thisEndMission)
+                {
+                    twcLogServer(null, winner + " has turned the map!", new object[] { });
+                    GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+                }
             });
             Timeout(endseconds + 45, () =>
             {
-                twcLogServer(null, winner + " has turned the map!", new object[] { });
-                GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+                if (currentEndMission == thisEndMission)
+                {
+                    twcLogServer(null, winner + " has turned the map!", new object[] { });
+                    GamePlay.gpHUDLogCenter(winner + " has turned the map - mission ending soon!");
+                }
             });
             Timeout(endseconds + 61, () =>
             {
-                twcLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
+                if (currentEndMission == thisEndMission)
+                {
+                    twcLogServer(null, "Congratulations " + winner + " for turning the map!", new object[] { });
+                }
 
             });
         }
@@ -1157,44 +1178,57 @@ public class Mission : AMission, IMainMission
         });
         Timeout(endseconds + 30, () =>
         {
-            twcLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
+            if (currentEndMission == thisEndMission)
+            {
+                twcLogServer(null, "Server Restarting in 30 seconds!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Server Restarting in 30 seconds!!!");
 
 
-            //All players who are lucky enough to still be in a plane at this point have saved their plane/it's returned to their team's supply
+                //All players who are lucky enough to still be in a plane at this point have saved their plane/it's returned to their team's supply
 
 
-            //Save map state & data
-            double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
+                //Save map state & data
+                double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
-            CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+                CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+            }
 
         });
         Timeout(endseconds + 50, () =>
         {
-            twcLogServer(null, "Server Restarting in 10 seconds!!!", new object[] { });
+            if (currentEndMission == thisEndMission)
+            {
+                twcLogServer(null, "Server Restarting in 10 seconds!!!", new object[] { });
+            }
+
 
         });
         Timeout(endseconds + 60, () =>
         {
-            twcLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
-            DebugAndLog("Mission ended.");
-
-            //OK, trying this for smoother exit (save stats etc)
-            //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
-            //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
-            if (GamePlay is GameDef)
+            if (currentEndMission == thisEndMission)
             {
-                (GamePlay as GameDef).gameInterface.CmdExec("exit");
+                twcLogServer(null, "Mission ended. Please wait 2 minutes to reconnect!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Mission ended. Please wait 2 minutes to reconnect!!!");
+                DebugAndLog("Mission ended.");
+
+                //OK, trying this for smoother exit (save stats etc)
+                //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+                //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
+                if (GamePlay is GameDef)
+                {
+                    (GamePlay as GameDef).gameInterface.CmdExec("exit");
+                }
+                //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
             }
-            //GamePlay.gpBattleStop(); //It would be nice to do this but if you do, the script stops here.
         });
         Timeout(endseconds + 90, () =>  //still doing this as a failsafe but allowing 20 secs to save etc
         {
-            //If the CmdExec("exit") didn't work for some reason, we can call OnBattleStoped manually to clean things up, then kill.  This is just a failsafe
-            (TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
-            Process.GetCurrentProcess().Kill();
+            if (currentEndMission == thisEndMission)
+            {
+                //If the CmdExec("exit") didn't work for some reason, we can call OnBattleStoped manually to clean things up, then kill.  This is just a failsafe
+                (TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+                Process.GetCurrentProcess().Kill();
+            }
         });
 
     }
@@ -3114,7 +3148,7 @@ public class Mission : AMission, IMainMission
                             //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
                             //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
                             //show up like 40% of the time?
-                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 45)
+                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 58)
                             {
                                 agid.AGGradarDropout = true;
                                 //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
@@ -3227,7 +3261,7 @@ public class Mission : AMission, IMainMission
                 AirGroupInfo agi = airGroupInfoDict[airGroup];
                 if (!agi.isAI || agi.type != "F") continue; //we're only doing aiaircraft here, and fighters
 
-                Console.WriteLine("AIAGRR: Checking radar returns for" + agi.playerNames);
+                //Console.WriteLine("AIAGRR: Checking radar returns for " + agi.playerNames);
                 listPositionAllAircraft(player: null, playerArmy: airGroup.getArmy(), inOwnArmy: false, radar_realism: RADAR_REALISM, aiairgroup: airGroup);
             }
 
@@ -3446,9 +3480,10 @@ public class Mission : AMission, IMainMission
                 {
                     if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(aiairgroup))
                     {
-                        pa = aiairgroup.GetItems()[0];
-                        p = pa as AiAircraft;
                         padig = airGroupInfoDict[aiairgroup];
+                        if (aiairgroup.GetItems().Length > 0) pa = aiairgroup.GetItems()[0];
+                        else { Console.WriteLine("AIAGRRR: No a/c in this airgroup, returning");  return; }
+                        p = pa as AiAircraft;
                         player_Vwld = new Vector3d(padig.vel.x, padig.vel.y, padig.vel.z);
                         player_vel_mps = Calcs.CalculatePointDistance(player_Vwld);
                         player_vel_mph = Calcs.meterspsec2milesphour(player_vel_mps);
@@ -7300,7 +7335,7 @@ public class Mission : AMission, IMainMission
             addRadar("Eastbourne Radar",        "EasR", 1, 1, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 50, "");
             addRadar("Littlehampton Radar",     "LitR", 1, 1, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, 50, "");
             addRadar("Ventnor Radar",           "VenR", 1, 1, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 50, "");
-            addRadar("Radar Communications HQ", "HQR", 1, 6,  "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 100000, false, 50, "");
+            addRadar("Radar Communications HQ", "HQR", 1, 6,  "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 200000, false, 50, "");
             addRadar("Radar Poole",             "PooR", 1, 2, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 25000,  false, 50, "");
 
 
@@ -7479,28 +7514,31 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Underwater repair training", "Havr", 2, 1, "LehavNaval4", "TGroundDestroyed", 81, 163039, 49798, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Naval Intelligence", "Havr", 2, 1, "LehavNaval5", "TGroundDestroyed", 71, 163172, 49816, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Meteorolgy", "Havr", 2, 1, "LehavNaval6", "TGroundDestroyed", 89, 163470, 49752, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Naval cryptologic HQ", "Havr", 2, 1, "LehavNaval7", "TGroundDestroyed", 75, 162993, 49927, 50, false, 100, "");
-
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Cryptologic HQ", "Havr", 2, 1, "LehavNaval7", "TGroundDestroyed", 75, 162993, 49927, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Diesel Storaage",        "Havr",            2, 2, "LehavNavalDiesel",              "TGroundDestroyed", 46, 162559, 50082, 100,      false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Gear Oil Storage",       "Havr",                             2, 2, "LehavNavalGearOil",              "TGroundDestroyed", 41 ,162668, 50240, 100,      false,      100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval  Benzine",        "Havr",                            2, 2, "LehavNaval",                     "TGroundDestroyed", 35, 161747, 50094, 50,       false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Lox",             "Havr",                2, 2, "LehavNavalBenzine",              "TGroundDestroyed", 41, 162099, 50034, 50,       false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Train Station",        "Havr",                    2, 2, "LehavTrainStation",              "TGroundDestroyed", 37 ,159918, 53120, 100,       false,       100,      "");
             //*************************
             //Some leftover objectives after last edit 9/19/2018.  Can delete these after a while if not needed.
             //
             //addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Diesel",                    2, 2, "RTarget12",.              "TGroundDestroyed", 50,  284978, 215920,    50,       false,       100,       ""); //Not sure what this one is?
             //addTrigger(MO_ObjectiveType.Fuel,      "Ethanol Storage Boulogne",           2, 2, "RTarget15",              "TGroundDestroyed", 50,  284153, 216913,    50,       false,      100,       ""); //Not sure what this one is?
-            /* //These targets have the wrong x-y locations per the mission file, so saving this backup of them before changing above 9/19/2018
-                        addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Diesel",                    2, 2, "RTarget10",              "TGroundDestroyed", 60,  266150, 189291,    100,      false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Aviation Fuel",             2, 2, "RTarget11",              "TGroundDestroyed", 43,  264966, 189374,    100,      false,      100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Diesel",                    2, 2, "RTarget12",              "TGroundDestroyed", 50,  284978, 215920,    50,       false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Benzine",                   2, 2, "RTarget13",              "TGroundDestroyed", 52,  284845, 216884,    50,       false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Liquid Oxygen",             2, 2, "RTarget14",              "TGroundDestroyed", 50,  285019, 217566,    50,       false,       100,      "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Ethanol Storage Boulogne",           2, 2, "RTarget15",              "TGroundDestroyed", 50,  284153, 216913,    50,       false,      100,       "");
+            /* //These Remmed out targets are use to transform x-y locations per the mission file, so for the red side,making easy work of doing the transfer for triggers Fatal 10/17/2018
+			
+                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Diesel Storaage",                    2, 2, "LehavNavalDiesel",              "TGroundDestroyed", 46, 162559, 50082, 100,      false,       100,       "");
+                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Gear Oil Storage",                                    2, 2, "LehavNavalGearOil",              "TGroundDestroyed", 41 ,162668, 50240, 100,      false,      100,       "");
+                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval  Benzine",                                    2, 2, "LehavNaval",                     "TGroundDestroyed", 35, 161747, 50094, 50,       false,       100,       "");
+                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Lox",                             2, 2, "LehavNavalBenzine",              "TGroundDestroyed", 41, 162099, 50034, 50,       false,       100,       "");
+                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Train Station",                            2, 2, "LehavTrainStation",              "TGroundDestroyed", 37 ,159918, 53120, 100,       false,       100,      "");
+ 
                        adding new le havre naval targets
-  1B TGroundDestroyed 70 264252 189991 50 b      Targets to replace AAA targets in Boulogne
-  2B TGroundDestroyed 47 265063 190506 50
-  3B TGroundDestroyed 51 265251 190259 50
-  4B TGroundDestroyed 62 264692 189709 50
-  5B TGroundDestroyed 54 265643 189603 50
-  6B TGroundDestroyed 77 265932 189324 50
-  7B TGroundDestroyed 53 264849 189190 50
+  LehavNavalDiesel TGroundDestroyed 46 162559 50082 100
+  LehavNavalGearlOil TGroundDestroyed 41 162668 50240 100
+  LehavNavalBenzine TGroundDestroyed 35 161747 50094 50
+  LehavNavalLOX TGroundDestroyed 41 162099 50034 50
+  LehavTrainStation TGroundDestroyed 37 159918 53120 100
 						*/
         }
             //Names of the flak areas and link to file name

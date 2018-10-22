@@ -1180,7 +1180,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                   //Console.WriteLine("SPE: " + cm.ToString());
                   cm.isInPlanePlaceChange = false;
-                  if (dis_meters < 5)
+                  if (dis_meters < 15)
                   {
                         cm.isInPlanePlaceChange = true; //hoping that dis_meters > 5 will catch e.g. bombers where the player switches position to position but it's still the same flight
                             //Console.WriteLine("That was an in-plane place change!" + dis_meters.ToString() + " meters");
@@ -1317,6 +1317,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     if (!ret1) cm1 = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
 
                     cm1.posLeftActor = actor;
+                    cm1.posEnterActor = null; //if they just left a position, if they are going to the same  plane they MUST to position enter.  Then we can pick that up in 0.1 seconds
                     cm1.placeLeaveLoc.x = actor.Pos().x;
                     cm1.placeLeaveLoc.y = actor.Pos().y;
                     //Console.WriteLine("PLL: PositionLeave cm1 PELx: " + cm1.placeEnterLoc.x.ToString("N0")
@@ -1347,10 +1348,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         //Console.WriteLine("Pll2: " + cm.ToString());
                         double dis_meters = Calcs.CalculatePointDistance(cm.placeLeaveLoc, cm.placeEnterLoc);
 
-                        /* Console.WriteLine("PLL2: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
+                         Console.WriteLine("PLL2: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
                             + " PELy: " + cm.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm.placeLeaveLoc.x.ToString("N0")
                             + " PLLy: " + cm.placeLeaveLoc.y.ToString("N0"));
-                        */
+                        
 
                         //This is used by onPositionLeave to determine whether the PositionLeave is the end of a flight or not
                         //PositionLeave waits 0.1 seconds, then checks whether there has been a recent Position Enter AND that the aircraft/actor is the same.  Difference in time can be up to 1 second, as we are using teimsince2016 which only
@@ -1372,6 +1373,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         bool leftPlane = false;
                         bool parachuted = false;
                         if (actor != null && (actor as AiAircraft) != null && mission.Stb_isAiControlledPlane(actor as AiAircraft)) leftPlane = true;
+                        if (dis_meters < 200) leftPlane = false;
+                        if (cm.posEnterActor == cm.posLeftActor) leftPlane = false;
                         if (player.PlacePrimary() == -1) parachuted = true; //OK, this doesn't actually work. Unfortunately.
                         cm.parachuted = parachuted;
                         
@@ -1587,6 +1590,16 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (!ret) return true; // if the player hasn't been flying before, all is AOK, it really is a takeoff
             //Console.WriteLine(cm.ToString());
             return !cm.isInPlanePlaceChange;  //if the placeenter was not a place change, then it IS a sortie start!
+
+        }
+        //this would be called ie onPlaceEnter to determine if the player is still in the same aircraft as before the placeEnter.
+        public bool StbCmr_PlaceLeave_PlaceEnter_sameActor(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) return false; // if the player hasn't been flying before, the actor is different (before it was null/nothing, now a real aircraft or other actor)
+            if (cm.posEnterActor == null || cm.posLeftActor == null) return false; //so if either OR both are null, we're going to say you can't be entering the same aircraft as before at this point
+            return (cm.posEnterActor == cm.posLeftActor);  //if the two are equal, then same aircraft or actor.  Otherwise, a different a/c or actor.
 
         }
         public bool StbCmr_HasPlayerLeftPlane(string playerName)
@@ -5948,7 +5961,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
                 {
                     Console.WriteLine("Checking for ai jump-in");
-                    bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
+                    bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());  //left plane via the "isAI" method.  Not infallible, it seems.
+                    bool sortieStart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(player.Name()); //Sortie start via measuring distance moved etc
+                    bool sameActor = stb_ContinueMissionRecorder.StbCmr_PlaceLeave_PlaceEnter_sameActor(player.Name()); //Whether changed aircraft by whether the old & new actors are the same
                     bool? onlyPlayer = Stb_isOnlyPlayerInAircraft(aircraft, player);
                     double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                     Vector3d Vwld = aircraft.AirGroup().Vwld();
@@ -5961,13 +5976,14 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     double dist = Calcs.CalculatePointDistance(bpLoc, (aircraft as AiActor).Pos());
                     double deltaAlt_m = Math.Abs(bpLoc.z - (aircraft as AiActor).Pos().z);
                     Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
-                    if (realPosLeave && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
+                    if (realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
                     {
                         Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
-                        
+
 
                         //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
                         //2 = self-kill
+                        /*
                         stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
                         Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
                         stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
@@ -5983,6 +5999,16 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         gpLogServerAndLog(null, "The stolen aircraft was destroyed at a loss to the team.", new object[] { player.Name(), aircraft.InternalTypeName() });
 
                         return; //and . . . don't save new mission/sortie etc etc etc
+                        */
+
+                        string pe3Hud_message = "Jumping into nearby AI aircraft is not allowed - Please Don't!";
+                        GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
+                        Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        //Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        //Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        gpLogServerAndLog(new Player[] { player }, "We are testing a new system to prevent pilots from jumping into nearby AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(new Player[] { player }, "The system detected that you just jumped into a new AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(new Player[] { player }, "If you did that, please don't!  If you didn't (ie, just moving to a new position in your bomber) please report the error to the admins.", new object[] { player.Name(), aircraft.InternalTypeName() });
 
                     }
                 });

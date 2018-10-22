@@ -43,6 +43,12 @@ public class Mission : AMission
     AiAirport AirGroupAirfield;
     bool toHome = false;
 
+    //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
+    double twcmap_minX = 10000;
+    double twcmap_minY = 10000;
+    double twcmap_maxX = 350000;
+    double twcmap_maxY = 310000;
+
     public IMainMission TWCMainMission;
     public Random ran;
 
@@ -89,7 +95,8 @@ public class Mission : AMission
     }
 
     private bool isAiControlledAirGroup(AiAirGroup airGroup) {
-        return isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft);
+        if (airGroup.GetItems().Length == 0) return true; //really should be null or something?
+        else return isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft);
     }
 
     private bool isAiControlledPlane2(AiAircraft aircraft)
@@ -113,12 +120,16 @@ public class Mission : AMission
 
             Vector3d Vwld = airGroup.Vwld();            
             double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+            if (vel_mps < 70) vel_mps = 70;
+            if (vel_mps > 160) vel_mps = 160;
 
             Point3d CurrentPos = airGroup.Pos();
 
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             aaWP.Action = aawpt;
+
+            //Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
             return aaWP;
         }
@@ -367,8 +378,11 @@ public class Mission : AMission
                     if (airGroup.GetItems().Length == 0) continue;
                     AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
                     string acType = Calcs.GetAircraftType(a);
+
+                    //This includes JU-87s, so it's slightly different from the configuration we've used before.  But we often have Ju-87s flying with 
+                    //escorts, which is hte context here
                     bool isHeavyBomber = false;
-                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV")) isHeavyBomber = true;
+                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
                     if (!isHeavyBomber) continue;
                     if (NearestAirgroup != null)
                     {
@@ -493,7 +507,11 @@ public class Mission : AMission
     public bool updateAirWaypoints(AiAirGroup airGroup)
     {
         if (airGroup == null || airGroup.GetWay() == null || !isAiControlledAirGroup(airGroup)) return false;
-        if (ran.Next(10) == 1) return false; //Just leave it as originally written sometimes
+        if (ran.Next(10) == 1)
+        {
+            fixWayPoints(airGroup); //fix any problems, particularly add the two endpoints that will take the a/c off the map @ the end
+            return false; //Just leave it as originally written sometimes
+        }
 
         AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
 
@@ -761,6 +779,7 @@ public class Mission : AMission
         {
             //Console.WriteLine("MBTITG: Updating this course");
             airGroup.SetWay(NewWaypoints.ToArray());
+            fixWayPoints(airGroup); //fix any problems that might have resulted from the new waypoint fixes.
             return true;
         } else
         { return false; }
@@ -776,7 +795,7 @@ public class Mission : AMission
 
             AirgroupsWayPointProcessed.Add(airGroup);
 
-            if (!isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
+            if (airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
 
             updateAirWaypoints(airGroup);
         }
@@ -791,9 +810,9 @@ public class Mission : AMission
          * Recursive function called every X seconds
          ************************************************/
 
-        //Timeout(127, () => { checkAirgroupsIntercept_recur(); });
+        Timeout(187, () => { checkAirgroupsIntercept_recur(); });
 
-        Timeout(27, () => { checkAirgroupsIntercept_recur(); }); //for testing
+        //Timeout(27, () => { checkAirgroupsIntercept_recur(); }); //for testing
 
         Task.Run(() => checkAirgroupsIntercept());
         //checkAirgroupsIntercept();
@@ -858,6 +877,7 @@ public class Mission : AMission
         try
         {
 
+
             if (airGroup == null || !isAiControlledAirGroup(airGroup) || airGroup.GetItems().Length == 0)
             {
                 Console.WriteLine("MoveBomb:airGroup is null, has no aircraft, or not AI, exiting");
@@ -904,12 +924,18 @@ public class Mission : AMission
                     return false;
                 }
 
-                double fuel = getAircraftFuel(agAircraft);
-                int ammo = getAircraftAmmo(airGroup);
+                double fuel = 100; // = getAircraftFuel(agAircraft);
+                int ammo = 100; // getAircraftAmmo(airGroup);
+                try
+                {
+                    fuel = getAircraftFuel(agAircraft);
+                    ammo = getAircraftAmmo(airGroup);
+                }
+                catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR7A: " + ex.ToString()); return false; }
 
                 if ((!airGroup.hasCourseWeapon() && !airGroup.hasCourseCannon()) || ammo < 40)
                 {
-                    Console.WriteLine("MoveBomb: Skipping no weapons & no cannon {0} {1} ammo: {2} " + airGroup.hasCourseWeapon(), airGroup.hasCourseCannon(), ammo);
+                    Console.WriteLine("MoveBomb: Skipping no weapons & no cannon {0} {1} ammo: {2} ", airGroup.hasCourseWeapon(), airGroup.hasCourseCannon(), ammo);
                     return false;
                 }
 
@@ -925,11 +951,28 @@ public class Mission : AMission
                 }
 
                 Tuple<double?, double?> dist_altdiff = getDistanceToNearestFriendlyBombergroup(airGroup); //item1 = distance(meters), item2=altdiff(meters) + if this group is higher than bombers
-                if (dist_altdiff.Item1 != null && dist_altdiff.Item1<9000 && dist_altdiff.Item2 > -1250)
+                if (dist_altdiff.Item1 != null && dist_altdiff.Item1<9000 && dist_altdiff.Item2 > -1050 && dist_altdiff.Item2 < 1750)
                 {
                     Console.WriteLine("MoveBomb: Near bombers, should be escorting them--not chasing things {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
                     return false;
 
+                }
+
+                AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+                if (CurrentWaypoints != null || CurrentWaypoints.Length > 0) {
+
+                    int currWay = airGroup.GetCurrentWayPoint();
+                    AiAirWayPointType aawp = new AiAirWayPointType();
+                    if (currWay <= CurrentWaypoints.Length) aawp = (CurrentWaypoints[currWay] as AiAirWayPoint).Action;
+                    if (aawp != null && aawp == AiAirWayPointType.GATTACK_TARG ||
+                            aawp == AiAirWayPointType.GATTACK_POINT ||
+                            aawp == AiAirWayPointType.COVER ||
+                            aawp == AiAirWayPointType.ESCORT ||
+                            aawp == AiAirWayPointType.FOLLOW)
+                    {
+                        Console.WriteLine("MoveBomb: Busy escorting or attacking, can't take time to attack another target {0} {1} {2} ", agActor.Name(), agAircraft.InternalTypeName(), aawp);
+                        return false;
+                    }
                 }
 
 
@@ -954,17 +997,37 @@ public class Mission : AMission
             bool positionintercept = false;
             foreach (string key in ai_radar_info.Keys)
             {
+                Point3d tempAagriIntcpPt = new Point3d (0,0,100000); 
+
                 if (ai_radar_info[key] != null)
                 {
                     aagri = ai_radar_info[key];
 
                     if (aagri.pagi.type != "F") continue; //We only get radar returns for fighters, so bombers are auto-skipped in this whole system.  But, we might as well be double sure here.
 
+                    tempAagriIntcpPt = new Point3d(aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z);
+
+                    try
+                    {
+                        //Sometimes the intercept value is off the map for one reason or another
+                        if (tempAagriIntcpPt.x > twcmap_maxX || tempAagriIntcpPt.y > twcmap_maxY || tempAagriIntcpPt.x < twcmap_minX || tempAagriIntcpPt.y < twcmap_minY)
+                        {
+                            if (tempAagriIntcpPt.z < 0) tempAagriIntcpPt.z = 0;
+                            if (tempAagriIntcpPt.z > 1000000) tempAagriIntcpPt.z = 1000000;
+                            if (tempAagriIntcpPt.x > twcmap_maxX) tempAagriIntcpPt.x = twcmap_maxX;
+                            if (tempAagriIntcpPt.y > twcmap_maxY) tempAagriIntcpPt.y = twcmap_maxY;
+                            if (tempAagriIntcpPt.x < twcmap_minX) tempAagriIntcpPt.x = twcmap_minX;
+                            if (tempAagriIntcpPt.y < twcmap_minY) tempAagriIntcpPt.y = twcmap_minY;
+                        }
+                    }
+                    catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR2A: " + ex.ToString()); return false; }
+
+
                     try
                     {
                         //So, because of the radar grouping system we should get ONLY grouped AirGroups & we can always plan on the one we get being the leader & we can/should use the AGG side of position, velocity, etc rather than the ag side.
-                        //if (aagri.agi.AGGAIorHuman == aiorhuman.AI)
-                        if (false) //for testing, just chase all airgroups including AI
+                        if (aagri.agi.AGGAIorHuman == aiorhuman.AI || isAiControlledAirGroup(aagri.agi.airGroup))  //belt & suspenders
+                        //if (false) //for testing, just chase all airgroups including AI
                         {
                             Console.WriteLine("MoveBomb: Skipping because 100% AI airgroup {0}", aagri.agi.AGGAIorHuman);
                             continue; //we don't make AI attack other ai - that would be . . . futile plus waste CPU cycles
@@ -979,35 +1042,35 @@ public class Mission : AMission
 
                         try
                         {
-                            Console.WriteLine("MoveBomb: Looking to update the same target we were previously attacking: {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask(), aagri.agi.playerNames);
+                            Console.WriteLine("MoveBomb: Looking to update the same target we were previously attacking: {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
 
                             //so we ALWAYS accept an updated radar plot for the airgroup we are already chasing IF it is better than the other possibilities
                             if (bestAagri == null)
                             {
-                                iPoint = aagri.interceptPoint;
+                                iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask(), aagri.agi.playerNames);
+                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                             }
-                            else if (iPoint.z > aagri.interceptPoint.z)
+                            else if (iPoint.z > tempAagriIntcpPt.z)
                             {
-                                iPoint = aagri.interceptPoint;
+                                iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask(), aagri.agi.playerNames);
+                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                             }
                             //But sometimes we stick with our previous chase even if it is worse - especially if we're already quite close, then we always do
-                            if (ran.NextDouble() > 0.9 || aagri.interceptPoint.z < 3.5 * 60)
+                            if (ran.NextDouble() > 0.9 || tempAagriIntcpPt.z < 3.5 * 60)
                             {
                                 goodintercept = true;
-                                iPoint = aagri.interceptPoint;
+                                iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
-                                Console.WriteLine("MoveBomb: Definitely updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask(), aagri.agi.playerNames);
+                                Console.WriteLine("MoveBomb: Definitely updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                                 break;
                             }
                             //So, the case where there is no good intercept, or it is very long intercept, but still we are quite close
                             //And we are already chasing, then this will become the bestNoninterceptAagri for sure
-                            else if (ran.NextDouble()>0.85 && Calcs.CalculatePointDistance(aagri.agi.pos,aagri.pagi.pos) < 35000 && ( aagri.interceptPoint.z == 0 || aagri.interceptPoint.z > 10*60))
+                            else if (ran.NextDouble()>0.85 && Calcs.CalculatePointDistance(aagri.agi.pos,aagri.pagi.pos) < 35000 && ( tempAagriIntcpPt.z == 0 || tempAagriIntcpPt.z > 10*60))
                             {
                                 bestNoninterceptAagri = aagri;
                             }
@@ -1017,8 +1080,8 @@ public class Mission : AMission
 
                     }
                     else if
-                      (aagri.interceptPoint.x == null || aagri.interceptPoint.x == 0 || aagri.interceptPoint.y == 0 || aagri.interceptPoint.z > 10 * 60 || aagri.interceptPoint.z <= 0 ||
-                          (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept > Time.current() && (aagri.interceptPoint.z > targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept - 120 ||
+                      (tempAagriIntcpPt.x == null || tempAagriIntcpPt.x == 0 || tempAagriIntcpPt.y == 0 || tempAagriIntcpPt.z > 10 * 60 || tempAagriIntcpPt.z <= 0 ||
+                          (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept > Time.current() && (tempAagriIntcpPt.z > targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept - 120 ||
                              targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept < Time.current() + 120
                             )
                            ) ||  // In case this target already has an a/g attacking it, skip - unless the old intercept time is still in the future more than 2 minutes out & new intercept time is better than the old one by a fair bit (120 seconds). In other words skip it, unless  the new one is quite a bit better than the old one, and the old one isn't almost ready to be intercepted regardless
@@ -1026,20 +1089,20 @@ public class Mission : AMission
                           (attackingAirgroupTimeToIntercept.ContainsKey(airGroup) && attackingAirgroupTimeToIntercept[airGroup].timeToIntercept > Time.current() &&
                              (
                                   attackingAirgroupTimeToIntercept[airGroup].timeToIntercept < Time.current() + 120 ||
-                                  aagri.interceptPoint.z > attackingAirgroupTimeToIntercept[airGroup].timeToIntercept - 120  //In case this a/g already has an existing intercept, unless this one is quite a bit better than the current one (ie, a quicker intercept), skip it
+                                  tempAagriIntcpPt.z > attackingAirgroupTimeToIntercept[airGroup].timeToIntercept - 120  //In case this a/g already has an existing intercept, unless this one is quite a bit better than the current one (ie, a quicker intercept), skip it
                              )
                           )
                        )
                     {
                         try
                         {
-                            Console.WriteLine("MoveBomb: Skipping {0} intercept {1} {2} {3} " + agActor.Name(),aagri.agi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z);
+                            Console.WriteLine("MoveBomb: Skipping {0} intercept {1} {2} {3} " + agActor.Name(),aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
 
-                            if (aagri.interceptPoint.x == null || aagri.interceptPoint.x == 0 || aagri.interceptPoint.y == 0 || aagri.interceptPoint.z > 10 * 60 || aagri.interceptPoint.z <= 0) { Console.WriteLine("MoveBomb: Skipping {0} intercept because no intercept or too distant {1} {2} {3} " + agActor.Name(), aagri.agi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z); }
+                            if (tempAagriIntcpPt.x == null || tempAagriIntcpPt.x == 0 || tempAagriIntcpPt.y == 0 || tempAagriIntcpPt.z > 10 * 60 || tempAagriIntcpPt.z <= 0) { Console.WriteLine("MoveBomb: Skipping {0} intercept because no intercept or too distant {1} {2} {3} " + agActor.Name(), aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z); }
                             else
                             {
 
-                                Console.WriteLine("MoveBomb: Skipping for another reason . . . target: {0} attacker:" + agActor.Name(), aagri.agi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z);
+                                Console.WriteLine("MoveBomb: Skipping for another reason . . . target: {0} attacker:" + agActor.Name(), aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
                                 if (attackingAirgroupTimeToIntercept.ContainsKey(airGroup) && attackingAirgroupTimeToIntercept[airGroup].timeToIntercept > Time.current()) Console.WriteLine("MoveBomb: Skipping because attacker {0} already has an existing intercept {1} " + attackingAirgroupTimeToIntercept[airGroup].timeToIntercept.ToString("N0"), aagri.pagi.playerNames, aagri.agi.playerNames);
                                 if (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept > Time.current()) Console.WriteLine("MoveBomb: Skipping because target {1} already has an existing interceptor {0} " + targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept.ToString("N0"), aagri.pagi.playerNames, aagri.agi.playerNames);
                             }
@@ -1066,24 +1129,24 @@ public class Mission : AMission
                     {
                         try
                         {
-                            //Console.WriteLine("MoveBomb: Moving {0} to intercept {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask());
+                            //Console.WriteLine("MoveBomb: Moving {0} to intercept {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
 
-                            Console.WriteLine("MoveBomb: Found an acceptable intercept! {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} . Now, is it better?" + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask());
+                            Console.WriteLine("MoveBomb: Found an acceptable intercept! {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} . Now, is it better?" + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
 
                             //If this is the first one we have found (iPoint.z==0) or better than our best interception point so far, then we accept it as the new intercept point
                             if (bestAagri == null || iPoint.z == 0)
                             {
-                                iPoint = aagri.interceptPoint;
+                                iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask());
+                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
                             }
-                            else if (aagri.interceptPoint.z > 0 && iPoint.z > aagri.interceptPoint.z)
+                            else if (tempAagriIntcpPt.z > 0 && iPoint.z > tempAagriIntcpPt.z)
                             {
-                                iPoint = aagri.interceptPoint;
+                                iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.pagi.playerNames, aagri.interceptPoint.x, aagri.interceptPoint.y, aagri.interceptPoint.z, airGroup.getTask());
+                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
                             }
                         }
                         catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR3: " + ex.ToString()); return false; }
@@ -1093,6 +1156,8 @@ public class Mission : AMission
                     //TODO: Check appropriate altitude, whether or not near enough, inctp time (intcp.z) short enough, whether we've recently chased another different airgrouop, etc etc etc
                 }
             }
+
+
 
             try
             {
@@ -1125,7 +1190,10 @@ public class Mission : AMission
                 interceptTime_sec = iPoint.z;
                 iPoint.x += ran.NextDouble() * 3000 - 1500;
                 iPoint.y += ran.NextDouble() * 3000 - 1500;
-                iPoint.z = bestAagri.agi.pos.z + 2000 + ran.NextDouble() * 3000 - 1500;
+                iPoint.z = bestAagri.agi.AGGmaxAlt_m + 750 + ran.NextDouble() * 1000 - 500;
+                if (iPoint.z > 6500) iPoint.z = bestAagri.agi.pos.z + ran.NextDouble() * 1000 - 750;
+                if (iPoint.z > 8500) iPoint.z = 8500 + ran.NextDouble() * 2000 - 1500;
+                if (iPoint.z < 100 ) iPoint.z = 100 + ran.NextDouble() * 150 - 20;
 
 
                 Console.WriteLine("MoveBombINER: Making new intercept for " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);
@@ -1139,14 +1207,16 @@ public class Mission : AMission
                     Console.WriteLine("MoveBombINER: Adding new/improved attacker " + bestAagri.pagi.playerNames + " for " + bestAagri.agi.playerNames);
                     //Do something to get rid of the old/worse pursuer
                     //AiAirGroup airGroupToRemove = targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup;
-                    removeAttackingAirGroup(targetAirgroupTimeToIntercept[bestAagri.agi.airGroup]);
+                    removeAttackingAirGroup(targetAirgroupTimeToIntercept[bestAagri.agi.airGroup], targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup);
+                    fixWayPoints(targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup); //fix any problems that might have resulted from the new waypoint fixes.
                 }
                 //targetAirgroupTimeToIntercept.Add(bestAagri.agi.airGroup, Time.current() + bestAagri.interceptPoint.z + 125.0 + ran.NextDouble() * 240.0 - 120.0);  //target can't get another interceptor assigned until this time is up, the actual time to the intercept plus 2 mins +/- 2 mins
-                targetAirgroupTimeToIntercept[bestAagri.agi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, bestAagri.pagi.airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this); //pagi is the attacker ("player" airgroup), agi is the target
+                //targetAirgroupTimeToIntercept[bestAagri.agi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, bestAagri.pagi.airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this); //pagi is the attacker ("player" airgroup), agi is the target
+                targetAirgroupTimeToIntercept[bestAagri.agi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this); //pagi is the attacker ("player" airgroup), agi is the target
 
                 //however, if this is a "bestNoninterceptAagri" type intercept, we don't consider it an actual intercept (because they WON'T intercept) but rather a move to see if
                 //the attacker can get in position to actually have an intercept.  So we don't register a targetAirgroupTimeToIntercept at all, which allows another attacker to take an intercept if there is one.
-                
+
             }
             catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR2: " + ex.ToString()); return false; }
 
@@ -1158,18 +1228,22 @@ public class Mission : AMission
 
                 //we always replace this value as it is represents what our current airgroup is doing, and we have decided to attack this target.  Sometimes it replaces
                 //a previous target sometimes is just a new target
-                attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, bestAagri.pagi.airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this);
+                //attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, bestAagri.pagi.airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this);
+                attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this);
 
 
                 AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
 
                 //for testing
+                /*
                 foreach (AiWayPoint wp in CurrentWaypoints)
                 {
                     AiWayPoint nextWP = wp;
                     Console.WriteLine("Add intcpt -  Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
+                */
+                
                 
                 int currWay = airGroup.GetCurrentWayPoint();
                 double speedDiff = 0;
@@ -1263,13 +1337,15 @@ public class Mission : AMission
 
                 }
 
-
+                //for testing
+                /*
                 foreach (AiWayPoint wp in NewWaypoints)
                 {
                     AiWayPoint nextWP = wp;
                     Console.WriteLine( "Add intcpt - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
+                */
 
 
                 //NewWaypoints.Add(CurrentPosWaypoint(airGroup));
@@ -1281,6 +1357,7 @@ public class Mission : AMission
                 {
                     //Console.WriteLine("MBTITG: Updating this course");
                     airGroup.SetWay(NewWaypoints.ToArray());
+                    fixWayPoints(airGroup);
                     return true;
                 }
                 else
@@ -1292,11 +1369,11 @@ public class Mission : AMission
     }
 
     //If we have found a better intercept we remove the old intercept waypoint from that ag's waypoints list & that airgroup just returns to its usual course
-    public void removeAttackingAirGroup(incpt intc)
+    public void removeAttackingAirGroup(incpt intc, AiAirGroup airGroup)
     {
         try
         {
-            AiAirGroup airGroup = intc.attackingAirGroup;
+            //AiAirGroup airGroup = intc.attackingAirGroup;
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
             if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
 
@@ -1322,19 +1399,23 @@ public class Mission : AMission
 
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
-                AiWayPoint nextWP = wp;
+                AiWayPoint nextWP = wp;                
                 
                 if (count >= currWay)
                 {
                     //If we find the intercept point we previously set, then we'll just omit it from the listing of the waypoints
-                    if (Math.Abs(nextWP.P.x - intc.pos.x) < 100 && Math.Abs(nextWP.P.y - intc.pos.y) < 100 && Math.Abs(nextWP.P.z - intc.pos.z) < 100  &&
+                    if (Math.Abs(nextWP.P.x - intc.pos.x) < 100 && Math.Abs(nextWP.P.y - intc.pos.y) < 100 && Math.Abs(nextWP.P.z - intc.pos.z) < 100 &&
                           ((nextWP as AiAirWayPoint).Action == AiAirWayPointType.AATTACK_FIGHTERS || (nextWP as AiAirWayPoint).Action == AiAirWayPointType.AATTACK_BOMBERS))
                     {
                         update = true;
-                        count++;
-                        continue;
+
+                        Console.WriteLine("RemoveAttackingAG - skipping this WayPoint: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //skip adding                        
                     }
-                    NewWaypoints.Add(nextWP);
+                    else
+                    {
+                        NewWaypoints.Add(nextWP); //do add
+                    }
                 }
                 count++;
 
@@ -1354,6 +1435,198 @@ public class Mission : AMission
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb RemoveIntercept: " + ex.ToString()); }
     }
+
+    //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
+    //the aircraft down low and off the map north (Red) or south (Blue)
+    public void fixWayPoints(AiAirGroup airGroup)
+    {
+        try
+        {
+            //AiAirGroup airGroup = intc.attackingAirGroup;
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+            if (!isAiControlledAirGroup(airGroup)) return;
+            if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
+            AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
+
+            //for testing
+            
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+
+                Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+            }
+            
+
+
+            int currWay = airGroup.GetCurrentWayPoint();
+            
+
+            //if (currWay >= CurrentWaypoints.Length) return;
+
+            List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
+            int count = 0;
+
+            bool update = false;
+
+            AiWayPoint prevWP = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
+
+            NewWaypoints.Add(prevWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+
+            AiWayPoint nextWP = prevWP;
+
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+                nextWP = wp;
+
+                //eliminate any exact duplicate points
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1 
+                    && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+                //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
+                    (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+
+
+                try
+                {
+                    //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
+                    if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX -9999|| nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                    {
+                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        update = true;
+                        if (nextWP.P.z < 0) nextWP.P.z = 0;
+                        if (nextWP.P.z > 50000) nextWP.P.z = 50000;
+                        if (nextWP.P.x > twcmap_maxX + 9999) nextWP.P.x = twcmap_maxX + 9999;
+                        if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
+                        if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
+                        if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
+                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+
+
+                NewWaypoints.Add(nextWP); //do add
+                count++;
+
+            }
+            //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
+            if (nextWP.P.x > twcmap_minX && nextWP.P.x < twcmap_maxX && nextWP.P.y > twcmap_minY && nextWP.P.y < twcmap_maxY)
+            {
+                update = true;
+                int army = airGroup.getArmy();
+                AiAirWayPoint midaaWP = null;
+                AiAirWayPoint endaaWP = null;
+                Point3d midPos = new Point3d(0, 0, 0);
+                Point3d endPos = new Point3d(0, 0, 0);
+                if (ran.NextDouble() > 0.5)
+                {
+                    if (army == 1) endPos.y = twcmap_maxY + 9000;
+                    else if (army == 2) endPos.y = twcmap_minY - 9000;
+                    else endPos.y = twcmap_maxY + 9000;
+                    endPos.x = prevWP.P.x + ran.NextDouble() * 300000 - 150000;
+                    if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
+                    if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                } else
+                {
+                    if (army == 1) endPos.x = twcmap_minX - 9000;
+                    else if (army == 2) endPos.x = twcmap_maxY + 9000;
+                    else endPos.x = twcmap_maxX + 9000;
+                    endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
+                    if (army == 1) endPos.y += 120000;
+                    else if (army == 2) endPos.y -= 60000;
+                    if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
+                    if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
+                }
+
+                //endPos.z = 25;  //Make them drop down so they drop off the radar 
+                //Ok, that was as bad idea for various reasons
+                endPos.z = prevWP.P.z;
+                if (endPos.z < 300) endPos.z = ran.NextDouble() * 6000 + 50;
+                double speed = prevWP.Speed;
+                
+
+                //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
+                //last point where the goal will be to have the airgroup low & off the radar at this point.
+                midPos.x = (nextWP.P.x * 4 + endPos.x) / 5;
+                midPos.y = (nextWP.P.y * 4 + endPos.y) / 5;
+                midPos.z = endPos.z;
+
+                /* (Vector3d Vwld = airGroup.Vwld();
+                double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                if (vel_mps < 70) vel_mps = 70;
+                if (vel_mps > 160) vel_mps = 160;                
+                */
+
+
+
+                AiAirWayPointType aawpt = AiAirWayPointType.HUNTING;
+                if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
+                    aawpt = (nextWP as AiAirWayPoint).Action;
+                else
+                {
+                    string type = "";
+                    string t = aircraft.Type().ToString();
+                    if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
+                    else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+
+                    if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
+
+                }
+
+                //add the mid Point
+                midaaWP = new AiAirWayPoint(ref midPos, speed);
+                //aaWP.Action = AiAirWayPointType.NORMFLY;
+                midaaWP.Action = aawpt; //same action for mid & end
+
+                NewWaypoints.Add(midaaWP); //do add
+                count++;
+
+                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+
+                //add the final Point, which is off the map
+                endaaWP = new AiAirWayPoint(ref endPos, speed);
+                //aaWP.Action = AiAirWayPointType.NORMFLY;
+                endaaWP.Action = aawpt;
+
+                NewWaypoints.Add(endaaWP); //do add
+                count++;
+                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+            }
+      
+
+            if (update)
+            {
+                //Console.WriteLine("MBTITG: Updating this course");
+                airGroup.SetWay(NewWaypoints.ToArray());
+
+                //for testing
+                
+                foreach (AiWayPoint wp in NewWaypoints)
+                {
+                    Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+                }
+                
+
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints: " + ex.ToString()); }
+    }
+
 
 
     public override void OnTickGame()

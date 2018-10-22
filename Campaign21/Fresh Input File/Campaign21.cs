@@ -5030,9 +5030,9 @@ public class Mission : AMission, IMainMission
         EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
         SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
 
-        ReadInitialSubmissions(MISSION_ID + "-stats", 0, 1);
-        ReadInitialSubmissions(MISSION_ID + "-supply", 0, 2);
-        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 10, 3); //so we can include initsubmissions if we want
+        ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
+        ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
+        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0.3); //so we can include initsubmissions if we want
 
 
 
@@ -5075,7 +5075,7 @@ public class Mission : AMission, IMainMission
      * 
      * **************************************/
 
-    public void ReadInitialSubmissions(string filenameID, int timespread = 60, int wait = 0)
+    public void ReadInitialSubmissions(string filenameID, int timespread = 60, double wait = 0)
     {
         List<string> InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
                                                                                                      //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
@@ -6347,7 +6347,7 @@ public class Mission : AMission, IMainMission
             //Don't give our help when any of these typical -stats.cs chat commands are entered
             !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
             || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac")
-            || msg.StartsWith("<net"))
+            || msg.StartsWith("<net") || msg.StartsWith("<k"))
 
             )
         {

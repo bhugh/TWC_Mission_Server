@@ -3679,6 +3679,9 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (airGroup == null) return;
             if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
 
+            string playername = "unknown/AI";
+            if (player != null) playername = player.Name();
+
             //AiAirGroup.candidates()
             //AiAirGroup.enemies()
             //AiAirGroup.getTask()
@@ -3728,10 +3731,27 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
 
                 if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: " + Calcs.GetAircraftType(aircraft) + " to " + player.Name(), new object[] { });
-                string playername = "unknown/AI";
-                if (player != null) playername = player.Name();
+                
                 Console.WriteLine("CHANGETARGET: " + Calcs.GetAircraftType(aircraft) + " to " + playername);
             }
+
+            //Experimental!!!  IN case of bomber being attacked, we're going to get NEARBY FRIENDLY FIGHTERS to attack the attacking aircraft preferentially\
+
+            if (airGroup.isAircraftType(AircraftType.Bomber)) {
+                //tuple is distance meters, delta Altitude meters (+ means the fighters are higher), airgroup
+                Tuple<double?, double?, AiAirGroup> resp = getDistanceToNearestFriendlyAIFightergroup(airGroup);
+                if (resp.Item3 == null) return;
+                AiAirGroup nearbyFighterGroup = resp.Item3;
+                if (resp.Item1<10000 && resp.Item2 > -1750 && stb_random.NextDouble()<0.9)
+                {
+                    Console.WriteLine("CHANGETARGET: " + airGroup.Name() + " bombers under attack, so got nearby AI fightergroup " + nearbyFighterGroup.Name() + " to attack " + playername);
+                    nearbyFighterGroup.changeGoalTarget(player.Place());
+                    nearbyFighterGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                }
+
+            }
+
+
         }
         catch (Exception ex)
         {
@@ -3892,6 +3912,61 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         Point3d pd = actor.Pos();
         //return null; //for testing
         return Stb_nearestBirthPlace(pd, army);
+    }
+
+    //Tuple is Distance (meters), altitude difference (meters), AiAirGroup  (? == nullable)
+    public Tuple<double?, double?, AiAirGroup> getDistanceToNearestFriendlyAIFightergroup(AiAirGroup from)
+    {
+        try
+        {
+            AiAirGroup airGroup = getNearestFriendlyAIFightergroup(from);
+            if (airGroup == null) return new Tuple<double?, double?, AiAirGroup>(null, null, null);
+            double dist = Calcs.CalculatePointDistance(from.Pos(), airGroup.Pos());
+            double alt_diff = from.Pos().z - airGroup.Pos().z;
+            return new Tuple<double?, double?, AiAirGroup>(dist, alt_diff, airGroup);
+        }
+        catch (Exception ex) { Console.WriteLine("-stats FriendlyfighterDist ERROR: " + ex.ToString()); return new Tuple<double?, double?, AiAirGroup>(null, null, null); }
+    }
+
+    public AiAirGroup getNearestFriendlyAIFightergroup(AiAirGroup from)
+    {
+        try
+        {
+            if (GamePlay == null) return null;
+            if (from == null) return null;
+            AiAirGroup NearestAirgroup = null;
+            AiAirGroup[] Airgroups;
+            Point3d StartPos = from.Pos();
+
+            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
+
+            if (Airgroups != null)
+            {
+                foreach (AiAirGroup airGroup in Airgroups)
+                {
+                    if (airGroup.GetItems().Length == 0) continue;
+                    AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
+                    string acType = Calcs.GetAircraftType(a);
+
+                    //This includes JU-87s, so it's slightly different from the configuration we've used before.  But we often have Ju-87s flying with 
+                    //escorts, which is the context here
+                    bool isHeavyBomber = false;
+                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
+                    if (isHeavyBomber) continue;
+                    if (NearestAirgroup != null)
+                    {
+                        if (NearestAirgroup.Pos().distance(ref StartPos) > airGroup.Pos().distance(ref StartPos))
+                            NearestAirgroup = airGroup;
+                    }
+                    else NearestAirgroup = airGroup;
+                }
+                return NearestAirgroup;
+            }
+            else
+                return null;
+        }
+        catch (Exception ex) { Console.WriteLine("-stats Friendly Fighter ERROR: " + ex.ToString()); return null; }
+
     }
 
 

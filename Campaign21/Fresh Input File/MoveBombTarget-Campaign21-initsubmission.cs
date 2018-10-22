@@ -344,6 +344,52 @@ public class Mission : AMission
 
         return Wps.ToArray();
     }
+    //Distance (meters, 2D XY distance), altitude difference (meters)
+    public Tuple<double?, double?> getDistanceToNearestLivePilot(AiAirGroup from)
+    {
+        try
+        {
+            AiAirGroup airGroup = getNearestLivePilot(from);
+            if (airGroup == null) return new Tuple<double?, double?>(null, null);
+            double dist = Calcs.CalculatePointDistance(from.Pos(), airGroup.Pos());
+            double alt_diff = from.Pos().z - airGroup.Pos().z;
+            return new Tuple<double?, double?>(dist, alt_diff);
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb LivePilotDist ERROR: " + ex.ToString()); return new Tuple<double?, double?>(null, null); }
+    }
+
+    public AiAirGroup getNearestLivePilot(AiAirGroup from)
+    {
+        try
+        {
+            if (GamePlay == null) return null;
+            if (from == null) return null;
+            AiAirGroup NearestAirgroup = null;
+            AiAirGroup[] Airgroups;
+            Point3d StartPos = from.Pos();
+
+            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
+
+            if (Airgroups != null)
+            {
+                foreach (AiAirGroup airGroup in Airgroups)
+                {
+                    if (isAiControlledAirGroup(airGroup)) continue;                    
+                    if (NearestAirgroup != null)
+                    {
+                        if (NearestAirgroup.Pos().distance(ref StartPos) > airGroup.Pos().distance(ref StartPos))
+                            NearestAirgroup = airGroup;
+                    }
+                    else NearestAirgroup = airGroup;
+                }
+                return NearestAirgroup;
+            }
+            else
+                return null;
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb LivePilot ERROR: " + ex.ToString()); return null; }
+
+    }
 
     //Distance (meters), altitude difference (meters)
     public Tuple<double?,double?> getDistanceToNearestFriendlyBombergroup(AiAirGroup from)
@@ -785,12 +831,86 @@ public class Mission : AMission
         { return false; }
     }
 
+    public bool playersNearby(AiAirGroup airGroup)
+    {
+        Tuple<double?, double?> dist = getDistanceToNearestLivePilot(airGroup);
+        if (dist.Item1 == null || (double)(dist.Item1) > 10000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
+        return true; //Players nearby
+    }
+
+    //So setting AI airgroups to LANDING is our clue that we are free to despawn them at any time. We first check there
+    //are no live players nearby to see the despawn
+    public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
+        if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
+        AiAirGroupTask task = airGroup.getTask();
+        if (task != AiAirGroupTask.LANDING) return; //Task LANDING is our clue these are ready to get out of here
+        if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+
+        foreach (AiActor actor in airGroup.GetItems())
+        {
+            AiAircraft aircraft = actor as AiAircraft;
+            double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
+            if (altAGL_m > 500) continue; //only dis-apparate if they are somewhat close to ground and "landing"
+            Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " "
+                      + aircraft.TypedName() + " "     );
+            if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
+        }
+    }
+    public void printAirgroupNames(AiAirGroup[] airGroups)
+    {
+        foreach (AiAirGroup airGroup in airGroups)
+        {
+            Console.Write(airGroup.Name() + " ");
+        }
+        Console.WriteLine();
+    }
+
+    public void printAttachedAirgroups(AiAirGroup airGroup)
+    {
+        try
+        {
+            if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
+            AiAirGroupTask task = airGroup.getTask();
+            Console.WriteLine("Airgroup {0} info & attached groups: {1}", airGroup.Name(), task);
+            if (airGroup.clientGroup() != null) Console.WriteLine("client: {0}", airGroup.clientGroup().Name());
+            if (airGroup.leaderGroup() != null) Console.WriteLine("leader: {0}", airGroup.leaderGroup().Name());
+            if (airGroup.motherGroup() != null) Console.WriteLine("mother: {0}", airGroup.motherGroup().Name());
+
+            if (airGroup.attachedGroups().Length > 0)
+            {
+                Console.WriteLine("Attached groups");
+                printAirgroupNames(airGroup.attachedGroups());
+            }
+            if (airGroup.candidates().Length > 0)
+            { 
+                Console.WriteLine("Candidates");
+                printAirgroupNames(airGroup.candidates());
+            }
+            if (airGroup.enemies().Length > 0)
+            {
+                Console.WriteLine("Enemies");
+                printAirgroupNames(airGroup.enemies());
+            }
+            if (airGroup.daughterGroups().Length > 0)
+            {
+                Console.WriteLine("Daughter groups");
+                printAirgroupNames(airGroup.daughterGroups());
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb print groups ERROR: " + ex.ToString()); }
+
+
+    }
+
+
+
     public void checkNewAirgroups()
     {
         GetCurrentAiAirgroups();
         foreach (AiAirGroup airGroup in airGroups)
         {
-
+            //printAttachedAirgroups(airGroup); //for testing
+            checkToDespawnOldAirgroups(airGroup);
             if (AirgroupsWayPointProcessed.Contains(airGroup)) continue;
 
             AirgroupsWayPointProcessed.Add(airGroup);
@@ -826,7 +946,7 @@ public class Mission : AMission
 
             if (airGroup.GetItems().Length > 0 && isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft))
             {
-                Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup" + airGroup.Name());
+                Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup " + airGroup.Name());
                 interceptNearestEnemyOnRadar(airGroup);
             } else
             {
@@ -944,9 +1064,10 @@ public class Mission : AMission
                     Console.WriteLine("MoveBomb: Skipping, low fuel: {0:N0} kg ", fuel);
                     return false;
                 }
-                if (airGroup.getTask() == AiAirGroupTask.DEFENDING)
+                AiAirGroupTask task = airGroup.getTask();
+                if (task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
                 {
-                    Console.WriteLine("MoveBomb: Busy defending, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
+                    Console.WriteLine("MoveBomb: Busy because {3}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
                     return false;
                 }
 
@@ -1207,6 +1328,8 @@ public class Mission : AMission
                     Console.WriteLine("MoveBombINER: Adding new/improved attacker " + bestAagri.pagi.playerNames + " for " + bestAagri.agi.playerNames);
                     //Do something to get rid of the old/worse pursuer
                     //AiAirGroup airGroupToRemove = targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup;
+                    //TODO: Sometimes removeAttackingAG ends up duplicating the first waypoint (bec. we just updated the WPs previously in this loop & are now doing it again)
+                    //fixWayPoints fixes the problem BUT it would be better to just address it right awayin removeAttackingAG
                     removeAttackingAirGroup(targetAirgroupTimeToIntercept[bestAagri.agi.airGroup], targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup);
                     fixWayPoints(targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup); //fix any problems that might have resulted from the new waypoint fixes.
                 }
@@ -1369,6 +1492,8 @@ public class Mission : AMission
     }
 
     //If we have found a better intercept we remove the old intercept waypoint from that ag's waypoints list & that airgroup just returns to its usual course
+    //TODO: Sometimes removeAttackingAG often ends up duplicating the first waypoint (bec. we just updated the WPs previously in the loop from which it is called & are now doing it again)
+    //fixWayPoints fixes the problem BUT it would be better to just address it right awayin removeAttackingAG, by tracking WPs added & making sure no two adjacent WPs duplicate each other's position.  This happens because we add the first WP as the a/c's current position, and so if we do it again within the same tick we get the same exactly position as the first waypoint again.  When this is put into place in the airgroup it stops the airgroup mid-air dead stop.  Not good.
     public void removeAttackingAirGroup(incpt intc, AiAirGroup airGroup)
     {
         try
@@ -1451,12 +1576,15 @@ public class Mission : AMission
 
             //for testing
             
+            /*
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
 
                 Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
+            */
+            
             
 
 
@@ -1554,16 +1682,28 @@ public class Mission : AMission
 
                 //endPos.z = 25;  //Make them drop down so they drop off the radar 
                 //Ok, that was as bad idea for various reasons
-                endPos.z = prevWP.P.z;
-                if (endPos.z < 300) endPos.z = ran.NextDouble() * 6000 + 50;
+                //nextWP is the most recent WP, ie the last WP in the 'old' waypoint list
+                //prevWP is where the a/c is right now, ie the first on the old waypoint list
+                //We choose one or the other 50% of the time as they are both 'typical' altitudes for this a/c ?
+                endPos.z = nextWP.P.z;                
+                if (ran.NextDouble() < 0.5) endPos.z = prevWP.P.z;
+                midPos.z = endPos.z;
+                endPos.z = ran.NextDouble() * 200 + 30; 
+                midPos.z = midPos.z + ran.NextDouble() * 4000 - 1700;
+                if (endPos.z < 30) endPos.z = 30;
+                if (midPos.z < 30) midPos.z = 30;
+
                 double speed = prevWP.Speed;
                 
 
                 //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
                 //last point where the goal will be to have the airgroup low & off the radar at this point.
-                midPos.x = (nextWP.P.x * 4 + endPos.x) / 5;
-                midPos.y = (nextWP.P.y * 4 + endPos.y) / 5;
-                midPos.z = endPos.z;
+                //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
+                //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
+                //and random normal altitudes
+                midPos.x = (nextWP.P.x * 1 + endPos.x*4) / 5 + ran.NextDouble() * 10000 - 5000;
+                midPos.y = (nextWP.P.y * 1 + endPos.y*4) / 5 + ran.NextDouble() * 10000 - 5000;
+                
 
                 /* (Vector3d Vwld = airGroup.Vwld();
                 double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
@@ -1595,16 +1735,16 @@ public class Mission : AMission
                 NewWaypoints.Add(midaaWP); //do add
                 count++;
 
-                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+                Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
                 //add the final Point, which is off the map
                 endaaWP = new AiAirWayPoint(ref endPos, speed);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = aawpt;
+                endaaWP.Action = AiAirWayPointType.LANDING;
 
                 NewWaypoints.Add(endaaWP); //do add
                 count++;
-                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
             }
       
 
@@ -1615,11 +1755,15 @@ public class Mission : AMission
 
                 //for testing
                 
+                
+                /*
                 foreach (AiWayPoint wp in NewWaypoints)
                 {
                     Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
+                */
+                
                 
 
             }

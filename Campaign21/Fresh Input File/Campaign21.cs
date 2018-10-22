@@ -2577,12 +2577,7 @@ public class Mission : AMission, IMainMission
             AGGaveAlt_m = pos.z;
             altAGL_m = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
             altAGL_ft = Calcs.meters2feet(altAGL_m);
-            belowRadar = (mission as Mission).belowRadar(altAGL_ft);
             AGGavealtAGL_ft = altAGL_ft;
-
-            if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1; }
-            else { AGGcountAboveRadar = 1; AGGcountBelowRadar = 0; }
-            AGGradarDropout = false;
 
             //Thread.Sleep(100);
             //pos2=a.Pos();
@@ -2611,8 +2606,13 @@ public class Mission : AMission, IMainMission
             sector = GamePlay.gpSectorName(a.Pos().x, a.Pos().y).ToString();
             sector = sector.Replace(",", ""); // remove the comma */
             //Console.WriteLine("AGI 5");
-            vel = new Point3d(Vwld.x, Vwld.y, Vwld.z);
-            AGGvel = vel;
+            vel = new Point3d(Vwld.x, Vwld.y, Vwld.z); 
+            AGGvel = vel;            
+            double vel_mps = Calcs.CalculatePointDistance(vel);
+            belowRadar = (mission as Mission).belowRadar(altAGL_ft, vel_mps, airGroup, a);
+            if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1; }
+            else { AGGcountAboveRadar = 1; AGGcountBelowRadar = 0; }
+            AGGradarDropout = false;
 
 
         }
@@ -3290,16 +3290,22 @@ public class Mission : AMission, IMainMission
             pagi = PAGI;
         }
     }
-    
 
-//unified location to determine if an a/c is low enough to drop off the radar
+
+    //unified location to determine if an a/c is low enough to drop off the radar
     //TRUE if off the radar, false otherwise
-    public bool belowRadar(double altAGL_ft) {
+    public bool belowRadar(double altAGL_ft, double vel_mps, AiAirGroup airGroup = null, AiAircraft aircraft = null)
+    {
 
-        return ((altAGL_ft < 400 && altAGL_ft - 225 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
-                                                                           //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
-        (altAGL_ft < 250)); //And, if they are less than 250 feet AGL, they are gone from radar
-            }
+        bool below = ((altAGL_ft < 350 && altAGL_ft - 175 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
+                                                                                 //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
+        (altAGL_ft < 200)); //And, if they are less than 250 feet AGL, they are gone from radar
+
+        //So, 80% of the time we cloak them if below radar, but 20% it somehow leaks out anyway . . .
+        if (altAGL_ft < 20 && vel_mps < 20 && random.NextDouble() < 0.9) return false; //So airplanes on the ground, taxiing at airport, etc, are picked up.  This isn't radar per se but intelligence or intercepts of radio chatter & other comms giving indications of future movements & where they are happening.
+        if (random.NextDouble() < 0.8 || (altAGL_ft < 100 && random.NextDouble() < 0.95)) return below;
+        else return false;  //so, sometimes, 20% of the time or 5% of the time below 100 ft AGL, aircraft below radar elevation show up somehow, leakage probably, or maybe an observer spotted them
+    }
 
     public System.IO.FileInfo fi;// = new System.IO.FileInfo(STATSCS_FULL_PATH + MISSION_ID + "_radar.txt"); //file to write to
     public System.IO.StreamWriter sw;
@@ -3814,7 +3820,7 @@ public class Mission : AMission, IMainMission
                                                     //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
                                                     //are etc
                                                     if ((playerArmy == -1 || playerArmy == -2) && (
-                                                                   belowRadar(altAGL_ft) || //unified method for deciding below radar or not
+                                                                   belowRadar(altAGL_ft, vel_mps, airGroup, a) || //unified method for deciding below radar or not
                                                                    ((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(3) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
                                                                                                                                          //However if the player heavy bombers group up they are MUCH more likely to show up on radar.  But they will still be harder than usual to track because each individual bomber will phase in/out quite often
 
@@ -3889,7 +3895,7 @@ public class Mission : AMission, IMainMission
                                                                                                                                   //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
                                                                                                                                   //phasing out targets below 250 feet.
 
-                                                            belowRadar(altAGL_ft) || //unified method for deciding below radar or not
+                                                            belowRadar(altAGL_ft, vel_mps, airGroup, a) || //unified method for deciding below radar or not
                                                              ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi > 11 && poscount <= 2 && random.Next(4) <= 2) || // Breather bombers have a higher chance of being overlooked/dropping out, especially when further away.  3/4 times it doesn't show up on radar.
                                                              ((!isAI && isHeavyBomber && army != playerArmy) && dis_mi <= 11 && poscount <= 2 && random.Next(5) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out when close (this is close enough it should be visual range, so we're not going to help them via radar)
                                                                                                                                                                          //((!isAI && type == "B" && army != playerArmy) && random.Next(5) > 0) || // Enemy bombers don't show up on your radar screen if less than 7 miles away as a rule - just once in a while.  You'll have to spot them visually instead at this distance!
@@ -4192,7 +4198,7 @@ public class Mission : AMission, IMainMission
                                                 //Also each army could have its own towers giving it better visibility on its own side of the lines where its own towers
                                                 //are etc
                                                 if ((playerArmy == -1 || playerArmy == -2) && (
-                                                               belowRadar(altAGL_ft) || //unified method for deciding below radar or not    
+                                                               belowRadar(altAGL_ft, vel_mps, airGroup, a) || //unified method for deciding below radar or not    
                                                                poscount == 0 || //this happens if all a/c in a group are belowRadar
                                                                agid.AGGradarDropout
                                                                //((!isAI && isHeavyBomber) && poscount <= 2 && random.Next(3) == 1) || // Breather bombers have a much higher chance of being overlooked/dropping out 
@@ -4290,7 +4296,7 @@ public class Mission : AMission, IMainMission
                                                                                                                               //but Chain Home Low detected targets well down to 500 feet quite early in WWII and after improvements, down to 50 feet.  We'll approximate this by
                                                                                                                               //phasing out targets below 250 feet.
 
-                                                         belowRadar(altAGL_ft) || //unified method for deciding below radar or not
+                                                         belowRadar(altAGL_ft, vel_mps, airGroup, a) || //unified method for deciding below radar or not
 
                                                          poscount == 0 || //this happens if all a/c in a group are belowRadar
                                                          agid.AGGradarDropout && random.Next(3) == 1 || //For Tab-4-1 listings we honor the heavy bomber radar dropout only 33% of the time.  This is bec. the radar screen operators have ways of picking up tracks even if they appear just once in a while, but Tab-4-1 folks less so.
@@ -6617,7 +6623,13 @@ public class Mission : AMission, IMainMission
         //to OnActorCreated at all . . . But they are in fact created
         AiAircraft a = actor as AiAircraft;
 
-        int destroyminutes = 90;//Destroy AI a/c this many minutes after they are spawned in.
+        int destroyminutes = 120;//Destroy AI a/c this many minutes after they are spawned in.
+        //Note that MoveBombTarget-.cs takes care of destroying aircraft when their task is set to "LANDING" and no live players
+        //are nearby.  Plus, a/c are destroyed when they fly off the map & MoveBombTarget-.cs will make them do that at 
+        //the end of any planned WAYPOINTS they have been given.
+        //So this 120 min. destruction thing here is a bit of a safety valve in case random a/c are still hanging about after all the above failed.
+        //a/c in the server too long tend to be useless, out of fuel, etc plus slow the server down.  Sometimes they are actually downed but still just sitting 
+        //on the ground or whatever
 
 
         Timeout(1.0, () => // wait 1 second for human to load into plane
@@ -8288,13 +8300,15 @@ public class Mission : AMission, IMainMission
             //TODO: We could make this more realistic in various ways, perhaps extending some high-level radar partially into UK or the like
 
 
-            if (pos.x > 170000 && pos.x <= 250000)
+            if (pos.x > 170000 && pos.x <= 225000)
             {
-                if ((pos.x - 170000) / 80000 * 42000 + 194000 < pos.y) return false;
+                //if ((pos.x - 170000) / 80000 * 42000 + 194000 < pos.y) return false;
+                if ((pos.x - 170000) / 80000 * 42000 + 219000 < pos.y) return false;
             }
             if (pos.x > 8000 && pos.x <= 170000)
             {
-                if ((pos.x - 8000) / 162000 * 14000 + 180000 < pos.y) return false;
+                //if ((pos.x - 8000) / 162000 * 14000 + 180000 < pos.y) return false;
+                if ((pos.x - 8000) / 162000 * 14000 + 205000 < pos.y) return false;
             }
             return true;
         }

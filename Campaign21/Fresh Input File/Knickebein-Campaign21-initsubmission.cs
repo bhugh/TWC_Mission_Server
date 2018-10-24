@@ -140,12 +140,16 @@ public class KnickebeinTarget
                     
 
         int deltaBear = Convert.ToInt32(Math.Round(distFromLine/100));
+        //bool noshow = false;
+        //if (distFromLine > 6000) noshow = true; //The wide 'guide beam' (ie similar to X-gerat) is let's say 6000m from the center
+        //if (distFromLine < 12000 && mission.ran.NextDouble() * 6000 < distFromLine - 6000) noshow = false; //it phases in 6000-12000m from center
         if (deltaBear > 12) deltaBear = 12;
         //if (deltaBear < -5) deltaBear = -5;
         
         if (deltaBear == 0) return new string(' ', 11) + "=" ;
         char c = '-';
         if (deltaBearingAngle_deg < 0) c = '+';
+        //if (noshow) c = ' ';
         string ret = new string(c, Math.Abs(deltaBear));
         string pad = new string(' ', 12-ret.Length);
         /*
@@ -171,11 +175,17 @@ public class KnickebeinTarget
         double currentTargetPointdistance_m = Calcs.CalculatePointDistance( actor.Pos(), this.targetPoint);
         double distFromBeam_m = Calcs.distancePointToLine(this.initialPoint, this.targetPoint, actor.Pos());
         double distFromCrossBeam_m = Math.Sqrt(currentTargetPointdistance_m * currentTargetPointdistance_m - distFromBeam_m * distFromBeam_m);
+
+        //bool noshow = false;
+        //if (distFromCrossBeam_m > 10000) noshow = true; //The wide 'guide beam' (ie similar to X-gerat) is let's say 6000m from the center
+        //if (distFromCrossBeam_m < 16000 && mission.ran.NextDouble() * 6000 < distFromCrossBeam_m - 10000) noshow = false;
+
         int deltaDist_km = Convert.ToInt32(Math.Round(distFromCrossBeam_m / 1000));
         if (deltaDist_km > 10) deltaDist_km = 10;        
         //if (deltaDist_km == 0) return new Tuple<double, string>(currentTargetdistance_m, "=");
         
-        char c = '|';       
+        char c = '|';
+        //if (noshow) c = ' ';
         string ret = new string(c, deltaDist_km);
 
         if (distFromCrossBeam_m < 1000)
@@ -242,9 +252,33 @@ public class Knickebeinholder
         {
             if (player == null) return;
             //Distance is auto adjusted to miles for Red & km for Blue
-            knickebeins[player] = new KnickebeinTarget(player, angle_deg, distance, mission);
-            knickebeins[player].turnOn();
+            //knickebeins[player] = new KnickebeinTarget(player, angle_deg, distance, mission);
+            //knickebeins[player].turnOn();
             //startKnickebein_recurs(player);
+
+            //Make a new knickebein point based on the angle, distance
+            Point3d initialPoint = new Point3d(0, 0, 0);
+            if (player.Place() != null) initialPoint = player.Place().Pos();
+            double dist_m = distance * 1000; //if army==2 we assume distance in km
+            if (player.Army() == 1) dist_m = Calcs.miles2meters(distance); //If army = 1 distance inmiles
+            Point3d targetPoint = Calcs.EndPointfromStartPointAngleDist(initialPoint, angle_deg, dist_m);
+            
+            //add it to the knickebein list
+            KniAdd(player, targetPoint);
+
+            //Make the current knickebein waypoint the one we've just added
+            int currWay = 0;
+            if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay = knickebeinCurrentWaypoint[player];
+
+
+            List<Point3d> currpoints = new List<Point3d>();
+            if (knickebeinWaypoints.ContainsKey(player)) currpoints = knickebeinWaypoints[player];
+            currWay = currpoints.Count - 1;
+            knickebeinCurrentWaypoint[player] = currWay;
+
+            //and, start the knickebein we've just added
+            KniStart(player, startWay_onebased: currWay + 1);
+
         }
         catch (Exception ex) { Console.WriteLine("Knickebein  SQKB: " + ex.ToString()); }
     }
@@ -603,20 +637,20 @@ public class Mission : AMission
                 string units = "km";
                 if (player.Army() == 1) units = "miles";
 
-                string newmsg = msg.Replace(",", "").Replace("(", "").Replace(")", "").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma
+                string newmsg = msg.Replace("<kadd", "").Replace("<ka", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma
                 string[] words = newmsg.Split(' ');
                 List<Point3d> points = new List<Point3d>();
                 
 
                 //Case of entering apoint like <kniadd 300000 100000
-                if (words.Length == 3 && Calcs.isDigit(words[1]) && Calcs.isDigit(words[2]))
+                if (words.Length == 2 && Calcs.isDigitOrPlusMinusPoint(words[0]) && Calcs.isDigitOrPlusMinusPoint(words[1]))
 
                 {
                     double x = 0;
                     double y = 0;
-                    try { if (words[1].Length > 0) x = Convert.ToDouble(words[1]); }
+                    try { if (words[0].Length > 0) x = Convert.ToDouble(words[0]); }
                     catch (Exception ex) { }
-                    try { if (words[2].Length > 0) y = Convert.ToDouble(words[2]); }
+                    try { if (words[1].Length > 0) y = Convert.ToDouble(words[1]); }
                     catch (Exception ex) { }
 
                     if (x != 0 && y != 0)
@@ -625,7 +659,7 @@ public class Mission : AMission
                     }
                 }
                 //Case of entering doublekeypad sectors, possibly in a row like <kniadd AA30.3.2 BA30.2.1 BD9.2
-                else if (words.Length > 1)
+                else if (words.Length > 0)
                 {
                     foreach (string word in words)
                     {
@@ -659,6 +693,7 @@ public class Mission : AMission
                     GamePlay.gpLogServer(new Player[] { player }, "To set up Knickebein waypoints, use chat command like: <kadd AB21.2.1 BE9.4.9 BA14.2.1", null);
                     GamePlay.gpLogServer(new Player[] { player }, "This means add those map sector points to your Knickebein Waypoints List.", null);
                     GamePlay.gpLogServer(new Player[] { player }, "You can add one or more points at a time. Formats BA14, AC9.2, AZ.2.6 all work. ", null);
+                    GamePlay.gpLogServer(new Player[] { player }, "For higher accuracy waypoints, use x/y map coordinates: <kadd 142381 150321", null);
                     GamePlay.gpLogServer(new Player[] { player }, "Then to use:  <kstart <knext <kprev <koff <kon <kclear <khelp", null);
                 }
             }
@@ -791,7 +826,13 @@ public class Mission : AMission
             //knickeb.KniStart(player);
             //Calcs.isDigit(words[1])
             //sector = sector.Replace(",", ""); // remove the comma
-            string wp_string = msg.Replace("<kstart ", "").Replace("<ks", "").Replace("<k","").Trim();
+
+            //Ok, this is tricky.  If we want to use "<k" as a shortcut it can only be like "<k" or "<k3" or "<k 3" because otherwise 
+            //we start matching all kinds of things like "<ko" or "<km" or whatever, that might means something       
+            
+            if (msg.StartsWith("<k") && !((msg.Trim() == "<k") || (msg.StartsWith("<ks")) || (msg.StartsWith("<k ")) || Calcs.isDigit(msg.Replace("<k", "").Trim()))) return;
+
+            string wp_string = msg.Replace("<kstart ", "").Replace("<kstart", "").Replace("<ks", "").Replace("<k","").Trim();
             //string[] words = msg.Split(' ');
             int wp = 0;
             if (Calcs.isDigit(wp_string))
@@ -900,6 +941,15 @@ public static class Calcs
         foreach (char c in s)
         {
             if (!char.IsDigit(c)) return false;
+        }
+        return true;
+    }
+    //Allows digits, . - + 
+    public static bool isDigitOrPlusMinusPoint(string s)
+    {
+        foreach (char c in s)
+        {
+            if (!(char.IsDigit(c) || c == '.' || c == '+' || c == '-')) return false;
         }
         return true;
     }

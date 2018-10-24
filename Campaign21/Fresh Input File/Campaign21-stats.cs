@@ -6053,7 +6053,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
                     if (realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
                     {
-                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
+                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7}", realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
 
 
                         //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead

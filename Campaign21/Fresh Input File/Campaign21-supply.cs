@@ -570,8 +570,8 @@ private bool IsLimitReached(AiActor actor)
 
         }
         if (pilotNames == "") pilotNames = "(AI/No Pilot Listed)";
-        aircraftCheckedOut.Add(actor);
-        aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
+        if (!aircraftCheckedOut.Contains(actor)) aircraftCheckedOut.Add(actor);        
+        if (!aircraftCheckedOutInfo.ContainsKey(actor)) aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
     }
 
     public string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "")

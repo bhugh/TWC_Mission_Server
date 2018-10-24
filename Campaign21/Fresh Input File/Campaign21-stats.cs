@@ -1597,8 +1597,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         {
             StbContinueMission cm = new StbContinueMission();
             bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) Console.WriteLine("PLPE-same actor: Player hasn't been in an aircraft before, no cmINFO");
             if (!ret) return false; // if the player hasn't been flying before, the actor is different (before it was null/nothing, now a real aircraft or other actor)
-            if (cm.posEnterActor == null || cm.posLeftActor == null) return false; //so if either OR both are null, we're going to say you can't be entering the same aircraft as before at this point
+            if (cm.posEnterActor == null || cm.posLeftActor == null)
+            {
+                Console.WriteLine("PLPE-same actor: one actor was null: posenter {0} posleft {1}", cm.posEnterActor == null, cm.posLeftActor == null);
+                return false; //so if either OR both are null, we're going to say you can't be entering the same aircraft as before at this point
+                //However, this could  happen if we're called after placeleave but before placeenter, as placeleave nulls out the placenterActor
+            }
+            Console.WriteLine("PLPE-same actor: Actor names - posenter {0} - posleft {1}", cm.posEnterActor.Name(), cm.posLeftActor.Name());
             return (cm.posEnterActor == cm.posLeftActor);  //if the two are equal, then same aircraft or actor.  Otherwise, a different a/c or actor.
 
         }
@@ -6050,10 +6057,16 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     if (birthPlace != null) bpLoc = birthPlace.Pos();
                     double dist = Calcs.CalculatePointDistance(bpLoc, (aircraft as AiActor).Pos());
                     double deltaAlt_m = Math.Abs(bpLoc.z - (aircraft as AiActor).Pos().z);
-                    Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5}", realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
-                    if (realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
+
+                    bool isEnteringAIAircraft = AIAircraftList.Contains(aircraft); //So this is the definite giveaway, the person is entering an a/c that was first created as AI.
+
+                    Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5} {6}", isEnteringAIAircraft, realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
+                    //TODO: Just record whether a given aircraft is AI say 30 seconds after it is created (to give time for a player ot enter ot whatever)
+                    //then save this as a database & here we can instantly see that a player has entered an a/c that was originally created as AI
+                
+                    if (isEnteringAIAircraft && realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
                     {
-                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7}", realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
+                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7} {8}", isEnteringAIAircraft, realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
 
 
                         //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
@@ -6443,6 +6456,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         //add your code here
     }
 
+    HashSet<AiAircraft> AIAircraftList = new HashSet<AiAircraft>(); //All aircraft created as AI, used to detect if any players have entered an AI aircraft
+
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
         base.OnActorCreated(missionNumber, shortName, actor);
@@ -6476,7 +6491,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
          *  - A 2nd/3rd player jumping into a bomber (it already exists)
          *  */
 
-        if (actor != null && actor is AiAircraft ) {
+        if (actor != null && actor is AiAircraft)
+        {
             //IsAirborne is false right now, but if we wait a little bit becomes true, when we are spawning in at an airspawn
             /* moving this part, to detect sortie start, to onplaceenter . . .
                 AiAircraft aircraft = actor as AiAircraft;
@@ -6532,7 +6548,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     Console.WriteLine("Checking Loadout/weaponsmask . . . ");
                     AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
                     Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
-                         + " " + aircraft.HullNumber() 
+                         + " " + aircraft.HullNumber()
                          + " " + aircraft.CallSignNumber());
                     System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.InternalTypeName());
                     //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
@@ -6540,7 +6556,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     //Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
                     if (weaponsmask != null) Console.WriteLine("not null");
                     else Console.WriteLine("null");
-                    if (weaponsmask.Count>2) Console.WriteLine("2");
+                    if (weaponsmask.Count > 2) Console.WriteLine("2");
                     else Console.WriteLine("3");
                     if (weaponsmask.Length > 2) Console.WriteLine("2");
                     else Console.WriteLine("3");
@@ -6556,8 +6572,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 }
 
             });
-       
-    }
+
+            Timeout(2, () =>
+            {
+                if (aircraft != null && Stb_isAiControlledPlane(aircraft)) //AI Aircraft has been created
+                {
+                    AIAircraftList.Add(aircraft);
+                }
+            });
+        }
 }
 
 public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)

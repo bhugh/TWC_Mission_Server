@@ -3148,7 +3148,7 @@ public class Mission : AMission, IMainMission
                             //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
                             //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
                             //show up like 40% of the time?
-                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 58)
+                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 42)  //2018-10-24, was 58, trying it lower
                             {
                                 agid.AGGradarDropout = true;
                                 //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
@@ -3297,13 +3297,13 @@ public class Mission : AMission, IMainMission
     public bool belowRadar(double altAGL_ft, double vel_mps, AiAirGroup airGroup = null, AiAircraft aircraft = null)
     {
 
-        bool below = ((altAGL_ft < 350 && altAGL_ft - 175 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
+        bool below = ((altAGL_ft < 500 && altAGL_ft - 325 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
                                                                                  //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
-        (altAGL_ft < 200)); //And, if they are less than 250 feet AGL, they are gone from radar
+        (altAGL_ft < 350)); //And, if they are less than 350 feet AGL, they are gone from radar
 
         //So, 80% of the time we cloak them if below radar, but 20% it somehow leaks out anyway . . .
-        if (altAGL_ft < 20 && vel_mps < 20 && random.NextDouble() < 0.9) return false; //So airplanes on the ground, taxiing at airport, etc, are picked up.  This isn't radar per se but intelligence or intercepts of radio chatter & other comms giving indications of future movements & where they are happening.
-        if (random.NextDouble() < 0.8 || (altAGL_ft < 100 && random.NextDouble() < 0.95)) return below;
+        if (altAGL_ft < 20 && vel_mps < 20 && random.NextDouble() < 0.9 && Stb_distanceToNearestAirport(aircraft as AiActor) < 2500) return false; //So airplanes on the ground, taxiing at airport, etc, are picked up.  This isn't radar per se but intelligence or intercepts of radio chatter & other comms giving indications of future movements & where they are happening.
+        if (random.NextDouble() < 0.87 || (altAGL_ft < 250 && random.NextDouble() < 0.96)) return below;
         else return false;  //so, sometimes, 20% of the time or 5% of the time below 100 ft AGL, aircraft below radar elevation show up somehow, leakage probably, or maybe an observer spotted them
     }
 

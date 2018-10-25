@@ -6230,17 +6230,14 @@ public class Mission : AMission, IMainMission
             {
                 twcLogServer(new Player[] { player }, "Please use Tab-4 menu to check airport status", new object[] { });
             }
-        }
-        /*
-         //oK, so this doesn't work because we have to change not only this but a bunch of other variables that depend on it here AND in -stats.cs
+        }                
         else if (msg.StartsWith("<server") && admin_privilege_level(player) >= 2)
         {
             string tr = msg_orig.Substring(7).Trim();
             SERVER_ID_SHORT = tr;
             twcLogServer(new Player[] { player }, "Server renamed to " + tr + " for the remainder of this session.", new object[] { });
 
-        }
-        */
+        }        
         else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
         {
 

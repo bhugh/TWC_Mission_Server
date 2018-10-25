@@ -3147,8 +3147,13 @@ public class Mission : AMission, IMainMission
                             //Small groups of human heavy bombers are more likely to disappear from radar, in order to give them more of a fighting chance
                             //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
                             //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
-                            //show up like 40% of the time?
-                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 42)  //2018-10-24, was 58, trying it lower
+                            //show up like 40% of the time?  This applies to 1-2 bombers.  3-4-5 bombers also drop out some but less so as the bomber group size grows
+                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 67)  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead.
+                            {
+                                agid.AGGradarDropout = true;
+                                //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
+                            }
+                            else if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 5 && agid.AGGcount > 2 && random.Next(100) <= ( 67 - 10*(agid.AGGcount-2)))  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead.
                             {
                                 agid.AGGradarDropout = true;
                                 //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
@@ -3296,14 +3301,49 @@ public class Mission : AMission, IMainMission
     //TRUE if off the radar, false otherwise
     public bool belowRadar(double altAGL_ft, double vel_mps, AiAirGroup airGroup = null, AiAircraft aircraft = null)
     {
+        //So mostly flying "below radar" is quite safe and undetected.  But in some cases there will be a detection, either because radar got a return somehow, or (far
+        //more likely) the aircraft was spotted by an observer or some other way.  So this type of thing is far more likely to happen when over
+        //enemy ground and far, far more  likely when near an enemy objective, which is likely to be well guarded etc.
+        bool onEnemyGround = false;
+        bool nearMissionObjective = false;
+        if (aircraft != null && (aircraft as AiActor != null))
+        {
+            bool onEnemyTerritory = false;
+            int terr = GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y);
+         
+            if ((terr == 1 || terr == 2) && (aircraft as AiActor).Army() != terr) onEnemyTerritory = true;
+
+            maddox.game.LandTypes landType = GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y);
+            if (onEnemyTerritory && landType != maddox.game.LandTypes.WATER) onEnemyGround = true;
+
+            int numMissionObjectivesNear = 0;
+
+            if (onEnemyGround && MO_MissionObjectivesNear(aircraft.Pos(), dist_m: 8000) > 1) nearMissionObjective = true;
+            
+        }
+
+        double leakageRate = .12;
+        double below250LeakageRate = 0.06;
+
+        if (onEnemyGround)
+        {
+            leakageRate = .2;
+            below250LeakageRate = 0.14;
+        }
+
+        if (nearMissionObjective)
+        {
+            leakageRate = .66;
+            below250LeakageRate = 0.44;
+        }
 
         bool below = ((altAGL_ft < 500 && altAGL_ft - 325 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
                                                                                  //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
-        (altAGL_ft < 350)); //And, if they are less than 350 feet AGL, they are gone from radar
+        (altAGL_ft < 350)); //And, if they are less than 350 feet AGL, they are gone from radar.  Except for a bit of leakage.
 
         //So, 80% of the time we cloak them if below radar, but 20% it somehow leaks out anyway . . .
         if (altAGL_ft < 20 && vel_mps < 20 && random.NextDouble() < 0.9 && Stb_distanceToNearestAirport(aircraft as AiActor) < 2500) return false; //So airplanes on the ground, taxiing at airport, etc, are picked up.  This isn't radar per se but intelligence or intercepts of radio chatter & other comms giving indications of future movements & where they are happening.
-        if (random.NextDouble() < 0.87 || (altAGL_ft < 250 && random.NextDouble() < 0.96)) return below;
+        if (random.NextDouble() < (1-leakageRate) || (altAGL_ft < 250 && random.NextDouble() < (1-below250LeakageRate))) return below;
         else return false;  //so, sometimes, 20% of the time or 5% of the time below 100 ft AGL, aircraft below radar elevation show up somehow, leakage probably, or maybe an observer spotted them
     }
 
@@ -6191,6 +6231,16 @@ public class Mission : AMission, IMainMission
                 twcLogServer(new Player[] { player }, "Please use Tab-4 menu to check airport status", new object[] { });
             }
         }
+        /*
+         //oK, so this doesn't work because we have to change not only this but a bunch of other variables that depend on it here AND in -stats.cs
+        else if (msg.StartsWith("<server") && admin_privilege_level(player) >= 2)
+        {
+            string tr = msg_orig.Substring(7).Trim();
+            SERVER_ID_SHORT = tr;
+            twcLogServer(new Player[] { player }, "Server renamed to " + tr + " for the remainder of this session.", new object[] { });
+
+        }
+        */
         else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
         {
 
@@ -6242,7 +6292,7 @@ public class Mission : AMission, IMainMission
         }
         else if (msg.StartsWith("<nump") && admin_privilege_level(player) >= 2)
         {
-            int nump = Calcs.gpNumberOfPlayers(GamePlay);            
+            int nump = Calcs.gpNumberOfPlayers(GamePlay);
             twcLogServer(new Player[] { player }, "stopAI: " + nump.ToString() + " players currently online", new object[] { });
 
         }
@@ -6322,7 +6372,7 @@ public class Mission : AMission, IMainMission
 
             }
         }
-    
+
         else if (msg.StartsWith("<test") && admin_privilege_level(player) >= 2)
         {
             var radar_messages = new Dictionary<string, string> {
@@ -6337,7 +6387,7 @@ public class Mission : AMission, IMainMission
             {
                 delay += 0.05;
                 Timeout(delay, () =>
-                {                    
+                {
                     gpLogServerAndLog(new Player[] { player }, mess.Value, null);
                 });
 
@@ -7008,14 +7058,14 @@ public class Mission : AMission, IMainMission
     //TODO: Use similar scheme for total points, objectives completed list, objectives completed
     public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 12 },
-        {ArmiesE.Blue, 12 }
+        {ArmiesE.Blue, 10 }
     };
 
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
     //This allows mission to be turned in case one objective is malfunctioning or super-difficult - by hitting some other alternate targets
     public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 16 },
-        {ArmiesE.Blue, 16 }
+        {ArmiesE.Blue, 13 }
     };
 
     Dictionary<string, MissionObjective> MissionObjectivesList = new Dictionary<string, MissionObjective>();
@@ -8299,16 +8349,19 @@ public class Mission : AMission, IMainMission
             //  8000    180000  Edge of map near Bournemouth
             //TODO: We could make this more realistic in various ways, perhaps extending some high-level radar partially into UK or the like
 
-
-            if (pos.x > 170000 && pos.x <= 225000)
+            //if (pos.x > 170000 && pos.x <= 250000)
+            //if (pos.x > 170000 && pos.x <= 225000)
+            if (pos.x > 170000 && pos.x <= 190000)
             {
                 //if ((pos.x - 170000) / 80000 * 42000 + 194000 < pos.y) return false;
-                if ((pos.x - 170000) / 80000 * 42000 + 219000 < pos.y) return false;
+                //if ((pos.x - 170000) / 80000 * 42000 + 219000 < pos.y) return false;
+                if ((pos.x - 170000) / 80000 * 42000 + 250000 < pos.y) return false;
             }
             if (pos.x > 8000 && pos.x <= 170000)
             {
                 //if ((pos.x - 8000) / 162000 * 14000 + 180000 < pos.y) return false;
-                if ((pos.x - 8000) / 162000 * 14000 + 205000 < pos.y) return false;
+                //if ((pos.x - 8000) / 162000 * 14000 + 205000 < pos.y) return false;
+                if ((pos.x - 8000) / 162000 * 14000 + 236000 < pos.y) return false;
             }
             return true;
         }

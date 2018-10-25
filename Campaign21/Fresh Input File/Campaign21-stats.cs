@@ -3663,6 +3663,82 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         }
     }
 
+    //Experiment with changingn the airgroup target to player, seeing if they will attack better
+    //Not actually used for now
+    public void Stb_changeTargetToDifferentNearbyAircraft_recurs()
+    {
+        Timeout(52.34, () => { Stb_changeTargetToDifferentNearbyAircraft_recurs(); });
+        //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
+        Task.Run(() => Stb_changeTargetToDifferentNearbyAircraft());
+        //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+    }
+
+    public void Stb_changeTargetToDifferentNearbyAircraft()
+    {        
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in GamePlay.gpArmies())
+            {
+                
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                {
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor is AiAircraft)
+                                {
+                                    AiAircraft aircraft = actor as AiAircraft;
+                                    if (aircraft != null)
+                                    {
+                                        if (Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne() &&
+                                            (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR ||
+                                            airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT ||
+                                            airGroup.getTask() == AiAirGroupTask.DO_NOTHING))
+
+                                        {
+                                            //AiAirGroup.candidates()
+                                            //AiAirGroup.enemies()
+                                            //AiAirGroup.getTask()
+                                            //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
+                                            //AiAirGroup.Vwld()
+                                            //AiAirGroupTask.ATTACK_AIR
+                                            // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
+                                            //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
+                                            //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
+
+                                            AiAirGroup newAG = null;
+
+                                            //If they are already attacking we select a (possibly) new target within reasonable distance
+                                            //If they are just flying straight we only select a target if they are basically right on top of it
+                                            //and even a dufus pilot would notice it
+                                            //In theory this leaves CloD's native piloting in place for the most part, but just 'improves' it a bit
+                                            if (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR)
+                                                newAG = getRandomNearbyEnemyAirGroup(airGroup, 5000, 1000, 1000);
+                                            else if (airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT || airGroup.getTask() == AiAirGroupTask.DO_NOTHING)
+                                                newAG = getRandomNearbyEnemyAirGroup(airGroup, 500, 300, 300);
+
+                                            if (newAG == null) break;
+
+                                            airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG);
+                                            airGroup.changeGoalTarget(newAG);
+                                            Console.WriteLine("Change Target to Nearby Friendly Aircraft: " + actor.Name() + " to " + newAG.Name());
+
+                                            break; //each airGroup has only one target so no need to do this more than once.
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     //Each aiairgroup can have only one goal target, which becomes kind of unrealistic.  
     //What we do is call this to change the target to a different a/c.  We could do this based on proximity or whatever
     //but for now we are mostly doing it based on damage or kills.  If you damage/kill one of the a/c in a group then
@@ -3749,9 +3825,12 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 Tuple<double?, double?, AiAirGroup> resp = getDistanceToNearestFriendlyAIFightergroup(airGroup);
                 if (resp.Item3 == null) return;
                 AiAirGroup nearbyFighterGroup = resp.Item3;
+
+                string nearbyFighterName = "(none)";
+                if (nearbyFighterGroup.GetItems() != null && nearbyFighterGroup.GetItems().Length > 0) nearbyFighterName = (nearbyFighterGroup.GetItems()[0] as AiActor).Name();
                 if (resp.Item1<10000 && resp.Item2 > -1750 && stb_random.NextDouble()<0.9)
                 {
-                    Console.WriteLine("CHANGETARGET: " + airGroup.Name() + " bombers under attack, so got nearby AI fightergroup " + nearbyFighterGroup.Name() + " to attack " + playername);
+                    Console.WriteLine("CHANGETARGET: " + (aircraft as AiActor).Name() + " bombers under attack, so got nearby AI fightergroup " + nearbyFighterName + " to attack " + playername);
                     nearbyFighterGroup.changeGoalTarget(player.Place());
                     nearbyFighterGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
                 }
@@ -3973,6 +4052,50 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 return null;
         }
         catch (Exception ex) { Console.WriteLine("-stats Friendly Fighter ERROR: " + ex.ToString()); return null; }
+
+    }
+    public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+    {
+        Point3d startPos = from.Pos();
+        List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
+        if (airGroups.Count == 0) return null;
+        int choice = stb_random.Next(airGroups.Count);
+        if (airGroups[choice].Pos().distance(ref startPos) <= distance_m/2) //We'll somewhat favor airgroups closer to the from airgroup
+            choice = stb_random.Next(airGroups.Count);
+        return airGroups[choice];
+
+    }
+
+    //Gets all nearby enemy airgroup within distance_m (meters) and between alt - lowAlt_m & alt-highAlt_m altitude of the target
+    public List<AiAirGroup> getNearbyEnemyAirGroups(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+    {
+        try
+        {
+            if (GamePlay == null) return null;
+            if (from == null) return null;
+            List<AiAirGroup> returnAirGroups = new List<AiAirGroup>();
+            AiAirGroup[] Airgroups;
+            Point3d StartPos = from.Pos();
+
+            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 2 : 1);
+
+            if (Airgroups != null)
+            {
+                foreach (AiAirGroup airGroup in Airgroups)
+                {
+                    if (airGroup.GetItems().Length == 0) continue;
+                    //AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
+
+                        if (airGroup.Pos().z>StartPos.z-lowAlt_m && airGroup.Pos().z < StartPos.z + highAlt_m && airGroup.Pos().distance(ref StartPos) <= distance_m)
+                            returnAirGroups.Add(airGroup);
+
+                }
+                return returnAirGroups;
+            }
+            else
+                return null;
+        }
+        catch (Exception ex) { Console.WriteLine("-stats getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
 
     }
 
@@ -4214,6 +4337,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             SetAirfieldTargets();
 
             Stb_RemoveOffMapPlayers_recurs();
+            Stb_changeTargetToDifferentNearbyAircraft_recurs();
 
             Console.WriteLine("-stats.cs successfully loaded");
 

@@ -662,69 +662,78 @@ private bool IsLimitReached(AiActor actor)
 
     private void CheckActorOut(AiActor actor, Player player = null, bool Force = false)
     {
-        AiCart cart = actor as AiCart;
+        try
+        {
+            AiCart cart = actor as AiCart;
 
-        Console.WriteLine("CheckActorOut " + cart.InternalTypeName() + " " + actor.Army().ToString());
-        //if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName())) Console.WriteLine("containskey true");
+            Console.WriteLine("CheckActorOut " + cart.InternalTypeName() + " " + actor.Army().ToString());
+            //if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName())) Console.WriteLine("containskey true");
 
-        //Don't double check-out aircraft, unless Forced to do so via new info from -stats.cs.  Force means we accidentally check it back in & so we're checking it out again for good.
-        if (aircraftCheckedOut.Contains(actor) && !Force) {
-            Console.WriteLine("Supply: This aircraft has already been checked OUT before: " + cart.InternalTypeName()); 
-            return;
-        }
-        else aircraftCheckOut_add(actor);
-
-        DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
-
-        //Console.WriteLine("valout1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-        if (cart != null && IsArmy(actor))
-            if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
+            //Don't double check-out aircraft, unless Forced to do so via new info from -stats.cs.  Force means we accidentally check it back in & so we're checking it out again for good.
+            if (aircraftCheckedOut.Contains(actor) && !Force)
             {
-                AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1;
-                double print = new Random().NextDouble();
-                Timeout(4.33, () =>
-                {
-                    GamePlay.gpLogServer(new Player[] { player }, AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0") + " "
-                        + ParseTypeName(cart.InternalTypeName())  + " remain in reserve", null);
-                });
-
-                //Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-                if (Force) Console.WriteLine("valout2= FORCED!");
+                Console.WriteLine("Supply: This aircraft has already been checked OUT before: " + cart.InternalTypeName());
+                return;
             }
+            else aircraftCheckOut_add(actor);
+
+            DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
+
+            //Console.WriteLine("valout1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+            if (cart != null && IsArmy(actor))
+                if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
+                {
+                    AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1;
+                    double print = new Random().NextDouble();
+                    Timeout(4.33, () =>
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0") + " "
+                            + ParseTypeName(cart.InternalTypeName()) + " remain in reserve", null);
+                    });
+
+                    //Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                    if (Force) Console.WriteLine("valout2= FORCED!");
+                }
+        }
+        catch (Exception ex) { Console.WriteLine("Supply - CheckActorOut ERROR: " + ex.ToString()); }
     }
 
 
     private void CheckActorIn(AiActor actor, Player player = null)
     {
-        AiCart cart = actor as AiCart;
-        //Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-
-        if (aircraftCheckedIn.Contains(actor))
+        try
         {
-            Console.WriteLine("Supply: This aircraft has already been checked IN before: " + cart.InternalTypeName()); 
-            return;
-        }
-        else aircraftCheckedIn.Add(actor);
+            AiCart cart = actor as AiCart;
+            //Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
 
-        if (!aircraftCheckedOut.Contains(actor))
-        {
-            Console.WriteLine("Supply: This aircraft has never been checked OUT but someone is trying to check it IN: " + cart.InternalTypeName());
-            return;
-        }
-
-        if (cart != null && IsArmy(actor))
-            if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
+            if (aircraftCheckedIn.Contains(actor))
             {
-                AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] += 1;
-                //Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());                                
+                Console.WriteLine("Supply: This aircraft has already been checked IN before: " + cart.InternalTypeName());
+                return;
+            }
+            else aircraftCheckedIn.Add(actor);
+
+            if (!aircraftCheckedOut.Contains(actor))
+            {
+                Console.WriteLine("Supply: This aircraft has never been checked OUT but someone is trying to check it IN: " + cart.InternalTypeName());
+                return;
+            }
+
+            if (cart != null && IsArmy(actor))
+                if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
+                {
+                    AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] += 1;
+                    //Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());                                
                     Timeout(3.33, () =>
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned safely and added to stock; " 
+                        GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned safely and added to stock; "
                             + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0") + " "
                             + "currently in stock", null);
                     });
-                
-            }
+
+                }
+        }
+        catch (Exception ex) { Console.WriteLine("Supply - CheckActorIn ERROR: " + ex.ToString()); }
     }
 
     /*

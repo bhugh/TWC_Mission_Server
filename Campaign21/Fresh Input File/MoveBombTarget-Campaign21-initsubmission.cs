@@ -867,11 +867,23 @@ public class Mission : AMission
 
     public void printAttachedAirgroups(AiAirGroup airGroup)
     {
+        /*
+         * So, airgroups that are ie escorting bombers have task "defending".  The airgroup they are defending is the "client"
+         * 
+         * Task RETURN *might* mean that the escorts are returning to their client group.  Not 100% sure however.
+         * 
+         * Airgroups that are attacking some aircraft are "ATTACK_AIR".  There doesn't seem to be the target of the attack available anyway.
+         * 
+         * enemies, candidates, mothergroups, daughtergroups, attachedgroups I haven't found used at all, yet.
+         * 
+         * 
+         * */
         try
         {
             if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             Console.WriteLine("Airgroup {0} info & attached groups: {1}", airGroup.Name(), task);
+            
             if (airGroup.clientGroup() != null) Console.WriteLine("client: {0}", airGroup.clientGroup().Name());
             if (airGroup.leaderGroup() != null) Console.WriteLine("leader: {0}", airGroup.leaderGroup().Name());
             if (airGroup.motherGroup() != null) Console.WriteLine("mother: {0}", airGroup.motherGroup().Name());
@@ -881,6 +893,7 @@ public class Mission : AMission
                 Console.WriteLine("Attached groups");
                 printAirgroupNames(airGroup.attachedGroups());
             }
+            
             if (airGroup.candidates().Length > 0)
             { 
                 Console.WriteLine("Candidates");
@@ -891,11 +904,13 @@ public class Mission : AMission
                 Console.WriteLine("Enemies");
                 printAirgroupNames(airGroup.enemies());
             }
+            
             if (airGroup.daughterGroups().Length > 0)
             {
                 Console.WriteLine("Daughter groups");
                 printAirgroupNames(airGroup.daughterGroups());
             }
+            
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb print groups ERROR: " + ex.ToString()); }
 
@@ -946,11 +961,11 @@ public class Mission : AMission
 
             if (airGroup.GetItems().Length > 0 && isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft))
             {
-                Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup " + airGroup.Name());
+                //Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup " + airGroup.Name());
                 interceptNearestEnemyOnRadar(airGroup);
             } else
             {
-                Console.WriteLine("MoveBomb: Skipping airgroup" + airGroup.Name());
+                //Console.WriteLine("MoveBomb: Skipping airgroup" + airGroup.Name());
             }
             
         }
@@ -1067,7 +1082,7 @@ public class Mission : AMission
                 AiAirGroupTask task = airGroup.getTask();
                 if (task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
                 {
-                    Console.WriteLine("MoveBomb: Busy because {3}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
+                    Console.WriteLine("MoveBomb: Busy because {2}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
                     return false;
                 }
 
@@ -1150,7 +1165,7 @@ public class Mission : AMission
                         if (aagri.agi.AGGAIorHuman == aiorhuman.AI || isAiControlledAirGroup(aagri.agi.airGroup))  //belt & suspenders
                         //if (false) //for testing, just chase all airgroups including AI
                         {
-                            Console.WriteLine("MoveBomb: Skipping because 100% AI airgroup {0}", aagri.agi.AGGAIorHuman);
+                            //Console.WriteLine("MoveBomb: Skipping because 100% AI airgroup {0}", aagri.agi.AGGAIorHuman);
                             continue; //we don't make AI attack other ai - that would be . . . futile plus waste CPU cycles
                         }
                         //If anything we should incorporate a scheme here to encourage AI to **avoid** attacking each other if possible

@@ -94,6 +94,13 @@ public class Mission : AMission
         Console.WriteLine("-MoveBombTarget.cs successfully inited");
     }
 
+    public override void Init(ABattle b, int missionNumber)
+    {
+        base.Init(b, missionNumber);
+
+        MissionNumberListener = -1;
+    }
+
     private bool isAiControlledAirGroup(AiAirGroup airGroup) {
         if (airGroup.GetItems().Length == 0) return true; //really should be null or something?
         else return isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft);
@@ -345,17 +352,18 @@ public class Mission : AMission
         return Wps.ToArray();
     }
     //Distance (meters, 2D XY distance), altitude difference (meters)
-    public Tuple<double?, double?> getDistanceToNearestLivePilot(AiAirGroup from)
+    //returns -1, -1 if no pilot found.
+    public Tuple<double, double> getDistanceToNearestLivePilot(AiAirGroup from)
     {
         try
         {
             AiAirGroup airGroup = getNearestLivePilot(from);
-            if (airGroup == null) return new Tuple<double?, double?>(null, null);
+            if (airGroup == null) return new Tuple<double, double>(-1,-1);
             double dist = Calcs.CalculatePointDistance(from.Pos(), airGroup.Pos());
             double alt_diff = from.Pos().z - airGroup.Pos().z;
-            return new Tuple<double?, double?>(dist, alt_diff);
+            return new Tuple<double, double>(dist, alt_diff);
         }
-        catch (Exception ex) { Console.WriteLine("MoveBomb LivePilotDist ERROR: " + ex.ToString()); return new Tuple<double?, double?>(null, null); }
+        catch (Exception ex) { Console.WriteLine("MoveBomb LivePilotDist ERROR: " + ex.ToString()); return new Tuple<double, double>(-1, -1); }
     }
 
     public AiAirGroup getNearestLivePilot(AiAirGroup from)
@@ -833,38 +841,42 @@ public class Mission : AMission
 
     public bool playersNearby(AiAirGroup airGroup)
     {
-        Tuple<double?, double?> dist = getDistanceToNearestLivePilot(airGroup);
+        Tuple<double, double> dist = getDistanceToNearestLivePilot(airGroup);
         Console.WriteLine("MoveBomb: Players nearby {0} {1} ", dist.Item1 == null, (double)(dist.Item1));
-        if (dist.Item1 == null || (double)(dist.Item1) > 7000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
+        if (dist.Item1 == -1 || (double)(dist.Item1) > 7000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
         return true; //Players nearby
     }
 
     //So setting AI airgroups to LANDING is our clue that we are free to despawn them at any time. We first check there
     //are no live players nearby to see the despawn
     public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
-        Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
-            !AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
-        if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
-        AiAirGroupTask task = airGroup.getTask();
-        AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
-        int currWay = airGroup.GetCurrentWayPoint();
-        bool landingWaypoint = false;
-        Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
-
-        if (CurrentWaypoints.Length>0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
-
-        if (task != AiAirGroupTask.LANDING && !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, we accept EITHER task landing OR LANDING is current Waypoint action
-        if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
-        List<AiActor> items = new List<AiActor>(airGroup.GetItems());
-
-        foreach (AiActor actor in items)
+        try
         {
-            AiAircraft aircraft = actor as AiAircraft;
-            double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-            if (altAGL_m < 500) continue; //only dis-apparate if they are somewhat close to ground and "landing"
-            Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " "  + aircraft.TypedName() + " "     );
-            if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
+            Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
+                !AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
+            if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
+            AiAirGroupTask task = airGroup.getTask();
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            int currWay = airGroup.GetCurrentWayPoint();
+            bool landingWaypoint = false;
+            Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
+
+            if (CurrentWaypoints != null &&CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
+
+            if (task != AiAirGroupTask.LANDING && !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, we accept EITHER task landing OR LANDING is current Waypoint action
+            if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+            List<AiActor> items = new List<AiActor>(airGroup.GetItems());
+
+            foreach (AiActor actor in items)
+            {
+                AiAircraft aircraft = actor as AiAircraft;
+                double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
+                if (altAGL_m < 500) continue; //only dis-apparate if they are somewhat close to ground and "landing"
+                Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
+            }
         }
+        catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
     }
     public void printAirgroupNames(AiAirGroup[] airGroups)
     {

@@ -6791,6 +6791,7 @@ public override void OnActorDestroyed(int missionNumber, string shortName, AiAct
     try
     {
 
+        Console.WriteLine("StatsOnDestroy: " + shortName + " was destroyed");
         AiAircraft aircraft = actor as AiAircraft;
 
         if (aircraft != null)

@@ -3533,6 +3533,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                            +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
                                           );
                                         */
+                                        
                                         if (a != null && !Stb_isAiControlledPlane(a) &&
                                               (a.Pos().x <= minX ||
                                                 a.Pos().x >= maxX ||
@@ -3721,10 +3722,15 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                                 newAG = getRandomNearbyEnemyAirGroup(airGroup, 500, 300, 300);
 
                                             if (newAG == null) break;
+                                            
+                                            
 
                                             airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG);
                                             airGroup.changeGoalTarget(newAG);
-                                            Console.WriteLine("Change Target to Nearby Friendly Aircraft: " + actor.Name() + " to " + newAG.Name());
+                                            AiAircraft newAircraft = newAG.GetItems()[0] as AiAircraft;
+                                            string playername = newAG.Name();
+                                            if (aircraft!=null && aircraft.Player(0) != null) playername = aircraft.Player(0).Name();
+                                            Console.WriteLine("Change Target to Nearby Friendly Aircraft: " + actor.Name() + " to " + playername);
 
                                             break; //each airGroup has only one target so no need to do this more than once.
                                         }
@@ -4828,7 +4834,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             //if (stb_Debug) Stb_Message(new Player[] { player }, "Spawning new a/c at " + myLoc.x.ToString("F0") + " " + myLoc.y.ToString("F0") + " " + acType + " " + aircraft.TypedName() +
                  // " hn:" + hullNumber + " r:" + regiment + " cS:" + callsign + " sN:" + serialNumber, new object[] { });
 
-            string newACActorName = Stb_LoadSubAircraft(loc: myLoc, type: acType, callsign: callsign, hullNumber: hullNumber, fuelStr: fuelStr, serialNumber: serialNumber, regiment: regiment, weapons: weapons, velocity: 0, delay_sec: delay_sec, skin_filename: skin_filename, fighterbomber: fighterbomber);
+            string newACActorName = Stb_LoadSubAircraft(loc: myLoc, type: acType, callsign: callsign, hullNumber: hullNumber, fuelStr: fuelStr, 
+                serialNumber: serialNumber, regiment: regiment, weapons: weapons, velocity: 0, delay_sec: delay_sec, skin_filename: skin_filename, fighterbomber: fighterbomber);
 
 
 

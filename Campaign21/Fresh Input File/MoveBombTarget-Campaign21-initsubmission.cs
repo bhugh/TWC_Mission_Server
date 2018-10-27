@@ -841,9 +841,15 @@ public class Mission : AMission
     //So setting AI airgroups to LANDING is our clue that we are free to despawn them at any time. We first check there
     //are no live players nearby to see the despawn
     public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
+        Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + actor.Name() + " ");
         if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
         AiAirGroupTask task = airGroup.getTask();
-        if (task != AiAirGroupTask.LANDING) return; //Task LANDING is our clue these are ready to get out of here
+        AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+        int currWay = airGroup.GetCurrentWayPoint();
+        bool landingWaypoint = false;
+        if (CurrentWaypoints.Length>0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
+
+        if (task != AiAirGroupTask.LANDING && !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, we accept EITHER task landing OR LANDING is current Waypoint action
         if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
 
         foreach (AiActor actor in airGroup.GetItems())
@@ -851,8 +857,7 @@ public class Mission : AMission
             AiAircraft aircraft = actor as AiAircraft;
             double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
             if (altAGL_m > 500) continue; //only dis-apparate if they are somewhat close to ground and "landing"
-            Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " "
-                      + aircraft.TypedName() + " "     );
+            Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " "  + aircraft.TypedName() + " "     );
             if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
         }
     }
@@ -1015,13 +1020,13 @@ public class Mission : AMission
 
             if (airGroup == null || !isAiControlledAirGroup(airGroup) || airGroup.GetItems().Length == 0)
             {
-                Console.WriteLine("MoveBomb:airGroup is null, has no aircraft, or not AI, exiting");
+                //Console.WriteLine("MoveBomb:airGroup is null, has no aircraft, or not AI, exiting");
                 return false;
             }
             
             AiActor agActor = airGroup.GetItems()[0];
             AiAircraft agAircraft = agActor as AiAircraft;
-            Console.WriteLine("MoveBomb: Checking radar returns for airGroup: " + agActor.Name() + " " + agAircraft.InternalTypeName());
+            //Console.WriteLine("MoveBomb: Checking radar returns for airGroup: " + agActor.Name() + " " + agAircraft.InternalTypeName());
             Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
             double interceptTime_sec = 0;
 
@@ -1049,13 +1054,13 @@ public class Mission : AMission
                 if (TWCMainMission != null) aris = TWCMainMission.ai_radar_info_store;
                 else
                 {
-                    Console.WriteLine("MoveBomb: No TWCMainMission connected, returning");
+                    //Console.WriteLine("MoveBomb: No TWCMainMission connected, returning");
                     return false;
                 }
 
                 if (!aris.ContainsKey(airGroup))
                 {
-                    Console.WriteLine("MoveBomb: No radar returns exist for this group, returning: " + agActor.Name());
+                    //Console.WriteLine("MoveBomb: No radar returns exist for this group, returning: " + agActor.Name());
                     return false;
                 }
 
@@ -1070,26 +1075,26 @@ public class Mission : AMission
 
                 if ((!airGroup.hasCourseWeapon() && !airGroup.hasCourseCannon()) || ammo < 40)
                 {
-                    Console.WriteLine("MoveBomb: Skipping no weapons & no cannon {0} {1} ammo: {2} ", airGroup.hasCourseWeapon(), airGroup.hasCourseCannon(), ammo);
+                    //Console.WriteLine("MoveBomb: Skipping no weapons & no cannon {0} {1} ammo: {2} ", airGroup.hasCourseWeapon(), airGroup.hasCourseCannon(), ammo);
                     return false;
                 }
 
                 if (fuel < 30)
                 {
-                    Console.WriteLine("MoveBomb: Skipping, low fuel: {0:N0} kg ", fuel);
+                    //Console.WriteLine("MoveBomb: Skipping, low fuel: {0:N0} kg ", fuel);
                     return false;
                 }
                 AiAirGroupTask task = airGroup.getTask();
                 if (task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
                 {
-                    Console.WriteLine("MoveBomb: Busy because {2}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
+                    //Console.WriteLine("MoveBomb: Busy because {2}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
                     return false;
                 }
 
                 Tuple<double?, double?> dist_altdiff = getDistanceToNearestFriendlyBombergroup(airGroup); //item1 = distance(meters), item2=altdiff(meters) + if this group is higher than bombers
                 if (dist_altdiff.Item1 != null && dist_altdiff.Item1<9000 && dist_altdiff.Item2 > -1050 && dist_altdiff.Item2 < 1750)
                 {
-                    Console.WriteLine("MoveBomb: Near bombers, should be escorting them--not chasing things {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
+                    //Console.WriteLine("MoveBomb: Near bombers, should be escorting them--not chasing things {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
                     return false;
 
                 }
@@ -1106,7 +1111,7 @@ public class Mission : AMission
                             aawp == AiAirWayPointType.ESCORT ||
                             aawp == AiAirWayPointType.FOLLOW)
                     {
-                        Console.WriteLine("MoveBomb: Busy escorting or attacking, can't take time to attack another target {0} {1} {2} ", agActor.Name(), agAircraft.InternalTypeName(), aawp);
+                        //Console.WriteLine("MoveBomb: Busy escorting or attacking, can't take time to attack another target {0} {1} {2} ", agActor.Name(), agAircraft.InternalTypeName(), aawp);
                         return false;
                     }
                 }
@@ -1316,7 +1321,7 @@ public class Mission : AMission
 
                 if (!goodintercept)
                 {
-                    Console.WriteLine("MoveBombINER: Returning - no good intercept found for airgroup: " + agActor.Name());
+                    //Console.WriteLine("MoveBombINER: Returning - no good intercept found for airgroup: " + agActor.Name());
 
                     return false;
                 }
@@ -1332,7 +1337,7 @@ public class Mission : AMission
                 if (iPoint.z < 100 ) iPoint.z = 100 + ran.NextDouble() * 150 - 20;
 
 
-                Console.WriteLine("MoveBombINER: Making new intercept for " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);
+                //Console.WriteLine("MoveBombINER: Making new intercept for " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);
 
                 //we have an actual good intercept not just a "best non intercept" vector, so we register
                 //
@@ -1340,7 +1345,7 @@ public class Mission : AMission
                 
                 if (targetAirgroupTimeToIntercept.ContainsKey(bestAagri.agi.airGroup))
                 {
-                    Console.WriteLine("MoveBombINER: Adding new/improved attacker " + bestAagri.pagi.playerNames + " for " + bestAagri.agi.playerNames);
+                    //Console.WriteLine("MoveBombINER: Adding new/improved attacker " + bestAagri.pagi.playerNames + " for " + bestAagri.agi.playerNames);
                     //Do something to get rid of the old/worse pursuer
                     //AiAirGroup airGroupToRemove = targetAirgroupTimeToIntercept[bestAagri.agi.airGroup].attackingAirGroup;
                     //TODO: Sometimes removeAttackingAG ends up duplicating the first waypoint (bec. we just updated the WPs previously in this loop & are now doing it again)
@@ -1360,7 +1365,7 @@ public class Mission : AMission
 
             try
             {
-                if (attackingAirgroupTimeToIntercept.ContainsKey(bestAagri.pagi.airGroup)) Console.WriteLine("MoveBombINER: Adding new/improved intercept for attacker " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);  //This is only an FYI to let us know that this airGroup had a previous target we were attacking & now we are updating it.
+                //if (attackingAirgroupTimeToIntercept.ContainsKey(bestAagri.pagi.airGroup)) Console.WriteLine("MoveBombINER: Adding new/improved intercept for attacker " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);  //This is only an FYI to let us know that this airGroup had a previous target we were attacking & now we are updating it.
 
                 //attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = Time.current() + bestAagri.interceptPoint.z + 125.0 + ran.NextDouble() * 240.0 - 120.0;  //attacker can't get another intercept unti lthis time is up, the actual time to the intercept plus 2 mins +/- 2 mins
 
@@ -1462,8 +1467,8 @@ public class Mission : AMission
 
                         if (update)
                         {
-                            Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                            Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                            //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                            //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
                         }
 
                     }
@@ -1517,16 +1522,19 @@ public class Mission : AMission
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
             if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
 
+            //for testing
+            /*
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
                
                 Console.WriteLine("RemoveAttackingAG - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
+            */
 
 
             int currWay = airGroup.GetCurrentWayPoint();
-            Console.WriteLine("RemoveAttackingAG - currWay: {0} {1:n0} {2:n0}", new object[] {currWay, intc.pos.x, intc.pos.y});
+            //Console.WriteLine("RemoveAttackingAG - currWay: {0} {1:n0} {2:n0}", new object[] {currWay, intc.pos.x, intc.pos.y});
 
             if (currWay >= CurrentWaypoints.Length) return;
 
@@ -1549,7 +1557,7 @@ public class Mission : AMission
                     {
                         update = true;
 
-                        Console.WriteLine("RemoveAttackingAG - skipping this WayPoint: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //Console.WriteLine("RemoveAttackingAG - skipping this WayPoint: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                         //skip adding                        
                     }
                     else
@@ -1565,11 +1573,14 @@ public class Mission : AMission
                 //Console.WriteLine("MBTITG: Updating this course");
                 airGroup.SetWay(NewWaypoints.ToArray());
 
+                //for testing
+                /*
                 foreach (AiWayPoint wp in NewWaypoints)
                 {                    
                     Console.WriteLine("RemoveAttackingAG - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
+                */
 
             }
         }
@@ -1971,7 +1982,7 @@ public class Mission : AMission
             iFuel += 40;
             ammo += 1;
             */
-            Console.WriteLine("MoveBomb: Aircraft levels speed {0:N0} ammo {1:N0} sFuel {2:N0} iFuel {3:N0} {4}", speed, ammo, sFuel, iFuel, aircraft.InternalTypeName());
+            //Console.WriteLine("MoveBomb: Aircraft levels speed {0:N0} ammo {1:N0} sFuel {2:N0} iFuel {3:N0} {4}", speed, ammo, sFuel, iFuel, aircraft.InternalTypeName());
             return iFuel;
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb Fuelreport ERROR: " + ex.ToString()); return -1; }

@@ -1,0 +1,153 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+  player it02.010
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_RAF_B_218Sqn.01
+  BoB_RAF_B_218Sqn.02
+  BoB_RAF_B_218Sqn.04
+  BoB_RAF_B_218Sqn.08
+  BoB_RAF_F_FatCat_Early.01
+  BoB_RA_56St_20Gruppo_353Sq.02
+  BoB_RA_56St_20Gruppo_353Sq.01
+  BoB_RA_56St_20Gruppo_353Sq.04
+  it02.01
+  it02.02
+[BoB_RAF_B_218Sqn.01]
+  Flight0  1
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 12
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_B_218Sqn.01_Way]
+  NORMFLY 194687.92 180588.58 1500.00 300.00
+  NORMFLY 206899.02 187500.53 1500.00 300.00
+[BoB_RAF_B_218Sqn.02]
+  Flight1  11
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 29
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_B_218Sqn.02_Way]
+  NORMFLY 309426.22 240031.31 4500.00 300.00
+  NORMFLY 295371.93 236575.34 4500.00 300.00
+[BoB_RAF_B_218Sqn.04]
+  Flight2  21
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 19
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_B_218Sqn.04_Way]
+  NORMFLY 257125.83 144185.67 3500.00 300.00
+  NORMFLY 258969.01 207084.37 3500.00 300.00
+[BoB_RAF_B_218Sqn.08]
+  Flight3  31
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 30
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_B_218Sqn.08_Way]
+  NORMFLY 211967.78 237036.14 2500.00 300.00
+  NORMFLY 246988.31 232197.77 2500.00 300.00
+[BoB_RAF_F_FatCat_Early.01]
+  Flight0  1
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 20
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RAF_F_FatCat_Early.01_Way]
+  NORMFLY 230860.43 258893.28 1500.00 300.00
+  NORMFLY 219801.32 212122.44 1500.00 300.00
+[BoB_RA_56St_20Gruppo_353Sq.02]
+  Flight1  11
+  Class Aircraft.Bf-109E-4
+  Formation VIC3
+  CallSign 19
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RA_56St_20Gruppo_353Sq.02_Way]
+  NORMFLY 221644.51 281011.50 500.00 300.00
+  NORMFLY 271180.12 278937.92 500.00 300.00
+  NORMFLY 243301.94 310041.67 500.00 300.00
+  NORMFLY 208051.01 250829.34 500.00 300.00
+[BoB_RA_56St_20Gruppo_353Sq.01]
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation VIC3
+  CallSign 6
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RA_56St_20Gruppo_353Sq.01_Way]
+  NORMFLY 95155.90 182631.48 2500.00 300.00
+  NORMFLY 87783.16 169037.98 2500.00 300.00
+  NORMFLY 153446.64 178484.31 2500.00 300.00
+[BoB_RA_56St_20Gruppo_353Sq.04]
+  Flight2  21
+  Class Aircraft.Bf-109E-4
+  Formation VIC3
+  CallSign 23
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_RA_56St_20Gruppo_353Sq.04_Way]
+  NORMFLY 171187.30 267648.41 3500.00 300.00
+  NORMFLY 275327.29 265344.43 3500.00 300.00
+[it02.01]
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation VIC3
+  CallSign 20
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[it02.01_Way]
+  NORMFLY 206899.02 292761.81 2000.00 300.00
+  NORMFLY 206668.62 214426.43 2000.00 300.00
+[it02.02]
+  Flight1  11
+  Class Aircraft.Ju-88A-1
+  Formation VIC3
+  CallSign 26
+  Fuel 22
+  Weapons 1 1 1 2 2 4
+  Detonator Bomb.SC-500_GradeIII_K 0 -1 14
+  Detonator Bomb.SD-250 0 -1 14
+  Detonator Bomb.SC-250_Type1_J 2 -1 14
+  Detonator Bomb.SD-500_A 0 -1 14
+  Detonator Bomb.SC-50_GradeII_J 1 -1 14
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+[it02.02_Way]
+  NORMFLY 76001.95 180527.91 3000.00 300.00
+  NORMFLY 76434.36 194172.21 800.00 300.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

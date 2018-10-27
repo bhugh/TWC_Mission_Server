@@ -515,7 +515,7 @@ private bool IsArmy(AiActor actor)
 }
 
 
-private bool IsLimitReached(AiActor actor)
+public bool IsLimitReached(AiActor actor)
     {
         bool limitReached = false;
         AiCart cart = actor as AiCart;
@@ -747,26 +747,42 @@ private bool IsLimitReached(AiActor actor)
         */
     public string DisplayNumberOfAvailablePlanes(AiActor actor, Player player = null)
     {
-        AiCart cart = actor as AiCart;
-
-        if (cart != null && actor != null)
+        try
         {
 
-            string m = ParseTypeName(cart.InternalTypeName()) + "s remaining: " + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n1");
 
-            if (player != null) 
+            AiCart cart = actor as AiCart;
+
+            if (cart != null && actor != null)
             {
-                Timeout(0.41, () =>
+
+                if (!AircraftSupply.ContainsKey((ArmiesE)actor.Army()) || !AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName())) return "";
+                string m = ParseTypeName(cart.InternalTypeName()) + "s remaining: " + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n1");
+
+                if (player != null)
                 {
-                    if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, m, null);
-                });
+                    Timeout(0.41, () =>
+                    {
+                        if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, m, null);
+                    });
+                }
+                else Console.WriteLine(m);
+
+
+                return m;
+
             }
-            else Console.WriteLine(m);
-            
-
-            return m;
-
-        } else return "";
+            else return "";
+        }catch (Exception ex)
+        {
+            AiCart cart = actor as AiCart;
+            Console.WriteLine("Supply DisplayNumberOfAvailablePlanes ERROR: " + ex.ToString());
+            if (cart != null && actor != null)
+            {
+                Console.WriteLine("Cart typename: {0}, actor.Army: {1}", cart.InternalTypeName(), actor.Army());
+            }
+                return "";
+        }
     }
 
     public string DisplayNumberOfAvailablePlanes(int army = 0, Player player = null, bool display = false, bool html = false, string match = "")
@@ -910,7 +926,7 @@ private int NumberPlayerInActor(AiActor actor)
     }
 
 
-    public void CheckActorAvailibility(Player player, AiActor actor, int placeIndex)
+    public void CheckActorAvailibility(Player player, AiActor actor, int placeIndex, bool AICheckout = false)
     {
         if (actor != null)
         {
@@ -918,7 +934,10 @@ private int NumberPlayerInActor(AiActor actor)
             //also, we keep sending people back through OnPlaceEnter repeatedly (on creating of a/c, on actually entering the place, a few other reasons)
             //because there is no harm bec. CheckActorOut will only process an aircraft at most once.  BUT . . . this routine also needs to 
             //avoid processing an aircraft at most once.
-            if (NumberPlayerInActor(actor) == 1 && !aircraftCheckedOut.Contains(actor))                
+            //another alternative is an AI (cover aircraft) checkout, where there are zero players in the aircraft
+            if ((NumberPlayerInActor(actor) == 1 && !aircraftCheckedOut.Contains(actor))                ||
+                (AICheckout && NumberPlayerInActor(actor) == 0) )
+
             {
                 if (!IsLimitReached(actor))
                     CheckActorOut(actor, player);
@@ -968,10 +987,21 @@ private int NumberPlayerInActor(AiActor actor)
     public void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex=0)
     {
         //base.OnPlaceEnter(player, actor, placeIndex);
-        //Console.WriteLine("PlaceEnter " + player.Name() + " " + (actor as AiCart).InternalTypeName());
-        //DisplayNumberOfAvailablePlanes(actor);
+        Console.WriteLine("PlaceEnter " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+        DisplayNumberOfAvailablePlanes(actor);
 
         CheckActorAvailibility(player, actor, placeIndex);
+        //DisplayNumberOfAvailablePlanes(actor); //don't display it here bec we are sent here any time ie a bomber pilot changes positions.  Instead we'll show it the first time only, at CheckActorOut
+        // DebugPrintNumberOfAvailablePlanes(); // for testing
+        //DisplayNumberOfAvailablePlanes(0, player, true);
+    }
+    public void SupplyAICheckout(Player player, AiActor actor, int placeIndex = 0)
+    {
+        //base.OnPlaceEnter(player, actor, placeIndex);
+        Console.WriteLine("AI Checkout " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+        DisplayNumberOfAvailablePlanes(actor);
+
+        CheckActorAvailibility(player, actor, placeIndex, AICheckout: true);
         //DisplayNumberOfAvailablePlanes(actor); //don't display it here bec we are sent here any time ie a bomber pilot changes positions.  Instead we'll show it the first time only, at CheckActorOut
         // DebugPrintNumberOfAvailablePlanes(); // for testing
         //DisplayNumberOfAvailablePlanes(0, player, true);

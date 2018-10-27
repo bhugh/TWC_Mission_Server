@@ -175,7 +175,9 @@ public interface ISupplyMission
 {
     string DisplayNumberOfAvailablePlanes(int army = 0, Player player = null, bool display = false, bool html = false, string match = "");
     string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "");
+    bool IsLimitReached(AiActor actor);
     void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex = 0 );
+    void SupplyAICheckout(Player player, AiActor actor, int placeIndex = 0);
     void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0);
     bool SupplyEndMission(double redMult = 1, double blueMult = 1);
     bool SupplySaveStatus();

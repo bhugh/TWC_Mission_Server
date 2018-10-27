@@ -6810,8 +6810,8 @@ public class Mission : AMission, IMainMission
                                     */
 
                                     //for testing
-                                    string name = actor.Name();
-                                    if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
+                                    //string name = actor.Name();
+                                    //if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
                                     //for testing
 
                                     if (a != null && isAiControlledPlane2(a) &&

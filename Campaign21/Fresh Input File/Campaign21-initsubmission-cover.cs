@@ -152,10 +152,12 @@ public class Mission : AMission
         {
             Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was destroyed; doing aircraft checkin");
 
+
+
             double minX = 20000;
             double minY = 20000;
             double maxX = 340000;
-            double maxY = 300000;
+            double maxY = 300000;            
 
             //AiActor actor = aircraft as AiActor;
             if (coverAircraftActorsCheckedOut.ContainsKey(actor))
@@ -166,6 +168,23 @@ public class Mission : AMission
 
                 if (aircraft != null)
                 {
+                    //if there are no more aircraft in this airgroup then we need to remove the airgroup from our cover list
+                    int numAC = aircraft.AirGroup().NOfAirc;
+                    /*int countAC = 0; //counting them up as below seems to give the same answer as NOfAirc
+                    foreach (AiActor a in aircraft.AirGroup().GetItems())
+                    {
+                        if (a == actor || !a.IsAlive()) continue;
+                        countAC++;
+                    }*/
+
+                    //Console.WriteLine("CoverOnDestroy: Counting a/c left in " + actor.Name() + " {0} {1} {2}", aircraft.AirGroup().Name(), numAC, countAC);
+                    if (numAC==0 && coverAircraftAirGroupsActive.ContainsKey(aircraft.AirGroup()))
+                    {
+                        coverAircraftAirGroupsActive.Remove(aircraft.AirGroup());
+                        Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
+                    }
+
+
 
                     double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
 
@@ -524,15 +543,17 @@ public class Mission : AMission
 
                 if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
 
-                if (numCheckedOut >= 2)
+                if (numCheckedOut >= 3)
                 {
 
-                    GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed at one time.", new object[] { numCheckedOut });
+                    GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
                     GamePlay.gpLogServer(new Player[] { player }, "When you release your escort groups to return to base, you may be able to check out more.", new object[] { numCheckedOut });
                     GamePlay.gpLogServer(new Player[] { player }, "Use command <cland to make your cover fighters land.", new object[] { numCheckedOut });
                     return;
                 }
 
+                /*
+                 * //this isn't working, need to re-do it with coverAircraftActorsCheckedOut
                 int numACInAir = numberAircraftCurrentlyCheckedOutFromSupply(player) - 1; //-1, making the reasonable assumption the player is  in an a/c right now
                 Console.WriteLine("<cover, numberAircraftCurrentlyCheckedOutFromSupply(player) {0} ", numACInAir);
                 if (numACInAir >= 8)
@@ -544,6 +565,7 @@ public class Mission : AMission
                     GamePlay.gpLogServer(new Player[] { player }, "Preserve your escorts by guiding them back to base safely. Use command <cland to instruct your cover fighters land, if they can.", new object[] { numCheckedOut });
                     return;
                 }
+                */
 
                 string acName = msg_orig.Substring(6).Trim();
 
@@ -697,6 +719,17 @@ public class Mission : AMission
 
         Timeout(delay, ()=>keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay));
 
+        int numAC = airGroup.NOfAirc;
+        
+        if (numAC == 0)
+        {
+            coverAircraftAirGroupsActive.Remove(airGroup);
+            Console.WriteLine("Cover KeepAircraftOnTask: Removing airgroup {0} from active list because no more aircraft in the group", airGroup.Name());
+            if (player != null) GamePlay.gpLogServer(new Player[] { player }, "Your {0} cover group has been destroyed.", new object[] { airGroup.Name() });
+            return;
+            //TODO: Maybe the group splits up, maybe there are daughter groups or something?
+        }
+
         //If player isn't in game any more, or too distant, or not in an aircraft then we release the cover a/c to land
         double distToLeadAircraft = 0;
 
@@ -716,7 +749,7 @@ public class Mission : AMission
             else { EscortMakeLand(airGroup, leadAircraft.AirGroup()); }
 
         
-            if (player != null) GamePlay.gpLogServer(new Player[] { player }, "You are too far from your cover aircraft. {0} groups of escort aircraft have been instructed to land at the nearest friendly airport.", new object[] { });
+            if (player != null) GamePlay.gpLogServer(new Player[] { player }, "You are too far from your cover aircraft. The {0} group of escort aircraft have been instructed to land at the nearest friendly airport.", new object[] { airGroup.Name() });
             return;
         }
 

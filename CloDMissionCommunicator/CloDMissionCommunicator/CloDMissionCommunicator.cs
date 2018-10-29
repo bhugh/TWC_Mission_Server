@@ -66,9 +66,19 @@ namespace TWCComms
 
 }
 
+public interface IStbStatRecorder
+{
+    string StbSr_MassagePlayername(string playerName, AiActor actor = null);
+    int StbSr_RankAsIntFromName(string playerName);
+    string StbSr_RankNameFromInt(int rank, int army = 1);
+    string StbSr_RankFromName(string playerName, AiActor actor = null, bool highest = false);
+    int StbSr_NumberOfKills(string playername);
+}
 
 public interface IStatsMission
 {
+    //IStbStatRecorder stb_StatRecorder { get; set; }
+    IStbStatRecorder stb_IStatRecorder { get; set; }
     string stb_LocalMissionIniDirectory { get; set; }              // Interface property (not implemented by definition)
     //string stb_LocalMissionIniDirectory;              // Interface property (not implemented by definition)
     int ot_GetCivilianBombings(string name);
@@ -83,6 +93,7 @@ public interface IStatsMission
     void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0);
     void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0);
     void gpLogServerAndLog(Player[] to, object data, object[] third = null);
+
 }
 
 public interface IMainMission
@@ -171,11 +182,23 @@ public interface IAirGroupInfo
 
 }
 
+public enum ArmiesE { None, Red, Blue };
+
 public interface ISupplyMission
-{
+{    
+    Dictionary<ArmiesE, Dictionary<string, double>> AircraftSupply { get; set; }
+    Dictionary<ArmiesE, Dictionary<string, double>> AircraftIncrease { get; set; }
+    HashSet<AiActor> aircraftCheckedOut { get; set; }
+    Dictionary<AiActor, Tuple<int, string, string, DateTime>> aircraftCheckedOutInfo { get; set; } //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type, time checked out>
+    HashSet<AiActor> aircraftCheckedIn { get; set; }//set of AiActor, to guarantee each Actor checked IN once only
+    HashSet<AiActor> aircraftCheckedInButLaterKilled { get; set; }  //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
     string DisplayNumberOfAvailablePlanes(int army = 0, Player player = null, bool display = false, bool html = false, string match = "");
     string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "");
     bool IsLimitReached(AiActor actor);
+    bool IsLimitReached(string internalTypeName, int army);
+    int AircraftStockRemaining(AiActor actor);
+    int AircraftStockRemaining(string internalTypeName, int army);
+    HashSet<AiActor> AircraftActorsCurrentlyInAir();
     void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex = 0 );
     void SupplyAICheckout(Player player, AiActor actor, int placeIndex = 0);
     void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0);

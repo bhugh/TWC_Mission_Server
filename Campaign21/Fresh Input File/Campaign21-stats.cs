@@ -352,6 +352,10 @@ public class Mission : AMission, IStatsMission
 
     public IMainMission TWCMainMission;
     //public AIniFile TWCIniFile;
+    public StbStatRecorder stb_StatRecorder { get; set; }
+    public IStbStatRecorder stb_IStatRecorder { get; set; }
+
+
 
     //initializer method
     public Mission () {
@@ -1781,7 +1785,6 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             }
     }
 
-    public StbStatRecorder stb_StatRecorder;
 
     #endregion
 
@@ -4322,9 +4325,11 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                                     stb_LogStatsUploadFilenameTeamLow, stb_LogStatsUploadFilenameTeamPrevLow,
                                                     stb_ResetPlayerStatsWhenKilled, stb_NoRankMessages, stb_NoRankTracking, stb_PlayerTimeoutWhenKilled, stb_PlayerTimeoutWhenKilledDuration_hours
                                                     );
-    
+            stb_IStatRecorder = stb_StatRecorder as IStbStatRecorder;
+            //IStbStatRecorder stb_IStatRecorder { get; set; }
 
-            stb_ContinueMissionRecorder=new StbContinueMissionRecorder(this,stb_LogErrors, stb_ErrorLogPath);
+
+            stb_ContinueMissionRecorder =new StbContinueMissionRecorder(this,stb_LogErrors, stb_ErrorLogPath);
             stb_RankToAllowedAircraft = new StbRankToAllowedAircraft(this, stb_LogErrors, stb_ErrorLogPath);
             stb_SaveIPlayerStat = new StbSaveIPlayerStat(this, stb_LogErrors, stb_ErrorLogPath);
 
@@ -6121,6 +6126,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 // and: Player.PlaceLeave(int indxPlace)
 
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
                 //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
 
@@ -6155,6 +6161,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 Timeout(15.0, () => { Stb_Message(new Player[] { player }, "Chat commands <ac and <nextac show your current & potential unlocked aircraft.", null); });
 
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
 
 
@@ -6803,7 +6810,8 @@ public override void OnActorDestroyed(int missionNumber, string shortName, AiAct
 
             if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
             {
-                //if (stb_Debug) Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
                 Stb_killActor(actor); //it's dead, Jim
 
             }
@@ -6811,13 +6819,15 @@ public override void OnActorDestroyed(int missionNumber, string shortName, AiAct
 
             else if (Z_AltitudeAGL < 5 && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
             {
-                //if (stb_Debug) Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
                 Stb_killActor(actor); //Also dead; counts as a kill
 
             }
             else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor) > 2000 )  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
-            {                    
-                //if (stb_Debug) Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
+            {
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
                 Stb_killActor(actor); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
 
             }
@@ -9149,7 +9159,7 @@ public class StbRankToAllowedAircraft
 } //class
 
 
-public class StbStatRecorder
+public class StbStatRecorder: IStbStatRecorder
 {
     //private readonly Mission outer; //allows us to reference methods etc from the Mission class as 'outer'        
     EventWaitHandle stbSr_Wh = new AutoResetEvent(false);

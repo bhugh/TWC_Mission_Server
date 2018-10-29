@@ -852,14 +852,14 @@ public class Mission : AMission
     public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
         try
         {
-            Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
-                !AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
+            //Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
+            //!AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
             if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
             int currWay = airGroup.GetCurrentWayPoint();
             bool landingWaypoint = false;
-            Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
+            //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
 
             if (CurrentWaypoints != null &&CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
@@ -943,18 +943,24 @@ public class Mission : AMission
 
     public void checkNewAirgroups()
     {
+         
         GetCurrentAiAirgroups();
         foreach (AiAirGroup airGroup in airGroups)
         {
-            //printAttachedAirgroups(airGroup); //for testing
-            checkToDespawnOldAirgroups(airGroup);
-            if (AirgroupsWayPointProcessed.Contains(airGroup)) continue;
+            try
+            {
+                //printAttachedAirgroups(airGroup); //for testing
+                checkToDespawnOldAirgroups(airGroup);
+                if (airGroup == null) continue;
+                if (AirgroupsWayPointProcessed.Contains(airGroup)) continue;
 
-            AirgroupsWayPointProcessed.Add(airGroup);
+                AirgroupsWayPointProcessed.Add(airGroup);
 
-            if (airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
+                if (airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) continue;
 
-            updateAirWaypoints(airGroup);
+                updateAirWaypoints(airGroup);
+            }
+            catch (Exception ex) { Console.WriteLine("MoveBomb checkNewAirgroups() ERROR: " + ex.ToString()); }
         }
     }
 
@@ -977,7 +983,7 @@ public class Mission : AMission
 
     public void checkAirgroupsIntercept()
     {
-        Console.WriteLine("MoveBomb: Checking airgroups intercepts, groups: " + airGroups.Count.ToString());
+        //Console.WriteLine("MoveBomb: Checking airgroups intercepts, groups: " + airGroups.Count.ToString());
         foreach (AiAirGroup airGroup in airGroups)
         {
 
@@ -1778,7 +1784,7 @@ public class Mission : AMission
                 NewWaypoints.Add(midaaWP); //do add
                 count++;
 
-                Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
                 //add the final Point, which is off the map
                 endaaWP = new AiAirWayPoint(ref endPos, speed);
@@ -1787,7 +1793,7 @@ public class Mission : AMission
 
                 NewWaypoints.Add(endaaWP); //do add
                 count++;
-                Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
             }
       
 

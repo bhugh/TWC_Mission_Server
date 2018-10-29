@@ -51,14 +51,19 @@ public class Mission : AMission, ISupplyMission
     public IMainMission TWCMainMission;
     public IStatsMission TWCStatsMission;
     //public AIniFile TWCIniFile;
-    public Dictionary<ArmiesE, Dictionary<string, double>> AircraftSupply;
-    public Dictionary<ArmiesE, Dictionary<string, double>> AircraftIncrease;
+    public Dictionary<ArmiesE, Dictionary<string, double>> AircraftSupply { get; set; }
+    public Dictionary<ArmiesE, Dictionary<string, double>> AircraftIncrease { get; set; }
+    public HashSet<AiActor> aircraftCheckedOut { get; set; }
+    public Dictionary<AiActor, Tuple<int, string, string, DateTime>> aircraftCheckedOutInfo { get; set; } //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type, time checked out>
+    public HashSet<AiActor> aircraftCheckedIn { get; set; }//set of AiActor, to guarantee each Actor checked IN once only
+    public HashSet <AiActor> aircraftCheckedInButLaterKilled { get; set; }  //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
+
     //public string SupplyFilename { get; set; }
     Ini.IniFile iniFile;
     string supplySuffix { get; set; }
 
     static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
-    public enum ArmiesE { None, Red, Blue };
+    //public enum ArmiesE { None, Red, Blue };
 
 
     //initializer method
@@ -81,6 +86,15 @@ public class Mission : AMission, ISupplyMission
             }
             AircraftSupply = new Dictionary<ArmiesE, Dictionary<string, double>>();
             AircraftIncrease = new Dictionary<ArmiesE, Dictionary<string, double>>();
+
+            //This hashset checking is a failsafe & prevents any aircraft from being checked in or out more than once
+            //This prevents things like a player slipping into an already-existing aircraft (which does not do a "check out" because check outs
+            //are done only when the aircraft is created with a player in it) but then leaves it, checking it back in & getting an extra aircraft
+            //Also, we can warrantee that no aircraft is checked back in unless it was checked out first.
+            aircraftCheckedOut = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked out ONCE ONLY
+            aircraftCheckedOutInfo = new Dictionary<AiActor, Tuple<int, string, string, DateTime>>(); //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type>
+            aircraftCheckedIn = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked IN once only
+            aircraftCheckedInButLaterKilled = new HashSet<AiActor>(); //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
 
             supplySuffix = "_supply";
 
@@ -413,8 +427,8 @@ public void ReadSupply(string suffix)
             //can't go below zero.  With a negative mult we could actually end up with -number even if we started out positive.
             if (AircraftSupply[armE][current.Key]<0) AircraftSupply[armE][current.Key] = 0;
 
-            //we'll say that max # of inventory of any aircraft is 250.  After that we run out of storage space or something.
-            if (AircraftSupply[armE][current.Key] > 250) AircraftSupply[armE][current.Key] = 250;
+            //we'll say that max # of inventory of any aircraft is 400.  After that we run out of storage space or something.
+            if (AircraftSupply[armE][current.Key] > 400) AircraftSupply[armE][current.Key] = 400;
         }      
 
     }
@@ -505,17 +519,17 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
     return ret;
 
 
-}
+    }
 
 
-private bool IsArmy(AiActor actor)
-{    
-    if (actor != null && actor.Army() != null && (actor.Army() == 1 || actor.Army() == 2)) return true;
-    else return false;
-}
+    private bool IsArmy(AiActor actor)
+    {    
+        if (actor != null && actor.Army() != null && (actor.Army() == 1 || actor.Army() == 2)) return true;
+        else return false;
+    }
 
 
-public bool IsLimitReached(AiActor actor)
+    public bool IsLimitReached(AiActor actor)
     {
         bool limitReached = false;
         AiCart cart = actor as AiCart;
@@ -527,20 +541,60 @@ public bool IsLimitReached(AiActor actor)
             if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName()))
                 if (AircraftSupply[(ArmiesE)(actor.Army())][cart.InternalTypeName()] < 0.5)   //We're using doubles and ROUNDING so for example 0.6 a/c will show as 1, 0.4 will show as 0.
                     limitReached = true;
+         
+        return limitReached;
+    }
+
+    public bool IsLimitReached(string internalTypeName, int army)
+    {
+        bool limitReached = false;
+        if (army==1 || army==2)
+            if (AircraftSupply[(ArmiesE)(army)].ContainsKey(internalTypeName))
+                if (AircraftSupply[(ArmiesE)(army)][internalTypeName] < 0.5)   //We're using doubles and ROUNDING so for example 0.6 a/c will show as 1, 0.4 will show as 0.
+                    limitReached = true;
 
         return limitReached;
     }
 
-    //This hashset checking is a failsafe & prevents any aircraft from being checked in or out more than once
-    //This prevents things like a player slipping into an already-existing aircraft (which does not do a "check out" because check outs
-    //are done only when the aircraft is created with a player in it) but then leaves it, checking it back in & getting an extra aircraft
-    //Also, we can warrantee that no aircraft is checked back in unless it was checked out first.
-    HashSet<AiActor> aircraftCheckedOut = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked out ONCE ONLY
-    Dictionary<AiActor, Tuple<int, string, string, DateTime>> aircraftCheckedOutInfo = new Dictionary<AiActor, Tuple<int, string, string, DateTime>>(); //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type>
-    HashSet<AiActor> aircraftCheckedIn = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked IN once only
-    HashSet<AiActor> aircraftCheckedInButLaterKilled = new HashSet<AiActor>(); //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
+    //-1 if the aircraft type doesn't even exist in the table
+    public int AircraftStockRemaining(AiActor actor)
+    {
+        int remaining = -1;
+        AiCart cart = actor as AiCart;
 
-    private void aircraftCheckOut_add (AiActor actor)
+        //Console.WriteLine("IsLimitReached " + cart.InternalTypeName() + " " + actor.Army().ToString());
+        //if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName())) Console.WriteLine("containskey true");
+
+        if (cart != null && IsArmy(actor))
+            if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName()))
+                remaining = (int)Math.Round(AircraftSupply[(ArmiesE)(actor.Army())][cart.InternalTypeName()]);   //We're using doubles and ROUNDING so for example 0.6 a/c will show as 1, 0.4 will show as 0.
+
+        return remaining;
+    }
+
+    //-1 if the aircraft type or army doesn't even exist in the table
+    public int AircraftStockRemaining(string internalTypeName, int army)
+    {
+        int remaining = -1;
+        if (army == 1 || army == 2)
+            if (AircraftSupply[(ArmiesE)(army)].ContainsKey(internalTypeName))
+                remaining = (int)Math.Round(AircraftSupply[(ArmiesE)(army)][internalTypeName]);   //We're using doubles and ROUNDING so for example 0.6 a/c will show as 1, 0.4 will 
+        return remaining;
+    }
+    /*
+    public Dictionary<string,int> AircraftStockRemaining(int army)
+    {
+        int remaining = -1;
+        if (army == 1 || army == 2)
+            if (AircraftSupply[(ArmiesE)(army)].ContainsKey(internalTypeName)
+                remaining = Math.Round(AircraftSupply[(ArmiesE)(army)][internalTypeName]);   //We're using doubles and ROUNDING so for example 0.6 a/c will show as 1, 0.4 will 
+        return remaining;
+    }
+    */
+
+
+
+    private void aircraftCheckOut_add (AiActor actor, Player player)
     {
         string pilotNames = "";
         string aircraftTy8pe = "";
@@ -569,7 +623,12 @@ public bool IsLimitReached(AiActor actor)
 
 
         }
-        if (pilotNames == "") pilotNames = "(AI/No Pilot Listed)";
+        if (pilotNames == "")
+        {
+            if (player != null && player.Name() != null) pilotNames = player.Name();
+            else pilotNames = "(AI/No Pilot Listed)";
+        }
+
         if (!aircraftCheckedOut.Contains(actor)) aircraftCheckedOut.Add(actor);        
         if (!aircraftCheckedOutInfo.ContainsKey(actor)) aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
     }
@@ -675,7 +734,7 @@ public bool IsLimitReached(AiActor actor)
                 Console.WriteLine("Supply: This aircraft has already been checked OUT before: " + cart.InternalTypeName());
                 return;
             }
-            else aircraftCheckOut_add(actor);
+            else aircraftCheckOut_add(actor,player);
 
             DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
 
@@ -685,13 +744,14 @@ public bool IsLimitReached(AiActor actor)
                 {
                     AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1;
                     double print = new Random().NextDouble();
+                    string numString = AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0");
                     Timeout(4.33, () =>
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0") + " "
+                        GamePlay.gpLogServer(new Player[] { player }, numString + " "
                             + ParseTypeName(cart.InternalTypeName()) + " remain in reserve", null);
                     });
 
-                    //Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                    Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                     if (Force) Console.WriteLine("valout2= FORCED!");
                 }
         }
@@ -704,7 +764,7 @@ public bool IsLimitReached(AiActor actor)
         try
         {
             AiCart cart = actor as AiCart;
-            //Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+            Console.WriteLine("valin1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
 
             if (aircraftCheckedIn.Contains(actor))
             {
@@ -723,12 +783,12 @@ public bool IsLimitReached(AiActor actor)
                 if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
                 {
                     AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] += 1;
-                    //Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());                                
+                    Console.WriteLine("valin2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                    string numString = AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0");
                     Timeout(3.33, () =>
                     {
                         GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned safely and added to stock; "
-                            + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0") + " "
-                            + "currently in stock", null);
+                            + numString + " " + "currently in stock", null);
                     });
 
                 }
@@ -943,7 +1003,10 @@ private int NumberPlayerInActor(AiActor actor)
                     CheckActorOut(actor, player);
                 else
                 {
-                    aircraftCheckOut_add(actor);//Being rejected amounts to the same thing as being checked out, so we add the actor to the list for two reasons:
+                    //So, first we were checking them out & then adding to the checkout_add list so they could be checked back in.  But, onactordestroyed doesn't
+                    //actually call onplaceleave, not sure what happens with onplace leave there, but if we haven't check it out & just won't
+                    //subtract any from stock here, it should work.
+                    //aircraftCheckOut_add(actor);//Being rejected amounts to the same thing as being checked out, so we add the actor to the list for two reasons:
                     // #1. avoid double processing here or in CheckActorOut #2. CheckActorIn won't process the plane when the player is rejected, unless they are added to the aircraftCheckedOut list.
                     AiCart cart = actor as AiCart;
 
@@ -953,13 +1016,13 @@ private int NumberPlayerInActor(AiActor actor)
                         Timeout(3.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, "Stock of {0} depleted - This aircraft not available", new object[] { ParseTypeName(cart.InternalTypeName()) }); });
                         GamePlay.gpLogServer(new Player[] { player }, ">>>>>No stock of {0} remaining - please choose another aircraft. Check Mission Briefing, chat command <stock, Tab-4 menu for details.", new object[] { ParseTypeName(cart.InternalTypeName()) });
 
-                        //Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-                        if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
-                            AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1; // We somehow end up -2 stock lower than we started, so trying add 1 here to correct.
+                        Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        //if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
+                        //    AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1; // We somehow end up -2 stock lower than we started, so trying add 1 here to correct.
 
                         TWCStatsMission.Stb_RemovePlayerFromAircraftandDestroy(actor as AiAircraft, player);
 
-                        //Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                         /*
                          * We'll use ours here
                         player.PlaceLeave(placeIndex); // does not work on Dedi correctly

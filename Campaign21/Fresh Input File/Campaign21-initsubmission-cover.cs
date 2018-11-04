@@ -1,4 +1,6 @@
-﻿//$reference System.Core.dll
+﻿#define DEBUG  
+#define TRACE  
+//$reference System.Core.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -25,11 +27,21 @@ public class Mission : AMission
 {
     public IMainMission TWCMainMission;
     public ISupplyMission TWCSupplyMission;
+    public IStatsMission TWCStatsMission;
+    public IStbStatRecorder TWCStbStatRecorder;
     public Random ran;
     public int minimumAircraftRequiredForCoverDuty {get; set;}
+    public int maximumAircraftAllowedPerMission { get; set; }
 
+    public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
     public Dictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new Dictionary<AiAirGroup, Player>();
+
+    //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
+    double twcmap_minX = 10000;
+    double twcmap_minY = 10000;
+    double twcmap_maxX = 350000;
+    double twcmap_maxY = 310000;
 
     public Mission()
     {
@@ -42,6 +54,7 @@ public class Mission : AMission
 
             MissionNumberListener = -1;
             minimumAircraftRequiredForCoverDuty = 100;
+            maximumAircraftAllowedPerMission = 4;
 
             Console.WriteLine("-cover.cs successfully constructed");
         }
@@ -87,6 +100,11 @@ public class Mission : AMission
         {
 
             TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+
+            TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+            if (TWCStatsMission != null) TWCStbStatRecorder = TWCStatsMission.stb_IStatRecorder;
+
+
 
             stb_lastMissionLoaded = missionNumber;
 
@@ -480,6 +498,28 @@ public class Mission : AMission
         catch (Exception ex) { Console.WriteLine("Cover, numberAircraftCurrentlyCheckedOutFromSupply ERROR: " + ex.ToString()); return 0; }
     }
 
+
+    /****************************************************************
+     * 
+     * ADMIN PRIVILEGE
+     * 
+     * Determine if player is an admin, and what level
+     * 
+     ****************************************************************/
+    public string[] admins_basic = new String[] { "TWC_","Rostic" };
+    public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error", "Server" };
+
+    public int admin_privilege_level(Player player)
+    {
+        if (player == null || player.Name() == null) return 0;
+        string name = player.Name();
+        //name = "TWC_muggle"; //for testing
+        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+        return 0;
+
+    }
+
     void Mission_EventChat(Player from, string msg)
     {
         if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
@@ -499,7 +539,7 @@ public class Mission : AMission
 
         }
         */
-        if (msg.StartsWith("<cland") && player.Name().Substring(0, 4) == @"TWC_")
+        if (msg.StartsWith("<cland") && admin_privilege_level(player) >= 1)
         {
             if (player == null) return;
             List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
@@ -515,12 +555,12 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport. They won't do so until all live players have left the area.", new object[] { });
 
         }
-        else if (msg.StartsWith("<clist") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<clist") && admin_privilege_level(player) >= 1)
         {
             if (player == null) return;
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
         }
-        else if (msg.StartsWith("<cover") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<cover") && admin_privilege_level(player) >= 1)
         {
             try
             {
@@ -542,6 +582,28 @@ public class Mission : AMission
                 int numCheckedOut = numberAirgroupsCurrentlyCheckedOutPlayer(player);
 
                 if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
+
+
+                string acType = Calcs.GetAircraftType(aircraft);
+                bool isHeavyBomber = false;
+                if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) isHeavyBomber = true;
+                if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
+
+                if (!isHeavyBomber) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
+
+                int numCheckedOutEntireMission = howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+                int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+                string rankExpl = "";
+                if (TWCStbStatRecorder != null)
+                {
+                    double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) -2.0 ) / 2.0;
+                    if (adder < 0) adder = 0;
+                    acAllowedThisPlayer += Convert.ToInt32(adder);
+                    rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+
+                }
+
+                if (numCheckedOutEntireMission >= acAllowedThisPlayer) { GamePlay.gpLogServer(new Player[] { player }, string.Format("Can't cover you - you've already used more than the {0} cover aircraft allowed{1} per mission!", acAllowedThisPlayer, rankExpl), new object[] { }); return; }
 
                 if (numCheckedOut >= 3)
                 {
@@ -601,9 +663,15 @@ public class Mission : AMission
                     else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
                     return;
                 }
+                //regiment determines which ARMY the new aircraft will be in BOB_RAF British, BOB_LW German. BoB_RA = Italian?
+                //Anyway, if we use the pilot's current regiment it matches which is nice but also definitely keeps them in the same army.
+                string regiment = "gb01";
+                //if (army == 1) regiment = "BoB_RAF_F_141Sqn_Early";
+                //if (army == 2) regiment = "BoB_LW_JG77_I";
+                regiment = aircraft.Regiment().name();
 
                 string newACActorName = Stb_LoadSubAircraft(loc: loc, type: plane, callsign: "26", hullNumber: "3", serialNumber: "001",
-                                    regiment: "gb01", fuelStr: "", weapons: "", velocity: 150, fighterbomber: "", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
+                                    regiment: regiment, fuelStr: "", weapons: "", velocity: 150, fighterbomber: "", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
 
 
 
@@ -640,6 +708,9 @@ public class Mission : AMission
                             //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, (a as AiActor));
                             if (TWCSupplyMission != null) TWCSupplyMission.SupplyAICheckout(player, a as AiActor);
                             coverAircraftActorsCheckedOut.Add((a as AiActor), player);
+                            int nca = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
+                            GamePlay.gpLogServer(new Player[] { player }, string.Format("You've checked out {0} cover aircrdaft of {1} allowed per mission", nca, maximumAircraftAllowedPerMission), new object[] { });
+                            
 
                         }
 
@@ -691,7 +762,7 @@ public class Mission : AMission
             }
             catch (Exception ex) { Console.WriteLine("Cover <cover: " + ex.ToString()); }
         }
-        else if (msg.StartsWith("<chelp") && player.Name().Substring(0, 4) == @"TWC_")
+        else if (msg.StartsWith("<chelp") && admin_privilege_level(player) >= 1)
         {
             string msg42 = "<cover or <cover Beau or <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });            
@@ -700,7 +771,7 @@ public class Mission : AMission
             msg42 = "<cland - release cover fighters to land (IMPORTANT!)";            
         }
 
-        else if ((msg.StartsWith("<help") || msg.StartsWith("<HELP") && player.Name().Substring(0, 4) == @"TWC_"))// || msg.StartsWith("<"))
+        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP") && admin_privilege_level(player) >= 1)// || msg.StartsWith("<"))
         {            
             double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5.2;
@@ -712,9 +783,29 @@ public class Mission : AMission
         }
     }
 
+    private int numberCoverAircraftActorsCheckedOutWholeMission_add(Player player)
+    {
+        if (numberCoverAircraftActorsCheckedOutWholeMission.ContainsKey(player)) numberCoverAircraftActorsCheckedOutWholeMission[player]++; 
+        else numberCoverAircraftActorsCheckedOutWholeMission[player] = 1;
+
+        return numberCoverAircraftActorsCheckedOutWholeMission[player];
+    }
+
+    private int howMany_numberCoverAircraftActorsCheckedOutWholeMission(Player player)
+    {
+        if (numberCoverAircraftActorsCheckedOutWholeMission.ContainsKey(player)) return numberCoverAircraftActorsCheckedOutWholeMission[player];
+        else return 0;        
+    }
 
     public void keepAircraftOnTask_recurs(AiAirGroup airGroup, AiAirGroupTask task = AiAirGroupTask.DEFENDING, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, Player player = null, double delay = 31.2354, double AltDiff_m = 1000, double AltDiff_range_m = 100)
     {
+        //So, sometimes airgroups split up, say when under attack or landing.  If so, we just add the new group to the coverAircraftAirGroupsActive (but
+        //only when the original groups was also there)
+        //In this case the name of the motherGroup it split off from is in airGroup.motherGroup()
+        //This little exercise ensures that we still keep control off the aircraft, and they continue to support & cover the main aircraft, even if their airGroups happen to split up.
+        if (airGroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airGroup.motherGroup())) coverAircraftAirGroupsActive.Add(airGroup,
+            coverAircraftAirGroupsActive[airGroup.motherGroup()]);
+
         if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
 
         Timeout(delay, ()=>keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay));
@@ -1325,7 +1416,25 @@ public class Mission : AMission
             Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
             airGroup.setTask(AiAirGroupTask.LANDING, airGroup);
         });
+        
+        //Return aircraft to supply as this is the point when the player is not longer responsible for it
+        if (airGroup.GetItems().Length > 0)
+        {
+            foreach (AiAircraft a in airGroup.GetItems())
+            {
+
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
+            }
+        }
+
         coverAircraftAirGroupsActive.Remove(airGroup);
+
+        Timeout(600, () =>
+        {
+            Console.WriteLine("-cover Aborting LANDING: Sending off map now " + airGroup.Name(), airGroup.getTask());
+            fixWayPoints(airGroup);
+        });
+
     }
 
     public void EscortUpdateWaypoints(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000,
@@ -1449,6 +1558,7 @@ public class Mission : AMission
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             aaWP.Action = aawpt;
+            aaWP.Target = ap as AiActor;
 
             Console.WriteLine("EscortLANDINGWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
@@ -1651,6 +1761,219 @@ public class Mission : AMission
         }
         return true;
     }
+
+
+    //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
+    //the aircraft down low and off the map north (Red) or south (Blue)
+    public void fixWayPoints(AiAirGroup airGroup)
+    {
+        try
+        {
+            //AiAirGroup airGroup = intc.attackingAirGroup;
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+            //if (!isAiControlledAirGroup(airGroup)) return;
+            if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
+            AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
+
+            //for testing
+
+            /*
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+
+                Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+            }
+            */
+
+
+
+
+            int currWay = airGroup.GetCurrentWayPoint();
+
+
+            //if (currWay >= CurrentWaypoints.Length) return;
+
+            List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
+            int count = 0;
+
+            bool update = false;
+
+            AiWayPoint prevWP = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
+
+            NewWaypoints.Add(prevWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+
+            AiWayPoint nextWP = prevWP;
+
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+                nextWP = wp;
+
+                //eliminate any exact duplicate points
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1
+                    && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+                //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
+                    (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+
+
+                try
+                {
+                    //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
+                    if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX - 9999 || nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                    {
+                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        update = true;
+                        if (nextWP.P.z < 0) nextWP.P.z = 0;
+                        if (nextWP.P.z > 50000) nextWP.P.z = 50000;
+                        if (nextWP.P.x > twcmap_maxX + 9999) nextWP.P.x = twcmap_maxX + 9999;
+                        if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
+                        if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
+                        if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
+                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+
+
+                NewWaypoints.Add(nextWP); //do add
+                count++;
+
+            }
+            //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
+            if (nextWP.P.x > twcmap_minX && nextWP.P.x < twcmap_maxX && nextWP.P.y > twcmap_minY && nextWP.P.y < twcmap_maxY)
+            {
+                update = true;
+                int army = airGroup.getArmy();
+                AiAirWayPoint midaaWP = null;
+                AiAirWayPoint endaaWP = null;
+                Point3d midPos = new Point3d(0, 0, 0);
+                Point3d endPos = new Point3d(0, 0, 0);
+                if (ran.NextDouble() > 0.5)
+                {
+                    if (army == 1) endPos.y = twcmap_maxY + 9000;
+                    else if (army == 2) endPos.y = twcmap_minY - 9000;
+                    else endPos.y = twcmap_maxY + 9000;
+                    endPos.x = prevWP.P.x + ran.NextDouble() * 300000 - 150000;
+                    if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
+                    if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                }
+                else
+                {
+                    if (army == 1) endPos.x = twcmap_minX - 9000;
+                    else if (army == 2) endPos.x = twcmap_maxY + 9000;
+                    else endPos.x = twcmap_maxX + 9000;
+                    endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
+                    if (army == 1) endPos.y += 120000;
+                    else if (army == 2) endPos.y -= 60000;
+                    if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
+                    if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
+                }
+
+                //endPos.z = 25;  //Make them drop down so they drop off the radar 
+                //Ok, that was as bad idea for various reasons
+                //nextWP is the most recent WP, ie the last WP in the 'old' waypoint list
+                //prevWP is where the a/c is right now, ie the first on the old waypoint list
+                //We choose one or the other 50% of the time as they are both 'typical' altitudes for this a/c ?
+                endPos.z = nextWP.P.z;
+                if (ran.NextDouble() < 0.5) endPos.z = prevWP.P.z;
+                midPos.z = endPos.z;
+                endPos.z = ran.NextDouble() * 200 + 30;
+                midPos.z = midPos.z + ran.NextDouble() * 4000 - 1700;
+                if (endPos.z < 30) endPos.z = 30;
+                if (midPos.z < 30) midPos.z = 30;
+
+                double speed = prevWP.Speed;
+
+
+                //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
+                //last point where the goal will be to have the airgroup low & off the radar at this point.
+                //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
+                //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
+                //and random normal altitudes
+                midPos.x = (nextWP.P.x * 1 + endPos.x * 4) / 5 + ran.NextDouble() * 10000 - 5000;
+                midPos.y = (nextWP.P.y * 1 + endPos.y * 4) / 5 + ran.NextDouble() * 10000 - 5000;
+
+
+                /* (Vector3d Vwld = airGroup.Vwld();
+                double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                if (vel_mps < 70) vel_mps = 70;
+                if (vel_mps > 160) vel_mps = 160;                
+                */
+
+
+
+                AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
+                if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
+                    aawpt = (nextWP as AiAirWayPoint).Action;
+                else
+                {
+                    string type = "";
+                    string t = aircraft.Type().ToString();
+                    if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
+                    else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+
+                    if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
+
+                }
+
+                //add the mid Point
+                midaaWP = new AiAirWayPoint(ref midPos, speed);
+                //aaWP.Action = AiAirWayPointType.NORMFLY;
+                midaaWP.Action = aawpt; //same action for mid & end
+
+                NewWaypoints.Add(midaaWP); //do add
+                count++;
+
+                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+
+                //add the final Point, which is off the map
+                endaaWP = new AiAirWayPoint(ref endPos, speed);
+                //aaWP.Action = AiAirWayPointType.NORMFLY;
+                endaaWP.Action = AiAirWayPointType.LANDING;
+
+                NewWaypoints.Add(endaaWP); //do add
+                count++;
+                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+            }
+
+
+            if (update)
+            {
+                //Console.WriteLine("MBTITG: Updating this course");
+                airGroup.SetWay(NewWaypoints.ToArray());
+
+                //for testing
+
+
+                /*
+                foreach (AiWayPoint wp in NewWaypoints)
+                {
+                    Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+                }
+                */
+
+
+
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints: " + ex.ToString()); }
+    }
+
 
 
 }

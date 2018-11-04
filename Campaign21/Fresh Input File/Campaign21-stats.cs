@@ -3730,10 +3730,10 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                                             airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG);
                                             airGroup.changeGoalTarget(newAG);
-                                            AiAircraft newAircraft = newAG.GetItems()[0] as AiAircraft;
+                                            AiAircraft newAircraft = newAG.GetItems()[0] as AiAircraft;                                           
                                             string playername = newAG.Name();
                                             if (aircraft!=null && aircraft.Player(0) != null) playername = aircraft.Player(0).Name();
-                                            Console.WriteLine("Change Target to Nearby Friendly Aircraft: " + actor.Name() + " to " + playername);
+                                            Console.WriteLine("Change Target to different nearby enemy aircraft: " + actor.Name() + " to " + playername);
 
                                             break; //each airGroup has only one target so no need to do this more than once.
                                         }
@@ -4046,7 +4046,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     //This includes JU-87s, so it's slightly different from the configuration we've used before.  But we often have Ju-87s flying with 
                     //escorts, which is the context here
                     bool isHeavyBomber = false;
-                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
+                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
+                    if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
                     if (isHeavyBomber) continue;
                     if (NearestAirgroup != null)
                     {

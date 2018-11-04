@@ -1,6 +1,6 @@
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
-/////#define DEBUG  
-/////#define TRACE  
+#define DEBUG  
+#define TRACE  
 ////$reference GCVBackEnd.dll
 //$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
@@ -481,7 +481,7 @@ public class Mission : AMission, IMainMission
 
 
         //periodically remove a/c that have gone off the map
-        if ((tickSinceStarted) % 2100 == 0)
+        if ((tickSinceStarted) % 2100 == 0 && tickSinceStarted > 0 )
         {
 
             RemoveOffMapAIAircraft();
@@ -2550,7 +2550,7 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("AGI 4");
             string acType = Calcs.GetAircraftType(a);
             isHeavyBomber = false;
-            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV")) isHeavyBomber = true;
+            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) isHeavyBomber = true;
             AGGisHeavyBomber = isHeavyBomber;
 
             string t = a.Type().ToString();
@@ -3686,7 +3686,7 @@ public class Mission : AMission, IMainMission
 
                                                     string acType = Calcs.GetAircraftType(a);
                                                     isHeavyBomber = false;
-                                                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV")) isHeavyBomber = true;
+                                                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains ("BlenheimMkIV")) isHeavyBomber = true;
 
                                                     type = a.Type().ToString();
                                                     if (type.Contains("Fighter") || type.Contains("fighter")) type = "F";
@@ -6785,7 +6785,7 @@ public class Mission : AMission, IMainMission
         double maxX = 350000;
         double maxY = 310000;
         //////////////Comment this out as we don`t have Your Debug mode  
-        DebugAndLog("Checking for AI Aircraft off map, to despawn");
+        DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
         if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
             foreach (int army in GamePlay.gpArmies())
@@ -6796,42 +6796,63 @@ public class Mission : AMission, IMainMission
                         if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
                             //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                            foreach (AiActor actor in airGroup.GetItems())
+                            if (airGroup.GetItems().Length> 0) foreach (AiActor actor in airGroup.GetItems())
                             {
                                 if (actor != null && actor is AiAircraft)
                                 {
                                     AiAircraft a = actor as AiAircraft;
-                                    /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
-                                       //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
-                                       //+ a.Type() + " " 
-                                       //+ a.TypedName() + " " 
-                                       +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                      );
-                                    */
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
+                                           //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
+                                           //+ a.Type() + " " 
+                                           //+ a.TypedName() + " " 
+                                           +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                          );
+                                        */
 
-                                    //for testing
-                                    //string name = actor.Name();
-                                    //if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
-                                    //for testing
+                                        //for testing
+                                        //string name = actor.Name();
+                                        //if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
+                                        //for testing
+                                        
 
-                                    if (a != null && isAiControlledPlane2(a) &&
-                                          (a.Pos().x <= minX ||
+                                        if (a != null && isAiControlledPlane2(a)) {
+
+                                        double Z_AltitudeAGL = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                                        double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+                                        AiAirGroupTask aagt =airGroup.getTask();
+
+                                            //so, lots of ai aircraft velicity is negative.  For some reason.  So if checking for stopped, must make it ==0 or maybe >-5 <5 or whatever
+                                            /*if (Z_VelocityTAS < 0) 
+                                                Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "
+                                                    + a.CallSign() + " "
+                                                    + a.Type() + " "
+                                                    + a.TypedName() + " "
+                                                    + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
+                                                    Z_AltitudeAGL, Z_VelocityTAS, aagt
+                                                   );
+                                                   */
+
+                                            if
+                                          (
+                                            (Z_AltitudeAGL < 5 && Z_VelocityTAS <10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not landing
+                                            a.Pos().x <= minX ||
                                             a.Pos().x >= maxX ||
                                             a.Pos().y <= minY ||
                                             a.Pos().y >= maxY
                                           )
+                                        // ai aircraft only
+                                        {
+                                            Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType (a) + " " 
+                                            + a.CallSign() + " " 
+                                            + a.Type() + " " 
+                                            + a.TypedName() + " " 
+                                            +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
+                                            Z_AltitudeAGL,Z_VelocityTAS, aagt
+                                           ); 
+                                            numremoved++;
+                                            Timeout(numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
 
-                                    )   // ai aircraft only
-                                    {
-                                        /* if (DEBUG) DebugAndLog ("DEBUG: Off Map/Destroying: " + Calcs.GetAircraftType (a) + " " 
-                                        //+ a.CallSign() + " " 
-                                        //+ a.Type() + " " 
-                                        //+ a.TypedName() + " " 
-                                        +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                       );  */
-                                        numremoved++;
-                                        Timeout(numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
-
+                                        }
                                     }
 
 

@@ -1,8 +1,12 @@
+#define DEBUG  
+#define TRACE  
+
 //$reference System.Core.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using maddox.game;
@@ -210,6 +214,69 @@ public class Mission : AMission
         return CurrentPoint;
     }
 
+    //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
+    //Includes airports AND spawnpoints
+    private double DistanceToNearestAirport(AiActor actor)
+    {
+        double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        double d2Min = d2;
+        if (actor == null) return d2Min;
+        Point3d pd = actor.Pos();
+        int n = GamePlay.gpAirports().Length;
+        //AiActor[] aMinSaves = new AiActor[n + 1];
+        //int j = 0;
+        //twcLogServer(null, "Checking distance to nearest airport", new object[] { });
+        for (int i = 0; i < n; i++)
+        {
+            AiActor a = (AiActor)GamePlay.gpAirports()[i];
+            if (a == null) continue;
+            //if (actor.Army() != a.Army()) continue; //only count friendly airports
+            //if (actor.Army() != (a.Pos().x, a.Pos().y)
+            //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
+
+            //twcLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+
+            if (GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //twcLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+            }
+
+        }
+
+        foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
+        {
+            if (a.Army() != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //twcLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+            }
+
+        }
+        //twcLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
+    }
+
 
     public AiAirport GetAirfieldAt(Point3d location)
     {
@@ -376,13 +443,15 @@ public class Mission : AMission
             AiAirGroup[] Airgroups;
             Point3d StartPos = from.Pos();
 
-            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
+            //Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
 
+            Airgroups = GamePlay.gpAirGroups(1).Concat(GamePlay.gpAirGroups(1)).ToArray();
+            //Concat(back).ToArray()
             if (Airgroups != null)
             {
                 foreach (AiAirGroup airGroup in Airgroups)
                 {
-                    if (isAiControlledAirGroup(airGroup)) continue;                    
+                    if (isAiControlledAirGroup(airGroup)) continue;
                     if (NearestAirgroup != null)
                     {
                         if (NearestAirgroup.Pos().distance(ref StartPos) > airGroup.Pos().distance(ref StartPos))
@@ -394,6 +463,7 @@ public class Mission : AMission
             }
             else
                 return null;
+
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb LivePilot ERROR: " + ex.ToString()); return null; }
 
@@ -843,7 +913,7 @@ public class Mission : AMission
     {
         Tuple<double, double> dist = getDistanceToNearestLivePilot(airGroup);
         Console.WriteLine("MoveBomb: Players nearby {0} {1} ", dist.Item1 == null, (double)(dist.Item1));
-        if (dist.Item1 == -1 || (double)(dist.Item1) > 7000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
+        if (dist.Item1 == -1 || (double)(dist.Item1) > 14000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
         return true; //Players nearby
     }
 
@@ -861,20 +931,26 @@ public class Mission : AMission
             bool landingWaypoint = false;
             //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
 
-            if (CurrentWaypoints != null &&CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
+            if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
-            if (task != AiAirGroupTask.LANDING && !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, we accept EITHER task landing OR LANDING is current Waypoint action
+            if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
             if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+
+            double airportDistance_m = DistanceToNearestAirport(airGroup as AiActor);
+
+            if (airportDistance_m > 3000) return;
+
             List<AiActor> items = new List<AiActor>(airGroup.GetItems());
 
             foreach (AiActor actor in items)
             {
                 AiAircraft aircraft = actor as AiAircraft;
                 double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-                if (altAGL_m < 500) continue; //only dis-apparate if they are somewhat close to ground and "landing"
-                Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                if (altAGL_m > 130) continue; //only dis-apparate if they are somewhat close to ground and "landing"
+                Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
                 if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
             }
+            Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
     }
@@ -893,6 +969,8 @@ public class Mission : AMission
          * So, airgroups that are ie escorting bombers have task "defending".  The airgroup they are defending is the "client"
          * 
          * Task RETURN *might* mean that the escorts are returning to their client group.  Not 100% sure however.
+         * 
+         * If airgroups split up, say when landing (or maybe other situations?) then the new split-off airgroup has motherGroup() set to the original group it split off from.
          * 
          * Airgroups that are attacking some aircraft are "ATTACK_AIR".  There doesn't seem to be the target of the attack available anyway.
          * 
@@ -1752,7 +1830,7 @@ public class Mission : AMission
                 //and random normal altitudes
                 midPos.x = (nextWP.P.x * 1 + endPos.x*4) / 5 + ran.NextDouble() * 10000 - 5000;
                 midPos.y = (nextWP.P.y * 1 + endPos.y*4) / 5 + ran.NextDouble() * 10000 - 5000;
-                
+
 
                 /* (Vector3d Vwld = airGroup.Vwld();
                 double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
@@ -1762,7 +1840,7 @@ public class Mission : AMission
 
 
 
-                AiAirWayPointType aawpt = AiAirWayPointType.HUNTING;
+                AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
                 if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
                     aawpt = (nextWP as AiAirWayPoint).Action;
                 else

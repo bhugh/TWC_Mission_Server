@@ -1,5 +1,5 @@
-﻿/////#define DEBUG  
-/////#define TRACE  
+﻿#define DEBUG  
+#define TRACE  
 //$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll

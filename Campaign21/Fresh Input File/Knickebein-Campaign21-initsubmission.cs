@@ -1,3 +1,6 @@
+#define DEBUG  
+#define TRACE  
+
 //$reference System.Core.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll

@@ -1,3 +1,6 @@
+#define DEBUG  
+#define TRACE  
+
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
@@ -1078,7 +1081,7 @@ private int NumberPlayerInActor(AiActor actor)
         {
             if (actor != null)
             {
-                Console.WriteLine("PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+                Console.WriteLine("Supply: PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
                 DisplayNumberOfAvailablePlanes(actor);
                 AiAircraft aircraft = actor as AiAircraft;
 

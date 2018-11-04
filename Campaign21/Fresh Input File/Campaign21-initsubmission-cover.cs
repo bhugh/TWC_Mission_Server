@@ -709,7 +709,7 @@ public class Mission : AMission
                             if (TWCSupplyMission != null) TWCSupplyMission.SupplyAICheckout(player, a as AiActor);
                             coverAircraftActorsCheckedOut.Add((a as AiActor), player);
                             int nca = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
-                            GamePlay.gpLogServer(new Player[] { player }, string.Format("You've checked out {0} cover aircrdaft of {1} allowed{3} per mission", nca, maximumAircraftAllowedPerMission, rankExpl), new object[] { });
+                            
                             
 
                         }
@@ -721,9 +721,25 @@ public class Mission : AMission
                         */
                         if (itemsmade > 0)
                         {
+                            int acAllowedThisPlayer1 = maximumAircraftAllowedPerMission;
+                            string rankExpl1 = "";
+                            if (TWCStbStatRecorder != null)
+                            {
+                                double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 3.0;
+                                if (adder < 0) adder = 0;
+                                acAllowedThisPlayer1 += Convert.ToInt32(adder);
+                                rankExpl1 = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+
+                            }
                             coverAircraftAirGroupsActive.Add(newAirgroup, player);
                             keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354);
                             GamePlay.gpLogServer(new Player[] { player }, "Your escort consists of {0} {1}s. They have just taken off from the nearest friendly airfield.", new object[] { itemsmade, aircrafttype });
+                            try
+                            {
+                                GamePlay.gpLogServer(new Player[] { player }, "You've checked out {0} cover aircraft of {1} allowed{2} per mission", new object[] { howMany_numberCoverAircraftActorsCheckedOutWholeMission(player), acAllowedThisPlayer1, rankExpl1 });
+                            }
+                            catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
+
                             GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use command <cland", new object[] { });
 
                         }

@@ -445,7 +445,7 @@ public class Mission : AMission
 
             //Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
 
-            Airgroups = GamePlay.gpAirGroups(1).Concat(GamePlay.gpAirGroups(1)).ToArray();
+            Airgroups = GamePlay.gpAirGroups(1).Concat(GamePlay.gpAirGroups(2)).ToArray();  //army 1 pilots UNION army 2 pilots.  Not sure why we can't just get a simple list of ALL pilots in the game, but this is one way to do it
             //Concat(back).ToArray()
             if (Airgroups != null)
             {
@@ -946,9 +946,9 @@ public class Mission : AMission
             {
                 AiAircraft aircraft = actor as AiAircraft;
                 double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-                if (altAGL_m > 130) continue; //only dis-apparate if they are somewhat close to ground and "landing"
+                if (altAGL_m > 800) continue; //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
                 Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
-                if (aircraft != null && isAiControlledPlane2(aircraft)) aircraft.Destroy();
+                if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
             }
             Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
         }

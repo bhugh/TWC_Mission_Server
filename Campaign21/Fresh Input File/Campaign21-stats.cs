@@ -2619,6 +2619,24 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (fuel == 0) fuel = 30;
 
         }
+        else if (type.Contains("110C-6")) //need to make sure this is a good load-out, copied from user-ini
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun04 Gun.Mk-101 MainBelt 0 2 0 2 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1"; //default
+                if (fighterbomber == "f") weapons = "1 1 1";
+            }
+
+            if (fuel == 0) fuel = 30;
+
+        }
         else if (type.Contains("110C-7")) //also covers 110C-7-late
         {
             f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
@@ -5175,82 +5193,86 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
     public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1, string targetType = "Ground Area", double  multiplier = 1, double aircraftCorrection = 1, bool crater = false ) //IsEnemy 0=friendly, 1 enemy, 2 neutral, crater = true places a crater instead of the smoke, useful for roads, railroads, etc
     {
-        if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
-        string playername = "AI";
-        if (player != null) playername = player.Name();
-        //GamePlay.gpLogServer(new Player[] { player }, "Area bombing by " + playername + " " + mass_kg.ToString("n0") + "kg at " + pos.x.ToString("n0") + " " + pos.y.ToString("n0"), new object[] { });
-
-        //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-        //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-        // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-        //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-        //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-        //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-        //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-        //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-
-        //double scoreBase = 0.06303;
-        double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
-        //if (blenheim) scoreBase *= 4; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
-        scoreBase *= aircraftCorrection; //correcting for lower tonnage carried by Blenheim, HE111, etc
-        scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
-
-
-        
-        if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
-        double score = scoreBase * Math.Pow (mass_kg, 0.67);
-
-        /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-         * 
-         * //Default is 0.5 points for ie 50 lb bomb
-         * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-        if (mass_kg > 110) score = 1.41; //250 
-        if (mass_kg > 220) score = 2.33; //500
-        if (mass_kg > 440) score = 3.70; //1000
-        if (mass_kg > 880) score = 5.92; //2000
-        if (mass_kg > 1760) score = 9.33 ; //4000
-        
-         */
-
-        if (isEnemy == 0 || isEnemy == 2)
+        try
         {
-            score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                             //but, still helps destroy the objects/area (for your enemies) as usual
-            GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
+            if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
+            string playername = "AI";
+            if (player != null) playername = player.Name();
+            //GamePlay.gpLogServer(new Player[] { player }, "Area bombing by " + playername + " " + mass_kg.ToString("n0") + "kg at " + pos.x.ToString("n0") + " " + pos.y.ToString("n0"), new object[] { });
+
+            //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+            //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+            // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+            //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+            //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+            //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+            //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+            //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+
+            //double scoreBase = 0.06303;
+            double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
+                                         //if (blenheim) scoreBase *= 4; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
+            scoreBase *= aircraftCorrection; //correcting for lower tonnage carried by Blenheim, HE111, etc
+            scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
+
+
+
+            if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+            double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+            /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+             * 
+             * //Default is 0.5 points for ie 50 lb bomb
+             * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+            if (mass_kg > 110) score = 1.41; //250 
+            if (mass_kg > 220) score = 2.33; //500
+            if (mass_kg > 440) score = 3.70; //1000
+            if (mass_kg > 880) score = 5.92; //2000
+            if (mass_kg > 1760) score = 9.33 ; //4000
+
+             */
+
+            if (isEnemy == 0 || isEnemy == 2)
+            {
+                score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                 //but, still helps destroy the objects/area (for your enemies) as usual
+                GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
+
+            }
+
+            //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
+            ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
+
+            Timeout(0.4 + stb_random.NextDouble() * 25, () =>
+            {
+                GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
+            }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
+
+
+            stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+                                                                                      //TODO: More/less points depending on bomb tonnage.
+
+            //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+            // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+            string firetype = "BuildingFireSmall";
+            //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
+            if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
+
+
+            if (crater)
+            {
+                firetype = "BombCrater_firmSoil_mediumkg";
+                if (mass_kg > 100) firetype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                if (mass_kg > 200) firetype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+            }
+
+            loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 20, stb_FullPath);
+            //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+            //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
 
         }
-
-        //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
-        ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
-        
-        Timeout(0.4 + stb_random.NextDouble() * 25, () =>
-        {
-            GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
-        }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
-        
-
-        stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
-        //TODO: More/less points depending on bomb tonnage.
-
-        //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-        // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-        string firetype = "BuildingFireSmall";
-        //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
-        if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
-
-
-        if (crater)
-        {
-            firetype = "BombCrater_firmSoil_mediumkg";
-            if (mass_kg > 100) firetype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-            if (mass_kg > 200) firetype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-        }
-
-        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 20, stb_FullPath);
-        //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-        //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
-
+        catch (Exception ex) { Console.WriteLine("ot_Handleareabombings: " + ex.ToString()); }
 
     }
 
@@ -5663,7 +5685,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
     //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
     //TODO: Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
     //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
-    int lastBombMessageTime_sec = Calcs.TimeSince2016_sec();
+    double lastBombMessageTime_sec = 0; // Calcs.TimeSince2016_sec();
 
     public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
@@ -5682,327 +5704,332 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
     public void OnBombExplosion_DoWork (string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
-        //GamePlay.gpLogServer(null, "bombe 1", null);
-        bool ai = true;
-        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
-
-        //GamePlay.gpLogServer(null, "bombe 2", null);
-        int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
-        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
-
-        //GamePlay.gpLogServer(null, "bombe 3", null);
-        if (terr == 00) isEnemy = 2;
-        if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
-
-        /***************************
-        * 
-        * Handle bomb landing on WATER
-        * 
-        ***************************/
-        //For now, all things we handle below are on land, so if the land type is water we just
-        //get out of here immediately
-        maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
-        if (landType == maddox.game.LandTypes.WATER) return;
-
-
-        //This is to give some score parity to various types of bombers, encouraging pilots to fly them.
-        //The destruction done remains proportional to tonnage of bomb etc, but they multipliers for their personal score that
-        //make up for some planes carrying far less tonnage.
-        //Factor is the max tonnage carried by each a/c under TF 4.5, scaled to JU88==1.  So ie Blenheim carries just 1/4 of that tonnage so gets a score correction factor of 1/(1/4) or 4.
-        double aircraftCorrection = 1;
-        AiAircraft aircraft = initiator.Actor as AiAircraft;
-        string acType = Calcs.GetAircraftType(aircraft);
-        if (acType.Contains("Blenheim")) aircraftCorrection = 4;
-        if (acType.Contains("He-111")) aircraftCorrection = 1.5;
-        if (acType.Contains("BR-20")) aircraftCorrection = 2;
-
-        //for testing
-        //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
-
-        //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
-
-        //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
-
-        /***************************
-         * 
-         * Handle bombing civilian areas AND area bombing generally
-         * 
-         ***************************/
-        //Give penalties to players if they bomb civilian areas
-        if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
-            {
-                if (sta == null) continue;
-                //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
-
-
-                double dis_m = sta.pos.distance(ref pos);  //distance from this groundstationary to the bomb detonation location, meters
-
-                //GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title + " " + dis_m.ToString("n0"), new object[] { });
-
-                if (sta.Title.Contains("JerryCan_GER1_1") || sta.Title.Contains("JerryCan_GER1_2") || sta.Title.Contains("JerryCan_GER1_3") || sta.Title.Contains("JerryCan_GER1_5"))
-                {
-                    //We use jerrycans to designate area targets or bombable areas.  
-                    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
-                    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
-                    // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
-                    // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
-                    if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                    if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                    // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
-                    //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
-                }
-
-
-                //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
-                //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
-                //If they manage to hit a ROAD HIGHWAY or RAILROAD within a civilian area then they don't get negative points
-                if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)
-                {
-                    if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
-                    if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
-                }
-
-
-            }
-
-
-        //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
-
-        /********************
-         * 
-         * Handle airport bombing
-         * 
-         *******************/
-
-        //GamePlay.gpLogServer(null, "bombe 5", null);
-
-        var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
-        apkeys = AirfieldTargets.Keys.ToList();
-
-        //GamePlay.gpLogServer(null, "bombe 6", null);
-
-        foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+        try
         {
-            /* if (!AirfieldTargets[ap].Item1)
-            {//airfield has already been knocked out so do nothing
-            }
-            else
-            { */
+            //GamePlay.gpLogServer(null, "bombe 1", null);
+            bool ai = true;
+            if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
 
-            //GamePlay.gpLogServer(null, "bombe 7", null);
-            double radius = AirfieldTargets[ap].Item6;
-            Point3d APPos = AirfieldTargets[ap].Item7;
-            double distFromCenter = 1000000000;
-            if (ap != null) distFromCenter = APPos.distance(ref pos);
-            //Check if bomb fell inside radius and if so increment up
-            if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
-            {
+            //GamePlay.gpLogServer(null, "bombe 2", null);
+            int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+            int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
 
+            //GamePlay.gpLogServer(null, "bombe 3", null);
+            if (terr == 00) isEnemy = 2;
+            if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
 
-                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-                //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+            /***************************
+            * 
+            * Handle bomb landing on WATER
+            * 
+            ***************************/
+            //For now, all things we handle below are on land, so if the land type is water we just
+            //get out of here immediately
+            maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+            if (landType == maddox.game.LandTypes.WATER) return;
 
 
-                //double scoreBase = 0.06303;
-                double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-                //if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic      
+            //This is to give some score parity to various types of bombers, encouraging pilots to fly them.
+            //The destruction done remains proportional to tonnage of bomb etc, but they multipliers for their personal score that
+            //make up for some planes carrying far less tonnage.
+            //Factor is the max tonnage carried by each a/c under TF 4.5, scaled to JU88==1.  So ie Blenheim carries just 1/4 of that tonnage so gets a score correction factor of 1/(1/4) or 4.
+            double aircraftCorrection = 1;
+            AiAircraft aircraft = initiator.Actor as AiAircraft;
+            string acType = Calcs.GetAircraftType(aircraft);
+            if (acType.Contains("Blenheim")) aircraftCorrection = 4;
+            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
+            if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
-                scoreBase *= aircraftCorrection; //Correcting tonnage effect for various types of bombers
+            //for testing
+            //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
 
-                //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
-                //TODO: Could also give more if exactly on the the runway, or near it, or whatever
-                double multiplier = 0.5;
-                if (distFromCenter <= 2 * radius / 3) multiplier = 1;
-                if (distFromCenter <= radius / 3) multiplier = 1.5;
+            //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
 
-                //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
-                if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+            //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
+
+            /***************************
+             * 
+             * Handle bombing civilian areas AND area bombing generally
+             * 
+             ***************************/
+            //Give penalties to players if they bomb civilian areas
+            if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
                 {
-                    multiplier = 1.6;
-                }
-
-                scoreBase *= multiplier;
+                    if (sta == null) continue;
+                    //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
 
 
-                if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
-                double score = scoreBase * Math.Pow(mass_kg, 0.67);
+                    double dis_m = sta.pos.distance(ref pos);  //distance from this groundstationary to the bomb detonation location, meters
 
-                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-                 * 
-                 * //Default is 0.5 points for ie 50 lb bomb
-                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-                if (mass_kg > 110) score = 1.41; //250 
-                if (mass_kg > 220) score = 2.33; //500
-                if (mass_kg > 440) score = 3.70; //1000
-                if (mass_kg > 880) score = 5.92; //2000
-                if (mass_kg > 1760) score = 9.33 ; //4000
+                    //GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title + " " + dis_m.ToString("n0"), new object[] { });
 
-                //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
-
-                 */
-
-                //Spread out these messages to no more than 1 per second
-                int TimeNow_sec = Calcs.TimeSince2016_sec();
-                double timeout = 0;
-                if (TimeNow_sec - lastBombMessageTime_sec < 1) timeout = lastBombMessageTime_sec - TimeNow_sec + 1;
-                lastBombMessageTime_sec = TimeNow_sec + (int)timeout + 1; //Which should be the same as lastBombMessageTime_sec +1;
-                Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
-                if (timeout < 0) { timeout = 0; }
-
-                double individualscore = score;
-
-                if (!ai && (isEnemy == 0 || isEnemy == 2))
-                {
-                    individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                                         //but, still helps destroy that base (for your enemies) as usual
-                    Timeout(timeout, () =>
+                    if (sta.Title.Contains("JerryCan_GER1_1") || sta.Title.Contains("JerryCan_GER1_2") || sta.Title.Contains("JerryCan_GER1_3") || sta.Title.Contains("JerryCan_GER1_5"))
                     {
-                        GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
-                    });
-                }
-
-
-
-                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-                string firetype = "BuildingFireSmall";
-                if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
-                if (stb_random.NextDouble() > 0.25) firetype = "";
-                //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-                //set placeholder variables
-                double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                double PointsTaken = AirfieldTargets[ap].Item4 + score;
-                string Mission = AirfieldTargets[ap].Item2;
-                bool disabled = AirfieldTargets[ap].Item1;
-                DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-
-
-                string cratertype = "BombCrater_firmSoil_mediumkg";
-                if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-
-                double percent = 0;
-                double prev_percent = 0;
-                double points_reduction_factor = 1;
-                if (PointsToKnockOut > 0)
-                {
-                    percent = PointsTaken / PointsToKnockOut;
-                    prev_percent = (PointsTaken - score) / PointsToKnockOut;
-                    if (prev_percent > 1) prev_percent = 1;
-                    if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
-                }
-
-                //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
-
-                if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
-
-
-                double timereduction = 0;
-                if (prev_percent > 0)
-                {
-                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
-                }
-
-                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
-
-                if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                {
-                    percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                }
-                //Advise player of hit/percent/points
-                //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
-
-                Timeout(timeout, ()=>{
-                    //Experiment: removing the message to see if it helps with warps  9/28/2018
-                    if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
-                    
-                    //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
-                    Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
-
-                    loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
-                    //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
-
-                });
-
-                
-
-                if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
-                {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
-                    if (!disabled)
-                    {
-
-                        //We do this part only in -stats.cs and & will stamp craters all over the ap but only if the ap was disabled by LIVE pilots, not AI . . . 
-                        //UPDATE 2018/09: We don't stamp the craters but actually disable the birthplace so that it no longer functions as a spawn point
-                        AirfieldDisable(ap);
-
-
-                        //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
-                        //This airport has been destroyed, so remove the spawn point
-                        //** We do this only in the -MAIN.cs, not -stats.cs
-                        /*
-                        if (ap != null)
-                        {
-                            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-                            {
-                                Point3d bp_pos = bp.Pos();
-                                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
-                            }
-                        }
-                        */
-
+                        //We use jerrycans to designate area targets or bombable areas.  
+                        //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
+                        // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
+                        // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
+                        // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
+                        if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
+                        //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
                     }
+
+
+                    //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
+                    //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
+                    //If they manage to hit a ROAD HIGHWAY or RAILROAD within a civilian area then they don't get negative points
+                    if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)
+                    {
+                        if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                        if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                    }
+
+
+                }
+
+
+            //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
+
+            /********************
+             * 
+             * Handle airport bombing
+             * 
+             *******************/
+
+            //GamePlay.gpLogServer(null, "bombe 5", null);
+
+            var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+            apkeys = AirfieldTargets.Keys.ToList();
+
+            //GamePlay.gpLogServer(null, "bombe 6", null);
+
+            foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+            {
+                /* if (!AirfieldTargets[ap].Item1)
+                {//airfield has already been knocked out so do nothing
                 }
                 else
+                { */
+
+                //GamePlay.gpLogServer(null, "bombe 7", null);
+                double radius = AirfieldTargets[ap].Item6;
+                Point3d APPos = AirfieldTargets[ap].Item7;
+                double distFromCenter = 1000000000;
+                if (ap != null) distFromCenter = APPos.distance(ref pos);
+                //Check if bomb fell inside radius and if so increment up
+                if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
                 {
-                    AirfieldTargets.Remove(ap);
-                    AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+
+
+                    //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+                    //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+                    // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+                    //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+                    //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+                    //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+                    //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+                    //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+                    //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+
+
+                    //double scoreBase = 0.06303;
+                    double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
+                                                 //if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic      
+
+                    scoreBase *= aircraftCorrection; //Correcting tonnage effect for various types of bombers
+
+                    //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
+                    //TODO: Could also give more if exactly on the the runway, or near it, or whatever
+                    double multiplier = 0.5;
+                    if (distFromCenter <= 2 * radius / 3) multiplier = 1;
+                    if (distFromCenter <= radius / 3) multiplier = 1.5;
+
+                    //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
+                    if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+                    {
+                        multiplier = 1.6;
+                    }
+
+                    scoreBase *= multiplier;
+
+
+                    if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+                    double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+                    /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+                     * 
+                     * //Default is 0.5 points for ie 50 lb bomb
+                     * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+                    if (mass_kg > 110) score = 1.41; //250 
+                    if (mass_kg > 220) score = 2.33; //500
+                    if (mass_kg > 440) score = 3.70; //1000
+                    if (mass_kg > 880) score = 5.92; //2000
+                    if (mass_kg > 1760) score = 9.33 ; //4000
+
+                    //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
+
+                     */
+
+                    //Spread out these messages to no more than 3 per second
+                    double TimeNow_sec = Time.current(); // Calcs.TimeSince2016_sec();
+                    double timeout = 0;
+                    if (TimeNow_sec - lastBombMessageTime_sec < 0.3333) timeout = lastBombMessageTime_sec - TimeNow_sec + 0.333;
+                    lastBombMessageTime_sec = TimeNow_sec + timeout + 0.333333; //Which should be the same as lastBombMessageTime_sec +1;
+                    Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
+                    if (timeout < 0) { timeout = 0; }
+
+                    double individualscore = score;
+
+                    if (!ai && (isEnemy == 0 || isEnemy == 2))
+                    {
+                        individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                             //but, still helps destroy that base (for your enemies) as usual
+                        Timeout(timeout, () =>
+                        {
+                            GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                        });
+                    }
+
+
+
+                    //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+                    // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+                    string firetype = "BuildingFireSmall";
+                    if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+                    if (stb_random.NextDouble() > 0.25) firetype = "";
+                    //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+                    //set placeholder variables
+                    double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                    double PointsTaken = AirfieldTargets[ap].Item4 + score;
+                    string Mission = AirfieldTargets[ap].Item2;
+                    bool disabled = AirfieldTargets[ap].Item1;
+                    DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+
+
+                    string cratertype = "BombCrater_firmSoil_mediumkg";
+                    if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                    if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+                    double percent = 0;
+                    double prev_percent = 0;
+                    double points_reduction_factor = 1;
+                    if (PointsToKnockOut > 0)
+                    {
+                        percent = PointsTaken / PointsToKnockOut;
+                        prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                        if (prev_percent > 1) prev_percent = 1;
+                        if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
+                    }
+
+                    //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                    individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
+
+                    if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
+
+
+                    double timereduction = 0;
+                    if (prev_percent > 0)
+                    {
+                        timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                    }
+
+                    double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                              //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                              //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                              //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                              //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                    if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+                    if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                    {
+                        percent = 1;
+                        timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                    }
+                    //Advise player of hit/percent/points
+                    //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+                    Timeout(timeout, () =>
+                    {
+                        //Experiment: removing the message to see if it helps with warps  9/28/2018
+                        if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
+
+                        //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+                        Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+
+                        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+                        //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
+
+                    });
+
+
+
+                    if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                    {
+                        AirfieldTargets.Remove(ap);
+                        AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                        if (!disabled)
+                        {
+
+                            //We do this part only in -stats.cs and & will stamp craters all over the ap but only if the ap was disabled by LIVE pilots, not AI . . . 
+                            //UPDATE 2018/09: We don't stamp the craters but actually disable the birthplace so that it no longer functions as a spawn point
+                            AirfieldDisable(ap);
+
+
+                            //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                            //This airport has been destroyed, so remove the spawn point
+                            //** We do this only in the -MAIN.cs, not -stats.cs
+                            /*
+                            if (ap != null)
+                            {
+                                foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                                {
+                                    Point3d bp_pos = bp.Pos();
+                                    if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                                }
+                            }
+                            */
+
+                        }
+                    }
+                    else
+                    {
+                        AirfieldTargets.Remove(ap);
+                        AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                    }
+                    //GamePlay.gpLogServer(null, "bombe 11", null);
+                    break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
                 }
-                //GamePlay.gpLogServer(null, "bombe 11", null);
-                break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
+            }
+
+            /***************************
+            * 
+            * Handle bomb landing on ROAD, HIGHWAY, or RAIL
+            * 
+            * We save this for last because we can test for road etc in airport bombings to see if something is on the runway or whatever
+            * 
+            ***************************/
+
+            if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+            {
+                ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, aircraftCorrection, true);
+                return;
+            }
+
+            if (landType == maddox.game.LandTypes.RAIL)
+            {
+                ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, aircraftCorrection, true);
+                return;
             }
         }
-
-        /***************************
-        * 
-        * Handle bomb landing on ROAD, HIGHWAY, or RAIL
-        * 
-        * We save this for last because we can test for road etc in airport bombings to see if something is on the runway or whatever
-        * 
-        ***************************/
-
-        if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
-        {
-            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, aircraftCorrection, true);
-            return;
-        }
-
-        if (landType == maddox.game.LandTypes.RAIL)
-        {
-            ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, aircraftCorrection, true);
-            return;
-        }
+        catch (Exception ex) { Console.WriteLine("On Bomb Explosion STATS do_work: " + ex.ToString()); }
 
     }
 

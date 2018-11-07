@@ -32,6 +32,7 @@ public class Mission : AMission
     public Random ran;
     public int minimumAircraftRequiredForCoverDuty {get; set;}
     public int maximumAircraftAllowedPerMission { get; set; }
+    public int maximumCheckoutsAllowedAtOnce { get; set; }
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -55,6 +56,7 @@ public class Mission : AMission
             MissionNumberListener = -1;
             minimumAircraftRequiredForCoverDuty = 100;
             maximumAircraftAllowedPerMission = 6;
+            maximumCheckoutsAllowedAtOnce = 3;
 
             Console.WriteLine("-cover.cs successfully constructed");
         }
@@ -147,6 +149,19 @@ public class Mission : AMission
         if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
             if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
+            numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
+            coverAircraftActorsCheckedOut.Remove(actor);
+        }
+    }
+    public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+        AiActor actor = aircraft as AiActor;
+        if (actor == null) return;
+        if (coverAircraftActorsCheckedOut.ContainsKey(actor))
+        {
+            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
             coverAircraftActorsCheckedOut.Remove(actor);
         }
     }
@@ -158,6 +173,7 @@ public class Mission : AMission
         if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
             if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
             coverAircraftActorsCheckedOut.Remove(actor);
         }
     }
@@ -205,6 +221,7 @@ public class Mission : AMission
 
 
                     double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    //double distNearestAirport_m = Stb_distanceToNearestAirport(actor);
 
                     if ((aircraft.Pos().x <= minX ||
                             aircraft.Pos().x >= maxX ||
@@ -215,6 +232,7 @@ public class Mission : AMission
                     )
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //valid return; the final true is softexit & forces return of a/c even though it is still flying.
+                        numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                         coverAircraftActorsCheckedOut.Remove(actor);
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because left map OK.");
 
@@ -222,6 +240,7 @@ public class Mission : AMission
                     else if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died on water.");
                     }
@@ -230,6 +249,7 @@ public class Mission : AMission
                     else if (Z_AltitudeAGL < 5 && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died in enemy territory.");
 
@@ -237,11 +257,12 @@ public class Mission : AMission
                     else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor) > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died away from airport.");
                     }
 
-                    else if (Z_AltitudeAGL < 600)  // movebombtarget auto-destroys ai aircraft that are in the vicinity of an airport and set to waypoint type LANDING.  Because they are too dumb to actually land.  So these count as "landed" & the aircraft is returned to supply.
+                    else if (Z_AltitudeAGL < 800)  // movebombtarget auto-destroys ai aircraft that are in the vicinity of an airport and set to waypoint type LANDING.  Because they are too dumb to actually land.  So these count as "landed" & the aircraft is returned to supply.
                     {
                         AiAirGroup airGroup = aircraft.AirGroup();
                         if (airGroup == null || !isAiControlledPlane2(aircraft))
@@ -261,6 +282,7 @@ public class Mission : AMission
 
 
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
+                        numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                         coverAircraftActorsCheckedOut.Remove(actor);
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because disapparated while LANDING.");
                     } else
@@ -323,8 +345,8 @@ public class Mission : AMission
         {"bob:Aircraft.Bf-110C-4-NJG",true},
         {"bob:Aircraft.Bf-110C-4B" ,false},
         {"bob:Aircraft.Bf-110C-4Late",false},
-        {"bob:Aircraft.Bf-110C-4N",false},
-        {"bob:Aircraft.Bf-110C-6",true},
+        {"bob:Aircraft.Bf-110C-4N",true},
+        {"bob:Aircraft.Bf-110C-6",true},  //These crash straight into the ground upon spawn FOR SOME UNKNOWN REASON so just eliminating their use altogether here.
         {"bob:Aircraft.Bf-110C-7",false},
         {"bob:Aircraft.BR-20M",false},	
         //{"bob:Aircraft.DH82A-1",10},  aircraft not on list aren't allowed as escorts, so disallow by either setting to FALSE or just remming out their line
@@ -372,6 +394,68 @@ public class Mission : AMission
         }        
     }
 
+    public string listPositionCurrentCoverAircraft(Player player = null, bool display = true, bool html = false)
+    {
+        string nl = Environment.NewLine;
+        if (html) nl = "<br>" + nl;
+        string retmsg = "";
+        int count = 0;
+        string smsg = ">>>> Your current cover airgroups:";
+        retmsg += smsg + nl;
+        AiActor playerPlace = player.Place();
+
+        GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+        foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
+        {
+            if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+            if (airGroup.GetItems().Length == 0) continue;
+            AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
+            count++;
+            double alt_m = aircraft.Pos().z;
+            double alt_km = alt_m / 1000;
+            double alt_angels = Calcs.Feet2Angels(Calcs.meters2feet(alt_m));
+            string alt_msg = string.Format("{0:N0} m, ", alt_m);
+            if (player.Army() == 1) alt_msg = string.Format("Angels {0:N0}, ", alt_angels);
+            string msg = "";
+
+            if (playerPlace == null) msg = "#" + count.ToString() + " " + Calcs.GetAircraftType(aircraft) + " at " + alt_msg + Calcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
+            else
+            {
+                double dis_m =Calcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
+                double dis_mi = (Calcs.meters2miles(dis_m));
+                int dis_10 = (int)dis_mi;
+                double bearing = Calcs.CalculateGradientAngle(playerPlace.Pos(), aircraft.Pos());
+                double bearing_10 = Calcs.GetDegreesIn10Step(bearing);
+                string ang = "A" + alt_angels.ToString("F0") + " ";
+                string mi = dis_mi.ToString("F0") + "mi";
+                string mi_10 = dis_10.ToString("F0") + "mi";
+
+                if (player.Army() == 2) //metric for the Germanos . . . 
+                {
+                    mi = (dis_m / 1000).ToString("F0") + "k";
+                    mi_10 = mi;
+                    if (dis_m > 30000) mi_10 = ((double)(Calcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
+
+                    //ft = alt_km.ToString("F2") + "k ";                                        
+                    ang = ((double)(Calcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
+                }
+
+                msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " - " + Calcs.GetAircraftType(aircraft);
+
+            }
+            GamePlay.gpLogServer(new Player[] { player }, msg, null);
+            retmsg += msg + nl;
+        }
+        if (count == 0)
+        {
+            string msg2 = "(none)";
+            GamePlay.gpLogServer(new Player[] { player }, msg2, null);
+            retmsg += msg2 + nl;
+
+        }
+        return retmsg;
+    }
+
     //army = ArmiesE.None lists both armies
     public string listCoverAircraftCurrentlyAvailable(ArmiesE army, Player player = null, bool display = true, bool html = false)
     {
@@ -408,9 +492,48 @@ public class Mission : AMission
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg1, null);
             }
         }
+        string msg3 = acAvailableToPlayer_msg(player);
+        GamePlay.gpLogServer(new Player[] { player }, msg3, new object[] { });
+        retmsg += msg3 + nl;
+
+        int numCheckedOut = numberAirgroupsCurrentlyCheckedOutPlayer(player);
+
+        GamePlay.gpLogServer(new Player[] { player }, "You have {0} cover groups escorting you, of {1} maximum allowed at one time.", new object[] { numCheckedOut, maximumCheckoutsAllowedAtOnce });
+
         return retmsg;
     }
+    public string acAvailableToPlayer_msg (Player player )
+    {
+        int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+        string rankExpl = "";
+        if (TWCStbStatRecorder != null)
+        {
+            double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 2.0;
+            if (adder < 0) adder = 0;
+            acAllowedThisPlayer += Convert.ToInt32(adder);
+            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
 
+        }
+        int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+        if (acAvailable < 0) acAvailable = 0;
+        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}",acAvailable, acAllowedThisPlayer, rankExpl);
+    }
+    public int acAvailableToPlayer_num(Player player)
+    {
+        int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+        string rankExpl = "";
+        if (TWCStbStatRecorder != null)
+        {
+            double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 3.0;
+            if (adder < 0) adder = 0;
+            acAllowedThisPlayer += Convert.ToInt32(adder);
+            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+
+        }
+        int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+        if (acAvailable < 0) acAvailable = 0;
+        return acAvailable;
+    }
     public string selectCoverPlane(string acName, ArmiesE army)
     {
         string retplane = "";
@@ -552,13 +675,20 @@ public class Mission : AMission
                 else { EscortMakeLand(airGroup, aircraft.AirGroup()); numret++; }
 
             }
-            GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport. They won't do so until all live players have left the area.", new object[] { });
+            GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport. They are shy and will land quicker if no one is around.", new object[] { });
 
         }
-        else if (msg.StartsWith("<clist") && admin_privilege_level(player) >= 1)
+        else if (msg.StartsWith("<clist") && admin_privilege_level(player) >= 1) //<clist
         {
             if (player == null) return;
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
+            
+        }
+        else if (msg.StartsWith("<cp") && admin_privilege_level(player) >= 1) //<cpos
+        {
+            if (player == null) return;
+            listPositionCurrentCoverAircraft(player);
+
         }
         else if (msg.StartsWith("<cover") && admin_privilege_level(player) >= 1)
         {
@@ -591,21 +721,9 @@ public class Mission : AMission
 
                 if (!isHeavyBomber) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
 
-                int numCheckedOutEntireMission = howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
-                int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
-                string rankExpl = "";
-                if (TWCStbStatRecorder != null)
-                {
-                    double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) -2.0 ) / 3.0;
-                    if (adder < 0) adder = 0;
-                    acAllowedThisPlayer += Convert.ToInt32(adder);
-                    rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+                if (acAvailableToPlayer_num(player) < 1) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - " + acAvailableToPlayer_msg(player), new object[] { }); return; }
 
-                }
-
-                if (numCheckedOutEntireMission >= acAllowedThisPlayer) { GamePlay.gpLogServer(new Player[] { player }, string.Format("Can't cover you - you've already used more than the {0} cover aircraft allowed{1} per mission!", acAllowedThisPlayer, rankExpl), new object[] { }); return; }
-
-                if (numCheckedOut >= 3)
+                if (numCheckedOut >= maximumCheckoutsAllowedAtOnce)
                 {
 
                     GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
@@ -633,7 +751,7 @@ public class Mission : AMission
 
                 Point3d loc = new Point3d(0, 0, 0);
                 if (aircraft != null) loc = actor.Pos();
-                loc.z = 150; //starting low, like took off from airport
+                loc.z += 150; //starting low, like took off from airport, but we have to make sure it is ABOVE THE ACTUAL GROUND LEVEL or else trouble.  So making it 150 meters higher than the pilot who called it in.
                 string escortedGroup = aircraft.AirGroup().Name();
 
                 /*
@@ -671,7 +789,7 @@ public class Mission : AMission
                 regiment = aircraft.Regiment().name();
 
                 string newACActorName = Stb_LoadSubAircraft(loc: loc, type: plane, callsign: "26", hullNumber: "3", serialNumber: "001",
-                                    regiment: regiment, fuelStr: "", weapons: "", velocity: 150, fighterbomber: "", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
+                                    regiment: regiment, fuelStr: "", weapons: "", velocity: 150, fighterbomber: "f", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
 
 
 
@@ -721,22 +839,15 @@ public class Mission : AMission
                         */
                         if (itemsmade > 0)
                         {
-                            int acAllowedThisPlayer1 = maximumAircraftAllowedPerMission;
-                            string rankExpl1 = "";
-                            if (TWCStbStatRecorder != null)
-                            {
-                                double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 3.0;
-                                if (adder < 0) adder = 0;
-                                acAllowedThisPlayer1 += Convert.ToInt32(adder);
-                                rankExpl1 = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
-
-                            }
+                            string msg6 = acAvailableToPlayer_msg(player);
+                            
                             coverAircraftAirGroupsActive.Add(newAirgroup, player);
-                            keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354);
+                            //keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354); //don't seem aggressive enough in defending with this, trying the .escort instead, with including the bomber group actor as .target
+                            keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DEFENDING, AiAirWayPointType.ESCORT, player, 43.2354);
                             GamePlay.gpLogServer(new Player[] { player }, "Your escort consists of {0} {1}s. They have just taken off from the nearest friendly airfield.", new object[] { itemsmade, aircrafttype });
                             try
                             {
-                                GamePlay.gpLogServer(new Player[] { player }, "You've checked out {0} cover aircraft of {1} allowed{2} per mission", new object[] { howMany_numberCoverAircraftActorsCheckedOutWholeMission(player), acAllowedThisPlayer1, rankExpl1 });
+                                GamePlay.gpLogServer(new Player[] { player }, msg6, new object[] { });
                             }
                             catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
 
@@ -782,9 +893,10 @@ public class Mission : AMission
         {
             string msg42 = "<cover or <cover Beau or <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });            
-            msg42 = "<clist - list available cover fighters";
+            msg42 = "<clist - list available cover fighters; <cpos - position of your current fighters";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cland - release cover fighters to land (IMPORTANT!)";            
+            msg42 = "<cland - release cover fighters to land (IMPORTANT!)";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
         }
 
         else if (msg.StartsWith("<help") || msg.StartsWith("<HELP") && admin_privilege_level(player) >= 1)// || msg.StartsWith("<"))
@@ -803,6 +915,18 @@ public class Mission : AMission
     {
         if (numberCoverAircraftActorsCheckedOutWholeMission.ContainsKey(player)) numberCoverAircraftActorsCheckedOutWholeMission[player]++; 
         else numberCoverAircraftActorsCheckedOutWholeMission[player] = 1;
+
+        return numberCoverAircraftActorsCheckedOutWholeMission[player];
+    }
+
+    private int numberCoverAircraftActorsCheckedOutWholeMission_remove(Player player)
+    {
+        if (numberCoverAircraftActorsCheckedOutWholeMission.ContainsKey(player))
+        {
+            numberCoverAircraftActorsCheckedOutWholeMission[player]--;
+            if (numberCoverAircraftActorsCheckedOutWholeMission[player] < 0 ) numberCoverAircraftActorsCheckedOutWholeMission[player] = 0;
+        }
+        else numberCoverAircraftActorsCheckedOutWholeMission[player] = 0;
 
         return numberCoverAircraftActorsCheckedOutWholeMission[player];
     }
@@ -862,7 +986,7 @@ public class Mission : AMission
 
         AiAirGroup playerAirGroup = (player.Place() as AiAircraft).AirGroup();
 
-        AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, 7000, 1500, 2000);
+        AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, 4000, 1500, 2000);
 
         if (attackingAirGroup != null)
         {
@@ -882,6 +1006,7 @@ public class Mission : AMission
         {
             AltDiff_m = 20;
             AltDiff_range_m = 20;
+            aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //aawpt = AiAirWayPointType.COVER seems to work better in general but the cover aircraft stay up above the a/c they are covering and thus are seen by radar even if the main a/c is below radar. Trying AATACK_FIGHTERS to see if they will stay below radar better.
         }
         {
             Console.WriteLine("ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
@@ -937,7 +1062,7 @@ public class Mission : AMission
         //So, we're going to try it.
 
         //TODO: What we shoudl really do, if this idea works, is to #1. find the nearest airport,  #2, move our loc to 2000 meters or whatever away from it. #3. Make sure that target airport is still our nearest airport
-        loc.z = 150; //the a/c always start low, as though they have just taken off
+        //loc.z = 150; //the a/c always start low, as though they have just taken off
 
         if (loc.x != 0 && loc.y != 0 && loc.z != 0)
         {
@@ -1313,7 +1438,7 @@ public class Mission : AMission
             f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
 
             if (weapons.Length == 0) weapons = "1 1 1"; //default
-            if (fuel == 0) fuel = 60;
+            if (fuel == 0) fuel = 80;
 
         }
         else if (type.Contains("110C-4"))
@@ -1327,7 +1452,25 @@ public class Mission : AMission
             f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
 
             if (weapons.Length == 0) weapons = "1 1 1"; //default
-            if (fuel == 0) fuel = 60;
+            if (fuel == 0) fuel = 80;
+
+        }
+        else if (type.Contains("110C-6")) //need to make sure this is a good load-out, copied from user-ini
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun04 Gun.Mk-101 MainBelt 0 2 0 2 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1"; //default
+                if (fighterbomber == "f") weapons = "1 1 1";
+            }
+
+            if (fuel == 0) fuel = 80;
 
         }
         else if (type.Contains("110C-7")) //also covers 110C-7-late
@@ -1350,7 +1493,7 @@ public class Mission : AMission
                 if (fighterbomber == "f") weapons = "1 1 1 0";
             }
 
-            if (fuel == 0) fuel = 60;
+            if (fuel == 0) fuel = 80;
 
         }
         else if (type.Contains("BR-20"))
@@ -1418,7 +1561,7 @@ public class Mission : AMission
     {
         if (airGroup == null || !coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
         List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-        NewWaypoints.Add(CurrentPosWaypoint(airGroup, AiAirWayPointType.NORMFLY));
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.NORMFLY));
         NewWaypoints.Add(EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe));
         airGroup.SetWay(NewWaypoints.ToArray());
         airGroup.setTask(AiAirGroupTask.LANDING, airGroup); //try to force it . . . .
@@ -1458,14 +1601,14 @@ public class Mission : AMission
     {
         
         List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-        NewWaypoints.Add(CurrentPosWaypoint(airGroup, aawpt));
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt));
         NewWaypoints.Add(EscortPosWaypoint(airGroup, targetAirGroup, aawpt, altDiff_m, AltDiff_range_m, nodupe));
         airGroup.SetWay(NewWaypoints.ToArray());
     }
 
     
 
-    public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS)
+    public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS)
     {
         try
         {
@@ -1474,14 +1617,29 @@ public class Mission : AMission
 
             Vector3d Vwld = airGroup.Vwld();
             double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
-            if (vel_mps < 70) vel_mps = 70;
-            if (vel_mps > 160) vel_mps = 160;
+
+            if (targetAirGroup != null)
+            {
+                Vector3d targetVwld = targetAirGroup.Vwld();
+                double target_vel_mps = Calcs.CalculatePointDistance(targetVwld); //Not 100% sure mps is the right unit here?
+
+                double targetDist_m = Calcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
+                if (target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5; //Go at least 20% faster than the group they're escorting, if possible
+                if (targetDist_m > 500 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5; //Go 2X as fast, if possible, the target gets more than 1km off
+            }
+
+            if (vel_mps < 110) vel_mps = 110;
+            if (vel_mps > 175) vel_mps = 175;
 
             Point3d CurrentPos = airGroup.Pos();
 
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             aaWP.Action = aawpt;
+            if (aawpt == AiAirWayPointType.ESCORT && airGroup.GetItems().Length>0)
+            {                
+                aaWP.Target = airGroup.GetItems()[0];
+            }
 
             Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
@@ -1505,10 +1663,10 @@ public class Mission : AMission
             double target_vel_mps = Calcs.CalculatePointDistance(targetVwld); //Not 100% sure mps is the right unit here?
 
             double targetDist_m = Calcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
-            if (target_vel_mps * 1.3 > vel_mps) vel_mps = target_vel_mps * 1.3; //Go at least 20% faster than the group they're escorting, if possible
-            if (targetDist_m>1000 && target_vel_mps * 2 > vel_mps) vel_mps = target_vel_mps * 2; //Go 2X as fast, if possible, the target gets more than 1km off
-            if (vel_mps < 110) vel_mps = 90;
-            if (vel_mps > 160) vel_mps = 175;
+            if (target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5; //Go at least 20% faster than the group they're escorting, if possible
+            if (targetDist_m>500 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5; //Go 2X as fast, if possible, the target gets more than 1km off
+            if (vel_mps < 110) vel_mps = 110;
+            if (vel_mps > 175) vel_mps = 175;
             
 
             Point3d CurrentPos = targetAirGroup.Pos();
@@ -1529,6 +1687,10 @@ public class Mission : AMission
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             aaWP.Action = aawpt;
+            if (aawpt == AiAirWayPointType.ESCORT && airGroup.GetItems().Length > 0)
+            {
+                aaWP.Target = airGroup.GetItems()[0];
+            }
 
             Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
@@ -1816,7 +1978,7 @@ public class Mission : AMission
 
             bool update = false;
 
-            AiWayPoint prevWP = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
+            AiWayPoint prevWP = CurrentPosWaypoint(airGroup, null, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
 
             NewWaypoints.Add(prevWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
 
@@ -2110,7 +2272,17 @@ public static class Calcs
         return (a / 1609.344 * 5280);
 
     }
+    public static int Feet2Angels(double altitude)
+    {
+        double altAngels = (altitude) / 1000;
 
+        if (altAngels > 1)
+            altAngels = Math.Round(altAngels, MidpointRounding.AwayFromZero);
+        else
+            altAngels = 1;
+
+        return (int)altAngels;
+    }
 
     public static double DegreesToRadians(double degrees)
     {
@@ -2154,6 +2326,15 @@ public static class Calcs
 
         return (int)degrees;
     }
+
+    public static int RoundInterval(double number, int interval = 10)
+    {
+        number = Math.Round((number / interval), MidpointRounding.AwayFromZero) * interval;
+
+
+        return (int)number;
+    }
+
 
     public static double CalculatePointDistance(
                         Point3d startPoint,

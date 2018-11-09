@@ -41,7 +41,7 @@ public class Mission : AMission
     //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
     double twcmap_minX = 10000;
     double twcmap_minY = 10000;
-    double twcmap_maxX = 350000;
+    double twcmap_maxX = 360000;
     double twcmap_maxY = 310000;
 
     public Mission()
@@ -1738,7 +1738,7 @@ public class Mission : AMission
             aaWP.Action = aawpt;
             aaWP.Target = ap as AiActor;
 
-            Console.WriteLine("EscortLANDINGWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+            Console.WriteLine("EscortLANDINGWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, ap.Name() });
 
             return aaWP;
         }
@@ -1799,14 +1799,18 @@ public class Mission : AMission
         Timeout(60.123232,()=>AddOffMapAIAircraftBackToSupply_recur());
 
         int numremoved = 0;
-        
+
         //BattleArea 10000 10000 350000 310000 10000
         //TODO: There is probably some way to access the size of the battle area programmatically
-        double minX = 20000;
-        double minY = 20000;
-        double maxX = 340000;
-        double maxY = 300000;
-        //////////////Comment this out as we don`t have Your Debug mode  
+        double twcmap_minX = 10000;
+        double twcmap_minY = 10000;
+        double twcmap_maxX = 360000;
+        double twcmap_maxY = 310000;
+        double minX = twcmap_minX + 10000; //20000
+        double minY = twcmap_minY + 10000; //20000
+        double maxX = twcmap_maxX - 10000; //340000;
+        double maxY = twcmap_maxY - 10000; // 300000;
+        
         Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
         foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
         {
@@ -1830,6 +1834,7 @@ public class Mission : AMission
             )   
             {
                 if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
+                numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                 coverAircraftActorsCheckedOut.Remove(actor);
                 Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
             }
@@ -2040,26 +2045,49 @@ public class Mission : AMission
                 AiAirWayPoint endaaWP = null;
                 Point3d midPos = new Point3d(0, 0, 0);
                 Point3d endPos = new Point3d(0, 0, 0);
-                if (ran.NextDouble() > 0.5)
+                Point3d tempEndPos = new Point3d(0, 0, 0);
+                double distance_m = 1000000000;
+                double tempDistance_m = 1000000000;
+
+                for (int i = 1; i < 10; i++)
                 {
-                    if (army == 1) endPos.y = twcmap_maxY + 9000;
-                    else if (army == 2) endPos.y = twcmap_minY - 9000;
-                    else endPos.y = twcmap_maxY + 9000;
-                    endPos.x = prevWP.P.x + ran.NextDouble() * 300000 - 150000;
-                    if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
-                    if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                    if (ran.NextDouble() > 0.5)
+                    {
+                        if (army == 1) endPos.y = twcmap_maxY + 9000;
+                        else if (army == 2) endPos.y = twcmap_minY - 9000;
+                        else endPos.y = twcmap_maxY + 9000;
+                        endPos.x = prevWP.P.x + ran.NextDouble() * 300000 - 150000;
+                        if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
+                        if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                    }
+                    else
+                    {
+                        if (army == 1) endPos.x = twcmap_minX - 9000;
+                        else if (army == 2) endPos.x = twcmap_maxY + 9000;
+                        else endPos.x = twcmap_maxX + 9000;
+                        endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
+                        if (army == 1) endPos.y += 120000;
+                        else if (army == 2) endPos.y -= 60000;
+                        if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
+                        if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
+                    }
+                    //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
+                    //so if we hit a distance < 120km we call it good enough
+                    //otherwise we take the shortest distance based on 10 random tries
+                    distance_m = Calcs.CalculatePointDistance(endPos, nextWP.P);
+                    if (distance_m < 120000)
+                    {
+                        tempEndPos = endPos;
+                        continue;
+                    }
+                    if (distance_m < tempDistance_m)
+                    {
+                        tempDistance_m = distance_m;
+                        tempEndPos = endPos;
+                    }
+
                 }
-                else
-                {
-                    if (army == 1) endPos.x = twcmap_minX - 9000;
-                    else if (army == 2) endPos.x = twcmap_maxY + 9000;
-                    else endPos.x = twcmap_maxX + 9000;
-                    endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
-                    if (army == 1) endPos.y += 120000;
-                    else if (army == 2) endPos.y -= 60000;
-                    if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
-                    if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
-                }
+                endPos = tempEndPos;
 
                 //endPos.z = 25;  //Make them drop down so they drop off the radar 
                 //Ok, that was as bad idea for various reasons

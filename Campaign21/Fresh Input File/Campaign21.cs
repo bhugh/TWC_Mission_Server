@@ -6792,11 +6792,11 @@ public class Mission : AMission, IMainMission
         int numremoved = 0;
         //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
         //This should match the values in your .mis file, like
-        //BattleArea 10000 10000 350000 310000 10000
+        //BattleArea 10000 10000 360000 310000 10000
         //TODO: There is probably some way to access the size of the battle area programmatically
         double minX = 10000;
         double minY = 10000;
-        double maxX = 350000;
+        double maxX = 360000;
         double maxY = 310000;
         //////////////Comment this out as we don`t have Your Debug mode  
         DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");

@@ -50,7 +50,7 @@ public class Mission : AMission
     //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
     double twcmap_minX = 10000;
     double twcmap_minY = 10000;
-    double twcmap_maxX = 350000;
+    double twcmap_maxX = 360000;
     double twcmap_maxY = 310000;
 
     public IMainMission TWCMainMission;

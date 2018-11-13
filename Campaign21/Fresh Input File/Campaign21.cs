@@ -7451,7 +7451,7 @@ public class Mission : AMission, IMainMission
             addRadar("Dunkirk Radar #2",              "DuRN", 2, 1, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 15000, false, 35, "");
             addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 15000, false, 35, "");
             addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 15000, false, 15, ""); //Mission in mission file
+            addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 274246, 151127, 50, 15000, false, 15, ""); //Mission in mission file
             addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 15000, false, 15, ""); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
             addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
             addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 15000, false, 15, ""); //Mission in mission file
@@ -7540,7 +7540,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Depth Charge Workshop Portsmouth", "Port", 1, 2, "BTarget37", "TGroundDestroyed", 83, 76720, 194082, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen Storage Portsmouth", "Port", 1, 6, "BTarget38", "TGroundDestroyed", 75, 76805, 193918, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Wood Alcohol Fuel Storage Portsmouth", "Port", 1, 4, "BTarget39", "TGroundDestroyed", 98, 77392, 193942, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 77317, 193860, 50, false, 100, ""); //This is in Portsmouth    .  
+            addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 75166, 193414, 50, false, 100, ""); //This is in Portsmouth   and has been moved across the inlet on 11/12 by fatal .  
             addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", "Port", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, ""); //This is in Portsmouth.fixed 9/19 fatal
             addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 100, ""); //Guildford Target added 9/20
             addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 2,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 100, "");//Sheerness Diesel Fuel Storage
@@ -7548,7 +7548,7 @@ public class Mission : AMission, IMainMission
 			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,2,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 50, false, 100,"");  // "Queensborough Radio communications center"
 			addTrigger(MO_ObjectiveType.Building,"Queensborough radio tramsmission booster" ,     "Quee",1,2,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 50,  false, 100,""); //  "Queensborough radio tramsmission booster"
 			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,2,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 50, false, 100,""); //  "Queensborough Electrical Research Facility"
-			
+            addTrigger(MO_ObjectiveType.Building,"Beaufighter Research Facility",    "Farn",1,2,  "BTarget48", "TGroundDestroyed", 74, 99971, 247951, 50, false, 100,""); //  "Farnborough Beaufighter Research Facility"			
             /*
               BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "
               BTarget7S TGroundDestroyed 80 155050 273258 50      "Hydrogen Storage @ London south docks", 
@@ -7667,6 +7667,7 @@ public class Mission : AMission, IMainMission
                     { "Dove", "/Flak areas/Doverflak.mis" },
                     { "Dunk", "/Flak areas/Dunkirkflak.mis" },
                     { "Estr", "/Flak areas/Estreeflak.mis" },
+					{ "Farn", "/Flak areas/Farnflak.mis" },
                     { "Guil", "/Flak areas/Guildfordflak.mis" },
                     { "Havr", "/Flak areas/LeHavreflak.mis" },
                     { "Trep", "/Flak areas/LeTreportflak.mis" },

@@ -1,20 +1,20 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
-  BattleArea 10000 10000 350000 310000 10000
-  TIME 8.0000001937151
-  WeatherIndex 1
-  CloudsHeight 1500
-  BreezeActivity 0
-  ThermalActivity 0
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 4000
+  BreezeActivity 2
+  ThermalActivity 2
 [GlobalWind_0]
-  Power 0.000 0.000 0.000
+  Power 0.500 0.000 0.000
   BottomBound 0.00
   TopBound 5000.00
-  GustPower 1
-  GustAngle 0
+  GustPower 2
+  GustAngle -1
 [splines]
 [AirGroups]
   BoB_LW_KuFlGr_706.03
@@ -71,6 +71,9 @@
   BoB_RAF_F_92Sqn_Early.02
   BoB_LW_JG26_I.22
   BoB_LW_JG27_I.01
+  BoB_RAF_F_FatCat_Early.02
+  gb01.12
+  LONDON.13
 [BoB_LW_KuFlGr_706.03]
   Flight0  1 2 3
   Flight1  11 12
@@ -157,11 +160,11 @@
   Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
 [BoB_RA_43St_98Gruppo_241Sq.03_Way]
   NORMFLY 267939.50 127172.08 4000.00 250.00
-  NORMFLY 227902.78 213904.47 4000.00 250.00
-  GATTACK_POINT 234440.86 248401.54 4000.00 250.00
-  NORMFLY 238234.95 255223.18 4000.00 250.00
-  NORMFLY 221353.48 254178.16 4000.00 250.00
-  NORMFLY 220580.03 230674.83 4000.00 250.00
+  NORMFLY 195249.70 219232.08 4000.00 250.00
+  GATTACK_POINT 141739.70 234036.87 4000.00 250.00
+  NORMFLY 134611.26 236311.33 4000.00 250.00
+  NORMFLY 134172.26 229484.34 4000.00 250.00
+  NORMFLY 205703.51 192911.36 4000.00 250.00
   LANDING 287309.68 174281.95 4000.00 250.00
 [BoB_RAF_F_FatCat_Late.13]
   Flight0  1 2 3 4
@@ -259,7 +262,7 @@
   Skill 1 1 1 1 1 1 1 1
 [BoB_LW_LG2_I.01_Way]
   ESCORT 267900.26 126954.12 4100.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
-  ESCORT 227032.52 213366.17 4100.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
+  ESCORT 194695.20 219375.76 4100.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
   ESCORT 234599.32 249305.98 4100.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
   ESCORT 236806.89 254410.98 4100.00 300.00
   HUNTING 223009.60 241510.51 4100.00 300.00
@@ -267,20 +270,20 @@
   LANDING 285097.40 182734.05 500.00 300.00
 [BoB_LW_LG2_I.02]
   Flight1  13 12
-  Class Aircraft.Bf-109E-3
+  Class Aircraft.Bf-110C-7
   Formation FINGERFOUR
   CallSign 32
   Fuel 100
-  Weapons 1 1
+  Weapons 1
   SpawnFromScript 1
   Skill 1 1 1 1 1 1 1 1
 [BoB_LW_LG2_I.02_Way]
   ESCORT 268010.56 127099.12 4100.00 300.00
-  AATTACK_FIGHTERS 227388.23 213961.33 4100.00 300.00
-  AATTACK_FIGHTERS 235772.09 248409.16 4100.00 300.00
-  AATTACK_FIGHTERS 238600.54 254617.94 4100.00 300.00
-  AATTACK_FIGHTERS 218594.46 234128.96 4100.00 300.00
-  AATTACK_FIGHTERS 213075.55 217641.20 4100.00 300.00
+  AATTACK_FIGHTERS 195861.72 219160.10 4100.00 300.00
+  AATTACK_FIGHTERS 133765.24 236576.21 4100.00 300.00
+  AATTACK_FIGHTERS 155182.93 228359.41 4100.00 300.00
+  AATTACK_FIGHTERS 158179.05 215976.62 4100.00 300.00
+  AATTACK_FIGHTERS 183629.97 204477.29 4100.00 300.00
   AATTACK_FIGHTERS 242325.80 242890.24 4100.00 300.00
   LANDING 306483.21 160658.39 4100.00 300.00
 [BoB_LW_LG2_I.04]
@@ -318,13 +321,13 @@
   Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
 [BoB_LW_LG2_I.11_Way]
   ESCORT 268156.25 127132.50 4000.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
-  ESCORT 227161.09 212584.35 4000.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
-  ESCORT 235743.08 249863.29 4000.00 300.00
-  ESCORT 215928.81 232947.02 4000.00 300.00
-  HUNTING 234866.94 231801.30 4000.00 300.00
-  HUNTING 215457.04 230251.20 4000.00 300.00
-  HUNTING 234934.33 228970.69 4000.00 300.00
-  HUNTING 213300.38 226342.26 4000.00 300.00
+  ESCORT 195014.55 218689.33 4000.00 300.00 BoB_RA_43St_98Gruppo_241Sq.03 0
+  ESCORT 135100.72 236161.23 4000.00 300.00
+  ESCORT 195420.90 231621.99 4000.00 300.00
+  HUNTING 197404.61 231108.67 4000.00 300.00
+  HUNTING 197538.97 229709.14 4000.00 300.00
+  HUNTING 197200.97 228518.97 4000.00 300.00
+  HUNTING 194719.79 221614.30 4000.00 300.00
   LANDING 278000.05 182198.22 500.00 300.00
 [BoB_LW_LG2_I.16]
   Flight1  11 12 13 14
@@ -983,10 +986,11 @@
   Flight0  1 2
   Flight2  21 22 23 24
   Class Aircraft.Bf-109E-3
-  Formation FINGERFOUR
+  Formation LINEASTERN
   CallSign 17
   Fuel 100
   Weapons 1 1
+  SpawnFromScript 1
   Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
 [BoB_LW_JG26_I.25_Way]
   HUNTING 332439.93 207040.25 1000.00 300.00
@@ -1275,6 +1279,54 @@
   HUNTING 270877.10 129859.94 5000.00 300.00
   HUNTING 284058.64 129744.27 5000.00 300.00
   LANDING 283999.50 125420.18 5000.00 300.00
+[BoB_RAF_F_FatCat_Early.02]
+  Flight1  11 12
+  Class Aircraft.BeaufighterMkIF
+  Formation VIC3
+  CallSign 28
+  Fuel 100
+  Weapons 1 1
+  SpawnFromScript 1
+  Skill 1 1 1 1 1 1 1 1
+[BoB_RAF_F_FatCat_Early.02_Way]
+  ESCORT 156604.63 206692.52 3300.00 250.00
+  ESCORT 283195.69 120925.84 3300.00 250.00
+  ESCORT 354656.92 121447.59 3300.00 250.00
+  ESCORT 351526.38 145135.35 3300.00 250.00
+  ESCORT 250201.23 147326.73 3300.00 250.00
+  ESCORT 164111.37 205867.83 3300.00 250.00
+  LANDING 141857.96 233995.56 500.00 300.00
+[gb01.12]
+  Flight1  11 12 13
+  Class Aircraft.BeaufighterMkIF
+  Formation VIC3
+  CallSign 2
+  Fuel 100
+  Weapons 1 1
+  SpawnFromScript 1
+  Skill 1 1 1 1 1 1 1 1
+[gb01.12_Way]
+  ESCORT 169867.86 209148.06 500.00 300.00
+  ESCORT 230392.90 99645.32 500.00 300.00
+  ESCORT 161408.98 55442.03 500.00 300.00
+  ESCORT 167213.45 211269.78 500.00 300.00
+  LANDING 120088.49 255067.13 500.00 300.00
+[LONDON.13]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.BeaufighterMkIF
+  Formation VIC3
+  CallSign 32
+  Fuel 100
+  Weapons 1 1
+  Skill 1 1 1 1 1 1 1 1
+[LONDON.13_Way]
+  ESCORT 179223.09 213902.96 3300.00 250.00
+  ESCORT 158557.57 55894.03 3300.00 250.00
+  ESCORT 116495.01 16825.02 3300.00 250.00
+  ESCORT 28163.63 70226.19 3300.00 250.00
+  ESCORT 80650.39 183977.99 3300.00 250.00
+  LANDING 89794.42 196048.11 500.00 300.00
 [CustomChiefs]
   Train.custom_chief27 $core/icons/tank.mma
 [Train.custom_chief27]
@@ -1434,11 +1486,40 @@
   Static632 Artillery.20_mm_Flak_38 de 293530.47 64107.80 65.00 /timeout 0/radius_hide 0
   Static669 Artillery.20_mm_Flak_38 de 44634.12 70588.39 65.00 /timeout 0/radius_hide 0
   Static668 Artillery.20_mm_Flak_38 de 42869.73 70922.20 65.00 /timeout 0/radius_hide 0
+  Static966 Stationary.Bf-108B-2 de 27478.49 72441.30 40.00 
+  Static933 Stationary.Airfield.blister_hangar nn 27478.63 72441.12 45.00 
+  Static965 Stationary.Bf-108B-2 de 27519.48 72447.59 40.00 
+  Static934 Stationary.Airfield.blister_hangar nn 27519.60 72447.46 45.00 
+  Static956 Stationary.Bf-108B-2 de 27823.19 72441.90 145.00 
+  Static952 Stationary.Airfield.blister_hangar nn 27824.89 72442.27 45.00 
+  Static957 Stationary.Bf-108B-2 de 27865.33 72414.70 145.00 
+  Static951 Stationary.Airfield.blister_hangar nn 27865.29 72414.57 115.00 
+  Static950 Stationary.Airfield.blister_hangar nn 27891.26 72410.53 105.00 
+  Static958 Stationary.Bf-108B-2 de 27891.30 72410.54 145.00 
+  Static959 Stationary.Bf-108B-2 de 27968.71 72391.92 145.00 
+  Static948 Stationary.Airfield.blister_hangar nn 27974.94 72389.75 145.00 
+  Static969 Stationary.Bf-108B-2 de 28024.76 72401.94 145.00 
+  Static949 Stationary.Airfield.blister_hangar nn 28025.15 72401.87 145.00 
+  Static967 Stationary.Bf-108B-2 de 27461.91 72470.20 40.00 
+  Static968 Stationary.Bf-108B-2 de 27457.58 72506.95 40.00 
+  Static944 Stationary.Airfield.blister_hangar nn 27578.47 72465.35 45.00 
+  Static964 Stationary.Bf-108B-2 de 27578.52 72465.47 40.00 
+  Static945 Stationary.Airfield.blister_hangar nn 27637.33 72463.63 45.00 
+  Static963 Stationary.Bf-108B-2 de 27637.32 72463.67 40.00 
+  Static962 Stationary.Bf-108B-2 de 27664.43 72468.33 40.00 
+  Static946 Stationary.Airfield.blister_hangar nn 27664.46 72468.24 45.00 
+  Static961 Stationary.Bf-108B-2 de 27713.51 72472.90 40.00 
+  Static947 Stationary.Airfield.blister_hangar nn 27713.51 72472.86 45.00 
+  Static954 Stationary.Airfield.blister_hangar nn 27761.99 72466.51 45.00 
+  Static960 Stationary.Bf-108B-2 de 27762.03 72466.64 40.00 
+  Static953 Stationary.Airfield.blister_hangar nn 27793.73 72448.04 45.00 
+  Static955 Stationary.Bf-108B-2 de 27793.80 72448.02 145.00 
   Static671 Artillery.20_mm_Flak_38 de 27355.14 72537.23 65.00 /timeout 0/radius_hide 0
   Static630 Artillery.20_mm_Flak_38 de 285700.78 69858.81 65.00 /timeout 0/radius_hide 0
   Static631 Artillery.20_mm_Flak_38 de 290620.31 73184.70 65.00 /timeout 0/radius_hide 0
   Static3772 Stationary.Environment.JerryCan_GER1_1 de 17032.64 77665.91 659.10 
   Static3302 Stationary.Radar.Wotan_I de 17036.02 77667.20 100.00 
+  Static891 Stationary.Unic_P107 de 17035.34 77674.14 95.00 
   Static4034 Stationary.AEC_Regent_II nn 177758.23 82054.52 0.00 
   Static3122 Stationary.Environment.JerryCan_GER1_1 nn 293787.38 84909.07 659.10 
   Static3121 Stationary.Environment.JerryCan_GER1_1 nn 293784.63 84925.63 659.10 
@@ -1448,19 +1529,19 @@
   Static1902 Stationary.Opel_Blitz_fuel de 293786.78 84952.17 659.10 
   Static1842 Stationary.Ford_G917 de 293791.38 84954.10 659.10 
   Static1903 Stationary.Unic_P107 de 293797.13 84948.85 659.10 
-  Static3109 Stationary.Environment.JerryCan_GER1_1 nn 293786.75 84960.89 659.10 
+  Static3109 Stationary.Environment.JerryCan_GER1_3 nn 293786.75 84960.89 659.10 
   Static1843 Stationary.Ford_G917 de 293794.41 84955.51 659.10 
   Static1844 Stationary.Ford_G917 de 293778.13 84972.62 659.10 
-  Static1904 Stationary.Opel_Blitz_fuel de 293802.44 84953.34 659.10 
   Static3120 Stationary.Environment.JerryCan_GER1_1 nn 293773.50 84982.07 659.10 
-  Static1846 Stationary.Ford_G917 de 293773.34 84984.07 659.10 
+  Static1904 Stationary.Opel_Blitz_fuel de 293802.44 84953.34 659.10 
   Static1845 Stationary.Opel_Blitz_fuel de 293798.88 84959.62 659.10 
+  Static1846 Stationary.Ford_G917 de 293773.34 84984.07 659.10 
   Static1848 Stationary.Opel_Blitz_fuel de 293795.44 84965.45 659.10 
   Static1849 Stationary.Ford_G917 de 293789.53 84974.34 659.10 
   Static1850 Stationary.Ford_G917 de 293818.50 84946.89 659.10 
   Static1851 Stationary.Ford_G917 de 293781.13 84983.62 659.10 
-  Static1852 Stationary.Renault_UE de 293799.16 84967.07 659.10 
   Static1853 Stationary.Ford_G917 de 293804.81 84962.30 659.10 
+  Static1852 Stationary.Renault_UE de 293799.16 84967.07 659.10 
   Static3108 Stationary.Environment.JerryCan_GER1_1 nn 293803.41 84965.97 659.10 
   Static1855 Stationary.Renault_UE de 293801.88 84968.54 659.10 
   Static1856 Stationary.SdKfz_10_1 de 293804.91 84970.09 659.10 
@@ -1498,8 +1579,8 @@
   Static1872 Stationary.Ford_G917 de 293819.19 84996.46 659.10 
   Static1873 Stationary.Ford_G917 de 293816.25 85005.57 659.10 
   Static1874 Stationary.Ford_G917 de 293810.91 85014.10 659.10 
-  Static1892 Stationary.Ford_G917 de 293818.88 85018.17 659.10 
   Static3118 Stationary.Environment.JerryCan_GER1_1 nn 293818.38 85018.80 659.10 
+  Static1892 Stationary.Ford_G917 de 293818.88 85018.17 659.10 
   Static1877 Stationary.Ford_G917 de 293828.16 84999.65 659.10 
   Static1878 Stationary.Ford_G917 de 293824.81 85008.76 659.10 
   Static3117 Stationary.Environment.JerryCan_GER1_1 nn 293825.38 85008.29 659.10 
@@ -1715,8 +1796,8 @@
   Static1306 Stationary.Ford_G917 de 280176.81 164360.66 659.10 
   Static1281 Stationary.Renault_UE de 280171.16 164365.42 659.10 
   Static2726 Stationary.Opel_Blitz_fuel de 280139.69 164399.19 659.10 
-  Static1311 Stationary.Ford_G917 de 280144.66 164395.22 659.10 
   Static1282 Stationary.Renault_UE de 280173.88 164366.89 659.10 
+  Static1311 Stationary.Ford_G917 de 280144.66 164395.22 659.10 
   Static2727 Stationary.Opel_Blitz_fuel de 280155.47 164388.33 659.10 
   Static1283 Stationary.SdKfz_10_1 de 280176.91 164368.44 659.10 
   Static1309 Stationary.Ford_G917 de 280139.38 164406.80 659.10 
@@ -1783,25 +1864,61 @@
   Static2641 Stationary.AEC_Regent_II de 268029.59 165171.84 659.10 
   Static2642 Stationary.AEC_Regent_II de 279897.34 165054.53 659.10 
   Static615 Artillery.20_mm_Flak_38 de 268613.19 165959.69 65.00 /timeout 0/radius_hide 0
+  Static1014 Stationary.Environment.TelegaBallon_UK1 gb 65285.39 169637.17 719.10 
+  Static829 Stationary.Radar.EnglishRadar1 gb 65321.86 169651.80 105.00 
+  Static1015 Stationary.Environment.TelegaBallon_UK1 gb 65355.22 169654.48 719.10 
+  Static869 Stationary.Environment.FuelDrum_UK1_9 nn 15846.07 170462.84 90.00 
+  Static1005 Stationary.Industrial.Railroad.SmallFactory gb 15881.34 170490.02 719.10 
+  Static1010 Stationary.Environment.TelegaBallon_UK1 gb 15883.64 170489.30 719.10 
+  Static870 Stationary.Environment.FuelDrum_UK1_9 nn 15921.21 170461.83 90.00 
+  Static429 Stationary.Radar.EnglishRadar1 gb 15950.52 170466.16 90.00 
+  Static1009 Stationary.Environment.TelegaBallon_UK1 gb 15953.18 170488.88 719.10 
+  Static1006 Stationary.Industrial.Railroad.SmallFactory gb 15956.95 170489.19 719.10 
+  Static871 Stationary.Environment.FuelDrum_UK1_9 nn 15981.51 170469.66 90.00 
+  Static1007 Stationary.Industrial.Railroad.SmallFactory gb 16025.91 170487.47 719.10 
+  Static1008 Stationary.Environment.TelegaBallon_UK1 gb 16028.81 170487.33 719.10 
+  Static872 Stationary.Environment.FuelDrum_UK1_9 nn 16063.21 170462.44 90.00 
   Static2638 Stationary.AEC_Regent_II de 266435.41 166530.97 659.10 
-  Static832 Stationary.Environment.JerryCan_GER1_3 gb 15648.34 170535.17 90.00 
-  Static429 Stationary.Radar.EnglishRadar1 gb 15649.56 170542.03 90.00 
   Static2640 Stationary.AEC_Regent_II de 269063.59 166684.17 659.10 
   Static2637 Stationary.AEC_Regent_II de 266011.97 167291.95 659.10 
   Static614 Artillery.20_mm_Flak_38 de 267106.03 167303.03 65.00 /timeout 0/radius_hide 0
   Static2639 Stationary.AEC_Regent_II de 265324.63 168095.89 659.10 
   Static406 Artillery.3_7_inch_QF_Mk_I gb 70633.63 171351.44 110.00 /timeout 0/radius_hide 0
   Static407 Artillery.3_7_inch_QF_Mk_I gb 70680.88 171356.28 110.00 /timeout 0/radius_hide 0
-  Static887 Stationary.Environment.JerryCan_GER1_3 gb 70720.63 171361.41 90.00 
   Static427 Artillery.3_7_inch_QF_Mk_I gb 70739.75 171364.89 110.00 /timeout 0/radius_hide 0
   Static428 Artillery.3_7_inch_QF_Mk_I gb 70839.02 171382.20 110.00 /timeout 0/radius_hide 0
-  Static821 Stationary.Environment.JerryCan_GER1_3 gb 70516.67 171748.91 90.00 
+  Static830 Stationary.Environment.TelegaBallon_UK1 gb 70439.69 171685.39 0.00 
+  Static835 Stationary.Environment.FuelDrum_UK1_9 gb 70513.50 171696.42 0.00 
+  Static836 Stationary.Environment.FuelDrum_UK1_9 gb 70589.20 171698.30 0.00 
+  Static833 Stationary.Environment.FuelDrum_UK1_9 gb 70417.23 171752.53 0.00 
+  Static1011 Stationary.Environment.TelegaBallon_UK1 gb 70448.46 171732.83 719.10 
+  Static1004 Stationary.Industrial.Railroad.SmallFactory gb 70446.17 171734.52 724.10 
+  Static1012 Stationary.Environment.TelegaBallon_UK1 gb 70502.34 171715.70 719.10 
+  Static1003 Stationary.Industrial.Railroad.SmallFactory gb 70505.83 171718.27 724.10 
+  Static1000 Stationary.Industrial.Railroad.SmallFactory gb 70588.83 171731.80 724.10 
+  Static834 Stationary.Environment.FuelDrum_UK1_9 gb 70585.81 171764.42 0.00 
+  Static1013 Stationary.Environment.TelegaBallon_UK1 gb 70593.06 171730.53 719.10 
+  Static831 Stationary.Environment.TelegaBallon_UK1 gb 70445.52 171790.19 0.00 
   Static2158 Stationary.Radar.EnglishRadar1 gb 70520.80 171784.30 90.00 
+  Static832 Stationary.Environment.JerryCan_GER1_3 gb 70593.00 171781.45 0.00 
   Static771 Artillery.20_mm_Flak_38 de 265423.00 171215.22 65.00 /timeout 0/radius_hide 0
   Static769 Stationary.Radar.Wotan_I de 265319.09 171409.73 65.00 
   Static3425 Stationary.AEC_Regent_II gb 71747.72 174524.59 0.00 
   Static770 Artillery.20_mm_Flak_38 de 264992.78 171698.20 65.00 /timeout 0/radius_hide 0
   Static688 Artillery.20_mm_Flak_38 de 321813.25 172457.06 65.00 /timeout 0/radius_hide 0
+  Static879 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43469.06 177926.45 90.00 
+  Static888 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43473.25 177922.55 180.00 
+  Static890 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43481.80 177922.58 180.00 
+  Static880 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43469.06 177936.31 90.00 
+  Static889 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43490.34 177922.61 180.00 
+  Static881 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43468.97 177946.13 90.00 
+  Static873 Stationary.Opel_Blitz_fuel de 43482.88 177937.39 90.00 
+  Static882 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43495.27 177927.13 90.00 
+  Static885 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43475.04 177949.28 180.00 
+  Static887 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43482.57 177949.30 180.00 
+  Static883 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43495.27 177937.09 90.00 
+  Static886 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43490.32 177949.05 180.00 
+  Static884 Stationary.Environment.Polotnische_10x1_5_white_1 nn 43495.36 177946.66 90.00 
   Static3424 Stationary.AEC_Regent_II gb 73649.99 177667.47 0.00 
   Static612 Artillery.20_mm_Flak_38 de 264709.53 178032.84 65.00 /timeout 0/radius_hide 0
   Static1569 Stationary.Radar.Wotan_I de 264883.31 178122.23 65.00 
@@ -1848,7 +1965,7 @@
   Static718 Stationary.Environment.TelegaBallon_UK1 de 264694.09 189712.31 285.00 
   Static727 Stationary.Environment.JerryCan_GER1_3 de 264694.28 189750.05 659.10 
   Static734 Stationary.Environment.JerryCan_GER1_3 de 265180.97 189787.17 659.10 
-  Static3410 Stationary.AEC_Regent_II gb 74612.63 192886.00 0.00 
+  Static3410 Stationary.AEC_Regent_II gb 73674.59 192791.81 0.00 
   Static731 Stationary.Environment.JerryCan_GER1_3 de 265570.66 189893.17 659.10 
   Static1809 Stationary.Environment.TelegaBallon_UK1 de 265584.91 189906.42 285.00 
   Static728 Stationary.Environment.JerryCan_GER1_3 de 264222.13 189967.48 659.10 
@@ -1865,8 +1982,6 @@
   Static2632 Stationary.AEC_Regent_II de 267093.91 190609.53 659.10 
   Static4558 Stationary.Environment.TelegaBallon_UK1 gb 76450.92 193668.30 0.00 
   Static3759 Stationary.Environment.JerryCan_GER1_2 nn 76447.77 193671.75 0.00 
-  Static824 Stationary.Environment.JerryCan_GER1_3 gb 76621.88 193717.69 90.00 
-  Static827 Stationary.Environment.JerryCan_GER1_3 gb 75219.30 193769.50 90.00 
   Static3768 Stationary.Environment.JerryCan_GER1_2 nn 76474.57 193830.81 0.00 
   Static4557 Stationary.Environment.TelegaBallon_UK1 gb 76477.12 193846.70 0.00 
   Static2904 Stationary.AEC_Regent_II gb 174295.44 192321.06 0.00 
@@ -1874,14 +1989,13 @@
   Static4556 Stationary.Environment.TelegaBallon_UK1 gb 76322.30 193919.14 0.00 
   Static4563 Stationary.Environment.TelegaBallon_UK1 gb 76797.20 193906.67 0.00 
   Static3761 Stationary.Environment.JerryCan_GER1_2 nn 76808.84 193916.52 0.00 
-  Static3758 Stationary.Environment.JerryCan_GER1_2 nn 77310.19 193860.47 0.00 
-  Static4561 Stationary.Environment.TelegaBallon_UK1 nn 77333.59 193859.59 0.00 
-  Static825 Stationary.Environment.JerryCan_GER1_3 gb 77173.28 193961.94 90.00 
-  Static3757 Stationary.Environment.JerryCan_GER1_2 nn 77389.09 193941.28 0.00 
+  Static3758 Stationary.Environment.JerryCan_GER1_2 gb 75136.23 193411.77 0.00 
+  Static4561 Stationary.Environment.TelegaBallon_UK1 gb 75143.78 193406.16 0.00 
+  Static3757 Stationary.Environment.JerryCan_GER1_2 gb 77389.09 193941.28 0.00 
   Static4560 Stationary.Environment.TelegaBallon_UK1 nn 77395.13 193939.00 0.00 
   Static4609 Stationary.Environment.TelegaBallon_UK1 gb 77381.31 193955.73 0.00 
   Static4566 Stationary.Environment.JerryCan_GER1_2 nn 76663.70 193999.53 0.00 
-  Static4567 Stationary.Environment.JerryCan_GER1_2 nn 76641.87 194042.20 0.00 
+  Static4567 Stationary.Environment.JerryCan_GER1_2 gb 76641.87 194042.20 0.00 
   Static4565 Stationary.Environment.JerryCan_GER1_2 nn 76867.60 194042.88 0.00 
   Static4559 Stationary.Environment.TelegaBallon_UK1 gb 76720.27 194073.97 0.00 
   Static3760 Stationary.Environment.JerryCan_GER1_2 nn 76720.77 194080.91 0.00 
@@ -1889,15 +2003,12 @@
   Static4590 Stationary.Environment.TelegaBallon_UK1 gb 76833.84 194072.77 0.00 
   Static4555 Stationary.Environment.TelegaBallon_UK1 gb 76369.12 194167.75 0.00 
   Static3755 Stationary.Environment.JerryCan_GER1_2 nn 76377.59 194163.73 0.00 
-  Static3753 Stationary.Industrial.Oxygen_Facility nn 76631.77 194141.70 0.00 
-  Static823 Stationary.Environment.JerryCan_GER1_3 gb 76851.31 194124.77 90.00 
-  Static826 Stationary.Environment.JerryCan_GER1_3 gb 76410.93 194183.97 90.00 
+  Static3753 Stationary.Industrial.Oxygen_Facility gb 76631.77 194141.70 0.00 
   Static691 Artillery.20_mm_Flak_38 de 318193.56 190447.69 65.00 /timeout 0/radius_hide 0
   Static3754 Stationary.Environment.Portable_Siren_UK1 gb 76368.98 194277.84 0.00 
   Static3763 Stationary.Environment.JerryCan_GER1_2 nn 76843.72 194412.19 0.00 
   Static4562 Stationary.Environment.TelegaBallon_UK1 gb 76859.21 194415.38 0.00 
   Static3762 Stationary.Environment.JerryCan_GER1_2 nn 76867.41 194411.19 0.00 
-  Static822 Stationary.Environment.JerryCan_GER1_3 gb 76777.30 194454.13 90.00 
   Static3409 Stationary.AEC_Regent_II gb 78470.66 194631.73 0.00 
   Static2903 Stationary.AEC_Regent_II gb 175850.23 193844.77 0.00 
   Static2631 Stationary.AEC_Regent_II de 313088.06 192268.86 659.10 
@@ -1910,16 +2021,37 @@
   Static1143 Stationary.Environment.RRH_GER1 de 313727.84 192720.48 629.10 
   Static1208 Stationary.Industrial.Smoke_Pipe nn 313744.78 192713.14 629.10 
   Static2630 Stationary.AEC_Regent_II de 312512.03 192998.28 659.10 
-  Static2156 Stationary.Radar.EnglishRadar1 gb 123466.00 196359.27 5.00 
-  Static831 Stationary.Environment.JerryCan_GER1_3 gb 123472.25 196356.83 90.00 
+  Static840 Stationary.Environment.FuelDrum_UK1_9 gb 123473.73 196254.23 0.00 
+  Static837 Stationary.Environment.FuelDrum_UK1_9 gb 123464.50 196320.58 0.00 
+  Static1001 Stationary.Industrial.Railroad.SmallFactory gb 123494.38 196292.34 724.10 
+  Static1017 Stationary.Environment.TelegaBallon_UK1 gb 123498.95 196292.16 719.10 
+  Static2156 Stationary.Radar.EnglishRadar1 gb 123466.00 196371.73 5.00 
+  Static1016 Stationary.Environment.TelegaBallon_UK1 gb 123485.32 196363.36 719.10 
+  Static1002 Stationary.Industrial.Railroad.SmallFactory gb 123488.39 196361.64 724.10 
+  Static838 Stationary.Environment.FuelDrum_UK1_9 gb 123461.80 196398.27 0.00 
   Static385 Artillery.3_7_inch_QF_Mk_I gb 123690.29 196404.28 110.00 /timeout 0/radius_hide 0
   Static404 Artillery.3_7_inch_QF_Mk_I gb 123727.25 196406.00 110.00 /timeout 0/radius_hide 0
+  Static839 Stationary.Environment.FuelDrum_UK1_9 gb 123451.20 196465.36 0.00 
+  Static999 Stationary.Industrial.Railroad.SmallFactory gb 123478.59 196447.22 724.10 
+  Static1018 Stationary.Environment.TelegaBallon_UK1 gb 123484.05 196448.73 719.10 
   Static365 Artillery.3_7_inch_QF_Mk_I gb 123689.15 196437.84 110.00 /timeout 0/radius_hide 0
   Static364 Artillery.3_7_inch_QF_Mk_I gb 123705.62 196431.55 110.00 /timeout 0/radius_hide 0
   Static431 Artillery.3_7_inch_QF_Mk_I gb 179082.66 196828.75 110.00 /timeout 0/radius_hide 0
   Static343 Artillery.3_7_inch_QF_Mk_I gb 179249.58 196918.72 110.00 /timeout 0/radius_hide 0
-  Static833 Stationary.Environment.JerryCan_GER1_3 gb 178825.45 197291.86 90.00 
-  Static430 Stationary.Radar.EnglishRadar1 gb 178847.52 197272.94 100.00 
+  Static845 Stationary.Environment.FuelDrum_UK1_9 gb 178562.53 197224.27 0.00 
+  Static847 Stationary.Environment.FuelDrum_UK1_9 gb 178594.36 197193.78 0.00 
+  Static846 Stationary.Environment.FuelDrum_UK1_9 gb 178625.11 197220.48 0.00 
+  Static844 Stationary.Environment.FuelDrum_UK1_9 gb 178593.55 197255.02 0.00 
+  Static841 Stationary.Environment.FuelDrum_UK1_9 gb 178745.08 197256.44 0.00 
+  Static996 Stationary.Industrial.Railroad.SmallFactory gb 178769.31 197267.61 374.10 
+  Static1021 Stationary.Environment.TelegaBallon_UK1 gb 178772.50 197269.72 719.10 
+  Static842 Stationary.Environment.FuelDrum_UK1_9 gb 178817.00 197270.23 0.00 
+  Static997 Stationary.Industrial.Railroad.SmallFactory gb 178847.94 197281.34 374.10 
+  Static1020 Stationary.Environment.TelegaBallon_UK1 gb 178849.19 197282.47 719.10 
+  Static430 Stationary.Radar.EnglishRadar1 gb 178847.52 197295.59 100.00 
+  Static998 Stationary.Industrial.Railroad.SmallFactory gb 178927.64 197295.09 374.10 
+  Static1019 Stationary.Environment.TelegaBallon_UK1 gb 178930.20 197297.75 719.10 
+  Static843 Stationary.Environment.FuelDrum_UK1_9 gb 178960.84 197297.81 0.00 
   Static690 Artillery.20_mm_Flak_38 de 318385.50 195130.94 65.00 /timeout 0/radius_hide 0
   Static363 Artillery.3_7_inch_QF_Mk_I gb 178587.34 197574.16 110.00 /timeout 0/radius_hide 0
   Static362 Artillery.3_7_inch_QF_Mk_I gb 178773.08 197661.61 110.00 /timeout 0/radius_hide 0
@@ -1987,17 +2119,16 @@
   Static3407 Stationary.Environment.JerryCan_GER1_2 nn 56984.21 203719.55 0.00 
   Static3403 Stationary.Environment.CamoNetAT nn 56988.81 203718.67 0.00 
   Static3402 Stationary.Environment.CamoNetAT nn 56988.81 203741.45 0.00 
-  Static3399 Stationary.Environment.CamoNetPlane nn 57009.96 203728.02 0.00 
   Static4573 Stationary.Environment.TelegaBallon_UK1 gb 57008.79 203729.50 0.00 
+  Static3399 Stationary.Environment.CamoNetPlane nn 57009.96 203728.02 0.00 
   Static3401 Stationary.Environment.CamoNetAT nn 56988.81 203760.27 0.00 
   Static3405 Stationary.Environment.JerryCan_GER1_2 nn 57001.73 203756.45 0.00 
   Static3398 Stationary.Environment.CamoNetPlane nn 57010.78 203758.08 0.00 
-  Static830 Stationary.Environment.JerryCan_GER1_3 gb 57030.86 203720.19 90.00 
   Static3404 Stationary.Environment.FieldKitchen_UK1 nn 57027.37 203756.06 0.00 
   Static3293 Stationary.Environment.JerryCan_GER1_2 nn 57095.84 203775.77 0.00 
   Static4569 Stationary.Environment.TelegaBallon_UK1 gb 57100.85 203774.50 0.00 
-  Static1584 Stationary.Environment.SandBagWall_Arch nn 271722.94 200390.98 529.10 
   Static1585 Stationary.Environment.SandBagWall_Arch2 nn 271726.59 200386.27 820.00 
+  Static1584 Stationary.Environment.SandBagWall_Arch nn 271722.94 200390.98 529.10 
   Static1593 Stationary.Flak37_transport de 271730.34 200384.44 1100.00 
   Static1592 Stationary.Flak37_transport de 271729.13 200387.44 1100.00 
   Static1591 Stationary.Flak37_transport de 271728.00 200390.63 1100.00 
@@ -2019,18 +2150,16 @@
   Static3295 Stationary.Environment.Fire_pump_UK gb 57042.96 203784.02 0.00 
   Static3294 Stationary.Environment.JerryCan_GER1_2 nn 57058.00 203800.58 0.00 
   Static4568 Stationary.Environment.TelegaBallon_UK1 gb 57060.03 203805.50 0.00 
-  Static829 Stationary.Environment.JerryCan_GER1_3 gb 57071.82 203824.05 90.00 
   Static3291 Stationary.Environment.JerryCan_GER1_2 nn 57126.13 203807.25 0.00 
   Static4571 Stationary.Environment.TelegaBallon_UK1 nn 57128.68 203806.77 0.00 
-  Static828 Stationary.Environment.JerryCan_GER1_3 gb 56987.89 203901.52 90.00 
   Static763 Stationary.Environment.CamoNetPlane nn 57008.77 203884.11 50.00 
   Static758 Stationary.SpitfireMkI gb 57010.11 203887.16 -45.00 
   Static757 Stationary.SpitfireMkI gb 57014.32 203896.39 -45.00 
   Static762 Stationary.Environment.CamoNetPlane nn 57014.16 203896.03 50.00 
   Static755 Stationary.Industrial.Railroad.SmallFactory gb 57076.00 203850.05 -35.00 
   Static760 Stationary.SpitfireMkI gb 57073.20 203867.31 145.00 
-  Static759 Stationary.SpitfireMkI gb 57084.80 203860.48 145.00 
   Static764 Stationary.Environment.CamoNetPlane nn 57081.39 203863.28 55.00 
+  Static759 Stationary.SpitfireMkI gb 57084.80 203860.48 145.00 
   Static756 Stationary.SpitfireMkI gb 57019.22 203906.30 -45.00 
   Static761 Stationary.Environment.CamoNetPlane nn 57018.63 203909.09 50.00 
   Static608 Artillery.20_mm_Flak_38 de 276453.38 200529.20 65.00 /timeout 0/radius_hide 0
@@ -2139,9 +2268,8 @@
   Static299 Stationary.Environment.TentRidgeTent_UK1 gb 221353.52 213995.97 -179.10 
   Static295 Stationary.Environment.TentRidgeTent_UK1 gb 221353.39 214003.94 -179.10 
   Static300 Stationary.Environment.TentRidgeTent_UK1 gb 221364.14 213996.20 -179.10 
-  Static296 Stationary.Environment.TentRidgeTent_UK1 gb 221363.66 214003.94 -179.10 
   Static292 Stationary.Environment.TentMedicLarge_UK1 gb 221352.00 214014.67 -269.10 
-  Static837 Stationary.Environment.JerryCan_GER1_3 gb 221161.39 214024.53 90.00 
+  Static296 Stationary.Environment.TentRidgeTent_UK1 gb 221363.66 214003.94 -179.10 
   Static112 Stationary.Environment.SandBagWall_Line_4m nn 221196.34 214041.77 -60.90 /hstart -0.2
   Static113 Stationary.Environment.SandBagWall_Line_4m nn 221194.25 214044.72 -60.90 /hstart -0.2
   Static111 Stationary.Environment.SandBagWall_Line_4m nn 221199.41 214043.48 -60.90 
@@ -2149,10 +2277,10 @@
   Static107 Stationary.Environment.SandBagWall_Line nn 221201.97 214044.16 -105.00 
   Static105 Stationary.Environment.SandBagWall_Line nn 221203.78 214043.77 -100.00 
   Static109 Stationary.Environment.SandBagWall_Line nn 221199.25 214048.67 -15.90 
-  Static108 Stationary.Environment.SandBagWall_Line nn 221199.69 214050.39 -15.00 
   Static104 Stationary.Environment.SandBagWall_Line nn 221205.47 214044.13 -60.00 
-  Static95 Stationary.Environment.SandBagWall_Line nn 221200.63 214051.72 120.00 
+  Static108 Stationary.Environment.SandBagWall_Line nn 221199.69 214050.39 -15.00 
   Static82 Artillery.SoundLocator_MkIIIV_UK1 gb 221203.89 214048.22 130.00 /timeout 0/radius_hide 0
+  Static95 Stationary.Environment.SandBagWall_Line nn 221200.63 214051.72 120.00 
   Static103 Stationary.Environment.SandBagWall_Line nn 221207.06 214045.19 -55.00 
   Static102 Stationary.Environment.SandBagWall_Line nn 221207.92 214046.53 -15.00 
   Static96 Stationary.Environment.SandBagWall_Line nn 221202.09 214052.55 120.00 
@@ -2161,8 +2289,10 @@
   Static98 Stationary.Environment.SandBagWall_Line nn 221205.59 214052.45 80.00 
   Static100 Stationary.Environment.SandBagWall_Line nn 221207.98 214050.11 30.00 
   Static99 Stationary.Environment.SandBagWall_Line nn 221207.05 214051.61 35.00 
-  Static145 Stationary.Environment.SandBagWall_Line nn 221330.91 214076.23 245.00 
+  Static1024 Stationary.Environment.TelegaBallon_UK1 gb 221266.27 214073.77 719.10 
+  Static992 Stationary.Industrial.Railroad.SmallFactory gb 221265.45 214078.67 454.10 
   Static150 Stationary.Environment.SandBagWall_Line nn 221329.75 214077.39 205.00 
+  Static145 Stationary.Environment.SandBagWall_Line nn 221330.91 214076.23 245.00 
   Static151 Stationary.Environment.SandBagWall_Line nn 221328.98 214079.16 205.00 
   Static144 Stationary.Environment.SandBagWall_Line nn 221332.42 214075.52 245.00 
   Static160 Stationary.Environment.SandBagWall_Line nn 221334.03 214075.50 110.00 
@@ -2177,8 +2307,8 @@
   Static114 Stationary.Environment.SandBagWall_Line_4m nn 221199.70 214100.83 -25.90 
   Static115 Stationary.Environment.SandBagWall_Line_4m nn 221203.03 214099.00 -30.90 
   Static94 Stationary.Environment.SandBagWall_Line nn 221200.30 214103.42 -345.90 
-  Static92 Stationary.Environment.SandBagWall_Line nn 221204.91 214100.88 -75.00 
   Static93 Stationary.Environment.SandBagWall_Line nn 221199.83 214105.14 -345.00 
+  Static92 Stationary.Environment.SandBagWall_Line nn 221204.91 214100.88 -75.00 
   Static79 Stationary.Environment.SandBagWall_Line nn 221199.98 214106.75 -210.00 
   Static91 Stationary.Environment.SandBagWall_Line nn 221206.66 214101.44 -70.00 
   Static80 Stationary.Environment.SandBagWall_Line nn 221200.83 214108.20 -210.00 
@@ -2190,13 +2320,12 @@
   Static85 Stationary.Environment.SandBagWall_Line nn 221205.58 214109.86 -295.00 
   Static87 Stationary.Environment.SandBagWall_Line nn 221208.31 214107.70 -340.00 
   Static86 Stationary.Environment.SandBagWall_Line nn 221207.14 214109.03 -300.00 
-  Static834 Stationary.Environment.JerryCan_GER1_3 gb 221251.17 214137.03 90.00 
   Static175 Stationary.Environment.SandBagWall_Line nn 221307.83 214104.95 -120.00 
   Static176 Stationary.Environment.SandBagWall_Line nn 221306.66 214106.27 -160.00 
   Static174 Stationary.Environment.SandBagWall_Line nn 221309.39 214104.11 -115.00 
   Static177 Stationary.Environment.SandBagWall_Line nn 221306.08 214108.06 -165.00 
-  Static173 Stationary.Environment.SandBagWall_Line nn 221311.08 214104.11 -70.00 
   Static178 Stationary.Environment.SandBagWall_Line nn 221306.16 214109.67 -205.00 
+  Static173 Stationary.Environment.SandBagWall_Line nn 221311.08 214104.11 -70.00 
   Static189 Artillery.SoundLocator_MkIIIV_UK1 gb 221310.42 214108.63 -19.10 /timeout 0/radius_hide 0
   Static179 Stationary.Environment.SandBagWall_Line nn 221307.02 214111.38 -210.00 
   Static180 Stationary.Environment.SandBagWall_Line nn 221308.30 214112.53 -250.00 
@@ -2206,13 +2335,13 @@
   Static153 Stationary.Environment.SandBagWall_Line nn 221329.52 214082.47 155.00 
   Static167 Artillery.SoundLocator_MkIIIV_UK1 gb 221333.42 214080.19 255.00 /timeout 0/radius_hide 0
   Static154 Stationary.Environment.SandBagWall_Line nn 221330.73 214083.73 115.00 
-  Static155 Stationary.Environment.SandBagWall_Line nn 221332.48 214084.45 110.00 
   Static172 Stationary.Environment.SandBagWall_Line nn 221312.89 214104.73 -70.00 
+  Static155 Stationary.Environment.SandBagWall_Line nn 221332.48 214084.45 110.00 
   Static159 Stationary.Environment.SandBagWall_Line nn 221337.84 214080.94 20.00 
   Static156 Stationary.Environment.SandBagWall_Line nn 221334.08 214084.53 70.00 
   Static157 Stationary.Environment.SandBagWall_Line nn 221335.88 214083.83 65.00 
-  Static158 Stationary.Environment.SandBagWall_Line nn 221337.13 214082.64 25.00 
   Static171 Stationary.Environment.SandBagWall_Line nn 221314.13 214105.78 -30.00 
+  Static158 Stationary.Environment.SandBagWall_Line nn 221337.13 214082.64 25.00 
   Static170 Stationary.Environment.SandBagWall_Line nn 221314.98 214107.23 -30.00 
   Static182 Stationary.Environment.SandBagWall_Line nn 221315.14 214108.83 -165.00 
   Static183 Stationary.Environment.SandBagWall_Line nn 221314.66 214110.55 -165.90 
@@ -2220,11 +2349,10 @@
   Static186 Stationary.Environment.SandBagWall_Line_4m nn 221313.75 214117.98 -210.90 
   Static187 Stationary.Environment.SandBagWall_Line_4m nn 221317.02 214116.47 -210.90 
   Static322 Artillery.3_7_inch_QF_Mk_I gb 221342.14 214138.58 110.00 /timeout 0/radius_hide 0
-  Static836 Stationary.Environment.JerryCan_GER1_3 gb 221376.66 214092.67 90.00 
   Static271 Artillery.3_7_inch_QF_Mk_I gb 221146.20 214165.44 110.00 /timeout 0/radius_hide 0
   Static230 Stationary.Environment.SandBagWall_Line_4m nn 221181.63 214168.48 -60.90 
-  Static290 Artillery.3_7_inch_QF_Mk_I gb 221162.77 214188.23 110.00 /timeout 0/radius_hide 0
   Static231 Stationary.Environment.SandBagWall_Line_4m nn 221179.55 214171.44 -60.90 
+  Static290 Artillery.3_7_inch_QF_Mk_I gb 221162.77 214188.23 110.00 /timeout 0/radius_hide 0
   Static228 Stationary.Environment.SandBagWall_Line_4m nn 221182.73 214173.44 -55.90 
   Static265 Artillery.3_7_inch_QF_Mk_I gb 221157.88 214202.89 110.00 /timeout 0/radius_hide 0
   Static267 Artillery.3_7_inch_QF_Mk_I gb 221179.05 214203.98 110.00 /timeout 0/radius_hide 0
@@ -2234,24 +2362,26 @@
   Static224 Stationary.Environment.SandBagWall_Line nn 221189.06 214170.48 -100.00 
   Static223 Stationary.Environment.SandBagWall_Line nn 221190.77 214170.84 -60.00 
   Static226 Stationary.Environment.SandBagWall_Line nn 221184.98 214177.11 -15.00 
-  Static232 Artillery.SoundLocator_MkIIIV_UK1 gb 221189.19 214174.94 130.00 /timeout 0/radius_hide 0
   Static214 Stationary.Environment.SandBagWall_Line nn 221185.92 214178.44 120.00 
   Static222 Stationary.Environment.SandBagWall_Line nn 221192.34 214171.91 -55.00 
+  Static232 Artillery.SoundLocator_MkIIIV_UK1 gb 221189.19 214174.94 130.00 /timeout 0/radius_hide 0
   Static221 Stationary.Environment.SandBagWall_Line nn 221193.20 214173.25 -15.00 
   Static215 Stationary.Environment.SandBagWall_Line nn 221187.38 214179.27 120.00 
   Static216 Stationary.Environment.SandBagWall_Line nn 221188.98 214179.56 80.00 
   Static220 Stationary.Environment.SandBagWall_Line nn 221193.63 214175.09 -10.00 
-  Static219 Stationary.Environment.SandBagWall_Line nn 221193.27 214176.83 30.00 
   Static217 Stationary.Environment.SandBagWall_Line nn 221190.88 214179.17 80.00 
+  Static219 Stationary.Environment.SandBagWall_Line nn 221193.27 214176.83 30.00 
   Static218 Stationary.Environment.SandBagWall_Line nn 221192.34 214178.33 35.00 
   Static147 Stationary.Radar.EnglishRadar1 gb 221245.19 214147.89 5.00 
+  Static991 Stationary.Industrial.Railroad.SmallFactory gb 221255.91 214151.69 454.10 
+  Static1022 Stationary.Environment.TelegaBallon_UK1 gb 221256.00 214156.67 719.10 
   Static76 Stationary.Radar.EnglishRadar1 gb 221277.08 214153.84 5.00 
-  Static198 Stationary.Environment.SandBagWall_Line nn 221302.22 214160.34 -160.00 
   Static197 Stationary.Environment.SandBagWall_Line nn 221303.38 214159.03 -120.00 
   Static196 Stationary.Environment.SandBagWall_Line nn 221304.94 214158.19 -115.00 
+  Static198 Stationary.Environment.SandBagWall_Line nn 221302.22 214160.34 -160.00 
   Static199 Stationary.Environment.SandBagWall_Line nn 221301.63 214162.14 -165.00 
-  Static195 Stationary.Environment.SandBagWall_Line nn 221306.63 214158.19 -70.00 
   Static200 Stationary.Environment.SandBagWall_Line nn 221301.72 214163.75 -205.00 
+  Static195 Stationary.Environment.SandBagWall_Line nn 221306.63 214158.19 -70.00 
   Static194 Stationary.Environment.SandBagWall_Line nn 221308.45 214158.81 -70.00 
   Static210 Artillery.SoundLocator_MkIIIV_UK1 gb 221305.98 214162.70 -19.10 /timeout 0/radius_hide 0
   Static201 Stationary.Environment.SandBagWall_Line nn 221302.56 214165.47 -210.00 
@@ -2285,8 +2415,10 @@
   Static235 Stationary.Environment.SandBagWall_Line nn 221194.09 214231.02 -25.00 
   Static234 Stationary.Environment.SandBagWall_Line nn 221194.17 214232.63 -345.00 
   Static243 Stationary.Environment.SandBagWall_Line nn 221190.86 214236.58 -295.00 
-  Static241 Stationary.Environment.SandBagWall_Line nn 221192.44 214235.75 -300.00 
   Static236 Stationary.Environment.SandBagWall_Line nn 221193.59 214234.42 -340.00 
+  Static241 Stationary.Environment.SandBagWall_Line nn 221192.44 214235.75 -300.00 
+  Static1023 Stationary.Environment.TelegaBallon_UK1 gb 221255.25 214216.31 719.10 
+  Static990 Stationary.Industrial.Railroad.SmallFactory gb 221254.00 214218.97 454.10 
   Static125 Stationary.Environment.SandBagWall_Line nn 221282.45 214217.75 -70.00 
   Static124 Stationary.Environment.SandBagWall_Line nn 221284.27 214218.38 -70.00 
   Static123 Stationary.Environment.SandBagWall_Line nn 221285.50 214219.42 -30.00 
@@ -2298,10 +2430,8 @@
   Static136 Stationary.Environment.SandBagWall_Line_4m nn 221286.61 214226.80 -205.90 
   Static138 Stationary.Environment.SandBagWall_Line_4m nn 221285.11 214231.64 -210.90 
   Static139 Stationary.Environment.SandBagWall_Line_4m nn 221288.39 214230.13 -210.90 
-  Static838 Stationary.Environment.JerryCan_GER1_3 gb 221270.66 214258.19 90.00 
-  Static835 Stationary.Environment.JerryCan_GER1_3 gb 221183.03 214279.81 90.00 
-  Static278 Stationary.Environment.SandBagWall_Line nn 221212.59 214293.61 -160.00 
   Static277 Stationary.Environment.SandBagWall_Line nn 221213.75 214292.28 -120.00 
+  Static278 Stationary.Environment.SandBagWall_Line nn 221212.59 214293.61 -160.00 
   Static276 Stationary.Environment.SandBagWall_Line nn 221215.31 214291.45 -115.00 
   Static279 Stationary.Environment.SandBagWall_Line nn 221212.00 214295.39 -165.00 
   Static275 Stationary.Environment.SandBagWall_Line nn 221217.00 214291.44 -70.00 
@@ -2312,8 +2442,8 @@
   Static273 Stationary.Environment.SandBagWall_Line nn 221220.06 214293.11 -30.00 
   Static282 Stationary.Environment.SandBagWall_Line nn 221214.22 214299.88 -250.00 
   Static272 Stationary.Environment.SandBagWall_Line nn 221220.91 214294.56 -30.00 
-  Static283 Stationary.Environment.SandBagWall_Line nn 221215.98 214300.44 -255.00 
   Static245 Artillery.3_7_inch_QF_Mk_I gb 221239.47 214276.58 110.00 /timeout 0/radius_hide 0
+  Static283 Stationary.Environment.SandBagWall_Line nn 221215.98 214300.44 -255.00 
   Static285 Stationary.Environment.SandBagWall_Line nn 221220.58 214297.88 -165.90 
   Static284 Stationary.Environment.SandBagWall_Line nn 221221.08 214296.17 -165.00 
   Static287 Stationary.Environment.SandBagWall_Line_4m nn 221217.84 214302.31 -210.90 
@@ -2329,6 +2459,9 @@
   Static3204 Stationary.AEC_Regent_II nn 308738.75 214458.00 659.10 
   Static2619 Stationary.AEC_Regent_II de 284227.94 214863.13 659.10 
   Static2623 Stationary.AEC_Regent_II de 286975.66 214907.70 659.10 
+  Static993 Stationary.Industrial.Railroad.SmallFactory nn 211388.81 216102.98 454.10 
+  Static994 Stationary.Industrial.Railroad.SmallFactory nn 211458.03 216142.75 454.10 
+  Static995 Stationary.Industrial.Railroad.SmallFactory nn 211518.41 216178.09 454.10 
   Static2743 Stationary.Environment.JerryCan_GER1_1 nn 283965.19 215340.48 659.10 
   Static2742 Stationary.Environment.JerryCan_GER1_1 nn 283978.63 215348.28 659.10 
   Static2746 Stationary.Environment.JerryCan_GER1_1 nn 284001.84 215333.69 659.10 
@@ -2376,8 +2509,8 @@
   Static2171 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER nn 284878.63 216568.47 285.00 
   Static2167 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER nn 284883.72 216565.44 285.00 
   Static2163 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER nn 284889.59 216561.53 285.00 
-  Static2162 Stationary.Environment.TelegaBallon_UK1 de 284895.63 216558.05 285.00 
   Static2175 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 284888.78 216565.09 285.00 
+  Static2162 Stationary.Environment.TelegaBallon_UK1 de 284895.63 216558.05 285.00 
   Static2183 Stationary.Opel_Blitz_fuel de 284898.63 216560.92 285.00 
   Static2172 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER nn 284888.78 216571.17 285.00 
   Static2182 Stationary.Opel_Blitz_fuel de 284895.66 216569.09 285.00 
@@ -2472,13 +2605,20 @@
   Static569 Artillery.20_mm_Flak_38 de 296586.09 217929.97 65.00 /timeout 0/radius_hide 0
   Static191 Artillery.3_7_inch_QF_Mk_I gb 213494.91 219877.50 110.00 /timeout 0/radius_hide 0
   Static212 Artillery.3_7_inch_QF_Mk_I gb 213562.67 219900.09 110.00 /timeout 0/radius_hide 0
-  Static843 Stationary.Environment.JerryCan_GER1_3 gb 213641.42 219890.00 90.00 
+  Static850 Stationary.Environment.FuelDrum_UK1_9 gb 212990.91 219947.50 0.00 
   Static213 Artillery.3_7_inch_QF_Mk_I gb 213630.44 219930.22 110.00 /timeout 0/radius_hide 0
   Static233 Artillery.3_7_inch_QF_Mk_I gb 213717.05 219952.80 110.00 /timeout 0/radius_hide 0
   Static3428 Stationary.AEC_Regent_II gb 27757.00 222889.94 0.00 
-  Static842 Stationary.Environment.JerryCan_GER1_3 gb 212984.64 220025.02 90.00 
+  Static989 Stationary.Industrial.Railroad.SmallFactory gb 212929.98 219969.55 449.10 
+  Static1025 Stationary.Environment.TelegaBallon_UK1 gb 212930.70 219976.00 719.10 
+  Static848 Stationary.Environment.FuelDrum_UK1_9 gb 212984.08 220022.66 0.00 
+  Static988 Stationary.Industrial.Railroad.SmallFactory gb 212927.02 220058.66 454.10 
+  Static1026 Stationary.Environment.TelegaBallon_UK1 gb 212927.97 220060.53 719.10 
   Static1571 Stationary.Radar.EnglishRadar1 gb 212981.83 220058.64 5.00 
   Static4608 Stationary.Environment.TelegaBallon_UK1 gb 212984.27 220073.30 0.00 
+  Static987 Stationary.Industrial.Railroad.SmallFactory gb 212920.08 220132.94 454.10 
+  Static1027 Stationary.Environment.TelegaBallon_UK1 gb 212920.47 220134.83 719.10 
+  Static849 Stationary.Environment.FuelDrum_UK1_9 gb 212970.41 220163.86 0.00 
   Static3426 Stationary.AEC_Regent_II gb 61628.00 222637.77 0.00 
   Static503 Artillery.20_mm_Flak_38 de 294072.38 219422.42 65.00 /timeout 0/radius_hide 0
   Static903 Stationary.Radar.Wotan_I de 294187.78 219447.31 65.00 
@@ -2532,14 +2672,14 @@
   Static943 Stationary.Pz_IVD de 299473.47 220985.02 270.00 
   Static1189 Stationary.Environment.JerryCan_GER1_18 nn 299497.69 220962.91 270.00 
   Static1072 Stationary.Pz_35t de 299483.75 220980.95 270.00 
-  Static1186 Stationary.Environment.IF5_MG-Wagen_36 de 299500.16 220967.50 270.00 
   Static1204 Stationary.Environment.CamoNetCrates nn 299500.78 220967.55 539.10 
+  Static1186 Stationary.Environment.IF5_MG-Wagen_36 de 299500.16 220967.50 270.00 
   Static1187 Stationary.Environment.JerryCan_GER1_18 nn 299477.59 220991.25 270.00 
   Static1071 Stationary.Pz_35t de 299483.50 220989.61 270.00 
   Static1184 Stationary.Environment.IF5_MG-Wagen_36 de 299506.66 220967.39 270.00 
   Static1205 Stationary.Environment.CamoNetCrates nn 299507.19 220967.55 539.10 
-  Static1206 Stationary.Environment.CamoNetCrates nn 299512.75 220967.55 539.10 
   Static1183 Stationary.Environment.IF5_MG-Wagen_36 de 299512.22 220967.63 270.00 
+  Static1206 Stationary.Environment.CamoNetCrates nn 299512.75 220967.55 539.10 
   Static1068 Stationary.Pz_IVD de 299516.78 220979.88 270.00 
   Static1121 Stationary.Pz_35t de 299505.16 220990.16 270.00 
   Static1195 Stationary.Environment.CamoNetTank nn 299517.63 220979.64 270.00 
@@ -2556,12 +2696,12 @@
   Static47 Stationary.Pz_IB de 299448.28 221012.09 270.00 
   Static672 Stationary.Panzerbefehlswagen_I de 299457.50 220993.41 270.00 
   Static670 Stationary.Panzerbefehlswagen_I de 299456.13 220999.09 270.00 
-  Static63 Stationary.Panzerbefehlswagen_I de 299456.69 221009.66 270.00 
   Static1193 Stationary.Environment.CamoNetTank nn 299470.78 220995.66 270.00 
+  Static63 Stationary.Panzerbefehlswagen_I de 299456.69 221009.66 270.00 
   Static942 Stationary.Pz_IVD de 299470.75 220996.39 270.00 
-  Static941 Stationary.Pz_IVD de 299469.13 221010.73 270.00 
   Static1192 Stationary.Environment.CamoNetTank nn 299469.34 221010.47 270.00 
   Static1070 Stationary.Pz_35t de 299482.41 220997.73 270.00 
+  Static941 Stationary.Pz_IVD de 299469.13 221010.73 270.00 
   Static1123 Stationary.Environment.TentTroopLarge_GER1 de 299459.13 221022.64 270.00 
   Static1069 Stationary.Pz_35t de 299483.50 221008.03 270.00 
   Static1124 Stationary.Environment.TentTroopLarge_GER1 de 299479.69 221022.38 270.00 
@@ -2569,9 +2709,9 @@
   Static1120 Stationary.Pz_35t de 299504.34 220999.63 270.00 
   Static1073 Stationary.Pz_35t de 299500.91 221011.39 270.00 
   Static1122 Stationary.SdKfz_9_Crane de 299492.69 221019.13 270.00 
-  Static1202 Stationary.Environment.CamoNetCrates nn 299482.28 221030.98 539.10 
   Static61 Stationary.Pz_IB de 299481.88 221031.05 270.00 
   Static1201 Stationary.Environment.CamoNetCrates nn 299501.59 221011.42 539.10 
+  Static1202 Stationary.Environment.CamoNetCrates nn 299482.28 221030.98 539.10 
   Static1066 Stationary.Pz_IVD de 299514.91 220998.55 270.00 
   Static1197 Stationary.Environment.CamoNetTank nn 299515.13 220998.61 270.00 
   Static1065 Stationary.Pz_IVD de 299513.81 221008.03 270.00 
@@ -2602,11 +2742,11 @@
   Static3086 Stationary.Weapons_.Destructing_Bomb nn 313882.59 223401.03 659.10 
   Static3084 Stationary.Weapons_.Destructing_Bomb nn 313879.25 223405.13 659.10 
   Static3143 Stationary.Opel_Blitz_fuel de 313877.91 223408.97 659.10 
-  Static3153 Stationary.Opel_Blitz_fuel de 313869.16 223419.91 659.10 
   Static3082 Stationary.Weapons_.Destructing_Bomb nn 313873.31 223415.16 659.10 
+  Static3153 Stationary.Opel_Blitz_fuel de 313869.16 223419.91 659.10 
   Static3070 Stationary.Environment.JerryCan_GER1_1 nn 313877.75 223414.17 659.10 
-  Static3152 Stationary.Opel_Blitz_fuel de 313888.84 223406.78 659.10 
   Static3155 Stationary.Environment.TelegaBallon_UK1 de 313877.88 223417.44 285.00 
+  Static3152 Stationary.Opel_Blitz_fuel de 313888.84 223406.78 659.10 
   Static3280 Stationary.Environment.CamoNetPlaneBig nn 313883.31 223412.84 305.00 /hstart 3
   Static3087 Stationary.Weapons_.Destructing_Bomb nn 313892.63 223405.86 659.10 
   Static3151 Stationary.Opel_Blitz_fuel de 313881.75 223417.72 659.10 
@@ -2740,7 +2880,6 @@
   Static3219 Stationary.AEC_Regent_II nn 325507.44 226611.58 659.10 
   Static904 Stationary.RadioBeacon.GenericLongRangeMast gb 224911.84 228419.77 75.00 /radioFreq 300
   Static544 Stationary.RadioBeacon.GenericLongRangeMast gb 230000.44 228422.83 200.00 /radioFreq 300
-  Static841 Stationary.Environment.JerryCan_GER1_3 gb 230016.27 228421.34 90.00 
   Static694 Stationary.GladiatorMkII gb 224751.28 228691.83 0.00 
   Static695 Stationary.GladiatorMkII gb 224759.23 228711.27 0.00 
   Static2859 Stationary.AEC_Regent_II gb 233249.19 228559.47 659.10 
@@ -2766,9 +2905,7 @@
   Static71 Stationary.SpitfireMkIa gb 234319.30 232278.36 380.00 
   Static70 Stationary.SpitfireMkIa gb 234316.73 232296.89 380.00 
   Static2520 Stationary.Beaverette_III gb 173751.91 233379.59 -30.00 
-  Static865 Stationary.Environment.JerryCan_GER1_3 gb 173812.47 233379.22 90.00 
   Static2523 Stationary.Beaverette_III gb 173793.69 233403.48 -30.00 
-  Static863 Stationary.Environment.JerryCan_GER1_3 gb 173697.08 233432.92 90.00 
   Static2521 Stationary.Beaverette_III gb 173757.53 233420.16 -30.00 
   Static2529 Stationary.Valentine_I gb 173729.38 233450.84 60.00 
   Static2530 Stationary.Valentine_I gb 173742.05 233443.86 60.00 
@@ -2784,7 +2921,6 @@
   Static2528 Stationary.DH82A gb 173831.61 233430.66 -30.00 
   Static68 Stationary.SpitfireMkIa gb 235367.72 232454.45 155.00 
   Static69 Stationary.SpitfireMkIa gb 235375.80 232477.58 155.00 
-  Static864 Stationary.Environment.JerryCan_GER1_3 gb 173775.08 233501.17 90.00 
   Static67 Stationary.SpitfireMkIa gb 235461.75 232534.91 125.00 
   Static66 Stationary.SpitfireMkIa gb 235482.48 232545.00 125.00 
   Static698 Stationary.GladiatorMkII gb 234321.09 232600.94 0.00 
@@ -2857,8 +2993,8 @@
   Static3354 Stationary.Environment.JerryCan_GER1_1 nn 35832.44 236688.86 65.00 
   Static4576 Stationary.Environment.TelegaBallon_UK1 gb 35809.51 236719.14 0.00 
   Static3360 Stationary.Environment.JerryCan_GER1_1 nn 35814.54 236719.00 65.00 
-  Static3312 Stationary.Industrial.Agricultural_Storage_Shed nn 35815.80 236725.53 65.00 
   Static3361 Stationary.Environment.JerryCan_GER1_1 nn 35809.61 236731.94 65.00 
+  Static3312 Stationary.Industrial.Agricultural_Storage_Shed nn 35815.80 236725.53 65.00 
   Static3372 Stationary.Environment.GuardTower_UK-GER_1 nn 35838.95 236705.23 65.00 
   Static3362 Stationary.Environment.JerryCan_GER1_1 nn 35819.33 236735.86 65.00 
   Static3310 Stationary.Industrial.Agricultural_Storage_Shed nn 35857.62 236674.77 65.00 
@@ -2878,8 +3014,8 @@
   Static3364 Stationary.Environment.JerryCan_GER1_1 nn 35832.15 236750.34 65.00 
   Static3313 Stationary.Industrial.Agricultural_Storage_Shed nn 35829.35 236755.30 65.00 
   Static3365 Stationary.Environment.JerryCan_GER1_1 nn 35836.93 236761.84 65.00 
-  Static3368 Stationary.Environment.JerryCan_GER1_1 nn 35832.71 236793.36 65.00 
   Static3369 Stationary.Environment.JerryCan_GER1_1 nn 35831.36 236794.25 65.00 
+  Static3368 Stationary.Environment.JerryCan_GER1_1 nn 35832.71 236793.36 65.00 
   Static3367 Stationary.Environment.JerryCan_GER1_1 nn 35835.64 236791.14 65.00 
   Static3314 Stationary.Environment.CamoNetPlaneBig nn 35835.37 236798.33 65.00 
   Static3366 Stationary.Environment.JerryCan_GER1_1 nn 35843.51 236784.95 65.00 
@@ -2891,31 +3027,43 @@
   Static2838 Stationary.Environment.JerryCan_GER1_1 nn 214725.06 235513.36 659.10 
   Static1444 Stationary.Beaverette_III gb 214651.34 235569.44 -30.00 
   Static2837 Stationary.Environment.JerryCan_GER1_1 nn 214689.30 235530.39 659.10 
-  Static868 Stationary.Environment.JerryCan_GER1_3 gb 214671.75 235575.22 90.00 
   Static2847 Stationary.AEC_Regent_II gb 245583.25 235094.11 659.10 
-  Static870 Stationary.Environment.JerryCan_GER1_3 gb 214551.97 235610.66 90.00 
   Static1442 Stationary.Beaverette_III gb 214586.73 235601.33 -30.00 
   Static1439 Stationary.Valentine_I gb 214587.05 235616.80 60.00 
-  Static866 Stationary.Environment.JerryCan_GER1_3 gb 214578.39 235630.78 90.00 
   Static1443 Stationary.Beaverette_III gb 214615.20 235586.11 -30.00 
   Static1438 Stationary.Valentine_I gb 214599.73 235609.83 60.00 
   Static1437 Stationary.Valentine_I gb 214613.52 235602.02 60.00 
   Static1436 Stationary.Valentine_I gb 214631.02 235593.63 60.00 
   Static1662 Stationary.Beaverette_III gb 214638.22 235592.00 -30.00 
-  Static1430 Stationary.Valentine_I gb 214597.95 235636.61 60.00 
   Static1435 Stationary.Valentine_I gb 214649.95 235584.22 60.00 
-  Static867 Stationary.Environment.JerryCan_GER1_3 gb 214638.16 235601.78 90.00 
+  Static1430 Stationary.Valentine_I gb 214597.95 235636.61 60.00 
   Static1431 Stationary.Valentine_I gb 214611.41 235630.19 60.00 
   Static1432 Stationary.Valentine_I gb 214625.05 235623.80 60.00 
   Static1433 Stationary.Valentine_I gb 214642.98 235615.66 60.00 
   Static1661 Stationary.Beaverette_III gb 214658.42 235591.16 -30.00 
   Static1434 Stationary.Valentine_I gb 214661.48 235607.69 60.00 
-  Static869 Stationary.Environment.JerryCan_GER1_3 gb 214704.20 235601.94 90.00 
   Static2849 Stationary.AEC_Regent_II gb 244878.59 235653.97 659.10 
   Static3429 Stationary.AEC_Regent_II gb 49183.62 238815.09 0.00 
+  Static980 Stationary.Environment.JerryCan_GER1_1 nn 246604.42 235760.48 659.10 
+  Static979 Stationary.Environment.JerryCan_GER1_1 nn 246627.02 235764.23 659.10 
+  Static851 Stationary.Environment.FuelDrum_UK1_9 gb 246663.53 235751.55 0.00 
   Static2787 Stationary.Environment.JerryCan_GER1_1 nn 246658.13 235760.39 659.10 
+  Static852 Stationary.Environment.FuelDrum_UK1_9 gb 246730.98 235768.41 0.00 
+  Static1028 Stationary.Environment.TelegaBallon_UK1 gb 246680.16 235789.53 719.10 
+  Static984 Stationary.Industrial.Railroad.SmallFactory gb 246684.72 235789.91 554.10 
+  Static981 Stationary.Environment.JerryCan_GER1_1 nn 246684.59 235790.20 659.10 
+  Static1029 Stationary.Environment.TelegaBallon_UK1 gb 246758.48 235803.64 719.10 
+  Static982 Stationary.Environment.JerryCan_GER1_1 nn 246762.45 235803.41 659.10 
+  Static985 Stationary.Industrial.Railroad.SmallFactory gb 246762.64 235803.55 554.10 
+  Static853 Stationary.Environment.FuelDrum_UK1_9 gb 246792.83 235786.67 0.00 
   Static2788 Stationary.Environment.JerryCan_GER1_1 nn 246799.55 235793.28 659.10 
+  Static983 Stationary.Environment.JerryCan_GER1_1 nn 246832.78 235818.98 659.10 
+  Static986 Stationary.Industrial.Railroad.SmallFactory gb 246832.50 235819.03 554.10 
+  Static1030 Stationary.Environment.TelegaBallon_UK1 gb 246837.30 235819.94 719.10 
+  Static854 Stationary.Environment.FuelDrum_UK1_9 gb 246877.14 235809.16 0.00 
   Static2789 Stationary.Environment.JerryCan_GER1_1 nn 246875.20 235813.02 659.10 
+  Static855 Stationary.Environment.FuelDrum_UK1_9 gb 246947.41 235821.81 0.00 
+  Static856 Stationary.Environment.FuelDrum_UK1_9 gb 246742.89 235892.42 0.00 
   Static16 Artillery.3_7_inch_QF_Mk_I gb 248434.97 236221.67 110.00 /timeout 0/radius_hide 0
   Static32 Artillery.Bofors_StandAlone gb 248454.30 236195.42 110.00 /timeout 0/radius_hide 0
   Static31 Artillery.3_7_inch_QF_Mk_I gb 248460.30 236222.55 110.00 /timeout 0/radius_hide 0
@@ -2923,13 +3071,11 @@
   Static15 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 248527.80 236219.22 110.00 /timeout 0/radius_hide 0
   Static17 Artillery.Flak30_Shield gb 248422.31 236247.05 110.00 /timeout 0/radius_hide 0
   Static29 Artillery.3_7_inch_QF_Mk_I gb 248452.08 236238.19 110.00 /timeout 0/radius_hide 0
-  Static844 Stationary.Environment.JerryCan_GER1_3 gb 248475.45 236229.80 90.00 
   Static30 Artillery.3_7_inch_QF_Mk_I gb 248471.00 236241.44 110.00 /timeout 0/radius_hide 0
   Static33 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 248455.42 236274.97 110.00 /timeout 0/radius_hide 0
   Static13 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 248489.86 236262.98 110.00 /timeout 0/radius_hide 0
   Static12 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 248513.83 236251.00 110.00 /timeout 0/radius_hide 0
   Static2845 Stationary.AEC_Regent_II gb 244347.77 236447.30 659.10 
-  Static840 Stationary.Environment.JerryCan_GER1_3 gb 243838.50 236850.34 90.00 
   Static1724 Stationary.Matilda_2A gb 243873.06 236835.06 0.00 
   Static1715 Stationary.Bedford_MW_tank gb 243775.81 236926.58 0.00 
   Static1722 Stationary.Matilda_2A gb 243796.11 236894.28 0.00 
@@ -2937,7 +3083,6 @@
   Static2843 Stationary.Environment.JerryCan_GER1_1 nn 243784.56 236921.86 659.10 
   Static1725 Stationary.Matilda_2A gb 243819.73 236926.20 0.00 
   Static1726 Stationary.Matilda_2A gb 243859.77 236891.39 0.00 
-  Static839 Stationary.Environment.JerryCan_GER1_3 gb 243867.94 236924.91 90.00 
   Static1727 Stationary.Matilda_2A gb 243920.52 236864.64 0.00 
   Static1730 Stationary.Matilda_2A gb 243940.06 236909.27 0.00 
   Static1716 Stationary.Bedford_MW_tank gb 243792.55 236970.95 0.00 
@@ -2979,12 +3124,12 @@
   Static1649 Stationary.GladiatorMkII gb 142960.33 240960.89 420.00 
   Static525 Stationary.Morris_CS8-Bedford_MW_CargoCrate9 gb 227351.09 240094.72 270.00 
   Static529 Stationary.Ford_V8_E917_Cargo1 gb 227347.39 240099.33 270.00 
-  Static524 Stationary.Morris_CS8-Bedford_MW_CargoFuel gb 227358.58 240094.70 270.00 
   Static528 Stationary.Morris_CS8-Bedford_MW_CargoAmmo3 gb 227353.97 240099.09 270.00 
+  Static524 Stationary.Morris_CS8-Bedford_MW_CargoFuel gb 227358.58 240094.70 270.00 
   Static527 Stationary.Morris_CS8-Bedford_MW_CargoAmmo4 gb 227360.63 240099.08 270.00 
   Static523 Stationary.Morris_CS8-Bedford_MW_CargoFuel2 gb 227365.55 240094.97 270.00 
-  Static532 Stationary.Beaverette_III gb 227350.00 240116.91 180.00 
   Static526 Stationary.Morris_CS8-Bedford_MW_CargoCrate10 gb 227367.91 240099.09 270.00 
+  Static532 Stationary.Beaverette_III gb 227350.00 240116.91 180.00 
   Static531 Stationary.Beaverette_III gb 227350.06 240124.66 180.00 
   Static535 Stationary.Beaverette_III gb 227363.98 240116.94 180.00 
   Static2840 Stationary.Environment.JerryCan_GER1_1 nn 227361.19 240123.91 659.10 
@@ -2992,7 +3137,6 @@
   Static536 Stationary.Beaverette_III gb 227376.61 240116.94 180.00 
   Static537 Stationary.Beaverette_III gb 227375.33 240124.66 180.00 
   Static510 Stationary.Radar.EnglishRadar3 gb 227382.13 240122.13 180.00 /hstart 10
-  Static889 Stationary.Environment.JerryCan_GER1_3 gb 227391.64 240115.09 90.00 
   Static541 Stationary.Beaverette_III gb 227389.50 240117.19 180.00 
   Static540 Stationary.Beaverette_III gb 227389.25 240124.41 180.00 
   Static542 Stationary.Beaverette_III gb 227401.88 240116.42 180.00 
@@ -3032,8 +3176,8 @@
   Static570 Stationary.Beaverette_III gb 227394.86 240151.27 180.00 
   Static568 Stationary.Beaverette_III gb 227393.81 240160.58 180.00 
   Static572 Stationary.Beaverette_III gb 227405.72 240150.48 180.00 
-  Static508 Stationary.Radar.EnglishRadar3 gb 227406.44 240158.27 180.00 /hstart 10
   Static566 Stationary.Beaverette_III gb 227395.11 240169.64 180.00 
+  Static508 Stationary.Radar.EnglishRadar3 gb 227406.44 240158.27 180.00 /hstart 10
   Static575 Stationary.Beaverette_III gb 227407.28 240159.55 180.00 
   Static588 Stationary.Beaverette_III gb 227416.08 240151.78 180.00 
   Static580 Stationary.Beaverette_III gb 227405.98 240168.86 180.00 
@@ -3049,7 +3193,6 @@
   Static513 Stationary.Bedford_OXA gb 227331.39 240208.86 180.00 
   Static590 Stationary.Beaverette_III gb 227348.13 240198.45 180.00 
   Static589 Stationary.Beaverette_III gb 227347.61 240206.44 180.00 
-  Static888 Stationary.Environment.JerryCan_GER1_3 gb 227357.00 240199.25 90.00 
   Static593 Stationary.Beaverette_III gb 227364.09 240197.67 180.00 
   Static594 Stationary.Beaverette_III gb 227363.06 240206.44 180.00 
   Static596 Stationary.Beaverette_III gb 227376.70 240198.47 180.00 
@@ -3085,7 +3228,25 @@
   Static3810 Stationary.AEC_Regent_II gb 111919.38 244816.17 0.00 
   Static3433 Stationary.AEC_Regent_II gb 76615.61 245396.00 0.00 
   Static2852 Stationary.AEC_Regent_II gb 250604.59 244160.88 659.10 
+  Static900 Stationary.BeaufighterMkIF gb 99562.08 247604.98 -60.00 
   Static2851 Stationary.AEC_Regent_II gb 250619.98 245284.05 659.10 
+  Static899 Stationary.BeaufighterMkIF gb 99637.17 247621.58 -60.00 
+  Static892 Stationary.BeaufighterMkIF gb 99953.95 247814.50 -60.00 
+  Static893 Stationary.BeaufighterMkIF gb 99998.26 247817.94 -60.00 
+  Static894 Stationary.BeaufighterMkIF gb 100003.18 247843.55 -60.00 
+  Static895 Stationary.BeaufighterMkIF gb 100033.70 247825.33 -60.00 
+  Static896 Stationary.BeaufighterMkIF gb 100043.05 247859.80 -60.00 
+  Static897 Stationary.BeaufighterMkIF gb 100074.07 247843.05 -60.00 
+  Static908 Stationary.Industrial.Huge_Factory.Part_A nn 100014.53 247884.50 -60.00 
+  Static907 Stationary.Industrial.Huge_Factory.Part_B nn 99993.13 247921.14 -60.00 
+  Static898 Stationary.BeaufighterMkIF gb 100097.34 247880.05 -60.00 
+  Static931 Stationary.Environment.TelegaBallon_UK1 gb 99951.00 247960.22 0.00 
+  Static906 Stationary.Industrial.Huge_Factory.Central nn 99974.27 247954.34 -60.00 
+  Static932 Stationary.Environment.JerryCan_GER1_3 nn 99970.25 247963.73 0.00 
+  Static929 Stationary.BeaufighterMkIF gb 99915.74 248011.86 120.00 
+  Static927 Stationary.Industrial.Huge_Factory.Part_C nn 99910.94 248060.88 -60.00 
+  Static928 Stationary.BeaufighterMkIF gb 99946.48 248024.95 120.00 
+  Static930 Stationary.BeaufighterMkIF gb 99933.77 248051.64 120.00 
   Static2853 Stationary.AEC_Regent_II gb 251235.42 246299.53 659.10 
   Static2872 Stationary.AEC_Regent_II gb 190344.33 247720.33 659.10 
   Static38 Artillery.3_7_inch_QF_Mk_I gb 250095.88 247221.36 110.00 /timeout 0/radius_hide 0
@@ -3099,11 +3260,22 @@
   Static44 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 250116.33 247274.66 110.00 /timeout 0/radius_hide 0
   Static35 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 250150.77 247262.67 110.00 /timeout 0/radius_hide 0
   Static34 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 250174.73 247250.69 110.00 /timeout 0/radius_hide 0
-  Static2786 Stationary.Environment.JerryCan_GER1_1 nn 249471.36 247793.02 659.10 
   Static269 Stationary.RadioBeacon.GenericLongRangeMast gb 181663.92 248871.39 60.00 /radioFreq 300
-  Static2785 Stationary.Environment.JerryCan_GER1_1 nn 249460.86 247870.00 659.10 
-  Static6 Stationary.Radar.EnglishRadar1 gb 249468.42 247922.41 5.00 
-  Static2784 Stationary.Environment.JerryCan_GER1_1 nn 249446.86 248015.22 659.10 
+  Static857 Stationary.Environment.FuelDrum_UK1_9 gb 249335.83 247833.00 0.00 
+  Static976 Stationary.Industrial.Railroad.SmallFactory gb 249338.73 247836.53 629.10 
+  Static2786 Stationary.Environment.JerryCan_GER1_1 nn 249335.16 247839.77 659.10 
+  Static978 Stationary.Environment.FuelDrum_UK1_9 gb 249339.28 247835.98 0.00 
+  Static1033 Stationary.Environment.TelegaBallon_UK1 gb 249343.41 247833.66 719.10 
+  Static858 Stationary.Environment.FuelDrum_UK1_9 gb 249337.39 247899.92 0.00 
+  Static977 Stationary.Environment.FuelDrum_UK1_9 gb 249338.73 247907.64 0.00 
+  Static975 Stationary.Industrial.Railroad.SmallFactory gb 249340.66 247907.09 629.10 
+  Static2785 Stationary.Environment.JerryCan_GER1_1 nn 249337.94 247912.70 659.10 
+  Static1032 Stationary.Environment.TelegaBallon_UK1 gb 249344.81 247907.88 719.10 
+  Static6 Stationary.Radar.EnglishRadar1 gb 249371.47 247917.80 5.00 
+  Static1031 Stationary.Environment.TelegaBallon_UK1 gb 249339.92 247976.52 719.10 
+  Static2784 Stationary.Environment.JerryCan_GER1_1 nn 249334.33 247982.91 659.10 
+  Static974 Stationary.Industrial.Railroad.SmallFactory gb 249338.45 247979.30 629.10 
+  Static859 Stationary.Environment.FuelDrum_UK1_9 gb 249337.80 247981.97 0.00 
   Static565 Stationary.BeaufighterMkIF gb 234457.13 248313.95 -330.00 
   Static564 Stationary.BeaufighterMkIF gb 234426.95 248371.97 -330.00 
   Static2873 Stationary.AEC_Regent_II gb 189909.11 249046.23 659.10 
@@ -3111,11 +3283,9 @@
   Static2829 Stationary.Environment.JerryCan_GER1_3 nn 189252.91 249244.66 659.10 
   Static2832 Stationary.Environment.JerryCan_GER1_1 nn 189274.69 249249.94 659.10 
   Static2833 Stationary.Environment.JerryCan_GER1_1 nn 189300.16 249231.48 659.10 
-  Static886 Stationary.Environment.JerryCan_GER1_3 gb 189264.28 249271.14 90.00 
   Static2834 Stationary.Environment.JerryCan_GER1_1 nn 189305.61 249258.92 659.10 
   Static560 Stationary.BeaufighterMkIF gb 234199.58 248625.52 -145.00 
   Static561 Stationary.BeaufighterMkIF gb 234259.80 248627.77 -110.00 
-  Static872 Stationary.Environment.JerryCan_GER1_3 gb 189234.81 249334.44 90.00 
   Static2546 Stationary.Industrial.Railroad.SmallFactory nn 189244.66 249324.47 110.00 
   Static2831 Stationary.Environment.JerryCan_GER1_1 nn 189241.89 249329.02 659.10 
   Static2830 Stationary.Environment.JerryCan_GER1_1 nn 189242.70 249332.06 659.10 
@@ -3123,38 +3293,45 @@
   Static2874 Stationary.AEC_Regent_II gb 185288.61 251740.30 659.10 
   Static2827 Stationary.Environment.JerryCan_GER1_1 gb 186032.55 251753.86 659.10 
   Static2826 Stationary.Environment.JerryCan_GER1_1 gb 186064.45 251750.23 659.10 
-  Static873 Stationary.Environment.JerryCan_GER1_3 gb 186086.77 251731.63 90.00 
   Static2824 Stationary.Environment.JerryCan_GER1_1 gb 186132.97 251761.44 659.10 
   Static2864 Stationary.AEC_Regent_II gb 229202.39 251122.83 659.10 
   Static2825 Stationary.Environment.JerryCan_GER1_1 gb 186102.89 251784.34 659.10 
-  Static874 Stationary.Environment.JerryCan_GER1_3 gb 185000.45 252585.08 90.00 
+  Static866 Stationary.Environment.FuelDrum_UK1_9 gb 217613.53 252069.78 0.00 
   Static2823 Stationary.Environment.JerryCan_GER1_1 gb 185037.73 252575.61 659.10 
-  Static2550 Stationary.Industrial.Railroad.SmallFactory nn 185035.20 252578.39 130.00 
   Static2822 Stationary.Environment.JerryCan_GER1_1 gb 185030.22 252583.11 659.10 
+  Static2550 Stationary.Industrial.Railroad.SmallFactory nn 185035.20 252578.39 130.00 
   Static2821 Stationary.Environment.JerryCan_GER1_1 gb 185045.25 252591.22 659.10 
   Static2547 Stationary.Industrial.Railroad.SmallFactory nn 185048.33 252589.06 130.00 
   Static2820 Stationary.Environment.JerryCan_GER1_1 gb 185058.75 252601.73 659.10 
   Static2548 Stationary.Industrial.Railroad.SmallFactory nn 185062.28 252600.00 130.00 
+  Static1048 Stationary.Industrial.Railroad.SmallFactory gb 217646.94 252100.78 639.10 
+  Static867 Stationary.Environment.FuelDrum_UK1_9 gb 217612.78 252136.55 0.00 
   Static2818 Stationary.Environment.JerryCan_GER1_1 gb 185024.73 252609.22 659.10 
   Static2817 Stationary.Environment.JerryCan_GER1_1 gb 185027.09 252637.50 659.10 
   Static2549 Stationary.Industrial.Railroad.SmallFactory nn 185074.59 252609.86 130.00 
   Static2819 Stationary.Environment.JerryCan_GER1_1 gb 185072.64 252613.73 659.10 
-  Static871 Stationary.Environment.JerryCan_GER1_3 gb 217602.13 252160.44 90.00 
   Static1570 Stationary.Radar.EnglishRadar1 gb 217608.27 252171.48 5.00 
+  Static1047 Stationary.Industrial.Railroad.SmallFactory gb 217644.91 252162.78 639.10 
+  Static868 Stationary.Environment.FuelDrum_UK1_9 gb 217606.27 252203.50 0.00 
+  Static1046 Stationary.Industrial.Railroad.SmallFactory gb 217637.22 252247.66 639.10 
   Static2863 Stationary.AEC_Regent_II gb 220247.63 252395.09 659.10 
   Static45 Artillery.3_7_inch_QF_Mk_I gb 249137.23 252788.36 110.00 /timeout 0/radius_hide 0
-  Static2782 Stationary.Environment.JerryCan_GER1_1 nn 248752.53 252928.55 659.10 
+  Static973 Stationary.Industrial.Railroad.SmallFactory gb 248717.22 252946.89 639.10 
+  Static1036 Stationary.Environment.TelegaBallon_UK1 gb 248716.38 252949.78 719.10 
+  Static2782 Stationary.Environment.JerryCan_GER1_1 gb 248752.53 252928.55 659.10 
+  Static1035 Stationary.Environment.TelegaBallon_UK1 gb 248705.44 253012.69 719.10 
+  Static972 Stationary.Industrial.Railroad.SmallFactory gb 248704.52 253013.27 639.10 
   Static146 Stationary.Radar.EnglishRadar1 gb 248740.00 253037.05 10.00 
-  Static2781 Stationary.Environment.JerryCan_GER1_1 nn 248724.33 253068.80 659.10 
-  Static2783 Stationary.Environment.JerryCan_GER1_1 nn 248716.44 253142.50 659.10 
+  Static971 Stationary.Industrial.Railroad.SmallFactory gb 248696.44 253107.91 639.10 
+  Static1034 Stationary.Environment.TelegaBallon_UK1 gb 248695.17 253109.80 719.10 
+  Static2781 Stationary.Environment.JerryCan_GER1_1 gb 248724.33 253068.80 659.10 
+  Static2783 Stationary.Environment.JerryCan_GER1_1 gb 248716.44 253142.50 659.10 
   Static46 Artillery.3_7_inch_QF_Mk_I gb 248791.08 253509.75 110.00 /timeout 0/radius_hide 0
   Static2862 Stationary.AEC_Regent_II gb 215354.33 254401.34 659.10 
   Static2898 Stationary.AEC_Regent_II gb 141173.22 257364.30 659.10 
   Static2861 Stationary.AEC_Regent_II gb 204050.78 257386.27 659.10 
   Static2869 Stationary.AEC_Regent_II gb 193628.03 257777.73 659.10 
-  Static875 Stationary.Environment.JerryCan_GER1_3 gb 187717.53 258234.09 90.00 
   Static268 Stationary.RadioBeacon.GenericLongRangeMast gb 187718.08 258240.91 60.00 /radioFreq 300
-  Static876 Stationary.Environment.JerryCan_GER1_3 gb 187718.97 258260.73 90.00 
   Static2896 Stationary.AEC_Regent_II gb 136126.61 259072.14 659.10 
   Static1707 Stationary.BeaufighterMkINF gb 247358.61 259074.78 0.00 
   Static1711 Stationary.BeaufighterMkINF gb 247333.59 259117.48 0.00 
@@ -3184,7 +3361,6 @@
   Static266 Stationary.RadioBeacon.GenericLongRangeMast gb 212794.17 262507.38 60.00 /radioFreq 300
   Static443 Stationary.Environment.TentRidgeTent_UK1 gb 244656.05 262582.19 -264.10 
   Static442 Stationary.Environment.TentRidgeTent_UK1 gb 244654.89 262589.25 -264.10 
-  Static851 Stationary.Environment.JerryCan_GER1_3 gb 244663.97 262580.84 90.00 
   Static439 Stationary.Environment.TentRidgeTent_UK1 gb 244662.20 262582.06 -264.10 
   Static438 Stationary.Environment.TentRidgeTent_UK1 gb 244661.31 262589.28 -264.10 
   Static190 Artillery.3_7_inch_QF_Mk_I gb 244696.28 262548.13 110.00 /timeout 0/radius_hide 0
@@ -3193,7 +3369,6 @@
   Static361 Stationary.Environment.SandBagWall_Line_4m nn 244717.17 262573.75 -20.90 
   Static360 Stationary.Environment.SandBagWall_Line_4m nn 244720.67 262572.81 -20.90 
   Static358 Stationary.Environment.SandBagWall_Line_4m nn 244718.33 262577.31 -15.90 
-  Static852 Stationary.Environment.JerryCan_GER1_3 gb 244724.34 262572.72 90.00 
   Static359 Stationary.Environment.SandBagWall_Line_4m nn 244721.92 262576.09 -20.90 
   Static356 Stationary.Environment.SandBagWall_Line nn 244717.69 262581.56 25.00 
   Static357 Stationary.Environment.SandBagWall_Line nn 244718.44 262580.00 24.10 
@@ -3202,40 +3377,41 @@
   Static345 Stationary.Environment.SandBagWall_Line nn 244718.14 262584.78 160.00 
   Static354 Stationary.Environment.SandBagWall_Line nn 244725.08 262579.13 -60.00 
   Static346 Stationary.Environment.SandBagWall_Line nn 244719.19 262586.03 120.00 
-  Static353 Stationary.Environment.SandBagWall_Line nn 244726.14 262580.50 -20.00 
   Static347 Stationary.Environment.SandBagWall_Line nn 244720.89 262586.97 120.00 
+  Static353 Stationary.Environment.SandBagWall_Line nn 244726.14 262580.50 -20.00 
   Static352 Stationary.Environment.SandBagWall_Line nn 244726.67 262582.31 -15.00 
   Static351 Stationary.Environment.SandBagWall_Line nn 244726.47 262583.91 25.00 
   Static348 Stationary.Environment.SandBagWall_Line nn 244722.53 262587.25 75.00 
-  Static350 Stationary.Environment.SandBagWall_Line nn 244725.59 262585.59 30.00 
   Static349 Stationary.Environment.SandBagWall_Line nn 244724.23 262586.72 70.00 
+  Static350 Stationary.Environment.SandBagWall_Line nn 244725.59 262585.59 30.00 
   Static441 Stationary.Environment.TentRidgeTent_UK1 gb 244654.75 262596.78 -264.10 
   Static437 Stationary.Environment.TentRidgeTent_UK1 gb 244660.78 262596.09 -264.10 
   Static440 Stationary.Environment.TentRidgeTent_UK1 gb 244654.78 262604.19 -264.10 
   Static436 Stationary.Environment.TentRidgeTent_UK1 gb 244660.50 262604.81 -264.10 
   Static188 Artillery.3_7_inch_QF_Mk_I gb 244696.31 262598.03 110.00 /timeout 0/radius_hide 0
+  Static860 Stationary.Environment.FuelDrum_UK1_9 gb 244681.94 262649.00 0.00 
+  Static1043 Stationary.Industrial.Railroad.SmallFactory gb 244703.38 262648.66 639.10 
   Static388 Stationary.Environment.SandBagWall_Line nn 244744.97 262605.22 -155.00 
-  Static386 Stationary.Environment.SandBagWall_Line nn 244747.64 262603.31 -115.00 
-  Static389 Stationary.Environment.SandBagWall_Line nn 244744.19 262606.97 -155.00 
   Static387 Stationary.Environment.SandBagWall_Line nn 244746.11 262604.06 -115.00 
+  Static389 Stationary.Environment.SandBagWall_Line nn 244744.19 262606.97 -155.00 
+  Static386 Stationary.Environment.SandBagWall_Line nn 244747.64 262603.31 -115.00 
   Static390 Stationary.Environment.SandBagWall_Line nn 244744.03 262608.63 -200.00 
   Static398 Stationary.Environment.SandBagWall_Line nn 244749.25 262603.31 -250.00 
   Static399 Stationary.Environment.SandBagWall_Line nn 244750.89 262603.97 -250.90 
   Static391 Stationary.Environment.SandBagWall_Line nn 244744.73 262610.28 -205.00 
   Static400 Stationary.Environment.SandBagWall_Line_4m nn 244753.53 262603.59 -290.90 
-  Static392 Stationary.Environment.SandBagWall_Line nn 244745.95 262611.56 -245.00 
   Static405 Artillery.SoundLocator_MkIIIV_UK1 gb 244748.61 262608.00 -104.10 /timeout 0/radius_hide 0
+  Static392 Stationary.Environment.SandBagWall_Line nn 244745.95 262611.56 -245.00 
   Static403 Stationary.Environment.SandBagWall_Line_4m nn 244757.00 262602.09 -295.90 
   Static393 Stationary.Environment.SandBagWall_Line nn 244747.69 262612.28 -250.00 
-  Static394 Stationary.Environment.SandBagWall_Line nn 244749.28 262612.31 -290.00 
   Static397 Stationary.Environment.SandBagWall_Line nn 244753.03 262608.78 -340.00 
+  Static394 Stationary.Environment.SandBagWall_Line nn 244749.28 262612.31 -290.00 
+  Static396 Stationary.Environment.SandBagWall_Line nn 244752.34 262610.47 -335.00 
   Static401 Stationary.Environment.SandBagWall_Line_4m nn 244755.08 262607.06 -295.90 
   Static395 Stationary.Environment.SandBagWall_Line nn 244751.08 262611.63 -295.00 
-  Static396 Stationary.Environment.SandBagWall_Line nn 244752.34 262610.47 -335.00 
   Static402 Stationary.Environment.SandBagWall_Line_4m nn 244758.25 262605.53 -295.90 
-  Static853 Stationary.Environment.JerryCan_GER1_3 gb 244779.84 262601.25 90.00 
-  Static410 Stationary.Environment.SandBagWall_Line nn 244798.45 262614.31 -155.00 
   Static409 Stationary.Environment.SandBagWall_Line nn 244799.59 262613.22 -115.00 
+  Static410 Stationary.Environment.SandBagWall_Line nn 244798.45 262614.31 -155.00 
   Static411 Stationary.Environment.SandBagWall_Line nn 244797.67 262616.09 -155.00 
   Static412 Stationary.Environment.SandBagWall_Line nn 244797.53 262617.81 -200.00 
   Static413 Stationary.Environment.SandBagWall_Line nn 244798.22 262619.38 -205.00 
@@ -3248,37 +3424,34 @@
   Static426 Artillery.SoundLocator_MkIIIV_UK1 gb 244802.11 262617.13 -104.10 /timeout 0/radius_hide 0
   Static425 Stationary.Environment.SandBagWall_Line_4m nn 244810.50 262611.28 -295.90 
   Static415 Stationary.Environment.SandBagWall_Line nn 244801.17 262621.41 -250.00 
-  Static419 Stationary.Environment.SandBagWall_Line nn 244806.53 262617.88 -340.00 
   Static416 Stationary.Environment.SandBagWall_Line nn 244802.78 262621.50 -290.00 
+  Static419 Stationary.Environment.SandBagWall_Line nn 244806.53 262617.88 -340.00 
   Static418 Stationary.Environment.SandBagWall_Line nn 244805.83 262619.59 -335.00 
-  Static423 Stationary.Environment.SandBagWall_Line_4m nn 244808.58 262616.22 -295.90 
   Static417 Stationary.Environment.SandBagWall_Line nn 244804.56 262620.78 -295.00 
+  Static423 Stationary.Environment.SandBagWall_Line_4m nn 244808.58 262616.22 -295.90 
   Static424 Stationary.Environment.SandBagWall_Line_4m nn 244811.73 262614.63 -295.90 
-  Static854 Stationary.Environment.JerryCan_GER1_3 gb 244828.02 262608.00 90.00 
-  Static848 Stationary.Environment.JerryCan_GER1_3 gb 244800.53 262637.38 90.00 
-  Static324 Stationary.Environment.SandBagWall_Line nn 244856.83 262642.50 -115.00 
+  Static862 Stationary.Environment.FuelDrum_UK1_9 gb 244840.47 262648.72 0.00 
   Static325 Stationary.Environment.SandBagWall_Line nn 244855.69 262643.59 -155.00 
+  Static324 Stationary.Environment.SandBagWall_Line nn 244856.83 262642.50 -115.00 
   Static326 Stationary.Environment.SandBagWall_Line nn 244854.89 262645.38 -155.00 
   Static323 Stationary.Environment.SandBagWall_Line nn 244858.36 262641.78 -115.00 
   Static335 Stationary.Environment.SandBagWall_Line nn 244859.97 262641.75 -250.00 
   Static327 Stationary.Environment.SandBagWall_Line nn 244854.75 262647.06 -200.00 
-  Static336 Stationary.Environment.SandBagWall_Line nn 244861.61 262642.34 -250.90 
   Static328 Stationary.Environment.SandBagWall_Line nn 244855.45 262648.66 -205.00 
-  Static329 Stationary.Environment.SandBagWall_Line nn 244856.67 262649.97 -245.00 
+  Static336 Stationary.Environment.SandBagWall_Line nn 244861.61 262642.34 -250.90 
   Static341 Artillery.SoundLocator_MkIIIV_UK1 gb 244859.36 262646.41 -104.10 /timeout 0/radius_hide 0
+  Static329 Stationary.Environment.SandBagWall_Line nn 244856.67 262649.97 -245.00 
   Static330 Stationary.Environment.SandBagWall_Line nn 244858.39 262650.72 -250.00 
-  Static331 Stationary.Environment.SandBagWall_Line nn 244860.03 262650.78 -290.00 
   Static334 Stationary.Environment.SandBagWall_Line nn 244863.75 262647.16 -340.00 
-  Static332 Stationary.Environment.SandBagWall_Line nn 244861.78 262650.06 -295.00 
+  Static331 Stationary.Environment.SandBagWall_Line nn 244860.03 262650.78 -290.00 
   Static333 Stationary.Environment.SandBagWall_Line nn 244863.06 262648.88 -335.00 
-  Static850 Stationary.Environment.JerryCan_GER1_3 gb 244873.83 262622.81 90.00 
+  Static332 Stationary.Environment.SandBagWall_Line nn 244861.78 262650.06 -295.00 
   Static337 Stationary.Environment.SandBagWall_Line_4m nn 244864.25 262642.03 -290.90 
   Static340 Stationary.Environment.SandBagWall_Line_4m nn 244867.73 262640.56 -295.90 
   Static338 Stationary.Environment.SandBagWall_Line_4m nn 244865.81 262645.50 -295.90 
   Static339 Stationary.Environment.SandBagWall_Line_4m nn 244868.97 262643.91 -295.90 
   Static77 Artillery.3_7_inch_QF_Mk_I gb 245379.09 262637.88 110.00 /timeout 0/radius_hide 0
   Static78 Artillery.3_7_inch_QF_Mk_I gb 245406.30 262643.72 110.00 /timeout 0/radius_hide 0
-  Static855 Stationary.Environment.JerryCan_GER1_3 gb 245437.70 262627.91 90.00 
   Static83 Artillery.3_7_inch_QF_Mk_I gb 245436.42 262653.44 110.00 /timeout 0/radius_hide 0
   Static312 Stationary.Environment.SandBagWall_Line nn 244675.23 262706.91 -145.00 
   Static310 Stationary.Environment.SandBagWall_Line nn 244677.83 262704.72 -100.00 
@@ -3294,32 +3467,40 @@
   Static306 Stationary.Environment.SandBagWall_Line nn 244683.53 262707.56 -5.00 
   Static320 Stationary.Environment.SandBagWall_Line_4m nn 244674.84 262718.16 -145.90 
   Static317 Stationary.Environment.SandBagWall_Line_4m nn 244677.11 262715.13 -140.90 
-  Static305 Stationary.Environment.SandBagWall_Line nn 244683.75 262709.47 -5.00 
   Static316 Stationary.Environment.SandBagWall_Line nn 244679.20 262713.53 -100.90 
+  Static305 Stationary.Environment.SandBagWall_Line nn 244683.75 262709.47 -5.00 
   Static315 Stationary.Environment.SandBagWall_Line nn 244680.95 262713.25 -100.00 
   Static303 Stationary.Environment.SandBagWall_Line nn 244682.36 262712.41 35.00 
   Static304 Stationary.Environment.SandBagWall_Line nn 244683.33 262711.06 35.00 
   Static380 Stationary.Environment.SandBagWall_Line_4m nn 244726.50 262715.66 -115.90 
-  Static369 Stationary.Environment.SandBagWall_Line nn 244733.69 262709.56 -115.00 
   Static371 Stationary.Environment.SandBagWall_Line nn 244732.42 262710.75 -155.00 
+  Static369 Stationary.Environment.SandBagWall_Line nn 244733.69 262709.56 -115.00 
+  Static373 Stationary.Environment.SandBagWall_Line nn 244731.70 262712.47 -160.00 
   Static367 Stationary.Environment.SandBagWall_Line nn 244735.47 262708.84 -110.00 
   Static376 Stationary.Environment.SandBagWall_Line_4m nn 244729.67 262714.13 -115.90 
-  Static373 Stationary.Environment.SandBagWall_Line nn 244731.70 262712.47 -160.00 
   Static384 Stationary.Environment.SandBagWall_Line_4m nn 244727.73 262719.06 -115.90 
   Static383 Stationary.Environment.SandBagWall_Line_4m nn 244731.20 262717.59 -110.90 
   Static379 Stationary.Environment.SandBagWall_Line nn 244733.84 262717.28 -70.90 
   Static382 Stationary.Environment.SandBagWall_Line nn 244735.50 262717.88 -70.00 
+  Static861 Stationary.Environment.FuelDrum_UK1_9 gb 244751.73 262669.28 0.00 
+  Static1037 Stationary.Environment.TelegaBallon_UK1 gb 244776.17 262661.47 719.10 
+  Static1044 Stationary.Industrial.Railroad.SmallFactory gb 244782.70 262661.81 639.10 
   Static366 Stationary.Environment.SandBagWall_Line nn 244737.08 262708.91 -70.00 
   Static368 Stationary.Environment.SandBagWall_Line nn 244738.78 262709.63 -65.00 
-  Static847 Stationary.Environment.JerryCan_GER1_3 gb 244779.52 262670.91 90.00 
+  Static1038 Stationary.Environment.TelegaBallon_UK1 gb 244784.67 262663.13 719.10 
   Static374 Artillery.SoundLocator_MkIIIV_UK1 gb 244736.11 262713.22 -285.00 /timeout 0/radius_hide 0
   Static370 Stationary.Environment.SandBagWall_Line nn 244740.03 262710.91 -25.00 
   Static372 Stationary.Environment.SandBagWall_Line nn 244740.72 262712.56 -20.00 
-  Static381 Stationary.Environment.SandBagWall_Line nn 244737.14 262717.84 -295.00 
   Static375 Stationary.Environment.SandBagWall_Line nn 244740.59 262714.25 -335.00 
+  Static381 Stationary.Environment.SandBagWall_Line nn 244737.14 262717.84 -295.00 
   Static378 Stationary.Environment.SandBagWall_Line nn 244738.64 262717.13 -295.00 
   Static377 Stationary.Environment.SandBagWall_Line nn 244739.81 262716.03 -335.00 
+  Static1039 Stationary.Environment.TelegaBallon_UK1 gb 244793.48 262665.09 719.10 
   Static301 Stationary.Radar.EnglishRadar1 gb 244782.03 262676.41 -80.00 
+  Static1045 Stationary.Industrial.Railroad.SmallFactory gb 244866.17 262678.31 639.10 
+  Static1040 Stationary.Environment.TelegaBallon_UK1 gb 244875.34 262676.34 719.10 
+  Static1041 Stationary.Environment.TelegaBallon_UK1 gb 244879.61 262678.66 719.10 
+  Static1042 Stationary.Environment.TelegaBallon_UK1 gb 244885.17 262679.31 719.10 
   Static445 Stationary.Environment.SandBagWall_Line nn 244924.53 262714.09 -115.00 
   Static446 Stationary.Environment.SandBagWall_Line nn 244923.39 262715.25 -155.00 
   Static447 Stationary.Environment.SandBagWall_Line nn 244922.61 262717.00 -155.00 
@@ -3329,41 +3510,38 @@
   Static462 Artillery.SoundLocator_MkIIIV_UK1 gb 244927.03 262718.06 -104.10 /timeout 0/radius_hide 0
   Static457 Stationary.Environment.SandBagWall_Line nn 244929.33 262714.00 -250.90 
   Static458 Stationary.Environment.SandBagWall_Line_4m nn 244931.97 262713.63 -290.90 
-  Static849 Stationary.Environment.JerryCan_GER1_3 gb 244942.94 262705.13 90.00 
   Static461 Stationary.Environment.SandBagWall_Line_4m nn 244935.44 262712.16 -295.90 
   Static455 Stationary.Environment.SandBagWall_Line nn 244931.47 262718.81 -340.00 
   Static459 Stationary.Environment.SandBagWall_Line_4m nn 244933.50 262717.09 -295.90 
   Static460 Stationary.Environment.SandBagWall_Line_4m nn 244936.67 262715.56 -295.90 
   Static118 Artillery.3_7_inch_QF_Mk_I gb 245477.22 262663.16 110.00 /timeout 0/radius_hide 0
-  Static846 Stationary.Environment.JerryCan_GER1_3 gb 244699.78 262732.56 90.00 
   Static474 Stationary.Environment.SandBagWall_Line nn 244799.67 262734.31 -185.00 
   Static475 Stationary.Environment.SandBagWall_Line nn 244799.89 262736.09 -190.00 
   Static479 Stationary.Environment.SandBagWall_Line_4m nn 244799.00 262738.59 -145.90 
   Static480 Stationary.Environment.SandBagWall_Line_4m nn 244797.03 262741.53 -145.90 
   Static481 Stationary.Environment.SandBagWall_Line_4m nn 244799.78 262743.84 -145.90 
-  Static473 Stationary.Environment.SandBagWall_Line nn 244800.17 262732.63 -145.00 
-  Static471 Stationary.Environment.SandBagWall_Line nn 244802.78 262730.38 -100.00 
   Static472 Stationary.Environment.SandBagWall_Line nn 244801.36 262731.13 -140.00 
+  Static471 Stationary.Environment.SandBagWall_Line nn 244802.78 262730.38 -100.00 
+  Static473 Stationary.Environment.SandBagWall_Line nn 244800.17 262732.63 -145.00 
   Static470 Stationary.Environment.SandBagWall_Line nn 244804.64 262730.13 -95.00 
   Static469 Stationary.Environment.SandBagWall_Line nn 244806.36 262730.63 -55.00 
-  Static468 Stationary.Environment.SandBagWall_Line nn 244807.75 262731.72 -50.00 
   Static482 Artillery.SoundLocator_MkIIIV_UK1 gb 244804.11 262734.56 45.00 /timeout 0/radius_hide 0
+  Static468 Stationary.Environment.SandBagWall_Line nn 244807.75 262731.72 -50.00 
   Static467 Stationary.Environment.SandBagWall_Line nn 244808.48 262733.25 -5.00 
   Static478 Stationary.Environment.SandBagWall_Line_4m nn 244802.06 262740.84 -140.90 
-  Static477 Stationary.Environment.SandBagWall_Line nn 244804.14 262739.25 -100.90 
-  Static466 Stationary.Environment.SandBagWall_Line nn 244808.70 262735.13 -5.00 
   Static476 Stationary.Environment.SandBagWall_Line nn 244805.89 262738.91 -100.00 
+  Static466 Stationary.Environment.SandBagWall_Line nn 244808.70 262735.13 -5.00 
+  Static477 Stationary.Environment.SandBagWall_Line nn 244804.14 262739.25 -100.90 
   Static465 Stationary.Environment.SandBagWall_Line nn 244808.25 262736.75 35.00 
   Static464 Stationary.Environment.SandBagWall_Line nn 244807.31 262738.09 35.00 
-  Static845 Stationary.Environment.JerryCan_GER1_3 gb 244822.00 262756.50 90.00 
   Static498 Stationary.Environment.SandBagWall_Line_4m nn 244851.47 262741.34 -115.90 
-  Static494 Stationary.Environment.SandBagWall_Line_4m nn 244854.61 262739.81 -115.90 
   Static489 Stationary.Environment.SandBagWall_Line nn 244857.36 262736.47 -155.00 
+  Static494 Stationary.Environment.SandBagWall_Line_4m nn 244854.61 262739.81 -115.90 
   Static487 Stationary.Environment.SandBagWall_Line nn 244858.64 262735.28 -115.00 
   Static485 Stationary.Environment.SandBagWall_Line nn 244860.42 262734.56 -110.00 
   Static491 Stationary.Environment.SandBagWall_Line nn 244856.64 262738.13 -160.00 
-  Static502 Stationary.Environment.SandBagWall_Line_4m nn 244852.67 262744.78 -115.90 
   Static484 Stationary.Environment.SandBagWall_Line nn 244862.00 262734.59 -70.00 
+  Static502 Stationary.Environment.SandBagWall_Line_4m nn 244852.67 262744.78 -115.90 
   Static486 Stationary.Environment.SandBagWall_Line nn 244863.75 262735.31 -65.00 
   Static492 Artillery.SoundLocator_MkIIIV_UK1 gb 244861.08 262738.88 -285.00 /timeout 0/radius_hide 0
   Static501 Stationary.Environment.SandBagWall_Line_4m nn 244856.14 262743.31 -110.90 
@@ -3385,15 +3563,21 @@
   Static270 Stationary.RadioBeacon.GenericLongRangeMast gb 180890.39 264112.94 60.00 /radioFreq 300
   Static2900 Stationary.AEC_Regent_II gb 144235.03 265088.06 659.10 
   Static3752 Stationary.AEC_Regent_II gb 86231.73 266191.72 0.00 
+  Static875 Stationary.Environment.JerryCan_GER1_1 nn 204765.73 264667.84 659.10 
+  Static877 Stationary.Environment.TelegaBallon_UK1 gb 204775.72 264669.31 659.10 
+  Static878 Stationary.Environment.TelegaBallon_UK1 gb 204812.95 264645.25 659.10 
+  Static876 Stationary.Environment.JerryCan_GER1_1 nn 204813.27 264647.78 659.10 
   Static3714 Stationary.AEC_Regent_II gb 83452.74 266660.47 0.00 
   Static3750 Stationary.AEC_Regent_II gb 84906.10 266680.34 0.00 
   Static752 Stationary.Environment.TelegaBallon_UK1 gb 204569.39 265128.50 659.10 
   Static750 Stationary.Environment.JerryCan_GER1_1 nn 204571.11 265129.66 659.10 
-  Static753 Stationary.Environment.TelegaBallon_UK1 gb 204719.63 265140.59 659.10 
+  Static970 Stationary.RadioBeacon.GenericLongRangeMast gb 204564.92 265151.75 659.10 /radioFreq 300
   Static747 Stationary.Environment.JerryCan_GER1_1 nn 204717.31 265142.88 659.10 
+  Static753 Stationary.Environment.TelegaBallon_UK1 gb 204719.63 265140.59 659.10 
   Static751 Stationary.Environment.TelegaBallon_UK1 gb 204637.88 265195.84 659.10 
   Static748 Stationary.Environment.JerryCan_GER1_1 nn 204645.94 265193.53 659.10 
   Static749 Stationary.Environment.JerryCan_GER1_1 nn 204722.50 265252.25 659.10 
+  Static874 Stationary.Environment.JerryCan_GER1_1 nn 204728.05 265252.41 659.10 
   Static2902 Stationary.AEC_Regent_II gb 152519.06 266218.19 659.10 
   Static3713 Stationary.Environment.JerryCan_GER1_1 nn 84247.05 267327.00 0.00 
   Static3742 Stationary.GladiatorMkII gb 84066.02 267332.41 155.00 
@@ -3465,14 +3649,12 @@
   Static3437 Stationary.AEC_Regent_II gb 111260.42 273693.84 0.00 
   Static2807 Stationary.Environment.JerryCan_GER1_1 nn 154305.36 273086.19 659.10 
   Static4602 Stationary.Environment.TelegaBallon_UK1 gb 154308.23 273085.69 659.10 
-  Static862 Stationary.Environment.JerryCan_GER1_3 gb 154373.22 273108.78 90.00 
   Static4600 Stationary.Environment.TelegaBallon_UK1 gb 155819.92 273211.91 659.10 
   Static2809 Stationary.Environment.JerryCan_GER1_1 nn 152976.97 273275.06 659.10 
   Static2810 Stationary.Environment.JerryCan_GER1_1 nn 153008.42 273255.84 659.10 
   Static2883 Stationary.AEC_Regent_II gb 149708.31 273322.13 659.10 
   Static4601 Stationary.Environment.TelegaBallon_UK1 gb 155048.09 273259.38 659.10 
   Static2806 Stationary.Environment.JerryCan_GER1_1 nn 155050.00 273257.25 659.10 
-  Static861 Stationary.Environment.JerryCan_GER1_3 gb 155087.22 273219.72 90.00 
   Static2808 Stationary.Environment.JerryCan_GER1_3 nn 155833.08 273220.56 659.10 
   Static2812 Stationary.Environment.JerryCan_GER1_1 nn 153838.22 273478.75 659.10 
   Static2811 Stationary.Environment.JerryCan_GER1_1 gb 153850.20 273475.38 659.10 
@@ -3539,26 +3721,16 @@
   Static1672 Stationary.Valentine_I gb 159635.09 275032.03 60.00 
   Static1671 Stationary.Valentine_I gb 159635.09 275037.19 60.00 
   Static4610 Stationary.Environment.TelegaBallon_UK1 gb 158402.08 275132.91 0.00 
-  Static860 Stationary.Environment.JerryCan_GER1_3 gb 158483.95 275126.03 90.00 
   Static4596 Stationary.AEC_Regent_II gb 28084.03 277205.19 0.00 
   Static4603 Stationary.Environment.TelegaBallon_UK1 gb 157904.70 275242.19 659.10 
   Static4607 Stationary.Environment.JerryCan_GER1_3 nn 157901.28 275246.34 659.10 
-  Static859 Stationary.Environment.JerryCan_GER1_3 gb 157970.98 275236.94 90.00 
-  Static1703 Stationary.Environment.TelegaBallon_UK1 gb 157090.47 275314.88 659.10 
   Static1701 Stationary.Environment.JerryCan_GER1_3 nn 157100.58 275304.91 659.10 
-  Static858 Stationary.Environment.JerryCan_GER1_3 gb 157159.92 275306.28 90.00 
-  Static882 Stationary.Environment.JerryCan_GER1_3 gb 26849.55 277571.63 90.00 
-  Static883 Stationary.Environment.JerryCan_GER1_3 gb 27112.72 277767.00 90.00 
+  Static1703 Stationary.Environment.TelegaBallon_UK1 gb 157090.47 275314.88 659.10 
   Static2886 Stationary.AEC_Regent_II gb 147859.94 275905.06 659.10 
-  Static878 Stationary.Environment.JerryCan_GER1_3 gb 27296.15 277830.81 90.00 
   Static4599 Stationary.Environment.TelegaBallon_UK1 nn 27319.32 277824.34 0.00 
-  Static879 Stationary.Environment.JerryCan_GER1_3 gb 27643.06 278026.19 90.00 
   Static820 Stationary.Environment.JerryCan_GER1_3 gb 27666.22 278033.56 0.00 
   Static4598 Stationary.Environment.TelegaBallon_UK1 gb 27679.91 278044.06 0.00 
-  Static880 Stationary.Environment.JerryCan_GER1_3 gb 27421.76 278245.50 90.00 
-  Static881 Stationary.Environment.JerryCan_GER1_3 gb 27666.99 278289.38 90.00 
   Static819 Stationary.Environment.JerryCan_GER1_3 gb 28521.29 278621.97 0.00 
-  Static884 Stationary.Environment.JerryCan_GER1_3 gb 28513.38 278642.59 90.00 
   Static4597 Stationary.Environment.TelegaBallon_UK1 gb 28541.96 278648.34 0.00 
   Static4506 Stationary.AEC_Regent_II gb 194436.41 276370.13 0.00 
   Static3447 Stationary.AEC_Regent_II gb 131367.03 277547.97 0.00 
@@ -3608,68 +3780,60 @@
   Static4501 Stationary.AEC_Regent_II gb 199557.44 280717.19 0.00 
   Static4502 Stationary.AEC_Regent_II gb 200754.16 280854.88 0.00 
   Static166 Artillery.3_7_inch_QF_Mk_I gb 208570.28 280992.28 110.00 /timeout 0/radius_hide 0
-  Static857 Stationary.Environment.JerryCan_GER1_3 gb 208574.83 281018.72 90.00 
+  Static865 Stationary.Environment.FuelDrum_UK1_9 gb 208289.45 281063.81 0.00 
+  Static1051 Stationary.Industrial.Railroad.SmallFactory gb 208311.61 281086.88 639.10 
   Static168 Artillery.3_7_inch_QF_Mk_I gb 208573.86 281024.84 110.00 /timeout 0/radius_hide 0
   Static140 Artillery.3_7_inch_QF_Mk_I gb 208584.59 281071.16 110.00 /timeout 0/radius_hide 0
-  Static856 Stationary.Environment.JerryCan_GER1_3 gb 208262.47 281121.44 90.00 
+  Static863 Stationary.Environment.FuelDrum_UK1_9 gb 208274.27 281133.34 0.00 
   Static119 Artillery.3_7_inch_QF_Mk_I gb 208573.02 281095.78 110.00 /timeout 0/radius_hide 0
   Static106 Stationary.Radar.EnglishRadar1 gb 208272.25 281172.28 10.00 
+  Static1050 Stationary.Industrial.Railroad.SmallFactory gb 208299.20 281161.31 639.10 
+  Static864 Stationary.Environment.FuelDrum_UK1_9 gb 208260.14 281206.06 0.00 
+  Static1049 Stationary.Industrial.Railroad.SmallFactory gb 208292.44 281241.34 639.10 
   Static3443 Stationary.AEC_Regent_II gb 166136.67 282689.00 0.00 
   Static3441 Stationary.AEC_Regent_II gb 181559.78 282553.72 0.00 
   Static3448 Stationary.AEC_Regent_II gb 130825.86 283500.75 0.00 
-  Static885 Stationary.Environment.JerryCan_GER1_3 gb 37729.72 285234.59 90.00 
   Static3444 Stationary.AEC_Regent_II gb 153554.66 284853.66 0.00 
   Static3446 Stationary.AEC_Regent_II gb 145301.94 287153.59 0.00 
-  Static2551 Stationary.Bofors_ENG_Transport gb 180103.05 288344.25 659.10 
-  Static1441 Stationary.Bofors_ENG_Transport gb 180105.86 288345.31 659.10 
-  Static2552 Stationary.Bofors_ENG_Transport gb 180108.70 288347.09 659.10 
-  Static131 Stationary.Fordson_Sussex_w_ballon gb 180121.41 288365.81 659.10 
-  Static1339 Stationary.Weapons_.Destructing_Bomb nn 180121.31 288369.00 659.10 
+  Static824 Stationary.RadioBeacon.GenericLongRangeMast gb 181780.05 288120.88 659.10 /radioFreq 300
+  Static827 Stationary.Environment.JerryCan_GER1_1 nn 181784.91 288122.94 659.10 
+  Static828 Stationary.Industrial.Oxygen_Facility nn 181788.08 288173.09 659.10 
+  Static823 Stationary.RadioBeacon.GenericLongRangeMast gb 181833.14 288161.50 659.10 /radioFreq 300
+  Static826 Stationary.Environment.JerryCan_GER1_1 nn 181839.14 288164.41 659.10 
+  Static822 Stationary.RadioBeacon.GenericLongRangeMast gb 181870.31 288190.28 659.10 /radioFreq 300
+  Static825 Stationary.Environment.JerryCan_GER1_1 nn 181879.53 288206.19 659.10 
+  Static821 Stationary.RadioBeacon.GenericLongRangeMast gb 181898.88 288218.56 659.10 /radioFreq 300
+  Static2551 Stationary.Bofors_ENG_Transport gb 180100.92 288343.19 659.10 
+  Static1441 Stationary.Bofors_ENG_Transport gb 180102.59 288349.41 659.10 
+  Static2552 Stationary.Bofors_ENG_Transport gb 180110.30 288348.34 659.10 
   Static211 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI gb 180123.19 288367.72 659.10 
+  Static1339 Stationary.Weapons_.Destructing_Bomb nn 180121.31 288369.00 659.10 
   Static143 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI gb 180123.33 288368.63 659.10 
   Static142 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI gb 180124.23 288368.47 659.10 
   Static141 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI gb 180124.91 288369.09 659.10 
   Static132 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI gb 180125.89 288369.22 659.10 
   Static2795 Stationary.Environment.JerryCan_GER1_1 nn 180072.44 288392.38 659.10 
   Static2794 Stationary.Environment.JerryCan_GER1_1 nn 180072.44 288399.59 659.10 
+  Static129 Stationary.Fordson_Sussex_w_ballon gb 180069.83 288406.84 659.10 
+  Static130 Stationary.Fordson_Sussex_w_ballon gb 180090.86 288386.91 659.10 
   Static2793 Stationary.Environment.JerryCan_GER1_1 nn 180066.53 288414.72 659.10 
-  Static2792 Stationary.Environment.JerryCan_GER1_1 nn 180062.44 288427.81 659.10 
+  Static2792 Stationary.Environment.JerryCan_GER1_3 gb 180062.44 288427.81 659.10 
   Static121 Stationary.Hangars.Type_C34_Long nn 180078.88 288418.38 659.10 
-  Static877 Stationary.Environment.JerryCan_GER1_3 gb 180146.19 288416.88 90.00 
+  Static131 Stationary.Fordson_Sussex_w_ballon gb 180073.28 288427.25 659.10 
   Static127 Stationary.Industrial.Railroad.SmallFactory nn 180193.09 288384.78 659.10 
   Static2797 Stationary.Environment.JerryCan_GER1_1 nn 180198.91 288386.78 659.10 
   Static2796 Stationary.Environment.JerryCan_GER1_1 nn 180185.64 288413.50 659.10 
-  Static2617 Stationary.RadioBeacon.GenericLongRangeMast gb 180166.92 288443.59 659.10 /radioFreq 300
+  Static2617 Stationary.RadioBeacon.GenericLongRangeMast nn 180166.92 288443.59 659.10 /radioFreq 300
   Static120 Stationary.Industrial.Oxygen_Facility nn 180214.38 288411.47 659.10 
   Static2790 Stationary.Environment.JerryCan_GER1_1 nn 180214.59 288422.78 659.10 
-  Static130 Stationary.Fordson_Sussex_w_ballon gb 180236.92 288399.59 659.10 
   Static2798 Stationary.Environment.JerryCan_GER1_1 nn 180236.95 288408.50 659.10 
   Static18 Stationary.Industrial.Oxygen_Facility nn 180243.98 288423.81 659.10 
   Static2791 Stationary.Environment.JerryCan_GER1_1 nn 180240.84 288433.97 659.10 
-  Static2618 Stationary.RadioBeacon.GenericLongRangeMast gb 180274.44 288422.25 659.10 /radioFreq 300
-  Static129 Stationary.Fordson_Sussex_w_ballon gb 180288.20 288437.50 659.10 
+  Static2618 Stationary.RadioBeacon.GenericLongRangeMast nn 180274.44 288422.25 659.10 /radioFreq 300
   Static128 Stationary.Balloons.Barrage_Balloon_Uk1 gb 180347.80 288414.09 659.10 /hstart 300/pax_skin mixed
-  Static2616 Stationary.RadioBeacon.GenericLongRangeMast gb 180099.55 288466.00 659.10 /radioFreq 300
+  Static2616 Stationary.RadioBeacon.GenericLongRangeMast nn 180099.55 288466.00 659.10 /radioFreq 300
   Static126 Stationary.Industrial.Railroad.SmallFactory nn 180125.89 288511.53 659.10 
   Static3438 Stationary.AEC_Regent_II gb 64424.88 300597.31 0.00 
-  Static890 Stationary.Radar.Wotan_I de 250637.75 116527.20 65.00 
-  Static891 Stationary.Environment.TelegaBallon_UK1 de 250635.02 116523.92 285.00 
-  Static892 Stationary.Environment.JerryCan_GER1_1 nn 250639.67 116525.28 659.10 
-  Static893 Stationary.Environment.JerryCan_GER1_1 nn 250234.67 116095.35 659.10 
-  Static894 Stationary.Environment.JerryCan_GER1_1 nn 250687.27 116095.35 659.10 
-  Static895 Stationary.Environment.JerryCan_GER1_1 nn 250851.47 116078.52 659.10 
-  Static896 Stationary.Environment.JerryCan_GER1_1 nn 250958.83 116059.57 659.10 
-  Static897 Stationary.Environment.JerryCan_GER1_1 nn 251038.83 116036.41 659.10 
-  Static898 Stationary.Environment.JerryCan_GER1_1 nn 251123.03 115985.89 659.10 
-  Static899 Stationary.Environment.JerryCan_GER1_1 nn 251524.47 116314.70 659.10 
-  Static900 Stationary.Environment.JerryCan_GER1_1 nn 251505.63 116431.76 659.10 
-  Static906 Stationary.Environment.JerryCan_GER1_1 nn 251668.33 116396.33 659.10 
-  Static907 Stationary.Environment.JerryCan_GER1_1 nn 251803.91 116324.24 659.10 
-  Static908 Stationary.Environment.JerryCan_GER1_1 nn 251679.58 116257.52 659.10 
-  Static927 Stationary.Environment.JerryCan_GER1_1 nn 250236.63 116333.27 659.10 
-  Static928 Stationary.Environment.JerryCan_GER1_1 nn 250097.69 116295.38 659.10 
-  Static929 Stationary.Environment.JerryCan_GER1_1 nn 250005.05 116289.06 659.10 
-  Static930 Stationary.Environment.JerryCan_GER1_1 nn 250156.63 116253.28 659.10 
 [Buildings]
   0_bld buildings.House$Trench03-D6 1 221161.73 214038.59 -90.00
   1_bld buildings.House$Trench01-30 1 221192.59 214063.28 180.00
@@ -3984,6 +4148,7 @@
   airdrome0 298383.34 127504.47 2 500 500 0
   airdrome1 295145.45 130454.72 2 500 500 0
   airdrome2 272439.44 200157.48 2 1000 700 0
+  airdrome3 27922.18 72660.12 0 1000 700 1
 [airdrome0_Points]
   298298.08 127366.83 1
   298186.62 127161.14 2
@@ -4009,6 +4174,22 @@
   272300.97 200639.58
   272205.75 200536.93 12
   272199.80 200621.73
+[airdrome3_Runways]
+  27932.77 72651.18 20.00 900.00 40.00 0
+[airdrome3_Points]
+  27684.30 72554.92 11 9 7 5 3 1
+  27674.73 72606.52 2
+  27662.82 72631.33
+  27801.76 72649.20 4
+  27785.89 72675.00
+  27775.96 72644.24 6
+  27763.06 72669.05
+  27760.08 72639.27 8
+  27741.23 72661.11
+  27732.29 72631.33 10
+  27713.44 72657.14
+  27694.58 72611.49 12
+  27679.69 72641.26
 [FrontMarker]
   FrontMarker0 122130.41 99692.54 1
   FrontMarker1 184923.58 199248.64 1
@@ -4074,7 +4255,7 @@
   BTarget37 TGroundDestroyed 83 76720 194082 50
   BTarget38 TGroundDestroyed 100 76805 193918 50
   BTarget39 TGroundDestroyed 98 77392 193942 50
-  BTarget40 TGroundDestroyed 95 77317 193860 50
+  BTarget40 TGroundDestroyed 95 75166 193414 50
   BTarget41 TGroundDestroyed 72 76855 194410 50
   BTarget42 TGroundDestroyed 89 112441 243834 200
   BTarget43 TGroundDestroyed 63 204654 268378 100
@@ -4082,6 +4263,7 @@
   Btarget45 TGroundDestroyed 74 204722 265252 50
   BTarget46 TGroundDestroyed 74 204570 265131 50
   BTarget47 TGroundDestroyed 74 204716 265140 50
+  BTarget48 TGroundDestroyed 50 99971 247951 50
   RTarget0 TGroundDestroyed 83 354623 121058 100
   RTarget1 TGroundDestroyed 50 299486 220998 50
   RTarget2 TGroundDestroyed 33 313732 192700 50
@@ -4100,8 +4282,8 @@
   RTarget15 TGroundDestroyed 50 264984 189378 100
   RTarget16 TGroundDestroyed 50 350605 142047 100
   RTarget17 TGroundDestroyed 50 352039 141214 50
-  RTarget18 TGroundDestroyed 50 303445 114053 50
-  RTarget19 TGroundDestroyed 50 285075 121608 50
+  RTarget18 TGroundDestroyed 50 303713 114020 50
+  RTarget19 TGroundDestroyed 50 285075 121608 150
   RTarget20 TGroundDestroyed 50 229270 101222 50
   RTarget21 TGroundDestroyed 50 250463 116096 100
   RTarget22 TGroundDestroyed 50 293827 84983 150
@@ -4146,7 +4328,7 @@
   LehavNaval6 TGroundDestroyed 25 163470 49752 50
   LehavNaval7 TGroundDestroyed 25 162993 49927 50
   LehavNavalDiesel TGroundDestroyed 46 162559 50082 100
-  LehavNavalGearlOil TGroundDestroyed 41 162668 50240 100
+  LehavNavalGearOil TGroundDestroyed 41 162668 50240 100
   LehavNavalBenzine TGroundDestroyed 35 161747 50094 50
   LehavNavalLOX TGroundDestroyed 41 162099 50034 50
   LehavTrainStation TGroundDestroyed 37 159918 53120 100
@@ -4242,6 +4424,9 @@
   Jabored TTime 3900
   Thems1 TPassThrough 5 2 224551 274305 13850
   Beau1 TPassThrough 5 2 208566 240164 11550
+  BeauAbby TTime 600
+  BeauDiep TTime 4200
+  BeauLeh TTime 7800
 [Action]
   action1 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
   action1c ASpawnGroup 1 BoB_LW_LG2_I.21
@@ -4335,6 +4520,9 @@
   London2air ASpawnGroup 1 gb01.02
   London3air ASpawnGroup 1 gb01.11
   Beau1 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  BeauAbby ASpawnGroup 1 BoB_RAF_F_FatCat_Early.02
+  BeauDiep ASpawnGroup 1 gb01.12
+  BeauLeh ASpawnGroup 1 LONDON.13
 [BirthPlace]
   "Tramecourt Bomber" 2 306582 160664 0 1 1 1 . . .
   "Pihen Fighter" 2 278935 207295 0 1 1 1 de . .
@@ -4354,7 +4542,7 @@
   "Willmington Bomber" 1 167710 198455 0 1 1 1 gb . .
   "Fighter Bomber Zutkerque" 2 299430 203053 0 1 1 1 de . .
   "Blenhiem (low fuel)" 1 234561 248433 0 1 1 1 gb . .
-  BirthPlace_1 2 295277 130601 0 1 0 0 de . .
+  Ywrench 2 295277 130601 0 1 0 0 de . .
   "Marquise West" 2 272539 200159 0 1 1 1 de . .
   "Oye Plauge" 2 296360 217323 0 1 1 1 . . .
   "Biggin Hill" 1 155087 253697 0 1 1 1 . . .
@@ -4401,7 +4589,7 @@
   Sempy 2 287368 163216 0 1 1 1 . . .
   Estree 2 280263 164216 0 1 1 1 . . .
   " Samer" 2 278075 182199 0 1 1 1 . . .
-  "BirthPlace_0 Devres" 2 285084 182696 0 1 1 1 . . .
+  " Devres" 2 285084 182696 0 1 1 1 . . .
   Colembert 2 284917 193073 0 1 1 1 . . .
   Heimelinghen 2 285642 200028 0 1 1 1 . . .
   Campagne-les-Guines 2 287134 202018 0 1 1 1 . . .
@@ -4412,14 +4600,16 @@
   Rely 2 321400 172374 0 1 1 1 . . .
   "Merville Calenne" 2 340747 178423 0 1 1 1 . . .
   " Brias" 2 321108 153671 0 1 1 1 de Luftwaffe_Bomber_1940 .
-  "BirthPlace_0 Arras" 2 351335 145343 0 1 1 1 de Luftwaffe_Bomber_1940 .
+  " Arras" 2 351335 145343 0 1 1 1 de Luftwaffe_Bomber_1940 .
   " Archiet-Grevillers" 2 350155 121133 0 2 1 1 de Luftwaffe_Fighter_1940 .
   " Montdidier" 2 335229 72728 0 1 1 1 de Luftwaffe_Fighter_1940 .
   Carpiquet 2 117918 18146 0 1 1 1 de Luftwaffe_Fighter_1940 .
   Lehavre 2 157333 57843 0 1 1 1 de . .
   Sanddown 1 71306 177289 0 1 1 1 . . .
-  Bembridge 1 76331 180210 0 0 0 0 . . .
+  Bembridge 1 76331 180210 0 1 1 1 . . .
   Ryde 1 74257 183303 0 1 1 1 . . .
+  Theville 2 43773 70739 0 1 1 1 . . .
+  Querquviller 2 27848 72588 0 1 1 1 . . .
 [BirthPlace0]
   Aircraft.Bf-110C-7
   Aircraft.Bf-110C-4
@@ -4729,54 +4919,54 @@
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI_FB
 [BirthPlace32]
-  Aircraft.SpitfireMkI
-  Aircraft.SpitfireMkIa
-  Aircraft.SpitfireMkIIa
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI
-  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIV_Late
+  Aircraft.SpitfireMkIIa
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
 [BirthPlace33]
-  Aircraft.SpitfireMkI
-  Aircraft.SpitfireMkIa
-  Aircraft.SpitfireMkIIa
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI
-  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIV_Late
+  Aircraft.SpitfireMkIIa
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
 [BirthPlace34]
-  Aircraft.SpitfireMkI
-  Aircraft.SpitfireMkIa
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI
-  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
 [BirthPlace35]
-  Aircraft.SpitfireMkI
-  Aircraft.SpitfireMkIa
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI
-  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
 [BirthPlace36]
   Aircraft.SpitfireMkI
@@ -4815,16 +5005,16 @@
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI_FB
 [BirthPlace39]
-  Aircraft.SpitfireMkI
-  Aircraft.SpitfireMkIa
-  Aircraft.SpitfireMkIa_100oct
-  Aircraft.HurricaneMkI
-  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
   Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
 [BirthPlace40]
   Aircraft.SpitfireMkI
@@ -5271,8 +5461,39 @@
   Aircraft.HurricaneMkI_100oct-NF
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.HurricaneMkI_dH5-20
-  Aircraft.HurricaneMkI_100oct
   Aircraft.HurricaneMkI_FB
 [BirthPlace83]
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+[BirthPlace84]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-3B
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace85]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-3B
+  Aircraft.Ju-88A-1
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4

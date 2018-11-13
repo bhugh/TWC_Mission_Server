@@ -3591,18 +3591,23 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                             {
                                                 foreach (Player player in players)
                                                 {
-                                                    //Stb_RemovePlayerFromAircraftandDestroy(a, player);
-                                                    //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
-                                                    //2 = self-kill
-                                                    stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
-                                                    //stbSr_PlayerDeath_penaltylist[playername]
-                                                    stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
-                                                    Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+                                                   if (player == null) continue;
+                                                   Timeout(1, () =>
+                                                   {
+                                                        
+                                                        //Stb_RemovePlayerFromAircraftandDestroy(a, player);
+                                                        //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                                                        //2 = self-kill
+                                                        stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+                                                                                                                                //stbSr_PlayerDeath_penaltylist[playername]
+                                                        stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                                                        Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
 
 
-                                                    gpLogServerAndLog(null, "{0} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), a.InternalTypeName() });
-                                                    gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name(), a.InternalTypeName() });
-                                                    gpLogServerAndLog(null, "{0}'s aircraft was lost.", new object[] { player.Name(), a.InternalTypeName() });
+                                                        gpLogServerAndLog(null, "{0} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), a.InternalTypeName() });
+                                                        gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name(), a.InternalTypeName() });
+                                                        gpLogServerAndLog(null, "{0}'s aircraft was lost.", new object[] { player.Name(), a.InternalTypeName() });
+                                                   });
 
                                                 }
 
@@ -7216,7 +7221,8 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
     //killType: 2=self-kill, 1 = regular kill; we're going to say parachuting death is never a self-kill as you were
     //PPl have been taking advantage of the fact that you can't die more than 1x in 60 seconds to do certain illegal things, so we 
     //reduce the time to 10 sec and also allow an override of the pause on deaths via ignoreDeathLimit
-    public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack=false, bool ignoreDeathLimit = false)
+    //In case aircraftDead = true that is an indication that EVERY position in this aircraft has just been killed because the aircraft itself has been killed (not just one of the pilots in it, so that means there is no chance of return -1 meaning that one position is dead but another survives for now.
+    public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack=false, bool ignoreDeathLimit = false, bool aircraftDead = false)
     {
         try
         {
@@ -7232,8 +7238,9 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 //We handle the case where the player is occupying two positions and one of them is dead but the other still alive
                 //Logic is a bit complex because we have to first check the person is occupying two positions, THEN that exactly ONE of those two is still alive
                 //Note that ^ is EXCLUSIVE OR operator, guaranteeing that one but not both of the player's positions still has some health.
-                if (player.PersonPrimary() != null && player.PersonSecondary() != null && 
-                    (player.PersonPrimary().Health > 0 ^ player.PersonSecondary().Health > 0))
+                if (player.PersonPrimary() != null && player.PersonSecondary() != null &&
+                    //(player.PersonPrimary().Health > 0 ^ player.PersonSecondary().Health > 0))
+                    (player.PersonPrimary().Health > 0 || player.PersonSecondary().Health > 0))
                 {
                     //Console.WriteLine("OnPlayerDead: Primary: " + player.PersonPrimary().Cart().InternalTypeName());
                     //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Cart().InternalTypeName());
@@ -7241,6 +7248,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Health);
                     bothPositionsDead = false;
                 }
+                if (aircraftDead) bothPositionsDead = true;
 
                 //Console.WriteLine("OnPlayerDead: Player " + playerName + " both dead " + bothPositionsDead.ToString() + " ");
 
@@ -7263,7 +7271,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     //we can do other things here, like save the injuries to the stats file and/or give them a timeout depending on how 
                     //serious the injuries were.  But for now, we just proceed since it wasn't an actual death.
                 }
-                if (recordedInjuries == 1  && !bothPositionsDead)
+                if (!aircraftDead  && recordedInjuries == 1  && !bothPositionsDead)
                 {
                     //Console.WriteLine("OnPlayerDead: Player " + playerName + " had one position/place killed, but the other still remains alive.  So we record a death on the player's stats but don't actually kill this personality yet.");
                     StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 778, 1 }, player.Place() as AiActor);
@@ -7276,6 +7284,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 if (bothPositionsDead && (recordedInjuries >= 0.5 || dist > 2000))
                 {
                     stb_recordAircraftWrittenOff(player, actor, recordedInjuries, dist);
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                 }
 
             }
@@ -7523,13 +7532,17 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 // if (player.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
                 //p = player.Place() as AiAircraft;
                 //if (stb_Debug) Console.WriteLine("OnActorDead: 9");
+                List < Player > playersInAircraft = new List<Player>();
                 for (int i = 0; i < aiAircraft.Places(); i++)
                 {
                     //if (aiAircraft.Player(i) != null) return false;
                     if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
                     {
                         string playerName = aiAircraft.Player(i).Name();
+                        Player player = aiAircraft.Player(i);
                         //StbSr_UpdateStatsForKilledPlayer(playerName);
+                        if (playersInAircraft.Contains(player)) continue; //only do this once for any given player in the a/c
+                        playersInAircraft.Add(player);
 
                         if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) > 0) continue; //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves in the few seconds they are allowed in before disappearing
 
@@ -7539,10 +7552,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         */
 
 
-                            int killType = 1;
+                        int killType = 1;
                         if (selfKill) killType = 2;
 
-                        double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true);
+                        double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
 
                         bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
                         
@@ -7586,17 +7599,17 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
                         if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
 
-                        if (stb_ResetPlayerStatsWhenKilled)
+                        if (stb_ResetPlayerStatsWhenKilled && !(injuriesExtent == -1))
                         {
-                            Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
                         }
                         else
                         {
-                            Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
                         }
 
 
-                        if (stb_PlayerTimeoutWhenKilled)
+                        if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
                         {
                             msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + Calcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". Please log off the server to allow others a chance to fly.";
                             if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
@@ -8343,6 +8356,13 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         }
         */
         #endregion
+    }
+
+    public void recentlyParachutedOrCrashedOrLanded_REMOVE(string PlayerName)
+    {
+        //If recently parachuted or crashlanded and decided on an outcome for it, don't do it all again for another 60 seconds . . . 
+        Console.WriteLine("recentlyParachCrLandedR: 1 " + PlayerName);
+        if (stb_PlayerParachute_Crashed_LandedTime.ContainsKey(PlayerName)) stb_PlayerParachute_Crashed_LandedTime.Remove(PlayerName);
     }
 
     //Return TRUE if the player has recently been through the Parachute and/or crash-landed routine

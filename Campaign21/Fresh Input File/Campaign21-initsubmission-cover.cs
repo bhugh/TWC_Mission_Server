@@ -526,7 +526,13 @@ public class Mission : AMission
         {
             double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 3.0;
             if (adder < 0) adder = 0;
+            int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
+            
+
             acAllowedThisPlayer += Convert.ToInt32(adder);
+
+            if (numPlayer > 6) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, being nice to pilots here . . . .
+            if (numPlayer > 9) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
 
         }
@@ -662,7 +668,7 @@ public class Mission : AMission
 
         }
         */
-        if (msg.StartsWith("<cland") && admin_privilege_level(player) >= 1)
+        if (msg.StartsWith("<cland") )
         {
             if (player == null) return;
             List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
@@ -678,19 +684,19 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport. They are shy and will land quicker if no one is around.", new object[] { });
 
         }
-        else if (msg.StartsWith("<clist") && admin_privilege_level(player) >= 1) //<clist
+        else if (msg.StartsWith("<clist")) //<clist
         {
             if (player == null) return;
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
             
         }
-        else if (msg.StartsWith("<cp") && admin_privilege_level(player) >= 1) //<cpos
+        else if (msg.StartsWith("<cp")) //<cpos
         {
             if (player == null) return;
             listPositionCurrentCoverAircraft(player);
 
         }
-        else if (msg.StartsWith("<cover") && admin_privilege_level(player) >= 1)
+        else if (msg.StartsWith("<cover"))
         {
             try
             {
@@ -710,6 +716,12 @@ public class Mission : AMission
                 sections.Add(msgTrim);
                 */
                 int numCheckedOut = numberAirgroupsCurrentlyCheckedOutPlayer(player);
+
+                int numInArmy = Calcs.numPlayersInArmy(player.Army(), this);
+
+                if (numInArmy > 12) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when 12 or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { }); return; }
+
+                if (numInArmy > 6) { GamePlay.gpLogServer(new Player[] { player }, "Note: Fewer cover aircraft available when more than 6 players on your side.", new object[] { });}
 
                 if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
 
@@ -889,7 +901,7 @@ public class Mission : AMission
             }
             catch (Exception ex) { Console.WriteLine("Cover <cover: " + ex.ToString()); }
         }
-        else if (msg.StartsWith("<chelp") && admin_privilege_level(player) >= 1)
+        else if (msg.StartsWith("<chelp"))
         {
             string msg42 = "<cover or <cover Beau or <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });            
@@ -899,7 +911,7 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
         }
 
-        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP") && admin_privilege_level(player) >= 1)// || msg.StartsWith("<"))
+        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
         {            
             double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5.2;
@@ -2777,6 +2789,20 @@ public static class Calcs
             result = part[1]; // get the part after the "." in the type string
         }
         return result;
+    }
+
+    public static int numPlayersInArmy(int army, Mission mission)
+    {
+        int ret = 0;
+        if (mission.GamePlay.gpRemotePlayers() != null && mission.GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in mission.GamePlay.gpRemotePlayers())
+            {
+                if (!p.IsConnected()) continue;
+                if (p.Army() == army) ret++;
+            }
+        }
+        return ret;
     }
 
     public static string randSTR(string[] strings)

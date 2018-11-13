@@ -339,15 +339,15 @@ public class Mission : AMission
         } },
         { ArmiesE.Blue, new Dictionary <string,bool>(){
         {"bob:Aircraft.Bf-109E-1",true},
-        {"bob:Aircraft.Bf-109E-1B",false},
+        {"bob:Aircraft.Bf-109E-1B",true},
         {"bob:Aircraft.Bf-109E-3",true},
-        {"bob:Aircraft.Bf-109E-3B",false},
+        {"bob:Aircraft.Bf-109E-3B",true},
         {"bob:Aircraft.Bf-109E-4",false},
         {"bob:Aircraft.Bf-109E-4_Late",false},
         {"bob:Aircraft.Bf-110C-2",true},
         {"bob:Aircraft.Bf-110C-4",true},
         {"bob:Aircraft.Bf-110C-4-NJG",true},
-        {"bob:Aircraft.Bf-110C-4B" ,false},
+        {"bob:Aircraft.Bf-110C-4B" ,true},
         {"bob:Aircraft.Bf-110C-4Late",false},
         {"bob:Aircraft.Bf-110C-4N",true},
         {"bob:Aircraft.Bf-110C-6",true},  //These crash straight into the ground upon spawn FOR SOME UNKNOWN REASON so just eliminating their use altogether here.
@@ -508,15 +508,11 @@ public class Mission : AMission
     }
     public string acAvailableToPlayer_msg (Player player )
     {
-        int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+        int acAllowedThisPlayer = acAvailableToPlayer_num(player);
         string rankExpl = "";
         if (TWCStbStatRecorder != null)
         {
-            double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 2.0;
-            if (adder < 0) adder = 0;
-            acAllowedThisPlayer += Convert.ToInt32(adder);
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
-
         }
         int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
         if (acAvailable < 0) acAvailable = 0;

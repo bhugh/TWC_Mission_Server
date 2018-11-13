@@ -33,6 +33,8 @@ public class Mission : AMission
     public int minimumAircraftRequiredForCoverDuty {get; set;}
     public int maximumAircraftAllowedPerMission { get; set; }
     public int maximumCheckoutsAllowedAtOnce { get; set; }
+    public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
+    public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -54,9 +56,11 @@ public class Mission : AMission
             ran = new Random();
 
             MissionNumberListener = -1;
-            minimumAircraftRequiredForCoverDuty = 100;
+            minimumAircraftRequiredForCoverDuty = 200;
             maximumAircraftAllowedPerMission = 6;
             maximumCheckoutsAllowedAtOnce = 3;
+            maxPlayersToAllowCover = 12; //Number of players online in players' army, above this number no cover will be allowed
+            numPlayersToReduceCover = 6; //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
 
             Console.WriteLine("-cover.cs successfully constructed");
         }
@@ -531,8 +535,8 @@ public class Mission : AMission
 
             acAllowedThisPlayer += Convert.ToInt32(adder);
 
-            if (numPlayer > 6) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, being nice to pilots here . . . .
-            if (numPlayer > 9) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
+            if (numPlayer > numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, being nice to pilots here . . . .
+            if (numPlayer > ((double)maxPlayersToAllowCover - (double)numPlayersToReduceCover) / 2.0) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
 
         }
@@ -719,9 +723,9 @@ public class Mission : AMission
 
                 int numInArmy = Calcs.numPlayersInArmy(player.Army(), this);
 
-                if (numInArmy > 12) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when 12 or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { }); return; }
+                if (numInArmy > maxPlayersToAllowCover) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when 12 or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { }); return; }
 
-                if (numInArmy > 6) { GamePlay.gpLogServer(new Player[] { player }, "Note: Fewer cover aircraft available when more than 6 players on your side.", new object[] { });}
+                if (numInArmy > numPlayersToReduceCover) { GamePlay.gpLogServer(new Player[] { player }, "Note: Fewer cover aircraft available when more than 6 players on your side.", new object[] { });}
 
                 if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
 

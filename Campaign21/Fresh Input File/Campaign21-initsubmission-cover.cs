@@ -466,6 +466,7 @@ public class Mission : AMission
         string nl = Environment.NewLine;
         if (html) nl = "<br>" + nl;
         string retmsg = "";
+        if (army != ArmiesE.Blue && army != ArmiesE.Red) return "Cover: No cover aircraft available because you are not in an army";
         if ( CoverAircraftCurrentlyAvailable[army] == null) return "Cover: Aircraft availability not initialized";
 
         List<ArmiesE> armylist = new List<ArmiesE>();
@@ -508,14 +509,13 @@ public class Mission : AMission
     }
     public string acAvailableToPlayer_msg (Player player )
     {
-        int acAllowedThisPlayer = acAvailableToPlayer_num(player);
+        int acAvailable = acAvailableToPlayer_num(player);
         string rankExpl = "";
         if (TWCStbStatRecorder != null)
         {
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
         }
-        int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
-        if (acAvailable < 0) acAvailable = 0;
+        int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);        
         return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}",acAvailable, acAllowedThisPlayer, rankExpl);
     }
     public int acAvailableToPlayer_num(Player player)

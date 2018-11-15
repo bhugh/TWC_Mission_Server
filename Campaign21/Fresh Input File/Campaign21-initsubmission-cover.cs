@@ -532,7 +532,7 @@ public class Mission : AMission
             acAllowedThisPlayer += Convert.ToInt32(adder);
 
             if (numPlayer > numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, being nice to pilots here . . . .
-            if (numPlayer > ((double)maxPlayersToAllowCover - (double)numPlayersToReduceCover) / 2.0) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
+            if (numPlayer > ((double)maxPlayersToAllowCover - (double)numPlayersToReduceCover) / 2.0 + (double)numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
 
         }
@@ -865,7 +865,7 @@ public class Mission : AMission
                             
                             coverAircraftAirGroupsActive.Add(newAirgroup, player);
                             //keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354); //don't seem aggressive enough in defending with this, trying the .escort instead, with including the bomber group actor as .target
-                            keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DEFENDING, AiAirWayPointType.ESCORT, player, 43.2354);
+                            keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DEFENDING, AiAirWayPointType.ESCORT, player, 21.2354); //2018/11/16 - WAS 43 seconds, trying 21 seconds instead
                             GamePlay.gpLogServer(new Player[] { player }, "Your escort consists of {0} {1}s. They have just taken off from the nearest friendly airfield.", new object[] { itemsmade, aircrafttype });
                             try
                             {
@@ -959,7 +959,7 @@ public class Mission : AMission
         else return 0;        
     }
 
-    public void keepAircraftOnTask_recurs(AiAirGroup airGroup, AiAirGroupTask task = AiAirGroupTask.DEFENDING, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, Player player = null, double delay = 31.2354, double AltDiff_m = 1000, double AltDiff_range_m = 100)
+    public void keepAircraftOnTask_recurs(AiAirGroup airGroup, AiAirGroupTask task = AiAirGroupTask.DEFENDING, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, Player player = null, double delay = 16.2354, double AltDiff_m = 1000, double AltDiff_range_m = 100)
     {
         //So, sometimes airgroups split up, say when under attack or landing.  If so, we just add the new group to the coverAircraftAirGroupsActive (but
         //only when the original groups was also there)

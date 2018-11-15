@@ -522,6 +522,7 @@ public class Mission : AMission, IMainMission
         }
 
         if (tickSinceStarted % 30000 == 1000)
+        //if (tickSinceStarted % 1100 == 1000)  //for testing
         {
 
             twcLogServer(null, "Completed Red Objectives (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):", new object[] { });
@@ -533,7 +534,17 @@ public class Mission : AMission, IMainMission
             Timeout(12, () =>
             twcLogServer(null, showTimeLeft(), new object[] { }));
 
-            stopAI();//for testing
+            //Console.WriteLine("Leaks: " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] + " " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red]);
+
+            Timeout(stb_random.Next(56, 623), () =>
+            //Timeout(stb_random.Next(5, 6), () => //for testing
+            {
+                if (MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] != "") sendChatMessageTo((int)ArmiesE.Blue, MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue], null);
+                if (MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red] != "") sendChatMessageTo((int)ArmiesE.Red, MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red], null);
+
+            });
+
+            //stopAI();//for testing
         }
 
         if (tickSinceStarted == END_MISSION_TICK)// Red battle Success.
@@ -2265,7 +2276,7 @@ public class Mission : AMission, IMainMission
                         {
                             //aircraft.Player(i).Place() = null;
                             //aircraft.Player(i).PlaceEnter(null,0);
-                            aircraft.Player(i).PlaceLeave(i);
+                            if (aircraft.Player(i) != null) aircraft.Player(i).PlaceLeave(i);
                         }
 
                         //Wait 0.5 second for player(s) to leave, then destroy
@@ -2410,8 +2421,7 @@ public class Mission : AMission, IMainMission
                                     {
 
 
-                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                         + a.CallSign() + " " 
+                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " "                                          
                                          + a.Type() + " " 
                                          + a.TypedName() + " " 
                                          +  a.AirGroup().ID(), new object[] { });
@@ -2573,7 +2583,7 @@ public class Mission : AMission, IMainMission
             AGGtype = type;
 
             /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-             + a.CallSign() + " " 
+             
              + a.Type() + " " 
              + a.TypedName() + " " 
              +  a.AirGroup().ID(), new object[] { });
@@ -3162,12 +3172,12 @@ public class Mission : AMission, IMainMission
                             //So bombers will drop out 1/7 and the amount indicated below.  Tried dropout 3/4 of the time but that leaves only 3/4*6/7 that
                             //they would show up, which means they didn't show up hardly at all. Around 50% for heavy bomber might be OK, means they
                             //show up like 40% of the time?  This applies to 1-2 bombers.  3-4-5 bombers also drop out some but less so as the bomber group size grows
-                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 67)  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead.
+                            if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 2 && random.Next(100) <= 50)  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead. 67 seems to basically make them disappear, trying 50 instead.
                             {
                                 agid.AGGradarDropout = true;
                                 //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
                             }
-                            else if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 5 && agid.AGGcount > 2 && random.Next(100) <= ( 67 - 10*(agid.AGGcount-2)))  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead.
+                            else if ((agid.AGGAIorHuman == aiorhuman.Human) && agid.AGGisHeavyBomber && agid.AGGcount <= 5 && agid.AGGcount > 2 && random.Next(100) <= ( 50 - 10*(agid.AGGcount-2)))  //2018-10-24, was 58, trying it lower.  10-25, 42 was worse, trying 67 instead.  Now 50, same as above.
                             {
                                 agid.AGGradarDropout = true;
                                 //Console.WriteLine("RG: AGGradarDropout due to HeavyBomber random 47% {0}", agid.actor.Name());
@@ -3336,19 +3346,19 @@ public class Mission : AMission, IMainMission
             
         }
 
-        double leakageRate = .12;
-        double below250LeakageRate = 0.06;
+        double leakageRate = .21;  //was .12, seemed too low
+        double below250LeakageRate = 0.105;
 
         if (onEnemyGround)
         {
-            leakageRate = .2;
-            below250LeakageRate = 0.14;
+            leakageRate = .31;  //was .24, seemed too low
+            below250LeakageRate = 0.19;
         }
 
         if (nearMissionObjective)
         {
-            leakageRate = .66;
-            below250LeakageRate = 0.44;
+            leakageRate = .7;//was .64, seemed too low
+            below250LeakageRate = 0.51;
         }
 
         bool below = ((altAGL_ft < 500 && altAGL_ft - 325 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
@@ -3707,7 +3717,7 @@ public class Mission : AMission, IMainMission
                                                     else if (type.Contains("Bomber") || type.Contains("bomber")) type = "B";
                                                     if (a == p && radar_realism >= 0) type = "Your position";
                                                     /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                                     + a.CallSign() + " " 
+                                                     
                                                      + a.Type() + " " 
                                                      + a.TypedName() + " " 
                                                      +  a.AirGroup().ID(), new object[] { });
@@ -4091,7 +4101,7 @@ public class Mission : AMission, IMainMission
                                                 //if (a == p && radar_realism >= 0) type = "Your position";
                                                 if (a == p && radar_realism >= 0) continue; //the player is in the DB and we don't want/need to give an intercept to self-location a while ago, as shown in the DB.
                                                                                             /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                                                                             + a.CallSign() + " " 
+                                                                                             
                                                                                              + a.Type() + " " 
                                                                                              + a.TypedName() + " " 
                                                                                              +  a.AirGroup().ID(), new object[] { });
@@ -4528,7 +4538,7 @@ public class Mission : AMission, IMainMission
                                                         type = agid.AGGtype;
                                                         if (a == p && radar_realism >= 0) type = "Your position";
                                                         // if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                                        // + a.CallSign() + " " 
+                                                        
                                                         // + a.Type() + " " 
                                                         // + a.TypedName() + " " 
                                                         // +  a.AirGroup().ID(), new object[] { });
@@ -5911,7 +5921,7 @@ public class Mission : AMission, IMainMission
         if (MissionNumber > -1)
         {
             /* AiAircraft aircraft = (player.Place() as AiAircraft);
-                            string cs = aircraft.CallSign();
+                            string cs = ""; 
                             //int p = part.ParameterTypes.I_VelocityIAS; 
                             double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
                             twcLogServer(new Player[] { player }, "Plane: "  
@@ -6427,9 +6437,9 @@ public class Mission : AMission, IMainMission
         {
             Timeout(0.1, () =>
             {
-                string m = "Commands: <tl Time Left; <rr How to reload; <stock aircraft reserve levels; <lost a/c";
+                string m = "Commands: <tl Time Left; <rr How to reload; <stock Aircraft reserve levels; <lost A/C";
                 if (admin_privilege_level(player) >= 2) m += "; <admin";
-                twcLogServer(new Player[] { player }, "Commands: <tl Time Left; <rr How to reload; <stock aircraft reserve levels; <admin", new object[] { });
+                twcLogServer(new Player[] { player }, m, new object[] { });
                 //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
                 //twcLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
                 //GamePlay.gp(, from);
@@ -6703,7 +6713,7 @@ public class Mission : AMission, IMainMission
         Timeout(1.0, () => // wait 1 second for human to load into plane
         {
                 /* if (DEBUG) twcLogServer(null, "DEBUGC: Airgroup: " + a.AirGroup() + " " 
-                  + a.CallSign() + " " 
+                  
                   + a.Type() + " " 
                   + a.TypedName() + " " 
                   +  a.AirGroup().ID(), new object[] { });
@@ -6718,7 +6728,7 @@ public class Mission : AMission, IMainMission
 
 
                     /* if (DEBUG) twcLogServer(null, "DEBUGD: Airgroup: " + a.AirGroup() + " " 
-                      + a.CallSign() + " " 
+                      
                       + a.Type() + " " 
                       + a.TypedName() + " " 
                       +  a.AirGroup().ID() + " timeout: " + ot, new object[] { });
@@ -6746,11 +6756,10 @@ public class Mission : AMission, IMainMission
                     //Timeout(75, () =>  //75 sec - 1.5 minutes for testing
                     Timeout(ot, () =>  //960 sec - 16 minutes for real use
                     {
-                    DebugAndLog("DEBUG: Destroying: " + a.AirGroup() + " "
-                  + a.CallSign() + " "
-                  + a.Type() + " "
-                  + a.TypedName() + " "
-                  + a.AirGroup().ID() + " timeout: " + ot);
+                    DebugAndLog("DEBUG: Destroying: " + a.AirGroup() + " "                 
+                    + a.Type() + " "
+                    + a.TypedName() + " "
+                    + a.AirGroup().ID() + " timeout: " + ot);
                     if (actor != null && isAiControlledPlane2(actor as AiAircraft))
                     { (actor as AiAircraft).Destroy(); }
                 }
@@ -6815,8 +6824,7 @@ public class Mission : AMission, IMainMission
                                 if (actor != null && actor is AiAircraft)
                                 {
                                     AiAircraft a = actor as AiAircraft;
-                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
-                                           //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
                                            //+ a.Type() + " " 
                                            //+ a.TypedName() + " " 
                                            +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
@@ -6837,8 +6845,7 @@ public class Mission : AMission, IMainMission
 
                                             //so, lots of ai aircraft velicity is negative.  For some reason.  So if checking for stopped, must make it ==0 or maybe >-5 <5 or whatever
                                             /*if (Z_VelocityTAS < 0) 
-                                                Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "
-                                                    + a.CallSign() + " "
+                                                Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "                                                    
                                                     + a.Type() + " "
                                                     + a.TypedName() + " "
                                                     + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
@@ -6857,14 +6864,13 @@ public class Mission : AMission, IMainMission
                                         // ai aircraft only
                                         {
                                             Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType (a) + " " 
-                                            + a.CallSign() + " " 
                                             + a.Type() + " " 
                                             + a.TypedName() + " " 
                                             +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
                                             Z_AltitudeAGL,Z_VelocityTAS, aagt
                                            ); 
                                             numremoved++;
-                                            Timeout(numremoved * 10, () => { a.Destroy(); }); //Destory the a/c, but space it out a bit so there is no giant stutter 
+                                            Timeout(numremoved * 10, () => { a.Destroy(); }); //Destroy the a/c, but space it out a bit so there is no giant stutter 
 
                                         }
                                     }
@@ -7097,7 +7103,7 @@ public class Mission : AMission, IMainMission
     //TODO: This percentage is not operative yet
     public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 75 },
-        {ArmiesE.Blue, 75 }
+        {ArmiesE.Blue, 64 }
     };
 
     //TODO: Use similar scheme for total points, objectives completed list, objectives completed
@@ -7111,6 +7117,11 @@ public class Mission : AMission, IMainMission
     public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 16 },
         {ArmiesE.Blue, 13 }
+    };
+
+    public Dictionary<ArmiesE, string> MO_IntelligenceLeakNearMissionEnd = new Dictionary<ArmiesE, string>() {
+        {ArmiesE.Red, "" },  //the leak FOR red army (about something Blue is doing)
+        {ArmiesE.Blue, "" }  //the leak FOR blue army (about something Red is doing)
     };
 
     Dictionary<string, MissionObjective> MissionObjectivesList = new Dictionary<string, MissionObjective>();
@@ -8094,6 +8105,28 @@ public class Mission : AMission, IMainMission
         return retmsg;
     }
 
+    public string MO_SectorOfRandomRemainingPrimaryObjective(int army)
+    {
+
+        var remainingMOs = new List<MissionObjective>();
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        {
+            
+            MissionObjective mo = entry.Value;
+            if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsPrimaryTarget && mo.IsEnabled)
+            {
+                remainingMOs.Add(mo);                
+            }
+        }
+
+        if (remainingMOs.Count <= 0) return "";
+
+        MissionObjective m = remainingMOs.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+
+        return Calcs.correctedSectorNameKeypad(this, m.Pos);        
+    }
+
     public void MO_WriteOutAllMissionObjectives(string filename, bool misformat = true, bool triggersonly = false)
     {
 
@@ -8239,6 +8272,12 @@ public class Mission : AMission, IMainMission
         double x = MO_NumberPrimaryObjectivesComplete(army);
         return (x / (double)npo * (double)100.0);
     }
+    public double MO_PrimaryObjectivesRemaining(int army)
+    {
+        int npo = MO_NumberPrimaryObjectives(army);
+        double x = MO_NumberPrimaryObjectivesComplete(army);
+        return (npo - x);
+    }
 
 
 
@@ -8326,6 +8365,10 @@ public class Mission : AMission, IMainMission
             EndMission(70, "Blue");
         }
 
+
+
+        
+
         double rp = MO_PercentPrimaryObjectives((int)ArmiesE.Red);
         if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequired[ArmiesE.Red] && bp > 99)
             || rp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Red])// Blue battle Success
@@ -8338,6 +8381,18 @@ public class Mission : AMission, IMainMission
                 GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
             });
             EndMission(70, "Red");
+        }
+
+        //Console.WriteLine("Figuring leaks:  {0} {1} {2} {3}", MissionObjectiveScore[ArmiesE.Red], MO_PointsRequired[ArmiesE.Red], bp, MO_PrimaryObjectivesRemaining( (int)ArmiesE.Red));
+
+
+        if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) == 2 )
+        {
+            MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] = "Intelligence sources indicate the enemy may be attacking sector " + MO_SectorOfRandomRemainingPrimaryObjective((int)ArmiesE.Red) + " soon";
+            //Console.WriteLine("Figuring Leaks: " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] + " " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red]);
+        } else if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) == 1)
+        {
+            MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] = "";
         }
     }
 

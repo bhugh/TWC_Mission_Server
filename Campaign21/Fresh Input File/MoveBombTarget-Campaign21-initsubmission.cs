@@ -1694,8 +1694,10 @@ public class Mission : AMission
     {
         try
         {
-            //AiAirGroup airGroup = intc.attackingAirGroup;
-            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            if (airGroup == null || airGroup.GetWay() == null) return; //Not sure what else to do?
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
+            //Maybe just exit?
+
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
             if (!isAiControlledAirGroup(airGroup)) return;
             if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
@@ -1798,7 +1800,7 @@ public class Mission : AMission
                 } else
                 {
                     if (army == 1) endPos.x = twcmap_minX - 9000;
-                    else if (army == 2) endPos.x = twcmap_maxY + 9000;
+                    else if (army == 2) endPos.x = twcmap_maxX + 9000;
                     else endPos.x = twcmap_maxX + 9000;
                     endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
                     if (army == 1) endPos.y += 120000;

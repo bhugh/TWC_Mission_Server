@@ -1184,7 +1184,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                   //Console.WriteLine("SPE: " + cm.ToString());
                   cm.isInPlanePlaceChange = false;
-                  if (dis_meters < 15)
+                  if (dis_meters < 15 || cm.posEnterActor == cm.posLeftActor )
                   {
                         cm.isInPlanePlaceChange = true; //hoping that dis_meters > 5 will catch e.g. bombers where the player switches position to position but it's still the same flight
                             //Console.WriteLine("That was an in-plane place change!" + dis_meters.ToString() + " meters");
@@ -1258,7 +1258,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
             if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec >= 10 * 60) && (cm.selfDamageThisFlight > 10))
                 endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true;   //OK, we're giving people a break if they have had a long flight & only a few self-damages, but if they have a LOT Of self-damage their Mission is still over
 
-            cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
+            mission.Timeout(15, () =>
+            {
+                cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
+                //We delay doing this, though, because leave last pos & reporting details of the last filght are happening almost simultaneously, and we don't want to 
+                //change flightstarttime until we have a chance to actually record the last flight etc.  Before this change we were getting "last sortie = 0.1 minutes" which
+                //might be  a result of this problem
+            });
 
             //record the time for the flight              
             Mission.StbStatTask sst = new Mission.StbStatTask(Mission.StbStatCommands.Mission, player.Name(), new int[] { 792, flightDuration_sec }, player.Place() as AiActor);
@@ -1377,11 +1383,13 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                         bool leftPlane = false;
                         bool parachuted = false;
                         if (actor != null && (actor as AiAircraft) != null && mission.Stb_isAiControlledPlane(actor as AiAircraft)) leftPlane = true;
-                        if (dis_meters < 200) leftPlane = false;
+                        if (dis_meters < 25) leftPlane = false;
                         if (cm.posEnterActor == cm.posLeftActor) leftPlane = false;
-                        if (player.PlacePrimary() == -1) parachuted = true; //OK, this doesn't actually work. Unfortunately.
+                        if (player.PlacePrimary() == -1) parachuted = true; //OK, this doesn't actually work. Unfortunately.                        
                         cm.parachuted = parachuted;
-                        
+
+                        if (player.PlacePrimary() == -1 && player.PlaceSecondary() == -1) leftPlane = true; //So this happens when ie clicking the flag or using function keys (ctlr-F2 etc) to exit all positions in the aircraft, but in this case you have not yet entered ANY OTHER NEW aircraft.  So for various reasons none of the above tests capture this particular situation, but -1, -1 does.  We hope.
+
                         int currTime = Calcs.TimeSince2016_sec();
                         //We were using dis_meters < 10 which seems to work when actually switching positions in a bomber.  But . . . if you use ALT-F11 (ALT-F2, whatever) to
                         //got to "external view" then the the time & distance noted here is the time since the last position move within the plane - but the ALT-F2 move doesn't
@@ -1394,6 +1402,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                         //Console.WriteLine("PLACE LEAVE: Just a pilot switching positions within an a/c " + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                             cm.isPlaneLeave = false; //not a plane leave, just a position switch.
+                            cm.isInPlanePlaceChange = true; //This is really fouled up, too - maybe adding this here will help.
                             stbCmr_ContinueMissionInfo[player.Name()] = cm;
                             //posLeave = false;
                             //return posLeave; 
@@ -3547,8 +3556,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                                     if (actor != null && actor is AiAircraft)
                                     {
                                         AiAircraft a = actor as AiAircraft;
-                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
-                                           //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
                                            //+ a.Type() + " " 
                                            //+ a.TypedName() + " " 
                                            +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
@@ -3624,7 +3632,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
         }
         catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString());}
         // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
-    } //method removeoffmapaiaircraft
+    } //method removeoffmapplayersaircraft
 
 
 
@@ -6461,14 +6469,39 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                 
                 bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
 
-                
+                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+
+                double aircraftDamage = injuries;
+                if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
+
+                AiAircraft aircraft = actor as AiAircraft;
+                if (aircraft != null) {
+                    Console.WriteLine("Stats, aircraft damage: {0:N2} due to injuries/crash; rpl: {1} {2}", aircraftDamage, realPosLeave, isLastPlayer);
+                    if (aircraftDamageTotal.ContainsKey(aircraft) && aircraftDamageTotal[aircraft] > 2)
+                    {
+                        Console.WriteLine("Stats, aircraft damages: {0:N0}", (double)aircraftDamageTotal[aircraft]);
+                        aircraftDamage += (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each item to repair is 15 mins.
+                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft damage", (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0);
+                    }
+                    if (aircraftCutlimbTotal.ContainsKey(aircraft))
+                    {
+                        aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
+                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
+                    }
+
+                }
+
+                if (aircraftDamage > 0.999 && injuries < 1) aircraftDamage = 0.999; //The most serious type of injury/damage/repair but not actually dead or destroyed completely
+
+                Console.WriteLine("Stats, aircraft damage: {0:N3} final", aircraftDamage);
+
                 if (realPosLeave && (actor as AiAircraft) != null)
                 {
                     //So if we are here it's a real pos leave & we're in an aircraft.  If we're the LAST PLAYER we're going to call it
                     //a real aircraft abandon.
                     //Below, we will also force destruction of the aircraft in certain situations such as big crash.  But this will be our 'main' 
                     //place to say, "Yes, the final pilot has left the aircraft"
-                    if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                    if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, forceDamage: aircraftDamage); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 }
 
                 /*
@@ -6508,7 +6541,8 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
 
                         //Stb_Chat("Checking place leave 2 . . . ", player);
-                        double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+
+                        //this WAS here:  double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed). 
 
                         //we force the player back into place momentarily
                         //this is necessary in order fo the killActor() routine to work properly
@@ -6872,6 +6906,9 @@ public override void OnActorDestroyed(int missionNumber, string shortName, AiAct
 }
 
 
+//Simple dictionary that keeps a count of how many times each aircraft was damaged and how many times a cut limb
+public Dictionary<AiAircraft, int> aircraftDamageTotal = new Dictionary<AiAircraft, int>();
+public Dictionary<AiAircraft, int> aircraftCutlimbTotal = new Dictionary<AiAircraft, int>();
 
 public override void OnAircraftDamaged(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, NamedDamageTypes damageType)
 {
@@ -6880,6 +6917,8 @@ public override void OnAircraftDamaged(int missionNumber, string shortName, AiAi
     try
     {
         //System.Console.WriteLine("Aircraft Actor damaged: " + aircraft.Army());
+        if (aircraftDamageTotal.ContainsKey(aircraft)) aircraftDamageTotal[aircraft]++;
+        else aircraftDamageTotal[aircraft] = 1;
 
         StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 781 }); //player damaged, 781                                                                        
         bool willReportDamage = false;
@@ -6918,6 +6957,8 @@ public override void OnAircraftCutLimb(int missionNumber, string shortName, AiAi
 
         bool ret = stb_ContinueMissionRecorder.StbCmr_IsSelfDamage (aircraft, initiator);
 
+        if (aircraftCutlimbTotal.ContainsKey(aircraft)) aircraftCutlimbTotal[aircraft]++;
+        else aircraftCutlimbTotal[aircraft] = 1;
 
         if (initiator != null && aircraft != null)
         {
@@ -7394,17 +7435,24 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         {
             //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
             // Console.WriteLine("OnActorDead: 1");
-            if (stb_deadActors.Contains(actor.Name())) {
-                //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
-                return; //This is an actor we've already 'killed' therefore we won't double count it.
-                        //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
-            } else {
-                //if (stb_Debug) 
-                // Console.WriteLine("OnActorDead: 2");
-                //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
-                //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
-                stb_deadActors.Add(actor.Name());
-                //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
+            //avoid recording death of any actor more than once, except for players of course
+            if (actor as Player == null)
+            {
+                if (stb_deadActors.Contains(actor.Name()))
+                {
+                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
+                    return; //This is an actor we've already 'killed' therefore we won't double count it.
+                            //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
+                }
+                else
+                {
+                    //if (stb_Debug) 
+                    // Console.WriteLine("OnActorDead: 2");
+                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
+                    //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
+                    stb_deadActors.Add(actor.Name());
+                    //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
+                }
             }
 
             //if (stb_Debug) 
@@ -7461,7 +7509,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
             {
                 
                 string iName = "ai";
-                if (ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName=ds.initiator.Player.Name();
+                if (ds.initiator != null && ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName=ds.initiator.Player.Name();
                 string typename=ds.initiator.Actor.Name();
                 int armyV = actor.Army();
                 int armyI = ds.initiator.Actor.Army();
@@ -7522,7 +7570,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                     {
                         int dc = damages.Count();
                         if (dc == 0) dc = 1;
-                        if (ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
+                        if (ds.initiator != null && ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
                         stb_RecordStatsOnActorDead(ds.initiator, 1, ds.score, totalscore, ds.initiator.Tool.Type); //type 1 is aerial kill
                     }
                 }
@@ -7536,7 +7584,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 for (int i = 0; i < aiAircraft.Places(); i++)
                 {
                     //if (aiAircraft.Player(i) != null) return false;
-                    if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
+                    if (aiAircraft.Player(i) != null && aiAircraft.Player(i) is Player && aiAircraft.Player(i).Name() != null)
                     {
                         string playerName = aiAircraft.Player(i).Name();
                         Player player = aiAircraft.Player(i);

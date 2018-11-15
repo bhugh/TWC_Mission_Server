@@ -516,7 +516,7 @@ public class Mission : AMission
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
         }
         int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);        
-        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}",acAvailable, acAllowedThisPlayer, rankExpl);
+        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}; {3} more are still in the air or awaiting R&R",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
     }
     public int acAvailableToPlayer_num(Player player)
     {
@@ -539,6 +539,15 @@ public class Mission : AMission
         int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
         if (acAvailable < 0) acAvailable = 0;
         return acAvailable;
+    }
+    public int coverACStillInAirForPlayer_num(Player player)
+    {
+        int count = 0;
+        foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
+        {
+            if (player == coverAircraftActorsCheckedOut[actor]) count++;
+        }
+        return count;
     }
     public string selectCoverPlane(string acName, ArmiesE army)
     {
@@ -681,7 +690,8 @@ public class Mission : AMission
                 else { EscortMakeLand(airGroup, aircraft.AirGroup()); numret++; }
 
             }
-            GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport. They are shy and will land quicker if no one is around.", new object[] { });
+            GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport.", new object[] { });
+            GamePlay.gpLogServer(new Player[] { player }, "Cover aircraft will be returned to General Stock immediately but will available for use in your personal Cover Squadron again only after the aircraft actually return to base or leave the map.", new object[] { });
 
         }
         else if (msg.StartsWith("<clist")) //<clist
@@ -968,7 +978,7 @@ public class Mission : AMission
         {
             coverAircraftAirGroupsActive.Remove(airGroup);
             Console.WriteLine("Cover KeepAircraftOnTask: Removing airgroup {0} from active list because no more aircraft in the group", airGroup.Name());
-            if (player != null) GamePlay.gpLogServer(new Player[] { player }, "Your {0} cover group has been destroyed.", new object[] { airGroup.Name() });
+            if (player != null) GamePlay.gpLogServer(new Player[] { player }, "Your {0} cover group has been disbanded.", new object[] { airGroup.Name() });
             return;
             //TODO: Maybe the group splits up, maybe there are daughter groups or something?
         }
@@ -1580,12 +1590,12 @@ public class Mission : AMission
         Timeout (60, ()=>
         {
             Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
-            airGroup.setTask(AiAirGroupTask.LANDING, airGroup);
+            if (airGroup != null ) airGroup.setTask(AiAirGroupTask.LANDING, airGroup);
         });
         Timeout(120, () =>
         {
             Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
-            airGroup.setTask(AiAirGroupTask.LANDING, airGroup);
+            if (airGroup != null) airGroup.setTask(AiAirGroupTask.LANDING, airGroup);
         });
         
         //Return aircraft to supply as this is the point when the player is not longer responsible for it
@@ -1657,7 +1667,7 @@ public class Mission : AMission
 
             return aaWP;
         }
-        catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
     }
     public AiAirWayPoint EscortPosWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m =1000, 
         double AltDiff_range_m = 700, bool nodupe = true)
@@ -1708,7 +1718,7 @@ public class Mission : AMission
 
             return aaWP;
         }
-        catch (Exception ex) { Console.WriteLine("MoveBomb EscortPosWaypoint: " + ex.ToString()); return null; }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb EscortPosWaypoint: " + ex.ToString()); return null; }
     }
 
     public AiAirWayPoint EscortLandingWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup = null, AiAirWayPointType aawpt = AiAirWayPointType.LANDING, double altDiff_m = 1000,
@@ -1754,7 +1764,7 @@ public class Mission : AMission
 
             return aaWP;
         }
-        catch (Exception ex) { Console.WriteLine("MoveBomb EscortLANDINGwaypoint: " + ex.ToString()); return null; }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb EscortLANDINGwaypoint: " + ex.ToString()); return null; }
     }
 
     public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
@@ -1810,49 +1820,56 @@ public class Mission : AMission
     {
         Timeout(60.123232,()=>AddOffMapAIAircraftBackToSupply_recur());
 
-        int numremoved = 0;
-
-        //BattleArea 10000 10000 350000 310000 10000
-        //TODO: There is probably some way to access the size of the battle area programmatically
-        double twcmap_minX = 10000;
-        double twcmap_minY = 10000;
-        double twcmap_maxX = 360000;
-        double twcmap_maxY = 310000;
-        double minX = twcmap_minX + 10000; //20000
-        double minY = twcmap_minY + 10000; //20000
-        double maxX = twcmap_maxX - 10000; //340000;
-        double maxY = twcmap_maxY - 10000; // 300000;
-        
-        Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
-        foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
+        try
         {
-            AiAircraft a = actor as AiAircraft;
-            /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " " 
-               //+ a.CallSign() + " " //OK, not all a/c have a callsign etc, so . . . don't use this . . .  
-               //+ a.Type() + " " 
-               //+ a.TypedName() + " " 
-               +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-              );
+            int numremoved = 0;
+
+            //BattleArea 10000 10000 350000 310000 10000
+            //TODO: There is probably some way to access the size of the battle area programmatically
+            /* double twcmap_minX = 10000;
+            double twcmap_minY = 10000;
+            double twcmap_maxX = 360000;
+            double twcmap_maxY = 310000;
             */
-            
 
-            if (a != null &&
-                  (a.Pos().x <= minX ||
-                    a.Pos().x >= maxX ||
-                    a.Pos().y <= minY ||
-                    a.Pos().y >= maxY
-                  )
+            double minX = twcmap_minX; //20000
+            double minY = twcmap_minY; //20000
+            double maxX = twcmap_maxX; //340000;
+            double maxY = twcmap_maxY; // 300000;
 
-            )   
+            Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
+            foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
             {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
-                numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                coverAircraftActorsCheckedOut.Remove(actor);
-                Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
+                AiAircraft a = actor as AiAircraft;
+                Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
+                + actor.Name() + " "
+                + a.Type() + " "
+                + a.TypedName() + " "
+                + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                  );
+
+
+
+                if (a != null &&
+                      (actor.Pos().x <= minX ||
+                        actor.Pos().x >= maxX ||
+                        actor.Pos().y <= minY ||
+                        actor.Pos().y >= maxY
+                      )
+
+                )
+                {
+                    numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);                    
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
+                    Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
+                    Timeout(0.1, () => { coverAircraftActorsCheckedOut.Remove(actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
+                }
+
+
             }
-
-
         }
+        catch (Exception ex) { Console.WriteLine("Cover removeoffmap: " + ex.ToString()); }
+
         // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
     } //method removeoffmapaiaircraft
 
@@ -1965,7 +1982,10 @@ public class Mission : AMission
         try
         {
             //AiAirGroup airGroup = intc.attackingAirGroup;
-            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            if (airGroup == null || airGroup.GetWay() == null) return; //Not sure what else to do?
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
+            //Maybe just exit?
+
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
             //if (!isAiControlledAirGroup(airGroup)) return;
             if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
@@ -2041,7 +2061,7 @@ public class Mission : AMission
                         Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                     }
                 }
-                catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+                catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWay ERROR2A: " + ex.ToString()); }
 
 
                 NewWaypoints.Add(nextWP); //do add
@@ -2075,7 +2095,7 @@ public class Mission : AMission
                     else
                     {
                         if (army == 1) endPos.x = twcmap_minX - 9000;
-                        else if (army == 2) endPos.x = twcmap_maxY + 9000;
+                        else if (army == 2) endPos.x = twcmap_maxX + 9000;
                         else endPos.x = twcmap_maxX + 9000;
                         endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
                         if (army == 1) endPos.y += 120000;
@@ -2087,7 +2107,7 @@ public class Mission : AMission
                     //so if we hit a distance < 120km we call it good enough
                     //otherwise we take the shortest distance based on 10 random tries
                     distance_m = Calcs.CalculatePointDistance(endPos, nextWP.P);
-                    if (distance_m < 120000)
+                    if (distance_m < 85000)
                     {
                         tempEndPos = endPos;
                         continue;
@@ -2189,7 +2209,7 @@ public class Mission : AMission
 
             }
         }
-        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints: " + ex.ToString()); }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWayPoints: " + ex.ToString()); }
     }
 
 

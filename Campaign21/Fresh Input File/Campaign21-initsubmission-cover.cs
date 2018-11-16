@@ -58,6 +58,7 @@ public class Mission : AMission
             MissionNumberListener = -1;
             minimumAircraftRequiredForCoverDuty = 200;
             maximumAircraftAllowedPerMission = 6;
+            //maximumAircraftAllowedPerMission = 36; //for testing        
             maximumCheckoutsAllowedAtOnce = 3;
             maxPlayersToAllowCover = 12; //Number of players online in players' army, above this number no cover will be allowed
             numPlayersToReduceCover = 6; //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
@@ -188,7 +189,7 @@ public class Mission : AMission
 
         try
         {
-            Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was destroyed; doing aircraft checkin");
+            //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was destroyed; doing aircraft checkin");
 
 
 
@@ -200,7 +201,7 @@ public class Mission : AMission
             //AiActor actor = aircraft as AiActor;
             if (coverAircraftActorsCheckedOut.ContainsKey(actor))
             {
-                Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was checked out by Cover");
+                //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was checked out by Cover");
 
                 AiAircraft aircraft = actor as AiAircraft;
 
@@ -219,7 +220,7 @@ public class Mission : AMission
                     if (numAC==0 && coverAircraftAirGroupsActive.ContainsKey(aircraft.AirGroup()))
                     {
                         coverAircraftAirGroupsActive.Remove(aircraft.AirGroup());
-                        Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
+                        //Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
                     }
 
 
@@ -516,7 +517,7 @@ public class Mission : AMission
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
         }
         int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);        
-        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}; {3} more are still in the air or awaiting R&R",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
+        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}; {3} more are still in the air or being readied for action.",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
     }
     public int acAvailableToPlayer_num(Player player)
     {
@@ -1610,7 +1611,8 @@ public class Mission : AMission
 
         coverAircraftAirGroupsActive.Remove(airGroup);
 
-        Timeout(600, () =>
+        Timeout(240, () =>
+        //Timeout(6, () =>  //for testing
         {
             Console.WriteLine("-cover Aborting LANDING: Sending off map now " + airGroup.Name(), airGroup.getTask());
             fixWayPoints(airGroup);
@@ -1837,16 +1839,17 @@ public class Mission : AMission
             double maxX = twcmap_maxX; //340000;
             double maxY = twcmap_maxY; // 300000;
 
-            Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
+            //Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
             foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
             {
                 AiAircraft a = actor as AiAircraft;
-                Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
+                /*Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
                 + actor.Name() + " "
                 + a.Type() + " "
                 + a.TypedName() + " "
                 + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
                   );
+                  */
 
 
 
@@ -2003,8 +2006,6 @@ public class Mission : AMission
             */
 
 
-
-
             int currWay = airGroup.GetCurrentWayPoint();
 
 
@@ -2021,6 +2022,7 @@ public class Mission : AMission
 
             AiWayPoint nextWP = prevWP;
 
+            /*
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
                 nextWP = wp;
@@ -2050,7 +2052,7 @@ public class Mission : AMission
                     //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
                     if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX - 9999 || nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
                     {
-                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                         update = true;
                         if (nextWP.P.z < 0) nextWP.P.z = 0;
                         if (nextWP.P.z > 50000) nextWP.P.z = 50000;
@@ -2058,7 +2060,7 @@ public class Mission : AMission
                         if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
                         if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
                         if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
-                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                     }
                 }
                 catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWay ERROR2A: " + ex.ToString()); }
@@ -2068,6 +2070,7 @@ public class Mission : AMission
                 count++;
 
             }
+            */
             //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
             if (nextWP.P.x > twcmap_minX && nextWP.P.x < twcmap_maxX && nextWP.P.y > twcmap_minY && nextWP.P.y < twcmap_maxY)
             {
@@ -2081,7 +2084,7 @@ public class Mission : AMission
                 double distance_m = 100000000000;
                 double tempDistance_m = 100000000000;
 
-                for (int i = 1; i < 15; i++)
+                for (int i = 1; i < 13; i++)
                 {
                     if (ran.NextDouble() > 0.5)
                     {
@@ -2098,7 +2101,7 @@ public class Mission : AMission
                         else if (army == 2) endPos.x = twcmap_maxX + 9000;
                         else endPos.x = twcmap_maxX + 9000;
                         endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
-                        if (army == 1) endPos.y += 120000;
+                        if (army == 1) endPos.y += 80000;
                         else if (army == 2) endPos.y -= 10000;
                         if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
                         if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
@@ -2144,8 +2147,8 @@ public class Mission : AMission
                 //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
                 //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
                 //and random normal altitudes
-                midPos.x = (nextWP.P.x * 1 + endPos.x * 4) / 5 + ran.NextDouble() * 10000 - 5000;
-                midPos.y = (nextWP.P.y * 1 + endPos.y * 4) / 5 + ran.NextDouble() * 10000 - 5000;
+                midPos.x = (nextWP.P.x * 1.0 + endPos.x * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
+                midPos.y = (nextWP.P.y * 1.0 + endPos.y * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
 
 
                 /* (Vector3d Vwld = airGroup.Vwld();
@@ -2178,16 +2181,16 @@ public class Mission : AMission
                 NewWaypoints.Add(midaaWP); //do add
                 count++;
 
-                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+                Console.WriteLine("CoverFixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
                 //add the final Point, which is off the map
                 endaaWP = new AiAirWayPoint(ref endPos, speed);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = AiAirWayPointType.LANDING;
+                endaaWP.Action = AiAirWayPointType.NORMFLY;
 
                 NewWaypoints.Add(endaaWP); //do add
                 count++;
-                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                Console.WriteLine("CoverFixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
             }
 
 
@@ -2198,7 +2201,6 @@ public class Mission : AMission
 
                 //for testing
 
-
                 /*
                 foreach (AiWayPoint wp in NewWaypoints)
                 {
@@ -2206,8 +2208,6 @@ public class Mission : AMission
 
                 }
                 */
-
-
 
             }
         }

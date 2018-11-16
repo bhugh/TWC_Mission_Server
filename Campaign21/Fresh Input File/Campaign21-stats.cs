@@ -5892,7 +5892,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
                     double timeout = 0;
                     if (TimeNow_sec - lastBombMessageTime_sec < 0.3333) timeout = lastBombMessageTime_sec - TimeNow_sec + 0.333;
                     lastBombMessageTime_sec = TimeNow_sec + timeout + 0.333333; //Which should be the same as lastBombMessageTime_sec +1;
-                    Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
+                    //Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
                     if (timeout < 0) { timeout = 0; }
 
                     double individualscore = score;

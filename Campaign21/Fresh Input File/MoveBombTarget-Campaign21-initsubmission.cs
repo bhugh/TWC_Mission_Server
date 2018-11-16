@@ -947,10 +947,10 @@ public class Mission : AMission
                 AiAircraft aircraft = actor as AiAircraft;
                 double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
                 if (altAGL_m > 800) continue; //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
-                Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
                 if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
             }
-            Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
+            //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
     }
@@ -1803,8 +1803,8 @@ public class Mission : AMission
                     else if (army == 2) endPos.x = twcmap_maxX + 9000;
                     else endPos.x = twcmap_maxX + 9000;
                     endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
-                    if (army == 1) endPos.y += 120000;
-                    else if (army == 2) endPos.y -= 60000;
+                    if (army == 1) endPos.y += 80000;
+                    else if (army == 2) endPos.y -= 10000;
                     if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
                     if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
                 }
@@ -1823,15 +1823,15 @@ public class Mission : AMission
                 if (midPos.z < 30) midPos.z = 30;
 
                 double speed = prevWP.Speed;
-                
+
 
                 //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
                 //last point where the goal will be to have the airgroup low & off the radar at this point.
                 //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
                 //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
                 //and random normal altitudes
-                midPos.x = (nextWP.P.x * 1 + endPos.x*4) / 5 + ran.NextDouble() * 10000 - 5000;
-                midPos.y = (nextWP.P.y * 1 + endPos.y*4) / 5 + ran.NextDouble() * 10000 - 5000;
+                midPos.x = (nextWP.P.x * 1 + endPos.x * 1) / 2 + ran.NextDouble() * 50000 - 25000;
+                midPos.y = (nextWP.P.y * 1 + endPos.y * 1) / 2 + ran.NextDouble() * 50000 - 25000;
 
 
                 /* (Vector3d Vwld = airGroup.Vwld();
@@ -1869,7 +1869,7 @@ public class Mission : AMission
                 //add the final Point, which is off the map
                 endaaWP = new AiAirWayPoint(ref endPos, speed);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = AiAirWayPointType.LANDING;
+                endaaWP.Action = AiAirWayPointType.NORMFLY;
 
                 NewWaypoints.Add(endaaWP); //do add
                 count++;

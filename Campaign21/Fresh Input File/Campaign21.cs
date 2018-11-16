@@ -6072,9 +6072,10 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<obj"))
         {
             //only allow this for admins - mostly so that we can check these items via chat commands @ the console
-            if (admin_privilege_level(player) >= 2)
+            if (admin_privilege_level(player) >= 0) // >= 2 previously 
             {
 
+                twcLogServer(new Player[] { player }, "***Please use Tab-4 menu for campaign status when possible", new object[] { });
                 Timeout(0.2, () =>
                 {
                     if (player.Army() == 2) twcLogServer(new Player[] { player }, "Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue], new object[] { });
@@ -6098,15 +6099,17 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<camlong")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far, longer & more detailed analysis
         {
             //only allow this for admins - mostly so that we can check these items via chat commands @ the console
-            if (admin_privilege_level(player) >= 2)
+            if (admin_privilege_level(player) >= 0 ) // >= 2 previously 
             {
+                twcLogServer(new Player[] { player }, "***Please use Tab-4 menu for campaign status when possible", new object[] { });
                 Tuple<double, string> res = CalcMapMove("", false, true, player);
                 //string outputmsg = res.Item2;
                 //string msg = "";
 
                 double newMapState = CampaignMapState + res.Item1;
-
                 summarizeCurrentMapstate(newMapState, true, player);
+
+
             }
             else
             {
@@ -6118,8 +6121,10 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<cam")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far
         {
             //only allow this for admins - mostly so that we can check these items via chat commands @ the console
-            if (admin_privilege_level(player) >= 2)
+            if (admin_privilege_level(player) >= 0) // >= 2 previously 
             {
+                twcLogServer(new Player[] { player }, "***Please use Tab-4 menu for campaign status when possible", new object[] { });
+
                 Tuple<double, string> res = CalcMapMove("", false, false, player);
                 double score = res.Item1 * 100;
                 string mes = "Campaign score for this mission so far: ";
@@ -7109,7 +7114,7 @@ public class Mission : AMission, IMainMission
     //TODO: Use similar scheme for total points, objectives completed list, objectives completed
     public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 12 },
-        {ArmiesE.Blue, 10 }
+        {ArmiesE.Blue, 9 }
     };
 
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
@@ -7444,17 +7449,17 @@ public class Mission : AMission, IMainMission
             //ID is the ID used in the [Trigger] portion of the .mis file. The central portion of the line can be copy/pasted from the  .mis file (then lightly edited)
 
             //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID,Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-100), comment) {
-            addRadar("Westgate Radar",          "WesR", 1, 1, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 50, "");
-            addRadar("Sandwich Radar",          "SanR", 1, 1, "BTarget15R", "TGroundDestroyed", 75, 248739, 253036, 200, 25000, false, 50, "");
-            addRadar("Deal Radar",              "DeaR", 1, 1, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 50, "");
-            addRadar("Dover Radar",             "DovR", 1, 1, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 50, "");
-            addRadar("Brookland Radar",         "BroR", 1, 1, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 50, "");
-            addRadar("Dungeness Radar",         "DunR", 1, 1, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 50, "");
-            addRadar("Eastbourne Radar",        "EasR", 1, 1, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 50, "");
-            addRadar("Littlehampton Radar",     "LitR", 1, 1, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, 50, "");
-            addRadar("Ventnor Radar",           "VenR", 1, 1, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 50, "");
-            addRadar("Radar Communications HQ", "HQR", 1, 6,  "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 200000, false, 50, "");
-            addRadar("Radar Poole",             "PooR", 1, 2, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 25000,  false, 50, "");
+            addRadar("Westgate Radar",          "WesR", 1, 2, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 100, "");
+            addRadar("Sandwich Radar",          "SanR", 1, 2, "BTarget15R", "TGroundDestroyed", 75, 248739, 253036, 200, 25000, false, 100, "");
+            addRadar("Deal Radar",              "DeaR", 1, 2, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 100, "");
+            addRadar("Dover Radar",             "DovR", 1, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 100, "");
+            addRadar("Brookland Radar",         "BroR", 1, 2, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 100, "");
+            addRadar("Dungeness Radar",         "DunR", 1, 2, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 100, "");
+            addRadar("Eastbourne Radar",        "EasR", 1, 2, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 100, "");
+            addRadar("Littlehampton Radar",     "LitR", 1, 2, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, 100, "");
+            addRadar("Ventnor Radar",           "VenR", 1, 2, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 100, "");
+            addRadar("Radar Communications HQ", "HQR", 1, 6,  "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 200000, false, 100, "");
+            addRadar("Radar Poole",             "PooR", 1, 2, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 25000,  false, 100, "");
 
 
             addRadar("Oye Plage Freya Radar",         "OypR", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 15000, false, 35, "");
@@ -7520,32 +7525,32 @@ public class Mission : AMission, IMainMission
 
             //BLUE TARGETS
             addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers", "Litt", 1, 2, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, "");
-            addTrigger(MO_ObjectiveType.AirfieldComplex, "Redhill Bomber Base", "Redh", 1, 2, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", "Ashf", 1, 2, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.AirfieldComplex, "Redhill Bomber Base", "Redh", 1, 3, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 40, "");
+            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", "Ashf", 1, 3, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 75, "");
             addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft", "Mans", 1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", "Dove", 1, 2, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", "Bext", 1, 2, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 10, "");
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", "Dove", 1, 3, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "");
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", "Bext", 1, 4, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 10, "");
             addTrigger(MO_ObjectiveType.Fuel, "Diesel fuel London south docks", "Lond", 1, 3, "BTarget6S", "TGroupDestroyed", 70, 154299, 273105, 100, false, 10, " ");//removed all ships "Designation S" used oil storage instead
             addTrigger(MO_ObjectiveType.Fuel, "Hydrogen Storage @ London south docks", "Lond", 1, 3, "BTarget7S", "TGroundDestroyed", 80, 155050, 273258, 50, false, 10, "");
             addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage @ London south docks", "Lond", 1, 2, "BTarget8S", "TGroundDestroyed", 80, 155823, 273221, 50, false, 10, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen @ Beckton", "Bext", 1, 2, "BTarget9S", "TGroundDestroyed", 80, 157899, 273957, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Kerosene Storage @ Beckton", "Bext", 1, 2, "BTarget10S", "TGroundDestroyed", 80, 157547, 274527, 100, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "High Octane aircraft fuel @ Beckton", "Bext", 1, 2, "BTarget11S", "TGroundDestroyed", 80, 158192, 274864, 50, false, 100, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen @ Beckton", "Bext", 1, 2, "BTarget9S", "TGroundDestroyed", 80, 157899, 273957, 50, false, 50, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Kerosene Storage @ Beckton", "Bext", 1, 2, "BTarget10S", "TGroundDestroyed", 80, 157547, 274527, 50, false, 50, "");
+            addTrigger(MO_ObjectiveType.Fuel, "High Octane aircraft fuel @ Beckton", "Bext", 1, 2, "BTarget11S", "TGroundDestroyed", 80, 158192, 274864, 50, false, 50, "");
             addTrigger(MO_ObjectiveType.Fuel, "87 octane fuelstorage @ Beckton", "Bext", 1, 2, "BTarget12S", "TGroundDestroyed", 63, 157899, 275256, 50, false, 20, "");
             addTrigger(MO_ObjectiveType.Fuel, "Peroxide Storage @ Beckton", "Bext", 1, 2, "BTarget13S", "TGroundDestroyed", 66, 157092, 275312, 50, false, 20, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 2, "BTarget13A", "TGroundDestroyed", 63, 160567, 275749, 10, false, 4, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 2, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 10, false, 4, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery", "Ditt", 1, 2, "BTarget24", "TGroundDestroyed", 75, 185027, 252619, 100, false, 20, "");// fixed triggers missing
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage", "Ditt", 1, 2, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 20, "");
-            addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", "Ditt", 1, 2, "BTarget26", "TGroundDestroyed", 85, 189262, 249274, 20, false, 100, "");
+            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 3, "BTarget13A", "TGroundDestroyed", 63, 160567, 275749, 10, false, 4, "");
+            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 3, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 10, false, 4, "");
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery", "Ditt", 1, 2, "BTarget24", "TGroundDestroyed", 75, 185027, 252619, 100, false, 80, "");// fixed triggers missing
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage", "Ditt", 1, 2, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 80, "");
+            addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", "Ditt", 1, 3, "BTarget26", "TGroundDestroyed", 85, 189262, 249274, 20, false, 40, "");
             //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, ""); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
-            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 2, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 70, ""); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
+            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 3, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 75, ""); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
             addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bult", 1, 4, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 10, "");
-            addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 2, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "");
+            addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 3, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 10, "");
             addTrigger(MO_ObjectiveType.Building, "Reading Engine Workshop ", "Read", 1, 4, "BTarget32", "TGroundDestroyed", 83, 84241, 267444, 300, false, 15, "");
             addTrigger(MO_ObjectiveType.Fuel, "Propeller repair Portsmouth", "Port", 1, 2, "BTarget33", "TGroundDestroyed", 81, 76446, 193672, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", "Port", 1, 6, "BTarget34", "TGroundDestroyed", 75, 76476, 193844, 50, false, 100, ""); //This might have wrong location? 9/24
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", "Port", 1, 5, "BTarget34", "TGroundDestroyed", 75, 76476, 193844, 50, false, 100, ""); //This might have wrong location? 9/24
             addTrigger(MO_ObjectiveType.Building, "Boiler Repair Shop Portsmouth", "Port", 1, 2, "BTarget35", "TGroundDestroyed", 71, 76317, 193904, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Main Fuel Portsmouth ", "Port", 1, 2, "BTarget36", "TGroundDestroyed", 75, 76378, 194163, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Building, "Depth Charge Workshop Portsmouth", "Port", 1, 2, "BTarget37", "TGroundDestroyed", 83, 76720, 194082, 50, false, 100, "");
@@ -7553,30 +7558,44 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Wood Alcohol Fuel Storage Portsmouth", "Port", 1, 4, "BTarget39", "TGroundDestroyed", 98, 77392, 193942, 50, false, 100, "");
             addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 75166, 193414, 50, false, 100, ""); //This is in Portsmouth   and has been moved across the inlet on 11/12 by fatal .  
             addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", "Port", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, ""); //This is in Portsmouth.fixed 9/19 fatal
-            addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 100, ""); //Guildford Target added 9/20
-            addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 2,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 100, "");//Sheerness Diesel Fuel Storage
-            addTrigger(MO_ObjectiveType.Building,"Queensborough Navigational jamming facilities", "Quee",1,2,  "BTarget44", "TGroundDestroyed", 74, 204638, 265195, 50, false, 100,""); // "Queensborough Navigational jamming facilities"
-			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,2,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 50, false, 100,"");  // "Queensborough Radio communications center"
-			addTrigger(MO_ObjectiveType.Building,"Queensborough radio tramsmission booster" ,     "Quee",1,2,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 50,  false, 100,""); //  "Queensborough radio tramsmission booster"
-			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,2,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 50, false, 100,""); //  "Queensborough Electrical Research Facility"
-            addTrigger(MO_ObjectiveType.Building,"Beaufighter Research Facility",    "Farn",1,2,  "BTarget48", "TGroundDestroyed", 74, 99971, 247951, 50, false, 100,""); //  "Farnborough Beaufighter Research Facility"			
-            /*
-              BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "
-              BTarget7S TGroundDestroyed 80 155050 273258 50      "Hydrogen Storage @ London south docks", 
-              BTarget8S TGroundDestroyed 80 155823 273221 50      "Ethanol Storage @ London south docks", 1
-              BTarget9S TGroundDestroyed 80 157899 273957 50      "Liquid Oxygen @ Beckton", 1, 2, "BTar
-              BTarget10S TGroundDestroyed 80 157547 274527 100    "Kerosene Storage @ Beckton", 1, 2, 
-              BTarget11S TGroundDestroyed 80 158192 274864 50     "High Octane aircraft fuel @ Beckton
-              BTarget12S TGroundDestroyed 63 157899 275256 50     "87 octane fuelstorage @ Beckton", 1
-              BTarget13S TGroundDestroyed 66 157092 275312 50     "Peroxide Storage @ Beckton", 1, 2, 
-			  
-			    BTarget43 TGroundDestroyed 63 204654 268378 50    "Sheerness Diesel Fuel Storage"
-                BTarget44 TGroundDestroyed 74 204638 265195 50    "Queensborough Navigational jamming facilities"
-                Btarget45 TGroundDestroyed 74 204722 265252 50     "Queensborough Radio communications center"
-                BTarget46 TGroundDestroyed 74 204570 265131 50     "Queensborough radio tramsmission booster"
-                BTarget47 TGroundDestroyed 74 204716 265140 50     "Queensborough Electrical Research Facility"
-            */
+            addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 20, ""); //Guildford Target added 9/20
+            addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 3,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 80, "");//Sheerness Diesel Fuel Storage
+            addTrigger(MO_ObjectiveType.Building,"Queensborough Navigational jamming facilities", "Quee",1,3,  "BTarget44", "TGroundDestroyed", 74, 204638, 265195, 90, false, 100,""); // "Queensborough Navigational jamming facilities"
+			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,3,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 90, false, 100,"");  // "Queensborough Radio communications center"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough radio tramsmission booster" ,     "Quee",1,3,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 90,  false, 100,""); //  "Queensborough radio tramsmission booster"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,3,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 90, false, 100,""); //  "Queensborough Electrical Research Facility"
+            addTrigger(MO_ObjectiveType.Building,"Beaufighter Research Facility",    "Farn",1,4,  "BTarget48", "TGroundDestroyed", 74, 99971, 247951, 50, false, 20,""); //  "Farnborough Beaufighter Research Facility"			
+            addTrigger(MO_ObjectiveType.Fuel,"Dover Main Fuel",    "Dove",1,2,  "BTarget49", "TGroundDestroyed", 50 ,244186, 235921, 50, false, 100,""); //                    "Dover Main Fuel"
+            addTrigger(MO_ObjectiveType.Fuel,"Dover Ship Fuel",    "Dove",1,2,  "BTarget50", "TGroundDestroyed", 59, 245628, 233569, 50, false, 100,""); //                    "Dover Ship Fuel"
+            addTrigger(MO_ObjectiveType.Fuel,"Margete Pumping Station",    "Marg",1,2,  "BTarget51", "TGroundDestroyed",     56, 251835, 264652, 50, false, 100,""); //           "Margete Pumping Station"
+            addTrigger(MO_ObjectiveType.Building,"Margate Pier and Radio Tower",    "Marg",1,2,  "BTarget52", "TGroundDestroyed",56, 251818, 264983, 50, false, 100,""); //       "Margate Pier and Radio Tower"
+            addTrigger(MO_ObjectiveType.Fuel," Birchington Fuel Storage",    "Birc",1,2,  "BTarget53", "TGroundDestroyed",   56, 243640, 262713, 50, false, 100,""); //         " Birchington Fuel Storage"
+            addTrigger(MO_ObjectiveType.Building,"Birchington Train Station",    "Birc",1,2,  "BTarget54", "TGroundDestroyed",   56, 243549, 262699, 50, false, 100,""); //         "Birchington Train Station" 
+            addTrigger(MO_ObjectiveType.Building,"Birchington Ammunition Warehouse",    "Birc",1,2,  "BTarget55", "TGroundDestroyed", 100, 243446, 262671, 50, false, 100,""); //  "Birchington Amunition Wharehouse"
+            addTrigger(MO_ObjectiveType.Building,"Canterbury Parachute Facility",    "Cant",1,2,  "BTarget56", "TGroundDestroyed",56, 230244, 252693, 50, false, 100,""); //       "Cantubury Parachute Facility"
+            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Main fuel Storage",    "Cant",1,2,"BTarget57"," TGroundDestroyed",  56, 230082, 252625, 50, false,100,"");//             "Canutbury Main fuel Storage"
+            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Liquid Oxygen Storage",  "Cant",1,2,    "BTarget58"," TGroundDestroyed", 56, 229865, 252370, 50, false,100,"");//          "Cantubury Liquid Oxygen Storage"
+            addTrigger(MO_ObjectiveType.Building,"Canterbury Millers Arms factory",  "Cant",1,2,  "BTarget59"," TGroundDestroyed",    56, 229443, 252117, 50, false,100,"");//             "Cantubury Millers Arms factory"
+            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Hydrogen Storage",     "Cant",1,2,   "BTarget60"," TGroundDestroyed",    56, 229271 ,251928 ,50, false,100,"");//             "Cantubury Hydrogen Storage"
+            addTrigger(MO_ObjectiveType.Building,"Canterbury Dolphin Pub",         "Cant",1,2,     "BTarget61"," TGroundDestroyed",90, 229521, 252090, 50, false,0,"Dolphin Pub Destroyed");//            "Cantabury Dolphin Pub"
+            addTrigger(MO_ObjectiveType.Building,"Canterbury RAF Headquarters 11 group",  "Cant",1,2,   "BTarget62"," TGroundDestroyed",59, 229064, 251808, 50, false,100,"");//       "Canatbury RAF Headquarters 11 group"
 
+            /*
+             BTarget49 TGroundDestroyed 50 244186 235921 50        "Dover Main Fuel"
+             BTarget50 TGroundDestroyed 59 245628 233569 50        "Dover Ship Fuel"
+             BTarget51 TGroundDestroyed 56 251835 264652 50       "Margete Pumping Station"
+             BTarget52 TGroundDestroyed 56 251818 264983 50       "Margate Pier and Radio Tower"
+             BTarget53 TGroundDestroyed 56 243640 262713 50       " Birchington Fuel Storage"
+             BTarget54 TGroundDestroyed 56 243549 262699 50       "Birchington Train Station" 
+             BTarget55 TGroundDestroyed 56 243446 262671 50       "Birchington Amunition Wharehouse"
+			 BTarget56 TGroundDestroyed 56 230244 252693 50       "Cantubury Parachute Facility"
+             Btarget57 TGroundDestroyed 56 230082 252625 50     "Canutbury Main fuel Storage"
+             Btarget58 TGroundDestroyed 56 229865 252370 50      "Cantubury Liquid Oxygen Storage"
+             Btarget59 TGroundDestroyed 56 229443 252117 50      "Cantubury Millers Arms factory"
+             Btarget60 TGroundDestroyed 56 229271 251928 50      "Cantubury Hydrogen Storage"
+			 BTarget61 TGroundDestroyed 90 229521 252090 50       "Cantabury Dolphin Pub"
+             BTarget62 TGroundDestroyed 59 229064 251808 50      "Canatbury RAF Headquarters 11 group"
+             */
             
             //RED TARGETS
             addTrigger(MO_ObjectiveType.Vehicles, "Bapaume Rail Transit Station", "Bapu", 2, 2, "RTarget0", "TGroundDestroyed", 83, 354623, 121058, 100, false, 100, "");  //g
@@ -7620,7 +7639,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Coastal Command Calais", "Cala", 2, 1, "8A", "TGroundDestroyed", 75, 294090, 85100, 100, false, 2, "");
             addTrigger(MO_ObjectiveType.Building, "Calais Rope Factory", "Cala", 2, 1, "7A", "TGroundDestroyed", 66, 293279, 84884, 100, false, 2, "");
             addTrigger(MO_ObjectiveType.Building, "Amunition Wharehouse", "Boul", 2, 1, "1B", "TGroundDestroyed", 70, 264252, 189991, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Fuel Reasearch Facility", "Boul", 2, 1, "2B", "TGroundDestroyed", 47, 265063, 190506, 50, false, 75, "");
+            addTrigger(MO_ObjectiveType.Building, "Fuel Research Facility", "Boul", 2, 1, "2B", "TGroundDestroyed", 47, 265063, 190506, 50, false, 75, "");
             addTrigger(MO_ObjectiveType.Building, "Radio Jamming Transmitter", "Boul", 2, 1, "3B", "TGroundDestroyed", 51, 265251, 190259, 50, false, 75, "");
             addTrigger(MO_ObjectiveType.Building, "Naval  Reasearch Facility", "Boul", 2, 1, "4B", "TGroundDestroyed", 62, 264692, 189709, 50, false, 75, "");
             addTrigger(MO_ObjectiveType.Building, "Boulogne Army HQ", "Boul", 2, 1, "5B", "TGroundDestroyed", 54, 265643, 189603, 50, false, 75, "");
@@ -7821,18 +7840,18 @@ public class Mission : AMission, IMainMission
         //int NumNearbyTargets = MissionObjectivesNear();
 
         int count = AirfieldTargets.Count;
-        double weight = (double)400 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets
+        double weight = (double)300 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets
         if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)
             {
                 int NumNearbyTargets = MO_MissionObjectivesNear(AirfieldTargets[ap].Item7, 15000);
                 double IndWeight = weight;
                 if (NumNearbyTargets > 0) IndWeight = weight * 2;
                 else if (NumNearbyTargets > 3) IndWeight = weight * 4;
-                else if (NumNearbyTargets > 5) IndWeight = weight * 8;
+                else if (NumNearbyTargets > 5) IndWeight = weight * 12;
                 //Console.WriteLine("AP: " + AirfieldTargets[ap].Item2 + "_airfield");
                 Point3d Pos = AirfieldTargets[ap].Item7;
                 int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
-                MissionObjectivesList.Add(AirfieldTargets[ap].Item2 + "_airfield", new MissionObjective(msn, 2, IndWeight, ap, army, AirfieldTargets[ap]));
+                MissionObjectivesList.Add(AirfieldTargets[ap].Item2 + "_airfield", new MissionObjective(msn, 3, IndWeight, ap, army, AirfieldTargets[ap]));
                 count++;
             }
         Console.WriteLine("Mission Objectives: Added " + count.ToString() + " airports to Mission Objectives, weight " + weight.ToString("N5"));

@@ -2078,10 +2078,10 @@ public class Mission : AMission
                 Point3d midPos = new Point3d(0, 0, 0);
                 Point3d endPos = new Point3d(0, 0, 0);
                 Point3d tempEndPos = new Point3d(0, 0, 0);
-                double distance_m = 1000000000;
-                double tempDistance_m = 1000000000;
+                double distance_m = 100000000000;
+                double tempDistance_m = 100000000000;
 
-                for (int i = 1; i < 10; i++)
+                for (int i = 1; i < 15; i++)
                 {
                     if (ran.NextDouble() > 0.5)
                     {
@@ -2099,7 +2099,7 @@ public class Mission : AMission
                         else endPos.x = twcmap_maxX + 9000;
                         endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
                         if (army == 1) endPos.y += 120000;
-                        else if (army == 2) endPos.y -= 60000;
+                        else if (army == 2) endPos.y -= 10000;
                         if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
                         if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
                     }
@@ -2107,11 +2107,13 @@ public class Mission : AMission
                     //so if we hit a distance < 120km we call it good enough
                     //otherwise we take the shortest distance based on 10 random tries
                     distance_m = Calcs.CalculatePointDistance(endPos, nextWP.P);
+                    /*
                     if (distance_m < 85000)
                     {
                         tempEndPos = endPos;
                         continue;
                     }
+                    */
                     if (distance_m < tempDistance_m)
                     {
                         tempDistance_m = distance_m;

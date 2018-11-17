@@ -58,6 +58,7 @@ public class Mission : AMission, ISupplyMission
     public Dictionary<ArmiesE, Dictionary<string, double>> AircraftIncrease { get; set; }
     public HashSet<AiActor> aircraftCheckedOut { get; set; }
     public Dictionary<AiActor, Tuple<int, string, string, DateTime>> aircraftCheckedOutInfo { get; set; } //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type, time checked out>
+    public Dictionary<AiActor, Tuple<Player, string, double, double, DateTime, DateTime>> damagedAircraft { get; set; } //Info about each a/c that is on the damaged list: Player, player name, damage amount (0-1), hours to repair, time damaged UTC, time repaired UTC
     public HashSet<AiActor> aircraftCheckedIn { get; set; }//set of AiActor, to guarantee each Actor checked IN once only
     public HashSet <AiActor> aircraftCheckedInButLaterKilled { get; set; }  //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
 
@@ -96,7 +97,8 @@ public class Mission : AMission, ISupplyMission
             //Also, we can warrantee that no aircraft is checked back in unless it was checked out first.
             aircraftCheckedOut = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked out ONCE ONLY
             aircraftCheckedOutInfo = new Dictionary<AiActor, Tuple<int, string, string, DateTime>>(); //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type>
-            aircraftCheckedIn = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked IN once only
+            damagedAircraft = new Dictionary<AiActor, Tuple<Player, string, double, double, DateTime, DateTime>>(); //Info about each a/c that is on the damaged list: Player, player name, damage amount (0-1), hours to repair, time damaged UTC, time repaired UTC
+        aircraftCheckedIn = new HashSet<AiActor>(); //set of AiActor, to guarantee each Actor checked IN once only
             aircraftCheckedInButLaterKilled = new HashSet<AiActor>(); //set of AiActor, to guarantee actors which were first reported AOK but later turned out to be killed, are able to be killed later & removed from the active a/c list, but ONCE ONLY
 
             supplySuffix = "_supply";
@@ -369,6 +371,39 @@ public void ReadSupply(string suffix)
             }
         }
     }
+
+    //For now, aircraft damaged are just held until mission end and then returned to supply
+    //Later we could do tricky things like saving out more severely damaged aircraft for $X hours or whatever
+    //For now we are showing hours to repair etc but then not really doing that, just returning to supply
+    //at mission end
+    public void ReturnDamagedAircraftToSupplyAtMissionEnd()
+    {
+        foreach (AiActor act in damagedAircraft.Keys)
+        {
+            if (act as AiAircraft != null)
+            {
+                Player py = damagedAircraft[act].Item1;
+                string pl = act.Name();
+                SupplyOnPlaceLeave(py, act, 0, true);
+                Console.WriteLine("SupplyEnd: Returning to stock " + py.Name() +
+                    " " + pl);
+            }
+        }
+    }
+
+    //stores the aircraft in the Damaged list & returns the hours to repair
+    public double AddAircraftToDamagedSupply(Player player, AiActor actor, double forceDamage = 0)
+    {
+        if (actor == null || actor as AiAircraft == null) return 0;
+        DateTime timeDamaged = DateTime.UtcNow;
+        double hoursToRepair = forceDamage * 96;
+        DateTime timeRepaired = timeDamaged.AddHours(hoursToRepair);
+        if (damagedAircraft.ContainsKey(actor) && damagedAircraft[actor].Item3 <= forceDamage + 0.01) return -1; //redundant entry, maybe because 2 positions reporting same aircraft.  However if it is greater damage this time, we'll take it!                
+
+        damagedAircraft[actor] = new Tuple<Player, string, double, double, DateTime, DateTime >(player, player.Name(), forceDamage, hoursToRepair, timeDamaged, timeRepaired);
+        return hoursToRepair;
+    }
+
     public HashSet<AiActor> AircraftActorsCurrentlyInAir()
     {
         HashSet<AiActor> retHS = new HashSet<AiActor>();
@@ -393,6 +428,7 @@ public void ReadSupply(string suffix)
 
     public bool SupplyEndMission(double redMult = 1, double blueMult = 1)
     {
+        ReturnDamagedAircraftToSupplyAtMissionEnd();
         ReturnAircraftToSupplyAtMissionEnd();
         ListAircraftLost(0, null, true, false, match: "");
         GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult*100).ToString("n1"), new object[] { });
@@ -1039,7 +1075,7 @@ private int NumberPlayerInActor(AiActor actor)
     }
 
 
-    private bool OverEnemyTeritory(AiActor actor)
+    private bool OverEnemyTerritory(AiActor actor)
     {
         if (actor == null) return false;
         if (!GamePlay.gpFrontExist()) return false;
@@ -1100,11 +1136,23 @@ private int NumberPlayerInActor(AiActor actor)
                 if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                 //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
                 //We could add in some scheme for damage later
-                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTeritory(actor)
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTerritory(actor)
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
-                    Console.WriteLine("SupOPL: Check-in");
-                    CheckActorIn(actor, player);
+                    if (forceDamage > 0 && forceDamage < 1)
+                    {
+                        Console.WriteLine("SupOPL: Check-in but with damage");
+                        double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage); //-1 if this damage already added
+                        AiCart cart = actor as AiCart;
+                        if (hoursToRepair > 0) GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned damaged; "
+                            + hoursToRepair.ToString("F1") + " hours required for repair and re-stock", null);
+                    }
+                    else
+                    {
+
+                        Console.WriteLine("SupOPL: Check-in");
+                        CheckActorIn(actor, player);
+                    }
                 }
                 else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
 

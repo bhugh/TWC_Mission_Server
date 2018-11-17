@@ -6473,6 +6473,7 @@ public StbContinueMissionRecorder stb_ContinueMissionRecorder;
 
                 double aircraftDamage = injuries;
                 if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
+                if (aircraftDamage >= 0.5) aircraftDamage = 1; //Per individual stats 0.5 crash seriousness or greater is a/c write-off, so we're going with the same here
 
                 AiAircraft aircraft = actor as AiAircraft;
                 if (aircraft != null) {
@@ -7606,9 +7607,12 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
 
                         bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
-                        
+
                         //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
+                        //-1 means one Player Position killed but the other still alive. BUT that is a logical impossibility here because this is the situation where the 
+                        //AIRCRAFT has crashed/died so ALL positiosn with the a/c are now dead.  So we treat -1 same as 1
                         //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
+                        if (injuriesExtent == -1) injuriesExtent = 1;
                         if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
                         else if (injuriesExtent < 1 && injuriesExtent > 0)
                         {
@@ -7621,13 +7625,17 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                             OnAircraftLanded(actor, aiAircraft.Player(i));
                             continue;
                         }
+                        /*
+                         * //So it was a mistake to treat injuriesExtent==-1 here, it is a logical impossibility because here is where the AIRCRAFT has been declared dead
+                         * //The possibility of injuriesExtent==-1 is really only for when the PLAYER is the actor who is dead.
                         else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
                         {
                             string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
                             if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
                             stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+                        */
 
-                        } else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
+                        else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
 
 
                         msg = "";
@@ -7677,9 +7685,6 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
                     }
                 }
-
-
-
 
             }
             else
@@ -7752,13 +7757,14 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         if (person != null) player = person.Player();
                         else player = player2;
                         //Stb_Message(null, "Person died: " + person.Player().Name(), new object[] { });    
+                        Console.WriteLine("Person died: " + person.Player().Name());    
 
                         if (player != null && player.Name() != null)
                         {
                             //System.Console.WriteLine("Person died: " + player.Name());
                             string playerName = person.Player().Name();
-
-                            bool RPCL = recentlyParachutedOrCrashedOrLanded(playerName);
+                            
+                            bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName);
 
                             int selfKillPers = 2;
                             string msg2 = "";
@@ -7818,6 +7824,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                                     //And now that they have died, they can't continue their mission
                                     //for stats purposes
                                     stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
+                                    recentlyParachutedOrCrashedOrLanded(playerName);
 
                                 }
                                 else if (injuriesExtent > 0)
@@ -7828,14 +7835,18 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                                     string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.  Your career will continue.";
                                     if (!RPCL) Stb_Message(new Player[] { player }, msg3, new object[] { });
                                     stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
-                                }
+                                    recentlyParachutedOrCrashedOrLanded(playerName);
+                                } 
                                 else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
                                 {
-                                    string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
+                                    string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed.";
                                     if (!RPCL) Stb_Message(new Player[] { player }, msg4, new object[] { });
                                     stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
 
+                                    //NO!!!! recentlyParachutedOrCrashedOrLanded(playerName); here because we want to continue to register any other 'lives' for this player
+
                                 }
+
                             }
                             //We could record how many persons (ai or human players) that players kill here, similarly to the way we track aircraft & ground
                             //kills above.  But it seems a bit creepy to do so?

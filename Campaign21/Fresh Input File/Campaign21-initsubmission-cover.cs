@@ -35,6 +35,7 @@ public class Mission : AMission
     public int maximumCheckoutsAllowedAtOnce { get; set; }
     public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
     public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
+    public int numPlayersToIncreaseCover { get; set; }
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -62,6 +63,7 @@ public class Mission : AMission
             maximumCheckoutsAllowedAtOnce = 3;
             maxPlayersToAllowCover = 12; //Number of players online in players' army, above this number no cover will be allowed
             numPlayersToReduceCover = 6; //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
+            numPlayersToIncreaseCover = 3; //This number of players online in players' army OR FEWER, the number of allowed cover per mission will be increased even more;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
 
             Console.WriteLine("-cover.cs successfully constructed");
         }
@@ -514,27 +516,29 @@ public class Mission : AMission
         string rankExpl = "";
         if (TWCStbStatRecorder != null)
         {
-            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+            int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
+            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name()) + "and with " + numPlayer.ToString() + " friendly players online";
         }
         int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);        
-        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}; {3} more are still in the air or being readied for action.",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
+        return string.Format("{0} remain available of your command squadron of {1} cover aircraft allowed{2}; {3} more are still in the air or being readied for re-use.",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
     }
     public int acAvailableToPlayer_num(Player player)
     {
         int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+        int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
+        if (numPlayer <= numPlayersToIncreaseCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling(maximumAircraftAllowedPerMission * 1.5));
+
         string rankExpl = "";
         if (TWCStbStatRecorder != null)
         {
-            double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 2.0) / 3.0;
+            double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 1.0) / 2.0;
             if (adder < 0) adder = 0;
-            int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
-            
-
+                       
             acAllowedThisPlayer += Convert.ToInt32(adder);
 
-            if (numPlayer > numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, being nice to pilots here . . . .
+            if (numPlayer > numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, using ceiling here is being a bit nice to pilots . . .
             if (numPlayer > ((double)maxPlayersToAllowCover - (double)numPlayersToReduceCover) / 2.0 + (double)numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 3.0));
-            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name());
+            rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name()) + "and with " + numPlayer.ToString() + " friendly players online";
 
         }
         int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
@@ -1027,9 +1031,10 @@ public class Mission : AMission
         double Z_AltitudeAGL = (player.Place() as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
         if (Z_AltitudeAGL < 175)
         {
-            AltDiff_m = 20;
-            AltDiff_range_m = 20;
-            aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //aawpt = AiAirWayPointType.COVER seems to work better in general but the cover aircraft stay up above the a/c they are covering and thus are seen by radar even if the main a/c is below radar. Trying AATACK_FIGHTERS to see if they will stay below radar better.
+            AltDiff_m = -100;
+            AltDiff_range_m = 5;
+            //aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //aawpt = AiAirWayPointType.COVER seems to work better in general but the cover aircraft stay up above the a/c they are covering and thus are seen by radar even if the main a/c is below radar. Trying AATACK_FIGHTERS to see if they will stay below radar better.
+            aawpt = AiAirWayPointType.COVER;
         }
         {
             Console.WriteLine("ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
@@ -2091,7 +2096,7 @@ public class Mission : AMission
                         if (army == 1) endPos.y = twcmap_maxY + 9000;
                         else if (army == 2) endPos.y = twcmap_minY - 9000;
                         else endPos.y = twcmap_maxY + 9000;
-                        endPos.x = prevWP.P.x + ran.NextDouble() * 300000 - 150000;
+                        endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
                         if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
                         if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
                     }
@@ -2100,7 +2105,7 @@ public class Mission : AMission
                         if (army == 1) endPos.x = twcmap_minX - 9000;
                         else if (army == 2) endPos.x = twcmap_maxX + 9000;
                         else endPos.x = twcmap_maxX + 9000;
-                        endPos.y = prevWP.P.y + ran.NextDouble() * 300000 - 150000;
+                        endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
                         if (army == 1) endPos.y += 80000;
                         else if (army == 2) endPos.y -= 10000;
                         if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
@@ -2114,7 +2119,7 @@ public class Mission : AMission
                     if (distance_m < 85000)
                     {
                         tempEndPos = endPos;
-                        continue;
+                        break;
                     }
                     */
                     if (distance_m < tempDistance_m)
@@ -2158,7 +2163,9 @@ public class Mission : AMission
                 */
 
 
-
+                /*
+                 * //Trying to give reasonable airwaypointtypes to the flight, but this just confusing -MoveBombTarget
+                 * //Instead, we'll give all aircraft .ESCORT which prevents them from being shanghaied by -MoveBombTarget and reprogrammed
                 AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
                 if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
                     aawpt = (nextWP as AiAirWayPoint).Action;
@@ -2172,6 +2179,11 @@ public class Mission : AMission
                     if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
 
                 }
+                */
+
+                //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
+                //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
+                AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
 
                 //add the mid Point
                 midaaWP = new AiAirWayPoint(ref midPos, speed);
@@ -2186,7 +2198,8 @@ public class Mission : AMission
                 //add the final Point, which is off the map
                 endaaWP = new AiAirWayPoint(ref endPos, speed);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = AiAirWayPointType.NORMFLY;
+                //endaaWP.Action = AiAirWayPointType.NORMFLY;
+                endaaWP.Action = aawpt;
 
                 NewWaypoints.Add(endaaWP); //do add
                 count++;

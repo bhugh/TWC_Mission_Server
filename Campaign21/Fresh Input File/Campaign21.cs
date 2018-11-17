@@ -2272,7 +2272,7 @@ public class Mission : AMission, IMainMission
                     {
                         //Force a player into a certain place:
                         //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
-                        for (int i = 0; i < aircraft.Places(); i++)
+                        if ( aircraft.Places() > 0) for (int i = 0; i < aircraft.Places(); i++)
                         {
                             //aircraft.Player(i).Place() = null;
                             //aircraft.Player(i).PlaceEnter(null,0);
@@ -2282,8 +2282,9 @@ public class Mission : AMission, IMainMission
                         //Wait 0.5 second for player(s) to leave, then destroy
                         Timeout(0.5, () =>
                         {
+                            Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
                             destroyPlane(aircraft);  //Destroy completely when dead, after a reasonable time period.
-                                Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
+                                
                         });
 
                     });

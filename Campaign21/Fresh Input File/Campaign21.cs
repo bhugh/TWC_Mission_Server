@@ -120,7 +120,7 @@ public class Mission : AMission, IMainMission
     public string RESULTS_OUT_FILE; //Added by Fatal 11/09/2018.  This allows us to have win/lose logic for next mission
 
     static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
-    public enum ArmiesE { None, Red, Blue };
+    //public enum ArmiesE { None, Red, Blue };
 
     public bool MISSION_STARTED = false;
     public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
@@ -5231,6 +5231,8 @@ public class Mission : AMission, IMainMission
   
     IStatsMission TWCStatsMission;
     ISupplyMission TWCSupplyMission;
+    IKnickebeinMission TWCKnickebeinMission;
+    ICoverMission TWCCoverMission;
 
     public override void OnMissionLoaded(int missionNumber)
     {
@@ -5239,6 +5241,8 @@ public class Mission : AMission, IMainMission
         TWCStatsMission = TWCComms.Communicator.Instance.Stats;
         if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+        TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
+        TWCCoverMission = TWCComms.Communicator.Instance.Cover;
         //TWCComms.Communicator.Instance.Main = this;
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
         //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
@@ -5331,8 +5335,13 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu3(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Airport damage summary", "Nearest friendly airport", "On friendly territory?", "Back...", "Aircraft Supply", "Aircraft available to you", "Aircraft lost this mission", "Time left in mission" }, new bool[] { false, false, false, true, false, false, false, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Airport damage summary", "Nearest friendly airport", "On friendly territory?", "More...", "Aircraft Supply", "Aircraft available to you", "Aircraft lost this mission", "Time left in mission" }, new bool[] { false, false, false, true, false, false, false, false });
     }
+    private void setSubMenu4(Player player)
+    {
+        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { true, false, false, true, false, false, false, false, false});
+    }
+
 
     //object plnameo= GamePlay.gpPlayer().Name();  
     //string plname= GamePlay.gpPlayer().Name() as string;
@@ -5353,7 +5362,7 @@ public class Mission : AMission, IMainMission
 
             if (menuItemIndex == 0)
             {
-                setSubMenu1(player);
+                //setSubMenu1(player);
                 setMainMenu(player);
             }
 
@@ -5491,6 +5500,106 @@ public class Mission : AMission, IMainMission
         }
 
         /*****************************************************
+        * 
+        * USER SUBMENU (4th submenu, ID == 4, Tab-4-4-4-4)
+        * 
+        *****************************************************/
+        //   GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { false, false, false, true, false, false, false, false, false});
+        else if (ID == 4)
+        { // main menu
+
+            if (menuItemIndex == 0)
+            {
+                setSubMenu3(player);
+                //setMainMenu(player);
+            }
+
+            //Knickebein on/next
+            else if (menuItemIndex == 1)
+            {
+                if (TWCKnickebeinMission != null)
+                {
+                    TWCKnickebeinMission.KniOnStartOrNext(player);
+                }
+                setSubMenu4(player);
+            }
+            //Knickebein Off
+            else if (menuItemIndex == 2)
+            {
+                if (TWCKnickebeinMission != null)
+                {
+                    TWCKnickebeinMission.KniStop(player);
+                }
+                setMainMenu(player);
+            }
+            //Knickebein - current KB info
+            else if (menuItemIndex == 3)
+            {
+                if (TWCKnickebeinMission != null)
+                {
+                    TWCKnickebeinMission.KniInfo(player);
+                }
+                setMainMenu(player);
+            }
+            else if (menuItemIndex == 4)  //MORE (next) menu
+            {
+                setMainMenu(player);
+            }
+            //Knickebein - List
+            else if (menuItemIndex == 5)
+            {
+                if (TWCKnickebeinMission != null)
+                {
+                    TWCKnickebeinMission.KniList(player);
+                }
+                setMainMenu(player);
+
+            }
+            //Cover - select/start
+            else if (menuItemIndex == 6)
+            {
+                if (TWCCoverMission != null)
+                {
+                    TWCCoverMission.checkoutCoverAircraft(player, "");
+                }
+                
+                setMainMenu(player);
+            }
+            //Cover - List available cover a/c
+            else if (menuItemIndex == 7)
+            {
+                if (TWCCoverMission != null)
+                {
+                    TWCCoverMission.listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
+                }
+                setMainMenu(player);
+
+            }
+            //Cover - Position of your cover a/c
+            else if (menuItemIndex == 8)
+            {
+                if (TWCCoverMission != null)
+                {
+                    string res = TWCCoverMission.listPositionCurrentCoverAircraft(player);                    
+                }
+                setMainMenu(player);                
+            }
+            //Cover - CLand
+            else if (menuItemIndex == 9)
+            {
+                if (TWCCoverMission != null)
+                {
+                    TWCCoverMission.landCoverAircraft(player);
+                }
+                setMainMenu(player);
+            }
+            else
+            { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
+                setMainMenu(player);
+            }
+        }
+
+        /*****************************************************
          * 
          * USER SUBMENU (3rd submenu, ID == 3, Tab-4-4-4)
          * 
@@ -5502,7 +5611,7 @@ public class Mission : AMission, IMainMission
             if (menuItemIndex == 0)
             {
                 setSubMenu2(player);
-                setMainMenu(player);
+                //setMainMenu(player);
             }
 
             //Airport damage summary, same as <ap
@@ -5572,9 +5681,7 @@ public class Mission : AMission, IMainMission
             }
             else if (menuItemIndex == 4)  //MORE (next) menu
             {
-                setMainMenu(player);
-
-
+                setSubMenu4(player);
             }
             else if (menuItemIndex == 5)
             {
@@ -5636,7 +5743,7 @@ public class Mission : AMission, IMainMission
             if (menuItemIndex == 0)
             {
                 setSubMenu1(player);
-                setMainMenu(player);
+                //setMainMenu(player);
             }
 
 

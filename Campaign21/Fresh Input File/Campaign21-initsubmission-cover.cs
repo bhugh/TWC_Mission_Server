@@ -23,7 +23,7 @@ using part;
 using TWCComms;
 
 
-public class Mission : AMission
+public class Mission : AMission, ICoverMission
 {
     public IMainMission TWCMainMission;
     public ISupplyMission TWCSupplyMission;
@@ -35,7 +35,7 @@ public class Mission : AMission
     public int maximumCheckoutsAllowedAtOnce { get; set; }
     public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
     public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
-    public int numPlayersToIncreaseCover { get; set; }
+    public int numPlayersToIncreaseCover { get; set; } //below this number there are additional cover a/c available.  usually this is small, like = 1, 2, 3 - lower than numPlayersToReduceCover
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -51,7 +51,8 @@ public class Mission : AMission
     {
         try
         {
-            TWCMainMission = TWCComms.Communicator.Instance.Main;
+            TWCMainMission = TWCComms.Communicator.Instance.Main;            
+            TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission                        
 
             //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
             ran = new Random();
@@ -496,7 +497,7 @@ public class Mission : AMission
                 retmsg += msg + nl;
             }
             if (i == 0) {
-                string msg1 = string.Format("***No cover aircraft available for {0} - aircraft available for cover duty only if 100 or more remain in supply. Use chat command <stock to check supply***",  a);
+                string msg1 = string.Format("***No cover aircraft available for {0} - aircraft available for cover duty only if {1} or more remain in supply. Use chat command <stock to check supply***",  a, minimumAircraftRequiredForCoverDuty);
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg1, null);
             }
         }
@@ -526,6 +527,9 @@ public class Mission : AMission
     {
         int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
         int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
+
+        if (numPlayer > maxPlayersToAllowCover) { return 0; }
+
         if (numPlayer <= numPlayersToIncreaseCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling(maximumAircraftAllowedPerMission * 1.5));
 
         string rankExpl = "";
@@ -684,19 +688,7 @@ public class Mission : AMission
         */
         if (msg.StartsWith("<cland") )
         {
-            if (player == null) return;
-            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
-            int numret = 0;
-            foreach (AiAirGroup airGroup in saveCAAGA)
-            {
-                if (airGroup == null || coverAircraftAirGroupsActive[airGroup] != player) continue;
-
-                if (aircraft == null) { EscortMakeLand(airGroup, null); numret++; }
-                else { EscortMakeLand(airGroup, aircraft.AirGroup()); numret++; }
-
-            }
-            GamePlay.gpLogServer(new Player[] { player },numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport.", new object[] { });
-            GamePlay.gpLogServer(new Player[] { player }, "Cover aircraft will be returned to General Stock immediately but will available for use in your personal Cover Squadron again only after the aircraft actually return to base or leave the map.", new object[] { });
+            landCoverAircraft(player);
 
         }
         else if (msg.StartsWith("<clist")) //<clist
@@ -713,214 +705,13 @@ public class Mission : AMission
         }
         else if (msg.StartsWith("<cover"))
         {
-            try
-            {
-
-                /*
-                int parseL = Calcs.LastIndexOfAny(msgTrim, new string[] { " " });
-
-                if (msgTrim.Length > 0 && parseL > -1)
-                {
-                List<string> sections = new List<string>();
-                while (parseL > -1)
-                {
-                    sections.Add(msgTrim.Substring(parseL));
-                    msgTrim = msgTrim.Substring(0, parseL);
-                    parseL = Calcs.LastIndexOfAny(msgTrim, new string[] { " " });
-                }
-                sections.Add(msgTrim);
-                */
-                int numCheckedOut = numberAirgroupsCurrentlyCheckedOutPlayer(player);
-
-                int numInArmy = Calcs.numPlayersInArmy(player.Army(), this);
-
-                if (numInArmy > maxPlayersToAllowCover) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when 12 or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { }); return; }
-
-                if (numInArmy > numPlayersToReduceCover) { GamePlay.gpLogServer(new Player[] { player }, "Note: Fewer cover aircraft available when more than 6 players on your side.", new object[] { });}
-
-                if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
-
-
-                string acType = Calcs.GetAircraftType(aircraft);
-                bool isHeavyBomber = false;
-                if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) isHeavyBomber = true;
-                if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
-
-                if (!isHeavyBomber) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
-
-                if (acAvailableToPlayer_num(player) < 1) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - " + acAvailableToPlayer_msg(player), new object[] { }); return; }
-
-                if (numCheckedOut >= maximumCheckoutsAllowedAtOnce)
-                {
-
-                    GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
-                    GamePlay.gpLogServer(new Player[] { player }, "When you release your escort groups to return to base, you may be able to check out more.", new object[] { numCheckedOut });
-                    GamePlay.gpLogServer(new Player[] { player }, "Use command <cland to make your cover fighters land.", new object[] { numCheckedOut });
-                    return;
-                }
-
-                /*
-                 * //this isn't working, need to re-do it with coverAircraftActorsCheckedOut
-                int numACInAir = numberAircraftCurrentlyCheckedOutFromSupply(player) - 1; //-1, making the reasonable assumption the player is  in an a/c right now
-                Console.WriteLine("<cover, numberAircraftCurrentlyCheckedOutFromSupply(player) {0} ", numACInAir);
-                if (numACInAir >= 8)
-                {
-
-                    GamePlay.gpLogServer(new Player[] { player }, "You currently have {0} cover or primary aircraft still in the air OR lost and never returned.", new object[] { numACInAir });
-                    GamePlay.gpLogServer(new Player[] { player }, "You have a maximum of 8 aircraft available to you during the mission, including your primary aircraft and escort aircraft.", new object[] { });
-                    GamePlay.gpLogServer(new Player[] { player }, "If aircraft are lost or destroyed they are no longer available; if your aircraft return to base they can refuel and rejoin you on another mission at that time.", new object[] { });
-                    GamePlay.gpLogServer(new Player[] { player }, "Preserve your escorts by guiding them back to base safely. Use command <cland to instruct your cover fighters land, if they can.", new object[] { numCheckedOut });
-                    return;
-                }
-                */
-
-                string acName = msg_orig.Substring(6).Trim();
-
-                Point3d loc = new Point3d(0, 0, 0);
-                if (aircraft != null) loc = actor.Pos();
-                loc.z += 150; //starting low, like took off from airport, but we have to make sure it is ABOVE THE ACTUAL GROUND LEVEL or else trouble.  So making it 150 meters higher than the pilot who called it in.
-                string escortedGroup = aircraft.AirGroup().Name();
-
-                /*
-                //TODO: Check with aircraft supply & only allow escorts with plenty of supply left
-                //"SpitfireMkIa_100oct"
-                string[] redplanes = { "HurricaneMkI_100oct", "HurricaneMkI_100oct", "HurricaneMkI", "HurricaneMkI_100oct-NF", "HurricaneMkI_100oct-NF", "HurricaneMkI_dH5-20", "SpitfireMkI" };
-                string[] blueplanes = { "Bf-109E-3", "Bf-109E-3", "Bf-109E-3", "Bf-110C-4", "G50" };
-                string[] planes = redplanes;
-                if (player.Army() == 2) planes = blueplanes;
-                string plane = Calcs.randSTR(planes);
-                */
-
-                string plane = selectCoverPlane(acName, (ArmiesE)player.Army());
-
-
-                //Point3d ac1loc = (aircraft as AiActor).Pos();
-
-                AiAirport ap = Stb_nearestAirport(actor.Pos(), actor.Army());
-                if (ap != null) { loc = ap.Pos(); loc.z = 150; } //starting low, as though taking off.  Not actually taking off, though
-
-
-                bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(ap.Pos().x, ap.Pos().y));
-                double distanceToSpawn_m = Stb_distanceToNearestAirport(aircraft as AiActor);
-                if (!spawnInFriendlyTerritory || distanceToSpawn_m > 2800)
-                {
-                    if (distanceToSpawn_m > 2800) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
-                    else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
-                    return;
-                }
-                //regiment determines which ARMY the new aircraft will be in BOB_RAF British, BOB_LW German. BoB_RA = Italian?
-                //Anyway, if we use the pilot's current regiment it matches which is nice but also definitely keeps them in the same army.
-                string regiment = "gb01";
-                //if (army == 1) regiment = "BoB_RAF_F_141Sqn_Early";
-                //if (army == 2) regiment = "BoB_LW_JG77_I";
-                regiment = aircraft.Regiment().name();
-
-                string newACActorName = Stb_LoadSubAircraft(loc: loc, type: plane, callsign: "26", hullNumber: "3", serialNumber: "001",
-                                    regiment: regiment, fuelStr: "", weapons: "", velocity: 150, fighterbomber: "f", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
-
-
-
-                //create the cover a/c
-                Timeout(1.05, () =>
-                //Timeout(0.15, () =>
-                {
-                    //AiActor newActor = GamePlay.gpActorByName(newACActorName);
-                    AiActor newActor = GamePlay.gpActorByName(newACActorName);
-                    Console.WriteLine("NewActorloaded: " + newActor.Name() + " for " + player.Name());
-                    AiAircraft newAircraft = newActor as AiAircraft;
-                    AiAirGroup newAirgroup = newAircraft.AirGroup();
-                    Console.WriteLine("NewAirgrouploaded: " + newAirgroup.Name() + " for " + player.Name());
-
-                    if (newAirgroup != null && newAirgroup.GetItems().Length > 0)
-                    {
-                        int itemsmade = 0;
-                        string aircrafttype = "";
-                        foreach (AiAircraft a in newAirgroup.GetItems())
-                        {
-                            //Point3d ac2loc = (a as AiActor).Pos();
-                            bool supplyLimitReached = false;
-                            if (TWCSupplyMission != null) supplyLimitReached = TWCSupplyMission.IsLimitReached(newActor);
-                            if (supplyLimitReached)
-                            {
-
-                                GamePlay.gpLogServer(new Player[] { player }, "Supply limit reached for " + Calcs.ParseTypeName((a as AiCart).InternalTypeName()) + "; no aircraft available. Please try again to find an available aircraft.", new object[] { });
-                                (a as AiCart).Destroy();
-                                continue;
-                            }
-                            itemsmade++;
-                            aircrafttype = Calcs.ParseTypeName((a as AiCart).InternalTypeName());
-                            GamePlay.gpLogServer(new Player[] { player }, "Created " + aircrafttype + " (" + (a as AiActor).Name() + ")", new object[] { });
-                            //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, (a as AiActor));
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyAICheckout(player, a as AiActor);
-                            coverAircraftActorsCheckedOut.Add((a as AiActor), player);
-                            int nca = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
-                            
-                            
-
-                        }
-
-                        /*
-                        newAirgroup.setTask(AiAirGroupTask.DEFENDING, (player.Place() as AiAircraft).AirGroup());
-                        newAirgroup.changeGoalTarget(player.Place());
-                        Console.WriteLine("ChangeGoalTarget: " + newAirgroup.Name() + " to " + player.Name());
-                        */
-                        if (itemsmade > 0)
-                        {
-                            string msg6 = acAvailableToPlayer_msg(player);
-                            
-                            coverAircraftAirGroupsActive.Add(newAirgroup, player);
-                            //keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354); //don't seem aggressive enough in defending with this, trying the .escort instead, with including the bomber group actor as .target
-                            keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DEFENDING, AiAirWayPointType.ESCORT, player, 21.2354); //2018/11/16 - WAS 43 seconds, trying 21 seconds instead
-                            GamePlay.gpLogServer(new Player[] { player }, "Your escort consists of {0} {1}s. They have just taken off from the nearest friendly airfield.", new object[] { itemsmade, aircrafttype });
-                            try
-                            {
-                                GamePlay.gpLogServer(new Player[] { player }, msg6, new object[] { });
-                            }
-                            catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
-
-                            GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use command <cland", new object[] { });
-
-                        }
-
-
-
-                    }
-
-                    setCoverAircraftCurrentlyAvailable();
-
-
-
-
-
-
-                });
-
-
-                /*
-                string units = "km";
-                if (player.Army() == 1) units = "miles";
-                string[] words = msg.Split(' ');
-
-                if (words.Length >= 3)
-                {
-                    double angle_deg = 0;
-                    double distance = 0;
-                    try { if (words[1].Length > 0) angle_deg = Convert.ToDouble(words[1]); }
-                    catch (Exception ex) { }
-                    try { if (words[2].Length > 0) distance = Convert.ToDouble(words[2]); }
-                    catch (Exception ex) { }
-                }
-                */
-
-
-            }
-            catch (Exception ex) { Console.WriteLine("Cover <cover: " + ex.ToString()); }
+            checkoutCoverAircraft(player, msg_orig.Substring(6).Trim());
         }
         else if (msg.StartsWith("<chelp"))
         {
-            string msg42 = "<cover or <cover Beau or <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
+            string msg42 = "<cover OR <cover Beau OR <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });            
-            msg42 = "<clist - list available cover fighters; <cpos - position of your current fighters";
+            msg42 = "<clist - list available cover fighters & ID#; <cpos - position of your current fighters";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<cland - release cover fighters to land (IMPORTANT!)";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
@@ -936,6 +727,239 @@ public class Mission : AMission
             Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
             //GamePlay.gp(, from);
         }
+    }
+
+    public void landCoverAircraft(Player player)
+    {
+
+        if (player == null) return;
+        AiAircraft aircraft = null;
+        if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+        
+        List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+        int numret = 0;
+        foreach (AiAirGroup airGroup in saveCAAGA)
+        {
+            if (airGroup == null || coverAircraftAirGroupsActive[airGroup] != player) continue;
+
+            if (aircraft == null) { EscortMakeLand(airGroup, null); numret++; }
+            else { EscortMakeLand(airGroup, aircraft.AirGroup()); numret++; }
+
+        }
+        GamePlay.gpLogServer(new Player[] { player }, numret.ToString() + " groups of escort aircraft have been instructed to land at the nearest friendly airport.", new object[] { });
+        GamePlay.gpLogServer(new Player[] { player }, "Cover aircraft will be returned to General Stock immediately but will available for use in your personal Cover Squadron again only after the aircraft actually return to base or leave the map.", new object[] { });
+
+    }
+
+    public void checkoutCoverAircraft(Player player, string aircraftName)
+    {
+        try
+        {
+
+            /*
+            int parseL = Calcs.LastIndexOfAny(msgTrim, new string[] { " " });
+
+            if (msgTrim.Length > 0 && parseL > -1)
+            {
+            List<string> sections = new List<string>();
+            while (parseL > -1)
+            {
+                sections.Add(msgTrim.Substring(parseL));
+                msgTrim = msgTrim.Substring(0, parseL);
+                parseL = Calcs.LastIndexOfAny(msgTrim, new string[] { " " });
+            }
+            sections.Add(msgTrim);
+            */
+            AiAircraft aircraft = null;
+            if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+            AiActor actor = aircraft as AiActor;
+
+            int numCheckedOut = numberAirgroupsCurrentlyCheckedOutPlayer(player);
+
+            int numInArmy = Calcs.numPlayersInArmy(player.Army(), this);
+
+            if (numInArmy > maxPlayersToAllowCover) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when 12 or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { }); return; }
+
+            if (numInArmy > numPlayersToReduceCover) { GamePlay.gpLogServer(new Player[] { player }, "Note: Fewer cover aircraft available when more than 6 players on your side.", new object[] { }); }
+
+            if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
+
+
+            string acType = Calcs.GetAircraftType(aircraft);
+            bool isHeavyBomber = false;
+            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) isHeavyBomber = true;
+            if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
+
+            if (!isHeavyBomber) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
+
+            if (acAvailableToPlayer_num(player) < 1) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - " + acAvailableToPlayer_msg(player), new object[] { }); return; }
+
+            if (numCheckedOut >= maximumCheckoutsAllowedAtOnce)
+            {
+
+                GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
+                GamePlay.gpLogServer(new Player[] { player }, "When you release your escort groups to return to base, you may be able to check out more.", new object[] { numCheckedOut });
+                GamePlay.gpLogServer(new Player[] { player }, "Use command <cland to make your cover fighters land.", new object[] { numCheckedOut });
+                return;
+            }
+
+            /*
+             * //this isn't working, need to re-do it with coverAircraftActorsCheckedOut
+            int numACInAir = numberAircraftCurrentlyCheckedOutFromSupply(player) - 1; //-1, making the reasonable assumption the player is  in an a/c right now
+            Console.WriteLine("<cover, numberAircraftCurrentlyCheckedOutFromSupply(player) {0} ", numACInAir);
+            if (numACInAir >= 8)
+            {
+
+                GamePlay.gpLogServer(new Player[] { player }, "You currently have {0} cover or primary aircraft still in the air OR lost and never returned.", new object[] { numACInAir });
+                GamePlay.gpLogServer(new Player[] { player }, "You have a maximum of 8 aircraft available to you during the mission, including your primary aircraft and escort aircraft.", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "If aircraft are lost or destroyed they are no longer available; if your aircraft return to base they can refuel and rejoin you on another mission at that time.", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "Preserve your escorts by guiding them back to base safely. Use command <cland to instruct your cover fighters land, if they can.", new object[] { numCheckedOut });
+                return;
+            }
+            */
+
+            string acName = aircraftName.Trim();
+
+            Point3d loc = new Point3d(0, 0, 0);
+            if (aircraft != null) loc = actor.Pos();
+            loc.z += 150; //starting low, like took off from airport, but we have to make sure it is ABOVE THE ACTUAL GROUND LEVEL or else trouble.  So making it 150 meters higher than the pilot who called it in.
+            string escortedGroup = aircraft.AirGroup().Name();
+
+            /*
+            //TODO: Check with aircraft supply & only allow escorts with plenty of supply left
+            //"SpitfireMkIa_100oct"
+            string[] redplanes = { "HurricaneMkI_100oct", "HurricaneMkI_100oct", "HurricaneMkI", "HurricaneMkI_100oct-NF", "HurricaneMkI_100oct-NF", "HurricaneMkI_dH5-20", "SpitfireMkI" };
+            string[] blueplanes = { "Bf-109E-3", "Bf-109E-3", "Bf-109E-3", "Bf-110C-4", "G50" };
+            string[] planes = redplanes;
+            if (player.Army() == 2) planes = blueplanes;
+            string plane = Calcs.randSTR(planes);
+            */
+
+            string plane = selectCoverPlane(acName, (ArmiesE)player.Army());
+
+
+            //Point3d ac1loc = (aircraft as AiActor).Pos();
+
+            AiAirport ap = Stb_nearestAirport(actor.Pos(), actor.Army());
+            if (ap != null) { loc = ap.Pos(); loc.z = 150; } //starting low, as though taking off.  Not actually taking off, though
+
+
+            bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(ap.Pos().x, ap.Pos().y));
+            double distanceToSpawn_m = Stb_distanceToNearestAirport(aircraft as AiActor);
+            if (!spawnInFriendlyTerritory || distanceToSpawn_m > 2800)
+            {
+                if (distanceToSpawn_m > 2800) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
+                else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
+                return;
+            }
+            //regiment determines which ARMY the new aircraft will be in BOB_RAF British, BOB_LW German. BoB_RA = Italian?
+            //Anyway, if we use the pilot's current regiment it matches which is nice but also definitely keeps them in the same army.
+            string regiment = "gb01";
+            //if (army == 1) regiment = "BoB_RAF_F_141Sqn_Early";
+            //if (army == 2) regiment = "BoB_LW_JG77_I";
+            regiment = aircraft.Regiment().name();
+
+            string newACActorName = Stb_LoadSubAircraft(loc: loc, type: plane, callsign: "26", hullNumber: "3", serialNumber: "001",
+                                regiment: regiment, fuelStr: "", weapons: "", velocity: 150, fighterbomber: "f", skin_filename: "", delay_sec: "", escortedGroup: escortedGroup);
+
+
+
+            //create the cover a/c
+            Timeout(1.05, () =>
+            //Timeout(0.15, () =>
+            {
+                //AiActor newActor = GamePlay.gpActorByName(newACActorName);
+                AiActor newActor = GamePlay.gpActorByName(newACActorName);
+                Console.WriteLine("NewActorloaded: " + newActor.Name() + " for " + player.Name());
+                AiAircraft newAircraft = newActor as AiAircraft;
+                AiAirGroup newAirgroup = newAircraft.AirGroup();
+                Console.WriteLine("NewAirgrouploaded: " + newAirgroup.Name() + " for " + player.Name());
+
+                if (newAirgroup != null && newAirgroup.GetItems().Length > 0)
+                {
+                    int itemsmade = 0;
+                    string aircrafttype = "";
+                    foreach (AiAircraft a in newAirgroup.GetItems())
+                    {
+                        //Point3d ac2loc = (a as AiActor).Pos();
+                        bool supplyLimitReached = false;
+                        if (TWCSupplyMission != null) supplyLimitReached = TWCSupplyMission.IsLimitReached(newActor);
+                        if (supplyLimitReached)
+                        {
+
+                            GamePlay.gpLogServer(new Player[] { player }, "Supply limit reached for " + Calcs.ParseTypeName((a as AiCart).InternalTypeName()) + "; no aircraft available. Please try again to find an available aircraft.", new object[] { });
+                            (a as AiCart).Destroy();
+                            continue;
+                        }
+                        itemsmade++;
+                        aircrafttype = Calcs.ParseTypeName((a as AiCart).InternalTypeName());
+                        GamePlay.gpLogServer(new Player[] { player }, "Created " + aircrafttype + " (" + (a as AiActor).Name() + ")", new object[] { });
+                        //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, (a as AiActor));
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyAICheckout(player, a as AiActor);
+                        coverAircraftActorsCheckedOut.Add((a as AiActor), player);
+                        int nca = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
+
+
+
+                    }
+
+                    /*
+                    newAirgroup.setTask(AiAirGroupTask.DEFENDING, (player.Place() as AiAircraft).AirGroup());
+                    newAirgroup.changeGoalTarget(player.Place());
+                    Console.WriteLine("ChangeGoalTarget: " + newAirgroup.Name() + " to " + player.Name());
+                    */
+                    if (itemsmade > 0)
+                    {
+                        string msg6 = acAvailableToPlayer_msg(player);
+
+                        coverAircraftAirGroupsActive.Add(newAirgroup, player);
+                        //keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354); //don't seem aggressive enough in defending with this, trying the .escort instead, with including the bomber group actor as .target
+                        keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DEFENDING, AiAirWayPointType.ESCORT, player, 21.2354); //2018/11/16 - WAS 43 seconds, trying 21 seconds instead
+                        GamePlay.gpLogServer(new Player[] { player }, "Your escort consists of {0} {1}s. They have just taken off from the nearest friendly airfield.", new object[] { itemsmade, aircrafttype });
+                        try
+                        {
+                            GamePlay.gpLogServer(new Player[] { player }, msg6, new object[] { });
+                        }
+                        catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
+
+                        GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use command <cland", new object[] { });
+
+                    }
+
+
+
+                }
+
+                setCoverAircraftCurrentlyAvailable();
+
+
+
+
+
+
+            });
+
+
+            /*
+            string units = "km";
+            if (player.Army() == 1) units = "miles";
+            string[] words = msg.Split(' ');
+
+            if (words.Length >= 3)
+            {
+                double angle_deg = 0;
+                double distance = 0;
+                try { if (words[1].Length > 0) angle_deg = Convert.ToDouble(words[1]); }
+                catch (Exception ex) { }
+                try { if (words[2].Length > 0) distance = Convert.ToDouble(words[2]); }
+                catch (Exception ex) { }
+            }
+            */
+
+
+        }
+        catch (Exception ex) { Console.WriteLine("Cover <cover: " + ex.ToString()); }
+
     }
 
     private int numberCoverAircraftActorsCheckedOutWholeMission_add(Player player)

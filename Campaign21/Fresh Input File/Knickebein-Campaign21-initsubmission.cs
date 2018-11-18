@@ -400,6 +400,70 @@ public class Knickebeinholder
         return true;
        
     }
+    
+    //So this is the all-purpose start/on/next
+    //If not started, it starts with #1.  If off turns on.  If started waypoing #N, moves to #N+1
+    //
+    public bool KniOnStartOrNext(Player player)
+    {               
+                
+        List<Point3d> currpoints = new List<Point3d>();
+        if (knickebeinWaypoints.ContainsKey(player)) currpoints = knickebeinWaypoints[player];
+        else
+        {
+            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: No waypoints entered yet", new object[] { });
+            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "<khelp for help with the Knickebein system", new object[] { });
+            return false;
+        }
+        if (knickebeins.ContainsKey(player) && !knickebeins[player].turnedOn)
+        {
+            knickebeins[player].turnOn();
+            int currWay1 = 0;
+            if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay1 = knickebeinCurrentWaypoint[player];
+            Point3d currPoint1 = currpoints[currWay1];
+            string sector1 = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint1);
+            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Resuming Knickebein waypoint #{0} to {1} ({2:N0},{3:N0})", new object[] { currWay1 + 1, sector1, Math.Round(currPoint1.x), Math.Round(currPoint1.y) });
+            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Make your heading {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
+
+            return true;
+        }
+
+        int currWay = -1;        
+        if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay = knickebeinCurrentWaypoint[player];
+        int currWaySave = currWay;
+        currWay++;        
+        if (currWay > currpoints.Count - 1 ) currWay = 0; //Wraps around to 0 again after top of list
+        //if (currWay < 0) currWay = currpoints.Count - 1; //Wraps around to top of list after 0
+        //Don't do this here ^^^^ as we're using currWay == -1 to indicate no knickebein ever started yet
+
+        knickebeinCurrentWaypoint[player] = currWay;
+        Console.WriteLine("currWay: " + currWay.ToString());
+
+        Point3d currPoint = currpoints[currWay];
+
+        string sector = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint);
+
+
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Starting Knickebein waypoint #{0} to {1} ({2:N0},{3:N0})", new object[] { currWay + 1, sector, Math.Round(currPoint.x), Math.Round(currPoint.y) });
+
+
+        if (currWay != currWaySave)
+        {
+            if (knickebeins.ContainsKey(player))
+            {
+                knickebeins[player].turnOff();
+                knickebeins[player] = null;
+            }
+            knickebeins[player] = new KnickebeinTarget(player, currPoint, mission);
+        }
+
+        knickebeins[player].turnOn();
+
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Make your heading {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
+        return true;
+
+    }
+
     public void KniInfo (Player player)
     {
 
@@ -487,7 +551,7 @@ public class Knickebeinholder
 
 }
 
-public class Mission : AMission
+public class Mission : AMission, IKnickebeinMission
 {
     public IMainMission TWCMainMission;
     public ISupplyMission TWCSupplyMission;
@@ -496,7 +560,9 @@ public class Mission : AMission
     public Mission()
     {
         TWCMainMission = TWCComms.Communicator.Instance.Main;
-        
+
+        TWCComms.Communicator.Instance.Knickebein = (IKnickebeinMission)this; //allows -stats.cs to access this instance of Mission                        
+
         //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
         ran = new Random();
         Console.WriteLine("-Knickebein.cs successfully inited");
@@ -507,7 +573,7 @@ public class Mission : AMission
 
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
-        
+
         base.OnPlaceEnter(player, actor, placeIndex);
         //startKnickebein(player);
 
@@ -521,7 +587,7 @@ public class Mission : AMission
     }
 
     public override void OnMissionLoaded(int missionNumber)
-    {        
+    {
         base.OnMissionLoaded(missionNumber);
 
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
@@ -537,7 +603,7 @@ public class Mission : AMission
 
             knickeb = new Knickebeinholder(this);
             knickeb.KniTest();
-           
+
 
         }
     }
@@ -643,7 +709,7 @@ public class Mission : AMission
                 string newmsg = msg.Replace("<kadd", "").Replace("<ka", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma
                 string[] words = newmsg.Split(' ');
                 List<Point3d> points = new List<Point3d>();
-                
+
 
                 //Case of entering apoint like <kniadd 300000 100000
                 if (words.Length == 2 && Calcs.isDigitOrPlusMinusPoint(words[0]) && Calcs.isDigitOrPlusMinusPoint(words[1]))
@@ -679,9 +745,9 @@ public class Mission : AMission
                         if (point.x == 0 && point.y == 0) continue;
                         //Knickebeins.startQuickKnickebein(Player player, double angle_deg, double distance);
                         int wp = knickeb.KniAdd(player, point);
-                        GamePlay.gpLogServer(new Player[] { player }, "Knickebein Waypoint #{0} at {1} added to your flight plan ({2:N0},{3:N0})", new object [] { wp, Calcs.correctedSectorNameDoubleKeypad(this, point), Math.Round(point.x), Math.Round(point.y) });
+                        GamePlay.gpLogServer(new Player[] { player }, "Knickebein Waypoint #{0} at {1} added to your flight plan ({2:N0},{3:N0})", new object[] { wp, Calcs.correctedSectorNameDoubleKeypad(this, point), Math.Round(point.x), Math.Round(point.y) });
                     }
-                    GamePlay.gpLogServer(new Player[] { player }, "To use: <kstart <knext <kprev <koff <kon <kclear <khelp", null);
+                    GamePlay.gpLogServer(new Player[] { player }, "To use: Tab-4-4-4-4 menu OR <kstart <knext <kprev <koff <kon <kclear <khelp", null);
                 }
                 else
                 {
@@ -697,7 +763,7 @@ public class Mission : AMission
                     GamePlay.gpLogServer(new Player[] { player }, "This means add those map sector points to your Knickebein Waypoints List.", null);
                     GamePlay.gpLogServer(new Player[] { player }, "You can add one or more points at a time. Formats BA14, AC9.2, AZ.2.6 all work. ", null);
                     GamePlay.gpLogServer(new Player[] { player }, "For higher accuracy waypoints, use x/y map coordinates: <kadd 142381 150321", null);
-                    GamePlay.gpLogServer(new Player[] { player }, "Then to use:  <kstart <knext <kprev <koff <kon <kclear <khelp", null);
+                    GamePlay.gpLogServer(new Player[] { player }, "Then to use: Tab-4-4-4-4 menu OR <kstart <knext <kprev <koff <kon <kclear <khelp", null);
                 }
             }
             catch (Exception ex) { Console.WriteLine("Knickebein Kadd: " + ex.ToString()); }
@@ -714,8 +780,8 @@ public class Mission : AMission
         {
             knickeb.KniList(player);
         }
-        
-        
+
+
         else if (msg.StartsWith("<kstop") || msg.StartsWith("<koff")) //<kstop
         {
             knickeb.KniStop(player);
@@ -724,11 +790,16 @@ public class Mission : AMission
         {
             knickeb.KniStart(player, contin: true);
         }
+        else if (msg.StartsWith("<kz")) //<kon
+        {
+
+            knickeb.KniOnStartOrNext(player);
+        }
         else if (msg.StartsWith("<ki")) //<kinfo
         {
             knickeb.KniInfo(player);
-        }        
-        else if (msg.StartsWith("<kd") ) //<kdel
+        }
+        else if (msg.StartsWith("<kd")) //<kdel
         {
             string[] words = msg.Split(' ');
             int wp = 0;
@@ -788,7 +859,7 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player }, "the one you want, and vector direct from where you are to it.", null);
             GamePlay.gpLogServer(new Player[] { player }, "<khelp5 for more", null);
         }
-        else if (msg.StartsWith("<khelp3") || msg.StartsWith("<kh3")) 
+        else if (msg.StartsWith("<khelp3") || msg.StartsWith("<kh3"))
         {
             GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 3/6)", null);
             GamePlay.gpLogServer(new Player[] { player }, "Command detail:  <kstart 4 or <k 4 - starts Knickebein @ waypoint #4 (#1 if none given),", null);
@@ -796,17 +867,18 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player }, "<kon - display back on, <klist - list waypoints,  <kdel 4 - delete waypoint #4 ", null);
             GamePlay.gpLogServer(new Player[] { player }, "<kclear - clear all waypoints, <kinfo - info abt current waypoint", null);
             GamePlay.gpLogServer(new Player[] { player }, "Most commands can be abbreviated to 2 letters, so <ks, <kn, <kp <kl, <kd, <kc, <ki, <kh etc", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Main commands accessed via Tab-4-4-4-4 menu to avoid cluttering Chat", null);
             GamePlay.gpLogServer(new Player[] { player }, "<khelp4 for more", null);
         }
-        else if (msg.StartsWith("<khelp2") || msg.StartsWith("<kh2")) 
+        else if (msg.StartsWith("<khelp2") || msg.StartsWith("<kh2"))
         {
             GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 2/6)", null);
             GamePlay.gpLogServer(new Player[] { player }, "<kadd: Formats like BA14 AC9.2 AZ.2.6 all work. Add 1-10 waypoints at a time.", null);
             GamePlay.gpLogServer(new Player[] { player }, "<kadd 200311 192300 adds an exact map coordinate (x,y) point; get coordinates from TWC radar web site or Full Mission Builder", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Main Knickebein commands:  <kstart <knext <kprev <koff <kon <kclear", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp3 for more", null);            
+            GamePlay.gpLogServer(new Player[] { player }, "Main Knickebein commands on Tab-4-4-4-4 menu OR Chat Commands <kstart <knext <kprev <koff <kon <kclear", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<khelp3 for more", null);
         }
-        else if (msg.StartsWith("<khelp") || msg.StartsWith("<kh")) 
+        else if (msg.StartsWith("<khelp") || msg.StartsWith("<kh"))
         {
             string units = "km";
             if (player.Army() == 1) units = "miles";
@@ -816,14 +888,15 @@ public class Mission : AMission
             GamePlay.gpLogServer(new Player[] { player }, "This means set Knickebein target 90 degrees 25 " + units + " from your current position", null);
 
             GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION", null);
-            GamePlay.gpLogServer(new Player[] { player }, "To set up Knickebein waypoints: <kadd AW23.2.8 AY26.1.2 BB21.1.8 (etc)" , null);
-            GamePlay.gpLogServer(new Player[] { player }, "Then <kstart - (reach 1st waypoint) - <knext - (reach 2nd wp) ", null);
+            GamePlay.gpLogServer(new Player[] { player }, "To set up Knickebein waypoints: <kadd AW23.2.8 AY26.1.2 BB21.1.8 (etc)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Then Tab-4-4-4-4 menu to start, stop, move to next on list, etc", null);
+            GamePlay.gpLogServer(new Player[] { player }, "OR use Chat Commands like: <kstart - (reach 1st waypoint) - <knext - (reach 2nd wp) ", null);
             GamePlay.gpLogServer(new Player[] { player }, "<knext - (reach 3rd wp) - <koff", null);
             GamePlay.gpLogServer(new Player[] { player }, "<khelp2 for more . . . ", null);
 
         }
 
-        
+
         else if (msg.StartsWith("<ks") || msg.StartsWith("<k")) //<kstart
         {
             //knickeb.KniStart(player);
@@ -832,10 +905,10 @@ public class Mission : AMission
 
             //Ok, this is tricky.  If we want to use "<k" as a shortcut it can only be like "<k" or "<k3" or "<k 3" because otherwise 
             //we start matching all kinds of things like "<ko" or "<km" or whatever, that might means something       
-            
+
             if (msg.StartsWith("<k") && !((msg.Trim() == "<k") || (msg.StartsWith("<ks")) || (msg.StartsWith("<k ")) || Calcs.isDigit(msg.Replace("<k", "").Trim()))) return;
 
-            string wp_string = msg.Replace("<kstart ", "").Replace("<kstart", "").Replace("<ks", "").Replace("<k","").Trim();
+            string wp_string = msg.Replace("<kstart ", "").Replace("<kstart", "").Replace("<ks", "").Replace("<k", "").Trim();
             //string[] words = msg.Split(' ');
             int wp = 0;
             if (Calcs.isDigit(wp_string))
@@ -869,6 +942,39 @@ public class Mission : AMission
             //GamePlay.gp(, from);
         }
     }
+    public void KniOnStartOrNext(Player player)
+    {
+        knickeb.KniOnStartOrNext(player);
+    }
+    public void KniNext(Player player) {
+        knickeb.KniNext(player);
+    }
+    public void KniPrev(Player player)
+    {
+        knickeb.KniPrev(player);
+    }
+    public void KniList(Player player)
+    {
+        knickeb.KniList(player);
+    }
+    public void KniStop(Player player)
+    {
+        knickeb.KniStop(player);
+    }
+    public void KniStart(Player player)
+    {
+        knickeb.KniStart(player, contin: true);
+    }
+    public void KniInfo(Player player)
+    {
+        knickeb.KniInfo(player);
+    }
+    public void KniDelete(Player player, int waypointToDelete)
+    {
+        knickeb.KniDelete(player, waypointToDelete);
+    }
+    
+
 
 }
 

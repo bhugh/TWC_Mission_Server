@@ -52,6 +52,8 @@ namespace TWCComms
         public IMainMission Main { get; set; }        
         public IStatsMission Stats { get; set; }
         public ISupplyMission Supply { get; set; }
+        public IKnickebeinMission Knickebein { get; set; }
+        public ICoverMission Cover { get; set; }
 
         //public dynamic Main { get; set; }
         //public dynamic Stats { get; set; }
@@ -204,6 +206,27 @@ public interface ISupplyMission
     void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0);
     bool SupplyEndMission(double redMult = 1, double blueMult = 1);
     bool SupplySaveStatus();
+
+}
+
+public interface IKnickebeinMission
+{
+    void KniOnStartOrNext(Player player);
+    void KniNext(Player player);
+    void KniPrev(Player player);
+    void KniList(Player player);
+    void KniStop(Player player);
+    void KniStart(Player player);
+    void KniInfo(Player player);
+    void KniDelete(Player player, int waypointToDelete);   
+}
+
+public interface ICoverMission
+{
+    void checkoutCoverAircraft(Player player, string aircraftName);
+    void landCoverAircraft(Player player);
+    string listPositionCurrentCoverAircraft(Player player = null, bool display = true, bool html = false);
+    string listCoverAircraftCurrentlyAvailable(ArmiesE army, Player player = null, bool display = true, bool html = false);
 
 }
 

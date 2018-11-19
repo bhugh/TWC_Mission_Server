@@ -404,6 +404,8 @@ public class Mission : AMission, ICoverMission
 
     public string listPositionCurrentCoverAircraft(Player player = null, bool display = true, bool html = false)
     {
+
+        
         string nl = Environment.NewLine;
         if (html) nl = "<br>" + nl;
         string retmsg = "";
@@ -412,12 +414,20 @@ public class Mission : AMission, ICoverMission
         retmsg += smsg + nl;
         AiActor playerPlace = player.Place();
 
+        if (!isHeavyBomber(playerPlace as AiAircraft))
+        {
+            string m = "****No Cover info - Cover provided for heavy bombers only!****";
+            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            return m;
+        }
+
         GamePlay.gpLogServer(new Player[] { player }, smsg, null);
         foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
         {
             if (coverAircraftAirGroupsActive[airGroup] != player) continue;
             if (airGroup.GetItems().Length == 0) continue;
             AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
+            
             count++;
             double alt_m = aircraft.Pos().z;
             double alt_km = alt_m / 1000;
@@ -501,6 +511,13 @@ public class Mission : AMission, ICoverMission
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg1, null);
             }
         }
+        AiAircraft aircraft = player.Place() as AiAircraft;
+        if (aircraft == null || !isHeavyBomber(aircraft)) {
+            string m = "****No Cover info - Cover provided for heavy bombers only!****";
+            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            return m;
+        }
+
         string msg3 = acAvailableToPlayer_msg(player);
         GamePlay.gpLogServer(new Player[] { player }, msg3, new object[] { });
         retmsg += msg3 + nl;
@@ -694,12 +711,14 @@ public class Mission : AMission, ICoverMission
         else if (msg.StartsWith("<clist")) //<clist
         {
             if (player == null) return;
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover Aircraft when possible", null);
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
             
         }
         else if (msg.StartsWith("<cp")) //<cpos
         {
             if (player == null) return;
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover Aircraft when possible", null);
             listPositionCurrentCoverAircraft(player);
 
         }
@@ -709,11 +728,11 @@ public class Mission : AMission, ICoverMission
         }
         else if (msg.StartsWith("<chelp"))
         {
-            string msg42 = "<cover OR <cover Beau OR <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
+            string msg42 = "Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 - New cover fighters of (optionally) type or ID#  indicated";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });            
-            msg42 = "<clist - list available cover fighters & ID#; <cpos - position of your current fighters";
+            msg42 = "Tab-4 menu OR commands <clist - list available cover fighters & ID#; <cpos - position of your current fighters";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cland - release cover fighters to land (IMPORTANT!)";
+            msg42 = "Tab-4 menu OR command <cland - release cover fighters to land (IMPORTANT!)";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
         }
 
@@ -727,6 +746,15 @@ public class Mission : AMission, ICoverMission
             Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
             //GamePlay.gp(, from);
         }
+    }
+    private bool isHeavyBomber(AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = Calcs.GetAircraftType(aircraft);
+        bool ret = false;
+        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) ret = true;
+        if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
+        return ret;
     }
 
     public void landCoverAircraft(Player player)
@@ -785,12 +813,7 @@ public class Mission : AMission, ICoverMission
             if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
 
 
-            string acType = Calcs.GetAircraftType(aircraft);
-            bool isHeavyBomber = false;
-            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV")) isHeavyBomber = true;
-            if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
-
-            if (!isHeavyBomber) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
+            if (!isHeavyBomber(aircraft)) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers only!", new object[] { }); return; }
 
             if (acAvailableToPlayer_num(player) < 1) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - " + acAvailableToPlayer_msg(player), new object[] { }); return; }
 
@@ -799,7 +822,7 @@ public class Mission : AMission, ICoverMission
 
                 GamePlay.gpLogServer(new Player[] { player }, "You already have {0} cover groups currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
                 GamePlay.gpLogServer(new Player[] { player }, "When you release your escort groups to return to base, you may be able to check out more.", new object[] { numCheckedOut });
-                GamePlay.gpLogServer(new Player[] { player }, "Use command <cland to make your cover fighters land.", new object[] { numCheckedOut });
+                GamePlay.gpLogServer(new Player[] { player }, "Use Tab-4 menu or Chat Command <cland to make your cover fighters land.", new object[] { numCheckedOut });
                 return;
             }
 
@@ -922,7 +945,7 @@ public class Mission : AMission, ICoverMission
                         }
                         catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
 
-                        GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use command <cland", new object[] { });
+                        GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use Tab-4 menu or Chat Command <cland", new object[] { });
 
                     }
 

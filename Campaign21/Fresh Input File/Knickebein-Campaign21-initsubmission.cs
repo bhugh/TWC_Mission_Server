@@ -770,24 +770,29 @@ public class Mission : AMission, IKnickebeinMission
         }
         else if (msg.StartsWith("<kn")) //<knext
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniNext(player);
         }
         else if (msg.StartsWith("<kp")) //<kprev
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniPrev(player);
         }
         else if (msg.StartsWith("<kl")) //<klist
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniList(player);
         }
 
 
         else if (msg.StartsWith("<kstop") || msg.StartsWith("<koff")) //<kstop
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniStop(player);
         }
         else if (msg.StartsWith("<kon")) //<kon
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniStart(player, contin: true);
         }
         else if (msg.StartsWith("<kz")) //<kon
@@ -797,6 +802,7 @@ public class Mission : AMission, IKnickebeinMission
         }
         else if (msg.StartsWith("<ki")) //<kinfo
         {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for Knickebein commands, when possible", null);
             knickeb.KniInfo(player);
         }
         else if (msg.StartsWith("<kd")) //<kdel

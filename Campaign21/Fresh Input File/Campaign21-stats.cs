@@ -291,9 +291,10 @@ public class Mission : AMission, IStatsMission
     public readonly string[] stb_LANDED_ENEMY_MSG = { "{0} landed in enemy territory. " };
     public readonly string[] stb_ASR_FAIL_DROWNED = { "{0} drowned! ", "{0} tried to swim for shore, but drowned! ", "{0} drowned when the life raft deflated! " };
     public readonly string[] stb_ASR_RESCUE_MSG = { "{0} was rescued by local fishermen! ", "{0} was rescued by friendly fishermen!", "{0} was rescued by ASR ", "{0} was rescued by a passing ship! ", "{0} was rescued after hanging onto a life raft for 28 hours! ", "{0} was rescued. Now {0} can join the Goldfish Club! " };
-    public readonly string[] stb_ASR_CAPTURE_MSG = { "{0} was captured by enemy forces and shot while escaping! ", "{0} was captured by enemy forces" };
-    public readonly string[] stb_CAPTURED_MSG = { "{0} was captured. ", "{0} was captured by enemy forces and shot while escaping! ", "{0} was captured and spent the rest of the war in a POW camp. ", };
-    public readonly string[] stb_ESCAPED_MSG = { "{0} escaped capture and is hiding in a resistance fighter's hayloft! ", "{0} escaped and is hiding the forest. ", "{0} escaped and is hiding in a resistance fighter's barn! ", "{0} escaped--now has to find the way home!" };
+    public readonly string[] stb_ASR_CAPTURE_MSG = { "{0} was captured by enemy forces! ", "{0} was captured. ", "{0} was captured and sent to spent the rest of the war in a POW camp. " };
+    public readonly string[] stb_CAPTURED_MSG = { "{0} was captured. ", "{0} was captured by enemy forces! ", "{0} was captured and sent to spent the rest of the war in a POW camp. ", };
+    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", "{0} tried to escape, but was captured again and shot.", "{0} was shot while attempting escape.", "{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "","{0} led a POW escape attempt but was caught in the act and shot on sight.", "{0} led a POW escape attempt but it was unsuccessful.", "", "","","" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
+    public readonly string[] stb_ESCAPED_MSG = { "{0} escaped capture and is hiding in a resistance fighter's hayloft! ", "{0} escaped and is hiding the forest. ", "{0} escaped and is hiding in a resistance fighter's barn! ", "{0} escaped--now has to find the way home!", "{0} was helped by a network of friendly resistance fighters and escape!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
     public readonly string[] stb_CRASHLAND_ENEMY_MSG = { "{0} crash landed in enemy territory. " };
     public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { "{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
 
@@ -8055,7 +8056,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                             }
                             else
                             {
-                                gpLogServerAndLog(null, Calcs.randSTR(stb_ASR_CAPTURE_MSG) + " " + Calcs.randSTR(stb_ASR_CAPTURE_MSG), new object[] { PlayerNameM });
+                                gpLogServerAndLog(null, Calcs.randSTR(stb_ASR_CAPTURE_MSG) + Calcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                                 playerDied = true;
                             }
 
@@ -8091,7 +8092,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                         }
                         else
                         {   // player captured
-                            gpLogServerAndLog(null, Calcs.randSTR(stb_CRASHLAND_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
+                            gpLogServerAndLog(null, Calcs.randSTR(stb_CRASHLAND_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG) + Calcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                             playerDied = true;
                         }
                     }
@@ -8253,7 +8254,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 else
                 {   // player captured
                     Console.WriteLine("On aircraft landed (stats), enemy land4.");
-                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
+                    gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG) + Calcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                     if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false);
                     else Stb_killActor(actor, 0);
                     Console.WriteLine("On aircraft landed (stats), enemy land4a.");
@@ -8529,7 +8530,7 @@ public void OnPersonParachuteLanded(AiActor actor, Player player, maddox.game.wo
                     }
                     else
                     {   // player captured
-                        gpLogServerAndLog(null, Calcs.randSTR(stb_PARACHUTED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
+                        gpLogServerAndLog(null, Calcs.randSTR(stb_PARACHUTED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG)  + Calcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                         playerDied = true;
                     }
                 }

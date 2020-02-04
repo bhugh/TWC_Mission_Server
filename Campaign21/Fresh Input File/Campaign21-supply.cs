@@ -182,7 +182,8 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.SpitfireMkIa",50},
         {"bob:Aircraft.SpitfireMkIa_100oct",50},
         {"bob:Aircraft.SpitfireMkI_100oct",50},
-        {"bob:Aircraft.SpitfireMkIIa",6}
+        {"bob:Aircraft.SpitfireMkIIa",6},
+        {"bob:Aircraft.WellingtonMkIc",100} /*bob:Aircraft.WellingtonMkIc=300.647357579865 */
         } },
         { ArmiesE.Blue, new Dictionary <string,double>(){
         {"bob:Aircraft.Bf-109E-1",100},
@@ -211,6 +212,7 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.Bf-109E-4B_Late",5},
         {"bob:Aircraft.Bf-109E-4N",6},
         {"bob:Aircraft.Bf-109E-4N_Late",6},
+        {"bob:Aircraft.Do-17Z-2",100},
         }
         }
 
@@ -271,18 +273,19 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.SpitfireMkIa_100oct",5},
         {"bob:Aircraft.SpitfireMkI_100oct",4},
         {"bob:Aircraft.SpitfireMkIIa",0.25},
+        {"bob:Aircraft.WellingtonMkIc",10} /*bob:Aircraft.WellingtonMkIc=300.647357579865 */
         } },
         { ArmiesE.Blue, new Dictionary <string,double>(){
-        {"bob:Aircraft.Bf-109E-1",5},
-        {"bob:Aircraft.Bf-109E-1B",3},
+        {"bob:Aircraft.Bf-109E-1",10},
+        {"bob:Aircraft.Bf-109E-1B",8},
         {"bob:Aircraft.Bf-109E-3",6},
         {"bob:Aircraft.Bf-109E-3B",3},
-        {"bob:Aircraft.Bf-109E-4",4},
+        {"bob:Aircraft.Bf-109E-4",0.25},
         {"bob:Aircraft.Bf-109E-4_Late",1},
         {"bob:Aircraft.Bf-110C-2",5},
         {"bob:Aircraft.Bf-110C-4",1},
         {"bob:Aircraft.Bf-110C-4-NJG",4},
-        {"bob:Aircraft.Bf-110C-4B" ,4},
+        {"bob:Aircraft.Bf-110C-4B" ,0.25},
         {"bob:Aircraft.Bf-110C-4Late",1},
         {"bob:Aircraft.Bf-110C-4N",4},
         {"bob:Aircraft.Bf-110C-6",4},
@@ -299,6 +302,7 @@ public class Mission : AMission, ISupplyMission
         {"bob:Aircraft.Bf-109E-4B_Late",0.25},
         {"bob:Aircraft.Bf-109E-4N",0.25},
         {"bob:Aircraft.Bf-109E-4N_Late",0.25},
+        {"bob:Aircraft.Do-17Z-2",10},
 
         }
         }

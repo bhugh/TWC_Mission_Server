@@ -61,7 +61,7 @@ public class Mission : AMission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
 
         moveAirports = true; //whether or not to move targets to a different/nearby airport
-        moveAirportsDistance_m = 40000; //max distance to move airports if you choose that option
+        moveAirportsDistance_m = 80000; //max distance to move airports if you choose that option
 
         //When adjusting various types of airgroup tasks, how far (at maximum) to move the position of that waypoint in xy and in alt (meters)
         //So for altitude, there is a number in meters and a percent.  It will use whichever is LARGER.  So if your formation is at 
@@ -72,13 +72,13 @@ public class Mission : AMission
         //all while 5000m +/- 30% is quite a large change.  By contrast 5000m +/- 1000m isn't much of a change while 500m +/- 1000m is a very large change.
         changeLimits = new Dictionary<AiAirWayPointType, changeLimit>()
         {
-            { AiAirWayPointType.NORMFLY, new changeLimit (7000, 700, 30, 10) },
-            { AiAirWayPointType.HUNTING, new changeLimit (7000, 700, 30, 10) },
-            { AiAirWayPointType.RECON, new changeLimit (4000, 1000, 50, 10) },
-            { AiAirWayPointType.GATTACK_POINT, new changeLimit (450, 0, 0, 10, 15000) },
-            { AiAirWayPointType.GATTACK_TARG, new changeLimit (450, 0, 0, 10, 15000) },
-            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (5500, 800, 25, 10) },
-            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (5500, 800, 25, 10) },
+            { AiAirWayPointType.NORMFLY, new changeLimit (27000, 700, 30, 10) },
+            { AiAirWayPointType.HUNTING, new changeLimit (27000, 700, 30, 10) },
+            { AiAirWayPointType.RECON, new changeLimit (14000, 1000, 50, 10) },
+            { AiAirWayPointType.GATTACK_POINT, new changeLimit (450, 0, 0, 10, 65000) },
+            { AiAirWayPointType.GATTACK_TARG, new changeLimit (450, 0, 0, 10, 65000) },
+            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (15500, 800, 25, 10) },
+            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (15500, 800, 25, 10) },
         };
         /*
         changeAlt_m = new Dictionary<AiAirWayPointType, double>()

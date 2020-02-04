@@ -14,6 +14,9 @@
 //$reference WPF/PresentationCore.dll
 //$reference WPF/WindowsBase.dll
 //$reference System.Xaml.dll
+//$reference System.xml.dll
+//$reference System.runtime.serialization.dll
+///$reference System.Text.Json.dll
 //The first two $references above + perhaps the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 // $reference System.Core.dll  is needed to make HashSet work.  For some reason.
 ///$reference parts/core/MySql.Data.dll  //THIS DOESN'T SEEM TO WORK
@@ -47,8 +50,19 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Dynamic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
+using System.Xml.Serialization;
+
+
+//using System.Web.Script.Serialization;
+//using System.Text.Json;
+//using System.Text.Json.Serialization;
 using TF_Extensions;
 //using GCVBackEnd;
+using System.Timers;                 /// <= Needed for Rearm/Refuel
+
 
 //////////////////simply change the////////////////////////
 //////////////////GamePlay.gpHUDLogCenter("Do 17's traveling towards Lympne");///////////////
@@ -84,6 +98,59 @@ namespace coord
         }
         public AMission Main { get; set; }
         public AMission Stats { get; set; }
+    }
+}
+
+//so we have the problem that we have used type Player extensively to pass back & forth to various methods.  It's convenient and the Player type has lots of useful information.
+//But . . . sometimes we only have the player's name & we still need to do things like record stats and such for that player.
+//CloD doesn't let us create a new Player player for anyone who has not logged in to the game (in that case cloD makes the player automatically).
+//So this little class built on the Player interface from maddox.game.Player allows us to do this trick:
+// aPlayer p1 = new aPlayer("Fred Jones", 1);  //name Fred Jones, army=1
+// Player p2 = p1 as Player;
+//Then we can send p2 to any method that usually accepts Player
+//And . . . mostly those methods only need the player's name & army, so it works.  Obviously if it needs more it will fail as most of the info returned below is fake/dummy.
+//
+//you can also initialize as 
+//   aPlayer p1 = new aPlayer(player);  //if you already have a valid Player player from Maddox
+
+public class aPlayer : Player
+{
+    private string name;
+    private int army;
+    private Player player;
+
+    public string Name() { return name;  }
+    public bool IsConnected() { return false; }
+    public int Channel() { return 0; }
+    public string ConnectAddress() { return ""; }
+    public int ConnectPort() { return 0; }
+    public int Army() { return army; }
+    public AiActor Place() { return null; }
+    public int PlacePrimary() { return 0; }
+    public int PlaceSecondary() { return 0; }
+    public AiPerson PersonPrimary() { return null; }
+    public AiPerson PersonSecondary() { return null; }
+    public bool AutopilotPrimary() { return false; }
+    public bool AutopilotSecondary() { return false; }
+    public bool IsExpelArmy(int i) { return false; }
+    public bool IsExpelUnit(AiActor a) { return false; }
+    public void SelectArmy(int i) { return; }
+    public void PlaceEnter(AiActor a, int i) { return; }
+    public void PlaceLeave(int i) { return; }
+    public int Ping() { return 0; }
+    public string LanguageName() { return ""; }
+
+    public aPlayer (aPlayer p )
+    {
+        name = player.Name();
+        army = player.Army();
+        player = p;
+    }
+
+    public aPlayer(string n, int a)
+    {
+        name = n;
+        army = a;        
     }
 }
 
@@ -133,7 +200,7 @@ public class Mission : AMission, IMainMission
     public int START_COOP_TICK = -1;
     public double COOP_TIME_LEFT_MIN = 9999;
     public int ticksperminute = 1986;
-    public double CampaignMapState = 0; //Determines which base map to load in & where the front it.  0 is the neutral map, - numbers tend more towards Blue, + numbers more towards Red
+    public double CampaignMapState = 0; //Determines which base map to load in & where the front is.  0 is the neutral map, - numbers tend more towards Blue, + numbers more towards Red
     public string CampaignMapSuffix = "-0"; //The initial initairports files will have suffix -0
     public string MapPrevWinner = ""; //Winner of the previous mission, if there was one
     public int CampaignMapMaxRedSuffixMax = 1; //This implies you have initairports files named with suffix ie -R001, -R002, -R003, -R004 through the max
@@ -147,7 +214,7 @@ public class Mission : AMission, IMainMission
     //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
     //used in method admins_privilege_level below
     public string[] admins_basic = new String[] { "TWC_" };
-    public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error", "Server" };
+    public string[] admins_full = new String[] { "TWC_Flug", "EvilUg", "TWC_Fatal_Error", "Server" };
     public int[][,] GiantSectorOverview = new int[3][,];  //holds a simple count of how many enemy airgroups (index 0) & aircraft (index 1) in each giant sector (giant keypad covering entire map)
 
 
@@ -160,8 +227,11 @@ public class Mission : AMission, IMainMission
     double blueMultAdmin = 0;
 
 
-    MissionObjectives mission_objectives;
+    //MissionObjectives mission_objectives;
+	MissionObjectives mission_objectives = null;
 
+	//private RearmRefuelManager ManageRnr = new RearmRefuelManager();
+	
     //Constructor
     public Mission()
     {
@@ -180,17 +250,17 @@ public class Mission : AMission, IMainMission
         MISSION_ID = @"Campaign21";
         SERVER_ID = "Tactical Campaign Server"; //Used by General Situation Map app
         //SERVER_ID_SHORT = "Tactical"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
-        SERVER_ID_SHORT = "MissionTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+        SERVER_ID_SHORT = "TacticalTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         CAMPAIGN_ID = "The Big War"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = false;
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "north"}, //Red army #1
-            { -2, "gate"}, //Blue, army #2
-            { -3, "twc2twc"}, //admin
-            { -4, "twc2twc"}, //admingrouped
+            { -1, "PASSWORD"}, //Red army #1
+            { -2, "PASSWORD"}, //Blue, army #2
+            { -3, "PASSWORD"}, //admin
+            { -4, "PASSWORD"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -224,7 +294,7 @@ public class Mission : AMission, IMainMission
 
     /********************************************************
      * 
-     * Save campaign state every 10 minutes so that if
+     * Save campaign state every 10 minutes or so, so that if
      * something messes up before end of mission, we
      * don't lose all the campaign developments this mission
      * 
@@ -233,11 +303,12 @@ public class Mission : AMission, IMainMission
     public void SaveCampaignStateIntermediate()
     {
 
-        Timeout(1800, () => { SaveCampaignStateIntermediate(); });
+        Timeout(667, () => { SaveCampaignStateIntermediate(); });
         if (!MISSION_STARTED) return;
-        Task.Run(() => SaveMapState("", true));
+        Task.Run(() => SaveMapState("", true));        
+        Task.Run(() => MO_WriteMissionObjects());
         //SaveMapState("", true);
-    }
+}
 
     public void CheckCoop()
     {
@@ -514,8 +585,7 @@ public class Mission : AMission, IMainMission
 
             //WriteResults_Out_File("3"); //1=red, 2= blue, 3=tie; we pre-set to tie in case the mission exits early etc.
             Task.Run(() => WriteResults_Out_File("3"));
-            Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place
-
+            Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place            
             Timeout(10, () => { groupAllAircraft_recurs(); });
             Timeout(15, () => { aiAirGroupRadarReturns_recurs(); });
             
@@ -642,7 +712,7 @@ public class Mission : AMission, IMainMission
     *************************************************************/
 
     public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
-    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, if it s knocked out, double airfield radius, Point3d airfield center (position)
     //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
 
     public void SetAirfieldTargets()
@@ -663,7 +733,7 @@ public class Mission : AMission, IMainMission
 
             ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
+            int pointstoknockout = 30;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
 
             double radius = ap.FieldR();
             Point3d center = ap.Pos();
@@ -724,6 +794,7 @@ public class Mission : AMission, IMainMission
                 double PointsToKnockOut = AirfieldTargets[ap].Item3;
                 string Mission = AirfieldTargets[ap].Item2;
                 DateTime lastBombHit = AirfieldTargets[ap].Item5;
+                //DateTime disabledUntil_DT = AirfieldTargets[ap].Item6;
 
                 double percent = 0;
                 if (PointsToKnockOut > 0)
@@ -743,13 +814,22 @@ public class Mission : AMission, IMainMission
                                                                           //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
                                                                           //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
 
+                string msg2 = "";
                 if (PointsTaken >= PointsToKnockOut) //airport knocked out
                 {
                     percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                    timetofix = 24 * 60 * 60; //24 hours to repair . . . if they achieve 100% knockout.  That is a little bonus beyond what the actual formula says, due ot total knockout
+                    timetofix += (PointsTaken - PointsToKnockOut) * 20 * 60; //Plus they achieve any additional knockout/repair time due to additional bombing beyond 100%, because those will have to be repaired, too.
+                    msg2 = "; estimated " + (timetofix/3600.0).ToString("F1") + "hrs to re-open";
+
                 }
 
-                string msg = Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago";
+                //AirfieldTargets[ap].Item6 = DateTime.Now.AddSeconds(timetofix); //just save that since we recalced it here; keep it consistent with what we are displaying.
+                //forget this, instead we'll add it to the missionobjectiveslist
+
+
+
+                string msg = Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago" + msg2;
                 returnmsg += msg + "\n";
 
                 if (display)
@@ -786,6 +866,13 @@ public class Mission : AMission, IMainMission
 
         }
 
+        //disable any associated birthplace - thus, no spawning here
+        foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+        {
+            Point3d bp_pos = bp.Pos();
+            if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+        }
+
         GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
         ISectionFile f = GamePlay.gpCreateSectionFile();
@@ -797,12 +884,12 @@ public class Mission : AMission, IMainMission
         string value = "";
 
 
-        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 80)
+        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 280)
         {
-            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 80)
+            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 310)
             {
                 string key = "Static" + count.ToString();
-                value = val1 + ".Environment." + type + " nn " + (x - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 100 + 200 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                value = val1 + ".Environment." + type + " nn " + (x - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
                 f.add(sect, key, value);
                 count++;
 
@@ -813,6 +900,8 @@ public class Mission : AMission, IMainMission
         //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
         GamePlay.gpPostMissionLoad(f);
         //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
+
+        Calcs.loadSmokeOrFire(GamePlay, this, pos.x, pos.y, 0, "BuildingFireBig", duration_s: 6 * 3600);
 
     }
     /*
@@ -1061,6 +1150,7 @@ public class Mission : AMission, IMainMission
                     {
                         percent = 1;
                         timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                        timetofix += (PointsTaken - PointsToKnockOut) * 20 * 60; //Plus they achieve any additional knockout/repair time due to additional bombing beyond 100%, because those will have to be repaired, too.
                     }
                     //Advise player of hit/percent/points (Note: Doing all messages & actual creation of craters, smoke etc in -stats.cs
                     /*
@@ -1092,8 +1182,11 @@ public class Mission : AMission, IMainMission
                             if (arm == 1) CampaignMapBluePoints += 5; //5 campaign points for knocking out an airfield
                             else if (arm == 2) CampaignMapRedPoints += 5;
                             */
-
-                            MO_DestroyObjective(Mission + "_airfield");
+                            try
+                            {
+                                MO_DestroyObjective(Mission + "_airfield", percentdestroyed: percent, timetofix_s: timetofix);
+                            }
+                            catch (Exception ex) { Console.WriteLine("OnExplosion_DoWork error1: " + ex.ToString()); };
                             /*
                              * The additional score & adding points for knocking out an airport have been moved to the MissionObjectives section with MO_DestroyObjective
                             //Question: Do we want to keep these objective points for knocking out any airfield?
@@ -1123,6 +1216,7 @@ public class Mission : AMission, IMainMission
                             }
 
                         }
+                        MO_DestroyObjective_addTime(Mission + "_airfield", percentdestroyed: percent, timetofix_s: timetofix);
                     }
                     else
                     {
@@ -1137,6 +1231,8 @@ public class Mission : AMission, IMainMission
         catch (Exception ex) { Console.WriteLine("On Bomb Explosion do_work: " + ex.ToString()); }
     }
 
+    bool final_SaveMapState_completed = false;
+    bool final_MO_WriteMissionObjects_completed = false;
     int currentEndMission = 0;
     //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
     //string winner should be "Red" or "Blue" exactly and only!!!
@@ -1216,6 +1312,9 @@ public class Mission : AMission, IMainMission
                 double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
                 CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+                MO_WriteMissionObjects(wait: true);
+                final_SaveMapState_completed = true;
+                final_MO_WriteMissionObjects_completed = true;
             }
 
         });
@@ -1483,12 +1582,28 @@ public class Mission : AMission, IMainMission
     {
         base.OnPlaceLeave(player, actor, placeIndex);
 
+        /// REARM/REFUEL: cancel possibly pending request of player
+      //  ManageRnr.cancelOfPlayer(GamePlay, player);
+		
         if (actor != null && actor is AiAircraft)
         {
             //OK, we have to wait a bit here bec. some ppl use ALT-F11 (ALT-F2) for 'external view' which allows to leave two positions
             //inhabited by bomber pilot & just return to the one position.  But how it actually works is the pilot leaves the aircraft momentarily.
             Timeout(0.5f, () =>
             {
+                //Save the reconnaissance photos, if the player is on friendly territory, stopped, & alive
+                //If crashlanded etc then the photos will be erased, so this applies only to a pretty good landing on friendly territory, maybe at/near an airport
+                if (player != null)
+                {
+                    if ((actor as AiAircraft) != null &&
+                        GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) == actor.Army() &&
+                        //Stb_distanceToNearestAirport(actor) < 3100 &&
+                        Calcs.CalculatePointDistance((actor as AiAircraft).AirGroup().Vwld()) < 2 &&
+                        actor.IsAlive()
+                        )
+                        MO_RecordPlayerScoutPhotos(player);
+
+                }
                 string pName = "";
                 if (player != null) pName = player.Name();
                 if (actor is AiAircraft)
@@ -1544,6 +1659,27 @@ public class Mission : AMission, IMainMission
         if (player != null)
         {
             setMainMenu(player);
+
+            /*
+             * TESTING STUFF FOR aPlayer Player extension
+            aPlayer p = new aPlayer();
+
+            Player p1 = p as Player;
+
+            Console.WriteLine("Player bugablug" + p1.Name());
+            Console.WriteLine("Player bugablug" + p1.Name() + p1.Army().ToString());
+
+            gpLogServerAndLog(null, "Player bugablug" + p1.Name(), null);
+
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddSessStat(p1, 798, 5321);
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 848);  //848 recon photos taken, 849 # of objectives photographed
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 848, 1);
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 849);  //848 recon photos taken, 849 # of objectives photographed
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 849, 1);
+
+            MO_AddPlayerStatsScoresForObjectiveDestruction(p1, MissionObjectivesList["RTarget28R"], 10);
+            */
+
         }
 
         /* handling this via -supply.cs now
@@ -1594,11 +1730,15 @@ public class Mission : AMission, IMainMission
     double RedNavalF = 0;
     double RedGroundF = 0;
     double RedPlanesWrittenOffI = 0;
+    double RedScoutPhotosI = 0;
+    double RedScoutedObjectivesI = 0;
     double BlueAirF = 0;
     double BlueAAF = 0;
     double BlueNavalF = 0;
     double BlueGroundF = 0;
     double BluePlanesWrittenOffI = 0;
+    double BlueScoutPhotosI = 0;
+    double BlueScoutedObjectivesI = 0;
 
     public void CheckStatsData(string winner = "")
     {
@@ -1685,6 +1825,18 @@ public class Mission : AMission, IMainMission
             }
             if (BluePlanesWrittenOffI >= 2 || RedPlanesWrittenOffI >= 2) outputmsg += "<br>" + Environment.NewLine;
 
+            if (RedScoutPhotosI >= 1 || RedScoutedObjectivesI >=0)
+            {
+                string msg = "Red has taken " + RedScoutPhotosI.ToString() + " reconnaissance photos of " + RedScoutedObjectivesI.ToString() + " mission objectives.";
+                outputmsg += msg + "<br>" + Environment.NewLine;
+            }
+            if (BlueScoutPhotosI >= 1 || BlueScoutedObjectivesI >= 0)
+            {
+                string msg = "Blue has taken " + BlueScoutPhotosI.ToString() + " reconnaissance photos of " + BlueScoutedObjectivesI.ToString() + " mission objectives.";
+                outputmsg += msg + "<br>" + Environment.NewLine;
+            }
+            if (BlueScoutPhotosI >= 1 || BlueScoutedObjectivesI >= 0 || RedScoutPhotosI >= 1 || RedScoutedObjectivesI >= 0) outputmsg += "<br>" + Environment.NewLine;           
+
             outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine;
             outputmsg += "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]) + "<br>" + Environment.NewLine;
 
@@ -1692,7 +1844,8 @@ public class Mission : AMission, IMainMission
             outputmsg += campaign_summary; //note: this include .NewLine but not <br>
             if (winner != "") outputmsg += "<br>" + winner.ToUpper() + " HAS TURNED THE MAP! Congratulations, " + winner + "<br>" + Environment.NewLine;
 
-            File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
+            //File.WriteAllText(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
+            Calcs.WriteAllTextAsync(STATSCS_FULL_PATH + "CampaignSummary.txt", outputmsg);
         }
         catch (Exception ex) { Console.WriteLine("CampaignSummary Write: " + ex.ToString()); }
 
@@ -2108,7 +2261,8 @@ public class Mission : AMission, IMainMission
 
             currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(s => s.Trim()).Take(150)); //cut down prev content to max of $X lines & omit blank lines
-            File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
+            //File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
+            Calcs.WriteAllTextAsync(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
             if (!intermediateSave) MapStateSaved = true;
 
             //Save mapstate to special directory once @ beginning of mission & again at very end
@@ -2119,7 +2273,7 @@ public class Mission : AMission, IMainMission
                 {
                     double pcDone = calcProportionTimeComplete();
 
-                    //This adds supply in based on how many player participated and how long the mission ran (6 hrs generally) as a basis
+                    //This adds supply in based on how many players participated and how long the mission ran (6 hrs generally) as a basis
                     //then adjusting based on score & whether anyone has turned the map
                     int netRedCount = 15;
                     int netBlueCount = 15;
@@ -2146,8 +2300,8 @@ public class Mission : AMission, IMainMission
                     if (netRedCount > 120) netRedCount = 120;
                     if (netBlueCount > 120) netBlueCount = 120;
                     //Take care of changes to supply
-                    double redMult = pcDone / 8.0 + 7.0 / 8.0 * pcDone * netRedCount / 20.0;  //must cast to double first . . .
-                    double blueMult = pcDone / 8.0 + 7.0 / 8.0 * pcDone * netBlueCount / 20.0;
+                    double redMult = pcDone / 8.0 + 7.0 / 8.0 * pcDone * netRedCount / 20.0 + RedScoutedObjectivesI/100.0;  //must cast to double first . . .
+                    double blueMult = pcDone / 8.0 + 7.0 / 8.0 * pcDone * netBlueCount / 20.0 + BlueScoutedObjectivesI/100.0; //Now also add some 'plane points' for reconnaissance
 
                     Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netBlueCount.ToString() + " " + redMult.ToString() + " " + blueMult.ToString() + " "
                         + redMultAdmin.ToString() + " " + blueMultAdmin.ToString() + " ");
@@ -2155,7 +2309,7 @@ public class Mission : AMission, IMainMission
                     //if one side turns the map they get a large increase in aircraft supply while the other side gets little or nothing
                     //if they don't turn the map there is still a slight tweak give the side with more overall victories a few more aircraft 
                     if (winner == "Red") { redMult = 3; blueMult = 0.01; }
-                    else if (winner == "Blue") { blueMult = 3; redMult = 0.01; }
+                    else if (winner == "Blue") { blueMult = 3.5; redMult = 0.01; }
                     else if (misResult > 0) redMult += misResult / 100.0;
                     else if (misResult < 0) blueMult += (-misResult) / 100.0;
                     redMult += redMultAdmin;
@@ -2260,10 +2414,19 @@ public class Mission : AMission, IMainMission
         base.OnActorDead(missionNumber, shortName, actor, damages);
         try
         {
+
+            if (actor as Player != null)
+            {
+                MO_SpoilPlayerScoutPhotos(actor as Player);
+            }
+
             if (actor != null && actor is AiAircraft)
             {
                 //if dead, then destroy it within a reasonable time
                 AiAircraft aircraft = actor as AiAircraft;
+
+                MO_SpoilPlayerScoutPhotos(playersInPlane(aircraft));
+
                 string pName = actor.Name();
                 if (aircraft != null)
                 {
@@ -2380,7 +2543,10 @@ public class Mission : AMission, IMainMission
 
     public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
     {
-        base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+        base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);        
+
+        MO_SpoilPlayerScoutPhotos(playersInPlane(aircraft));
+
         Timeout(300, () =>
         //{ destroyPlane(aircraft); } //Not sure why to destory all planes just bec. crash landed?  Best to check if a pilot is still in it & just destroy aicontrolled planes, like this:
 
@@ -2390,11 +2556,41 @@ public class Mission : AMission, IMainMission
     public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
     {
         base.OnAircraftLanded(missionNumber, shortName, aircraft);
+
+        
+        
         Timeout(300, () =>
         //{ destroyPlane(aircraft); } //Not sure why to destory **ALL** planes just bec. landed?  Best to check if a pilot is still in it & just destroy aicontrolled planes, like this:
 
         { destroyAiControlledPlane(aircraft); }
             );
+
+        try
+        {
+            if (GamePlay.gpFrontArmy((aircraft as AiActor).Pos().x, (aircraft as AiActor).Pos().y) == (aircraft as AiActor).Army())
+
+                MO_RecordPlayerScoutPhotos(playersInPlane(aircraft));
+        }
+        catch (Exception ex) { System.Console.WriteLine("Main mission OnAircraftLanded recon record - Exception: " + ex.ToString()); }
+
+    }
+
+    public override void OnPersonParachuteFailed(maddox.game.world.AiPerson person)
+    {     
+        base.OnPersonParachuteFailed(person);
+        if (person.Player() != null) MO_SpoilPlayerScoutPhotos(person.Player());
+    }
+
+    public override void OnPersonParachuteLanded(maddox.game.world.AiPerson person)
+    {        
+        base.OnPersonParachuteLanded(person);
+        if (person.Player() != null) MO_SpoilPlayerScoutPhotos(person.Player());
+    }
+
+    public override void OnAircraftTookOff(int missionNumber, string shortName, AiAircraft aircraft)
+    {     
+        base.OnAircraftTookOff(missionNumber, shortName, aircraft);
+        MO_SpoilPlayerScoutPhotos(playersInPlane(aircraft));
     }
 
     //this will destroy ALL ai controlled aircraft on the server
@@ -3538,9 +3734,10 @@ public class Mission : AMission, IMainMission
                     }
 
                     string posmessageCSP;
-
+                    string speedMsg = player_vel_mph.ToString("F0") + "mph ";
+                    if (playerArmy == 2) speedMsg = (player_vel_mps*3.6).ToString("F0") + "km/h ";
                     posmessageCSP = "Radar intercepts are based on your speed/position as last detected at the command center: " +
-                                player_vel_mph.ToString("F0") + "mph " +
+                                speedMsg +
                                 player_sector.ToString();
                     gpLogServerAndLog(new Player[] { player }, posmessageCSP, null);
 
@@ -4854,137 +5051,170 @@ public class Mission : AMission, IMainMission
                             if (playerArmy == -4) typeSuff = "_ADMINGROUP";
                             if (playerArmy == -1) typeSuff = "_RED";
                             if (playerArmy == -2) typeSuff = "_BLUE";
+
+                            //TODO!!!!  Rewrite all this to just create a string with the file & then write using File.WriteAllText(file,data);
+                            //The avoids the problem of files not being closed/disposed & then they are LOCKED!!!!!
+                            //For now the try/catch should take care of any problems, but we'll see.
                             string filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_radar.txt";
                             if (File.Exists(filepath)) { File.Delete(filepath); }
                             fi = new System.IO.FileInfo(filepath); //file to write to
                             sw = fi.CreateText(); // Writes Lat long & other info to file
 
-                            foreach (var mess in radar_messages)
+                            try
                             {
-                                sw.WriteLine(mess.Value);
+                                foreach (var mess in radar_messages)
+                                {
+                                    sw.WriteLine(mess.Value);
+                                }
                             }
+                            catch (Exception ex) { Console.WriteLine("Radar Write2: " + ex.ToString()); }
 
                             sw.Close();
+                            sw.Dispose();
 
 
                             //And, now we create a file with the list of players:
                             //TODO: This probably could/should be a separate method that we just call here
+
+                            //TODO!!!!  Rewrite all this to just create a string with the file & then write using File.WriteAllText(file,data);
+                            //The avoids the problem of files not being closed/disposed & then they are LOCKED!!!!!
+                            //For now the try/catch should take care of any problems, but we'll see.
                             filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_players.txt";
                             if (File.Exists(filepath)) { File.Delete(filepath); }
                             fi = new System.IO.FileInfo(filepath); //file to write to
-                            sw = fi.CreateText(); // Writes Lat long & other info to file
-                            sw.WriteLine(DateTime.UtcNow.ToString("u").Trim() + " - " + showTimeLeft(null, false));
-                            sw.WriteLine();
-
-                            int pycount = 0;
-                            int pyinplace = 0;
-                            string msg = "";
-                            if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+                            try
                             {
+                                sw = fi.CreateText(); // Writes Lat long & other info to file
+                                sw.WriteLine(DateTime.UtcNow.ToString("u").Trim() + " - " + showTimeLeft(null, false));
+                                sw.WriteLine();
 
-                                foreach (Player py in GamePlay.gpRemotePlayers())
+                                int pycount = 0;
+                                int pyinplace = 0;
+                                string msg = "";
+                                if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
                                 {
-                                    pycount++;
-                                    string pl = "(none)";
-                                    if (py.Place() != null)
+
+                                    foreach (Player py in GamePlay.gpRemotePlayers())
                                     {
-                                        pyinplace++;
-                                        AiActor act = py.Place();
-                                        pl = act.Name();
-
-                                        if (act as AiAircraft != null)
+                                        pycount++;
+                                        string pl = "(none)";
+                                        if (py.Place() != null)
                                         {
-                                            AiAircraft acf = act as AiAircraft;
-                                            string acType = Calcs.GetAircraftType(acf);
-                                            pl = acType;
-                                        }
+                                            pyinplace++;
+                                            AiActor act = py.Place();
+                                            pl = act.Name();
 
-                                        if (playerArmy == -3 || playerArmy == -4)
-                                        {
-                                            //Point3d ps = Calcs.Il2Point3dToLongLat(act.Pos());
-                                            //pl += " " + ps.y.ToString("n2") + " " + ps.x.ToString("n2");
-                                            pl += " " + act.Pos().x.ToString("n0") + " " + act.Pos().y.ToString("n0");  //2018/09/20 - switching order of x & y & now need to do the same in radar.php
+                                            if (act as AiAircraft != null)
+                                            {
+                                                AiAircraft acf = act as AiAircraft;
+                                                string acType = Calcs.GetAircraftType(acf);
+                                                pl = acType;
+                                            }
+
+                                            if (playerArmy == -3 || playerArmy == -4)
+                                            {
+                                                //Point3d ps = Calcs.Il2Point3dToLongLat(act.Pos());
+                                                //pl += " " + ps.y.ToString("n2") + " " + ps.x.ToString("n2");
+                                                pl += " " + act.Pos().x.ToString("n0") + " " + act.Pos().y.ToString("n0");  //2018/09/20 - switching order of x & y & now need to do the same in radar.php
+                                            }
+
                                         }
+                                        msg += py.Name() + " " + py.Army() + " " + pl + "\n";
 
                                     }
-                                    msg += py.Name() + " " + py.Army() + " " + pl + "\n";
 
                                 }
 
-                            }
-
-                            sw.WriteLine("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString());
-                            sw.WriteLine();
-
-                            sw.WriteLine("MISSION SUMMARY");
-
-                            sw.WriteLine(string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
-          BlueAirF, BlueAAF, BlueNavalF, BlueGroundF));
-                            sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
-          RedAirF, RedAAF, RedNavalF, RedGroundF));
-                            sw.WriteLine();
-
-                            sw.WriteLine("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]));
-                            if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue, numToDisplay: 50, delay: 0, display: false, html: false));//sw.WriteLine("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]);
-
-                            sw.WriteLine("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]));
-                            if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html: false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
-
-                            /***TODO: Need to include some kind of current mission & campaign summary here
-                             * 
-                             */
-
-                            /*
-                            if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
-                            if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);
-                            sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
-                            sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
-                            //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
-                            */
-
-                            sw.WriteLine("CAMPAIGN SUMMARY");
-
-                            Tuple<double, string> res = CalcMapMove("", false, false, null);
-                            sw.Write(res.Item2);
-                            double newMapState = CampaignMapState + res.Item1;
-                            sw.Write(summarizeCurrentMapstate(newMapState, false, null));
-
-
-                            if (msg.Length > 0)
-                            {
+                                sw.WriteLine("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString());
                                 sw.WriteLine();
-                                sw.WriteLine("PLAYER SUMMARY");
-                                sw.WriteLine(msg);
-                            }
 
+                                sw.WriteLine("MISSION SUMMARY");
 
-                            msg = ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
-                            if (msg.Length > 0)
-                            {
+                                sw.WriteLine(string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
+              BlueAirF, BlueAAF, BlueNavalF, BlueGroundF));
+                                sw.WriteLine(string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
+              RedAirF, RedAAF, RedNavalF, RedGroundF));
                                 sw.WriteLine();
-                                sw.WriteLine("AIRFIELD CONDITION SUMMARY");
-                                sw.WriteLine(msg);
-                            }
 
-                            sw.WriteLine();
-                            string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
-                            string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
-                            sw.WriteLine("PLAYER ACTIVITY SUMMARY");
-                            sw.WriteLine(netBlue);
-                            sw.WriteLine(netRed);
-
-                            if (TWCSupplyMission != null)
-                            {
+                                sw.WriteLine("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]));
                                 sw.WriteLine();
-                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(TWCSupplyMission.ListAircraftLost(2, null, false, false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
-                                                                                                                                                                     //if (playerArmy == -3 || playerArmy == -4) sw.WriteLine();
-                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(TWCSupplyMission.ListAircraftLost(1, null, false, false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue, numToDisplay: 50, delay: 0, display: false, html: false));//sw.WriteLine("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]);
+
+                                sw.WriteLine("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]));
+                                sw.WriteLine();
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html: false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+
+                                /***TODO: Need to include some kind of current mission & campaign summary here
+                                 * 
+                                 */
+
+                                /*
+                                if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
+                                if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);
+                                sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
+                                sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
+                                //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
+                                */
+
+                                sw.WriteLine("CAMPAIGN SUMMARY");
+
+                                Tuple<double, string> res = CalcMapMove("", false, false, null);
+                                sw.Write(res.Item2);
+                                double newMapState = CampaignMapState + res.Item1;
+                                sw.Write(summarizeCurrentMapstate(newMapState, false, null));
+
+
+                                if (msg.Length > 0)
+                                {
+                                    sw.WriteLine();
+                                    sw.WriteLine("PLAYER SUMMARY");
+                                    sw.WriteLine(msg);
+                                }
+
+
+                                msg = ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
+                                if (msg.Length > 0)
+                                {
+                                    sw.WriteLine();
+                                    sw.WriteLine("AIRFIELD CONDITION SUMMARY");
+                                    sw.WriteLine(msg);
+                                }
+
+                                sw.WriteLine();
+                                string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
+                                string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
+                                sw.WriteLine("PLAYER ACTIVITY SUMMARY");
+                                sw.WriteLine(netBlue);
+                                sw.WriteLine(netRed);
+
+                                if (TWCSupplyMission != null)
+                                {
+                                    sw.WriteLine();
+                                    if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(TWCSupplyMission.ListAircraftLost(2, null, false, false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+                                                                                                                                                                         //if (playerArmy == -3 || playerArmy == -4) sw.WriteLine();
+                                    if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) sw.WriteLine(TWCSupplyMission.ListAircraftLost(1, null, false, false));//sw.WriteLine("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]);
+
+
+                                }
+
+
+                                msg = "";
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) msg += MO_ListScoutedObjectives(null, 2) + Environment.NewLine;
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) msg += MO_ListScoutedObjectives(null, 1) + Environment.NewLine;                                
+
+                                if (msg.Length > 0)
+                                {
+                                    sw.WriteLine();
+                                    sw.WriteLine("RECONNAISSANCE SUMMARY");
+                                    sw.WriteLine(msg);
+                                }
 
 
                             }
-
+                            catch (Exception ex) { Console.WriteLine("Radar Write3: " + ex.ToString()); }
 
                             sw.Close();
+                            sw.Dispose();
 
 
                         }
@@ -5100,7 +5330,14 @@ public class Mission : AMission, IMainMission
         CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
                                             //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
         SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
+        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want
+        if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
+
         mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
+
+        if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
+
+
         LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
 
 
@@ -5110,8 +5347,44 @@ public class Mission : AMission, IMainMission
 
         ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
         ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
-        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0.3); //so we can include initsubmissions if we want
 
+
+        /// CONFIGURE REARM/REFUEL
+        /// Duration in seconds for full rearm
+        // RearmRefuelConfig.REARM_DURATION = 150;
+        
+        /// Duration in seconds for 100% refuel
+        /// Lesser fuel amounts result in relative fractions of that.
+        /// Note: see REFUEL_MIN_DURATION below
+        // RearmRefuelConfig.REFUEL_DURATION =  270;
+        
+        /// Minimum duration in seconds for refuel
+        /// Refuel time cannot be shorter than that
+        // RearmRefuelConfig.REFUEL_MIN_DURATION = 150;
+        
+        /// Interval in seconds of "... complete in Min::Sec messages
+        // RearmRefuelConfig.MESSAGE_INTERVAL = 15;
+        
+        /// The visible airfields are sometimes bigger than the technical value configured.
+        /// Even spawn points may sometimes be outside of that technical perimeter
+        /// Technical airfield perimeter is multiplied with this.
+        // RearmRefuelConfig.AIRFIELD_PERIMETER_ADJUST = 1.5;
+
+        /// Allowable deviation from airfield's elevation in meter.
+        /// To check if we're actually on the ground, we need to check plane's elevation
+        /// against the airfield's. Unfortunately airfield elevation is not homogenous, en
+        /// extreme is Maidstone with places up to 7m different from technical elevation.
+        /// Note: This is strictly not necessary, because speed=0 within airfield
+        ///       perimeter would mean the same, but for user friendliness we say 
+        ///       'land on airfield' first and 'set chokes' later
+        /// value in meters
+        // public static double AIRFIELD_ELEVATION_ADJUST = 7;
+        
+        /// maximum engines to check (tanks, fuelcocks, magnetos, etc.)
+        // RearmRefuelConfig.MAX_ENGINE_COUNT = 2;
+        
+        /// output debugging messages
+        // public static bool DEBUG_MESSAGES = false;
 
 
         if (GamePlay is GameDef)
@@ -5126,6 +5399,8 @@ public class Mission : AMission, IMainMission
             File.Delete(STATSCS_FULL_PATH + "CampaignSummary.txt");
         }
         catch (Exception ex) { Console.WriteLine("CampaignSummary Delete: " + ex.ToString()); }
+		
+		
     }
 
     public override void OnBattleStoped()
@@ -5134,7 +5409,12 @@ public class Mission : AMission, IMainMission
 
         Console.WriteLine("Battle Stopping -- saving map state & current supply status");
 
-        if (Time.tickCounter()>15000) SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
+        /// REARM/REFUEL: CLEANUP ANY PENDING REQUESTS
+     //   ManageRnr.cancelAll(GamePlay);
+
+        if (!final_SaveMapState_completed && Time.tickCounter()>15000) SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
+        if (!final_MO_WriteMissionObjects_completed) MO_WriteMissionObjects(wait:true);        
+
         if (GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
@@ -5142,6 +5422,7 @@ public class Mission : AMission, IMainMission
             //If we don't remove the new EventChat when the battle is stopped
             //we tend to get several copies of it operating, if we're not careful
         }
+        Thread.Sleep(3); //just wait for all files to save etc
     }
 
     /****************************************
@@ -5233,16 +5514,19 @@ public class Mission : AMission, IMainMission
     ISupplyMission TWCSupplyMission;
     IKnickebeinMission TWCKnickebeinMission;
     ICoverMission TWCCoverMission;
+    IStbSaveIPlayerStat TWCSaveIPlayerStat;
 
     public override void OnMissionLoaded(int missionNumber)
     {
         base.OnMissionLoaded(missionNumber);
         //if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
         TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+        if (TWCStatsMission != null) TWCSaveIPlayerStat = TWCStatsMission.stb_ISaveIPlayerStat;        
         if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
         TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
         TWCCoverMission = TWCComms.Communicator.Instance.Cover;
+        //TWCStbSaveIPlayerStat = TWCComms.Communicator.Instance.Cover
         //TWCComms.Communicator.Instance.Main = this;
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
         //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
@@ -5299,17 +5583,12 @@ public class Mission : AMission, IMainMission
     private void setMainMenu(Player player)
     {
         //GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Server Options - Users" }, new bool[] { true });
-        if (admin_privilege_level(player) >= 1)
-        {
-            //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
-            //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATELY or TAKE YOU TO ANOTHER MENU
-            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Enemy Activity Map Overview", "More...", "Objectives Complete", "Objectives Remaining", "Other Suggested Targets", "Current Campaign Status", "Admin options" }, new bool[] { false, false, false, true, false, false, false, false, true });
-        }
-        else
-        {
-            GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Enemy Activity Map Overview", "More...", "Objectives Complete", "Objectives Remaining", "More Suggested Targets", "Current Campaign Status" }, new bool[] { false, false, false, true, false, false, false, false });
 
-        }
+
+        //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATELY or TAKE YOU TO ANOTHER MENU
+
+        GamePlay.gpSetOrderMissionMenu(player, true, 0, new string[] { "Enemy radar", "Friendly radar", "Enemy Activity Map Overview", "More...", "Objectives Complete", "Objectives Remaining", "Convoys and Other Suggested Targets", "Recon Photo Results with Coordinates", "Take Recon Photo" }, new bool[] { false, false, false, true, false, false, false, false, false });
+
     }
 
     private void setSubMenu1(Player player)
@@ -5320,8 +5599,8 @@ public class Mission : AMission, IMainMission
             string rollovertext = "(admin) End mission now/roll over to next mission";
             if (EndMissionSelected) rollovertext = "(admin) CANCEL End mission now command";
             if (admin_privilege_level(player) == 2)
-                GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
-            else GamePlay.gpSetOrderMissionMenu(player, true, 1, new string[] { "", "", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
+                GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "(admin) Show detailed damage reports for all players (toggle)", "(admin) Toggle debug mode", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
+            else GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "", "", "", rollovertext, "Return to User Menu" }, new bool[] { false, false, false, false, true });
         }
         else
         {
@@ -5331,7 +5610,16 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu2(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Detail Campaign Team/Session" }, new bool[] { false, false, false, true, false, false });
+        if (admin_privilege_level(player) >= 1)
+        {
+            //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
+            //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATELY or TAKE YOU TO ANOTHER MENU
+            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session", "", "Admin Options" }, new bool[] { false, false, false, true, false, false, false, false, true });
+        }
+        else
+        {
+            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session" }, new bool[] { false, false, false, true, false, false, false });
+        }
     }
     private void setSubMenu3(Player player)
     {
@@ -5354,7 +5642,7 @@ public class Mission : AMission, IMainMission
 
         /*****************************************************
          * 
-         * ADMIN SUBMENU (2nd submenu, ID ==1, Tab-4-9)
+         * ADMIN SUBMENU (2nd submenu, ID ==1, Tab-4-4-9)
          * 
          *****************************************************/
         if (ID == 1)
@@ -5807,6 +6095,23 @@ public class Mission : AMission, IMainMission
             else if (menuItemIndex == 6)
             {
                 /*
+                 * Display Campaign Summary, same as <cam
+                 */
+                setMainMenu(player);
+                Tuple<double, string> res = CalcMapMove("", false, false, player);
+                double score = res.Item1 * 100;
+                string mes = "Campaign score for this mission so far: ";
+                if (score > 0) mes += "Red +" + score.ToString("n0");
+                else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
+                else mes += "A tie!";
+                twcLogServer(new Player[] { player }, mes, null);
+
+                double newMapState = CampaignMapState + res.Item1;
+                summarizeCurrentMapstate(newMapState, true, player);
+            }
+            else if (menuItemIndex == 7)
+            {
+                /*
                  * Detailed Campaign summary as in <camlong
                  */
 
@@ -5819,6 +6124,11 @@ public class Mission : AMission, IMainMission
                 double newMapState = CampaignMapState + res.Item1;
                 summarizeCurrentMapstate(newMapState, true, player);
 
+            }
+            //ADMIN sub-menu
+            else if (menuItemIndex == 9)
+            {
+                setSubMenu1(player);
             }
 
             else
@@ -5918,30 +6228,27 @@ public class Mission : AMission, IMainMission
             else if (menuItemIndex == 8)
             {
                 /*
-                 * Display Campaign Summary, same as <cam
+                 * List Scouted Objectives
                  */
                 setMainMenu(player);
-                Tuple<double, string> res = CalcMapMove("", false, false, player);
-                double score = res.Item1 * 100;
-                string mes = "Campaign score for this mission so far: ";
-                if (score > 0) mes += "Red +" + score.ToString("n0");
-                else if (score < 0) mes += "Blue +" + (-score).ToString("n0");
-                else mes += "A tie!";
-                twcLogServer(new Player[] { player }, mes, null);
-
-                double newMapState = CampaignMapState + res.Item1;
-                summarizeCurrentMapstate(newMapState, true, player);              
+                MO_ListScoutedObjectives(player, player.Army());
+               
+            }            
+            else if (menuItemIndex == 9)
+            {
+                /*
+                 * Take Recon Photo
+                 */
+                setMainMenu(player);
+                MO_TakeScoutPhoto(player, player.Army());                
             }
+
             else if (menuItemIndex == 4)  //MORE (next) menu
             {
                 setSubMenu2(player);
             }
 
-            //ADMIN sub-menu
-            else if (menuItemIndex == 9)
-            {
-                setSubMenu1(player);
-            }
+
             else
             { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
                 setMainMenu(player);
@@ -5983,7 +6290,7 @@ public class Mission : AMission, IMainMission
         string message;
         //Not starting it here due to Coop Start Mode
         //if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
-        //MISSION_STARTED = true;
+        //MISSION_STARTED = true;        
 
         if (MissionNumber > -1)
         {
@@ -6011,6 +6318,8 @@ public class Mission : AMission, IMainMission
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
     public override void OnPlayerDisconnected(Player player, string diagnostic)
     {
+        MO_SpoilPlayerScoutPhotos(player);
+
         string message;
         if (MissionNumber > -1)
         {
@@ -6132,9 +6441,12 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<stock"))
         {
             string m = msg.Substring(6).Trim();
-            if (admin_privilege_level(player) < 2) {
+            if (admin_privilege_level(player) < 2)
+            {
                 if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(player.Army(), player, true, false, m);
-            } else {
+            }
+            else
+            {
                 if (TWCSupplyMission != null) TWCSupplyMission.DisplayNumberOfAvailablePlanes(0, player, true, false, m);
             }
         }
@@ -6207,7 +6519,7 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<camlong")) //show current campaign state (ie map we're on) and also the campaign results for this mission so far, longer & more detailed analysis
         {
             //only allow this for admins - mostly so that we can check these items via chat commands @ the console
-            if (admin_privilege_level(player) >= 0 ) // >= 2 previously 
+            if (admin_privilege_level(player) >= 0) // >= 2 previously 
             {
                 twcLogServer(new Player[] { player }, "***Please use Tab-4 menu for campaign status when possible", new object[] { });
                 Tuple<double, string> res = CalcMapMove("", false, true, player);
@@ -6249,6 +6561,15 @@ public class Mission : AMission, IMainMission
                 twcLogServer(new Player[] { player }, "Please use Tab-4 menu for campaign status", new object[] { });
             }
 
+        }
+        else if (msg.StartsWith("<recon")) //take recon photo
+        {
+            twcLogServer(new Player[] { player }, "***Please use Tab-4-9 to take recon photos when possible", new object[] { });
+            MO_TakeScoutPhoto(player, player.Army());
+        }
+        else if (msg.StartsWith("<record")) //record recon photo
+        {
+            MO_RecordPlayerScoutPhotos(player, check: true);
         }
         else if (msg.StartsWith("<coop start") && admin_privilege_level(player) >= 1)
         {
@@ -6330,14 +6651,46 @@ public class Mission : AMission, IMainMission
         {
             listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); //enemy a/c  
         }
+        else if (msg.StartsWith("<exit") && admin_privilege_level(player) >= 2)
+        {
+            EndMission(0); //end immediately/for testing
+        }
+        else if (msg.StartsWith("<rctest") && admin_privilege_level(player) >= 2)
+        {
+            Point3d? test = new Point3d(237074, 243644, 10000);
+            MO_TakeScoutPhoto(player, player.Army(), 0, test);
+        }
+        else if (msg.StartsWith("<rcrecord") && admin_privilege_level(player) >= 2)
+        {
+            MO_RecordPlayerScoutPhotos(player);
+        }
+        else if (msg.StartsWith("<rcdest") && admin_privilege_level(player) >= 2)
+        {
+            MO_DestroyObjective("BTarget14R", true);
+            //destroy a random airport
+            Timeout(5, () =>
+           {
+               var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+               apkeys = AirfieldTargets.Keys.ToList();
+
+               AiAirport ap = apkeys.ElementAt(random.Next(apkeys.Count));
+               string Mission = AirfieldTargets[ap].Item2;
+
+               twcLogServer(new Player[] { player }, "Destroying airport " + Mission, new object[] { });
+
+               MO_DestroyObjective(Mission + "_airfield", true);
+           });
+        }
         else if (msg.StartsWith("<pad"))
         {
 
-            if (admin_privilege_level(player) >= 2) {
+            if (admin_privilege_level(player) >= 2)
+            {
                 showGiantSectorOverview(player, 2);  //Blue enemies
                 showGiantSectorOverview(player, 1); //Red enemies
                 showGiantSectorOverview(player, 0); //all
-            } else showGiantSectorOverview(player, player.Army()); //enemies of current player
+            }
+            else showGiantSectorOverview(player, player.Army()); //enemies of current player
             /*
             Timeout(0.1, () => twcLogServer(new Player[] { player }, "***Schematic Map Overview of Enemy Activity***", null));
             Timeout(0.1, () => twcLogServer(new Player[] { player }, "Airgroups:Aircraft in each Large Map Keypad area", null));
@@ -6374,14 +6727,14 @@ public class Mission : AMission, IMainMission
             {
                 twcLogServer(new Player[] { player }, "Please use Tab-4 menu to check airport status", new object[] { });
             }
-        }                
+        }
         else if (msg.StartsWith("<server") && admin_privilege_level(player) >= 2)
         {
             string tr = msg_orig.Substring(7).Trim();
             SERVER_ID_SHORT = tr;
             twcLogServer(new Player[] { player }, "Server renamed to " + tr + " for the remainder of this session.", new object[] { });
 
-        }        
+        }
         else if (msg.StartsWith("<trigger") && admin_privilege_level(player) >= 2)
         {
 
@@ -6550,7 +6903,7 @@ public class Mission : AMission, IMainMission
         {
             Timeout(0.1, () =>
             {
-                string m = "Commands: <tl Time Left; <rr How to reload; <stock Aircraft reserve levels; <lost A/C";
+                string m = "Commands: <tl Time Left; <rr Rearm/reload; <recon take recon photo; <record send recon photos to HQ";
                 if (admin_privilege_level(player) >= 2) m += "; <admin";
                 twcLogServer(new Player[] { player }, m, new object[] { });
                 //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
@@ -6904,6 +7257,19 @@ public class Mission : AMission, IMainMission
     }
     #endregion
 
+    public HashSet<Player> playersInPlane(AiAircraft aircraft)
+
+    { // returns list of players in the aircraft (unique list - no duplicates)
+        HashSet<Player> players = new HashSet<Player>();
+        if (aircraft == null) return players;
+        
+        //check if a player is in any of the "places"
+        for (int i = 0; i < aircraft.Places(); i++)
+        {
+            if (aircraft.Player(i) != null) players.Add(aircraft.Player(i));
+        }
+        return players;
+    }
 
 
 
@@ -7187,7 +7553,7 @@ public class Mission : AMission, IMainMission
      * 
      * ******************************************************************************************************************/
 
-    /*
+    /*   points to turn map**********************************************
     public double InitialBlueObjectiveCount = 0;
     public double InitialRedObjectiveCount = 0;
     public string Objective_Total_Blue = "";
@@ -7215,21 +7581,21 @@ public class Mission : AMission, IMainMission
 
     //TODO: This percentage is not operative yet
     public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 75 },
-        {ArmiesE.Blue, 64 }
+        {ArmiesE.Red, 60 },
+        {ArmiesE.Blue, 60 }
     };
 
     //TODO: Use similar scheme for total points, objectives completed list, objectives completed
     public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 12 },
-        {ArmiesE.Blue, 9 }
+        {ArmiesE.Red, 25 },
+        {ArmiesE.Blue, 22 }
     };
-
+//////////////////////******************************************/////////////////////////////
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
     //This allows mission to be turned in case one objective is malfunctioning or super-difficult - by hitting some other alternate targets
     public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 16 },
-        {ArmiesE.Blue, 13 }
+        {ArmiesE.Red, 10 },
+        {ArmiesE.Blue, 10 }
     };
 
     public Dictionary<ArmiesE, string> MO_IntelligenceLeakNearMissionEnd = new Dictionary<ArmiesE, string>() {
@@ -7257,44 +7623,62 @@ public class Mission : AMission, IMainMission
     public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase };
     //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
 
+    [DataContract()]
     public class MissionObjective
     {
         //public string TriggerName { get; set; }
-        public string ID { get; set; } //unique name, often the Triggername or static name
-        public string Name { get; set; } //Name the will be displayed to the public in messages etc
-        public int AttackingArmy { get; set; } // Army this is an objective for (ie, whose task is to destroy it); can be 1=red, 2=blue,0=none
-        public int OwnerArmy { get; set; } // Army that owns this object (ie, is harmed if it is destroyed)
-        public string FlakID { get; set; } //Flak area associated with this objective.  Flak area codes & associated .mis files are identified in FlakMissions dictionary defined below
-        public bool IsEnabled { get; set; } //TODO: This is only partially implemented.  But could be used in case of bad data or whatever to just disable the objective.
-        public Mission.MO_ObjectiveType MOObjectiveType { get; set; }
-        public Mission.MO_TriggerType MOTriggerType { get; set; }
-        public bool IsPrimaryTarget { get; set; } //One of the primary/required targets for this mission?
-        public double PrimaryTargetWeight { get; set; } //If we select primary targets randomly etc, is this one that could be selected? Percentage weight 0-100, 0 means never chosen.
-        public double Points { get; set; }
-        public bool Destroyed { get; set; }
-        public Point3d Pos { get; set; }
-        public string Sector { get; set; }
-        public string HUDMessage { get; set; }
-        public string LOGMessage { get; set; }
-        public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
-        public double RadarEffectiveRadius { get; set; }
-        public string TriggerName { get; set; }
-        public string TriggerType { get; set; }
-        public double TriggerPercent { get; set; }
-        public double TriggerDestroyRadius { get; set; }
-        public List<string> StaticNames { get; set; } //for static targets, the list of static names that will determine if the target is destroyed
-        public double StaticPercentageRequired { get; set; } //what percentage of those static targets must be destroyed to eliminate the objective
-        public List<string> StaticRemoveNames { get; set; } //what statics to remove when the object is destroyed (allows eg dams to be breached by removal of certain portions)
-        public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
-        public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
-        public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc, not for display to end users
+
+        [DataMember] public string ID { get; set; } //unique name, often the Triggername or static name
+        [DataMember] public string Name { get; set; } //Name the will be displayed to the [DataMember] public in messages etc
+        [DataMember] public int AttackingArmy { get; set; } // Army this is an objective for (ie, whose task is to destroy it); can be 1=red, 2=blue,0=none
+        [DataMember] public int OwnerArmy { get; set; } // Army that owns this object (ie, is harmed if it is destroyed)
+        [DataMember] public string FlakID { get; set; } //Flak area associated with this objective.  Flak area codes & associated .mis files are identified in FlakMissions dictionary defined below
+        [DataMember] public bool IsEnabled { get; set; } //TODO: This is only partially implemented.  But could be used in case of bad data or whatever to just disable the objective.
+        [DataMember] public Mission.MO_ObjectiveType MOObjectiveType { get; set; }
+        [DataMember] public Mission.MO_TriggerType MOTriggerType { get; set; }
+        [DataMember] public bool IsPrimaryTarget { get; set; } //One of the primary/required targets for this mission?
+        [DataMember] public double PrimaryTargetWeight { get; set; } //If we select primary targets randomly etc, is this one that could be selected? Percentage weight 0-100, 0 means never chosen.  Update: Now 0-200.  2020-01.
+        [DataMember] public double Points { get; set; }
+        [DataMember] public double TimetoRepairIfDestroyed_hr { get; set; } //hours needed to repair this objective if it is destroyed
+        [DataMember] public bool Destroyed { get; set; }
+        [DataMember] public double DestroyedPercent { get; set; } //some items can potentially be partially destroyed, it 50% = 0.5, 100%=1.0; also higher numbers possible such as 200% = 2.0;
+        [DataMember] public DateTime? TimeToUndestroy_UTC { get; set; } //if destroyed, what time UTC is the d/t it should be undestroyed/repaired.  This is in real time, ie if item destroyed 10pm, Tues Jan 24, 2022 UTC for 24 hours then it will be repaired at 10pm Wed Jan 25, 2022.
+
+        [DataMember] public bool Scouted { get; set; } //whether or not it has been scouted or reconnoitered by the enemy; if so they can get access to exact coordinates etc
+        //public Dictionary<Player,int> PlayersWhoScouted { get; set; } //list of any players who have scouted this objective //Player is not serializable, alas.
+        [DataMember] public Dictionary<string, int> PlayersWhoScoutedNames { get; set; } //list of any players who have scouted this objective
+
+        [DataMember] public Point3d Pos { get; set; }
+        [DataMember] public string Sector { get; set; }
+        [DataMember] public string bigSector { get; set; } //a block of several sectors, somewhat randomly selected, and the target is somewhere within it
+        [DataMember] public string HUDMessage { get; set; }
+        [DataMember] public string LOGMessage { get; set; }
+        [DataMember] public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
+        [DataMember] public double RadarEffectiveRadius { get; set; }
+        [DataMember] public string TriggerName { get; set; }
+        [DataMember] public string TriggerType { get; set; }
+        [DataMember] public double TriggerPercent { get; set; }
+        [DataMember] public double TriggerDestroyRadius { get; set; }
+        [DataMember] public List<string> StaticNames { get; set; } //for static targets, the list of static names that will determine if the target is destroyed
+        [DataMember] public double StaticPercentageRequired { get; set; } //what percentage of those static targets must be destroyed to eliminate the objective
+        [DataMember] public List<string> StaticRemoveNames { get; set; } //what statics to remove when the object is destroyed (allows eg dams to be breached by removal of certain portions)
+        [DataMember] public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
+        [DataMember] public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
+        [DataMember] public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc, not for display to end users
         public Mission msn;
+
+        //for serialization we must  have a paramterless constructor.  So if we serialize things in we'll have to add the Mission msn value later;
+        //after loading the data back in & unserializing it.
+        public MissionObjective()
+        {            
+        }
+
         public MissionObjective(Mission m)
         {
             msn = m;
         }
         //RADAR TRIGGER initiator
-        public MissionObjective(Mission m, string tn, string n, string flak, int ownerarmy, double pts, string t, double p, double x, double y, double d, double e, bool pt, double ptp, string comment)
+        public MissionObjective(Mission m, string tn, string n, string flak, int ownerarmy, double pts, double repairdays, string t, double p, double x, double y, double d, double e, bool pt, double ptp, string comment)
         {
 
             msn = m;
@@ -7313,12 +7697,12 @@ public class Mission : AMission, IMainMission
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
-                LOGMessage = "Heavy damage to " + Name + " - good job " + ArmiesL[AttackingArmy] + "!!!";
+                LOGMessage = "Heavy damage to " + Name + " - out of action about " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + " days. Good job " + ArmiesL[AttackingArmy] + "!!!";
             }
             else
             {
                 HUDMessage = Name + " was destroyed";
-                LOGMessage = Name + " was destroyed";
+                LOGMessage = Name + " was destroyed, " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + " days to repair. " + pts + " awarded " + ArmiesL[AttackingArmy] ;
             }
 
             Points = pts;
@@ -7329,9 +7713,17 @@ public class Mission : AMission, IMainMission
             Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
             Sector = Sector.Replace(",", ""); // remove the comma */
             Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+            bigSector = Calcs.makeBigSector(msn, Pos);
             TriggerDestroyRadius = d;
             RadarEffectiveRadius = e;
+            TimetoRepairIfDestroyed_hr = repairdays * 24;
             Destroyed = false;
+            DestroyedPercent = 0;
+            TimeToUndestroy_UTC = null; 
+
+            Scouted = false;
+
+            PlayersWhoScoutedNames = new Dictionary <string, int>();
 
 
             IsPrimaryTarget = pt;
@@ -7370,9 +7762,14 @@ public class Mission : AMission, IMainMission
             /* Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
             Sector = Sector.Replace(",", ""); // remove the comma     */
             Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+            bigSector = Calcs.makeBigSector(msn, Pos);
 
             Destroyed = false;
+            DestroyedPercent = 0;
+            TimeToUndestroy_UTC = null;
 
+            Scouted = false;
+            PlayersWhoScoutedNames = new Dictionary<string, int>();
 
             IsPrimaryTarget = false;
             PrimaryTargetWeight = ptp;
@@ -7417,16 +7814,30 @@ public class Mission : AMission, IMainMission
             /* Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
             Sector = Sector.Replace(",", ""); // remove the comma     */
             Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
-
-
+            bigSector = Calcs.makeBigSector(msn, Pos);
 
             TriggerDestroyRadius = d;
             Destroyed = false;
+            DestroyedPercent = 0;
+            TimeToUndestroy_UTC = null;
 
+            Scouted = false;
+            PlayersWhoScoutedNames = new Dictionary<string, int>();
 
             IsPrimaryTarget = pt;
             PrimaryTargetWeight = ptp;
             Comment = comment;
+        }
+
+        public void makeScouted(Player player)
+        {
+            Scouted = true;
+            if (player == null || player.Name() == null) return;
+            if (PlayersWhoScoutedNames.ContainsKey(player.Name())) return; //they're already in the list
+            //PlayersWhoScoutedNames
+
+            PlayersWhoScoutedNames[player.Name()] = PlayersWhoScoutedNames.Count; //Add them to the list of players who have scouted; So 0 for the first player to scout, 1 for the 2nd, etc
+
         }
 
         public string ToString(bool misformat = true)
@@ -7448,7 +7859,7 @@ public class Mission : AMission, IMainMission
                 + " " + sn + " " + srn;*/
 
                 return ID + "\t" + Name + "\t" + AttackingArmy.ToString() + "\t" + OwnerArmy.ToString() + "\t" + IsEnabled.ToString() + "\t" + MOObjectiveType.ToString() + "\t" + MOTriggerType + "\t" + IsPrimaryTarget.ToString() + "\t"
-                    + PrimaryTargetWeight.ToString() + "\t" + Points.ToString() + "\t" + Destroyed.ToString() + "\t" + Pos.x.ToString() + "\t" + Pos.y.ToString() + "\t" + Sector + "\t" + RadarEffectiveRadius.ToString() + "\t" + TriggerName + "\t"
+                    + PrimaryTargetWeight.ToString() + "\t" + Points.ToString() + "\t" + "Destroyed: " + Destroyed.ToString() + "\t" + "Scouted: " + Scouted.ToString() + "\t" + Pos.x.ToString() + "\t" + Pos.y.ToString() + "\t" + Sector + "\t" + RadarEffectiveRadius.ToString() + "\t" + TriggerName + "\t"
                     + TriggerType + "\t" + TriggerPercent.ToString() + "\t" + TriggerDestroyRadius.ToString() + "\t" + StaticPercentageRequired.ToString() + "\t" + StaticRemoveDelay_sec.ToString() + "\t" + StaticRemoveSpread_sec.ToString() + "\t"
                     + Comment + "\t" + HUDMessage + "\t" + LOGMessage
                     + "\t" + sn + "\t" + srn;
@@ -7469,29 +7880,80 @@ public class Mission : AMission, IMainMission
         {
             msn = mission;
             gp = gameplay;
-            RadarPositionTriggersSetup();
-            MissionObjectiveTriggersSetup();
-            msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay); //must do this after the Radar & Triggers setup, as it uses info from those objectives
-            SelectSuggestedObjectives();
+            
+
+            bool[] loadPreviousMission_success = new bool[] { false, false, false, false, false, false};
+            bool loadingFromDiskOK = false;
+            try
+            {
+                loadPreviousMission_success = msn.MO_ReadMissionObjects();
+            }
+            catch (Exception ex) {
+                Console.WriteLine("File Read problem on startup!!  Using defaults. Error message: " + ex.ToString());
+                loadPreviousMission_success = new bool[] { false, false, false, false, false, false }; //loadPreviousMission_success = false;
+            }
+             
+            if (!loadPreviousMission_success[0] || !loadPreviousMission_success[3] || !loadPreviousMission_success[4] || !loadPreviousMission_success[5])
+            {   //If we couldn't load the old file we have little choice but to just  start afresh [0]
+                //we couldn't read the current score [3], the list of objectives completed [4] or the full list of objectives  [5] we could just
+                //reconstruct those.  But for now if we lose them we'll just re-start everythign from scratch.
+            
+                msn.MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
+                RadarPositionTriggersSetup();
+                MissionObjectiveTriggersSetup();
+                msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
+            } else
+            {
+                loadingFromDiskOK = true;
+            }
+
+            if (!loadPreviousMission_success[1])
+            {
+                Console.WriteLine("Failed to load Suggested Objectives - generating them fresh.");
+                SelectSuggestedObjectives(ArmiesE.Red);
+                SelectSuggestedObjectives(ArmiesE.Blue);
+            }
 
             //Get new objectives for winner if they have turned the map OR read in the old objectives if not
             if (msn.MapPrevWinner == "Red")
             {
+                msn.MO_MissionObjectiveWinnersReward(ArmiesE.Red); //clear all destroyed radar, airfields, other objectives
                 msn.MO_SelectPrimaryObjectives(1);
                 msn.MO_ReadPrimaryObjectives(2);
+                SelectSuggestedObjectives(ArmiesE.Red);
             }
             else if (msn.MapPrevWinner == "Blue")
             {
+                msn.MO_MissionObjectiveWinnersReward(ArmiesE.Blue); //clear all destroyed radar, airfields, other objectives
                 msn.MO_SelectPrimaryObjectives(2);
                 msn.MO_ReadPrimaryObjectives(1);
+                SelectSuggestedObjectives(ArmiesE.Blue);
             }
             else
             {
                 msn.MO_ReadPrimaryObjectives(2);
                 msn.MO_ReadPrimaryObjectives(1);
+                //SuggestedObjectives for both armies are read in via the .ini file
+            }
+
+            //If we can't load the objectives from disk we just generate them from the .cs file, and in that case, don't go through the rigamorole of comparing/updating things fro mthe disk because we don't even have it.
+            //But if we DO have the restore from the disk, we need to go through & update what objectives are still destroyed, what have been restored by a victory or time passing, etc.
+            if (loadingFromDiskOK)
+            {
+                //this will go through all objectives (except airports) & disable any that need to be disabled, add any new ones in the .cs file, etc
+                //needs to be done AFTER winner stuff is done as that will turn off mo.destroyed etc. for the winner
+                msn.MO_MissionObjectiveOnStartCheck(msn, gp);
+
+                msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: true); //must do this after the Radar & Triggers setup, as it uses info from those objectives
             }
             //Now write the new objective list to file
             msn.MO_WritePrimaryObjectives();
+
+            //Must select suggested/secondary objectives AFTER loading/choosing the primary objectives - otherwise we might end up with some items on both lists                        
+
+            //msn.MO_WriteMissionObjects();
+            //Thread.Sleep(1000); //For testing purposes, not really the best way to do it.
+            
 
             //load the flak for the areas that have primary objectives
             msn.MO_LoadAllPrimaryObjectiveFlak(FlakMissions);
@@ -7536,60 +7998,71 @@ public class Mission : AMission, IMainMission
 
         }
 
-        public void addRadar(string n, string flak, int ownerarmy, double pts, string tn, string t, double p, double x, double y, double d, double e, bool pt, double ptp = 100, string comment = "")
+        public void addRadar(string n, string flak, int ownerarmy, double pts, double repair, string tn, string t, double p, double x, double y, double d, double e, bool pt, double ptp = 100, string comment = "", bool add = false)
         {
             if (!MO_SanityChecks(tn, n)) return;
-            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, tn, n, flak, ownerarmy, pts, t, p, x, y, d, e, pt, ptp, comment));
+            //Add the item -always when add==false and if it doesn't already exist, when add==true
+            if (!add || !msn.MissionObjectivesList.ContainsKey(tn))
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, tn, n, flak, ownerarmy, pts, repair, t, p, x, y, d, e, pt, ptp, comment));
 
         }
 
-        public void addTrigger(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, string t = "", double p = 50, double x = 0, double y = 0, double d = 100, bool pt = false, double ptp = 100, string comment = "")
+        public void addTrigger(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, string t = "", double p = 50, double x = 0, double y = 0, double d = 100, bool pt = false, double ptp = 100, string comment = "", bool add = false)
         {
             if (!MO_SanityChecks(tn, n)) return;
             //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
-            msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, t, p, x, y, d, pt, ptp, comment));
+            //Add the item -always when add==false and if it doesn't already exist, when add==true
+            if (!add || !msn.MissionObjectivesList.ContainsKey(tn))
+            {
+                if (ownerarmy == 1 && x > 210000 && y > 180000 && x < 321000 && y < 270000) ptp *= 1.5; //vastly increase proportion of mission objectives in 'primary' campaign area, and reduce others, for Blue 2020-01
+                else ptp *= 0.75;
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, t, p, x, y, d, pt, ptp, comment));
+            }
         }
 
         //TODO: Flak doesn't DO ANYTHING yet, it is just in the addRadar & addTrigger methods so we can use it later if desired.
-        public void RadarPositionTriggersSetup()
+        //add=true means, we already loaded the triggers back from disk, but run through them & add any new ones from this list not already there.
+        public void RadarPositionTriggersSetup(bool add=false)
         {
 
             //ID is the ID used in the [Trigger] portion of the .mis file. The central portion of the line can be copy/pasted from the  .mis file (then lightly edited)
 
-            //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID,Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-100), comment) {
-            addRadar("Westgate Radar",          "WesR", 1, 2, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 100, "");
-            addRadar("Sandwich Radar",          "SanR", 1, 2, "BTarget15R", "TGroundDestroyed", 75, 248739, 253036, 200, 25000, false, 100, "");
-            addRadar("Deal Radar",              "DeaR", 1, 2, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 100, "");
-            addRadar("Dover Radar",             "DovR", 1, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 100, "");
-            addRadar("Brookland Radar",         "BroR", 1, 2, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 100, "");
-            addRadar("Dungeness Radar",         "DunR", 1, 2, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 100, "");
-            addRadar("Eastbourne Radar",        "EasR", 1, 2, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 100, "");
-            addRadar("Littlehampton Radar",     "LitR", 1, 2, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 25000, false, 100, "");
-            addRadar("Ventnor Radar",           "VenR", 1, 2, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 25000, false, 100, "");
-            addRadar("Radar Communications HQ", "HQR", 1, 6,  "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 200000, false, 100, "");
-            addRadar("Radar Poole",             "PooR", 1, 2, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 25000,  false, 100, "");
+
+            //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID, Days to repair, Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-200), comment) {
+			//weights change 0-200, many weights below adjusted, 2020-01
+            addRadar("Westgate Radar",          "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 45000, false, 30, "", add);
+            addRadar("Sandwich Radar",          "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 45000, false, 30, "", add);
+            addRadar("Deal Radar",              "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 45000, false, 30, "", add);
+            addRadar("Dover Radar",             "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 45000, false, 30, "", add);
+            addRadar("Brookland Radar",         "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 45000, false, 30, "", add);
+            addRadar("Dungeness Radar",         "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 45000, false, 30, "", add);
+            addRadar("Eastbourne Radar",        "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 45000, false, 10, "", add);
+            addRadar("Littlehampton Radar",     "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 45000, false, 10, "", add);
+            addRadar("Ventnor Radar",           "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 45000, false, 10, "", add);
+            addRadar("Radar Communications HQ", "HQR", 1, 6, 3, "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 350000, false, 5, "", add);
+            addRadar("Radar Poole",             "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 45000,  false, 5, "", add);
 
 
-            addRadar("Oye Plage Freya Radar",         "OypR", 2, 1, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 15000, false, 35, "");
-            addRadar("Coquelles Freya Radar",         "CoqR", 2, 1, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 15000, false, 35, "");
-            addRadar("Dunkirk Radar #2",              "DuRN", 2, 1, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 15000, false, 35, "");
-            addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 15000, false, 35, "");
-            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 1, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Berck Freya Radar",             "BrkR", 2, 1, "RTarget40R", "TGroundDestroyed", 86, 274246, 151127, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppee",                 "DieR", 2, 1, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 15000, false, 15, ""); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
-            addRadar("Radar Le Treport",              "TreR", 2, 1, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 15000, false, 15, ""); // Mission in mission file
-            addRadar("Radar Somme River",             "SomR", 2, 1, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar AMBETEUSE",               "AmbR", 2, 1, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar BOULOGNE",                "BlgR", 2, 1, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674,  50, 15000, false, 35, ""); //Mission in mission file           
-            addRadar("Radar Le Touquet",              "L2kR", 2, 1, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Dieppe",                  "FreR", 2, 1, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 1, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 15000, false, 15, "");//Mission in mission file
-            addRadar("Le Havre Freya Radar",          "LhvR", 2, 1, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 15000, false, 35, "");//Mission in mission file
-            addRadar("Ouistreham Freya Radar",        "OuiR", 2, 1, "RTarget50R", "TGroundDestroyed", 100, 135205,29918,  50, 15000, false, 35, "");// Mission in mission file
-            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 1, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 1, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Tatihou",                 "TatR", 2, 1, "RTarget53R", "TGroundDestroyed", 77, 60453,  63873,  50, 15000, false, 15, ""); //Mission in mission file
-            addRadar("Radar Querqueville",            "QueR", 2, 1, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666,  50, 15000, false, 35, ""); // Mission in mission file
+            addRadar("Oye Plage Freya Radar",         "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 40000, false, 35, "", add);
+            addRadar("Coquelles Freya Radar",         "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 40000, false, 35, "", add);
+            addRadar("Dunkirk Radar #2",              "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 40000, false, 35, "", add);
+            //    addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, 2, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 30000, false, 35, "", add);
+            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 40000, false, 35, "", add); //Mission in mission file
+            addRadar("Berck Freya Radar",             "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppee",                 "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 40000, false, 5, "", add); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
+            addRadar("Radar Le Treport",              "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 40000, false, 15, "", add); // Mission in mission file
+            addRadar("Radar Somme River",             "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar AMBETEUSE",               "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar BOULOGNE",                "BlgR", 2, 4, 2, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674,  50, 40000, false, 35, "", add); //Mission in mission file           
+            addRadar("Radar Le Touquet",              "L2kR", 2, 4, 2, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppe",                  "FreR", 2, 4, 2, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 40000, false, 15, "", add); //Mission in mission file
+            addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 4, 2, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 40000, false, 5, "", add);//Mission in mission file
+            addRadar("Le Havre Freya Radar",          "LhvR", 2, 4, 2, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 40000, false, 15, "", add);//Mission in mission file
+            addRadar("Ouistreham Freya Radar",        "OuiR", 2, 4, 2, "RTarget50R", "TGroundDestroyed", 100, 135205,29918,  50, 40000, false, 15, "", add);// Mission in mission file
+            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 4, 2, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Tatihou",                 "TatR", 2, 4, 2, "RTarget53R", "TGroundDestroyed", 77, 60453,  63873,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Querqueville",            "QueR", 2, 4, 2, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666,  50, 40000, false, 15, "", add); // Mission in mission file
 
             /*
             BTarget15R TGroundDestroyed 75 248739 253036 200
@@ -7627,179 +8100,199 @@ public class Mission : AMission, IMainMission
 
         }
 
-        public void MissionObjectiveTriggersSetup()
+        public void MissionObjectiveTriggersSetup(bool add = false)
         {
             //Format: addTrigger(MO_ObjectiveType.Building (Aircraft, airport, etc), "Name,                      OwnerArmy,Points,ID,TriggerType,PercRequired,XLoc,YLoc,Radius,IsPrimaryTarget,IsPrimaryTargetWeight,Comment "");
 
             //BLUE TARGETS
-            addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers", "Litt", 1, 2, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, "");
-            addTrigger(MO_ObjectiveType.AirfieldComplex, "Redhill Bomber Base", "Redh", 1, 3, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 40, "");
-            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", "Ashf", 1, 3, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 75, "");
-            addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft", "Mans", 1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", "Dove", 1, 3, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "");
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", "Bext", 1, 4, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 10, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel fuel London south docks", "Lond", 1, 3, "BTarget6S", "TGroupDestroyed", 70, 154299, 273105, 100, false, 10, " ");//removed all ships "Designation S" used oil storage instead
-            addTrigger(MO_ObjectiveType.Fuel, "Hydrogen Storage @ London south docks", "Lond", 1, 3, "BTarget7S", "TGroundDestroyed", 80, 155050, 273258, 50, false, 10, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage @ London south docks", "Lond", 1, 2, "BTarget8S", "TGroundDestroyed", 80, 155823, 273221, 50, false, 10, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen @ Beckton", "Bext", 1, 2, "BTarget9S", "TGroundDestroyed", 80, 157899, 273957, 50, false, 50, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Kerosene Storage @ Beckton", "Bext", 1, 2, "BTarget10S", "TGroundDestroyed", 80, 157547, 274527, 50, false, 50, "");
-            addTrigger(MO_ObjectiveType.Fuel, "High Octane aircraft fuel @ Beckton", "Bext", 1, 2, "BTarget11S", "TGroundDestroyed", 80, 158192, 274864, 50, false, 50, "");
-            addTrigger(MO_ObjectiveType.Fuel, "87 octane fuelstorage @ Beckton", "Bext", 1, 2, "BTarget12S", "TGroundDestroyed", 63, 157899, 275256, 50, false, 20, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Peroxide Storage @ Beckton", "Bext", 1, 2, "BTarget13S", "TGroundDestroyed", 66, 157092, 275312, 50, false, 20, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 3, "BTarget13A", "TGroundDestroyed", 63, 160567, 275749, 10, false, 4, "");
-            addTrigger(MO_ObjectiveType.AA, "AAA London area", "Lond", 1, 3, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 10, false, 4, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel refinery", "Ditt", 1, 2, "BTarget24", "TGroundDestroyed", 75, 185027, 252619, 100, false, 80, "");// fixed triggers missing
-            addTrigger(MO_ObjectiveType.Fuel, "Ditton fuel Storage", "Ditt", 1, 2, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 80, "");
-            addTrigger(MO_ObjectiveType.Building, "Maidstone train repair station ", "Ditt", 1, 3, "BTarget26", "TGroundDestroyed", 85, 189262, 249274, 20, false, 40, "");
-            //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, ""); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
-            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 3, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 75, ""); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
-            addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bult", 1, 4, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 10, "");
-            addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 3, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 10, "");
-            addTrigger(MO_ObjectiveType.Building, "Reading Engine Workshop ", "Read", 1, 4, "BTarget32", "TGroundDestroyed", 83, 84241, 267444, 300, false, 15, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Propeller repair Portsmouth", "Port", 1, 2, "BTarget33", "TGroundDestroyed", 81, 76446, 193672, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", "Port", 1, 5, "BTarget34", "TGroundDestroyed", 75, 76476, 193844, 50, false, 100, ""); //This might have wrong location? 9/24
-            addTrigger(MO_ObjectiveType.Building, "Boiler Repair Shop Portsmouth", "Port", 1, 2, "BTarget35", "TGroundDestroyed", 71, 76317, 193904, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Main Fuel Portsmouth ", "Port", 1, 2, "BTarget36", "TGroundDestroyed", 75, 76378, 194163, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Depth Charge Workshop Portsmouth", "Port", 1, 2, "BTarget37", "TGroundDestroyed", 83, 76720, 194082, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen Storage Portsmouth", "Port", 1, 6, "BTarget38", "TGroundDestroyed", 75, 76805, 193918, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Wood Alcohol Fuel Storage Portsmouth", "Port", 1, 4, "BTarget39", "TGroundDestroyed", 98, 77392, 193942, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 75166, 193414, 50, false, 100, ""); //This is in Portsmouth   and has been moved across the inlet on 11/12 by fatal .  
-            addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", "Port", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, ""); //This is in Portsmouth.fixed 9/19 fatal
-            addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 20, ""); //Guildford Target added 9/20
-            addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 3,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 80, "");//Sheerness Diesel Fuel Storage
-            addTrigger(MO_ObjectiveType.Building,"Queensborough Navigational jamming facilities", "Quee",1,3,  "BTarget44", "TGroundDestroyed", 74, 204638, 265195, 90, false, 100,""); // "Queensborough Navigational jamming facilities"
-			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,3,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 90, false, 100,"");  // "Queensborough Radio communications center"
-			addTrigger(MO_ObjectiveType.Building,"Queensborough radio tramsmission booster" ,     "Quee",1,3,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 90,  false, 100,""); //  "Queensborough radio tramsmission booster"
-			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,3,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 90, false, 100,""); //  "Queensborough Electrical Research Facility"
-            addTrigger(MO_ObjectiveType.Building,"Beaufighter Research Facility",    "Farn",1,4,  "BTarget48", "TGroundDestroyed", 74, 99971, 247951, 50, false, 20,""); //  "Farnborough Beaufighter Research Facility"			
-            addTrigger(MO_ObjectiveType.Fuel,"Dover Main Fuel",    "Dove",1,2,  "BTarget49", "TGroundDestroyed", 50 ,244186, 235921, 50, false, 100,""); //                    "Dover Main Fuel"
-            addTrigger(MO_ObjectiveType.Fuel,"Dover Ship Fuel",    "Dove",1,2,  "BTarget50", "TGroundDestroyed", 59, 245628, 233569, 50, false, 100,""); //                    "Dover Ship Fuel"
-            addTrigger(MO_ObjectiveType.Fuel,"Margete Pumping Station",    "Marg",1,2,  "BTarget51", "TGroundDestroyed",     56, 251835, 264652, 50, false, 100,""); //           "Margete Pumping Station"
-            addTrigger(MO_ObjectiveType.Building,"Margate Pier and Radio Tower",    "Marg",1,2,  "BTarget52", "TGroundDestroyed",56, 251818, 264983, 50, false, 100,""); //       "Margate Pier and Radio Tower"
-            addTrigger(MO_ObjectiveType.Fuel," Birchington Fuel Storage",    "Birc",1,2,  "BTarget53", "TGroundDestroyed",   56, 243640, 262713, 50, false, 100,""); //         " Birchington Fuel Storage"
-            addTrigger(MO_ObjectiveType.Building,"Birchington Train Station",    "Birc",1,2,  "BTarget54", "TGroundDestroyed",   56, 243549, 262699, 50, false, 100,""); //         "Birchington Train Station" 
-            addTrigger(MO_ObjectiveType.Building,"Birchington Ammunition Warehouse",    "Birc",1,2,  "BTarget55", "TGroundDestroyed", 100, 243446, 262671, 50, false, 100,""); //  "Birchington Amunition Wharehouse"
-            addTrigger(MO_ObjectiveType.Building,"Canterbury Parachute Facility",    "Cant",1,2,  "BTarget56", "TGroundDestroyed",56, 230244, 252693, 50, false, 100,""); //       "Cantubury Parachute Facility"
-            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Main fuel Storage",    "Cant",1,2,"BTarget57"," TGroundDestroyed",  56, 230082, 252625, 50, false,100,"");//             "Canutbury Main fuel Storage"
-            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Liquid Oxygen Storage",  "Cant",1,2,    "BTarget58"," TGroundDestroyed", 56, 229865, 252370, 50, false,100,"");//          "Cantubury Liquid Oxygen Storage"
-            addTrigger(MO_ObjectiveType.Building,"Canterbury Millers Arms factory",  "Cant",1,2,  "BTarget59"," TGroundDestroyed",    56, 229443, 252117, 50, false,100,"");//             "Cantubury Millers Arms factory"
-            addTrigger(MO_ObjectiveType.Fuel,"Canterbury Hydrogen Storage",     "Cant",1,2,   "BTarget60"," TGroundDestroyed",    56, 229271 ,251928 ,50, false,100,"");//             "Cantubury Hydrogen Storage"
-            addTrigger(MO_ObjectiveType.Building,"Canterbury Dolphin Pub",         "Cant",1,2,     "BTarget61"," TGroundDestroyed",90, 229521, 252090, 50, false,0,"Dolphin Pub Destroyed");//            "Cantabury Dolphin Pub"
-            addTrigger(MO_ObjectiveType.Building,"Canterbury RAF Headquarters 11 group",  "Cant",1,2,   "BTarget62"," TGroundDestroyed",59, 229064, 251808, 50, false,100,"");//       "Canatbury RAF Headquarters 11 group"
+            addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers", "Litt", 1, 3, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.AirfieldComplex, "Redhill Bomber Base", "Redh", 1, 5, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", "Ashf", 1, 3, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft", "Mans", 1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", "Dove", 1, 3, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", "Bext", 1, 5, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Fuel London South Docks", "Lond", 1, 3, "BTarget6S", "TGroupDestroyed", 70, 154299, 273105, 100, false, 100, "", add);//removed all ships "Designation S" used oil storage instead
+            addTrigger(MO_ObjectiveType.Fuel, "Hydrogen Storage @ London South Docks", "Lond", 1, 3, "BTarget7S", "TGroundDestroyed", 80, 155050, 273258, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage @ London South Docks", "Lond", 1, 5, "BTarget8S", "TGroundDestroyed", 80, 155823, 273221, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen @ Beckton", "Bext", 1, 5, "BTarget9S", "TGroundDestroyed", 80, 157899, 273957, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Kerosene Storage @ Beckton", "Bext", 1, 5, "BTarget10S", "TGroundDestroyed", 80, 157547, 274527, 100, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "High Octane Aircraft Fuel @ Beckton", "Bext", 1, 5, "BTarget11S", "TGroundDestroyed", 80, 158192, 274864, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "87 Octane Fuel Storage @ Beckton", "Bext", 1, 5, "BTarget12S", "TGroundDestroyed", 63, 157899, 275256, 50, false, 100, "", add);
+        //    addTrigger(MO_ObjectiveType.Fuel, "Peroxide Storage @ Beckton", "Bext", 1, 5, "BTarget13S", "TGroundDestroyed", 66, 157092, 275312, 50, false, 20, "", add);
+            addTrigger(MO_ObjectiveType.AA, "Peroxide Storage @ Beckton", "LondArea", 1, 2, "BTarget13S", "TGroundDestroyed", 63, 160567, 275749, 10, false, 4, "", add);
+            addTrigger(MO_ObjectiveType.AA, "Vehicle Departure Docks", "Lond", 1, 2, "BTarget14A", "TGroundDestroyed", 63, 160025, 273824, 10, false, 4, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton Fuel Refinery", "Ditt", 1, 4, "BTarget24", "TGroundDestroyed", 75, 185027, 252619, 100, false, 100, "", add);// fixed triggers missing
+            addTrigger(MO_ObjectiveType.Fuel, "Ditton Fuel Storage", "Ditt", 1, 4, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Maidstone Train Repair Station ", "Ditt", 1, 3, "BTarget26", "TGroundDestroyed", 60, 189272, 249311, 50, false, 100, "", add);
+            //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, "", add); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
+            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 4, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 70, "", add); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
+            addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bult", 1, 7, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 10, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 7, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 3, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Reading Engine Workshop ", "Read", 1, 7, "BTarget32", "TGroundDestroyed", 83, 84241, 267444, 300, false, 10, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Propeller Repair Portsmouth", "Port", 1, 6, "BTarget33", "TGroundDestroyed", 81, 76446, 193672, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Portsmouth", "Port", 1, 6, "BTarget34", "TGroundDestroyed", 75, 76476, 193844, 50, false, 100, "", add); //This might have wrong location? 9/24
+            addTrigger(MO_ObjectiveType.Building, "Boiler Repair Shop Portsmouth", "Port", 1, 5, "BTarget35", "TGroundDestroyed", 71, 76317, 193904, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Main Fuel Portsmouth", "Port", 1, 6, "BTarget36", "TGroundDestroyed", 75, 76378, 194163, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Depth Charge Workshop Portsmouth", "Port", 1, 5, "BTarget37", "TGroundDestroyed", 83, 76720, 194082, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Liquid Oxygen Storage Portsmouth", "Port", 1, 6, "BTarget38", "TGroundDestroyed", 75, 76805, 193918, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Wood Alcohol Fuel Storage Portsmouth", "Port", 1, 5, "BTarget39", "TGroundDestroyed", 98, 77392, 193942, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel, "Portsmouth Hydrogen Storage", "Port", 1, 4, "BTarget40", "TGroundDestroyed", 95, 77317, 193860, 50, false, 100, "", add); //This is in Portsmouth    .  
+            addTrigger(MO_ObjectiveType.Building, "Portsmouth Torpedo Facility", "Port", 1, 4, "BTarget41", "TGroundDestroyed", 72, 76855, 194410, 50, false, 100, "", add); //This is in Portsmouth.fixed 9/19 fatal
+            addTrigger(MO_ObjectiveType.Fuel, "Guildford High Octane Plant", "Guil", 1, 5, "BTarget42", "TGroundDestroyed", 89, 112441, 243834, 200, false, 100, "", add); //Guildford Target added 9/20
+            addTrigger(MO_ObjectiveType.Fuel,  "Sheerness Diesel Fuel Storage", "Quee", 1, 3,"BTarget43", "TGroundDestroyed", 63, 204654, 268378, 50, false, 100, "", add);//Sheerness Diesel Fuel Storage
+            addTrigger(MO_ObjectiveType.Building,"Queensborough Navigational jamming facilities", "Quee",1,4,  "BTarget44", "TGroundDestroyed", 74, 204638, 265195, 50, false, 100,""); // "Queensborough Navigational Jamming Facilities"
+			addTrigger(MO_ObjectiveType.Building, "Queensborough Radio communications center",    "Quee",1,4,  "Btarget45", "TGroundDestroyed", 74, 204722, 265252, 50, false, 100,"");  // "Queensborough Radio Communications center"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough Radio Transmission Booster" ,     "Quee",1,4,  "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 50,  false, 100,""); //  "Queensborough radio Transmission booster"
+			addTrigger(MO_ObjectiveType.Building,"Queensborough Electrical Research Facility",    "Quee",1,4,  "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 50, false, 100,""); //  "Queensborough Electrical Research Facility"
+			addTrigger(MO_ObjectiveType.Building,"Littlestone Research Facility",    "Litt",1,4,  "littlestonehang", "TGroundDestroyed", 66, 221988, 221642, 50, false, 100,""); //  "Littlestone research facility"
 
+            addTrigger(MO_ObjectiveType.Building, "Dover Ammo Dump", "Dove", 1, 3, "BTargDoverAmmo", "TGroundDestroyed", 8, 245461, 233488, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Diehl Military Train Station", "Dove", 1, 4, "BTargDiehlTrainStation", "TGroundDestroyed", 10, 251138, 245883, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dover Naval Operations Fuel", "Dove", 1, 4, "BTargDoverFuel", "TGroundDestroyed", 11, 245695, 233573, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Broadstairs Train Station Military Complex", "Mans", 1, 4, "BTargBroadstairsTrainStation", "TGroundDestroyed", 10, 252836, 261369, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Brighton Army Recruitment Station", "", 1, 4, "BTargBrightonMilitaryRecruitment", "TGroundDestroyed", 11, 144654, 198443, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Brighton Gasoline Storage", "", 1, 4, "BTargBrightonFuel", "TGroundDestroyed", 21, 144738, 198233, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Tenterden Chemical Manufacture", "Litt", 1, 4, "BTargTenterdenChemicalFactory", "TGroundDestroyed", 12, 194591, 220821, 150, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Minster Synthetic Case Oil Manufactuer", "Mans", 1, 4, "BTargMinsterCaseOilManufacturing", "TGroundDestroyed", 10, 240203, 256964, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", 1, 3, "BTargDoverNavalOffice", "TGroundDestroyed", 10, 245567, 233499, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Battle Commando Training Center", "", 1, 4, "BTargBattleCommandoTrainingCenter", "TGroundDestroyed", 11, 185093, 219403, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Shoreham Submarine Base", "", 1, 4, "BTargShorehamSubmarineBase", "TGroundDestroyed", 10, 137054, 198034, 50, false, 120, "", add);
+            //BTargShorehamSubmarineBase TGroundDestroyed 10 137054 198034 50
             /*
-             BTarget49 TGroundDestroyed 50 244186 235921 50        "Dover Main Fuel"
-             BTarget50 TGroundDestroyed 59 245628 233569 50        "Dover Ship Fuel"
-             BTarget51 TGroundDestroyed 56 251835 264652 50       "Margete Pumping Station"
-             BTarget52 TGroundDestroyed 56 251818 264983 50       "Margate Pier and Radio Tower"
-             BTarget53 TGroundDestroyed 56 243640 262713 50       " Birchington Fuel Storage"
-             BTarget54 TGroundDestroyed 56 243549 262699 50       "Birchington Train Station" 
-             BTarget55 TGroundDestroyed 56 243446 262671 50       "Birchington Amunition Wharehouse"
-			 BTarget56 TGroundDestroyed 56 230244 252693 50       "Cantubury Parachute Facility"
-             Btarget57 TGroundDestroyed 56 230082 252625 50     "Canutbury Main fuel Storage"
-             Btarget58 TGroundDestroyed 56 229865 252370 50      "Cantubury Liquid Oxygen Storage"
-             Btarget59 TGroundDestroyed 56 229443 252117 50      "Cantubury Millers Arms factory"
-             Btarget60 TGroundDestroyed 56 229271 251928 50      "Cantubury Hydrogen Storage"
-			 BTarget61 TGroundDestroyed 90 229521 252090 50       "Cantabury Dolphin Pub"
-             BTarget62 TGroundDestroyed 59 229064 251808 50      "Canatbury RAF Headquarters 11 group"
-             */
-            
-            //RED TARGETS
-            addTrigger(MO_ObjectiveType.Vehicles, "Bapaume Rail Transit Station", "Bapu", 2, 2, "RTarget0", "TGroundDestroyed", 83, 354623, 121058, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Vehicles, "Motorpool near Grand-Fort Philippe", "MPGP", 2, 2, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "St. Omer Ball bearing Factory", "Omar", 2, 2, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Estree Fuel Depot", "Estr", 2, 3, "RTarget3", "TGroundDestroyed", 40, 280182, 164399, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Synthetic Fuel", "Boul", 2, 2, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.RRYard, "Calais Rail Yard", "Cala", 2, 2, "RTarget5", "TGroundDestroyed", 60, 283995, 215369, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Hydrogen", "Cala", 2, 2, "RTarget6", "TGroundDestroyed", 60, 284867, 216414, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Calais Main Fuel", "Cala", 2, 2, "RTarget7", "TGroundDestroyed", 60, 285518, 217456, 100, false, 100, ""); //g
-            addTrigger(MO_ObjectiveType.Building, "Calais LOX", "Cala", 2, 2, "RTarget8", "TGroundDestroyed", 60, 285001, 215944, 100, false, 100, ""); //g
-            addTrigger(MO_ObjectiveType.Fuel, "Calais Torpedo Factory", "Cala", 2, 2, "RTarget9", "TGroundDestroyed", 60, 284831, 216887, 100, false, 100, ""); //g
-            addTrigger(MO_ObjectiveType.Fuel, "Calais Diesel Storage", "Cala", 2, 2, "RTarget10", "TGroundDestroyed", 60, 285040, 217547, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Aviation", "Boul", 2, 2, "RTarget11", "TGroundDestroyed", 43, 265591, 189902, 100, false, 100, "");   //g 
-            addTrigger(MO_ObjectiveType.Building, "Boulogne Diesel", "Boul", 2, 2, "RTarget12", "TGroundDestroyed", 50, 266651, 187088, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Benzine", "Boul", 2, 2, "RTarget13", "TGroundDestroyed", 52, 266160, 189276, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne LOX", "Boul", 2, 2, "RTarget14", "TGroundDestroyed", 50, 264515, 188950, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Ethanol", "Boul", 2, 2, "RTarget15", "TGroundDestroyed", 50, 264984, 189378, 100, false, 100, ""); //g
-            addTrigger(MO_ObjectiveType.Fuel, "Arras Main Fuel", "Arra", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 50,
-                     false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Arras Rubber Factory", "Arra", 2, 3, "RTarget17", "TGroundDestroyed", 50, 352039, 141214, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "St Ouen AAA Factory", "Stou", 2, 2, "RTarget18", "TGroundDestroyed", 50, 303445, 114053, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Abbeville Fuel", "Abbe", 2, 2, "RTarget19", "TGroundDestroyed", 50, 285075, 121608, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Dieppe Fuel", "Diep", 2, 2, "RTarget20", "TGroundDestroyed", 50, 229270, 101222, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Le Treport Fuel", "LeTr", 2, 2, "RTarget21", "TGroundDestroyed", 50, 250477, 116082, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Poix Nord Fuel Storage", "Poix", 2, 3, "RTarget22", "TGroundDestroyed", 50, 293827, 84983, 150, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Research Facility", "Cala", 2, 2, "RTarget23", "TGroundDestroyed", 75, 285254, 216717, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Optical Research Facility", "Cala", 2, 2, "RTarget24", "TGroundDestroyed", 100, 285547, 216579, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Storage", "Cala", 2, 2, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Rations Storage", "Cala", 2, 1, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Gunpowder Facility", "Cala", 2, 2, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, 100, "");  //g  //  addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", "Abbe", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263443, 181488, 0, false, 100, "0_Chief  Minensuchtboot");   //removed from the mission
-            addTrigger(MO_ObjectiveType.Fuel, "Arras Fuel Storage 2", "Arra", 2, 3, "RTarget31", "TGroundDestroyed", 75, 351371, 141966, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Watten Armory", "watt", 2, 2, "RTarget32", "TGroundDestroyed", 60, 310395, 200888, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Half Track Factory", "Dunk", 2, 2, "RTarget33", "TGroundDestroyed", 50, 314794, 224432, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Steel Mill Dunkirk", "Dunk", 2, 2, "RTarget34", "TGroundDestroyed", 75, 315081, 224145, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Brass Smelter Dunkirk", "Dunk", 2, 2, "RTarget35", "TGroundDestroyed", 75, 314832, 223389, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Dunkirk", "Dunk", 2, 2, "RTarget36", "TGroundDestroyed", 75, 314482, 223882, 200, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Dunkirk", "Dunk", 2, 3, "RTarget37", "TGroundDestroyed", 75, 313878, 223421, 100, false, 100, "");  //g
-            addTrigger(MO_ObjectiveType.Building, "Low smoke Diesel Le Havre", "Havr", 2, 2, "RTarget38", "TGroundDestroyed", 70, 161702, 52073, 100, false, 100, "");  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
-            addTrigger(MO_ObjectiveType.Building, "Calais Water treatment", "Cala", 2, 1, "9A", "TGroundDestroyed", 63, 296130, 218469, 50, false, 2, ""); //I think the locations of the AAA batteries are off? Ok, checking with the .mis file, the order was just reversed and the wrong name with the wrong battery. 1A..9A vs 9A..1A.  Now fixed to match .mis file 9/19/2018
-            addTrigger(MO_ObjectiveType.Building, "Coastal Command Calais", "Cala", 2, 1, "8A", "TGroundDestroyed", 75, 294090, 85100, 100, false, 2, "");
-            addTrigger(MO_ObjectiveType.Building, "Calais Rope Factory", "Cala", 2, 1, "7A", "TGroundDestroyed", 66, 293279, 84884, 100, false, 2, "");
-            addTrigger(MO_ObjectiveType.Building, "Amunition Wharehouse", "Boul", 2, 1, "1B", "TGroundDestroyed", 70, 264252, 189991, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Fuel Research Facility", "Boul", 2, 1, "2B", "TGroundDestroyed", 47, 265063, 190506, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Radio Jamming Transmitter", "Boul", 2, 1, "3B", "TGroundDestroyed", 51, 265251, 190259, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Naval  Reasearch Facility", "Boul", 2, 1, "4B", "TGroundDestroyed", 62, 264692, 189709, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Boulogne Army HQ", "Boul", 2, 1, "5B", "TGroundDestroyed", 54, 265643, 189603, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Propeller repair Boulogne", "Boul", 2, 1, "6B", "TGroundDestroyed", 77, 265932, 189324, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "E-boat factory", "Boul", 2, 1, "7B", "TGroundDestroyed", 53, 264849, 189190, 50, false, 75, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval main facility", "Havr", 2, 1, "LehavNaval1", "TGroundDestroyed", 84, 163216, 49915, 50, false, 100, "");    //added to targets list in mission and here in CS  fatal 9/22
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Officer mess", "Havr", 2, 1, "LehavNaval2", "TGroundDestroyed", 71, 163447, 49855, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval weapons training", "Havr", 2, 1, "LehavNaval3", "TGroundDestroyed", 75, 163313, 50063, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Underwater repair training", "Havr", 2, 1, "LehavNaval4", "TGroundDestroyed", 81, 163039, 49798, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Naval Intelligence", "Havr", 2, 1, "LehavNaval5", "TGroundDestroyed", 71, 163172, 49816, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Meteorology", "Havr", 2, 1, "LehavNaval6", "TGroundDestroyed", 89, 163470, 49752, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Cryptologic HQ", "Havr", 2, 1, "LehavNaval7", "TGroundDestroyed", 75, 162993, 49927, 50, false, 100, "");
-            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Diesel Storage",        "Havr",            2, 2, "LehavNavalDiesel",              "TGroundDestroyed", 46, 162559, 50082, 100,      false,       100,       "");
-            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Gear Oil Storage",       "Havr",                             2, 2, "LehavNavalGearOil",              "TGroundDestroyed", 41 ,162668, 50240, 100,      false,      100,       "");
-            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval  Benzine",        "Havr",                            2, 2, "LehavNavalBenzine",                     "TGroundDestroyed", 35, 161747, 50094, 50,       false,       100,       "");
-            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Lox",             "Havr",                2, 2, "LehavNavalLOX",              "TGroundDestroyed", 41, 162099, 50034, 50,       false,       100,       "");
-            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Train Station",        "Havr",                    2, 2, "LehavTrainStation",              "TGroundDestroyed", 37 ,159918, 53120, 100,       false,       100,      "");
-            //*************************
-            //Some leftover objectives after last edit 9/19/2018.  Can delete these after a while if not needed.
-            //
-            //addTrigger(MO_ObjectiveType.Fuel,      "Boulogne Diesel",                    2, 2, "RTarget12",.              "TGroundDestroyed", 50,  284978, 215920,    50,       false,       100,       ""); //Not sure what this one is?
-            //addTrigger(MO_ObjectiveType.Fuel,      "Ethanol Storage Boulogne",           2, 2, "RTarget15",              "TGroundDestroyed", 50,  284153, 216913,    50,       false,      100,       ""); //Not sure what this one is?
-            /* //These Remmed out targets are use to transform x-y locations per the mission file, so for the red side,making easy work of doing the transfer for triggers Fatal 10/17/2018
-			
-                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Diesel Storaage",                    2, 2, "LehavNavalDiesel",              "TGroundDestroyed", 46, 162559, 50082, 100,      false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Gear Oil Storage",                                    2, 2, "LehavNavalGearOil",              "TGroundDestroyed", 41 ,162668, 50240, 100,      false,      100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval  Benzine",                                    2, 2, "LehavNaval",                     "TGroundDestroyed", 35, 161747, 50094, 50,       false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Lox",                             2, 2, "LehavNavalBenzine",              "TGroundDestroyed", 41, 162099, 50034, 50,       false,       100,       "");
-                        addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Train Station",                            2, 2, "LehavTrainStation",              "TGroundDestroyed", 37 ,159918, 53120, 100,       false,       100,      "");
+			littlestonehang TGroundDestroyed 66 221988 221642 50
+              BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "
+              BTarget7S TGroundDestroyed 80 155050 273258 50      "Hydrogen Storage @ London south docks", 
+              BTarget8S TGroundDestroyed 80 155823 273221 50      "Ethanol Storage @ London south docks", 1
+              BTarget9S TGroundDestroyed 80 157899 273957 50      "Liquid Oxygen @ Beckton", 1, 2, "BTar
+              BTarget10S TGroundDestroyed 80 157547 274527 100    "Kerosene Storage @ Beckton", 1, 2, 
+              BTarget11S TGroundDestroyed 80 158192 274864 50     "High Octane aircraft fuel @ Beckton
+              BTarget12S TGroundDestroyed 63 157899 275256 50     "87 octane fuelstorage @ Beckton", 1
+              BTarget13S TGroundDestroyed 66 157092 275312 50     "Peroxide Storage @ Beckton", 1, 2, 
+			  BTarget14A", "TGroundDestroyed"     63, 160025, 273824, 10,                  "Vehicle departure docks"
+			    BTarget43 TGroundDestroyed 63 204654 268378 50    "Sheerness Diesel Fuel Storage"
+                BTarget44 TGroundDestroyed 74 204638 265195 50    "Queensborough Navigational jamming facilities"
+                Btarget45 TGroundDestroyed 74 204722 265252 50     "Queensborough Radio communications center"
+                BTarget46 TGroundDestroyed 74 204570 265131 50     "Queensborough radio tramsmission booster"
+                BTarget47 TGroundDestroyed 74 204716 265140 50     "Queensborough Electrical Research Facility"
+            */
+            /*
+              BTargDoverAmmo TGroundDestroyed 8 245461 233488 50
+              BTargDiehlTrainStation TGroundDestroyed 10 251138 245883 50
+              BTargDoverFuel TGroundDestroyed 11 245695 233573 100
+              BTargBroadstairsTrainStation TGroundDestroyed 10 252836 261369 50
+              BTargBrightonMilitaryRecruitment TGroundDestroyed 11 144654 198443 50
+              BTargBrightonFuel TGroundDestroyed 21 144738 198233 50
+              BTargTenterdenChemicalFactory TGroundDestroyed 12 194591 220821 150
+              BTargMinsterCaseOilManufacturing TGroundDestroyed 10 240203 256964 100
+              BTargDoverNavalOffice TGroundDestroyed 10 245567 233499 50
  
-                       adding new le havre naval targets
-  LehavNavalDiesel TGroundDestroyed 46 162559 50082 100
-  LehavNavalGearlOil TGroundDestroyed 41 162668 50240 100
-  LehavNavalBenzine TGroundDestroyed 35 161747 50094 50
-  LehavNavalLOX TGroundDestroyed 41 162099 50034 50
-  LehavTrainStation TGroundDestroyed 37 159918 53120 100
-						*/
+             
+              */
+
+
+            //RED TARGETS
+            addTrigger(MO_ObjectiveType.Vehicles, "Bapaume Rail Transit Station", "Bapu", 2, 8, "RTarget0", "TGroundDestroyed", 83, 354623, 121058, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Vehicles, "Motorpool near Grand-Fort Philippe", "MPGP", 2, 3, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "St. Omer Ball bearing Factory", "Omar", 2, 4, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Estree Fuel Depot", "Estr", 2, 4, "RTarget3", "TGroundDestroyed", 40, 280182, 164399, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Synthetic Fuel", "Boul", 2, 3, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.RRYard, "Calais Rail Yard", "Cala", 2, 3, "RTarget5", "TGroundDestroyed", 60, 283995, 215369, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Hydrogen", "Cala", 2, 4, "RTarget6", "TGroundDestroyed", 60, 284867, 216414, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Calais Main Fuel", "Cala", 2, 4, "RTarget7", "TGroundDestroyed", 60, 285518, 217456, 100, false, 100, "", add); //g
+            addTrigger(MO_ObjectiveType.Building, "Calais LOX", "Cala", 2, 4, "RTarget8", "TGroundDestroyed", 60, 285001, 215944, 100, false, 100, "", add); //g
+            addTrigger(MO_ObjectiveType.Fuel, "Calais Torpedo Factory", "Cala", 2, 4, "RTarget9", "TGroundDestroyed", 60, 284831, 216887, 100, false, 100, "", add); //g
+            addTrigger(MO_ObjectiveType.Fuel, "Calais Diesel Storage", "Cala", 2, 4, "RTarget10", "TGroundDestroyed", 60, 285040, 217547, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Aviation", "Boul", 2, 4, "RTarget11", "TGroundDestroyed", 43, 265591, 189902, 100, false, 100, "", add);   //g 
+            addTrigger(MO_ObjectiveType.Building, "Boulogne Diesel", "Boul", 2, 4, "RTarget12", "TGroundDestroyed", 50, 266651, 187088, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Benzine", "Boul", 2, 4, "RTarget13", "TGroundDestroyed", 52, 266160, 189276, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne LOX", "Boul", 2, 4, "RTarget14", "TGroundDestroyed", 50, 264515, 188950, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Boulogne Ethanol", "Boul", 2, 4, "RTarget15", "TGroundDestroyed", 50, 264984, 189378, 100, false, 100, "", add); //g
+            addTrigger(MO_ObjectiveType.Fuel, "Arras Main Fuel", "Arra", 2, 7, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 50,
+                     false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Arras Rubber Factory", "Arra", 2, 6, "RTarget17", "TGroundDestroyed", 50, 352039, 141214, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "St Ouen AAA Factory", "Stou", 2, 6, "RTarget18", "TGroundDestroyed", 50, 303445, 114053, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Abbeville Fuel", "Abbe", 2, 5, "RTarget19", "TGroundDestroyed", 50, 285075, 121608, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Dieppe Fuel", "Diep", 2, 4, "RTarget20", "TGroundDestroyed", 50, 229270, 101222, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Le Treport Fuel", "LeTr", 2, 4, "RTarget21", "TGroundDestroyed", 50, 250477, 116082, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Poix Nord Fuel Storage", "Poix", 2, 5, "RTarget22", "TGroundDestroyed", 50, 293827, 84983, 150, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Research Facility", "Cala", 2, 4, "RTarget23", "TGroundDestroyed", 75, 285254, 216717, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Optical Research Facility", "Cala", 2, 4, "RTarget24", "TGroundDestroyed", 100, 285547, 216579, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Chemical Storage", "Cala", 2, 4, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Rations Storage", "Cala", 2, 4, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Gunpowder Facility", "Cala", 2, 4, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, 100, "", add);  //g  //  addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", "Abbe", 2, 2, "RTarget30S", "TGroupDestroyed", 90, 263443, 181488, 0, false, 100, "0_Chief  Minensuchtboot");   //removed from the mission
+            addTrigger(MO_ObjectiveType.Fuel, "Arras Fuel Storage 2", "Arra", 2, 7, "RTarget31", "TGroundDestroyed", 75, 351371, 141966, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Watten Armory", "watt", 2, 5, "RTarget32", "TGroundDestroyed", 60, 310395, 200888, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Half Track Factory Dunkirk", "Dunk", 2, 4, "RTarget33", "TGroundDestroyed", 50, 314794, 224432, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Steel Mill Dunkirk", "Dunk", 2, 4, "RTarget34", "TGroundDestroyed", 75, 315081, 224145, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Brass Smelter Dunkirk", "Dunk", 2, 4, "RTarget35", "TGroundDestroyed", 75, 314832, 223389, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Fuel, "Diesel Storage Dunkirk", "Dunk", 2, 4, "RTarget36", "TGroundDestroyed", 75, 314482, 223882, 200, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Dunkirk", "Dunk", 2, 4, "RTarget37", "TGroundDestroyed", 75, 313878, 223421, 100, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Low Smoke Diesel Le Havre", "Havr", 2, 5, "RTarget38", "TGroundDestroyed", 70, 161702, 52073, 100, false, 100, "", add);  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
+            addTrigger(MO_ObjectiveType.Building, "Calais Water Treatment", "Cala", 2, 2, "9A", "TGroundDestroyed", 63, 296130, 218469, 50, false, 2, "", add); //I think the locations of the AAA batteries are off? Ok, checking with the .mis file, the order was just reversed and the wrong name with the wrong battery. 1A..9A vs 9A..1A.  Now fixed to match .mis file 9/19/2018
+            addTrigger(MO_ObjectiveType.Building, "Coastal Command Calais", "Cala", 2, 4, "8A", "TGroundDestroyed", 75, 294090, 85100, 100, false, 2, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Calais Rope Factory", "Cala", 2, 3, "7A", "TGroundDestroyed", 66, 293279, 84884, 100, false, 2, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Ammunition Warehouse Boulogne", "Boul", 2, 4, "1B", "TGroundDestroyed", 70, 264252, 189991, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Fuel Research Facility Boulogne", "Boul", 2, 5, "2B", "TGroundDestroyed", 47, 265063, 190506, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Radio Jamming Transmitter Boulogne", "Boul", 2, 2, "3B", "TGroundDestroyed", 51, 265251, 190259, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Naval  Research Facility Boulogne", "Boul", 2, 4, "4B", "TGroundDestroyed", 62, 264692, 189709, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Boulogne Army HQ", "Boul", 2, 4, "5B", "TGroundDestroyed", 54, 265643, 189603, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Propeller Repair Boulogne", "Boul", 2, 4, "6B", "TGroundDestroyed", 77, 265932, 189324, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "E-boat Factory Boulogne", "Boul", 2, 4, "7B", "TGroundDestroyed", 53, 264849, 189190, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Main Facility", "Havr", 2, 4, "LehavNaval1", "TGroundDestroyed", 84, 163216, 49915, 50, false, 100, "", add);    //added to targets list in mission and here in CS  fatal 9/22
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Officer Mess", "Havr", 2, 4, "LehavNaval2", "TGroundDestroyed", 71, 163447, 49855, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Weapons Training", "Havr", 2, 4, "LehavNaval3", "TGroundDestroyed", 75, 163313, 50063, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Underwater Repair Training", "Havr", 2, 4, "LehavNaval4", "TGroundDestroyed", 81, 163039, 49798, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Naval Intelligence", "Havr", 2, 4, "LehavNaval5", "TGroundDestroyed", 71, 163172, 49816, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Meteorolgy", "Havr", 2, 4, "LehavNaval6", "TGroundDestroyed", 89, 163470, 49752, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Cryptologic HQ", "Havr", 2, 4, "LehavNaval7", "TGroundDestroyed", 75, 162993, 49927, 50, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Diesel Storage",        "Havr",            2, 4, "LehavNavalDiesel",              "TGroundDestroyed", 46, 162559, 50082, 100,      false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Gear Oil Storage",       "Havr",                             2, 4, "LehavNavalGearOil",              "TGroundDestroyed", 41 ,162668, 50240, 100,      false,      100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval Benzine",        "Havr",                            2, 4, "LehavNavalBenzine",                     "TGroundDestroyed", 35, 161747, 50094, 50,       false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Naval LOX",             "Havr",                2, 4, "LehavNavalLOX",              "TGroundDestroyed", 41, 162099, 50034, 50,       false,       100,       "");
+            addTrigger(MO_ObjectiveType.Fuel,      "Le Havre Train Station",        "Havr",                    2, 4, "LehavTrainStation",              "TGroundDestroyed", 37 ,159918, 53120, 100,       false,       100,      "");
+            addTrigger(MO_ObjectiveType.Fuel, "Estree Secret Facility", "Estr", 2, 8, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 100, "", add);  //g
+            addTrigger(MO_ObjectiveType.Building, "Marquise Fuel Dump", "Quee", 2, 3, "RTargMarquiseFuelDump", "TGroundDestroyed", 13, 274209, 199150, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Calais UBoot Repair", "Cala", 2, 4, "RTargCalaisUBootRepair", "TGroundDestroyed", 10, 284999, 216446, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Calais Docks Area", "Cala", 2, 4, "RTargCalaisDocksArea", "TGroundDestroyed", 5, 284656, 217404, 350, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Calais Jackboot Storage", "Cala", 2, 4, "RTargCalaisJackbootStorage", "TGroundDestroyed", 12, 284994, 216869, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dunkirk Weapon Storage & Distribution", "Dunk", 2, 4, "RTargDunkirkWeaponStoarge", "TGroundDestroyed", 11, 315271, 224033, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dunkirk Radar Manufacture", "Dunk", 2, 4, "RTargDunkirkRadarManufacturing", "TGroundDestroyed", 10, 315295, 224146, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dunkirk Military Warehouse", "Dunk", 2, 4, "RTargDunkirkMilitaryWarehouse", "TGroundDestroyed", 10, 315300, 224265, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Dunkirk Explosives Research", "Dunk", 2, 4, "RTargDunkirkExplosivesResearch", "TGroundDestroyed", 9, 314884, 223318, 50, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Desvres Aviation Fuel", "", 2, 4, "RTargDesvresAviationFuel", "TGroundDestroyed", 9, 284580, 182275, 150, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Aire-Sur-La-Lys Chemical Refinery", "", 2, 4, "RTargAireSurLaLysChemicalRefinery", "TGroundDestroyed", 12, 323803, 181252, 100, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Veume Military Manufacturing Area", "", 2, 4, "RTargVeumeMilitaryManufacturingArea", "TGroundDestroyed", 8, 342180, 228344, 250, false, 120, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Etaple Fuel Refinery/Storage", "", 2, 4, "RTargEtapleFuelDump", "TGroundDestroyed", 11, 267479, 166274, 100, false, 120, "", add);
+
+            /*41 162099 50034 50
+         *
+
+***************** add unfinished convoys for british attack here***********
+
+
+
+    /*    
+*/
         }
             //Names of the flak areas and link to file name
             //Name is used in list of objectives aboe & must match exactly.  You can change the name below but then the name in the addTrigger etc above must also be changed to match
             //file name must match exactly with the filename
             public Dictionary<string, string> FlakMissions = new Dictionary<string, string>()
             {
-                    { "Abbe", "/Flak areas/Abbevilleflak.mis" },
+                    { "LondArea", "/Flak areas/LondonFlak.mis" },
+		        	{ "Abbe", "/Flak areas/Abbevilleflak.mis" },
                     { "Arra", "/Flak areas/Arrasflak.mis" },
                     { "Ashf", "/Flak areas/Ashfordflak.mis" },
 					{ "Bapu", "/Flak areas/Bapumeflak.mis" },// was missing
                     { "Bext", "/Flak areas/Bextonflak.mis" },
                     { "Boul", "/Flak areas/Boulogneflak.mis" },
                     { "Bult", "/Flak areas/Bultonflak.mis" },
+                    { "CaeB", "/Flak areas/CaeBflak.mis" },		//not used but german caen defense			
                     { "Caen", "/Flak areas/Caenflak.mis" },
                     { "Cala", "/Flak areas/Calaisflak.mis" },
+                    { "Cant", "/Flak areas/Cantflak2.mis" },//was missing
+                    { "Cher", "/Flak areas/Cherbourgflak2.mis" },//romove the 2 to activate flak after testing				
                     { "Diep", "/Flak areas/Dieppeflak.mis" },
                     { "Ditt", "/Flak areas/Dittonflak.mis" },
                     { "Dove", "/Flak areas/Doverflak.mis" },
@@ -7816,19 +8309,20 @@ public class Mission : AMission, IMainMission
 					{ "MPGP", "/Flak areas/MPGPflak.mis" },// grand fort philippe flak
                     { "Poix", "/Flak areas/PoixNordflak.mis" },
                     { "Port", "/Flak areas/Portsmouthflak.mis" },
-                    { "Quer", "/Flak areas/Quervilleflak.mis" },
+                    { "QueR", "/Flak areas/Quervilleflak.mis" },
                     { "RaHQ", "/Flak areas/RadarHQflak.mis" },
                     { "Read", "/Flak areas/Readingflak.mis" },
                     { "Redh", "/Flak areas/RedHillflak.mis" },
                     { "Shee", "/Flak areas/Sheernessflak.mis" },
                     { "Sout", "/Flak areas/Southhamptonflak.mis" },
-                    { "Omar", "/Flak areas/St Omarflak.mis" },
-                    { "Ouen", "/Flak areas/StOuenflak.mis" },
+                    { "Omar", "/Flak areas/Omarflak.mis" },
+                    { "Ouen", "/Flak areas/Ouenflak.mis" },
+                    { "Stel", "/Flak areas/Stellingflak.mis" },					
                     { "Swin", "/Flak areas/Swindonflak.mis" },
                     { "Tunb", "/Flak areas/Tunbridgeflak.mis" },
                     { "Watt", "/Flak areas/Wattenflak.mis" },
 					{ "Quee", "/Flak areas/Queeflak.mis" },//Queensborough Flak
-					// Radar flak added for radar instalations 
+					// Radar flak added for radar instalations and new targets 
 					{ "AmbR", "/Flak areas/AmbRflak.mis" },//Radar AMBETEUSE
                     { "LeHR", "/Flak areas/LeHavreflak.mis" },//Le Havre Freya Radar
 					{ "BerR", "/Flak areas/BerRflak.mis" },// Berck Freya Radar
@@ -7850,10 +8344,25 @@ public class Mission : AMission, IMainMission
                     { "VenR", "/Flak areas/VenRflak.mis" },// Ventnor Radar
 					{ "VeuR", "/Flak areas/VeuRflak.mis" },// NW Freecamp Veuletts sur mer
                     { "WesR", "/Flak areas/WesRflak.mis" },// Westgate English Radar
-					//{ "DunR", "/Flak areas/DunRflak.mis" },//Dunkirk Freya Radar //dup so removing for now
 					{ "PooR", "/Flak areas/PooRflak.mis" },//Poole English Radar
 					{ "LitR", "/Flak areas/LitRflak.mis" },// Littlehampton Radar
-					
+					{ "Roue", "/Flak areas/Roueflak.mis" },// Rouen Flak batteries remove the 2 to activate flak batteries					
+					{ "Larr", "/Flak areas/Larrowflak.mis" },
+				    { "Lblu", "/Flak areas/Lblueflak.mis" },
+				    { "Lgol", "/Flak areas/Lgoldflak.mis" },
+				    { "Lgre", "/Flak areas/Lgreyflak.mis" },  
+				    { "Lhyd", "/Flak areas/Lhydrogenflak.mis" },
+				    { "Lwhi", "/Flak areas/Lwhiteflak.mis" },
+				    { "Pers", "/Flak areas/Persanflak.mis" },    
+				    { "Dun1", "/Flak areas/Dun1flak.mis" },
+				    { "Dun2", "/Flak areas/Dun2flak.mis" },
+				    { "Dun3", "/Flak areas/Dun3flak.mis" },
+				    { "Peti", "/Flak areas/Petitflak.mis" },
+				    { "None", "/Flak areas/Noneflak.mis" },
+				
+				
+				
+				
 				/*	
 				 	
 				Oye Plage Freya Radar",    	
@@ -7874,6 +8383,7 @@ public class Mission : AMission, IMainMission
                 Beauguillot Beach Freya Rad
 				Radar Tatihou",            
 				Radar Querqueville", 
+added Rouen Flak 
 				*/	
 					
 					
@@ -7903,7 +8413,7 @@ public class Mission : AMission, IMainMission
         }*/
         //This creates a randomized list of Blue & Red objectives.  When asked for potential targets we can check which still have not yet been destroyed & list location, name, etc.
         //They are, however, weighted by PrimaryTargetWeight field so that we'll end up with a similar distribution of objectives to what we see in the Primary Objectives List
-        public void SelectSuggestedObjectives()
+        public void SelectSuggestedObjectives(ArmiesE army)
         {
 
             List<string> keys = new List<string>(msn.MissionObjectivesList.Keys);
@@ -7918,10 +8428,10 @@ public class Mission : AMission, IMainMission
                     MissionObjective mo = msn.MissionObjectivesList[key];
                     if (mo.PrimaryTargetWeight > 0 && mo.IsEnabled && !mo.IsPrimaryTarget)
                     {
-                        double r = msn.stb_random.NextDouble() * 100;
+                        double r = msn.stb_random.NextDouble() * 200; //was 100 but now primarytargetweight goes up to 200 instead of 100
                         //Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID);
                         if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 100% is never skipped, 50% skipped half the time, 0% skipped always
-
+                        if (mo.AttackingArmy != (int)army) continue;
                         if (mo.AttackingArmy == 1 || mo.AttackingArmy == 2)
                         {
                             if (msn.MissionObjectivesSuggested[(ArmiesE)mo.AttackingArmy].Contains(key)) continue;
@@ -7935,8 +8445,70 @@ public class Mission : AMission, IMainMission
             }
         }
     }
+    //When one side completes their full objective/reaches their score then they clear the decks
+    //and everything destroyed is restored again
+    public void MO_MissionObjectiveWinnersReward(ArmiesE army)
+    {
+        foreach (string ID in MissionObjectivesList.Keys)
+        {
+            MissionObjective mo = MissionObjectivesList[ID];
 
-    public void MO_MissionObjectiveAirfieldsSetup(Mission msn, maddox.game.IGamePlay gp)
+            if (mo.Destroyed && mo.OwnerArmy==(int)army)
+            {
+                mo.Destroyed = false;
+                mo.IsPrimaryTarget = false;
+                mo.DestroyedPercent = 0;
+                mo.TimeToUndestroy_UTC = null;
+                mo.Scouted = false;
+                mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
+            }
+        }
+    }
+
+    //We load the existing objectives list from the disk.  But . . . . 
+    //if an objective is still destroyed from a previous mission then we must set it to destroyed, put a smoke on it to make it look destroyed, and
+    //if it has functionality (like radar) turn it off.
+    //This handles every kind of objective except airports, which are handled separately
+    public void MO_MissionObjectiveOnStartCheck(Mission msn, maddox.game.IGamePlay gp)
+    { 
+        foreach (string ID in MissionObjectivesList.Keys)
+        {
+            MissionObjective mo = MissionObjectivesList[ID];
+
+            if (mo.Destroyed)
+            {
+                //Sometime is has been destroyed and now it is time to undestroy it
+                if (mo.TimeToUndestroy_UTC.HasValue && DateTime.Compare(mo.TimeToUndestroy_UTC.Value, DateTime.UtcNow) < 0 )
+                {
+                    mo.Destroyed = false;
+                    mo.DestroyedPercent = 0;
+                    mo.TimeToUndestroy_UTC = null;
+                } else //it's just destroyed
+                {
+
+                    Calcs.loadSmokeOrFire(GamePlay, this, mo.Pos.x, mo.Pos.y, 0, "BuildingFireBig", duration_s: 6 * 3600);
+                    if (mo.Points > 3) Calcs.loadSmokeOrFire(gp, msn, mo.Pos.x + random.Next(50)-25, mo.Pos.y + random.Next(50) - 25, 0, "BuildingFireBig", duration_s: 6 * 3600); //bigger, put another
+                    if (mo.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
+                    {
+                        Console.WriteLine("MO_DestroyObjective: Disabling trigger " + ID);
+                        GamePlay.gpGetTrigger(ID).Enable = false;
+                    }
+
+                    //Turn off any radars if they are still disabled
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Radar)
+                    {
+                        if (mo.OwnerArmy == 1) DestroyedRadar[(ArmiesE.Red)].Add(mo);
+                        if (mo.OwnerArmy == 2) DestroyedRadar[(ArmiesE.Blue)].Add(mo);                        
+                    }
+
+
+                }
+            }
+        }
+    }
+
+    //AddNewOnly means only add new aps not already in the file read from disk.  addNewOnly=false means, forget about what's on the disk load, just read them all in.  Usually you only want to do this if the disk read failed.
+    public void MO_MissionObjectiveAirfieldsSetup(Mission msn, maddox.game.IGamePlay gp, bool addNewOnly = false)
     {
         //public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
         //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
@@ -7949,20 +8521,78 @@ public class Mission : AMission, IMainMission
 
         int count = AirfieldTargets.Count;
         double weight = (double)300 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets
-        if (AirfieldTargets != null) foreach (AiAirport ap in AirfieldTargets.Keys)
+        int num_added = 0;
+        int num_updated = 0;
+        var allKeys = new List<AiAirport> (AirfieldTargets.Keys);
+        if (AirfieldTargets != null) foreach (AiAirport ap in allKeys)
             {
-                int NumNearbyTargets = MO_MissionObjectivesNear(AirfieldTargets[ap].Item7, 15000);
-                double IndWeight = weight;
-                if (NumNearbyTargets > 0) IndWeight = weight * 2;
-                else if (NumNearbyTargets > 3) IndWeight = weight * 4;
-                else if (NumNearbyTargets > 5) IndWeight = weight * 12;
-                //Console.WriteLine("AP: " + AirfieldTargets[ap].Item2 + "_airfield");
-                Point3d Pos = AirfieldTargets[ap].Item7;
-                int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
-                MissionObjectivesList.Add(AirfieldTargets[ap].Item2 + "_airfield", new MissionObjective(msn, 3, IndWeight, ap, army, AirfieldTargets[ap]));
-                count++;
+                string af_name = AirfieldTargets[ap].Item2 + "_airfield";
+                if (!addNewOnly || !MissionObjectivesList.ContainsKey(af_name))
+                {
+
+                    int NumNearbyTargets = MO_MissionObjectivesNear(AirfieldTargets[ap].Item7, 20000);  //was 15,000 - 2020-01
+                    double IndWeight = weight;
+                    if (NumNearbyTargets > 0) IndWeight = weight * 2;
+                    else if (NumNearbyTargets > 3) IndWeight = weight * 16;  //was 4 -> 16 increasing airfields near major objects as targets with cover bomber system.  2020-01
+                    else if (NumNearbyTargets > 5) IndWeight = weight * 48;  //was 12 -> 48 increasing 4X with cover bomber system.  2020-01
+                                                                             //Console.WriteLine("AP: " + AirfieldTargets[ap].Item2 + "_airfield");
+                    Point3d Pos = AirfieldTargets[ap].Item7;
+                    int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
+                    if (Pos.x > 210000 && Pos.y > 180000 && Pos.x < 321000 && Pos.y < 270000) IndWeight = 200; //vastly increase # of airports as mission objectives, in the 'main' campaign area. 2020-01
+                    MissionObjectivesList.Add(af_name, new MissionObjective(msn, 3, IndWeight, ap, army, AirfieldTargets[ap]));
+                    num_added++;
+                } else if (MissionObjectivesList.ContainsKey(af_name))
+                {
+                    //AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+                    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+                    Tuple<bool, string, double, double, DateTime, double, Point3d> oldAp = AirfieldTargets[ap];
+                    MissionObjective mo = MissionObjectivesList[af_name];
+                    double damagePoints = 0; //assumed because it is knocked out/100%
+                    bool apDestroyed = false; 
+                    if (mo.Destroyed)
+                    {
+                        //it was destroyed, but now it is time to undestroy the airport
+                        if (!mo.TimeToUndestroy_UTC.HasValue || DateTime.Compare(mo.TimeToUndestroy_UTC.Value, DateTime.UtcNow) < 0) //airport should always have an undestroy time.  IF not, we assume the undestroy time is right now.
+                        {
+                            mo.Destroyed = false;                            
+                            mo.DestroyedPercent = 0;
+                            mo.TimeToUndestroy_UTC = null;
+                            damagePoints = 0;
+                        } else //it is still destroyed, so we need to mark it destroyed & actually destroy it
+                        {
+                            apDestroyed = true;
+                            /*
+                              Unfortunately we must reverse engineer the damage point total from time remaining to repair
+                              here is the formula:
+                                  timetofix = 24 * 60 * 60; //24 hours to repair . . . if they achieve 100% knockout.  That is a little bonus beyond what the actual formula says, due ot total knockout
+                                  timetofix += (PointsTaken - PointsToKnockOut) * 20 * 60; //Plus they achieve any additional knockout/repair time due to additional bombing beyond 100%, because those will have to be 
+                              */
+                            double perc = 1.0;// if it's knocked out, we start there.  100%
+                            double hrs = mo.TimeToUndestroy_UTC.Value.Subtract(DateTime.UtcNow).TotalHours;
+                            if (hrs > 24) perc += (hrs - 24) / 24; //If it's knocked out more than 24 hours it mus t have more damage poitns than just pointstoknockout
+                                                                    //figuring this allows ppl to keep piling on damage points if they so wish
+                            damagePoints = oldAp.Item3 * perc;
+
+                            AirfieldDisable(ap);
+
+                        }
+                    }
+
+                    AirfieldTargets[ap] = new Tuple<bool, string, double, double, DateTime, double, Point3d>(
+                        apDestroyed, //bool disabled
+                        oldAp.Item2, //name
+                        oldAp.Item3, //pointstoknockout
+                        damagePoints, //damage point total
+                        DateTime.Now, //time of last damage hit //unfort we don't really have this, it happened in a previous mission; we set it to right now
+                        oldAp.Item6, // airfield radius
+                        oldAp.Item7  //airfield center
+                        );
+
+                    num_updated++;
+                }
+                
             }
-        Console.WriteLine("Mission Objectives: Added " + count.ToString() + " airports to Mission Objectives, weight " + weight.ToString("N5"));
+        Console.WriteLine("Mission Objectives: Added " + num_added.ToString() + " airports to Mission Objectives, updated " + num_updated.ToString() + " weight " + weight.ToString("N5"));
 
     }
 
@@ -8006,9 +8636,9 @@ public class Mission : AMission, IMainMission
                     MissionObjective mo = MissionObjectivesList[key];
                     if (mo.AttackingArmy == a && mo.PrimaryTargetWeight > 0 && mo.IsEnabled && !mo.IsPrimaryTarget)
                     {
-                        double r = stb_random.NextDouble() * 100;
+                        double r = stb_random.NextDouble() * 200; //was 100.  This will cut chance of everything being chose, in half.  Except airports and a few other things, which we increased by a lot.  2020-01
                         //Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID);
-                        if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 100% is never skipped, 50% skipped half the time, 0% skipped always
+                        if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 200% is never skipped, 100% skipped half the time, 50% 3/4 of the time, 0% skipped always
                         if (totalPoints < MO_PointsRequired[(ArmiesE)a])
                         {
                             mo.IsPrimaryTarget = true;
@@ -8031,6 +8661,199 @@ public class Mission : AMission, IMainMission
         }
 
     }
+
+    static ManualResetEvent resetEvent = new ManualResetEvent(false);
+
+    public bool MO_WriteMissionObject(object mo, string name, bool wait = false)
+    {
+        Console.WriteLine("Writing " + name + " to file");
+
+        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_SESSIONSTATE_" + name + ".xml";
+
+        try
+        {
+            /* 
+             * //System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(mo.GetType());
+            BinaryFormatter writer = new BinaryFormatter();
+            using (FileStream fs = File.Create(filepath))
+            {
+                writer.Serialize(fs, mo);
+            }
+            */
+            var serializer = new DataContractSerializer(mo.GetType());
+            string xmlString;
+            using (var sw = new StringWriter())
+            {
+                using (var writer = new XmlTextWriter(sw))
+                {
+                    writer.Formatting = Formatting.Indented; // indent the Xml so it's human readable
+                    serializer.WriteObject(writer, mo);
+                    writer.Flush();
+                    xmlString = sw.ToString();
+                }
+            }
+            //File.WriteAllText(filepath, xmlString);
+
+            int count = 0;
+
+            //if wait is set we block the thread & wait until it's complete
+            //we only do this at final program exit, just to make sure file write actually complete/not corrupted
+            if (wait)
+            {
+
+                    /*Task<bool> task = Calcs.WriteAllTextAsync(filepath, xmlString);
+                    bool res = await task; */
+                    Calcs.WriteAllTextAsync(filepath, xmlString, wait: true, resetEvent: resetEvent);
+                    Console.WriteLine("MO_WriteMissionObject: waiting . . . to write " + name);
+                    resetEvent.WaitOne(); // Blocks the thread until until "set"
+                    Console.WriteLine("MO_WriteMissionObject: . . . . released.");            
+
+            } else Calcs.WriteAllTextAsync(filepath, xmlString); 
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("WriteMissionObjectivesClass ERROR: " + ex.ToString());
+            return false;
+        }
+        return true;
+    
+    }
+
+
+
+    public object MO_ReadMissionObject(object mo, string name)
+    {
+        Console.WriteLine("Reading " + name + " from file");
+
+        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_SESSIONSTATE_" + name + ".xml";
+
+        try
+        {
+            /* 
+             * //System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(mo.GetType());
+            BinaryFormatter writer = new BinaryFormatter();
+            using (FileStream fs = File.Create(filepath))
+            {
+                writer.Serialize(fs, mo);
+            }
+            */
+            string xmlString = File.ReadAllText(filepath);
+
+            //XmlDictionaryReader reader =
+            //    XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
+
+            var serializer = new DataContractSerializer(mo.GetType());
+
+            using(XmlReader reader = XmlReader.Create(new StringReader(xmlString))) { 
+                DataContractSerializer formatter0 =
+                    new DataContractSerializer(mo.GetType());
+                mo = formatter0.ReadObject(reader);
+            }            
+            
+        }
+    
+
+        /*
+
+        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_" + name + ".json";        
+
+        //System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(mo.GetType());
+        BinaryFormatter writer = new BinaryFormatter();
+
+        try
+        {
+            using (FileStream fs = File.OpenRead(filepath))
+            {
+                //jsonString = File.ReadAllText(filepath);
+                mo =  writer.Deserialize(fs);
+            }
+        }
+        */
+
+        catch (Exception ex)
+        {
+            Console.WriteLine("ReadMissionObjectivesClass ERROR: " + ex.ToString());
+            return null;
+        }
+        return mo;
+
+
+
+    }
+
+    //wait = true makes it wait for the async disk write & verify that it worked/no errors
+    //usually we only do this right before final thread exit
+    public void MO_WriteMissionObjects(bool wait = false)
+    {
+        MO_WriteMissionObject(MissionObjectivesList, "MissionObjectivesList", wait);
+        MO_WriteMissionObject(DestroyedRadar, "DestroyedRadar", wait);
+        MO_WriteMissionObject(MissionObjectivesSuggested, "MissionObjectivesSuggested", wait);        
+        MO_WriteMissionObject(MissionObjectiveScore, "MissionObjectiveScore", wait);
+        MO_WriteMissionObject(MissionObjectivesCompletedString, "MissionObjectivesCompletedString", wait);
+        MO_WriteMissionObject(MissionObjectivesString, "MissionObjectivesString", wait);
+        
+    }
+
+
+    public bool[] MO_ReadMissionObjects()
+    {
+        bool[] ret = new bool [] { true, true, true, true, true, true};
+        var mo = MO_ReadMissionObject(MissionObjectivesList, "MissionObjectivesList");
+        Console.WriteLine("Read " + mo.GetType().ToString());
+        if (mo != null) MissionObjectivesList = mo as Dictionary<string, MissionObjective>;
+        else ret[0] = false;
+
+        Dictionary<string, MissionObjective> mo_dic = mo as Dictionary<string, MissionObjective>;//have to switch it from type object to Dictionary
+        /*
+        if (mo != null) foreach ( string key in (mo_dic as Dictionary<string, MissionObjective>).Keys)
+            {
+                //Console.WriteLine("RMO: Restoring " + key + " " + MissionObjectivesList[key].Scouted.ToString() + mo_dic[key].Scouted.ToString());
+                if (!MissionObjectivesList.ContainsKey(key)) continue;
+                MissionObjectivesList[key].Scouted = mo_dic[key].Scouted;
+                MissionObjectivesList[key].PlayersWhoScoutedNames = mo_dic[key].PlayersWhoScoutedNames;
+            }
+            */
+
+        var mo1 = MO_ReadMissionObject(MissionObjectivesSuggested, "MissionObjectivesSuggested");
+        Console.WriteLine("Read " + mo1.GetType().ToString());
+        if (mo1 != null) MissionObjectivesSuggested = mo1 as Dictionary<ArmiesE, List<String>>;
+        else ret[1] = false;        
+
+        /*
+         * //We don't need this as it is reconstructed from the MissionObjectivesList .Destroyed flag for objectives
+        var mo2 = MO_ReadMissionObject(DestroyedRadar, "DestroyedRadar");
+        Console.WriteLine("Read " + mo1.GetType().ToString());
+        if (mo2 != null) DestroyedRadar = mo2 as Dictionary<ArmiesE, List<MissionObjective>>;
+        else ret[2] = false;
+        */
+
+        var mo3 = MO_ReadMissionObject(MissionObjectiveScore, "MissionObjectiveScore");
+        Console.WriteLine("Read " + mo3.GetType().ToString());
+        if (mo3 != null) MissionObjectiveScore = mo3 as Dictionary<ArmiesE, double>;
+        else ret[3] = false;
+
+        var mo4 = MO_ReadMissionObject(MissionObjectivesCompletedString, "MissionObjectivesCompletedString");
+        Console.WriteLine("Read " + mo4.GetType().ToString());
+        if (mo4 != null) MissionObjectivesCompletedString = mo4 as Dictionary<ArmiesE, string>;
+        else ret[4] = false;
+
+        var mo5 = MO_ReadMissionObject(MissionObjectivesString, "MissionObjectivesString");
+        Console.WriteLine("Read " + mo5.GetType().ToString());
+        if (mo5 != null) MissionObjectivesString = mo5 as Dictionary<ArmiesE, string>;
+        else ret[5] = false;
+
+        return ret;
+        /*
+        MO_WriteMissionObject(DestroyedRadar, "DestroyedRadar");
+        MO_WriteMissionObject(MissionObjectivesSuggested, "MissionObjectivesSuggested");
+        MO_WriteMissionObject(MissionObjectiveScore, "MissionObjectiveScore");
+        MO_WriteMissionObject(MissionObjectivesCompletedString, "MissionObjectivesCompletedString");
+        MO_WriteMissionObject(MissionObjectivesString, "MissionObjectivesString");
+        */
+
+    }
+
 
     //This reads the primary objectives selected from the previous mission
     //Just reads the previous objectives, but takes into consideration that objectives might have been removed, names changed
@@ -8154,13 +8977,24 @@ public class Mission : AMission, IMainMission
 
     }
 
-    public void MO_ListSuggestedObjectives(Player player, int army, int numToDisplay = 5, double delay = 0.2)
+    //Lists the current secondary/suggested targets to theplayer's screen, and/or just returns the keys of the objectives as a List<string>
+    public List<string> MO_ListSuggestedObjectives(Player player, int army, int numToDisplay = 5, double delay = 0.2, bool display = true)
     {
 
         int numDisplayed = 0;
         double totDelay = 0;
+        List<string> currentSecondaryObjectives = new List<string>();
 
-        twcLogServer(new Player[] { player }, "Suggested " + ArmiesL[army] + " Secondary Objectives:", new object[] { });
+        if (player != null && display) twcLogServer(new Player[] { player }, "SUGGESTED " + ArmiesL[army].ToUpper() + " SECONDARY OBJECTIVES:", new object[] { });
+
+        string msg1 = ">>> NOTE: If sectors are listed, those areas need to be scouted.";
+            
+        
+        if (player != null && display) twcLogServer(new Player[] { player }, msg1, new object[] { });
+
+        msg1 = ">>> Scout those sectors and take recon photos - Tab-4-9. HQ will then identify specific targets.";
+
+        if (player != null && display) twcLogServer(new Player[] { player }, msg1, new object[] { });
 
         foreach (var key in MissionObjectivesSuggested[(ArmiesE)army])
         {
@@ -8169,15 +9003,25 @@ public class Mission : AMission, IMainMission
             MissionObjective mo = MissionObjectivesList[key];
             if (!mo.Destroyed && mo.IsEnabled)
             {
-                totDelay += delay;
-                Timeout(totDelay, () =>
+                currentSecondaryObjectives.Add(key);
+
+                if (display && player != null)
                 {
+                    totDelay += delay;
+                    Timeout(totDelay, () =>
+                    {
                         //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
                         // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
-                        twcLogServer(new Player[] { player }, mo.Sector + " " + mo.Name, new object[] { });
 
-                });//timeout      
+
+
+                    string msg = "Recon sector: " + mo.Sector.Substring(0,4).TrimEnd('.');
+                    if (mo.Scouted) msg = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
+                    twcLogServer(new Player[] { player }, msg, new object[] { });
+
+                    });//timeout    
+                }  
 
 
                 numDisplayed++;
@@ -8185,8 +9029,299 @@ public class Mission : AMission, IMainMission
 
             }
         }
+
+        return currentSecondaryObjectives;
+
     }
 
+    public string MO_ListScoutedObjectives(Player player = null, int army = 1, int numToDisplay = -1, double delay = 0.2) //num to display less than 1 means display all
+    {
+
+        int numDisplayed = 0;
+        double totDelay = 0;
+
+        string retmsg = "";
+        string msg = "Scouted " + ArmiesL[army] + " Targets with Coordinates:";
+
+        if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
+        retmsg += msg + Environment.NewLine;
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        //foreach (var key in MissionObjectives[(ArmiesE)army])
+        {
+            //mo.AttackingArmy == army
+            if (numToDisplay > 0 && numDisplayed >= numToDisplay) break;
+            MissionObjective mo = entry.Value;
+
+     
+            if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsEnabled && mo.Scouted)
+            {
+                totDelay += delay;
+                //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+
+                // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
+                msg = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
+                if (mo.Destroyed) msg += " (destroyed)";
+                retmsg += msg + Environment.NewLine;
+                numDisplayed++;
+                Timeout(totDelay, () =>
+                {                    
+                    if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });                    
+                });//timeout                      
+            }
+        }
+        if (numDisplayed == 0)
+        {
+            msg = ">>>>> No objectives scouted yet <<<<<";
+            if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
+            retmsg += msg + Environment.NewLine;
+        }
+        Timeout(totDelay + 2, () =>
+        {
+            if (player != null) twcLogServer(new Player[] { player }, ">>> To scout objectives, fly 20000ft/6000m or higher in an aircraft with no bombs on board and record a reconnaissance photo of the area via Tab-4-9.", new object[] { });
+            Timeout(2, () =>
+            {
+                if (player != null) twcLogServer(new Player[] { player }, ">>> Return the photos to base, land safely, and use chat command <record to transfer the photos to headquarters.", new object[] { });
+            });
+            Timeout(4, () =>
+            {
+                if (player != null) twcLogServer(new Player[] { player }, ">>> The photos allow headquarters to determine precise coordinates of all potential objectives in that area.", new object[] { });
+            });
+            //twcLogServer(new Player[] { player }, ">>>>> The higher you fly the larger the area your photo will capture.", new object[] { });
+        
+        });
+        
+        return retmsg;
+    }
+
+    int ScoutPhotoID = 0;
+    Dictionary<Tuple<int,int, Player>,List<string>> ScoutPhotoRecord = new Dictionary<Tuple<int,int,Player>,List<string>> (); //<int,int> = ScoutPhotoID, Army
+
+    public void MO_TakeScoutPhoto(Player player, int army, double delay = 0.2, Point3d? test = null)
+    {
+        int numScouted = 0;
+        string minAlt = "20000 feet";
+        if (army == 2) minAlt = "6000m";
+
+        bool fail = false;
+        if (player.Place() as AiAircraft == null && !test.HasValue) fail = true;
+
+        AiAircraft aircraft = player.Place() as AiAircraft;
+
+        Point3d pos = aircraft.Pos();
+        if (test.HasValue) pos = test.Value; //for testing
+
+        double altitude = pos.z;
+
+        if (altitude < 6000) fail = true;        
+
+        double radiusCovered_m = altitude / 0.342;  //(Sin (20 degrees) = 0.342)  Meaning that we can scout things 20 degrees below the horizon & lower.  This might be alittle ambitious, but also maybe not?
+
+        string alt = (radiusCovered_m / 1000.0).ToString("F1") +" km";
+        if (army == 1 ) alt = (Calcs.meters2feet(radiusCovered_m) /5280.0).ToString("F1") + " miles";
+
+        if (aircraft.AirGroup().hasBombs()) fail = true;
+
+        if (fail)
+        {
+            twcLogServer(new Player[] { player }, "You must be in an aircraft, with no bombs on board, above " + minAlt + ", to successfully take a reconnaissance photo.", new object[] { });
+            return;
+        }
+
+        ScoutPhotoID++;
+        
+        List<string> keys = new List<string>();
+
+        twcLogServer(new Player[] { player }, "Reconnaissance photo successfully taken, covering a radius of approx. " + alt + ".", new object[] { });
+
+        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+        //foreach (var key in MissionObjectives[(ArmiesE)army])
+        {
+            //mo.AttackingArmy == army
+
+            MissionObjective mo = entry.Value;
+
+            if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsEnabled && !mo.Scouted && Calcs.CalculatePointDistance (mo.Pos, pos) < radiusCovered_m)                
+                {
+                keys.Add(entry.Key);
+                //We'll say it takes 30 minutes to get the photo back from the rec. expedition and also process it at headquarters.
+                //We only process it if the player hasn't died etc in the meanwhile.
+                  numScouted++;
+                }
+        }
+
+        var recordKey = new Tuple<int, int, Player>(ScoutPhotoID, army, player);
+        ScoutPhotoRecord.Add(recordKey, keys);
+
+        Timeout( 60*60, () => {
+            if (ScoutPhotoRecord.ContainsKey(recordKey)) {
+                int total = ScoutPhotoRecord[recordKey].Count();
+                ScoutPhotoRecord.Remove(recordKey);
+                if (total > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photo taken over 1 hour ago identifying " + total.ToString() + " objectives were spoiled due to equipment malfunction during an overly extended flight.", new object[] { });
+            }
+
+        }); //spoil it after 1 hour if not returned
+
+        if (numScouted == 0)
+        {
+            Timeout(3, () =>
+            {
+                twcLogServer(new Player[] { player }, ">>> No objectives scouted", new object[] { });
+                return;
+            });
+        }
+
+        numScouted += Convert.ToInt32(Math.Round(random.Next(numScouted * 3) / 4.0 - numScouted * 3.0 / 8.0)); //fuzz the result a little
+        if (numScouted < 0) numScouted = 0;
+        Timeout(1.5, () =>
+        {
+            twcLogServer(new Player[] { player }, "It looks like you scouted about " + numScouted.ToString() + " objectives", new object[] { });
+        });
+        Timeout(3, () =>
+        {
+            twcLogServer(new Player[] { player }, "Reconnaissance results will be available after you land safely and headquarters has a chance to analyze the photos fully.", new object[] { });
+        });
+        Timeout(4.5, () =>
+        {
+            twcLogServer(new Player[] { player }, "You have one hour to return and land safely or the photos will be spoiled.", new object[] { });
+        });
+
+    }
+
+    public void MO_SpoilPlayerScoutPhotos (Player player)
+    {
+        int total = 0;
+        var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, Player>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
+        foreach (KeyValuePair<Tuple<int, int, Player>, List<string>> entry in ScoutPhotoRecord_copy)
+        {
+            if (entry.Key.Item3 != player) continue;
+            total += ScoutPhotoRecord[entry.Key].Count;
+            ScoutPhotoRecord.Remove(entry.Key);
+        }
+        if (total > 0)
+            Timeout(20, () => //wait a while for message because it often comes when player died, crashed, etc, many other messages coming through at once.
+            {
+                twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photos identifying " + total.ToString() + " objectives were lost.", new object[] { });
+            });
+    }
+
+    public void MO_SpoilPlayerScoutPhotos(HashSet<Player> players)
+    {
+        
+        foreach (Player player in players)
+        {
+            MO_SpoilPlayerScoutPhotos(player);
+        }
+        
+    }
+
+    //check = true means, the player is requesting to record the photos, ie, checking.
+    //Otherwise it is some automated thing & no message is required unless there is success.
+    public void MO_RecordPlayerScoutPhotos(Player player, bool check = false)
+    {
+        if (player == null) return;
+        if (player.Place() != null && (player.Place() as AiAircraft) != null &&
+            GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) == player.Army() &&
+            //Stb_distanceToNearestAirport(actor) < 3100 &&
+            Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) < 2 &&
+            player.Place().IsAlive()
+            )
+        {//it's good 
+           //(do nothing)
+        }
+        else
+        {//it's no good
+                if (check) twcLogServer(new Player[] { player }, "You can't check in your reconnaissance photos now - you must be safely landed, in your aircraft with the photos, on friendly ground and ideally at an air base.", new object[] { });
+                return;
+        }
+            
+
+        int totalPhotos = 0;
+        int total = 0;
+        int totalPrimary = 0;
+        int totalSecondary = 0;
+        int totalRadar = 0;
+        int totalAirfield = 0;
+        int totalShip = 0;
+        int totalFuel = 0;
+        int army = player.Army();
+        //List<String> mos = MissionObjectivesSuggested[(ArmiesE)army];
+        List<String> mos = MO_ListSuggestedObjectives(null, player.Army(), display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
+
+        var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, Player>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
+
+        HashSet<string> objectivesIDed = new HashSet<string>();
+
+        foreach (KeyValuePair<Tuple<int, int, Player>, List<string>> entry in ScoutPhotoRecord_copy)
+        {
+            if (entry.Key.Item3 != player) continue;
+            totalPhotos++;
+            
+            if (player.Army() == 1) RedScoutPhotosI++;
+            if (player.Army() == 2) BlueScoutPhotosI++;
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 848);  //848 recon photos taken, 849 # of objectives photographed
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 848, 1);
+
+            foreach (string key in entry.Value)
+            {                
+                MissionObjective mo = MissionObjectivesList[key];
+                int ct = objectivesIDed.Count;
+                objectivesIDed.Add(key);
+                if (ct != objectivesIDed.Count) //only bother doing all this stuff if it's new/unique object not before identified
+                {
+
+                    if (player.Army() == 1) RedScoutedObjectivesI++;
+                    if (player.Army() == 2) BlueScoutedObjectivesI++;
+                    if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 849);  //848 recon photos taken, 849 # of objectives photographed
+                    if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 849, 1);
+
+                    Timeout(60 * random.Next(6), () =>
+                    {                        
+                        mo.makeScouted(player);
+
+                    }); //Some delay for careful analysis, before they show up in the in-game lists. 
+
+                    total++;
+                    if (mo.IsPrimaryTarget) totalPrimary++;
+                    if (mos.Contains(key) && mos.IndexOf(key) < 5) totalSecondary++;
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Radar) totalRadar++;
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Airfield) totalAirfield++;
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Ship) totalShip++;
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Fuel) totalFuel++;
+                    //Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase
+                }
+                
+            }            
+            ScoutPhotoRecord.Remove(entry.Key);
+        }
+
+        if (total == 0 && totalPhotos > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your " + totalPhotos.ToString() + " reconnaissance photos identified no new objectives.", new object[] { });
+        else if (totalPhotos == 0 && check) twcLogServer(new Player[] { player }, "You have no reconnaissance photos to process.  Perhaps they were processed automatically when you landed?", new object[] { });
+        if (total > 0) {
+            int totalOthers = total - totalPrimary - totalSecondary;
+            if (totalOthers < 0) totalOthers = 0;
+            twcLogServer(new Player[] { player }, ">>>> Your " + totalPhotos.ToString() + " reconnaissance photos identified " + total.ToString() + " new objectives, including " + totalPrimary.ToString() + " primary objectives, " + totalSecondary.ToString() + " identified secondary objectives, and " + totalOthers.ToString() + " other important objectives.", new object[] { });
+            Timeout(1.5, () =>
+            {
+                twcLogServer(new Player[] { player }, ">>>> Among the objectives: " + totalRadar.ToString() + " radar installations, " + totalAirfield.ToString() + " airfields, " + totalFuel.ToString() + " fuel dumps, and " + totalShip.ToString() + " ships.", new object[] { });
+            });
+            Timeout(3, () =>
+            {
+                twcLogServer(new Player[] { player }, ">>>> Precise mapping coordinates for your objectives will be available via Tab-4-8 in a few minutes, after headquarters has a chance to carefully analyze the photos.", new object[] { });
+            });
+
+        }
+    }
+
+    public void MO_RecordPlayerScoutPhotos(HashSet<Player> players)
+    {
+
+        foreach (Player player in players)
+        {
+            MO_RecordPlayerScoutPhotos(player);
+        }
+
+    }
 
     public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 10, double delay = 0.2, bool display = true, bool html = false)
     {
@@ -8198,10 +9333,17 @@ public class Mission : AMission, IMainMission
 
         int numDisplayed = 0;
         double totDelay = 0;
-        msg = "Remaining " + ArmiesL[army] + " Primary Objectives:";
+        msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
+        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
         retmsg = msg + newline;
 
+        msg = ">>> NOTE: If sector regions are listed, those areas need to be scouted.";
         if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
+        retmsg += msg + newline;
+
+        msg = ">>> Scout the areas and take recon photos - Tab-4-9. HQ will then identify specific targets & details.";
+        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
+        retmsg += msg + newline;                
 
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
@@ -8210,7 +9352,9 @@ public class Mission : AMission, IMainMission
             MissionObjective mo = entry.Value;
             if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsPrimaryTarget && mo.IsEnabled)
             {
-                string msg1 = mo.Sector + " " + mo.Name;
+                
+                string msg1 = "Recon area: " + mo.bigSector;
+                if (mo.Scouted) msg1 = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
                 retmsg += msg1 + newline;
                 totDelay += delay;
                 if (display)
@@ -8290,7 +9434,8 @@ public class Mission : AMission, IMainMission
         try
         {
             string filepath = CLOD_PATH + FILE_PATH + @"/" + filename;
-            File.WriteAllText(filepath, op);
+            //File.WriteAllText(filepath, op);
+            Calcs.WriteAllTextAsync(filepath, op);
         }
         catch (Exception ex) { Console.WriteLine("MO_WriteOutAll: " + ex.ToString()); }
     }
@@ -8406,71 +9551,228 @@ public class Mission : AMission, IMainMission
         return (npo - x);
     }
 
+    //Autosends generic scores needed by all objective types.
+    //Send the score as 1/kill - this figures if they need to be multiplied by 100 or not
+    public void MO_AddStatPoints(Player player, int score, List<int> ids) {
+        ids.Add(798); //This is a value /100 like the others in ids
 
+        foreach (int id in ids)
+        {
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddSessStat(player, id, score*100);
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, id, score*100);
+        }
+
+        ids = new List<int> { 647, 648, 649, 794, 799 }; //These are all values NOT /100 - just done straight
+
+        foreach (int id in ids)
+        {
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddSessStat(player, id, score);
+            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, id, score);
+        }
+
+        //return (Value[647] + Value[648] + Value[649] + Value[794]); - kill/any participation for aircraft / aa=artillery-tank / ships=naval / ground
+        //NOT multiplied by 100
+
+        //798 = total kill PERCENTAGE /100
+        // 799 = num of total victories, NOT /100
+    }
+
+    public void MO_AddPlayerStatsScoresForObjectiveDestruction(Player player, string name, MissionObjective mo, int score)
+    {
+        //798-799 all types combined (total) -806/807 AA/Artillery/Tanks, 810/811 Naval/ship, 814/815 Other 
+        //ground recon photos taken, 849 # of objectives photographed
+
+        if (player == null) player = Calcs.PlayerFromName(this, name);
+
+        //If the player isn't online we substitute in its place the 'stub' Player p1.  It only has the name & army of the player, but that is all that is needed by stats (thanks to 
+        //clever hacking/tweaking of the stats routines).
+        if (player == null)
+        {
+            aPlayer p1 = new aPlayer(name, mo.AttackingArmy);
+            player = p1 as Player;
+        }
+
+        if (mo.MOObjectiveType == MO_ObjectiveType.AA            
+            )
+        {
+
+            List<int> scoreIDs = new List<int> {  806, 807 };
+            MO_AddStatPoints(player, score, scoreIDs);
+
+        }
+        else if (mo.MOObjectiveType == MO_ObjectiveType.Ship
+                )
+        {
+
+            List<int> scoreIDs = new List<int> { 810, 811 };
+            MO_AddStatPoints(player, score, scoreIDs);
+
+        }
+        else 
+        /* covers these & a bunch more - all just classed as ground targets:
+         *  (mo.MOObjectiveType == MO_ObjectiveType.Aircraft ||
+             mo.MOObjectiveType == MO_ObjectiveType.ArmyBase ||
+             mo.MOObjectiveType == MO_ObjectiveType.Dam ||
+             mo.MOObjectiveType == MO_ObjectiveType.Dock
+             //We're counting aircraft killed on the ground as ground targets, because they're not flying at the time
+
+             )
+             */
+        {
+
+            List<int> scoreIDs = new List<int> { 814, 815 };
+            MO_AddStatPoints(player, score, scoreIDs);
+
+        }
+
+    }
 
     //Destroys the objective with the given ID and takes other related actions, such as 
     //adding points, displaying messages, reducing radar coverage
-    public bool MO_DestroyObjective(string ID, bool active = true)
+    public bool MO_DestroyObjective(string ID, bool active = true, double percentdestroyed = 0, double timetofix_s = 0 , DateTime? TimetoUndestroy_UTC = null)
     {
-        if (!active) return false;  //If a trigger is passed with flag active=false that (generally) means the trigger has already been activated once before & we don't want to repeat it again
-                                    //this is passed when coming from onTrigger, otherwise it should just be TRUE by default
-
-        var OldObj = new MissionObjective(this);
-
-        if (!MissionObjectivesList.TryGetValue(ID, out OldObj))
+        try
         {
-            return false;
-            //OldObj = new MissionObjective(msn);
+            if (!active) return false;  //If a trigger is passed with flag active=false that (generally) means the trigger has already been activated once before & we don't want to repeat it again
+                                        //this is passed when coming from onTrigger, otherwise it should just be TRUE by default
+
+            var OldObj = new MissionObjective(this);
+
+            if (!MissionObjectivesList.TryGetValue(ID, out OldObj))
+            {
+                return false;
+                //OldObj = new MissionObjective(msn);
+            }
+
+            //Turn off the trigger so it won't trigger again - IF this objective type is a trigger
+            if (OldObj.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
+            {
+                Console.WriteLine("MO_DestroyObjective: Disabling trigger " + ID);
+                GamePlay.gpGetTrigger(ID).Enable = false;
+            }
+
+            if (OldObj.IsEnabled) {
+                if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
+                if (timetofix_s>0) OldObj.TimeToUndestroy_UTC = DateTime.Now.AddSeconds(timetofix_s);
+                if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
+            }
+
+            if (OldObj.Destroyed || !OldObj.IsEnabled) return false; //The object has already been destroyed; don't need to do it again; we only give points/credit for destroying any given objective once
+
+
+            OldObj.Destroyed = true;
+
+            if (OldObj.MOObjectiveType == MO_ObjectiveType.Radar)
+            {
+                if (OldObj.OwnerArmy == 1) DestroyedRadar[(ArmiesE.Red)].Add(OldObj);
+                if (OldObj.OwnerArmy == 2) DestroyedRadar[(ArmiesE.Blue)].Add(OldObj);
+                OldObj.TimeToUndestroy_UTC = DateTime.UtcNow.AddHours(OldObj.TimetoRepairIfDestroyed_hr);
+            }
+
+            if (OldObj.AttackingArmy == 1)
+            {
+                MissionObjectivesCompletedString[ArmiesE.Red] += " - " + OldObj.Name;
+
+                Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
+                Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Red]);
+                MissionObjectiveScore[ArmiesE.Red] += OldObj.Points;
+            }
+            if (OldObj.AttackingArmy == 2)
+            {
+                MissionObjectivesCompletedString[ArmiesE.Blue] += " - " + OldObj.Name;
+                Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
+                Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Blue]);
+
+                MissionObjectiveScore[ArmiesE.Blue] += OldObj.Points;
+            }
+
+
+            if (OldObj.HUDMessage != null && OldObj.HUDMessage.Length > 0) GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
+
+            if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) Timeout(10, () =>
+            {
+                twcLogServer(null, OldObj.LOGMessage, new object[] { });
+                twcLogServer(null, "All involved have received commendations and promotions.", new object[] { });
+                MissionObjectivesList[ID] = OldObj;
+            });
+
+            MO_CheckObjectivesComplete();
+
+            //now update related player scores
+
+            //**add player points for any players on the side that destroyed this objective, who are within 10km of this spot
+            List<String> mos = MO_ListSuggestedObjectives(null, OldObj.AttackingArmy, display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
+
+            int score = 5;        //Remember that stats kill scores are /100.  But the routines above will do that calculation; we just need the kill points here.
+            if (mos.Contains(ID)) score *= 2; //secondary objective
+            if (OldObj.IsPrimaryTarget) score *= 3;
+
+
+            try
+            {
+                foreach (Player player in GamePlay.gpRemotePlayers())
+                {
+                    if (player.Place() == null) continue;
+
+                    if (OldObj.AttackingArmy == player.Army() &&
+                    player.Place() != null &&                    
+                    Calcs.CalculatePointDistance(player.Place().Pos(), OldObj.Pos) < 10000)
+                    {
+                        MO_AddPlayerStatsScoresForObjectiveDestruction(player, player.Name(), OldObj, score);
+
+                    }
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("MO_Destroy error2: " + ex.Message); };
+
+            try
+            {
+                //**add player stat points for any players who scouted/recon photo for this objective
+                //It is max for first player to recon, then reduced by 50% for each succeeding player who also reconned it
+                foreach (string playerName in OldObj.PlayersWhoScoutedNames.Keys)
+                {
+                   MO_AddPlayerStatsScoresForObjectiveDestruction(null, playerName, OldObj, score/(2^ OldObj.PlayersWhoScoutedNames[playerName]));
+                }
+
+            }
+            catch (Exception ex) { Console.WriteLine("MO_Destroy error3: " + ex.Message); };
+
+
+
+            return true;
         }
-
-        //Turn off the trigger so it won't trigger again - IF this objective type is a trigger
-        if (OldObj.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
-        {
-            Console.WriteLine("MO_DestroyObjective: Disabling trigger " + ID);
-            GamePlay.gpGetTrigger(ID).Enable = false;
-        }
-
-        if (OldObj.Destroyed || !OldObj.IsEnabled) return false; //The object has already been destroyed; don't need to do it again; we only give points/credit for destroying any given objective once
-
-        OldObj.Destroyed = true;
-        if (OldObj.MOObjectiveType == MO_ObjectiveType.Radar)
-        {
-            if (OldObj.OwnerArmy == 1) DestroyedRadar[(ArmiesE.Red)].Add(OldObj);
-            if (OldObj.OwnerArmy == 2) DestroyedRadar[(ArmiesE.Blue)].Add(OldObj);
-        }
-
-        if (OldObj.AttackingArmy == 1)
-        {
-            MissionObjectivesCompletedString[ArmiesE.Red] += " - " + OldObj.Name;
-
-            Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
-            Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Red]);
-            MissionObjectiveScore[ArmiesE.Red] += OldObj.Points;
-        }
-        if (OldObj.AttackingArmy == 2)
-        {
-            MissionObjectivesCompletedString[ArmiesE.Blue] += " - " + OldObj.Name;
-            Console.WriteLine("MO_DestroyObjective: Name " + OldObj.Name);
-            Console.WriteLine("MO_DestroyObjective: String " + MissionObjectivesCompletedString[ArmiesE.Blue]);
-
-            MissionObjectiveScore[ArmiesE.Blue] += OldObj.Points;
-        }
-
-
-        if (OldObj.HUDMessage != null && OldObj.HUDMessage.Length > 0) GamePlay.gpHUDLogCenter(OldObj.HUDMessage);
-
-        if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) Timeout(10, () =>
-        {
-            twcLogServer(null, OldObj.LOGMessage, new object[] { });
-            MissionObjectivesList[ID] = OldObj;
-        });
-
-        MO_CheckObjectivesComplete();
-
-        return true;
+        catch (Exception ex) { Console.WriteLine("MO_Destroy error4: " + ex.Message); return true; };
     }
 
-    public void MO_CheckObjectivesComplete()
+    //Adds additional destruction/percent/time out of commission to objects that are already destroyed
+    //string ID, bool active = true, double percentdestroyed = 0, double timetofix_s = 0 , DateTime? TimetoUndestroy_UTC = null
+    public bool MO_DestroyObjective_addTime(string ID, double percentdestroyed = 0, double timetofix_s = 0, DateTime? TimetoUndestroy_UTC = null)
+    {
+        try
+        {
+
+            var OldObj = new MissionObjective(this);
+
+            if (!MissionObjectivesList.TryGetValue(ID, out OldObj))
+            {
+                return false;
+                //OldObj = new MissionObjective(msn);
+            }
+
+            //Add the extra time/destruction percent and/or update the time when the object will be undestroyed
+            if (OldObj.IsEnabled)
+            {
+                if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
+                if (timetofix_s > 0) OldObj.TimeToUndestroy_UTC = DateTime.Now.AddSeconds(timetofix_s);
+                if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
+            }
+            return true;
+
+        }
+        catch (Exception ex) { Console.WriteLine("MO_Destroy_addTime ERROR: " + ex.Message); return true; }
+    }
+
+public void MO_CheckObjectivesComplete()
     {
 
 
@@ -8549,9 +9851,14 @@ public class Mission : AMission, IMainMission
         //Console.WriteLine("#1 " + pos.x.ToString() + " " + pos.y.ToString() + " " + radarArmy.ToString());
         //WITHIN AN AREA WHERE THE RADAR HAS BEEN DESTROYED?
         //Finds if the point/ac is in an area with destroyed radar for either/both sides
-        if (mission_objectives != null) { if (MO_IsPointInDestroyedRadarArea(pos, radarArmy)) return false; }
-        else Console.WriteLine("#1.5  Mission Objectives doesn't exist!");
-        //Console.WriteLine("#2 " + pos.x.ToString() + " " + radarArmy.ToString());
+        //if (mission_objectives != null) { if (MO_IsPointInDestroyedRadarArea(pos, radarArmy)) return false; }
+        //else Console.WriteLine("#1.5111  Mission Objectives doesn't exist!!!!!");
+
+        if (mission_objectives == null) Console.WriteLine("#1.51  Mission Objectives really doesn't exist!");
+        else { if (MO_IsPointInDestroyedRadarArea(pos, radarArmy)) return false; }
+		
+	if (mission_objectives == null) Console.WriteLine("#1.52  Mission Objectives really doesn't exist!");
+        //Console.WriteLine("#2.123 " + pos.x.ToString() + " " + radarArmy.ToString());
 
         //RED army special denied areas or areas the never have radar coverage
         if (radarArmy == 1)
@@ -8610,7 +9917,7 @@ public class Mission : AMission, IMainMission
 
         int nump = Calcs.gpNumberOfPlayers(GamePlay);
         Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
-        if (nump > 50 || (nump > 40 && random.NextDouble() > 0.5))
+        if (nump > 60 || (nump > 40 && random.NextDouble() > 0.5))
         {
             Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
             return true;
@@ -8686,9 +9993,9 @@ public class Mission : AMission, IMainMission
      * You can call both triggers and actions from any mission--either the main mission file or any sub-mission loaded via gpPostMissionLoad.
      * You only need the EXACT name from the .mis file.
      *             
-     * 
+     * Also Timers should be named as timers with the time to launch in the title to avoid confusion
      * ****************************************************************************************************************/
-    //
+    //  First triggers are convoys*************************************************
     public override void OnTrigger(int missionNumber, string shortName, bool active)
     //public void bartOnTrigger(int missionNumber, string shortName, bool active)
     {
@@ -8700,16 +10007,37 @@ public class Mission : AMission, IMainMission
         //Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString() + " MO_DestroyObjective result: " + res.ToString());
 
 
-        //Console.WriteLine("OnTrigger: Now doing ActionTriggers: " + shortName + " Active: " + active.ToString() + " !stopAI()=" + (!stopAI()).ToString() + " zonedef: " + ("zonedefenseblue1".Equals(shortName) && active && !stopAI()).ToString());
+        //Console.WriteLine("OnTrigger: Now doing ActionTriggers: " + shortName + " Active: " + active.ToString() + " !stopAI()=" + (!stopAI()).ToString() + " zonedef: " + ("zonedefenseblue1".Equals(shortName) && active && !stopAI()).ToString());  
 
         ///Timed raids into enemy territory////////////////////////// using the action part of the trigger//
 
         //if you want any patrols etc to continue running even when the server is full of live players, just remove the  && !stopAI() of that trigger
         //stopAI will slow down AI patrols with 40 players online and stop them at 50 (adjustable above).
-
-        if ("F1".Equals(shortName) && active && !stopAI())
+		//Begin convoys for both sides with pass thru zones
+/*	
+	
+"Rouen_2_Lehavre",				       "Panzer_2_Calais",			
+"Rouen_2_Brombos",				       "Opel_BlitzFuel1",			
+"Dieppe_2_Lehavre",				       
+"Bernay_2_Hornfleur",			       "Dunkirk_2_GrandFort",		
+"Beaumont_2_Forges",			       "Onkel_Albert_Staff_Car",	
+"Lehavre_2_Forges",				       "LeTreport_fuel_Convoy",	
+"FuelBeauvis_2_Nuefchatel",		       "Abbeville_2_PoixDePicard",	
+"Huate_from_Dieppe",			       "Amiens_2_MontDidiear",		
+"Clermont_2_Dieppe",			       "Arras_2_WallyBeaucamp",	
+"Opel_Blitz_fuel_1",			       "GER_Fuel_Column_1",		
+"Rouen_2_Dieppe2",				       "GER_Fuel_Column_2",		
+"Stelling_to_Dunkirk		       "GER_Fuel_Column_3",		
+"General_Tiny_Barber",			
+"Rouen_Fuel_Convoy_2Dieppe",	
+"Les_Andeleys_2_Brombos",		
+"Axis_War_Plans",				
+	
+*/		
+        if ("Convoy_Timer1_10min".Equals(shortName) && active )//Ai activity reguardless of number of players
+		
         {
-            AiAction action = GamePlay.gpGetAction("action1");
+            AiAction action = GamePlay.gpGetAction("Rouen_2_Lehavre");//Chief_0
 
 
             if (action != null)
@@ -8717,15 +10045,156 @@ public class Mission : AMission, IMainMission
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
+            Timeout(10, () => sendScreenMessageTo(1, " Rouen_2_Lehavre Convoy Launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+		}
+        else if ("Convoy_Timer2_11min".Equals(shortName) && active )//Ai activity reguardless of number of players
+		
+        {
+            AiAction action = GamePlay.gpGetAction("Panzer_2_Calais");//Chief_0
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(15, () => sendScreenMessageTo(1, " Panzer_2_Calais Convoy Launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+		}		
+        else if ("Timer3_30min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Rouen_2_Brombos");//Chief_1
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Rouen_2_Brombos convoy launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer4_31min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Opel_Blitz_fuel_1 ");//Chief_10
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Abbeville .Ligescourt Cramont area refueling", null));			
+          //  Timeout(3600, () => sendScreenMessageTo(2, "Rouen Fighters restset...Check time", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+        else if ("Timer5_45min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Dieppe_2_Lehavre");//Chief_2
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Dieppe to Le Havre Convoy launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Beckton_Sewage".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+        //    AiAction action = GamePlay.gpGetAction("Dieppe_2_Lehavre");//Chief_2
+
+
+       //     if (action != null)
+       //     {
+       //         action.Do();
+       //         Console.WriteLine("Triggered action " + action.Name);
+       //     }
+            Timeout(10, () => sendScreenMessageTo(2, "Beckton Sewage Treatment facility Destroyed", null));
+            Timeout(20, () => sendScreenMessageTo(2, "Crap everywhere", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Beckton Sewage Treatment facility Destroyed,", null));
+	        Timeout(20, () => sendScreenMessageTo(1, "Crap everywhere 3 sheets in the wind", null));		
+		  GamePlay.gpGetTrigger(shortName).Enable = false;
+		}
+        else if ("D_Sewage".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+        //    AiAction action = GamePlay.gpGetAction("Dieppe_2_Lehavre");//Chief_2
+
+
+       //     if (action != null)
+       //     {
+        //        action.Do();
+        //        Console.WriteLine("Triggered action " + action.Name); 
+       //     }
+            Timeout(10, () => sendScreenMessageTo(2, "Sewage Treatment facility Destroyed in Dunkirk", null));
+            Timeout(20, () => sendScreenMessageTo(2, "Crap everywhere ", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Allied Effort results in destruction of a sewage plant in Dunkirk,", null));
+	        Timeout(20, () => sendScreenMessageTo(1, "Crap everywhere", null));		
+		  GamePlay.gpGetTrigger(shortName).Enable = false;
+		}		
+        else if ("Timer6_46min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Dunkirk_2_GrandFort");//Chief_12
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Dunkirk_2_GrandFort Convoy launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+          //  GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+        else if ("Timer7_60min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Bernay_2_Hornfleur");//Chief_3
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+           Timeout(10, () => sendScreenMessageTo(1, "Bernay_2_Hornfleur Convoy launched", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer8_61min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Onkel_Albert_Staff_Car");//Chief_14
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(40, () => sendScreenMessageTo(1, "German General on Inspection", null));
 
             
         //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F1e".Equals(shortName) && active && !stopAI())// Trigger F1e launches escorts to go with Do 17s from trigger F1 above
+        else if ("Timer9_90min".Equals(shortName) && active )//Ai activity reguardless of number of players
         {
-            AiAction action = GamePlay.gpGetAction("action1e");
+            AiAction action = GamePlay.gpGetAction("Beaumont_2_Forges");//Chief_4
 
 
             if (action != null)
@@ -8733,12 +10202,58 @@ public class Mission : AMission, IMainMission
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
+            Timeout(10, () => sendScreenMessageTo(1, "Beaumont_2_Forges Convoy launched", null));
 
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+        else if ("Timer10_91min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("LeTreport_fuel_Convoy");//Chief_17
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "LeTreport_fuel_Convoy launched", null));
+        //    Timeout(10, () => sendScreenMessageTo(1, "Friendly Resupply Convoy Spotted AC 6 headed to Carquebut area Someone check for vehicle spawn please", null));
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+        else if ("Timer11_95min".Equals(shortName) && active && !stopAI())// Trigger F1e launches escorts to go with Do 17s from trigger F1 above
+        {
+            AiAction action = GamePlay.gpGetAction("Lehavre_2_Forges");//Chief_5
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+       Timeout(10, () => sendScreenMessageTo(2, "Critical Fuel Supplies Lehavre_2_Forges", null));
+       Timeout(10, () => sendScreenMessageTo(1, "Friendly  Fuel Supplies Flowing Lehavre_2_Forges ", null));	   
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer12_96min".Equals(shortName) && active && !stopAI())// Trigger F1e launches escorts to go with Do 17s from trigger F1 above
+        {
+            AiAction action = GamePlay.gpGetAction("Abbeville_2_PoixDePicard");//Chief_19
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+       Timeout(10, () => sendScreenMessageTo(1, "Enemy Tanks Spotted Abbeville to Poix Nord", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F1c".Equals(shortName) && active && !stopAI())// Trigger F1c launches escorts to go with escorts from trigger F1e above
+        else if ("Timer13_120min".Equals(shortName) && active && !stopAI())// Trigger F1c launches escorts to go with escorts from trigger F1e above
         {
-            AiAction action = GamePlay.gpGetAction("action1c");
+            AiAction action = GamePlay.gpGetAction("FuelBeauvis_2_Nuefchatel");//Chief_6
 
 
             if (action != null)
@@ -8746,59 +10261,344 @@ public class Mission : AMission, IMainMission
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-
+			 Timeout(10, () => sendScreenMessageTo(1, "Fuel Supplies Beauvis to Nuefchatel", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F2".Equals(shortName) && active && !stopAI())
+        else if ("Timer14_121min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action2");
+            AiAction action = GamePlay.gpGetAction("Amiens_2_MontDidiear");//Chief_20
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Supplies from Amiens to Mt. Didiear.", null));
           //  Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F3".Equals(shortName) && active && !stopAI())
+        else if ("Timer15_125min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action3");
+            AiAction action = GamePlay.gpGetAction("Huate_from_Dieppe");//Chief_7
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
-        //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
+            Timeout(10, () => sendScreenMessageTo(2, "Supplies from Huate_from_Dieppe.", null)); 
+         //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+		}	
+        else if ("Timer16_126min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Arras_2_WallyBeaucamp");//Chief_21
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+ 
+            Timeout(60, () => sendScreenMessageTo(1, "Arras_2_WallyBeaucamp Supplies moving now!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;			
+        }
+        else if ("Timer17_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Clermont_2_Dieppe");//Chief_8
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(60, () => sendScreenMessageTo(2, "Clermont_2_Dieppe fuel supplies Spotted!!!.", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F4".Equals(shortName) && active && !stopAI())
+        else if ("Timer18_181min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action4");
+            AiAction action = GamePlay.gpGetAction("GER_Fuel_Column_1");//Chief 22
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lypne in 10 minutes.", null));
+            Timeout(60, () => sendScreenMessageTo(2, "Liegescourt area fuel supplies Spotted!!!.", null));
+        }
+        else if ("Timer19_210min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Stelling_to_Dunkirk");//Chief_13
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(60, () => sendScreenMessageTo(2, "Stelling_to_Canterbury Dunkirk area in Britain moving now ", null));
+        }		
+       else if ("Timer20_211min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("GER_Fuel_Column_2");//Chief_
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+           Timeout(60, () => sendScreenMessageTo(1, " St omar to Colembert", null));
+        }
+       else if ("Timer21_240min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("General_Tiny_Barber");//Chief_23
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Scotish General touring front lines Le Havre to Dieppe.", null));
+        }
+				
+        else if ("Timer22_241min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("GER_Fuel_Column_3");//Chief_24
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Fuel Supplies movingAbbeville to Arras!", null));
+         //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
+        }
+       else if ("Timer23_270min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Rouen_Fuel_Convoy_2Dieppe");//Chief_16
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Rouen_Fuel_Convoy_2Dieppe", null));
+        //    Timeout(600, () => sendScreenMessageTo(1, "He-111s have been spotted over Calais @ 14K ft. heading west!", null));
+        }
+        else if ("Timer24_271min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Les_Andeleys_2_Brombos");//Chief_18
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "Les_Andeleys_2_Brombos fuel trucks heading out.", null));
+        }
+        else if ("Timer25_300min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Axis_War_Plans");//Chief_25
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "Enemy has our battle plans single vehicle BD5 to AY8", null));
+          Timeout(30, () => sendScreenMessageTo(2, "Destroy the Vehicle with the plans!!", null));
+        }
+        else if ("Timer24_271min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Rouen_2_Dieppe2");//Chief_13
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "Rouen_2_Dieppe2 fuel trucks heading out.", null));
+        }
+
+//Aircraft timers
+
+		else if ("ATimer2_60min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("110_Escort_2_London");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+        //    Timeout(10, () => sendScreenMessageTo(1, "Heavy enemy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }	
+        else if ("ATimer2_60min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("110_Escort_2_London");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+        //    Timeout(10, () => sendScreenMessageTo(1, "Heavy enemy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer2_60min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("109_Escort_2_London");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+         //   Timeout(10, () => sendScreenMessageTo(1, "Heavy enemy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }	
+        else if ("ATimer1_60min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("Heavy_Bomber_Raid_2");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "#2 Heavy enemy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+          //  GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+        else if ("ATimer1_210min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("110_Escort_2_London");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+          //  Timeout(10, () => sendScreenMessageTo(1, "#2 Heavy enemy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_210min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("109_Escort_2_London");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(40, () => sendScreenMessageTo(1, "Heavy raid with escorts moving North!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_210min".Equals(shortName) && active )//Ai activity reguardless of number of players
+        {
+            AiAction action = GamePlay.gpGetAction("109_late_raid_Jabo");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "109s heading north from moving Northwest from Merville!", null));
+
+            
+        //    Timeout(15, () => sendScreenMessageTo(1, " Testing...Do 17s have been spotted  east Calais @ 4000m heading west! Check for Escorts", null));
+            GamePlay.gpGetTrigger(shortName).Enable = false;
+        }		
+
+        else if ("Timer_Convoy_Britian".Equals(shortName) && active && !stopAI())// Trigger F1e launches escorts to go with Do 17s from trigger F1 above
+        {
+            AiAction action = GamePlay.gpGetAction("TimedPanzerConvoy");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+       Timeout(10, () => sendScreenMessageTo(1, "Enemy Tanks Spotted AS 1 heading West", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_60min".Equals(shortName) && active && !stopAI())// Trigger F1c launches escorts to go with escorts from trigger F1e above
+        {
+            AiAction action = GamePlay.gpGetAction("StukaRaid");
+
+
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_120min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("StukaRaid");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "test of timed operation.", null));
+          //  Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("StukaRaid2");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+ 
+         //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+		}	
+        else if ("ATimer1_270min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("StukaRaid3");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+ 
+         //    Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @ 20K ft. heading west!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;			
+        }
+        else if ("ATimer2_31min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Interior_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
          //   Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympe at 6000m!!!.", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F5".Equals(shortName) && active && !stopAI())
+        else if ("ATimer2_90min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action5");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(2, "BR.20Ms requesting escort.  Meet at Boulogne @ 6km in 10 minutes.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 12000 ft. heading west! with escorts", null));
-        }
-        else if ("F5e".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("action5e");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Interior_Patrol");
             if (action != null)
             {
                 action.Do();
@@ -8806,108 +10606,150 @@ public class Mission : AMission, IMainMission
             }
 
         }
-        else if ("F6".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_240min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action6");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
+            Timeout(600, () => sendScreenMessageTo(1, "Activity reported along Somme.", null));
+        }		
+       else if ("ATimer1_60min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");// every hour
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+        }
+       else if ("ATimer1_120min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");//hour 2
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+        }
+				
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");//hour 3
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+         //   Timeout(10, () => sendScreenMessageTo(1, "Testing Somme Patrol Note time please", null));
          //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
         }
-        else if ("F7".Equals(shortName) && active && !stopAI())
+       else if ("ATimer1_240min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action7");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");//4 hrs
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "He-111s requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Enemy aircraft reported along Somme.", null));
         //    Timeout(600, () => sendScreenMessageTo(1, "He-111s have been spotted over Calais @ 14K ft. heading west!", null));
         }
-        else if ("F7e".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_300min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action7e");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Somme_Patrol");//Somme patrol at 5 hours
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-
+          //  Timeout(10, () => sendScreenMessageTo(1, "Testing Somme #3  Patrol Note time please.", null));
         }
-        else if ("F8".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_60min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action8");
+            AiAction action = GamePlay.gpGetAction("  Timed_B_Front_Patrol");//60 min after start second front patrol of 109's
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
-        //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Fighters near front lines", null));
+        //  Timeout(600, () => sendScreenMessageTo(2, "Our Fighters covering front lines", null));
+        }		
+        else if ("ATimer1_90min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol2");//90 min after start second front patrol then again every 90 min
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Fighters near front lines", null));
+        //  Timeout(600, () => sendScreenMessageTo(2, "Our Fighters covering front lines", null));
         }
-        else if ("F9".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action9");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol3");// second 110 patrol 180 min later
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "Do 17s requesting escort! Meet at Calais at 6km in 10 minutes", null));
-         //   Timeout(600, () => sendScreenMessageTo(1, "Second run Do 17s spotted over Calais @ 6000m heading west!!!", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Beware of front line fighters!", null));
+          Timeout(600, () => sendScreenMessageTo(2, "Again our fighters cover he front lines", null));
         }
-        else if ("F10".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_270min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action10");
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol4");// 3rd patrol of front using different aircraft
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null));
-        //    Timeout(600, () => sendScreenMessageTo(2, "Wellingtons have been spotted over Dymchurch at 6000m heading east!!!", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Air trafic increase near front lines!", null));
+            Timeout(600, () => sendScreenMessageTo(2, "Last flight of our fighters headed to front lines!", null));
         }
-        else if ("F11".Equals(shortName) && active && !stopAI())
+          else if ("ATimer1_92min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action11");
+            AiAction action = GamePlay.gpGetAction("StukaRaid2");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "Ju88s requesting escort. Meet at Oye-Plage @ 6000m in 10 minutes.", null));
-         //   Timeout(600, () => sendScreenMessageTo(1, "Ju88s have been spotted over Oye-Plage @20K ft. heading west!", null));
+            Timeout(10, () => sendScreenMessageTo(2, "Heavy Stuka raid on front lines Escorts needed Launching Freecamp Now!!!.", null));
+            Timeout(600, () => sendScreenMessageTo(1, "Activity in Le Havre Area!!", null));
         }
-        else if ("F12".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_95min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action12");
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid2");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at 20K ft. over Lympne in 10 minutes.", null));
+            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Heading to Rouen Fuel targets low and fast", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
         }
-        else if ("F13".Equals(shortName) && active && !stopAI())
+        else if ("ATimer3_120min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action13");
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid3");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(2, "BR.20Ms requesting escort.  Meet at Boulogne @ 6km in 10 minutes.", null));
+            Timeout(10, () => sendScreenMessageTo(2, "Spies report Blenheim aircraft heading East toward Rouen.", null));
         //    Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F13e".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_300min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action13e");
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid");
             if (action != null)
             {
                 action.Do();
@@ -8916,9 +10758,9 @@ public class Mission : AMission, IMainMission
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F13c".Equals(shortName) && active && !stopAI())
+       else if ("Timer3_90min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action13c");
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
             if (action != null)
             {
                 action.Do();
@@ -8927,30 +10769,234 @@ public class Mission : AMission, IMainMission
 
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F13cc".Equals(shortName) && active && !stopAI())
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action13cc");
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
 
-            Timeout(600, () => sendScreenMessageTo(1, "testing Escorts", null));
+       //     Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }
-        else if ("F14".Equals(shortName) && active && !stopAI())
+
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
         {
-            AiAction action = GamePlay.gpGetAction("action14");
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
             if (action != null)
             {
                 action.Do();
                 Console.WriteLine("Triggered action " + action.Name);
             }
-            Timeout(10, () => sendScreenMessageTo(1, "Wellingtons requesting escort.  Meet at 20K ft. over St. Mary's Bay in 10 minutes.", null));
+
+         //   Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }			
+
+        else if  ("ATimer1_30min".Equals(shortName) && active && !stopAI())
+        {
+			AiAction action = GamePlay.gpGetAction("Cher_Cover_Hi");
+			if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+        //    Timeout(600, () => sendScreenMessageTo(1, "testing cher hi patrol", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("ATimer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+        //    Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+	        else if ("ATimer1_270min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("109_Escort_2_London");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "Heavy Bomber Raid  heading West w/escorts", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }			
+  /*      else if ("Timer1_90min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol2");//90 min after start second front patrol then again every 90 min
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Fighters near front lines", null));
+        //  Timeout(600, () => sendScreenMessageTo(2, "Our Fighters covering front lines", null));
+        }
+        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol3");// second 110 patrol 180 min later
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Beware of front line fighters!", null));
+          Timeout(600, () => sendScreenMessageTo(2, "Again our fighters cover he front lines", null));
+        }
+        else if ("Timer1_270min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol4");// 3rd patrol of front using different aircraft
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Air trafic increase near front lines!", null));
+            Timeout(600, () => sendScreenMessageTo(2, "Last flight of our fighters headed to front lines!", null));
+        }
+          else if ("Timer1_92min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("StukaRaid2");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "Heavy Stuka raid on front lines Escorts needed Launching Freecamp Now!!!.", null));
+            Timeout(600, () => sendScreenMessageTo(1, "Activity in Le Havre Area!!", null));
+        }
+        else if ("Timer1_95min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid2");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Heading to Rouen Fuel targets low and fast", null));
+        //    Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
+        }
+        else if ("Timer3_120min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid3");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(2, "Spies report Blenheim aircraft heading East toward Rouen.", null));
+        //    Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer1_300min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+       else if ("Timer3_90min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+
+        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }			
+
+        else if  ("Timer1_30min".Equals(shortName) && active && !stopAI())
+        {
+			AiAction action = GamePlay.gpGetAction("Cher_Cover_Hi");
+			if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "testing cher hi patrol", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }
+	        else if ("  Heavy_Bomber_Raid_3".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("109_Escort_2_London");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+
+            Timeout(600, () => sendScreenMessageTo(1, "testing 3.5 hours Heavy Bomber Raid w/escorts #3 ", null));
+            //GamePlay.gpGetTrigger(shortName).Enable = false;
+        }	
+*/
+		/*       else if ("Timer1_300min".Equals(shortName) && active && !stopAI())
+        {
+            AiAction action = GamePlay.gpGetAction("General_Inspection_Red");
+            if (action != null)
+            {
+                action.Do();
+                Console.WriteLine("Triggered action " + action.Name);
+            }
+            Timeout(10, () => sendScreenMessageTo(1, "Second Test 300 min in", null));
         //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
         }
-        else if ("F15".Equals(shortName) && active && !stopAI())
+         
+		 /*     From Here raids remmed out for now Do not delete just re write
+		 else if ("F15".Equals(shortName) && active && !stopAI())
         {
             AiAction action = GamePlay.gpGetAction("action15");
             if (action != null)
@@ -9423,6 +11469,7 @@ public class Mission : AMission, IMainMission
             //GamePlay.gpGetTrigger(shortName).Enable = false;
 
         }
+                */		
         else
         {
             //This final ELSE ensures that any other triggers in the mission file (ie time triggers)
@@ -9810,6 +11857,24 @@ public static class Calcs
 
     }
 
+    //This make a  larger, somewhat random block of sectors, with the initial point in it somewhere. 
+    //MaxSectorWidth 4x10000 actually gives sector blocks 5 wide sometimes (0.5 to 4.5, say -- takes in sectors 0,1,2,3,4)
+    //So, we subract 1.
+    public static string makeBigSector(Mission msn, Point3d p, int maxSectorWidth = 4)
+    {
+        Point3d p1 = new Point3d(p.x - clc_random.Next((maxSectorWidth-1) * 10000), p.y - clc_random.Next((maxSectorWidth - 1) * 10000), p.z);
+        if (p1.x < 0) p1.x = 0;
+        if (p1.y < 0) p1.y = 0;
+        Point3d p2 = new Point3d(p1.x + clc_random.Next((maxSectorWidth - 1) * 10000), p1.y + clc_random.Next((maxSectorWidth - 1) * 10000), p1.z);
+
+        //BattleArea 10000 10000 350000 310000 10000 is TWC standard
+        if (p2.x > 350000) p2.x = 350000;
+        if (p2.y > 310000) p2.y = 310000;
+
+        return correctedSectorName(msn, p1) + "-" + correctedSectorName(msn, p2);
+        
+    }
+
     //OK, so in order for the sector # to match up with the TWC map, and
     //to work with our "double keypad" routines listed here,
     //And (most important!) in order to make the sectors match up with EASY SIMPLE
@@ -9973,7 +12038,21 @@ public static class Calcs
         // Return the hexadecimal string.
         return sBuilder.ToString();
     }
-
+    public static Player PlayerFromName(Mission msn, string name)
+    {   // Purpose: Returns Player player given string name of player
+        
+        //multiplayer
+        if (msn.GamePlay.gpRemotePlayers() != null) foreach (Player player in msn.GamePlay.gpRemotePlayers())
+        {
+                if (player.Name() == name) return player;
+        }
+        //singleplayer
+        else if (msn.GamePlay.gpPlayer() != null)
+        {
+            if (msn.GamePlay.gpPlayer().Name() == name) return msn.GamePlay.gpPlayer();
+        }
+        return null;
+    }
     public static int gpNumberOfPlayers(this IGamePlay GamePlay)
     {   // Purpose: Returns the number of human players in the game.
         // Use: GamePlay.NumberOfPlayers(); 
@@ -10104,13 +12183,72 @@ public static class Calcs
         list[j] = temp;
     }
 
+    public static async Task<bool> WriteAllTextAsync(string filelocation, string data, bool wait = false, ManualResetEvent resetEvent = null )
+    {
+        try
+        {
+            using (var sw = new StreamWriter(filelocation))
+            {
+                /*
+                int count = 0;
+                if (wait)
+                {
+                    //try it like 10X if not successful
+                    *
+                    while (count < 10)
+                    {
+                        Task<bool> task = Calcs.WriteAllTextAsync(filepath, xmlString);
+                        bool res = await task;
+                        if (res) break;
+                        Console.WriteLine("MO_WriteMissionObject: Attempt #" + count.ToString() + " to write " + name + " not successful");
+                        Thread.Sleep(1);
+                        count++;
+                    }*
+                    Task task = sw.WriteAsync(data);
+                    await task;
+
+                }
+                else */
+                await sw.WriteAsync(data);
+            }
+            if (resetEvent != null) resetEvent.Set(); //signals the waiting method that called this, to exit
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("WriteAllTextAsync ERROR writing " + filelocation + ": " + ex.ToString());
+
+            if (resetEvent != null) resetEvent.Set();
+            return false;
+            
+        }
+    }
+
+    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type="BuildingFireBig", double duration_s = 300)
+    {
+        /* Sample: Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24 
+         possible types: Smoke1 Smoke2 BuildingFireSmall BuildingFireBig BigSitySmoke_0 BigSitySmoke_1
+
+        Not sure if height is above sea level or above ground level.
+ */
+
+
+
+        //AMission mission = GamePlay as AMission;
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        string key = "Static1";
+        string value = "Smoke.Environment." + type + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + (duration_s / 60).ToString("0.0") + " /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+
+    }
+
 
 } //end class Calcs
 
 
-
-
-    public class ReverseComparer2 : IComparer<string>
+public class ReverseComparer2 : IComparer<string>
     {
         public int Compare(string x, string y)
         {

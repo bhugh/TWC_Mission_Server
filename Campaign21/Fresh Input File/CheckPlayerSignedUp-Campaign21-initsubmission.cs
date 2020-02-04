@@ -148,7 +148,7 @@ Debug.Assert(set.Contains("JohN"));
            )
         {            
             Stb_Chat(">>>>>" + player.Name() + " tried to join the Campaign but is not registered.");
-            Stb_Chat(">>>>>Contact TWC_Fatal_Error @ ATAG forums if an error OR register at TWCClan.com");
+            Stb_Chat(">>>>>Contact TWC_Fatal_Error @ ATAG forums if an error OR register at twcpilots.com");
             //Timeout(1, () => (GamePlay as GameDef).gameInterface.CmdExec("kick " + player.Name()));
 
             //(GamePlay as GameDef).selectArmyRequest(player as IPlayer, 3-army);

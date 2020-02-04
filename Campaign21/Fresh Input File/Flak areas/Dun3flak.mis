@@ -1,0 +1,39 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.37mm_PaK_35_36 de 319135.19 225041.63 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.37mm_PaK_35_36 de 319030.81 225065.34 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.37mm_PaK_35_36 de 318897.94 225070.09 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.37mm_PaK_35_36 de 319638.19 226166.22 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.37mm_PaK_35_36 de 319638.19 226246.88 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.37mm_PaK_35_36 de 319543.28 226284.84 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.37mm_PaK_35_36 de 321270.50 225478.17 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.37mm_PaK_35_36 de 321246.75 225520.88 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.37mm_PaK_35_36 de 321213.56 225568.33 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 de 321546.59 225668.69 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 321540.13 225694.58 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 321529.34 225720.48 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 321518.56 225752.86 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 321594.09 225772.28 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 de 321609.19 225755.02 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 321628.63 225729.11 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak37 de 321648.06 225688.11 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

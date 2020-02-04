@@ -1,0 +1,77 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.3_7_inch_QF_Mk_I de 36442.44 68726.86 270.00 /timeout 0/radius_hide 0
+  Static1 Artillery.3_7_inch_QF_Mk_I de 36442.46 68716.18 270.00 /timeout 0/radius_hide 0
+  Static2 Artillery.3_7_inch_QF_Mk_I de 36455.13 68726.82 270.00 /timeout 0/radius_hide 0
+  Static3 Artillery.3_7_inch_QF_Mk_I de 36423.41 68722.65 270.00 /timeout 0/radius_hide 0
+  Static4 Artillery.3_7_inch_QF_Mk_I de 36455.26 68714.04 270.00 /timeout 0/radius_hide 0
+  Static5 Artillery.3_7_inch_QF_Mk_I de 36429.91 68712.00 270.00 /timeout 0/radius_hide 0
+  Static6 Artillery.3_7_inch_QF_Mk_I de 36446.79 68705.52 270.00 /timeout 0/radius_hide 0
+  Static7 Artillery.3_7_inch_QF_Mk_I de 36432.21 68701.38 270.00 /timeout 0/radius_hide 0
+  Static8 Artillery.3_7_inch_QF_Mk_I de 36459.57 68705.51 270.00 /timeout 0/radius_hide 0
+  Static9 Artillery.3_7_inch_QF_Mk_I de 36411.11 68710.01 270.00 /timeout 0/radius_hide 0
+  Static10 Artillery.3_7_inch_QF_Mk_I de 35156.37 67906.58 270.00 /timeout 0/radius_hide 0
+  Static11 Artillery.3_7_inch_QF_Mk_I de 35147.57 67923.05 270.00 /timeout 0/radius_hide 0
+  Static12 Artillery.3_7_inch_QF_Mk_I de 35140.89 67935.38 270.00 /timeout 0/radius_hide 0
+  Static13 Artillery.3_7_inch_QF_Mk_I de 35136.24 67947.72 270.00 /timeout 0/radius_hide 0
+  Static14 Artillery.3_7_inch_QF_Mk_I de 35170.27 67916.70 270.00 /timeout 0/radius_hide 0
+  Static15 Artillery.3_7_inch_QF_Mk_I de 35165.64 67929.02 270.00 /timeout 0/radius_hide 0
+  Static16 Artillery.3_7_inch_QF_Mk_I de 35158.97 67941.37 270.00 /timeout 0/radius_hide 0
+  Static17 Artillery.3_7_inch_QF_Mk_I de 35156.60 67949.61 270.00 /timeout 0/radius_hide 0
+  Static18 Artillery.3_7_inch_QF_Mk_I de 35133.35 67966.22 270.00 /timeout 0/radius_hide 0
+  Static19 Artillery.3_7_inch_QF_Mk_I de 35171.12 67947.49 270.00 /timeout 0/radius_hide 0
+  Static20 Artillery.3_7_inch_QF_Mk_I de 35016.84 68821.21 270.00 /timeout 0/radius_hide 0
+  Static21 Artillery.3_7_inch_QF_Mk_I de 34986.74 68825.52 270.00 /timeout 0/radius_hide 0
+  Static22 Artillery.3_7_inch_QF_Mk_I de 34971.74 68814.75 270.00 /timeout 0/radius_hide 0
+  Static23 Artillery.3_7_inch_QF_Mk_I de 35001.86 68803.98 270.00 /timeout 0/radius_hide 0
+  Static24 Artillery.3_7_inch_QF_Mk_I de 34999.65 68821.21 270.00 /timeout 0/radius_hide 0
+  Static25 Artillery.3_7_inch_QF_Mk_I de 34526.14 70425.61 270.00 /timeout 0/radius_hide 0
+  Static26 Artillery.3_7_inch_QF_Mk_I de 34511.03 70419.13 270.00 /timeout 0/radius_hide 0
+  Static27 Artillery.3_7_inch_QF_Mk_I de 34498.08 70427.77 270.00 /timeout 0/radius_hide 0
+  Static28 Artillery.3_7_inch_QF_Mk_I de 34519.66 70442.88 270.00 /timeout 0/radius_hide 0
+  Static29 Artillery.3_7_inch_QF_Mk_I de 34487.29 70447.19 270.00 /timeout 0/radius_hide 0
+  Static30 Artillery.3_7_inch_QF_Mk_I de 33349.79 68231.57 270.00 /timeout 0/radius_hide 0
+  Static31 Artillery.3_7_inch_QF_Mk_I de 33374.04 68240.81 270.00 /timeout 0/radius_hide 0
+  Static32 Artillery.3_7_inch_QF_Mk_I de 33352.31 68219.41 270.00 /timeout 0/radius_hide 0
+  Static33 Artillery.3_7_inch_QF_Mk_I de 33374.40 68222.46 270.00 /timeout 0/radius_hide 0
+  Static34 Artillery.3_7_inch_QF_Mk_I de 33394.25 68227.54 270.00 /timeout 0/radius_hide 0
+  Static35 Artillery.3_7_inch_QF_Mk_I de 33363.87 68203.72 270.00 /timeout 0/radius_hide 0
+  Static36 Artillery.3_7_inch_QF_Mk_I de 33390.32 68211.22 270.00 /timeout 0/radius_hide 0
+  Static37 Artillery.3_7_inch_QF_Mk_I de 33401.28 68213.81 270.00 /timeout 0/radius_hide 0
+  Static38 Artillery.3_7_inch_QF_Mk_I de 33377.60 68190.34 270.00 /timeout 0/radius_hide 0
+  Static39 Artillery.3_7_inch_QF_Mk_I de 33395.05 68195.28 270.00 /timeout 0/radius_hide 0
+  Static40 Artillery.3_7_inch_QF_Mk_I de 31083.97 70638.63 270.00 /timeout 0/radius_hide 0
+  Static41 Artillery.3_7_inch_QF_Mk_I de 31113.91 70638.54 270.00 /timeout 0/radius_hide 0
+  Static42 Artillery.3_7_inch_QF_Mk_I de 31140.30 70638.54 270.00 /timeout 0/radius_hide 0
+  Static43 Artillery.3_7_inch_QF_Mk_I de 31084.02 70619.80 270.00 /timeout 0/radius_hide 0
+  Static44 Artillery.3_7_inch_QF_Mk_I de 31113.91 70619.70 270.00 /timeout 0/radius_hide 0
+  Static45 Artillery.3_7_inch_QF_Mk_I de 31136.53 70619.70 270.00 /timeout 0/radius_hide 0
+  Static46 Artillery.3_7_inch_QF_Mk_I de 31080.32 70600.98 270.00 /timeout 0/radius_hide 0
+  Static47 Artillery.3_7_inch_QF_Mk_I de 31110.33 70600.92 270.00 /timeout 0/radius_hide 0
+  Static48 Artillery.3_7_inch_QF_Mk_I de 31128.99 70600.84 270.00 /timeout 0/radius_hide 0
+  Static49 Artillery.3_7_inch_QF_Mk_I de 31102.93 70574.59 270.00 /timeout 0/radius_hide 0
+  Static50 Artillery.Bofors de 31155.38 70589.53 270.00 /timeout 0/radius_hide 0
+  Static51 Artillery.Bofors de 33417.95 68213.82 270.00 /timeout 0/radius_hide 0
+  Static52 Artillery.Bofors de 34473.86 70428.32 270.00 /timeout 0/radius_hide 0
+  Static53 Artillery.Bofors de 35017.01 68804.88 270.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Bofors de 36457.54 68684.02 270.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

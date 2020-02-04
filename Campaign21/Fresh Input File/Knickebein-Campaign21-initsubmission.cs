@@ -291,7 +291,7 @@ public class Knickebeinholder
         if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display turned off.", new object[] { });
         if (!knickebeins.ContainsKey(player)) return;        
         knickebeins[player].turnOff();
-
+        
         
         //startKnickebein_recurs(player);
     }
@@ -482,6 +482,32 @@ public class Knickebeinholder
 
         if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Current Knickebein: Waypoint #{0} magnetic bearing {1} degrees from {2} ({3:N0}/{4:N0})  to {5} ({6:N0}/{7:N0})", new object[] { currWay + 1, Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg), initialSector, Math.Round(knickebeins[player].initialPoint.x), Math.Round(knickebeins[player].initialPoint.y), targetSector, Math.Round(knickebeins[player].targetPoint.x), Math.Round(knickebeins[player].targetPoint.y) });     
         
+    }
+    public Point3d KniPoint(Player player)
+    {
+
+        if (!knickebeins.ContainsKey(player) || !knickebeins[player].turnedOn)
+        {
+            //if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: No Knickebein Waypoint is currently active", null);
+            return new Point3d(-1,-1,-1);
+        }
+
+
+        //int currWay = 0;
+        //if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay = knickebeinCurrentWaypoint[player];
+
+        // string initialSector = Calcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].initialPoint);
+        //string targetSector = Calcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].targetPoint);
+
+        /*
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Current Knickebein: Waypoint #{0} magnetic bearing {1} degrees from {2} ({3:N0}/{4:N0})  to {5} ({6:N0}/{7:N0})", new object[] { currWay + 1, Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg), initialSector, Math.Round(knickebeins[player].initialPoint.x), Math.Round(knickebeins[player].initialPoint.y), targetSector, Math.Round(knickebeins[player].targetPoint.x), Math.Round(knickebeins[player].targetPoint.y) });
+        */
+        
+        //Point3d currPoint = knickebeinWaypoints[player][currWay];
+        //Point3d tp = knickebeins[player].targetPoint;
+        //Console.WriteLine("KB: currPoint 2 ways: {0:F0} {1:F0} {2:F0} : {3:F0} {4:F0} {5:F0}  ", new object[] { currPoint.x, currPoint.y, currPoint.z, tp.x, tp.y, tp.z }) ;
+        return knickebeins[player].targetPoint;
+
     }
     public bool KniNext(Player player)
     {
@@ -974,6 +1000,10 @@ public class Mission : AMission, IKnickebeinMission
     public void KniInfo(Player player)
     {
         knickeb.KniInfo(player);
+    }
+    public Point3d KniPoint(Player player)
+    {
+        return knickeb.KniPoint(player);
     }
     public void KniDelete(Player player, int waypointToDelete)
     {

@@ -257,10 +257,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "north"}, //Red army #1
-            { -2, "gate"}, //Blue, army #2
-            { -3, "twc2twc"}, //admin
-            { -4, "twc2twc"}, //admingrouped
+            { -1, "PASSWORD"}, //Red army #1
+            { -2, "PASSWORD"}, //Blue, army #2
+            { -3, "PASSWORD"}, //admin
+            { -4, "PASSWORD"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 

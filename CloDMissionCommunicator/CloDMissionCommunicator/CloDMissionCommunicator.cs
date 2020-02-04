@@ -77,10 +77,18 @@ public interface IStbStatRecorder
     int StbSr_NumberOfKills(string playername);
 }
 
+public interface IStbSaveIPlayerStat
+{
+    void StbSis_AddToMissionStat(Player player, int index, int value);//mission stats are the total overall stats for a player's career; also saves to current session red/blue stat totals
+    void StbSis_IncrementSessStat(Player player, int index); //Session stats are just a few selected stats per player and only for this session.
+    void StbSis_AddSessStat(Player player, int index, int value);
+}
+
 public interface IStatsMission
 {
     //IStbStatRecorder stb_StatRecorder { get; set; }
     IStbStatRecorder stb_IStatRecorder { get; set; }
+    IStbSaveIPlayerStat stb_ISaveIPlayerStat { get; set; }
     string stb_LocalMissionIniDirectory { get; set; }              // Interface property (not implemented by definition)
     //string stb_LocalMissionIniDirectory;              // Interface property (not implemented by definition)
     int ot_GetCivilianBombings(string name);
@@ -218,6 +226,7 @@ public interface IKnickebeinMission
     void KniStop(Player player);
     void KniStart(Player player);
     void KniInfo(Player player);
+    Point3d KniPoint(Player player);    
     void KniDelete(Player player, int waypointToDelete);   
 }
 

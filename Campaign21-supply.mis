@@ -1,0 +1,25 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$Online_Volcanic_Island
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 12
+  Army 1 gb
+  Army 2 de
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 5
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Airdromes]

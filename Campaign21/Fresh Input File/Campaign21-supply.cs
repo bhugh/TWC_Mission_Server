@@ -121,6 +121,27 @@ public class Mission : AMission, ISupplyMission
 
         Console.WriteLine("-supply.cs successfully loaded");
 
+
+
+        if (GamePlay is GameDef)
+        {
+            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+        }
+
+
+    }
+    public override void OnBattleStoped()
+    {
+        base.OnBattleStoped();
+
+        if (GamePlay is GameDef)
+        {
+            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+            //If we don't remove the new EventChat when the battle is stopped
+            //we tend to get several copies of it operating, if we're not careful
+        }
     }
 
 
@@ -676,6 +697,121 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
         if (!aircraftCheckedOutInfo.ContainsKey(actor)) aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
     }
 
+    public string selectSupplyPlane(string acName, ArmiesE army)
+    {
+        string retplane = null;
+        if (!(army == ArmiesE.Blue || army == ArmiesE.Red) ) return null;        
+
+        //else if (army == ArmiesE.None) { armylist.Add(ArmiesE.Red); armylist.Add(ArmiesE.Blue); }
+
+        int numChoice = -1;
+        if (!Int32.TryParse(acName, out numChoice)) numChoice = -1;
+        //if (numChoice >= 0 && numChoice < CoverAircraftCurrentlyAvailable[army].Count) returnCoverAircraftCurrentlyAvailable[army][numChoice].Key;
+        int count = 1;
+
+        foreach (string key in AircraftSupply[army].Keys)
+        {
+            //string acn = returnCoverAircraftCurrentlyAvailable[army][key];
+            //string msg = string.Format("#{0} {1} {2}", i, Calcs.ParseTypeName(CoverAircraftCurrentlyAvailable[a].Key), CoverAircraftCurrentlyAvailable[a].Entry);
+            
+            //returns the very first match, or null
+            if (numChoice > 0 && count == numChoice) { retplane = key; break; }
+            if (numChoice <= 0 && acName.Length > 0 && key.ToLowerInvariant().Contains(acName.Trim().ToLowerInvariant()))
+            {
+                retplane = key;
+                break;
+            }
+            count++;
+
+        }
+
+        return retplane;
+
+    }
+
+    public void addAircraftToSupply(Player player, string selectString)
+    {
+        try
+        {
+
+
+
+            string[] sections = selectString.Split(' ');
+
+            GamePlay.gpLogServer(new Player[] { player }, "Supply: Call " + selectString + " - Number values: " + (sections.Count() -1 ).ToString(), new object[] { });
+
+            string aircraftName = "";
+            string numAddString = "";
+            string armyName = "";
+
+            if (sections.Count()  == 4)
+            {
+                armyName = sections[1];
+                aircraftName = sections[2];
+                numAddString = sections[3];
+            }
+            else
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Supply Add: ERROR adding new aircraft to Supply.  Command had the wrong format. 3 values needed--number entered: " + (sections.Count() -1).ToString("F0"), new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "HELP: <suppadd 2 6 -10   - remove 10 aircraft from Army 2=Blue, aircraft type #6.   Get aircraft type # from Tab-4 supply listing.", new object[] { });
+
+            }
+
+            int numToAdd = 0;
+            try
+            {
+                numToAdd = Convert.ToInt32(numAddString);
+            }
+            catch { numToAdd = 0; }
+
+            int army = 0;
+            try
+            {
+                army = Convert.ToInt32(armyName);
+            }
+            catch { army = 0; }
+
+            aircraftName = aircraftName.Trim();
+
+            //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC1 " + numAC.ToString(), new object[] { });
+
+
+            if (numToAdd <= 0)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Supply Add: 0 aircraft requested.  Error in command format?", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "Result: " + numToAdd.ToString("F0") + " type " + aircraftName + " to army " + ArmiesL[army], new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "HELP: <suppadd 1 8 12   - add 12 aircraft to Army 1=Red, aircraft type #8.  Get aircraft type # from Tab-4 supply listing. - " + sections.Count().ToString(), new object[] { });
+                return;
+            }
+                
+            
+
+            string planeKey = selectSupplyPlane(aircraftName, (ArmiesE)army);
+
+            if (planeKey == null)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "Supply Add: ERROR adding new aircraft to stock.  Command had the wrong format.", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "Result: " + numToAdd.ToString("F0") + " type " + planeKey + " to army " + ArmiesL[army], new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, "HELP: <suppadd 1 12 60   - add 60 aircraft to Army 1=Red, aircraft type #12.   Get aircraft type # from Tab-4 supply listing.", new object[] { });
+
+                return;
+            }
+
+            
+            //Point3d ac1loc = (aircraft as AiActor).Pos();
+
+
+
+            //AircraftSupply[(ArmiesE)army][aircraftName] += numToAdd;
+            AircraftSupply[(ArmiesE)army][planeKey] += numToAdd;
+
+            GamePlay.gpLogServer(new Player[] { player }, "Supply Add: Adding " + numToAdd.ToString("F0") + " type " + planeKey + " to army " + ArmiesL[army] + " - new total: " + AircraftSupply[(ArmiesE)army][planeKey].ToString("F0"), new object[] { });
+        }
+
+        catch (Exception ex) { Console.WriteLine("Supply Add ERROR: " + ex.ToString()); }
+
+    }
+
     public string ListAircraftLost(int army = 0, Player player = null, bool display = true, bool html = false, string match = "", string playerNameMatch = "")
     {
         try
@@ -917,12 +1053,12 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
                     if (GamePlay != null) Timeout(delay, () => { GamePlay.gpLogServer(playerL, msg, null); });
                 }
                 returnmsg += msg + nl;
-
+                int count = 1;
                 foreach (KeyValuePair<string, double> current in AircraftSupply[(ArmiesE)x])
                 {
                     if (match.Length > 0 && !current.Key.ToLowerInvariant().Contains(match.Trim().ToLowerInvariant())) continue; //implement substring matching "<stock hurri" etc
                     //string msg1 = ParseTypeName(current.Key) + ": " + current.Value.ToString("n1");
-                    string msg1 = current.Value.ToString("n0") + " " + ParseTypeName(current.Key);
+                    string msg1 = "#" + count.ToString("F0") + " " + current.Value.ToString("n0") + " " + ParseTypeName(current.Key);                   
                     //string msg1 = current.Key + ": " + current.Value.ToString("n1");
                     if (display && GamePlay != null)
                     {
@@ -930,6 +1066,7 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
                         Timeout(delay, () => { GamePlay.gpLogServer(playerL, msg1, null); });
                     }
                     returnmsg += msg1 + nl;
+                    count++;
                 }
             }
             return returnmsg;
@@ -1175,6 +1312,78 @@ private int NumberPlayerInActor(AiActor actor)
             }
         } catch (Exception ex) { Console.WriteLine("SupplyOnPlaceLeave: " + ex.ToString()); }
     }
+
+
+
+    /*************************************************************************************
+     * 
+     * 
+     * 
+     * /****************************************************************
+     * 
+     * ADMIN PRIVILEGE
+     * 
+     * Determine if player is an admin, and what level
+     * 
+     ****************************************************************/
+    public string[] admins_basic = new String[] { "TWC_", "Rostic" };
+    public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error", "EvilUg", "Server" };
+
+    public int admin_privilege_level(Player player)
+    {
+        if (player == null || player.Name() == null) return 0;
+        string name = player.Name();
+        //name = "TWC_muggle"; //for testing
+        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+        return 0;
+
+    }
+
+    void Mission_EventChat(Player from, string msg)
+    {
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
+
+        Player player = from as Player;
+        AiAircraft aircraft = null;
+        if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+        AiActor actor = aircraft as AiActor;
+
+        string msg_orig = msg;
+        msg = msg.ToLower();
+        //Stb_Message(null, "Stats msg recvd.", null);
+
+        /*
+        if (msg.StartsWith("<!deban") && (admin_privilege_level(player) < 2))
+        {
+
+        }
+        */
+        if (msg.StartsWith("<suppadd") && (admin_privilege_level(player) > 1))
+        {
+            addAircraftToSupply(player, msg);
+
+        }
+
+        else if (msg.StartsWith("<admin") && admin_privilege_level(player) > 1)// || msg.StartsWith("<"))
+        {
+            double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
+            if (!msg.StartsWith("<help")) to = 5.2;
+
+            string msg41 = "<suppadd 1 3 20 - add 20 planes to army 1 aircraft #3.  Get aircraft # from supply listing.";
+            msg41 = "<suppadd 1 beau 20 - add 20 planes to army 1 aircraft 'Beaufighter'.  Will match 1st plane on list.";
+
+            Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
+            msg41 = "<suppadd 1 beau 20 - add 20 planes to army 1 aircraft 'Beaufighter'.  Will match 1st plane on list.";
+            Timeout(to + 0.05, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
+
+            //GamePlay.gp(, from);
+        }
+    }
+
+    /********************************************************************************************************
+     *  END chat commands
+     * *******************************************************************************************************/
 
 
 }

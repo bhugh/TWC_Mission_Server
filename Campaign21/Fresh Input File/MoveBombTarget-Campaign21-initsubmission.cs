@@ -61,7 +61,7 @@ public class Mission : AMission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
 
         moveAirports = true; //whether or not to move targets to a different/nearby airport
-        moveAirportsDistance_m = 80000; //max distance to move airports if you choose that option
+        moveAirportsDistance_m = 160000; //max distance to move airports if you choose that option
 
         //When adjusting various types of airgroup tasks, how far (at maximum) to move the position of that waypoint in xy and in alt (meters)
         //So for altitude, there is a number in meters and a percent.  It will use whichever is LARGER.  So if your formation is at 
@@ -72,13 +72,13 @@ public class Mission : AMission
         //all while 5000m +/- 30% is quite a large change.  By contrast 5000m +/- 1000m isn't much of a change while 500m +/- 1000m is a very large change.
         changeLimits = new Dictionary<AiAirWayPointType, changeLimit>()
         {
-            { AiAirWayPointType.NORMFLY, new changeLimit (27000, 700, 30, 10) },
-            { AiAirWayPointType.HUNTING, new changeLimit (27000, 700, 30, 10) },
-            { AiAirWayPointType.RECON, new changeLimit (14000, 1000, 50, 10) },
+            { AiAirWayPointType.NORMFLY, new changeLimit (97000, 700, 30, 10) },
+            { AiAirWayPointType.HUNTING, new changeLimit (47000, 700, 30, 10) },
+            { AiAirWayPointType.RECON, new changeLimit (64000, 1000, 50, 10) },
             { AiAirWayPointType.GATTACK_POINT, new changeLimit (450, 0, 0, 10, 65000) },
             { AiAirWayPointType.GATTACK_TARG, new changeLimit (450, 0, 0, 10, 65000) },
-            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (15500, 800, 25, 10) },
-            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (15500, 800, 25, 10) },
+            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (35500, 800, 25, 10) },
+            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (35500, 800, 25, 10) },
         };
         /*
         changeAlt_m = new Dictionary<AiAirWayPointType, double>()
@@ -602,7 +602,7 @@ public class Mission : AMission
 
         if (ap != null)
         {
-            /*
+            
                //Choose a random point within the airfield radius
                double radius = ap.FieldR();
                Point3d center = ap.Pos();
@@ -612,15 +612,19 @@ public class Mission : AMission
                retPos.x = Math.Cos(angl) * dist + center.x;
                retPos.y = Math.Sin(angl) * dist + center.y;
                retPos.z = 0;
-               */
+               
             //return the SAME relative position to this new airfield as we had with the old airfield
             //This is important because the attack point is often quite distant from the airfield itself, in order to actually hit the airfield accurately
             //retPos.x = p.x - nearestAirfield.Pos().x + ap.Pos().x;
             //retPos.y = p.y - nearestAirfield.Pos().y + ap.Pos().y;
+
             //Ok, we're going to make the airport attacks more effective by just centering them more on the new airport (plus/minus the radius defined above, of course)
+            //With Campaign21 3.0 this looks to be TOO accurate now, we'll go back to kinda inaccurate
+            /*
             retPos.x = ap.Pos().x;
             retPos.y = ap.Pos().y;
             retPos.z = 0;
+            */
             Console.WriteLine("MBT: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
             return retPos;
         }

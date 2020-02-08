@@ -251,16 +251,16 @@ public class Mission : AMission, IMainMission
         SERVER_ID = "Tactical Campaign Server"; //Used by General Situation Map app
         //SERVER_ID_SHORT = "Tactical"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
         SERVER_ID_SHORT = "TacticalTEST"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
-        CAMPAIGN_ID = "The Big War"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
+        CAMPAIGN_ID = "The Long War"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
         DEBUG = false;
         LOG = false;
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "PASSWORD"}, //Red army #1
-            { -2, "PASSWORD"}, //Blue, army #2
-            { -3, "PASSWORD"}, //admin
-            { -4, "PASSWORD"}, //admingrouped
+            { -1, "xxx"}, //Red army #1
+            { -2, "xxx"}, //Blue, army #2
+            { -3, "xxx"}, //admin
+            { -4, "xxx"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -805,7 +805,7 @@ public class Mission : AMission, IMainMission
                 double timereduction = 0;
                 if (percent > 0)
                 {
-                    timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                    timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
                 }
 
                 double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
@@ -820,7 +820,8 @@ public class Mission : AMission, IMainMission
                     percent = 1;
                     timetofix = 24 * 60 * 60; //24 hours to repair . . . if they achieve 100% knockout.  That is a little bonus beyond what the actual formula says, due ot total knockout
                     timetofix += (PointsTaken - PointsToKnockOut) * 20 * 60; //Plus they achieve any additional knockout/repair time due to additional bombing beyond 100%, because those will have to be repaired, too.
-                    msg2 = "; estimated " + (timetofix/3600.0).ToString("F1") + "hrs to re-open";
+                    //msg2 = "; estimated " + (Math.Round(timetofix/3600.0*2.0)/2.0).ToString("F1") + "hrs to re-open";
+                    msg2 = " (" + (Math.Ceiling(timetofix / 3600.0/24 * 2.0) / 2.0).ToString("F1") + " days)";
 
                 }
 
@@ -834,7 +835,7 @@ public class Mission : AMission, IMainMission
 
                 if (display)
                 {
-                    delay += 0.2;
+                    delay += 0.02;
                     Timeout(delay, () => { twcLogServer(new Player[] { player }, msg, new object[] { }); });
                 }
 
@@ -851,12 +852,14 @@ public class Mission : AMission, IMainMission
     }
 
     //stamps a rectangular pattern of craters over an airfield to disable it
-    public void AirfieldDisable(AiAirport ap)
+    public void AirfieldDisable(AiAirport ap, double percent = 1.0)
 
     {
         string apName = ap.Name();
         double radius = ap.FieldR();
         Point3d pos = ap.Pos();
+
+        //Console.WriteLine("Disabling airport {0} {1:F0} {2:F0}", new Object[] {ap.Name(), ap.Pos().x, ap.Pos().y });
 
         if (AirfieldTargets.ContainsKey(ap))
         {
@@ -873,9 +876,19 @@ public class Mission : AMission, IMainMission
             if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
         }
 
+        foreach (GroundStationary gg in GamePlay.gpGroundStationarys(pos.x, pos.y, radius)) //all stationaries w/i 10 or whatever meters of this object
+        {
+            if (random.Next(3) < 1)
+            {
+                Console.WriteLine("Airfield dest: Removing airfield item " + gg.Name);
+                gg.Destroy();
+            }
+        }
+
+
         GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
-        ISectionFile f = GamePlay.gpCreateSectionFile();
+        //ISectionFile f = GamePlay.gpCreateSectionFile();
         string sect = "Stationary";
 
         string val1 = "Stationary";
@@ -883,25 +896,83 @@ public class Mission : AMission, IMainMission
         int count = 0;
         string value = "";
 
+        int rounds = Convert.ToInt32(Math.Ceiling(percent * 5));
 
-        for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 280)
+        int stripesCount = 0;
+
+        double craterSpacing_m = 41 + random.NextDouble()*10;
+
+        int delay = 1; 
+        for (int round = 0; round < rounds; round++)
         {
-            for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 310)
+
+            double xpos = pos.x - 400 + 800 * stb_random.NextDouble();
+            double ypos = pos.y - 400 + 800 * stb_random.NextDouble();
+            double angle = random.NextDouble() * 2.0 * Math.PI;
+            Point3d vec = new Point3d(Math.Cos(angle) * craterSpacing_m, Math.Sin(angle) * craterSpacing_m, 0);
+            //Point3d vec90deg = new Point3d(-vec.y, vec.x, vec.z);
+
+            int stripes = random.Next(4) + 1;
+            for (int stripe = 0; stripe < stripes; stripe++)
             {
-                string key = "Static" + count.ToString();
-                value = val1 + ".Environment." + type + " nn " + (x - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
-                f.add(sect, key, value);
-                count++;
+                if (stripesCount > rounds) break; //we don't really need more than this many stripes altogether
+                ISectionFile f = GamePlay.gpCreateSectionFile();
+
+                Point3d startPos = new Point3d (xpos + 150 - 300 * stb_random.NextDouble(), ypos + 150 - 300 * stb_random.NextDouble(), vec.z );
+                int craters = random.Next(10) + 12;
+
+                count = 0;
+
+                for (int crater = 0; crater < craters; crater++)
+                {
+                    double randAdd = random.NextDouble() * 1.8 - 0.9 ;
+
+                    //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2:F0} {3:F0} {4:F0} {5:F0} {6:F0}", new Object[] { startPos.x.ToString("0.00"), startPos.y.ToString("0.00"), vec.x.ToString("0.00"), vec.y.ToString("0.00"), crater, randAdd, craterSpacing_m/10 });
+                    Point3d craterPos = new Point3d(startPos.x + vec.x * (crater + randAdd), startPos.y + vec.y * (crater + randAdd) + random.NextDouble() * craterSpacing_m/10, vec.z);
+                    string key = "Static" + count.ToString();
+                    value = val1 + ".Environment." + type + " nn " + craterPos.x.ToString("0.00") + " " + craterPos.y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + craterPos.z.ToString("0.00");
+                    f.add(sect, key, value);
+                    
+                    //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2} {3} {4}", new Object []  { craterPos.x.ToString("0.00"), craterPos.y.ToString("0.00"), round, stripe, crater });
+
+                    if (random.Next(7) < 1)
+                        Timeout(delay+1, () =>
+                        {
+                            Calcs.loadSmokeOrFire(GamePlay, this, craterPos.x, craterPos.y, craterPos.z, "BuildingFireSmall", random.Next(5 * 3600) + 3600);
+                        });
+                    count++;
+                }
+
+                Timeout(delay, () => { GamePlay.gpPostMissionLoad(f); });
+                delay += 5;
+                
+                stripesCount++;
+                
+            }
+        }
+
+        /*
+         *             for (double x = pos.x - radius * 1.1; x < pos.x + radius * 1.1; x = x + 280)
+            {
+                for (double y = pos.y - radius * 1.1; y < pos.y + radius * 1.1; y = y + 310)
+                {
+                    string key = "Static" + count.ToString();
+                    value = val1 + ".Environment." + type + " nn " + (x - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 400 + 800 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+                    f.add(sect, key, value);
+
+                    if (random.Next(5) < 1) Calcs.loadSmokeOrFire(GamePlay, this, pos.x, pos.y, pos.z, "BuildingFireSmall", random.Next(5 * 3600) + 3600);
+                    count++;
+
+                }
 
             }
-
-        }
+            */
         if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7"); //Testing for potential causes of warping
         //f.save(CLOD_PATH + FILE_PATH + "airfielddisableMAIN-ISectionFile.txt"); //testing
-        GamePlay.gpPostMissionLoad(f);
+        
         //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
 
-        Calcs.loadSmokeOrFire(GamePlay, this, pos.x, pos.y, 0, "BuildingFireBig", duration_s: 6 * 3600);
+        //Calcs.loadSmokeOrFire(GamePlay, this, pos.x, pos.y, 0, "BuildingFireBig", duration_s: 6 * 3600);
 
     }
     /*
@@ -937,15 +1008,15 @@ public class Mission : AMission, IMainMission
 
 
 
-    /*****************************************************************************
-     * 
-     * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
-     * 
-     *****************************************************************************/
+        /*****************************************************************************
+         * 
+         * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
+         * 
+         *****************************************************************************/
 
-    //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
-    //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
-    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+        //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
+        //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
+        //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
     public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
 
@@ -1135,7 +1206,7 @@ public class Mission : AMission, IMainMission
                     double timereduction = 0;
                     if (prev_percent > 0)
                     {
-                        timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                        timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
                     }
 
                     double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
@@ -1216,7 +1287,7 @@ public class Mission : AMission, IMainMission
                             }
 
                         }
-                        MO_DestroyObjective_addTime(Mission + "_airfield", percentdestroyed: percent, timetofix_s: timetofix);
+                        MO_DestroyObjective_addTime(Mission + "_airfield", percentdestroyed: percent, timetofix_s: timetofix, TimeLastHit_UTC: DateTime.UtcNow);
                     }
                     else
                     {
@@ -3527,6 +3598,7 @@ public class Mission : AMission, IMainMission
         //enemy ground and far, far more  likely when near an enemy objective, which is likely to be well guarded etc.
         bool onEnemyGround = false;
         bool nearMissionObjective = false;
+        bool isAI = false;
         if (aircraft != null && (aircraft as AiActor != null))
         {
             bool onEnemyTerritory = false;
@@ -3540,8 +3612,12 @@ public class Mission : AMission, IMainMission
             int numMissionObjectivesNear = 0;
 
             if (onEnemyGround && MO_MissionObjectivesNear(aircraft.Pos(), dist_m: 8000) > 1) nearMissionObjective = true;
+
+            isAI = isAiControlledPlane2(aircraft);
             
         }
+
+        if (isAI) altAGL_ft = altAGL_ft - 350; //AI aircraft just can't fly below a certain altitude.  So we're giving them a break as far as disappearing from radar if they're low.
 
         double leakageRate = .21;  //was .12, seemed too low
         double below250LeakageRate = 0.105;
@@ -5102,7 +5178,7 @@ public class Mission : AMission, IMainMission
                                         {
                                             pyinplace++;
                                             AiActor act = py.Place();
-                                            pl = act.Name();
+                                            if (act == null) continue; // no point in going on if nothing here
 
                                             if (act as AiAircraft != null)
                                             {
@@ -5128,7 +5204,7 @@ public class Mission : AMission, IMainMission
                                 sw.WriteLine("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString());
                                 sw.WriteLine();
 
-                                sw.WriteLine("MISSION SUMMARY");
+                                sw.WriteLine(CAMPAIGN_ID.ToUpper() + " MISSION SUMMARY");
 
                                 sw.WriteLine(string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
               BlueAirF, BlueAAF, BlueNavalF, BlueGroundF));
@@ -5156,7 +5232,7 @@ public class Mission : AMission, IMainMission
                                 //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
                                 */
 
-                                sw.WriteLine("CAMPAIGN SUMMARY");
+                                sw.WriteLine(CAMPAIGN_ID.ToUpper() + " CAMPAIGN SUMMARY");
 
                                 Tuple<double, string> res = CalcMapMove("", false, false, null);
                                 sw.Write(res.Item2);
@@ -5171,14 +5247,19 @@ public class Mission : AMission, IMainMission
                                     sw.WriteLine(msg);
                                 }
 
-
-                                msg = ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
-                                if (msg.Length > 0)
+                                try
                                 {
-                                    sw.WriteLine();
-                                    sw.WriteLine("AIRFIELD CONDITION SUMMARY");
-                                    sw.WriteLine(msg);
+                                    msg = ListRadarTargetDamage(null, -1, false, false); //Add the list of current radar airport conditions
+                                    msg += Environment.NewLine;
+                                    msg += ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
+                                    if (msg.Length > 0)
+                                    {
+                                        sw.WriteLine();
+                                        sw.WriteLine("RADAR AND AIRFIELD CONDITION SUMMARY");
+                                        sw.WriteLine(msg);
+                                    }
                                 }
+                                catch (Exception ex) { Console.WriteLine("Radar Write34: " + ex.ToString()); }
 
                                 sw.WriteLine();
                                 string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
@@ -5205,10 +5286,27 @@ public class Mission : AMission, IMainMission
                                 if (msg.Length > 0)
                                 {
                                     sw.WriteLine();
-                                    sw.WriteLine("RECONNAISSANCE SUMMARY");
+                                    sw.WriteLine(CAMPAIGN_ID.ToUpper() + " RECONNAISSANCE SUMMARY");
                                     sw.WriteLine(msg);
                                 }
 
+                                
+                                msg = "";
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4)
+                                {
+                                    if (TWCSupplyMission != null) msg += (TWCSupplyMission.DisplayNumberOfAvailablePlanes(2, null, false)) + Environment.NewLine;
+                                }
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4)
+                                {
+                                    if (TWCSupplyMission != null) msg += (TWCSupplyMission.DisplayNumberOfAvailablePlanes(1, null, false)) + Environment.NewLine;
+                                }
+
+                                if (msg.Length > 0)
+                                {
+                                    sw.WriteLine();
+                                    sw.WriteLine(CAMPAIGN_ID.ToUpper() + " CURRENT AIRCRAFT STOCK LEVELS");
+                                    sw.WriteLine(msg);
+                                }
 
                             }
                             catch (Exception ex) { Console.WriteLine("Radar Write3: " + ex.ToString()); }
@@ -5399,8 +5497,12 @@ public class Mission : AMission, IMainMission
             File.Delete(STATSCS_FULL_PATH + "CampaignSummary.txt");
         }
         catch (Exception ex) { Console.WriteLine("CampaignSummary Delete: " + ex.ToString()); }
-		
-		
+
+
+        //if (GamePlay is GameDef) (GamePlay as GameDef).gameInterface.CmdExec("ban LOAD twc_banned.txt");
+        //we do the "ban" system loading in BurnBabyBurn.cs instead of here.  
+
+
     }
 
     public override void OnBattleStoped()
@@ -5569,13 +5671,19 @@ public class Mission : AMission, IMainMission
             TWCStatsMission = m;
             Console.WriteLine("StatsMission! " + m.stb_StatsINIFilename);
         }*/
+
+        /* 
+         * ban LOAD blacklist.txt
+         * */
+
+        
     }
 
     /************************************************************
      * MENU SYSTEM
      * *********************************************************/
 
-    bool dmgOn = false;
+        bool dmgOn = false;
     bool EndMissionSelected = false;
     bool debugMenu = false;
     bool debugSave;
@@ -5623,7 +5731,7 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu3(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Airport damage summary", "Nearest friendly airport", "On friendly territory?", "More...", "Aircraft Supply", "Aircraft available to you", "Aircraft lost this mission", "Time left in mission" }, new bool[] { false, false, false, true, false, false, false, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 3, new string[] { "Radar & airport damage summary", "Nearest friendly airport", "On friendly territory?", "More...", "Aircraft Supply", "Aircraft available to you", "Aircraft lost this mission", "Time left in mission" }, new bool[] { false, false, false, true, false, false, false, false });
     }
     private void setSubMenu4(Player player)
     {
@@ -5892,7 +6000,7 @@ public class Mission : AMission, IMainMission
          * USER SUBMENU (3rd submenu, ID == 3, Tab-4-4-4)
          * 
          *****************************************************/
-        //   GamePlay.gpSetOrderMissionMenu( player, true, 2, new string[] { "Detailed Campaign Summary", "Airport damage summary", "Nearest friendly airport", "On friendly territory?","Back..."}, new bool[] { false, false, false, false, false } );
+        //   GamePlay.gpSetOrderMissionMenu( player, true, 2, new string[] { "Detailed Campaign Summary", "Radar & Airport damage summary", "Nearest friendly airport", "On friendly territory?","Back..."}, new bool[] { false, false, false, false, false } );
         else if (ID == 3)
         { // main menu
 
@@ -5902,11 +6010,14 @@ public class Mission : AMission, IMainMission
                 //setMainMenu(player);
             }
 
-            //Airport damage summary, same as <ap
+            //Radar & Airport damage summary, same as <ap
             else if (menuItemIndex == 1)
             {
                 //ListAirfieldTargetDamage(player, -1);//list damaged airport of both teams
-                Task.Run(() => ListAirfieldTargetDamage(player, -1));
+                Task.Run(() => {
+                    ListRadarTargetDamage(player, -1);
+                    Timeout(2, () => { ListAirfieldTargetDamage(player, -1); });
+                });
                 setMainMenu(player);
             }
             //Directions to nearest friendly airport
@@ -6035,7 +6146,7 @@ public class Mission : AMission, IMainMission
             }
 
 
-            //Airport damage summary, same as <ap
+            
             else if (menuItemIndex == 1)
             {
                 /*
@@ -6296,7 +6407,7 @@ public class Mission : AMission, IMainMission
         {
             setMainMenu(player);
 
-            twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
             //twcLogServer(null, "Mission loaded.", new object[] { });
 
             DateTime utcDate = DateTime.UtcNow;
@@ -6349,7 +6460,8 @@ public class Mission : AMission, IMainMission
             setMainMenu(player);
             if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
             MISSION_STARTED = true;
-            twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            //twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+            twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
             //twcLogServer(null, "Mission loaded.", new object[] { });
         }
     }
@@ -6358,8 +6470,8 @@ public class Mission : AMission, IMainMission
         if (MissionNumber > -1)
         {
 
-            setMainMenu(GamePlay.gpPlayer());
-            twcLogServer(null, "Welcome " + GamePlay.gpPlayer().Name(), new object[] { });
+            setMainMenu(GamePlay.gpPlayer());            
+            twcLogServer(null, "Welcome to " + CAMPAIGN_ID, new object[] { });
 
         }
     }
@@ -6681,6 +6793,25 @@ public class Mission : AMission, IMainMission
                MO_DestroyObjective(Mission + "_airfield", true);
            });
         }
+        else if (msg.StartsWith("<smoke") && admin_privilege_level(player) >= 2)
+        {
+            Point3d pos = new Point3d(10000, 100000, 0);
+            if (player.Place() != null) pos = player.Place().Pos();
+            Calcs.loadSmokeOrFire(GamePlay, this, pos.x+ random.Next(100) + 10 , pos.y + random.Next(100) + 10, 0, "BuildingFireBig", duration_s: 6 * 3600);
+            Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "BuildingFireSmall", duration_s: 6 * 3600);
+            Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "Smoke1", duration_s: 6 * 3600);
+        }
+        else if (msg.StartsWith("<apdest") && admin_privilege_level(player) >= 2)
+        {
+            AiAirport ap = Calcs.nearestAirport(GamePlay, player.Place().Pos(), player.Army());
+            AirfieldDisable(ap, 1);
+            
+        }
+        //string firetype = "BuildingFireSmall"; //small-ish
+        //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger  //REALLY huge
+        //if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger //larger
+
+
         else if (msg.StartsWith("<pad"))
         {
 
@@ -6721,7 +6852,9 @@ public class Mission : AMission, IMainMission
             if (admin_privilege_level(player) >= 2)
             {
 
-                ListAirfieldTargetDamage(player, -1); //list damaged airport of both teams
+                //ListAirfieldTargetDamage(player, -1); //list damaged airport of both teams
+                ListRadarTargetDamage(player, -1);
+                Timeout(2, () => { ListAirfieldTargetDamage(player, -1); });
             }
             else
             {
@@ -7579,23 +7712,29 @@ public class Mission : AMission, IMainMission
          {ArmiesE.Blue, "" }
     };
 
-    //TODO: This percentage is not operative yet
+    //What percent of primary targets is actually required ot turn the map
+    //If you make it 100% you have to get them all, but if some are difficult or impossible then that army will be stuck
     public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
         {ArmiesE.Red, 60 },
         {ArmiesE.Blue, 60 }
     };
 
     //TODO: Use similar scheme for total points, objectives completed list, objectives completed
+    //Points required, assuming they are doing it entirely with Primary Targets; ie, secondary or other targets do not count towards this total
+    //at all
     public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 25 },
-        {ArmiesE.Blue, 22 }
+        {ArmiesE.Red, 35 },
+        {ArmiesE.Blue, 32 }
     };
-//////////////////////******************************************/////////////////////////////
+    //////////////////////******************************************/////////////////////////////
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
     //This allows mission to be turned in case one objective is malfunctioning or super-difficult - by hitting some other alternate targets
+    //So this is like a consolation prize.  You couldn't take out all primary targets?  OK, you can just take out a few MORE alternates
+    //Generally thise should be more than MO_PointsRequired
+    //If it's less than MO_PointsRequired then the MO_PercentPrimaryTargetsRequired becomes more the operative factor in determining the map turn
     public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 10 },
-        {ArmiesE.Blue, 10 }
+        {ArmiesE.Red, 44 },
+        {ArmiesE.Blue, 42 }
     };
 
     public Dictionary<ArmiesE, string> MO_IntelligenceLeakNearMissionEnd = new Dictionary<ArmiesE, string>() {
@@ -7643,6 +7782,7 @@ public class Mission : AMission, IMainMission
         [DataMember] public bool Destroyed { get; set; }
         [DataMember] public double DestroyedPercent { get; set; } //some items can potentially be partially destroyed, it 50% = 0.5, 100%=1.0; also higher numbers possible such as 200% = 2.0;
         [DataMember] public DateTime? TimeToUndestroy_UTC { get; set; } //if destroyed, what time UTC is the d/t it should be undestroyed/repaired.  This is in real time, ie if item destroyed 10pm, Tues Jan 24, 2022 UTC for 24 hours then it will be repaired at 10pm Wed Jan 25, 2022.
+        [DataMember] public DateTime? LastHitTime_UTC { get; set; } //Last time target attacked/hit
 
         [DataMember] public bool Scouted { get; set; } //whether or not it has been scouted or reconnoitered by the enemy; if so they can get access to exact coordinates etc
         //public Dictionary<Player,int> PlayersWhoScouted { get; set; } //list of any players who have scouted this objective //Player is not serializable, alas.
@@ -7719,7 +7859,8 @@ public class Mission : AMission, IMainMission
             TimetoRepairIfDestroyed_hr = repairdays * 24;
             Destroyed = false;
             DestroyedPercent = 0;
-            TimeToUndestroy_UTC = null; 
+            TimeToUndestroy_UTC = null;
+            LastHitTime_UTC = null;
 
             Scouted = false;
 
@@ -7767,6 +7908,7 @@ public class Mission : AMission, IMainMission
             Destroyed = false;
             DestroyedPercent = 0;
             TimeToUndestroy_UTC = null;
+            LastHitTime_UTC = null;
 
             Scouted = false;
             PlayersWhoScoutedNames = new Dictionary<string, int>();
@@ -7820,6 +7962,7 @@ public class Mission : AMission, IMainMission
             Destroyed = false;
             DestroyedPercent = 0;
             TimeToUndestroy_UTC = null;
+            LastHitTime_UTC = null;
 
             Scouted = false;
             PlayersWhoScoutedNames = new Dictionary<string, int>();
@@ -8030,37 +8173,37 @@ public class Mission : AMission, IMainMission
 
             //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID, Days to repair, Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-200), comment) {
 			//weights change 0-200, many weights below adjusted, 2020-01
-            addRadar("Westgate Radar",          "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 45000, false, 30, "", add);
-            addRadar("Sandwich Radar",          "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 45000, false, 30, "", add);
-            addRadar("Deal Radar",              "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 45000, false, 30, "", add);
-            addRadar("Dover Radar",             "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 45000, false, 30, "", add);
-            addRadar("Brookland Radar",         "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 45000, false, 30, "", add);
-            addRadar("Dungeness Radar",         "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 45000, false, 30, "", add);
-            addRadar("Eastbourne Radar",        "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 45000, false, 10, "", add);
-            addRadar("Littlehampton Radar",     "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 45000, false, 10, "", add);
-            addRadar("Ventnor Radar",           "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 45000, false, 10, "", add);
+            addRadar("Westgate Radar",          "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 35000, false, 30, "", add);
+            addRadar("Sandwich Radar",          "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 35000, false, 30, "", add);
+            addRadar("Deal Radar",              "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 35000, false, 30, "", add);
+            addRadar("Dover Radar",             "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 35000, false, 30, "", add);
+            addRadar("Brookland Radar",         "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 35000, false, 30, "", add);
+            addRadar("Dungeness Radar",         "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 35000, false, 30, "", add);
+            addRadar("Eastbourne Radar",        "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 35000, false, 10, "", add);
+            addRadar("Littlehampton Radar",     "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 50000, false, 10, "", add);
+            addRadar("Ventnor Radar",           "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 50000, false, 10, "", add);
             addRadar("Radar Communications HQ", "HQR", 1, 6, 3, "BTarget28", "TGroundDestroyed",   61, 180207, 288435, 200, 350000, false, 5, "", add);
-            addRadar("Radar Poole",             "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 45000,  false, 5, "", add);
+            addRadar("Radar Poole",             "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed",  75,  15645,  170552, 200, 50000,  false, 5, "", add);
 
 
-            addRadar("Oye Plage Freya Radar",         "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 40000, false, 35, "", add);
-            addRadar("Coquelles Freya Radar",         "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 40000, false, 35, "", add);
-            addRadar("Dunkirk Radar #2",              "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 40000, false, 35, "", add);
+            addRadar("Oye Plage Freya Radar",         "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444,  50, 30000, false, 35, "", add);
+            addRadar("Coquelles Freya Radar",         "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150,  50, 30000, false, 35, "", add);
+            addRadar("Dunkirk Radar #2",              "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 30000, false, 35, "", add);
             //    addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, 2, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 30000, false, 35, "", add);
-            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 40000, false, 35, "", add); //Mission in mission file
-            addRadar("Berck Freya Radar",             "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Dieppee",                 "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 40000, false, 5, "", add); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
-            addRadar("Radar Le Treport",              "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 40000, false, 15, "", add); // Mission in mission file
-            addRadar("Radar Somme River",             "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar AMBETEUSE",               "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar BOULOGNE",                "BlgR", 2, 4, 2, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674,  50, 40000, false, 35, "", add); //Mission in mission file           
-            addRadar("Radar Le Touquet",              "L2kR", 2, 4, 2, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Dieppe",                  "FreR", 2, 4, 2, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 40000, false, 15, "", add); //Mission in mission file
-            addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 4, 2, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 40000, false, 5, "", add);//Mission in mission file
-            addRadar("Le Havre Freya Radar",          "LhvR", 2, 4, 2, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 40000, false, 15, "", add);//Mission in mission file
-            addRadar("Ouistreham Freya Radar",        "OuiR", 2, 4, 2, "RTarget50R", "TGroundDestroyed", 100, 135205,29918,  50, 40000, false, 15, "", add);// Mission in mission file
-            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 4, 2, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659,  50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580,  50, 40000, false, 5, "", add); //Mission in mission file
+            addRadar("Herderlot-Plage Freya Radar",   "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 30000, false, 35, "", add); //Mission in mission file
+            addRadar("Berck Freya Radar",             "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713,  50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppee",                 "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248,  50, 30000, false, 5, "", add); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
+            addRadar("Radar Le Treport",              "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531,  50, 30000, false, 15, "", add); // Mission in mission file
+            addRadar("Radar Somme River",             "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885,  50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar AMBETEUSE",               "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956,  50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar BOULOGNE",                "BlgR", 2, 4, 2, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674,  50, 30000, false, 35, "", add); //Mission in mission file           
+            addRadar("Radar Le Touquet",              "L2kR", 2, 4, 2, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppe",                  "FreR", 2, 4, 2, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 30000, false, 15, "", add); //Mission in mission file
+            addRadar("Veulettes-sur-Mer Radar",       "VeuR", 2, 4, 2, "RTarget48R", "TGroundDestroyed", 100, 195165,93441,  50, 30000, false, 5, "", add);//Mission in mission file
+            addRadar("Le Havre Freya Radar",          "LhvR", 2, 4, 2, "RTarget49R", "TGroundDestroyed", 100, 157636,60683,  50, 30000, false, 15, "", add);//Mission in mission file
+            addRadar("Ouistreham Freya Radar",        "OuiR", 2, 4, 2, "RTarget50R", "TGroundDestroyed", 100, 135205,29918,  50, 30000, false, 15, "", add);// Mission in mission file
+            addRadar("Bayeux Beach Freya Radar",      "BayR", 2, 4, 2, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659,  50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580,  50, 30000, false, 5, "", add); //Mission in mission file
             addRadar("Radar Tatihou",                 "TatR", 2, 4, 2, "RTarget53R", "TGroundDestroyed", 77, 60453,  63873,  50, 40000, false, 5, "", add); //Mission in mission file
             addRadar("Radar Querqueville",            "QueR", 2, 4, 2, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666,  50, 40000, false, 15, "", add); // Mission in mission file
 
@@ -8107,10 +8250,10 @@ public class Mission : AMission, IMainMission
             //BLUE TARGETS
             addTrigger(MO_ObjectiveType.Aircraft, "Littlestone Bombers", "Litt", 1, 3, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, "", add);
             addTrigger(MO_ObjectiveType.AirfieldComplex, "Redhill Bomber Base", "Redh", 1, 5, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 100, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot", "Ashf", 1, 3, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Ashford Train Depot Armour", "Ashf", 1, 3, "BTarget3", "TGroundDestroyed", 20, 214639, 235604, 100, false, 100, "", add);
             addTrigger(MO_ObjectiveType.Aircraft, "Manston aircraft", "Mans", 1, 2, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, "", add);
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ Dover", "Dove", 1, 3, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "", add);
-            addTrigger(MO_ObjectiveType.Vehicles, "British Armor @ CreekMouth", "Bext", 1, 5, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armour @ Dover", "Dove", 1, 3, "BTarget5", "TGroundDestroyed", 80, 243887, 236956, 200, false, 100, "", add);
+            addTrigger(MO_ObjectiveType.Vehicles, "British Armour @ CreekMouth", "Bext", 1, 5, "BTarget6", "TGroundDestroyed", 50, 159687, 275015, 200, false, 100, "", add);
             addTrigger(MO_ObjectiveType.Fuel, "Diesel Fuel London South Docks", "Lond", 1, 3, "BTarget6S", "TGroupDestroyed", 70, 154299, 273105, 100, false, 100, "", add);//removed all ships "Designation S" used oil storage instead
             addTrigger(MO_ObjectiveType.Fuel, "Hydrogen Storage @ London South Docks", "Lond", 1, 3, "BTarget7S", "TGroundDestroyed", 80, 155050, 273258, 50, false, 100, "", add);
             addTrigger(MO_ObjectiveType.Fuel, "Ethanol Storage @ London South Docks", "Lond", 1, 5, "BTarget8S", "TGroundDestroyed", 80, 155823, 273221, 50, false, 100, "", add);
@@ -8125,7 +8268,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Fuel, "Ditton Fuel Storage", "Ditt", 1, 4, "BTarget25", "TGroundDestroyed", 80, 186057, 251745, 100, false, 100, "", add);
             addTrigger(MO_ObjectiveType.Building, "Maidstone Train Repair Station ", "Ditt", 1, 3, "BTarget26", "TGroundDestroyed", 60, 189272, 249311, 50, false, 100, "", add);
             //addTrigger(MO_ObjectiveType.Building, "Billicaray Factory", "RaHQ", 1, 2, "BTarget27", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, "", add); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
-            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armory", "Tunb", 1, 4, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 70, "", add); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
+            addTrigger(MO_ObjectiveType.Building, "Tunbridge Wells Armoury", "Tunb", 1, 4, "BTarget27", "TGroundDestroyed", 85, 173778, 233407, 100, false, 70, "", add); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
             addTrigger(MO_ObjectiveType.Building, "Bulford Army Facility", "Bult", 1, 7, "BTarget29", "TGroundDestroyed", 90, 35872, 236703, 200, false, 10, "", add);
             addTrigger(MO_ObjectiveType.Building, "Wooleston Spitfire Shop ", "Wool", 1, 7, "BTarget30", "TGroundDestroyed", 81, 56990, 203737, 100, false, 100, "", add);
             addTrigger(MO_ObjectiveType.Fuel, "Swindon Aircraft repair Station", "Swin", 1, 6, "BTarget31", "TGroundDestroyed", 75, 29968, 279722, 300, false, 3, "", add);
@@ -8161,7 +8304,7 @@ public class Mission : AMission, IMainMission
             //BTargShorehamSubmarineBase TGroundDestroyed 10 137054 198034 50
             /*
 			littlestonehang TGroundDestroyed 66 221988 221642 50
-              BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "
+              BTarget6S TGroundDestroyed 70 154299 273105 100     "Diesel fuel London south docks", 1, 3, "r
               BTarget7S TGroundDestroyed 80 155050 273258 50      "Hydrogen Storage @ London south docks", 
               BTarget8S TGroundDestroyed 80 155823 273221 50      "Ethanol Storage @ London south docks", 1
               BTarget9S TGroundDestroyed 80 157899 273957 50      "Liquid Oxygen @ Beckton", 1, 2, "BTar
@@ -8486,6 +8629,10 @@ added Rouen Flak
                 } else //it's just destroyed
                 {
 
+                    //string firetype = "BuildingFireSmall"; //small-ish
+                    //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger  //REALLY huge
+                    //if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger //larger
+
                     Calcs.loadSmokeOrFire(GamePlay, this, mo.Pos.x, mo.Pos.y, 0, "BuildingFireBig", duration_s: 6 * 3600);
                     if (mo.Points > 3) Calcs.loadSmokeOrFire(gp, msn, mo.Pos.x + random.Next(50)-25, mo.Pos.y + random.Next(50) - 25, 0, "BuildingFireBig", duration_s: 6 * 3600); //bigger, put another
                     if (mo.MOTriggerType == MO_TriggerType.Trigger && GamePlay.gpGetTrigger(ID) != null)
@@ -8548,7 +8695,11 @@ added Rouen Flak
                     Tuple<bool, string, double, double, DateTime, double, Point3d> oldAp = AirfieldTargets[ap];
                     MissionObjective mo = MissionObjectivesList[af_name];
                     double damagePoints = 0; //assumed because it is knocked out/100%
-                    bool apDestroyed = false; 
+                    if (mo.DestroyedPercent > 0) damagePoints = mo.DestroyedPercent * oldAp.Item3;  //so if the airport was partially knocked out before, it still remains that way
+                                                                                                    //between this & the last-hit time the airport routine can calculate airport repair time accurately.
+                    bool apDestroyed = false;
+                    DateTime lastHitTime = DateTime.Now; //time of last damage hit //unfort we don't really have this, it happened in a previous mission; we set it to right now
+                    if (mo.LastHitTime_UTC.HasValue) lastHitTime = mo.LastHitTime_UTC.Value;
                     if (mo.Destroyed)
                     {
                         //it was destroyed, but now it is time to undestroy the airport
@@ -8583,7 +8734,7 @@ added Rouen Flak
                         oldAp.Item2, //name
                         oldAp.Item3, //pointstoknockout
                         damagePoints, //damage point total
-                        DateTime.Now, //time of last damage hit //unfort we don't really have this, it happened in a previous mission; we set it to right now
+                        lastHitTime,
                         oldAp.Item6, // airfield radius
                         oldAp.Item7  //airfield center
                         );
@@ -8627,6 +8778,12 @@ added Rouen Flak
 
         foreach (var a in arms)
         {
+            //first, reset all the targets (in this army) to be not primaries.            
+            foreach (var key in keys)
+            {
+                if (MissionObjectivesList[key].AttackingArmy == a) MissionObjectivesList[key].IsPrimaryTarget = false;
+            }
+
             int counter = 1;
 
             for (int x = 0; x < 10; x++) //unlikely but possible that we'd need to cycle through the list of targets multiple times to select enough targets to reach the points. Could happen though if PrimaryTargetWeights are set low, or only a few possible objectives available in the list. 
@@ -8636,7 +8793,7 @@ added Rouen Flak
                     MissionObjective mo = MissionObjectivesList[key];
                     if (mo.AttackingArmy == a && mo.PrimaryTargetWeight > 0 && mo.IsEnabled && !mo.IsPrimaryTarget)
                     {
-                        double r = stb_random.NextDouble() * 200; //was 100.  This will cut chance of everything being chose, in half.  Except airports and a few other things, which we increased by a lot.  2020-01
+                        double r = stb_random.NextDouble() * 200; //was 100.  This will cut chance of everything being chosen, in half.  Except airports and a few other things, which we increased by a lot.  2020-01
                         //Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID);
                         if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 200% is never skipped, 100% skipped half the time, 50% 3/4 of the time, 0% skipped always
                         if (totalPoints < MO_PointsRequired[(ArmiesE)a])
@@ -8644,6 +8801,7 @@ added Rouen Flak
                             mo.IsPrimaryTarget = true;
                             totalPoints += mo.Points;
                             MissionObjectivesString[(ArmiesE)a] += " - " + mo.Sector + " " + mo.Name;
+                            Console.WriteLine("Adding new Mission Objective: " + mo.Sector + " " + mo.Name + " " + mo.Points.ToString("F0") + " " + totalPoints.ToString("F0"));
                             //if (counter % 3 == 0) MissionObjectivesString[(ArmiesE)a] += Environment.NewLine;
                             counter++;
                         }
@@ -8668,7 +8826,13 @@ added Rouen Flak
     {
         Console.WriteLine("Writing " + name + " to file");
 
-        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_SESSIONSTATE_" + name + ".xml";
+        string ext = ".xml";
+        string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_SESSIONSTATE_" + name + ext;
+        string suffix = "_SESSIONSTATE_" + name;
+        string fileName_base = CAMPAIGN_ID;
+        string backupDir = CAMPAIGN_ID + @" campaign backups\"; //will be added at the end of STATSCS_FULL_PATH
+
+        //WriteAllTextAsyncWithBackups(string fileDir_base, string fileName_base, string suffix, string ext, string backupDir, bool wait = false, ManualResetEvent resetEvent = null)
 
         try
         {
@@ -8700,15 +8864,16 @@ added Rouen Flak
             //we only do this at final program exit, just to make sure file write actually complete/not corrupted
             if (wait)
             {
+                    
+                /*Task<bool> task = Calcs.WriteAllTextAsync(filepath, xmlString);
+                bool res = await task; */
+                //Calcs.WriteAllTextAsync(filepath_new, xmlString, wait: true, resetEvent: resetEvent);
+                Calcs.WriteAllTextAsyncWithBackups(xmlString, STATSCS_FULL_PATH, fileName_base, suffix, ext, backupDir, wait: true, resetEvent: resetEvent);
+                Console.WriteLine("MO_WriteMissionObject: waiting . . . to write " + name);
+                resetEvent.WaitOne(); // Blocks the thread until until "set"
+                Console.WriteLine("MO_WriteMissionObject: . . . . released.");            
 
-                    /*Task<bool> task = Calcs.WriteAllTextAsync(filepath, xmlString);
-                    bool res = await task; */
-                    Calcs.WriteAllTextAsync(filepath, xmlString, wait: true, resetEvent: resetEvent);
-                    Console.WriteLine("MO_WriteMissionObject: waiting . . . to write " + name);
-                    resetEvent.WaitOne(); // Blocks the thread until until "set"
-                    Console.WriteLine("MO_WriteMissionObject: . . . . released.");            
-
-            } else Calcs.WriteAllTextAsync(filepath, xmlString); 
+            } else Calcs.WriteAllTextAsyncWithBackups(xmlString, STATSCS_FULL_PATH, fileName_base, suffix, ext, backupDir);
 
         }
         catch (Exception ex)
@@ -8838,10 +9003,12 @@ added Rouen Flak
         if (mo4 != null) MissionObjectivesCompletedString = mo4 as Dictionary<ArmiesE, string>;
         else ret[4] = false;
 
+        /*
         var mo5 = MO_ReadMissionObject(MissionObjectivesString, "MissionObjectivesString");
         Console.WriteLine("Read " + mo5.GetType().ToString());
         if (mo5 != null) MissionObjectivesString = mo5 as Dictionary<ArmiesE, string>;
         else ret[5] = false;
+        */
 
         return ret;
         /*
@@ -8864,6 +9031,16 @@ added Rouen Flak
         if (army < 1 || army > 2) return;
 
         Console.WriteLine("Reading Mission Objectives from file for " + ArmiesL[army]);
+
+        List<string> moKeys = new List<string>(MissionObjectivesList.Keys);
+
+        //first, remove any/all existing primary targets marked in the MissionObjectivesList
+        //reason is, we want the .ini file primary objective list to be the operative list. 
+        //What it says, goes.  So you can for example change or delete objectives just by editing the .ini file.  Then MissionObjectivesList will be updated (here) to match that.
+        foreach (var key in moKeys)
+        {
+            if (MissionObjectivesList[key].AttackingArmy == army) MissionObjectivesList[key].IsPrimaryTarget = false;
+        }
 
         string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapObjectives.ini";
 
@@ -8908,9 +9085,6 @@ added Rouen Flak
     public void MO_WritePrimaryObjectives()
     {
 
-        DateTime dt = DateTime.UtcNow;
-        string date = dt.ToString("u");
-
 
         //Console.WriteLine("MO_Write #2");
 
@@ -8949,6 +9123,9 @@ added Rouen Flak
         }
         catch (Exception ex) { Console.WriteLine("MapState Write: " + ex.ToString()); }
 
+        MO_makeCampaignFilesBackup(filepath, @" campaign backups\", @"_MapObjectives-", ".ini");
+
+        /*
         var backPath = STATSCS_FULL_PATH + CAMPAIGN_ID + @" campaign backups\";
         string filepath_date = backPath + CAMPAIGN_ID + @"_MapObjectives-" + dt.ToString("yyyy-MM-dd-tt") + ".ini";
 
@@ -8972,7 +9149,41 @@ added Rouen Flak
             File.Copy(filepath, filepath_date);
         }
         catch (Exception ex) { Console.WriteLine("MO_Write Date: " + ex.ToString()); }
+        */
 
+
+
+    }
+
+    public void MO_makeCampaignFilesBackup (string fullFilename, string dirName, string fileSuffix, string extension)
+    {
+
+        DateTime dt = DateTime.UtcNow;
+        string date = dt.ToString("u");
+
+        var backPath = STATSCS_FULL_PATH + CAMPAIGN_ID + dirName;
+        string filepath_date = backPath + CAMPAIGN_ID + fileSuffix + dt.ToString("yyyy-MM-dd-tt") + extension;
+
+        //Create the directory for the MapState.txt backup files, if it doesn't exist
+        if (!System.IO.File.Exists(backPath))
+        {
+
+            try
+            {
+                //System.IO.File.Create(backPath);
+                System.IO.Directory.CreateDirectory(backPath);
+            }
+            catch (Exception ex) { Console.WriteLine("MO_Write Dir Create Date: " + ex.ToString()); }
+
+        }
+
+        //Save most recent copy of corresponding file with suffix like  -2018-05-13.ini
+        try
+        {
+            if (File.Exists(filepath_date)) { File.Delete(filepath_date); }
+            File.Copy(fullFilename, filepath_date);
+        }
+        catch (Exception ex) { Console.WriteLine("MO_Write Date: " + ex.ToString()); }
 
 
     }
@@ -9060,13 +9271,13 @@ added Rouen Flak
                 //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
 
                 // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
-                msg = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
+                string msg6 = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
                 if (mo.Destroyed) msg += " (destroyed)";
-                retmsg += msg + Environment.NewLine;
+                retmsg += msg6 + Environment.NewLine;
                 numDisplayed++;
                 Timeout(totDelay, () =>
                 {                    
-                    if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });                    
+                    if (player != null) twcLogServer(new Player[] { player }, msg6, new object[] { });                    
                 });//timeout                      
             }
         }
@@ -9655,6 +9866,7 @@ added Rouen Flak
                 if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
                 if (timetofix_s>0) OldObj.TimeToUndestroy_UTC = DateTime.Now.AddSeconds(timetofix_s);
                 if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
+                OldObj.LastHitTime_UTC = DateTime.UtcNow;
             }
 
             if (OldObj.Destroyed || !OldObj.IsEnabled) return false; //The object has already been destroyed; don't need to do it again; we only give points/credit for destroying any given objective once
@@ -9746,7 +9958,8 @@ added Rouen Flak
 
     //Adds additional destruction/percent/time out of commission to objects that are already destroyed
     //string ID, bool active = true, double percentdestroyed = 0, double timetofix_s = 0 , DateTime? TimetoUndestroy_UTC = null
-    public bool MO_DestroyObjective_addTime(string ID, double percentdestroyed = 0, double timetofix_s = 0, DateTime? TimetoUndestroy_UTC = null)
+    public bool MO_DestroyObjective_addTime(string ID, double percentdestroyed = 0, double timetofix_s = 0, DateTime? TimetoUndestroy_UTC = null,
+        DateTime? TimeLastHit_UTC = null )
     {
         try
         {
@@ -9765,6 +9978,7 @@ added Rouen Flak
                 if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
                 if (timetofix_s > 0) OldObj.TimeToUndestroy_UTC = DateTime.Now.AddSeconds(timetofix_s);
                 if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
+                if (TimeLastHit_UTC.HasValue) OldObj.LastHitTime_UTC = TimeLastHit_UTC.Value;
             }
             return true;
 
@@ -9834,9 +10048,23 @@ public void MO_CheckObjectivesComplete()
 
         foreach (MissionObjective value in DR)
         {
-            double dist = Calcs.CalculatePointDistance(p, value.Pos);
-            //if (value.ID == "BTarget14R") Console.WriteLine(value.Name + " " + army.ToString() + " " + dist.ToString("F0") + " " + value.RadarEffectiveRadius.ToString("F0") + " " + p.x.ToString("F0") + " " + p.y.ToString("F0") + " " + value.Pos.x.ToString("F0") + " " + value.Pos.y.ToString("F0"));
-            if (dist < value.RadarEffectiveRadius) return true;
+            for (int i = 0; i< 3; i++) {
+
+                //So we take 3 circles starting at the radar location and moving towards heading 315 for Blue radars & 135 for Red radars
+                //this works pretty well for the Channel map.
+                double xadd = (double)i*value.RadarEffectiveRadius;
+                double yadd = -(double)i * value.RadarEffectiveRadius;
+                if (army == 2) {
+                    xadd = -(double)i * value.RadarEffectiveRadius;
+                    yadd = (double)i * value.RadarEffectiveRadius;
+                }
+
+                Point3d calcPos = new Point3d(value.Pos.x + xadd, value.Pos.y + yadd, p.z);
+
+                double dist = Calcs.CalculatePointDistance(p, calcPos);
+                //if (value.ID == "BTarget14R") Console.WriteLine(value.Name + " " + army.ToString() + " " + dist.ToString("F0") + " " + value.RadarEffectiveRadius.ToString("F0") + " " + p.x.ToString("F0") + " " + p.y.ToString("F0") + " " + value.Pos.x.ToString("F0") + " " + value.Pos.y.ToString("F0"));
+                if (dist < value.RadarEffectiveRadius) return true;
+            }
         }
         return false;
     }
@@ -9902,6 +10130,58 @@ public void MO_CheckObjectivesComplete()
         }
         return true;
 
+    }
+
+    public string ListRadarTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
+    {
+        try
+        {
+            int count = 0;
+            string returnmsg = "";
+            double delay = 0.1;
+
+            var DR = new List<MissionObjective>();
+
+            List<int> armies;
+            if (army == 1) armies = new List<int>() { 1 };
+            else if (army == 2) armies = new List<int>() { 2 };
+            else armies = new List<int>() { 1, 2 };
+
+            foreach (int a in armies)
+            {
+                DR = DestroyedRadar[(ArmiesE)a];
+
+                foreach (MissionObjective mo in DR)
+                {
+                    string msg2 = " (unknown)";
+                    if (mo.TimeToUndestroy_UTC.HasValue)
+                    {
+
+                        double hrs = Math.Ceiling((mo.TimeToUndestroy_UTC.Value.Subtract(DateTime.UtcNow)).TotalDays * 2.0) / 2.0;
+                        msg2 = "(" + hrs.ToString("F1") + " days)";
+                    }
+                    string msg = mo.Name + " destroyed " + msg2;
+                    returnmsg += msg + "\n";
+
+                    if (display)
+                    {
+                        delay += 0.02;
+                        Timeout(delay, () => { twcLogServer(new Player[] { player }, msg, new object[] { }); });
+                    }
+
+                    count++;
+                }
+            }
+            if (count == 0)
+            {
+                string msg = "No radar currently damaged or destroyed";
+                if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
+                returnmsg = ""; //In case of display == false we just don't return any message at all, allowing this bit to simply be omitted
+            }
+
+            return returnmsg;
+        }
+        catch (Exception ex) { Console.WriteLine("MO_RadarList Error: " + ex.ToString()); return ""; };
     }
 
     /******************************************************************************************************************** 
@@ -12182,6 +12462,137 @@ public static class Calcs
         list[i] = list[j];
         list[j] = temp;
     }
+    public static async Task<bool> WriteAllTextAsyncWithBackups(string data, string fileDir_base, string fileName_base, string suffix, string ext, string backupDirStub, bool wait = false, ManualResetEvent resetEvent = null)
+    {
+
+        DateTime dt = DateTime.UtcNow;
+        string date = dt.ToString("u");
+        TimeSpan start = new TimeSpan(0, 0, 0); //Midnight o'clock
+        TimeSpan end = new TimeSpan(12, 0, 0); //12 o'clock noon
+        TimeSpan now = DateTime.Now.TimeOfDay;
+
+        string backupDirFile = fileDir_base + backupDirStub + fileName_base + suffix + "-" + dt.ToString("yyyy-MM-dd");
+        if (start < now && now < end) backupDirFile += "-AM" + ext; //two backups a day, morn & eve
+        else backupDirFile += "-PM" + ext;       
+
+        string filename_main = fileDir_base + fileName_base + suffix + ext;
+        string backupTxtFile2 = fileDir_base + fileName_base + suffix + "_old2" + ext;
+        string backupTxtFile1 = fileDir_base + fileName_base + suffix + "_old" + ext;
+        string tempNewTxtFile = fileDir_base + fileName_base + suffix + "_tmp" + ext;
+
+
+        //Console.WriteLine("WriteAllTextAsyncWithBackups: " + tempNewTxtFile + ": " + fileDir_base + " " + fileName_base + " " + suffix);
+
+        try
+        {
+            //first, write the new file as a temp file
+            try
+            {
+                System.IO.File.Delete(tempNewTxtFile);
+            }
+            catch (Exception ex) { }
+
+            try
+            {
+                await WriteAllTextAsync(tempNewTxtFile, data);
+            }
+            catch (Exception ex) {
+                Console.WriteLine("WriteAllTextAsyncWithBackups ERROR writing-ABORTING SAVE!! " + fileName_base + suffix + "_tmp" + ext + ": " + ex.Message);
+
+                if (resetEvent != null) resetEvent.Set();
+                return false;
+            }
+
+            //Now if that succeeded, we can proceed with backups etc. -  but only if it succeeded. No point in backing up if we don't have anything to backup
+
+            if (System.IO.File.Exists(tempNewTxtFile)) {
+
+                //First, copy the  new .tmp file to the backup directory (date plus A/B - morn & evening)
+                try
+                {
+                    System.IO.File.Delete(backupDirFile);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR deleting " + backupDirFile + ": " + ex.Message); }
+
+                try
+                {
+                    System.IO.File.Copy(tempNewTxtFile, backupDirFile);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR moving to backup " + fileName_base + suffix + "_tmp" + ext + ": " + ex.Message); }
+
+                //Now move 1st backup to 2nd backup
+                try
+                {
+                    System.IO.File.Delete(backupTxtFile2);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR deleting " + fileName_base + suffix + "_old2" + ext + ": " + ex.Message); }
+
+                try
+                {
+                    System.IO.File.Move(backupTxtFile1, backupTxtFile2);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR moving to " + fileName_base + suffix + "_old2" + ext + ": " + ex.Message); }
+
+
+                //Now move current main file to 1st backup
+                try
+                {
+                    System.IO.File.Delete(backupTxtFile1);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR deleting " + fileName_base + suffix + "_old" + ext + ": " + ex.Message); }
+
+                try
+                {
+                    System.IO.File.Copy(filename_main, backupTxtFile1);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR copying to " + fileName_base + suffix + "_old" + ext + ": " + ex.Message); }
+
+
+
+                //Now move tmpNew main file to main file
+                try
+                {
+                    System.IO.File.Delete(filename_main);
+                }
+                catch (Exception ex) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR deleting " + fileName_base + suffix + ext + ": " + ex.Message); }
+
+                try
+                {
+                    System.IO.File.Move(tempNewTxtFile, filename_main);
+                } catch (Exception ex)
+                {
+                    //If the rename of the .tmp to main fails this is DISASTROUS so we will try to
+                    //save a copy of the current data file at least.  It will be namnd
+                    //xxxx.EXT-3030301 with date/time appended to end
+                    //Random ran = new Random();
+                    //string r = ran.Next(1000000, 9999999).ToString();   
+                    string r = dt.ToString("yyyy-MM-dd-HHmmss");
+
+                    try
+                    {
+                        System.IO.File.Move(tempNewTxtFile, filename_main + "EMERGENCY_SAVE" + "-" + r);
+                    }
+                    catch (Exception ex1) { Console.WriteLine("WriteAllTextAsyncWithBackups ERROR on emergency save " + fileName_base + suffix + ext + ": " + ex1.ToString()); }
+                }
+            } else
+            {
+                Console.WriteLine("WriteAllTextAsync ERROR - file write FAILED: " + fileName_base + suffix + "_tmp" + ext);
+            }
+
+            //once all this is done we can release the hold, if present
+            if (resetEvent != null) resetEvent.Set();
+            return false;
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("WriteAllTextAsync ERROR writing " + fileName_base + suffix + "_tmp" + ext + ": " + ex.Message);
+
+            if (resetEvent != null) resetEvent.Set();
+            return false;
+
+        }
+    }
 
     public static async Task<bool> WriteAllTextAsync(string filelocation, string data, bool wait = false, ManualResetEvent resetEvent = null )
     {
@@ -12240,6 +12651,8 @@ public static class Calcs
         string key = "Static1";
         string value = "Smoke.Environment." + type + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + (duration_s / 60).ToString("0.0") + " /height " + z.ToString("0.00");
         f.add(sect, key, value);
+
+        GamePlay.gpPostMissionLoad(f);
 
 
     }

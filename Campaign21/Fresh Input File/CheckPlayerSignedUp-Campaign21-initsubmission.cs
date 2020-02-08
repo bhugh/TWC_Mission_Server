@@ -77,6 +77,19 @@ Debug.Assert(set.Contains("JohN"));
 
             try
             {
+                if (!File.Exists(full_file_prefix + "reds.txt")) { File.CreateText(full_file_prefix + "reds.txt"); }                
+            }
+            catch (Exception ex) { Console.WriteLine("CheckPlayerSignedUp - error checking/creating player sign-up files RED." + ex.ToString()); }
+
+            try
+            {
+                if (!File.Exists(full_file_prefix + "blues.txt")) { File.CreateText(full_file_prefix + "blues.txt"); }                
+            }
+            catch (Exception ex) { Console.WriteLine("CheckPlayerSignedUp - error checking/creating player sign-up files BLUE." + ex.ToString()); }
+
+
+            try
+            {
                 red_temp = new List<string>((System.IO.File.ReadAllLines(full_file_prefix + "reds.txt")).ToList().TrimAll().ToLowerAll());//.TrimAll().ToLowerAll());//, StringComparer.OrdinalIgnoreCase); //.ToList());
                 blue_temp = new List<string>((System.IO.File.ReadAllLines(full_file_prefix + "blues.txt")).ToList().TrimAll().ToLowerAll());//, StringComparer.OrdinalIgnoreCase); //.ToList());
                 reds = new HashSet<string>(red_temp);

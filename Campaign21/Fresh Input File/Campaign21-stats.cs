@@ -316,7 +316,7 @@ public class Mission : AMission, IStatsMission
     double stb_ParachuteFailureRecoveryChance = .99; //If CloD decides your "parachute failed" what is your chance of being able to deploy your reserve chute? 
                                                      //CloD does something like 20-50% parachute failure rate. Wherease US AF in training in WWII found one main chute failure PER WEEK in a large training facility, so that is one per hundreds of jumps.  And that is the main chute. The reserve shoot fails maybe 1% of the time or less also.  So even .99 here is probably too LOW, certainly not too high.
                                                      //In reality in combat it might have been somewhat less than that, but still . . . 
-    bool stb_AllowJumpIntoAIAircraft = false; //Players can jump into an already-existing AI aircraft in certain situations, such as 
+    bool stb_AllowJumpIntoAIAircraft = true; //Players can jump into an already-existing AI aircraft in certain situations, such as 
 
 
 
@@ -1016,7 +1016,7 @@ struct
         {
             if (player != null && player.Name() != null && player.Name().Length > 0)
             {
-                Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
+                //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
 
                 var OldStats = new Stb_PlayerSessStat(mission);
 
@@ -3571,6 +3571,38 @@ struct
             }
         }
     }
+    public HashSet<AiAircraft> Stb_returnListAllAIAircraft()
+    {
+        HashSet<AiAircraft> ist = new HashSet<AiAircraft>();
+        //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in GamePlay.gpArmies())
+            {
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                {
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor is AiAircraft)
+                                {
+                                    AiAircraft a = actor as AiAircraft;
+                                    if (a != null)
+                                    {
+                                        ist.Add(a);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ist;
+    }
 
     //Put a player into a certain place of a certain plane.
     private bool Stb_putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
@@ -4450,8 +4482,12 @@ struct
             if (stb_LogStats) { Stb_LogStatsRecursive(); }
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive();}
             SetAirfieldTargets();
+            
+            //put all aircraft in the air at start of mission into AIAircraftList - we use 
+            //this to detect if people have jumped into AI aircraft, and we pick up the rest vis onactorcreated
+            AIAircraftList.UnionWith(Stb_returnListAllAIAircraft());
 
-          //  Stb_RemoveOffMapPlayers_recurs();
+            //  Stb_RemoveOffMapPlayers_recurs();
             Stb_changeTargetToDifferentNearbyAircraft_recurs();
 
             Console.WriteLine("-stats.cs successfully loaded");
@@ -5430,7 +5466,7 @@ struct
             double timereduction = 0;
             if (percent > 0)
             {
-                timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
             }
 
             double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
@@ -5468,7 +5504,7 @@ struct
 
         }
 
-        GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+        //GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
         //
         /** OK, instead of putting the 'peperoni pizza' pattern of craters to disable an airfield, we're just going to disable the associated spawn point **/
@@ -5986,7 +6022,7 @@ struct
                     double timereduction = 0;
                     if (prev_percent > 0)
                     {
-                        timereduction = (DateTime.Now - lastBombHit).TotalSeconds;
+                        timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
                     }
 
                     double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
@@ -6007,12 +6043,13 @@ struct
 
                     Timeout(timeout, () =>
                     {
+                        /*
                         //Experiment: removing the message to see if it helps with warps  9/28/2018
                         if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
 
                         //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
                         Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
-
+                        */
                         loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
                         //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
 
@@ -6029,7 +6066,8 @@ struct
 
                             //We do this part only in -stats.cs and & will stamp craters all over the ap but only if the ap was disabled by LIVE pilots, not AI . . . 
                             //UPDATE 2018/09: We don't stamp the craters but actually disable the birthplace so that it no longer functions as a spawn point
-                            AirfieldDisable(ap);
+                            //UPDATE 2020/02: We're taking care of this in the main .cs file now
+                            //AirfieldDisable(ap);
 
 
                             //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
@@ -6239,7 +6277,7 @@ struct
 
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                 if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+               Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
 
 
                 string pe2Hud_message = "Sorry, you are restricted from " + aircraft_type +  ". Read Chat Msg & Mission Briefing for details";
@@ -6284,9 +6322,9 @@ struct
                         Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7} {8}", isEnteringAIAircraft, realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
 
 
-                        //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                        Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
                         //2 = self-kill
-                        /*
+                        
                         stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
                         Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
                         stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
@@ -6302,8 +6340,8 @@ struct
                         gpLogServerAndLog(null, "The stolen aircraft was destroyed at a loss to the team.", new object[] { player.Name(), aircraft.InternalTypeName() });
 
                         return; //and . . . don't save new mission/sortie etc etc etc
-                        */
-
+                        
+                        /*
                         string pe3Hud_message = "Jumping into nearby AI aircraft is not allowed - Please Don't!";
                         GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
                         Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
@@ -6312,6 +6350,7 @@ struct
                         gpLogServerAndLog(new Player[] { player }, "We are testing a new system to prevent pilots from jumping into nearby AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
                         gpLogServerAndLog(new Player[] { player }, "The system detected that you just jumped into a new AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
                         gpLogServerAndLog(new Player[] { player }, "If you did that, please don't!  If you didn't (ie, just moving to a new position in your bomber) please report the error to the admins.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        */
 
                     }
                 });
@@ -6815,6 +6854,8 @@ struct
 
             });
 
+            //we use 
+            //this to detect if people have jumped into AI aircraft, and we pick up the rest via onmissionloaded
             Timeout(2, () =>
             {
                 if (aircraft != null && Stb_isAiControlledPlane(aircraft)) //AI Aircraft has been created
@@ -10759,7 +10800,7 @@ public class StbStatRecorder: IStbStatRecorder
             //string line = "";
             var currSessStat = new Mission.Stb_PlayerSessStat(mission); //save current state of stats, plus gets it back for current use
             Player currPlayer = entry.Value.player;
-            Console.WriteLine("SISplayer: " + currPlayer.Name());
+            //Console.WriteLine("SISplayer: " + currPlayer.Name());
             try
             {
                 currSessStat = mission.stb_SaveIPlayerStat.StbSis_Save(currPlayer);

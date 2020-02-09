@@ -1,0 +1,27 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[BirthPlace]
+  "Testing AirSpawn" 2 76604 189936 750 1 1 1 . . . 1
+  "Red Testing Air Spawn" 1 261840 192657 300 1 1 1 . . . 1
+  "Shoreham Testing AirSpawn" 2 136729 197369 750 1 1 1 . . . 1
+  "Abbeville Airspawn Testing" 1 291070 120814 750 1 1 1 . . . 0

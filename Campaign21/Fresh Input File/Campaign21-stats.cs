@@ -5271,7 +5271,8 @@ struct
      *    Bombers receive points for bombing these areas (calculated below, depends on size of bomb etc)
      *    Also each bomb is marked with a smoke plume.
      *    
-     *    TODO: Make sure they are bombing enemy territory/point deductions for bombing friendly
+     *    As of TF 4.2, 4.5, and 4.57 you can place jerrycans (stationaries) in any .mis or submission .mis file.  This will register them all.
+     *    This is in distinction to the built in CloD "triggers" which only pick up objects within the same .mis file, and then the trigger is only received by the corresponding .cs file (not necessarily -main.cs)
      * 
      ****************************************************************/
 
@@ -7747,7 +7748,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
                         if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
                         {
-                            msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + Calcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". Please log off the server to allow others a chance to fly.";
+                            msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + Calcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60));
                             if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
                         }
 
@@ -7948,6 +7949,85 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
 
         }
         //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+    
+    //OnBuildingKilled(string title, maddox.GP.Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+
+    public override void OnBuildingKilled(string title, Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        #region stb
+        base.OnBuildingKilled(title, pos, initiator, eventArgInt);
+        try
+        {
+            //stb_KilledActors.Add(actor, damages); // save 
+            //System.Console.WriteLine("Actor dead: Army " + actor.Army() );            
+            int statarmy = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+            string msg = "Building " + title + " " + statarmy.ToString() + " " + "killed by ";
+
+            Player player = null;
+            if (initiator != null && initiator.Player != null) player = initiator.Player;
+
+
+            /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+            this.Actor = Actor;
+            this.Person = Person;
+            this.Player = Player;
+            this.Tool = Tool;
+            */
+
+
+            bool willReportDead = false;
+            if (initiator != null)
+            {
+                if (initiator.Player != null)
+                {
+                    int statArmy = GamePlay.gpFrontArmy(pos.x, pos.y);
+                    msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
+
+                    //We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.  See note at onStationaryKilled
+ 
+                    if
+                      (
+                        (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
+
+                      )
+                    {
+
+                        willReportDead = true;
+                        msg += "(enemy ground target)";
+
+                    }
+                    else
+                    {
+                        msg += "(friendly ground target)";
+                    }
+                }
+                else
+                {
+                    msg += "nobody/AI  ";
+                }
+            }
+
+            int score = 2;
+            
+            if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //Type 1 aircraft, etc etc .. type 4 is any other ground type
+            //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
+            //score.  But for these buildings it just reported "it is dead", along with the
+            //initiators.  So we are just saying damage.score =  1 for killing one building.  We could check titles/types & adjust up or down (TODO). The complete 1 points goes to the actor reported in 
+            //initiator, resulting in 1 kill pt (100%) per ground target killed.  
+
+            //Report ground kills but spread them out a bit in case many die @ once            
+            Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Building Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+
+            //Stb_LogError(msg);
+            //if (willReportDead) 
+            Console.WriteLine(msg);
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
         #endregion
         //add your code here
     }

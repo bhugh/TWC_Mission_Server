@@ -291,7 +291,7 @@ public class Mission : AMission, ICoverMission
                         Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died in enemy territory.");
 
                     }
-                    else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor) > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
+                    else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor).Item1 > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                         //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
@@ -1129,29 +1129,33 @@ public class Mission : AMission, ICoverMission
             GamePlay.gpLogServer(new Player[] { player }, "Cover: Call " + numAC.ToString() + " " + plane + " in " + formation, new object[] { });
             //Point3d ac1loc = (aircraft as AiActor).Pos();
 
-            AiAirport ap = Stb_nearestAirport(actor.Pos(), actor.Army());
-            if (ap != null) { loc = ap.Pos(); loc.z = 150; } //starting low, as though taking off.  Not actually taking off, though
+            Tuple<double, Point3d, bool> dtS = Stb_distanceToNearestAirport(aircraft as AiActor, birthplacefind: true); //<distance, airport/birthplace location, isAirSpawn> //allow birthplace to function as airport; allows cover aircraft at air spawn points
 
-            //If we are a long way from the nearest airport then we must be near an air spawn point.
-            //In that case, spawn the new a/c near the player rather than near the airport.
-            AiActor playerplace = player.Place();
-            if (playerplace as AiAircraft != null)
+            //AiAirport ap = Stb_nearestAirport(actor.Pos(), actor.Army());
+            //if (ap != null) { loc = ap.Pos(); loc.z = 150; } //starting low, as though taking off.  Not actually taking off, though
+            if (dtS.Item2.x != -1 || dtS.Item2.y != -1 || dtS.Item2.z != -1 ) loc = dtS.Item2; //nearest airport location.
+            loc.z = 350; //If ground airport, start the spawnees near the ground, but not too near
+            if (dtS.Item3 && actor != null) loc.z = dtS.Item2.z + ran.Next(100)-50; //actor.Pos().z;//In case of airspawn we spawn them in at or near the airspawn altitude, though.            
+
+
+            bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(dtS.Item2.x, dtS.Item2.y));
+            
+            double distanceToSpawn_m = dtS.Item1 ; 
+            int maxSpawnDistance_m = 2800;
+            if (dtS.Item3) maxSpawnDistance_m = 4200; //in case it's an airspawn point, make the area a bit bigger
+            if (!spawnInFriendlyTerritory && distanceToSpawn_m > maxSpawnDistance_m)
             {
-                Point3d pp = playerplace.Pos();
-                if (Calcs.CalculatePointDistance(pp, loc) > 3000) { loc.x = pp.x; loc.y = pp.y; }
-            }
-
-
-            bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(ap.Pos().x, ap.Pos().y));
-            double distanceToSpawn_m = Stb_distanceToNearestAirport(aircraft as AiActor, birthplacefind: true); //allow birthplace to function as airport; allows cover aircraft at air spawn points
-            if (!spawnInFriendlyTerritory || distanceToSpawn_m > 2800)
-            {
-                if (distanceToSpawn_m > 2800) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
+                if (distanceToSpawn_m > maxSpawnDistance_m) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
                 else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
                 return;
             }
             //regiment determines which ARMY the new aircraft will be in BOB_RAF British, BOB_LW German. BoB_RA = Italian?
             //Anyway, if we use the pilot's current regiment it matches which is nice but also definitely keeps them in the same army.
+            //
+            //SO problem with this scheme is that SOME unusual regiments will prevent aircraft from flying in certain formations (and thus, from being loaded at all).  This includes
+            //things like observer and weather squadrons.  Don't know why!  But if the pilot has chosen (or been forced to choose, via mission design) those certain
+            //regiments then sectionfileload throws an error "Bad formation for ..." and no aircraft are loaded.  The player just silently receives no aircraft.
+          
             string regiment = "gb01";
             //if (army == 1) regiment = "BoB_RAF_F_141Sqn_Early";
             //if (army == 2) regiment = "BoB_LW_JG77_I";
@@ -1703,7 +1707,7 @@ public class Mission : AMission, ICoverMission
             f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
         } */
-
+        int numFlightsCreated = 0;
         numACcreated = 0;
         for (int flight = 0; flight < 4; flight++)
         {
@@ -1747,6 +1751,7 @@ public class Mission : AMission, ICoverMission
                 //k = "Skill1"; v = "0.6 0.6 0.6 0.6 0.6 0.6 0.6 0.6"; f.add(s, k, v);
 
             }
+            numFlightsCreated++;
         }
         if (velocity_mps <= 0)
         {
@@ -1785,7 +1790,9 @@ public class Mission : AMission, ICoverMission
         
 
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt", new object[] { }); //testing
-        //f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
+        f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
+
+        //
 
         return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
 
@@ -2941,16 +2948,22 @@ public class Mission : AMission, ICoverMission
     //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
     //In case of birthplace find, get the nearest birthplace regardless of friendly or not
     //2020-01 - rewrote so that birthplaces work.  They worked before, I thought?  Maybe something changed with CloD 4.5+?
-    private double Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
+    //Finds either airports alone OR airports & birthplaces/spawn points.  
+    //Double is distance, bool is true if closest airport is an AIRSPAWN
+    private Tuple <double, Point3d, bool> Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
     {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
         double d2Min = d2;
-        if (actor == null) return d2Min;
+        if (actor == null) return new Tuple<double, Point3d, bool> (d2Min, new Point3d(-1,-1,-1), false);
         Point3d pd = actor.Pos();
+        Point3d retPoint = new Point3d(-1, -1, -1);
+        int pArmy = actor.Army();
+        bool isAirSpawn = false;
+
 
         int n;
-        if (birthplacefind) n = GamePlay.gpBirthPlaces().Length;
-        else n = GamePlay.gpAirports().Length;
+
+        n = GamePlay.gpAirports().Length;
 
         //AiActor[] aMinSaves = new AiActor[n + 1];
         //int j = 0;
@@ -2958,30 +2971,23 @@ public class Mission : AMission, ICoverMission
         for (int i = 0; i < n; i++)
         {
             AiActor a;
-            Point3d ps = new Point3d (-1 ,-1,-1);
-            int army = -1;
+            Point3d ps = new Point3d(-1, -1, -1);
+            int aArmy = -1;
 
-            if (birthplacefind) {
-                ps = GamePlay.gpBirthPlaces()[i].Pos();
-                army = GamePlay.gpBirthPlaces()[i].Army();
-            }
-            else
-            {
-                a = (AiActor)GamePlay.gpAirports()[i];
-                if (a == null) continue;
-                ps = a.Pos();
-                army = a.Army();
 
-            }
+            a = (AiActor)GamePlay.gpAirports()[i];
+            if (a == null) continue;
+            ps = a.Pos();
+            aArmy = a.Army();
 
-            
+
             //if (actor.Army() != a.Army()) continue; //only count friendly airports
             //if (actor.Army() != (a.Pos().x, a.Pos().y)
             //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
 
             //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
 
-            if (!birthplacefind && GamePlay.gpFrontArmy(ps.x, ps.y) != army) continue;
+            if (GamePlay.gpFrontArmy(ps.x, ps.y) != pArmy) continue;
 
 
             //if (!a.IsAlive()) continue;
@@ -2993,13 +2999,53 @@ public class Mission : AMission, ICoverMission
             d2 = pd.distanceSquared(ref pp);
             if (d2 < d2Min)
             {
+                retPoint = ps;
                 d2Min = d2;
                 //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
             }
+        }
 
+        if (birthplacefind)
+        {
+            n = GamePlay.gpBirthPlaces().Length;
+            for (int i = 0; i < n; i++)
+            {
+                AiActor a;
+                Point3d ps = new Point3d(-1, -1, -1);
+                int aArmy = -1;
+
+
+                ps = GamePlay.gpBirthPlaces()[i].Pos();
+                aArmy = GamePlay.gpBirthPlaces()[i].Army();
+
+                if (aArmy != pArmy)  //We want to allow for cases where the Birthplace doesn't have an army assigned (?!) but is still on the home territory of the player, but also maybe it is an airspawn and happens to be over friendly territory and belongs to the player's army . That would be OK.
+                {
+                    if (aArmy != 0) continue;
+                    if (GamePlay.gpFrontArmy(ps.x, ps.y) != pArmy) continue;
+                }
+
+
+                //if (!a.IsAlive()) continue;
+
+
+                Point3d pp;
+                pp = ps;
+                pd.z = pp.z; //we only care about the horizontal distance for this purpose
+                d2 = pd.distanceSquared(ref pp);
+                if (d2 < d2Min)
+                {
+                    d2Min = d2;
+                    retPoint = ps;
+                    //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+                    if (ps.z > 500) isAirSpawn = true;
+                    else isAirSpawn = false;
+                }
+
+            }
+            
         }
         //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
-        return Math.Sqrt(d2Min);
+        return new Tuple<double, Point3d, bool>(Math.Sqrt(d2Min), retPoint, isAirSpawn);
     }
 
 

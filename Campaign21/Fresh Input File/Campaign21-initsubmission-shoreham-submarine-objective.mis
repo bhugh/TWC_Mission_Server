@@ -33,29 +33,8 @@
   Static12 Stationary.Environment.JerryCan_GER1_1 nn 137034.17 198035.25 815.00 
   Static13 Stationary.Environment.JerryCan_GER1_1 nn 137055.92 198028.00 815.00 
   Static14 Stationary.Environment.JerryCan_GER1_1 nn 137027.72 198019.13 815.00 
-  Static15 Artillery.Bofors gb 136978.56 198123.89 815.00 /timeout 0/radius_hide 0
-  Static16 Artillery.Bofors gb 137100.25 198096.48 815.00 /timeout 0/radius_hide 0
-  Static17 Artillery.Bofors gb 137105.22 197974.13 815.00 /timeout 0/radius_hide 0
-  Static18 Artillery.Bofors gb 136955.20 198057.00 815.00 /timeout 0/radius_hide 0
-  Static19 Artillery.Bofors gb 136703.23 198332.45 815.00 /timeout 0/radius_hide 0
-  Static20 Artillery.Bofors gb 136689.33 198311.78 815.00 /timeout 0/radius_hide 0
-  Static21 Artillery.Bofors gb 136716.63 198309.39 815.00 /timeout 0/radius_hide 0
-  Static22 Artillery.Bofors gb 136730.58 198336.44 815.00 /timeout 0/radius_hide 0
-  Static23 Artillery.Bofors gb 136704.41 198364.20 815.00 /timeout 0/radius_hide 0
-  Static24 Artillery.Bofors gb 136670.44 198346.00 815.00 /timeout 0/radius_hide 0
-  Static25 Artillery.Bofors gb 136638.00 198322.16 815.00 /timeout 0/radius_hide 0
-  Static26 Artillery.Bofors gb 137151.94 198629.20 815.00 /timeout 0/radius_hide 0
-  Static27 Artillery.Bofors gb 137182.22 198619.53 815.00 /timeout 0/radius_hide 0
-  Static28 Artillery.Bofors gb 137206.13 198609.97 815.00 /timeout 0/radius_hide 0
-  Static29 Artillery.Bofors gb 137139.97 198613.16 815.00 /timeout 0/radius_hide 0
-  Static30 Artillery.Bofors gb 137162.28 198604.39 815.00 /timeout 0/radius_hide 0
-  Static31 Artillery.Bofors gb 137205.33 198582.06 815.00 /timeout 0/radius_hide 0
-  Static32 Artillery.Bofors gb 137129.61 198590.03 815.00 /timeout 0/radius_hide 0
-  Static33 Artillery.Bofors gb 137159.91 198571.80 815.00 /timeout 0/radius_hide 0
-  Static34 Artillery.Bofors gb 137188.59 198558.95 815.00 /timeout 0/radius_hide 0
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Big 1 137086.18 198029.81 815.00
 [BuildingsLinks]
-[Trigger]
-  BTargShorehamSubmarineBase TGroundDestroyed 10 137054 198034 50
+[Trigger]  
 [Action]

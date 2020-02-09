@@ -1145,7 +1145,7 @@ struct
 
             try
             {
-                Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
+                //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
             }
             catch (Exception ex) { Console.WriteLine("ASS ERror 1" + ex.ToString()); }
 
@@ -7952,14 +7952,14 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         #endregion
         //add your code here
     }
-    
+
     //OnBuildingKilled(string title, maddox.GP.Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
 
     public override void OnBuildingKilled(string title, Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
     {
         #region stb
         base.OnBuildingKilled(title, pos, initiator, eventArgInt);
-        try
+        //try
         {
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );            
@@ -7985,10 +7985,10 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 if (initiator.Player != null)
                 {
                     int statArmy = GamePlay.gpFrontArmy(pos.x, pos.y);
-                    msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
+                    msg += initiator.Player.Name() + " player army: " + initiator.Player.Army().ToString() + " location/side: " + statArmy.ToString();
 
                     //We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.  See note at onStationaryKilled
- 
+
                     if
                       (
                         (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
@@ -8007,27 +8007,34 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
                 }
                 else
                 {
-                    msg += "nobody/AI  ";
+                    msg += "AI  ";
                 }
             }
 
             int score = 2;
-            
-            if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //Type 1 aircraft, etc etc .. type 4 is any other ground type
-            //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
-            //score.  But for these buildings it just reported "it is dead", along with the
-            //initiators.  So we are just saying damage.score =  1 for killing one building.  We could check titles/types & adjust up or down (TODO). The complete 1 points goes to the actor reported in 
-            //initiator, resulting in 1 kill pt (100%) per ground target killed.  
+            try
+            {
 
-            //Report ground kills but spread them out a bit in case many die @ once            
-            Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Building Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+                if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //Type 1 aircraft, etc etc .. type 4 is any other ground type
+                                                                                                             //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
+                                                                                                             //score.  But for these buildings it just reported "it is dead", along with the
+                                                                                                             //initiators.  So we are just saying damage.score =  1 for killing one building.  We could check titles/types & adjust up or down (TODO). The complete 1 points goes to the actor reported in 
+                                                                                                             //initiator, resulting in 1 kill pt (100%) per ground target killed.  
+            }
+            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
 
+            try
+            {
+                //Report ground kills but spread them out a bit in case many die @ once            
+                Timeout(1 + stb_random.NextDouble() * 25, () => { if (player != null && score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Building Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            }
+            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
             //Stb_LogError(msg);
             //if (willReportDead) 
             Console.WriteLine(msg);
 
         }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
         #endregion
         //add your code here
     }

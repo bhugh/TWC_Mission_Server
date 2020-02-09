@@ -4,7 +4,7 @@
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 10000 10000 350000 310000 10000
-  TIME 4.75000011501834
+  TIME 4.50000011501834
   WeatherIndex 1
   CloudsHeight 1500
   BreezeActivity 0
@@ -4772,6 +4772,18 @@
   Static2616 Stationary.RadioBeacon.GenericLongRangeMast nn 180099.55 288466.00 659.10 /radioFreq 300
   Static126 Stationary.Industrial.Railroad.SmallFactory nn 180125.89 288511.53 659.10 
   Static3438 Stationary.AEC_Regent_II gb 64424.88 300597.31 0.00 
+  Static7003 Stationary.Environment.JerryCan_GER1_1 nn 137016.44 198052.97 815.00 
+  Static7004 Stationary.Environment.JerryCan_GER1_1 gb 137072.84 198048.14 815.00 
+  Static7005 Stationary.Environment.JerryCan_GER1_1 nn 137070.44 198019.13 815.00 
+  Static7006 Stationary.Environment.JerryCan_GER1_1 nn 137015.64 198019.95 815.00 
+  Static7007 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 198040.89 815.00 
+  Static7008 Stationary.Environment.JerryCan_GER1_1 nn 137068.83 198033.64 815.00 
+  Static7009 Stationary.Environment.JerryCan_GER1_1 gb 137094.61 198036.86 815.00 
+  Static7010 Stationary.Environment.JerryCan_GER1_1 nn 137046.25 198048.94 815.00 
+  Static7011 Stationary.Environment.JerryCan_GER1_1 gb 137048.67 198014.30 815.00 
+  Static7012 Stationary.Environment.JerryCan_GER1_1 nn 137034.17 198035.25 815.00 
+  Static7013 Stationary.Environment.JerryCan_GER1_1 gb 137055.92 198028.00 815.00 
+  Static7014 Stationary.Environment.JerryCan_GER1_1 gb 137027.72 198019.13 815.00
 [Buildings]
   0_bld buildings.House$Trench03-D6 1 221161.73 214038.59 -90.00
   1_bld buildings.House$Trench01-30 1 221192.59 214063.28 180.00

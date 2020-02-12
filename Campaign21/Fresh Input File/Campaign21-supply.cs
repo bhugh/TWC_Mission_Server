@@ -453,11 +453,12 @@ public void ReadSupply(string suffix)
 
     public bool SupplyEndMission(double redMult = 1, double blueMult = 1)
     {
+        Console.WriteLine("SupplyEndMission: Red: " + redMult.ToString() + " Blue: " + blueMult.ToString());
         ReturnDamagedAircraftToSupplyAtMissionEnd();
         ReturnAircraftToSupplyAtMissionEnd();
         ListAircraftLost(0, null, true, false, match: "");
-        GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult*100).ToString("n1"), new object[] { });
-        GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100).ToString("n1"), new object[] { });
+        GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult * 100.0).ToString("F0"), new object[] { });  //NEVER multiply by an integer.  100.0<<<<<
+        GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100.0).ToString("F0"), new object[] { }); //100 = par (ie, 1.00) for resupply, as shown to players
         AddIncrease(ArmiesE.Red, redMult);
         AddIncrease(ArmiesE.Blue, blueMult);
         return WritePrimarySupply(supplySuffix);
@@ -478,39 +479,47 @@ public void ReadSupply(string suffix)
         //foreach (AircraftIncrease[ArmiesE.Red] )
         foreach (KeyValuePair<string, double> current in AircraftIncrease[armE])
         {
-
-            if (AircraftSupply[armE].ContainsKey(current.Key))
+            try
             {
-                if (AircraftSupply[armE][current.Key] < 0) AircraftSupply[armE][current.Key] = 0;  //If you start out with say 0.6 in supply & lose one you can actually go to negative value; we'll say that's not physically possible.  This actually gives armies a little break on getting that first a/c back after they have lost them all
-                //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
-                AircraftSupply[armE][current.Key] += current.Value * mult;
-                //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
-            }
-            else AircraftSupply[armE][current.Key] = current.Value * mult;
 
-            //can't go below zero.  With a negative mult we could actually end up with -number even if we started out positive.
-            if (AircraftSupply[armE][current.Key]<0) AircraftSupply[armE][current.Key] = 0;
+                if (AircraftSupply[armE].ContainsKey(current.Key))
+                {
+                    if (AircraftSupply[armE][current.Key] < 0) AircraftSupply[armE][current.Key] = 0;  //If you start out with say 0.6 in supply & lose one you can actually go to negative value; we'll say that's not physically possible.  This actually gives armies a little break on getting that first a/c back after they have lost them all
+                                                                                                       //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
+                    AircraftSupply[armE][current.Key] += current.Value * mult;
+                    //Console.WriteLine("Supply Upd: " + current.Key + " " + AircraftSupply[armE][current.Key].ToString("n3"));
+                }
+                else AircraftSupply[armE][current.Key] = current.Value * mult;
 
-            //we'll say that max # of inventory of any aircraft is 400.  After that we run out of storage space or something.
-            if (AircraftSupply[armE][current.Key] > 400) AircraftSupply[armE][current.Key] = 400;
+                //can't go below zero.  With a negative mult we could actually end up with -number even if we started out positive.
+                if (AircraftSupply[armE][current.Key] < 0) AircraftSupply[armE][current.Key] = 0;
+
+                //if mult>2, meaning the side has turned the map or something, then they will get a minimum of 5 of each plane type
+                //reward for turning the map, plus for very slow-to-resupply aircraft even with a large mult you sometimes don't even get 1 aircraft out of it.
+                //so it smooths out the difference in resupply for large vs small resupply values when a mult is incorporated.
+                if (mult > 3.5 && AircraftSupply[armE][current.Key] < 5) AircraftSupply[armE][current.Key] = 5;
+
+                //we'll say that max # of inventory of any aircraft is 400.  After that we run out of storage space or something.
+                if (AircraftSupply[armE][current.Key] > 500) AircraftSupply[armE][current.Key] = 500;
+            }catch (Exception ex) { Console.WriteLine("SupplyAI ERROR!: " + ex.ToString()); }
         }      
 
     }
 
-public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=false)
-{
+    public bool WritePrimarySupply(string suffix, bool quick = false, bool firstTime = false)
+    {
 
-    DateTime dt = DateTime.UtcNow;
-    string date = dt.ToString("u");
-    bool ret = true;
+        DateTime dt = DateTime.UtcNow;
+        string date = dt.ToString("u");
+        bool ret = true;
         if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("UXX1"); //Testing for potential causes of warping
 
         //Console.WriteLine("MO_Write #2");
 
         string filepath = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + ".ini";
-    string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + "_old.ini";
-    string currentContent = String.Empty;
-    if (!quick)
+        string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + suffix + "_old.ini";
+        string currentContent = String.Empty;
+        if (!quick)
         {
             //Save most recent copy of Supply.ini with suffix _old
             try
@@ -524,63 +533,63 @@ public bool WritePrimarySupply(string suffix, bool quick=false, bool firstTime=f
             //Console.WriteLine("MO_Write Save #3");
         }
 
-    try
-    {
-
-        //Ini.IniFile ini = new Ini.IniFile(filepath, this);
-        Ini.IniFile ini = new Ini.IniFile(filepath);
-
-        //.ini keeps the same file & just adds or updates entries already there. Unless you delete them.
-        //Delete all entries in these sections first
-
-       //First time we read the INCREASE sections in from file (replacing them with defaults if they don't exist) and then immediately write that back out to file with the defaults added if necessary.
-       //but the second and succeeding times we write on SUPPLY only and don't overwrite the INCREASE sections. This allows us to edit
-       //the INCREASE sections of the .ini file while the program is running and have any changes picked up next time the mission starts.
-        
-        ini.IniDeleteSection("AircraftSupplyRed");
-        ini.IniDeleteSection("AircraftSupplyBlue");
-        if (firstTime) ini.IniDeleteSection("AircraftIncreaseRed");
-        if (firstTime) ini.IniDeleteSection("AircraftIncreaseBlue");
-        
-
-        //Write the new data in the two sections
-        ini.IniWriteDictionary("AircraftSupplyRed", AircraftSupply[ArmiesE.Red]);
-        ini.IniWriteDictionary("AircraftSupplyBlue", AircraftSupply[ArmiesE.Blue]);
-        if (firstTime) ini.IniWriteDictionary("AircraftIncreaseRed", AircraftIncrease[ArmiesE.Red]);
-        if (firstTime) ini.IniWriteDictionary("AircraftIncreaseBlue", AircraftIncrease[ArmiesE.Blue]);        
-
-        //Save supply list to special directory as a bit of a backup/record of objectives over time
-    }
-    catch (Exception ex) { Console.WriteLine("Supply Write: " + ex.ToString()); ret = false; }
-
-    if (!quick)
-    {
-        var backPath = STATSCS_FULL_PATH + CAMPAIGN_ID + @" campaign backups\";
-        string filepath_date = backPath + CAMPAIGN_ID + suffix + "-" + dt.ToString("yyyy-MM-dd-tt") + ".ini";
-
-        //Create the directory for the backup files, if it doesn't exist
-        if (!System.IO.File.Exists(backPath))
-        {
-
-            try
-            {
-                //System.IO.File.Create(backPath);
-                System.IO.Directory.CreateDirectory(backPath);
-            }
-            catch (Exception ex) { Console.WriteLine("MO_Write Dir Create Date: " + ex.ToString()); ret = false; }
-
-        }
-
-        //Save most recent copy of supply file to the backup directory with suffix like  -2018-05-13.ini
         try
         {
-            if (File.Exists(filepath_date)) { File.Delete(filepath_date); }
-            File.Copy(filepath, filepath_date);
-        }
-        catch (Exception ex) { Console.WriteLine("Supply Write Date: " + ex.ToString()); ret = false; }
-    }
 
-    return ret;
+            //Ini.IniFile ini = new Ini.IniFile(filepath, this);
+            Ini.IniFile ini = new Ini.IniFile(filepath);
+
+            //.ini keeps the same file & just adds or updates entries already there. Unless you delete them.
+            //Delete all entries in these sections first
+
+            //First time we read the INCREASE sections in from file (replacing them with defaults if they don't exist) and then immediately write that back out to file with the defaults added if necessary.
+            //but the second and succeeding times we write on SUPPLY only and don't overwrite the INCREASE sections. This allows us to edit
+            //the INCREASE sections of the .ini file while the program is running and have any changes picked up next time the mission starts.
+
+            ini.IniDeleteSection("AircraftSupplyRed");
+            ini.IniDeleteSection("AircraftSupplyBlue");
+            if (firstTime) ini.IniDeleteSection("AircraftIncreaseRed");
+            if (firstTime) ini.IniDeleteSection("AircraftIncreaseBlue");
+
+
+            //Write the new data in the two sections
+            ini.IniWriteDictionary("AircraftSupplyRed", AircraftSupply[ArmiesE.Red]);
+            ini.IniWriteDictionary("AircraftSupplyBlue", AircraftSupply[ArmiesE.Blue]);
+            if (firstTime) ini.IniWriteDictionary("AircraftIncreaseRed", AircraftIncrease[ArmiesE.Red]);
+            if (firstTime) ini.IniWriteDictionary("AircraftIncreaseBlue", AircraftIncrease[ArmiesE.Blue]);
+
+            //Save supply list to special directory as a bit of a backup/record of objectives over time
+        }
+        catch (Exception ex) { Console.WriteLine("Supply Write: " + ex.ToString()); ret = false; }
+
+        if (!quick)
+        {
+            var backPath = STATSCS_FULL_PATH + CAMPAIGN_ID + @" campaign backups\";
+            string filepath_date = backPath + CAMPAIGN_ID + suffix + "-" + dt.ToString("yyyy-MM-dd-tt") + ".ini";
+
+            //Create the directory for the backup files, if it doesn't exist
+            if (!System.IO.File.Exists(backPath))
+            {
+
+                try
+                {
+                    //System.IO.File.Create(backPath);
+                    System.IO.Directory.CreateDirectory(backPath);
+                }
+                catch (Exception ex) { Console.WriteLine("MO_Write Dir Create Date: " + ex.ToString()); ret = false; }
+
+            }
+
+            //Save most recent copy of supply file to the backup directory with suffix like  -2018-05-13.ini
+            try
+            {
+                if (File.Exists(filepath_date)) { File.Delete(filepath_date); }
+                File.Copy(filepath, filepath_date);
+            }
+            catch (Exception ex) { Console.WriteLine("Supply Write Date: " + ex.ToString()); ret = false; }
+        }
+
+        return ret;
 
 
     }

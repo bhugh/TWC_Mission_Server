@@ -8050,7 +8050,7 @@ public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killTyp
         {
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
-            string msg = "Stationary " + stationary.Name + " " + stationary.country + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
+            string msg = "Stationary " + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
 
             Player player = null;
             if (initiator != null && initiator.Player != null) player = initiator.Player;

@@ -18,23 +18,23 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static0 Stationary.Industrial.Medium_Factory.Part_A nn 137046.44 198058.30 815.00 
-  Static1 Stationary.Industrial.Medium_Factory.Central nn 137049.05 198026.64 815.00 
-  Static2 Stationary.Airfield.Fuel_Storage nn 137020.55 198030.97 815.00 
-  Static3 Stationary.Environment.JerryCan_GER1_1 nn 137016.44 198052.97 815.00 
-  Static4 Stationary.Environment.JerryCan_GER1_1 nn 137072.84 198048.14 815.00 
-  Static5 Stationary.Environment.JerryCan_GER1_1 nn 137070.44 198019.13 815.00 
-  Static6 Stationary.Environment.JerryCan_GER1_1 nn 137015.64 198019.95 815.00 
-  Static7 Stationary.Environment.JerryCan_GER1_1 nn 137015.64 198040.89 815.00 
-  Static8 Stationary.Environment.JerryCan_GER1_1 nn 137068.83 198033.64 815.00 
-  Static9 Stationary.Environment.JerryCan_GER1_1 nn 137094.61 198036.86 815.00 
-  Static10 Stationary.Environment.JerryCan_GER1_1 nn 137046.25 198048.94 815.00 
-  Static11 Stationary.Environment.JerryCan_GER1_1 nn 137048.67 198014.30 815.00 
-  Static12 Stationary.Environment.JerryCan_GER1_1 nn 137034.17 198035.25 815.00 
-  Static13 Stationary.Environment.JerryCan_GER1_1 nn 137055.92 198028.00 815.00 
-  Static14 Stationary.Environment.JerryCan_GER1_1 nn 137027.72 198019.13 815.00 
+  Static0 Stationary.Industrial.Medium_Factory.Part_A gb 137046.44 200058.30 815.00 
+  Static1 Stationary.Industrial.Medium_Factory.Central gb 137049.05 200026.64 815.00 
+  Static2 Stationary.Airfield.Fuel_Storage nn 137020.55 200030.97 815.00 
+  Static3 Stationary.Environment.JerryCan_GER1_1 nn 137016.44 200052.97 815.00 
+  Static4 Stationary.Environment.JerryCan_GER1_1 gb 137072.84 200048.14 815.00 
+  Static5 Stationary.Environment.JerryCan_GER1_1 gb 137070.44 200019.13 815.00 
+  Static6 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 200019.95 815.00 
+  Static7 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 200040.89 815.00 
+  Static8 Stationary.Environment.JerryCan_GER1_1 gb 137068.83 200033.64 815.00 
+  Static9 Stationary.Environment.JerryCan_GER1_1 gb 137094.61 200036.86 815.00 
+  Static10 Stationary.Environment.JerryCan_GER1_1 gb 137046.25 200048.94 815.00 
+  Static11 Stationary.Environment.JerryCan_GER1_1 gb 137048.67 200014.30 815.00 
+  Static12 Stationary.Environment.JerryCan_GER1_1 gb 137034.17 200035.25 815.00 
+  Static13 Stationary.Environment.JerryCan_GER1_1 gb 137055.92 200028.00 815.00 
+  Static14 Stationary.Environment.JerryCan_GER1_1 gb 137027.72 200019.13 815.00 
 [Buildings]
-  0_bld buildings.House$Oil_Bunker-Big 1 137086.18 198029.81 815.00
+  0_bld buildings.House$Oil_Bunker-Big 1 137086.18 200029.81 815.00
 [BuildingsLinks]
 [Trigger]  
 [Action]

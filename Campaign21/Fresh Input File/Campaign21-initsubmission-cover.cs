@@ -436,7 +436,7 @@ public class Mission : AMission, ICoverMission
     //Returns shift_m (amount to shift this group right or left, in meters +/right or -/left), position slot (1 slot for each aircraft earlier on this list than this one, sorted into even=+/right and odd=-/left positions), the position of this airgroup in the list of its type for this player (bombers OR fighters), the position of this airgroup overall for this player (counting Bomber Groups AND fighter groups).
     //This is a simple/easy routine & we want to recalc it each time the cover/bomber a/c position & course is recalculated because it can change over time as aircraft or airgroups are added or crash/shot down, etc
 
-    public Tuple <double, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
+    public Tuple<double, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
     {
         //Blenheim wingspan is 17m;     JU88 18m; HE111 22.5m; DO217 19 m; Wellington 26 m
         //Beaufighter 17 m; HE110 16.25
@@ -479,7 +479,7 @@ public class Mission : AMission, ICoverMission
         if (!type) shiftamt = amtToShiftForEachFighter_m;
         double shift_m = pos * shiftamt;
         //GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3}", new object[] { shift_m, pos, count, allcount }); 
-            
+
         return new Tuple<double, int, int, int>(shift_m, pos, count, allcount);
 
 
@@ -493,9 +493,9 @@ public class Mission : AMission, ICoverMission
         Tuple<double, int, int, int> shifts = aircraftPositionAndNumber(airGroup, player);
         double shift_m = shifts.Item1;
         //double shiftvert_m = shifts.Item2 * 40;
-        double shiftvert_m = (shifts.Item2 % 2* 40 - 20) * (shifts.Item3%2 *2 - 1); //up-down-up-down pattern on each side, but swapped direction left/right sides
+        double shiftvert_m = (shifts.Item2 % 2 * 40 - 20) * (shifts.Item3 % 2 * 2 - 1); //up-down-up-down pattern on each side, but swapped direction left/right sides
 
-        Point3d unit_vector_vel_m = new Point3d (1, 0, 0);
+        Point3d unit_vector_vel_m = new Point3d(1, 0, 0);
         if (dir == offsetDirection.up_down) unit_vector_vel_m = new Point3d(0, 0, 1);
         if (vel_mps != 0) unit_vector_vel_m = new Point3d(Vwld.x / vel_mps, Vwld.y / vel_mps, 0);  //This is unit vector in the direction the  main a/c is traveling. vel_mps is from CalculatePointDistance which calcs only x/y velocity, neglecting the z component entirely
 
@@ -519,7 +519,7 @@ public class Mission : AMission, ICoverMission
             storedRollingAverages[key] = p;
             return p;
         }
-        
+
         Point3d res = Calcs.rollingAverage(storedRollingAverages[key], newpoint, rolls);
         storedRollingAverages[key] = res;
         return res;
@@ -528,7 +528,7 @@ public class Mission : AMission, ICoverMission
     public string listPositionCurrentCoverAircraft(Player player = null, bool display = true, bool html = false)
     {
 
-        
+
         string nl = Environment.NewLine;
         if (html) nl = "<br>" + nl;
         string retmsg = "";
@@ -543,7 +543,7 @@ public class Mission : AMission, ICoverMission
         string player_vel = ((double)(Calcs.RoundInterval(player_vel_mph * 1, 5)) / 1).ToString("F0") + "mph ";
         if (player.Army() == 2) player_vel = ((double)(Calcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
 
-        string smsg = ">>>> Your current speed: "+ player_vel + ". Your current cover airgroups:";
+        string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
         retmsg += smsg + nl;
 
 
@@ -560,19 +560,19 @@ public class Mission : AMission, ICoverMission
             if (coverAircraftAirGroupsActive[airGroup] != player) continue;
             if (airGroup.GetItems().Length == 0) continue;
             AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
-            
+
             count++;
             double alt_m = aircraft.Pos().z;
             double alt_km = alt_m / 1000;
             double alt_angels = Calcs.Feet2Angels(Calcs.meters2feet(alt_m));
             string alt_msg = string.Format("{0:N0} m, ", alt_m);
-            if (player.Army() == 1) alt_msg = string.Format("Angels {0:N0}, ", alt_angels);          
+            if (player.Army() == 1) alt_msg = string.Format("Angels {0:N0}, ", alt_angels);
             string msg = "";
 
             if (playerPlace == null) msg = "#" + count.ToString() + " " + Calcs.GetAircraftType(aircraft) + " at " + alt_msg + Calcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
             else
             {
-                double dis_m =Calcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
+                double dis_m = Calcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
                 double dis_mi = (Calcs.meters2miles(dis_m));
                 int dis_10 = (int)dis_mi;
                 double bearing = Calcs.CalculateGradientAngle(playerPlace.Pos(), aircraft.Pos());
@@ -595,9 +595,9 @@ public class Mission : AMission, ICoverMission
                     ang = ((double)(Calcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
                     vel = ((double)(Calcs.RoundInterval(vel_kph * 10, 5)) / 10).ToString("F0") + "kph ";
                 }
-                msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel +" - " + numAC +"x" + Calcs.GetAircraftType(aircraft);
+                msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + " - " + numAC + "x" + Calcs.GetAircraftType(aircraft);
             }
-                
+
             //AiAirGroupTask task = airGroup.getTask();
             //string tsk = task.ToString();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
@@ -631,7 +631,7 @@ public class Mission : AMission, ICoverMission
         if (html) nl = "<br>" + nl;
         string retmsg = "";
         if (army != ArmiesE.Blue && army != ArmiesE.Red) return "Cover: No cover aircraft/bombers available because you are not in an army";
-        if ( CoverAircraftCurrentlyAvailable[army] == null) return "Cover: Aircraft availability not initialized";
+        if (CoverAircraftCurrentlyAvailable[army] == null) return "Cover: Aircraft availability not initialized";
 
         List<ArmiesE> armylist = new List<ArmiesE>();
         if (army == ArmiesE.Blue || army == ArmiesE.Red) armylist.Add(army);
@@ -649,7 +649,7 @@ public class Mission : AMission, ICoverMission
 
             //foreach (string acName in CoverAircraftCurrentlyAvailable[army])
             int i = 0;
-            foreach (string key in  CoverAircraftCurrentlyAvailable[a].Keys)
+            foreach (string key in CoverAircraftCurrentlyAvailable[a].Keys)
             {
                 i++;
                 string msg = string.Format("#{0} {1} {2}", i, Calcs.ParseTypeName(key), CoverAircraftCurrentlyAvailable[a][key]);
@@ -657,7 +657,7 @@ public class Mission : AMission, ICoverMission
                 retmsg += msg + nl;
             }
             if (i == 0) {
-                string msg1 = string.Format("***No cover aircraft/bombers available for {0} - aircraft available for cover & bomber squadron duty only if {1} or more remain in supply. Use chat command <stock to check supply***",  a, minimumAircraftRequiredForCoverDuty);
+                string msg1 = string.Format("***No cover aircraft/bombers available for {0} - aircraft available for cover & bomber squadron duty only if {1} or more remain in supply. Use chat command <stock to check supply***", a, minimumAircraftRequiredForCoverDuty);
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg1, null);
             }
         }
@@ -678,7 +678,7 @@ public class Mission : AMission, ICoverMission
 
         return retmsg;
     }
-    public string acAvailableToPlayer_msg (Player player )
+    public string acAvailableToPlayer_msg(Player player)
     {
         int acAvailable = acAvailableToPlayer_num(player);
         string rankExpl = "";
@@ -687,8 +687,8 @@ public class Mission : AMission, ICoverMission
             int numPlayer = Calcs.numPlayersInArmy(player.Army(), this);
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name()) + "and with " + numPlayer.ToString() + " friendly players online";
         }
-        int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);        
-        return string.Format("{0} remain available of your command squadron of {1} bomber & cover aircraft allowed{2}; {3} more are still in the air or being readied for re-use.",acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
+        int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+        return string.Format("{0} remain available of your command squadron of {1} bomber & cover aircraft allowed{2}; {3} more are still in the air or being readied for re-use.", acAvailable, acAllowedThisPlayer, rankExpl, coverACStillInAirForPlayer_num(player));
     }
     public int acAvailableToPlayer_num(Player player)
     {
@@ -704,7 +704,7 @@ public class Mission : AMission, ICoverMission
         {
             double adder = ((double)TWCStbStatRecorder.StbSr_RankAsIntFromName(player.Name()) - 1.0) / 2.0;
             if (adder < 0) adder = 0;
-                       
+
             acAllowedThisPlayer += Convert.ToInt32(adder);
 
             if (numPlayer > numPlayersToReduceCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling((double)acAllowedThisPlayer / 2.0)); //Ceiling to run up to nearest integer, using ceiling here is being a bit nice to pilots . . .
@@ -745,8 +745,8 @@ public class Mission : AMission, ICoverMission
             //string msg = string.Format("#{0} {1} {2}", i, Calcs.ParseTypeName(CoverAircraftCurrentlyAvailable[a].Key), CoverAircraftCurrentlyAvailable[a].Entry);
             count++;
             if (numChoice > 0 && count == numChoice) aircraftChoices.AddRange(Enumerable.Repeat(key, CoverAircraftCurrentlyAvailable[army][key] - minimumAircraftRequiredForCoverDuty));
-            if (numChoice <=0 && acName.Length > 0 && key.ToLowerInvariant().Contains(acName.Trim().ToLowerInvariant())) aircraftChoices.AddRange(Enumerable.Repeat(key, CoverAircraftCurrentlyAvailable[army][key] - minimumAircraftRequiredForCoverDuty)); //implement substring matching "<cover beau             
-            
+            if (numChoice <= 0 && acName.Length > 0 && key.ToLowerInvariant().Contains(acName.Trim().ToLowerInvariant())) aircraftChoices.AddRange(Enumerable.Repeat(key, CoverAircraftCurrentlyAvailable[army][key] - minimumAircraftRequiredForCoverDuty)); //implement substring matching "<cover beau             
+
         }
 
         //If choice by ID# or a/c name hasn't produced any matches, then we just add all a/c available.  aircraftChoices.AddRange(Enumerable.Repeat(key, CoverAircraftCurrentlyAvailable[army][key])); makes it add a choice for each a/c available so the selection is biased to select a/c for which more are available.
@@ -781,7 +781,7 @@ public class Mission : AMission, ICoverMission
             //GamePlay.gpLogServer(new Player[] { player }, "Cover: numcheckedout " + numret.ToString(), new object[] { });
             return numret;
         }
-            catch (Exception ex) { Console.WriteLine("Cover, numberAircraftCurrently: " + ex.ToString()); return 0; }
+        catch (Exception ex) { Console.WriteLine("Cover, numberAircraftCurrently: " + ex.ToString()); return 0; }
     }
     //This prob should be in -supply.cs
     public int numberAircraftCurrentlyCheckedOutFromSupply(Player player)
@@ -792,9 +792,9 @@ public class Mission : AMission, ICoverMission
             //aircraftCheckedOutInfo { get; set; } //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type, time checked out>
             if (TWCSupplyMission == null) return 0;
             if (player == null || player.Name() == null) return 0;
-            string playerName = player.Name();            
+            string playerName = player.Name();
             int numret = 0;
-            HashSet<AiActor> actorsNotCheckedIn = new HashSet<AiActor>(TWCSupplyMission.aircraftCheckedOut);            
+            HashSet<AiActor> actorsNotCheckedIn = new HashSet<AiActor>(TWCSupplyMission.aircraftCheckedOut);
 
             actorsNotCheckedIn.ExceptWith(TWCSupplyMission.aircraftCheckedIn); //remove all a/c that have been checked in
 
@@ -807,8 +807,8 @@ public class Mission : AMission, ICoverMission
                 numret++;
             }
             return numret;
-                
-            
+
+
         }
         catch (Exception ex) { Console.WriteLine("Cover, numberAircraftCurrentlyCheckedOutFromSupply ERROR: " + ex.ToString()); return 0; }
     }
@@ -821,7 +821,7 @@ public class Mission : AMission, ICoverMission
      * Determine if player is an admin, and what level
      * 
      ****************************************************************/
-    public string[] admins_basic = new String[] { "TWC_","Rostic" };
+    public string[] admins_basic = new String[] { "TWC_", "Rostic" };
     public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error", "EvilUg", "Server" };
 
     public int admin_privilege_level(Player player)
@@ -854,9 +854,9 @@ public class Mission : AMission, ICoverMission
 
         }
         */
-        if (msg.StartsWith("<cland") )
+        if (msg.StartsWith("<cland"))
         {
-            landCoverAircraft(player);
+            landCoverAircraft(player, msg);
 
         }
         else if (msg.StartsWith("<clist")) //<clist
@@ -864,7 +864,7 @@ public class Mission : AMission, ICoverMission
             if (player == null) return;
             GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover/Bomber Aircraft when possible", null);
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
-            
+
         }
         else if (msg.StartsWith("<cp")) //<cpos
         {
@@ -887,6 +887,8 @@ public class Mission : AMission, ICoverMission
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "Formation types: VI=Vic, V3=Vic3, AB=Abreast, AS=Astern, RI=Right echelon, LE=Left echelon";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cland 2 release group #2.  Get group # from Tab-4 menu or <cpos";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "Cover aircraft include cover fighters and bombers. They are available only to heavy bomber pilots.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
         }
@@ -907,7 +909,7 @@ public class Mission : AMission, ICoverMission
         }
 
         else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
-        {            
+        {
             double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5.2;
 
@@ -928,11 +930,11 @@ public class Mission : AMission, ICoverMission
         AiAircraft aircraft = null;
         if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isHeavyBomber(aircraft);
-        
+
     }
-    private bool isHeavyBomber (string acType)
+    private bool isHeavyBomber(string acType)
     {
-        if (acType == "") return false;        
+        if (acType == "") return false;
         bool ret = false;
         if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington")) ret = true;
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
@@ -950,7 +952,7 @@ public class Mission : AMission, ICoverMission
         foreach (AiAirGroup airGroup in saveCAAGA)
         {
             EscortMakeLand(airGroup, null);
-            numret++;             
+            numret++;
         }
         GamePlay.gpLogServer(null, numret.ToString() + " groups of escort aircraft/bombers have been instructed to land at the nearest friendly airport and returned to General Supply.", new object[] { });
     }
@@ -959,10 +961,35 @@ public class Mission : AMission, ICoverMission
 
     public void landCoverAircraft(Player player)
     {
+        landCoverAircraft(player, "");
+    }
+
+    public void landCoverAircraft(Player player, string msg = "")
+    {
         int currTime_sec = Calcs.TimeSince2016_sec();
 
+        //parse message to see if anything requested besides <cland [all]
+        string[] sections = msg.Split(' ');
+
+        //GamePlay.gpLogServer(new Player[] { player }, "Cover: Call " + sections.Count().ToString(), new object[] { });
+
+        int unitToLand = -1; //-1 means, land all of them
+        string unitToLand_str = "";
+
+        if (sections.Count() > 0)
+        {
+            unitToLand_str = sections[1];
+
+            try
+            {
+                unitToLand = Convert.ToInt32(sections[1]);
+            }
+            catch { unitToLand = -1; }
+        }
+
         //must request it 2X within 30 seconds, to prevent accidental Tab-4-4-9 cover a/c release
-        if (TimeOfPlayerLastLandRequest.ContainsKey(player) && currTime_sec - TimeOfPlayerLastLandRequest[player] < 30)
+        //This is not required if typing <cover, though
+        if (msg.Contains("<cover") || ( TimeOfPlayerLastLandRequest.ContainsKey(player) && currTime_sec - TimeOfPlayerLastLandRequest[player] < 30))
         {
             TimeOfPlayerLastLandRequest.Remove(player);
             if (player == null) return;
@@ -971,9 +998,14 @@ public class Mission : AMission, ICoverMission
 
             List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
             int numret = 0;
+            int count = 0;
             foreach (AiAirGroup airGroup in saveCAAGA)
             {
-                if (airGroup == null || coverAircraftAirGroupsActive[airGroup] != player) continue;
+                
+                if (airGroup == null || !coverAircraftAirGroupsActive.Contains(airGroup) ||coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (airGroup.GetItems().Length > 0) count++;
+
+                if (unitToLand > 0 && count != unitToLand) continue;  //allow to instruct just one particular group to land
 
                 if (aircraft == null) { EscortMakeLand(airGroup, null); numret++; }
                 else { EscortMakeLand(airGroup, aircraft.AirGroup()); numret++; }
@@ -1419,10 +1451,19 @@ public class Mission : AMission, ICoverMission
             double oldToNewTargetPointDistance_m = Calcs.CalculatePointDistance(oldTargetPoint, newTargetPoint);
 
             //Console.WriteLine("Cover: KBPoint, dist: {0:F0} {1:F0} {2:F0} : {3:F0} {4:F0} {5:F0} : {6:F0}  ", new object[] { newTargetPoint.x, newTargetPoint.y, newTargetPoint.z, oldTargetPoint.x, oldTargetPoint.y, oldTargetPoint.z, oldToNewTargetPointDistance_m });
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+            int currWay = airGroup.GetCurrentWayPoint();
+
+            bool bombing = false;
+            if ((CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT || (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG) bombing = true;
 
             //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 8km to it, and haven't bombed yet, then DON'T CHANGE IT
             //This hopefully will increase the accuracy of bombers by not messing with their final run-in
-            if ((oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && oldToNewTargetPointDistance_m < 10 && airGroup.hasBombs() && Calcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 8000) return;
+            if (bombing && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && oldToNewTargetPointDistance_m < 10 && airGroup.hasBombs() && Calcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 8000)
+            {
+                return;
+
+            }
 
             coverAircraftAirGroupsTargetPoint[airGroup] = newTargetPoint;
 
@@ -2500,7 +2541,7 @@ public class Mission : AMission, ICoverMission
 
             (nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.AUTO;  //can do ._1 ._2 ._3 etc, I think? could try different numbers here, or random
             (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.LEVEL;  //could change to dive maybe? for certain a/c?
-            if (ran.Next(2)==0) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;  //change to dive for 50% of bombers
+            //if (ran.Next(2)==0) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;  //change to dive for 50% of bombers
 
             //if (airGroup.hasBombs()) airGroup.setTask(AiAirGroupTask.ATTACK_GROUND, null); //not sure if this really does anything here? Maybe not needed?  //Seems to make bombers drop bombs at ???; not sure what the 2nd variable is - should be an aiairgroup or null apparently?  Maybe only needed for ATTACK_AIR, DEFENDING, etc.
 
@@ -2671,15 +2712,16 @@ public class Mission : AMission, ICoverMission
                 }  else if (angleTargetToGroup >= 90 && angleTargetToGroup <= 270)  //cover a/c headed straight away from main a/c, more or less
                 {                    
                     vel_mps = target_vel_mps * 0.95; //Go 95% as fast as main aircraft when ahead but kinda close
-                    if (targetDist_m > 750 && target_vel_mps * .8 < vel_mps) vel_mps = target_vel_mps * 0.7; //Go 70% as fast when the target a/c gets more than 1km off
-                    if (targetDist_m > 2000 && target_vel_mps * .6 < vel_mps) vel_mps = target_vel_mps * 0.7; //Go 70% as fast when the target a/c gets more than 1km off
+                    if (targetDist_m > 750 && target_vel_mps * .8 < vel_mps) vel_mps = target_vel_mps * 0.8; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (targetDist_m > 1500 && target_vel_mps * .6 < vel_mps) vel_mps = target_vel_mps * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
+                    if (targetDist_m > 2500 && target_vel_mps * .4 < vel_mps) vel_mps = target_vel_mps * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
 
                     if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                                       //closer to the main a/c which is more how we keep it in the right area
                     {
                         vel_mps = target_vel_mps * 1.3; //Generally fighters go a fair but faster than the bombers, but if they get TOO far away and are going in the wrong direction, slow down
                         if (targetDist_m > 3000 && target_vel_mps * 1 > vel_mps) vel_mps = target_vel_mps * 1;
-                        if (targetDist_m > 7000 && target_vel_mps * 0.8 > vel_mps) vel_mps = target_vel_mps * 0.8;
+                        if (targetDist_m > 7000 && target_vel_mps * 0.7 > vel_mps) vel_mps = target_vel_mps * 0.8;
 
                     }
                 }
@@ -2697,7 +2739,7 @@ public class Mission : AMission, ICoverMission
 
                 if (vel_mps < 45) vel_mps = 45;
                 if (vel_mps > 175) vel_mps = 175;
-                if (target_vel_mps < 15 && vel_mps < 75) vel_mps = 75;  //help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
+                if (target_vel_mps < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
 
                 
                 CurrentPos = targetAirGroup.Pos();
@@ -2710,30 +2752,58 @@ public class Mission : AMission, ICoverMission
                 {
                     if (vel_mps < 60)
                     {
-                        CurrentPos.x += targetVwld2.x * 20; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time if the a/c is going quite slow.  This would be, say, the main a/c is injured and RTB.
-                        CurrentPos.y += targetVwld2.y * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly.  
 
-                        
+                        //if ahead of the main ac & more than 400 meters away, try setting target point a lot further ahead
+                        //Otherwise when they get up there near the point they seem to mill around a bit.
+                        //Also trying more dramatically reducing their speed when they get too far ahead
+                        //Note that the alternate target point will also apply if they are far behind & facing away from the main
+                        //a/c.  However in that situation I don't think the exact target point makes much difference.
+                        //11 seconds at 83mps/300kph is about 900 meters; 60 seconds about 5km
+                        if (targetDist_m > 400 && angleTargetToGroup > 120 && angleTargetToGroup < 240)
+                        {
+                            CurrentPos.x += targetVwld2.x * 90; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 90; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+                        else
+                        {
+                            CurrentPos.x += targetVwld2.x * 20; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time if the a/c is going quite slow.  This would be, say, the main a/c is injured and RTB.
+                            CurrentPos.y += targetVwld2.y * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly. 
+                        }
+
+
                         //sO THIS didn't work - they just climb & dive way too abruptly, not over the next 20 or 60 seconds or whatever
                         double targetVwldZ = targetVwld5.z;
                         //also match the climb/dive of the target a/c, but limit it to relatively normal climb/dive rate of 7 mps.
                         if (targetVwldZ > 8) targetVwldZ = 8;
                         if (targetVwldZ < -7) targetVwldZ = -7;
-                        CurrentPos.z += targetVwldZ * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly.                             
+                        //CurrentPos.z += targetVwldZ * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly.                             
+                        //^ trying just keeping it at main a/c current altitude instead of adjusting for current a/c climb or dive
                         
                     }
                     else
                     {
-                        CurrentPos.x += targetVwld2.x * 60; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
-                        CurrentPos.y += targetVwld2.y * 60; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        //if ahead of the main ac & more than 400 meters away, try setting target point a lot further ahead
+                        //11 seconds at 83mps/300kph is about 900 meters; 60 seconds about 5km
+                        if (targetDist_m > 400 && angleTargetToGroup > 120 && angleTargetToGroup < 240)
+                        {
+                            CurrentPos.x += targetVwld2.x * 120; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 120; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+                        else
+                        {
 
+                            CurrentPos.x += targetVwld2.x * 60; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 60; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+ 
                         
                         double targetVwldZ = targetVwld5.z;
                         //also match the climb/dive of the target a/c, but limit it to relatively normal climb/dive rate of 7 mps.
                         if (targetVwldZ > 8) targetVwldZ = 8;
                         if (targetVwldZ < -8) targetVwldZ = -8;
-                        CurrentPos.z += targetVwldZ * 20; //try just 20 seconds alt here, rather than 60
-                        
+                        //CurrentPos.z += targetVwldZ * 20; //try just 20 seconds alt here, rather than 60
+                        //^ trying just keeping it at main a/c current altitude instead of adjusting for current a/c climb or dive
+
                     }
 
                 } else 

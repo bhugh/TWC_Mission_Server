@@ -269,10 +269,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "xxx"}, //Red army #1
-            { -2, "xxx"}, //Blue, army #2
-            { -3, "xxx"}, //admin
-            { -4, "xxx"}, //admingrouped
+            { -1, "$$$"}, //Red army #1
+            { -2, "$$$"}, //Blue, army #2
+            { -3, "$$$"}, //admin
+            { -4, "$$$"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -8197,7 +8197,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             AutoFlakIfPrimary = true;
             AutoFlak = false;
             NumFlakBatteries = 6;
-            NumInFlakBattery = 10;
+            NumInFlakBattery = 6;
 
             //NumFlakBatteries = 3;
             //NumInFlakBattery = 4;
@@ -8266,7 +8266,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             AutoFlakIfPrimary = true;
             AutoFlak = false;
             NumFlakBatteries = 8;
-            NumInFlakBattery = 10;
+            NumInFlakBattery = 6;
             //for testing
             //NumFlakBatteries = 3;
             //NumInFlakBattery = 4;
@@ -9002,7 +9002,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 4, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 400, 550, 8000, 8, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "", 1, 6, "CrowboroughBunker", 167289, 224222, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "", 1, 6, "HastingsBunker", 196108, 205853, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 5, "BTargFolkestoneNavyDocks", 237505, 228904, 300, 325, 0, 50, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 5, "BTargFolkestoneNavyDocks", 237505, 228904, 300, 325, 0, 80, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 150, 200, 2000, 1, 120, 24, true, true, 8, 10, "", add);

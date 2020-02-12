@@ -57,7 +57,7 @@
   Static36 ShipUnit.MotorBarge_Large1 gb 237570.83 228877.41 -255.00 /sleep 0/skill 2/slowfire 1
   Static37 ShipUnit.MotorBarge_Large1 gb 237580.06 228822.55 -255.00 /sleep 0/skill 2/slowfire 1
   Static38 ShipUnit.Tanker_Medium1 gb 237421.66 229065.36 -345.00 /sleep 0/skill 2/slowfire 1
-  Static39 ShipUnit.Tanker_Medium2 de 237670.63 228947.30 -570.00 /sleep 0/skill 2/slowfire 1
+  Static39 ShipUnit.Tanker_Medium2 gb 237670.63 228947.30 -570.00 /sleep 0/skill 2/slowfire 1
   Static40 Stationary.Environment.JerryCan_GER1_3 nn 237348.91 228987.09 -570.00 /hstart 20
   Static41 Stationary.Environment.JerryCan_GER1_3 nn 237387.97 228964.33 -570.00 /hstart 20
   Static42 Stationary.Environment.JerryCan_GER1_3 nn 237358.72 228941.08 -570.00 /hstart 20

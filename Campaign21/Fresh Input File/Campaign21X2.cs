@@ -1,4 +1,4 @@
-﻿//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
+//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
 #define TRACE  
 ////$reference GCVBackEnd.dll
@@ -269,10 +269,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "north"}, //Red army #1
-            { -2, "gate"}, //Blue, army #2
-            { -3, "twc2twc"}, //admin
-            { -4, "twc2twc"}, //admingrouped
+            { -1, "$$$"}, //Red army #1
+            { -2, "$$$"}, //Blue, army #2
+            { -3, "$$$"}, //admin
+            { -4, "$$$"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 

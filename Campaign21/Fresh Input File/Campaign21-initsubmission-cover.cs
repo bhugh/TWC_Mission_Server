@@ -1000,9 +1000,8 @@ public class Mission : AMission, ICoverMission
             int numret = 0;
             int count = 0;
             foreach (AiAirGroup airGroup in saveCAAGA)
-            {
-                
-                if (airGroup == null || !coverAircraftAirGroupsActive.Contains(airGroup) ||coverAircraftAirGroupsActive[airGroup] != player) continue;
+            {                
+                if (airGroup == null || !coverAircraftAirGroupsActive.ContainsKey(airGroup) ||coverAircraftAirGroupsActive[airGroup] != player) continue;
                 if (airGroup.GetItems().Length > 0) count++;
 
                 if (unitToLand > 0 && count != unitToLand) continue;  //allow to instruct just one particular group to land

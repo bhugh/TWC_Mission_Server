@@ -1,4 +1,4 @@
-//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
+﻿//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
 #define TRACE  
 ////$reference GCVBackEnd.dll
@@ -269,10 +269,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "$$$"}, //Red army #1
-            { -2, "$$$"}, //Blue, army #2
-            { -3, "$$$"}, //admin
-            { -4, "$$$"}, //admingrouped
+            { -1, "north"}, //Red army #1
+            { -2, "gate"}, //Blue, army #2
+            { -3, "twc2twc"}, //admin
+            { -4, "twc2twc"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -8979,20 +8979,27 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
 
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             // n is the DESCRIPTIVE NAME for the target--what the player sees
-            //rad is the radius-extent to hte object itself.  Say an airfield will have a certain radius, or a general industrial area or military base.
-            //trigrad is like the center of the bullseye--the radius from the center within which the bombs, killed objectives etc will count THE MOST towards disabling the objective.  Anything outside this radius (but still inside the main radius of the object) won't count as much, anything inside the radius counts more.
+            //rad is the radius-extent to the object itself.  Say an airfield will have a certain radius, or a general industrial area or military base.
+            //trigrad is like the center of the bullseye--the radius from the center within which the bombs, killed objectives etc will count THE MOST towards disabling the objective.  Anything outside this radius (but still inside the main radius of the object) won't count as much--but still counts.  Anything inside the radius counts more.  Anything outside both radii counts zero.
             //   - for example you might have an airbase with radius 2500 meters but you want the bombs to hit more in the center of that to count, so you set rad=2500, trigrad=1000.
-            // tn is the INTERNAL KEY for the object.  It just be unique (ie,different from ALL OTHER objectives listed here).
+            // tn is the INTERNAL KEY for the object.  It can be anything you want to identify it to yourself and the computer, but it must be unique (ie,different from ALL OTHER objectives listed here).
             //orttkg = kg of ordnance that must be dumped in this area to knock it out
             //ortt = number of objects (statics, buildings, AiActors like vehicles, trains, whatever) that must be killed within the area to knock it out.
+            //     - if you set this higher than 0 you MUST have some objects within the radius of the area, preferably the trigger radius, or taking out the objective will be impossible
+            //     - AiActors such as vehicles, ships, trains, planes, artillery, etc also count as 'objects' that count towards this goal.  BUT they must be strictly within the radius given.  If they wander outside the radius, they are no longer part of this objective
+            //     - Buildings can be counted to a limited extent in the future, but for now they are not (until TF resolves the OnBuildingKilled thing, which currently works for AI but not live players
+            //     - You can add objects/actors, etc to the -main.cs file OR to a XXXXMission-initsubmission.mis file, which is loaded by this .cs file right at mission startup.  It is a lot cleaner to keep things in separate submission.mis files.
+            //     - Note that you cannot add BUILDINGS in an -initsubmission file.  You can add them in FMB but they don't show up in-game.  However you could add a building in the -main.mis file and then other objects in an -initsubmission.mis file.
             //You can specify orttkg OR ortt OR both - if both, the player must satisfy both conditions to knock out
             //initSub is a submission that will be loaded when the mission starts, if this objective is enabled
             //ptp = primary target weight, ie, 0-200 increase or decrease chance of selection as a primary target.        
             //ttr_hours = time to repair, in hours, if taken out 100%.
             //af = add auto-flak batteries always
             //afip = add auto-flak batteries only if a primary target
-            //fb = number of flak batteries to add
-            //fnib = number of guns in each battery
+            //fb = number of flak batteries to add (if a primary target)
+            //fnib = number of guns in each battery (if a primary target)
+            //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
+            //That's because too many flak installations seems to bring the server to its knees.
             addPointArea(MO_ObjectiveType.IndustrialArea, "Southhampton Docks Industrial Area", "Sout", "", 1, 4, "SouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Submarine Base", "", "", 1, 3, "BTargShorehamSubmarineBase", 137054, 198034, 90, 150, 2000, 5, 120, 24, true, true, 8, 10, "", add);
 
@@ -10650,13 +10657,23 @@ added Rouen Flak
 
                     Timeout(random.Next(360), () =>
                     {
-                        mo.makeScouted(player);
-                        if (mo.hasGeneralStaff)
+                        //So, from a given recon mission we only identify 1/4 of possible objectives in that area.  Because recon photos aren't perfect, photo intelligence ID
+                        //of targets isn't perfect, etc. So that we reconning the same area again might result in more targets IDed.
+                        //But, we always identify primary targets, not because recon is specially good for them, but because  HQ has chosen the primary targets based on 
+                        //Recon photos returned.  
+                        //FUTURE: Maybe 1/4 of targets IDed is too much or too little.  Or maybe it varies day to day depending on weather, time of day photo taken, etc.
+                        if ((mo.IsPrimaryTarget && mo.IsEnabled) || random.Next(4) == 0)
                         {
-                            string af = "RAF";
-                            if (army == 2) af = "Luftwaffe";
-                            string msg7 = ">>>Recon has identified a possible group of high-ranking " + af + " officers near " + mo.Name;
-                            twcLogServer(null, msg7, null);
+                            mo.makeScouted(player);
+                            if (mo.hasGeneralStaff)
+                            {
+                                string af = "RAF";
+                                if (army == 2) af = "Luftwaffe";
+                                string name = "";
+                                if (player != null && player.Name() != null) name = "by " + player.Name();
+                                string msg7 = ">>>Recon" + name + " has identified a possible group of high-ranking " + af + " officers near " + mo.Name;
+                                twcLogServer(null, msg7, null);                                    
+                            }
                         }
 
                     }); //Some delay for careful analysis, before they show up in the in-game lists. 
@@ -11556,7 +11573,7 @@ added Rouen Flak
     public void MO_HandlePointAreaObjectives(AiActor actor)
     {
 
-        Console.WriteLine("AreaPoint Actor: {0}, {1}, {2}", actor.Name(), actor.Army(), (actor as AiCart).InternalTypeName());
+        // Console.WriteLine("AreaPoint Actor: {0}, {1}, {2}", actor.Name(), actor.Army(), (actor as AiCart).InternalTypeName());
         //TODO: Could easily combine this with the GroundStationaries route, 95% the same
         foreach (string ID in MissionObjectivesList.Keys)
         {

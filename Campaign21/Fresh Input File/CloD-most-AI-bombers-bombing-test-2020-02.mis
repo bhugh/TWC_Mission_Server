@@ -1,0 +1,146 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_F_FatCat_Early.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[AirGroups]
+  BoB_LW_KuFlGr_706.01
+  BoB_RAF_F_FatCat_Early.01
+  BoB_LW_KuFlGr_706.02
+  BoB_LW_KG3_Stab.04
+  BoB_LW_KG3_Stab.01
+  BoB_LW_KuFlGr_706.04
+  BoB_RAF_B_218Sqn.01
+  BoB_RAF_B_218Sqn.02
+[BoB_LW_KuFlGr_706.01]
+  Flight0  1 2
+  Class Aircraft.He-111H-2
+  Formation VIC3
+  CallSign 26
+  Fuel 55
+  Weapons 1 1 1 1 1 1 2
+  Detonator Bomb.SC-250_Type1_J 2 -1 0.08
+  Detonator Bomb.SC-50_GradeII_J 1 -1 0
+  SetOnPark 1
+  Skill 1 1 1 1 1 1 1 1
+  Serial0 nbgf6
+[BoB_LW_KuFlGr_706.01_Way]
+  FOLLOW 236217.90 231046.41 500.00 180.00
+  GATTACK_POINT 234976.84 232544.79 500.00 180.00
+  FOLLOW 233498.25 233981.26 500.00 180.00
+[BoB_RAF_F_FatCat_Early.01]
+  Flight0  1
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+[BoB_RAF_F_FatCat_Early.01_Way]
+  NORMFLY 234764.83 231905.38 500.00 300.00
+  NORMFLY 234509.31 232446.07 500.00 300.00
+[BoB_LW_KuFlGr_706.02]
+  Flight1  11 12 13
+  Class Aircraft.Ju-87B-2
+  Formation VIC3
+  CallSign 26
+  Fuel 54
+  Weapons 1 1 2 1
+  Detonator Bomb.SC-500_GradeIII_J 0 -1 0.08
+  Detonator Bomb.SD-500_E 0 -1 0.08
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_LW_KuFlGr_706.02_Way]
+  NORMFLY 238041.32 234262.41 2000.00 300.00
+  GATTACK_TARG 235117.45 232648.74 2000.00 300.00 Static1 0 /GAttackType DIVE
+  NORMFLY 231289.37 231303.15 2000.00 300.00
+[BoB_LW_KG3_Stab.04]
+  Flight2  21 22
+  Class Aircraft.Do-17Z-2
+  Formation VIC3
+  CallSign 33
+  Fuel 34
+  Weapons 1 1 1 1 1 1 4 2
+  Detonator Bomb.SC-250_Type1_J 2 -1 0.08
+  Detonator Bomb.SC-50_GradeII_J 1 -1 0.08
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_LW_KG3_Stab.04_Way]
+  NORMFLY 234355.93 229832.36 750.00 250.00
+  GATTACK_POINT 234979.15 232543.14 750.00 250.00
+  FOLLOW 235515.78 235526.11 750.00 250.00
+[BoB_LW_KG3_Stab.01]
+  Flight0  1 2
+  Class Aircraft.Ju-88A-1
+  Formation VIC3
+  CallSign 16
+  Fuel 100
+  Weapons 1 1 1 2 2 4
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_LW_KG3_Stab.01_Way]
+  NORMFLY 231748.79 229784.87 750.00 250.00
+  GATTACK_POINT 234956.33 232559.50 750.00 250.00
+  NORMFLY 236982.02 235205.65 750.00 250.00
+[BoB_LW_KuFlGr_706.04]
+  Flight2  21 22
+  Class Aircraft.BlenheimMkIV
+  Formation VIC3
+  CallSign 33
+  Fuel 36
+  Weapons 1 1 5 0 2
+  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 11
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 11
+  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+[BoB_LW_KuFlGr_706.04_Way]
+  NORMFLY 232002.63 233197.59 750.00 250.00
+  GATTACK_POINT 234956.35 232581.36 750.00 250.00
+  NORMFLY 237391.09 232069.60 750.00 250.00
+[BoB_RAF_B_218Sqn.01]
+  Flight0  1 2
+  Class Aircraft.WellingtonMkIc
+  Formation LINEABREAST
+  CallSign 16
+  Fuel 38
+  Weapons 1 1 2
+  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_RAF_B_218Sqn.01_Way]
+  NORMFLY 234216.38 234669.15 750.00 250.00
+  GATTACK_POINT 234979.00 232544.10 750.00 250.00
+  NORMFLY 235639.95 230495.79 750.00 250.00
+[BoB_RAF_B_218Sqn.02]
+  Flight1  11
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 33
+  Fuel 38
+  Weapons 1 1 5 1 2
+  Detonator Bomb.Bomb_GP_40lb_MkIII 3 0 1
+  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
+  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+[BoB_RAF_B_218Sqn.02_Way]
+  NORMFLY 239563.15 232876.77 750.00 250.00
+  GATTACK_POINT 234964.80 232582.89 750.00 250.00
+  NORMFLY 230749.72 232396.70 750.00 250.00
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.20_mm_Flak_38 gb 234745.17 232339.05 15.00 /timeout 0/radius_hide 0
+  Static1 Stationary.Bedford_OXA gb 235103.20 232451.92 0.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  Folkestone TGroundDestroyed 100 237505 228904 300

@@ -625,7 +625,7 @@ public class Mission : AMission
             retPos.y = ap.Pos().y;
             retPos.z = 0;
             */
-            Console.WriteLine("MBT: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
+            //Console.WriteLine("MBT: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
             return retPos;
         }
         else return null;
@@ -916,7 +916,7 @@ public class Mission : AMission
     public bool playersNearby(AiAirGroup airGroup)
     {
         Tuple<double, double> dist = getDistanceToNearestLivePilot(airGroup);
-        Console.WriteLine("MoveBomb: Players nearby {0} {1} ", dist.Item1 == null, (double)(dist.Item1));
+        //Console.WriteLine("MoveBomb: Players nearby {0} {1} ", dist.Item1 == null, (double)(dist.Item1));
         if (dist.Item1 == -1 || (double)(dist.Item1) > 14000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
         return true; //Players nearby
     }
@@ -1288,7 +1288,7 @@ public class Mission : AMission
 
                         try
                         {
-                            Console.WriteLine("MoveBomb: Looking to update the same target we were previously attacking: {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
+                            //Console.WriteLine("MoveBomb: Looking to update the same target we were previously attacking: {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
 
                             //so we ALWAYS accept an updated radar plot for the airgroup we are already chasing IF it is better than the other possibilities
                             if (bestAagri == null)
@@ -1296,14 +1296,14 @@ public class Mission : AMission
                                 iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
+                                //Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                             }
                             else if (iPoint.z > tempAagriIntcpPt.z)
                             {
                                 iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
+                                //Console.WriteLine("MoveBomb: Possibly updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                             }
                             //But sometimes we stick with our previous chase even if it is worse - especially if we're already quite close, then we always do
                             if (ran.NextDouble() > 0.9 || tempAagriIntcpPt.z < 3.5 * 60)
@@ -1311,7 +1311,7 @@ public class Mission : AMission
                                 goodintercept = true;
                                 iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
-                                Console.WriteLine("MoveBomb: Definitely updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
+                                //Console.WriteLine("MoveBomb: Definitely updating {0} to intercept {5} {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask(), aagri.agi.playerNames);
                                 break;
                             }
                             //So, the case where there is no good intercept, or it is very long intercept, but still we are quite close
@@ -1342,13 +1342,13 @@ public class Mission : AMission
                     {
                         try
                         {
-                            Console.WriteLine("MoveBomb: Skipping {0} intercept {1} {2} {3} " + agActor.Name(),aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
+                            //Console.WriteLine("MoveBomb: Skipping {0} intercept {1} {2} {3} " + agActor.Name(),aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
 
                             if (tempAagriIntcpPt.x == null || tempAagriIntcpPt.x == 0 || tempAagriIntcpPt.y == 0 || tempAagriIntcpPt.z > 10 * 60 || tempAagriIntcpPt.z <= 0) { Console.WriteLine("MoveBomb: Skipping {0} intercept because no intercept or too distant {1} {2} {3} " + agActor.Name(), aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z); }
                             else
                             {
 
-                                Console.WriteLine("MoveBomb: Skipping for another reason . . . target: {0} attacker:" + agActor.Name(), aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
+                                //Console.WriteLine("MoveBomb: Skipping for another reason . . . target: {0} attacker:" + agActor.Name(), aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z);
                                 if (attackingAirgroupTimeToIntercept.ContainsKey(airGroup) && attackingAirgroupTimeToIntercept[airGroup].timeToIntercept > Time.current()) Console.WriteLine("MoveBomb: Skipping because attacker {0} already has an existing intercept {1} " + attackingAirgroupTimeToIntercept[airGroup].timeToIntercept.ToString("N0"), aagri.pagi.playerNames, aagri.agi.playerNames);
                                 if (targetAirgroupTimeToIntercept.ContainsKey(aagri.agi.airGroup) && targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept > Time.current()) Console.WriteLine("MoveBomb: Skipping because target {1} already has an existing interceptor {0} " + targetAirgroupTimeToIntercept[aagri.agi.airGroup].timeToIntercept.ToString("N0"), aagri.pagi.playerNames, aagri.agi.playerNames);
                             }
@@ -1377,7 +1377,7 @@ public class Mission : AMission
                         {
                             //Console.WriteLine("MoveBomb: Moving {0} to intercept {1:N0} {2:N0} {3:N0} {4} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
 
-                            Console.WriteLine("MoveBomb: Found an acceptable intercept! {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} . Now, is it better?" + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
+                            //Console.WriteLine("MoveBomb: Found an acceptable intercept! {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} . Now, is it better?" + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
 
                             //If this is the first one we have found (iPoint.z==0) or better than our best interception point so far, then we accept it as the new intercept point
                             if (bestAagri == null || iPoint.z == 0)
@@ -1385,14 +1385,14 @@ public class Mission : AMission
                                 iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
+                                //Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
                             }
                             else if (tempAagriIntcpPt.z > 0 && iPoint.z > tempAagriIntcpPt.z)
                             {
                                 iPoint = tempAagriIntcpPt;
                                 bestAagri = aagri;
                                 goodintercept = true;
-                                Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
+                                //Console.WriteLine("MoveBomb: Moving {0} to best intercept so far {1} {2:N0} {3:N0} {4:N0} {5} " + agAircraft.InternalTypeName(), aagri.pagi.playerNames, aagri.agi.playerNames, tempAagriIntcpPt.x, tempAagriIntcpPt.y, tempAagriIntcpPt.z, airGroup.getTask());
                             }
                         }
                         catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR3: " + ex.ToString()); return false; }
@@ -1540,7 +1540,7 @@ public class Mission : AMission
                             */
                                 //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
                                 //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
-                                Console.WriteLine("WP before{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, wp.Speed, wp.P.x, wp.P.y, wp.P.z });
+                                //Console.WriteLine("WP before{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, wp.Speed, wp.P.x, wp.P.y, wp.P.z });
                                 pos = wp.P;
 
                                 speed = wp.Speed;
@@ -1555,7 +1555,7 @@ public class Mission : AMission
                                 else if (bestAagri.agi.type == "B") (nextWP as AiAirWayPoint).Action = AiAirWayPointType.AATTACK_BOMBERS;
                                 else (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
                                 //Console.WriteLine( "Target after: {0}", new object[] { nextWP });
-                                Console.WriteLine("Added{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, nextWP.Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z });
+                                //Console.WriteLine("Added{0}: {1:N0} {2:N0} {3:N0} {4:N0}", new object[] { count, nextWP.Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z });
                                 //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
                                 update = true;
 
@@ -1766,7 +1766,7 @@ public class Mission : AMission
                     //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
                     if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX -9999|| nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
                     {
-                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                         update = true;
                         if (nextWP.P.z < 0) nextWP.P.z = 0;
                         if (nextWP.P.z > 50000) nextWP.P.z = 50000;
@@ -1774,7 +1774,7 @@ public class Mission : AMission
                         if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
                         if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
                         if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
-                        Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                     }
                 }
                 catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }

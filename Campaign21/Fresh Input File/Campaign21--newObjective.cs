@@ -1,4 +1,8 @@
-﻿//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
+﻿////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-stats.cs"
+
+
+//TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
 #define TRACE  
 ////$reference GCVBackEnd.dll
@@ -187,6 +191,9 @@ public class Mission : AMission, IMainMission
     public int RADAR_REALISM;
     public string RESULTS_OUT_FILE; //Added by Fatal 11/09/2018.  This allows us to have win/lose logic for next mission
 
+    public Dictionary<string, MissionObjective> MissionObjectivesList { get; set; }
+    //public Dictionary<string, IMissionObjective> SMissionObjectivesList { get; set; }
+
     static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
     //public enum ArmiesE { None, Red, Blue };
 
@@ -296,12 +303,24 @@ public class Mission : AMission, IMainMission
         RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";
         radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
         ai_radar_info_store = new Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>>();
+        MissionObjectivesList = new Dictionary<string, MissionObjective>();
+        //SMissionObjectivesList = MissionObjectivesList as IMissionObjecit;
 
         //initialize giant sector overview, which gives a quick total of airgroups (ind=0) and aircraft (ind=1) for the entire map.
         GiantSectorOverview[0] = new int[10, 2]; //army = 0 is ie admins
         GiantSectorOverview[1] = new int[10, 2];
         GiantSectorOverview[2] = new int[10, 2];
 
+    }
+
+    public Dictionary<string, IMissionObjective> SMissionObjectivesList()
+    {
+        var ret = new Dictionary<string, IMissionObjective>();
+        foreach (string key in MissionObjectivesList.Keys)
+        {
+            ret[key] = MissionObjectivesList[key] as IMissionObjective;
+        }
+        return ret;
     }
 
     /********************************************************
@@ -8091,7 +8110,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         {ArmiesE.Blue, "" }  //the leak FOR blue army (about something Red is doing)
     };
 
-    Dictionary<string, MissionObjective> MissionObjectivesList = new Dictionary<string, MissionObjective>();
+    //Dictionary<string, IMissionObjective> MissionObjectivesList = new Dictionary<string, IMissionObjective>();
     Dictionary<ArmiesE, List<MissionObjective>> DestroyedObjectives = new Dictionary<ArmiesE, List<MissionObjective>>() {
         {ArmiesE.Red, new List<MissionObjective>() },
         {ArmiesE.Blue, new List<MissionObjective>() }
@@ -8112,7 +8131,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
     //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
 
     [DataContract()]
-    public class MissionObjective
+    public class MissionObjective : IMissionObjective
     {
         //public string TriggerName { get; set; }
 
@@ -9009,7 +9028,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 4, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 400, 550, 8000, 8, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "", 1, 6, "CrowboroughBunker", 167289, 224222, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "", 1, 6, "HastingsBunker", 196108, 205853, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 5, "BTargFolkestoneNavyDocks", 237505, 228904, 300, 325, 0, 80, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 6, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 0, 80, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 150, 200, 2000, 1, 120, 24, true, true, 8, 10, "", add);
@@ -9020,6 +9039,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "", 2, 6, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271378, 132785, 600, 1000, 12000, 5, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "", 2, 6, "LeCroytoyForestBunker", 277853, 138221, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "", 2, 6, "DieppeCliffsBunker", 238972, 107365, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
+
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\Visual Studio 2015\Projects\ClodBLITZ-2018-01\Campaign21-MissionObjectivesInclude.cs"
 
             /* addTrigger(MO_ObjectiveType.Building, "Portsmouth Small Industrial Area SW", "Port", 1, 4, "BTargPortsmouthSmallIndustrialArea", "TGroundDestroyed", 35, 75235, 193676, 350, false, 120, 24, "", add);
 addTrigger(MO_ObjectiveType.Building, "Portsmouth Large Industrial Area NE", "Port", 1, 5, "BTargPortsmouthLargeIndustrialArea", "TGroundDestroyed", 27, 77048, 193985, 850, false, 120, 24, "", add);

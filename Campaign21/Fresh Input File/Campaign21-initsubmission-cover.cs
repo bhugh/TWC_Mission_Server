@@ -120,11 +120,31 @@ public class Mission : AMission, ICoverMission
     }
 
     AiActor[] allStaticActors = null;
+    Dictionary<string, IMissionObjective> SMissionObjectivesList = new Dictionary<string, IMissionObjective>();
 
     private void renewAllStaticActors_recurs()
     {
         Timeout(3*60, () => renewAllStaticActors_recurs());
         allStaticActors = Calcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
+        SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
+    }
+
+    //Returns an objective point & radius that point p lies within.
+    //If it lies within mroe than one objective, it chooses the objective with the smallest radius to return
+    private Tuple<Point3d?,double> ObjectivesRadius_m (Point3d p) //center point, radius
+    {
+        double r = 10000000;
+        Tuple<Point3d?, double> ret = new Tuple<Point3d?, double> ( null, 0 );
+        foreach (string key in SMissionObjectivesList.Keys)
+        {
+            IMissionObjective mo = SMissionObjectivesList[key];
+            if (Calcs.CalculatePointDistance(mo.Pos, p)< mo.TriggerDestroyRadius && mo.TriggerDestroyRadius <= r)
+            {
+                ret = new Tuple<Point3d?, double>(mo.Pos, mo.TriggerDestroyRadius);
+                r = mo.TriggerDestroyRadius;
+            }
+        }
+        return ret;
     }
 
     int stb_lastMissionLoaded = -1;
@@ -368,11 +388,11 @@ public class Mission : AMission, ICoverMission
         //{"bob:Aircraft.DH82A-1",10},  aircraft remmed out or not on list have no restrictions so if you dont want any //of these available use amount 0 like below
         {"bob:Aircraft.DH82A-2",false},
         {"bob:Aircraft.HurricaneMkI",true},
-        {"bob:Aircraft.HurricaneMkI_100oct",true},
+        {"bob:Aircraft.HurricaneMkI_100oct",false},
         {"bob:Aircraft.HurricaneMkI_100oct-NF",true},
         {"bob:Aircraft.HurricaneMkI_dH5-20",true},
         {"bob:Aircraft.HurricaneMkI_dH5-20_100oct",true},
-        {"bob:Aircraft.HurricaneMkI_FB",false},
+        {"bob:Aircraft.HurricaneMkI_FB",true},
         {"bob:Aircraft.SpitfireMkI",true},
         {"bob:Aircraft.SpitfireMkIa",true},
         {"bob:Aircraft.SpitfireMkIa_100oct",false},
@@ -952,7 +972,7 @@ public class Mission : AMission, ICoverMission
     {
         if (acType == "") return false;
         bool ret = false;
-        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington")) ret = true;
+        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington") || acType.Contains("HurricaneMkI_FB")) ret = true;
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
         return ret;
     }
@@ -973,7 +993,7 @@ public class Mission : AMission, ICoverMission
     {
         if (acType == "") return false;
         bool ret = false;
-        if (acType.Contains("Ju-87")) ret = true; //only JU-87 for now, but maybe more later?   
+        if (acType.Contains("Ju-87")) ret = true; //only JU-87 Hurri/FB for now, but maybe more later?   
         return ret;
     }
 
@@ -1144,8 +1164,9 @@ public class Mission : AMission, ICoverMission
 
             if (aircraft == null) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - you're not in an aircraft!", new object[] { }); return; }
 
-
-            if (!isHeavyBomber(aircraft) && !isDiveBomber(aircraft)) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
+            //hurri FB registers as a heavy bomber so that you can lead formations of them.  But you can't lead
+            //a formation as a hurriFB pilot, only heavy bombers can lead.  They could bring Hurri FB's with them, though.
+            if (!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) && !Calcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
 
             
             if (numCheckedOut >= maximumCheckoutsAllowedAtOnce  )
@@ -2440,6 +2461,32 @@ public class Mission : AMission, ICoverMission
             
            //Console.WriteLine("MBT: Moving airport of attack!");
             Point3d pos = newTargetPoint;
+
+            Tuple<Point3d?, double> obj_cr = ObjectivesRadius_m(pos); //center point, radius
+
+            double Obj_radius = 0;
+            Point3d Obj_pos = new Point3d (-1,-1,-1);
+
+            if (obj_cr.Item1.HasValue)
+            {
+                Obj_radius = obj_cr.Item2;
+                Obj_pos = obj_cr.Item1.Value;
+
+                //We'll pick a point within 1/2 of the target objective radius of the target point the player has given us via knickebein.
+                //This will be nicely within the target radius if the knickebein point is exactly aligned with the center of the objective, and hopefully not too far off otherwise     
+                
+                //Some linear algebra magic . . . 
+                double dist = Calcs.CalculatePointDistance(pos, airGroup.Pos());
+                Point3d unit_vec_AGtoTarg = new Point3d ((pos.x-airGroup.Pos().x)/dist, (pos.y-airGroup.Pos().y)/dist, 0);
+                Point3d unit_vec_perpAGtoTarg = new Point3d(-unit_vec_AGtoTarg.y, unit_vec_AGtoTarg.x, 0);
+                double randadd = ran.NextDouble() * Obj_radius - Obj_radius / 2;
+                double backup = -ran.NextDouble() * Obj_radius;
+                Point3d newPoint = new Point3d (pos.x + backup*unit_vec_AGtoTarg.x + randadd*unit_vec_perpAGtoTarg.x,  pos.y + backup*unit_vec_AGtoTarg.y + randadd * unit_vec_perpAGtoTarg.y, pos.z);
+                //We could check if the point is on water & move it if so?  But then what if it is a ship?
+                pos = newPoint;
+
+            }
+
             //pos.z = playerAirGroup.Pos().z; //this was the first plan - just match the player's current altitude (at the target point - which is the only point in this AAWP
             pos.z = airGroup.Pos().z; //this is the new plan - if close to the target, just keep the current airgroup position, ie, fly flat & level.
                                       //if further from the target, fly a rate of climb/dive to put them in the right altitude relative to the main a/c at the target point, if the main a/c keeps its current climb/dive rate.  Main calculations below
@@ -2451,17 +2498,28 @@ public class Mission : AMission, ICoverMission
             GroundStationary newGroundTarget = null;
             bool diveTarget = false;
             //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
-            Console.WriteLine("MBT: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
+            //Console.WriteLine("MBT: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
 
             if (isDiveBomber(airGroup) && pos.z >= 1800)//only bother to do this search for dive bombers; they need an object to glom onto to do their dive, they also need to start above 2000m or so altitude; right now only JU87 can do it.
             {
+                double maxMove_m = 200;
+                double preferredMove_m = 100;
+
+                if (obj_cr.Item1.HasValue)
+                {
+                    maxMove_m = Obj_radius;
+                    preferredMove_m = Obj_radius / 2;
+
+                }
+
+                Console.WriteLine("Choosing target for dive bomber, maxMove {0:F0}, preferredMove {1:F0}", maxMove_m, preferredMove_m);
                 if (airgroupTargetPoints.ContainsKey(airGroup))
                 {
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (Calcs.CalculatePointDistance(oldApos, newTargetPoint) <= 15 * changeL_XY_m)
+                    if (Calcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m)
                     {
-                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null) newTarget = airgroupTargets[airGroup];
-                        else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null) newGroundTarget = airgroupGroundTargets[airGroup];
+                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) newTarget = airgroupTargets[airGroup];
+                        else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive) newGroundTarget = airgroupGroundTargets[airGroup];
                         Console.WriteLine("reusing old ground traget");
                         diveTarget = true;
                     }
@@ -2474,7 +2532,7 @@ public class Mission : AMission, ICoverMission
                     {
                         if (allStaticActors != null)
                         {
-                            List<AiActor> closeStaticActors = new List<AiActor>(Calcs.gpGetAllGroundActorsNear(allStaticActors, pos, 15 * changeL_XY_m).ToList()); //1000?
+                            List<AiActor> closeStaticActors = new List<AiActor>(Calcs.gpGetAllGroundActorsNear(allStaticActors, pos, maxMove_m).ToList()); //1000?
                             //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
                             Calcs.Shuffle(closeStaticActors);
                             foreach (AiActor act in closeStaticActors)
@@ -2499,12 +2557,14 @@ public class Mission : AMission, ICoverMission
                 //Here, we're going more for the center of the target. Again we COULD/SHOULD look up the actual radius of the objective.
                 if (!diveTarget)
                 {
-                    for (int d = 1; d <6; d++)
+                    double step = (maxMove_m-preferredMove_m)/ 6;
+                    for (int d = 0; d <=6; d++)
                     {
 
-                        GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, changeL_XY_m * d);
-                        foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
-                        Console.WriteLine("MBT: Looking for nearby stationary at {0}m", changeL_XY_m * d);
+
+                        GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d*step);
+                        //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
+                        //Console.WriteLine("MBT: Looking for nearby stationary at {0}m", changeL_XY_m * d);
                         for (int i = 1; i < 30; i++)
                         {
                             try
@@ -2575,17 +2635,27 @@ public class Mission : AMission, ICoverMission
         Vector3d coverVwld = airGroup.Vwld();
         double cover_vel_mps = Calcs.CalculatePointDistance(coverVwld); 
         double time_to_target_s = distance_to_target_m / cover_vel_mps;
-        if (time_to_target_s > 45)
-        {
+            if (time_to_target_s > 45)
+            {
 
-            /* so this little scheme didn't work because the airgroups don't **gradually** descend to the given altitude over the entire way, instead they just instantly change
-             * to that altitude.  So if we want them to match the player's altitude we just need to give them that altitude now, not trickily try to get them to descend or climb gradually.
-             * In the test, the player lost an engine so was gradually descending to the target point.  The bombers all dropped to the ground immediately.
-             * newPos.z = playerAirGroup.Pos().z + time_to_target_s * Vwld5.z;
-            if (newPos.z > 5) newPos.z = 5;
-            if (newPos.z > -5) newPos.z = -5;
-            */
-                                newPos.z = playerAirGroup.Pos().z;
+                /* so this little scheme didn't work because the airgroups don't **gradually** descend to the given altitude over the entire way, instead they just instantly change
+                 * to that altitude.  So if we want them to match the player's altitude we just need to give them that altitude now, not trickily try to get them to descend or climb gradually.
+                 * In the test, the player lost an engine so was gradually descending to the target point.  The bombers all dropped to the ground immediately.
+                 * newPos.z = playerAirGroup.Pos().z + time_to_target_s * Vwld5.z;
+                if (newPos.z > 5) newPos.z = 5;
+                if (newPos.z > -5) newPos.z = -5;
+                */
+                newPos.z = playerAirGroup.Pos().z;
+            }
+
+            //If we want to do Hurri_FB, they don't dive bomb.
+            //They need to do low alt point bomb.  So 5km out they are at 1000m & aimed straight at target.
+            //Put attack_point at 0m to get them as low as possible.  They are usually pretty on target with this strategy
+            //Tested via AI mission
+            if (distance_to_target_m < 10000 && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null && Calcs.GetAircraftType(airGroup.GetItems()[0] as AiAircraft).Contains("HurricaneMkI_FB")) {
+                newPos.z = 1000; //Hurri FBs need to be at 1000m 5K out
+                if (distance_to_target_m < 5000) newPos.z = 0;
+
             }
 
 
@@ -2656,7 +2726,7 @@ public class Mission : AMission, ICoverMission
 
             //if (airGroup.hasBombs()) airGroup.setTask(AiAirGroupTask.ATTACK_GROUND, null); //not sure if this really does anything here? Maybe not needed?  //Seems to make bombers drop bombs at ???; not sure what the 2nd variable is - should be an aiairgroup or null apparently?  Maybe only needed for ATTACK_AIR, DEFENDING, etc.
 
-            Console.WriteLine("MBT: bom,alt: {0} {1:F0} {2}", isDiveBomber(airGroup), pos.z, (newTarget as AiActor) != null);
+            //Console.WriteLine("MBT: bom,alt: {0} {1:F0} {2}", isDiveBomber(airGroup), pos.z, (newTarget as AiActor) != null);
             //if ((newTarget as AiActor) != null && isDiveBomber(airGroup) && pos.z >= 1800)
             if (diveTarget)
             {
@@ -2665,7 +2735,7 @@ public class Mission : AMission, ICoverMission
                 else if (newGroundTarget != null) (nextWP as AiAirWayPoint).Target = newGroundTarget as AiActor;  //This is bizarre, becuase if you do AiActor new = newGroundTarget as AiActor and then use new here, it WON'T WORK. But just use newGroundTarget as AiActor instead and it works.  There is no rhyme or reason.
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_TARG;  //keep action same
                 (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
-                Console.WriteLine("set target to ground");
+                //Console.WriteLine("set target to ground");
             } else
             {
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_POINT;  //keep action same
@@ -2680,8 +2750,8 @@ public class Mission : AMission, ICoverMission
             {
                 //if (((wp as AiAirWayPoint).Target as AiActor) != null) nm = ((wp as AiAirWayPoint).Target as AiActor).Name(); //doesn't work bec. grounstationaries are never AiActors.  We could try looking for AiGroundActors AiGroundGroups, or even AirGroups instead, maybe.  
                 //Console.WriteLine("Old Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (wp as AiAirWayPoint).P.x, (wp as AiAirWayPoint).P.y, (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType });
-                Console.WriteLine("Target Waypoint: {0:F0} {1:F0} {2} {3} {4} for " + airGroup.Name(), new object[] { (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType, (nextWP as AiAirWayPoint).Action.ToString() });
-            Console.WriteLine ("After Target Waypoint: {0:F0} {1:F0} {2} {3} {4} for " + airGroup.Name(), new object[] { (nextWP2 as AiAirWayPoint).P.x, (nextWP2 as AiAirWayPoint).P.y, (nextWP2 as AiAirWayPoint).GAttackPasses, (nextWP2 as AiAirWayPoint).GAttackType, (nextWP2 as AiAirWayPoint).Action.ToString() });
+                //Console.WriteLine("Target Waypoint: {0:F0} {1:F0} {2} {3} {4} for " + airGroup.Name(), new object[] { (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType, (nextWP as AiAirWayPoint).Action.ToString() });
+            //Console.WriteLine ("After Target Waypoint: {0:F0} {1:F0} {2} {3} {4} for " + airGroup.Name(), new object[] { (nextWP2 as AiAirWayPoint).P.x, (nextWP2 as AiAirWayPoint).P.y, (nextWP2 as AiAirWayPoint).GAttackPasses, (nextWP2 as AiAirWayPoint).GAttackType, (nextWP2 as AiAirWayPoint).Action.ToString() });
             /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
 
                 //Console.WriteLine("BomberPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5} {6} LONG: {7:n0} {8:n0} {9:n0}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackType, nextWP2.P.x, nextWP2.P.y, nextWP2.P.z});
@@ -2736,7 +2806,7 @@ public class Mission : AMission, ICoverMission
                 aaWP.Target = targetAirGroup.GetItems()[0];
             }
 
-            Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+            //Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
             return aaWP;
         }
@@ -2829,7 +2899,7 @@ public class Mission : AMission, ICoverMission
                     }
                 }  else if (angleTargetToGroup >= 90 && angleTargetToGroup <= 270)  //cover a/c headed straight away from main a/c, more or less
                 {                    
-                    vel_mps = target_vel_mps * 0.95; //Go 95% as fast as main aircraft when ahead but kinda close
+                    vel_mps = target_vel_mps * 0.90; //Go 95% as fast as main aircraft when ahead but kinda close
                     if (targetDist_m > 750 && target_vel_mps * .8 < vel_mps) vel_mps = target_vel_mps * 0.8; //Go 80% as fast when the target a/c gets more than 750m off
                     if (targetDist_m > 1500 && target_vel_mps * .6 < vel_mps) vel_mps = target_vel_mps * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
                     if (targetDist_m > 2500 && target_vel_mps * .4 < vel_mps) vel_mps = target_vel_mps * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
@@ -4353,10 +4423,10 @@ public static class Calcs
             AiGroundGroup[] agg = msn.GamePlay.gpGroundGroups(armies[i]);
             if (agg == null)
             {
-                Console.WriteLine("# it's nulL!");
+                //Console.WriteLine("# it's nulL!");
                 return null;
             }
-            Console.WriteLine("#" + agg.ToString());// + " " + agg.Length.ToString());
+            //Console.WriteLine("#" + agg.ToString());// + " " + agg.Length.ToString());
             //return null;
             if (agg == null) return null;
             List <AiGroundGroup> gg = new List<AiGroundGroup>(msn.GamePlay.gpGroundGroups(armies[i]));
@@ -4366,7 +4436,7 @@ public static class Calcs
                 for (int k = 0; k < act.Count; k++)
                 {
                     result.Add(act[k] as AiActor);
-                    Console.WriteLine("Actor: " + (act[k] as AiActor).Name());
+                    //Console.WriteLine("Actor: " + (act[k] as AiActor).Name());
                 }
             }
             /*

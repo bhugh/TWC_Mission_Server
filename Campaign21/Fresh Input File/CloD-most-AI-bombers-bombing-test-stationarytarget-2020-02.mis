@@ -9,7 +9,7 @@
   CloudsHeight 1500
   BreezeActivity 0
   ThermalActivity 0
-  player BoB_RAF_F_FatCat_Early.000
+  player BoB_RA_56St_20Gruppo_353Sq.000
 [GlobalWind_0]
   Power 0.000 0.000 0.000
   BottomBound 0.00
@@ -19,13 +19,15 @@
 [splines]
 [AirGroups]
   BoB_LW_KuFlGr_706.01
-  BoB_RAF_F_FatCat_Early.01
+  BoB_RA_56St_20Gruppo_353Sq.01
   BoB_LW_KuFlGr_706.02
   BoB_LW_KG3_Stab.04
   BoB_LW_KG3_Stab.01
   BoB_LW_KuFlGr_706.04
-  BoB_RAF_B_218Sqn.01
-  BoB_RAF_B_218Sqn.02
+  BoB_RA_43St_99Gruppo_243Sq.01
+  BoB_RA_43St_99Gruppo_243Sq.02
+  BoB_RA_56St_20Gruppo_353Sq.04
+  BoB_RA_56St_20Gruppo_353Sq.02
 [BoB_LW_KuFlGr_706.01]
   Flight0  1 2
   Class Aircraft.He-111H-2
@@ -42,7 +44,7 @@
   FOLLOW 236217.90 231046.41 500.00 180.00
   GATTACK_POINT 234976.84 232544.79 500.00 180.00
   FOLLOW 233498.25 233981.26 500.00 180.00
-[BoB_RAF_F_FatCat_Early.01]
+[BoB_RA_56St_20Gruppo_353Sq.01]
   Flight0  1
   Class Aircraft.SpitfireMkIa_100oct
   Formation VIC3
@@ -50,7 +52,7 @@
   Fuel 100
   Weapons 1
   Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
-[BoB_RAF_F_FatCat_Early.01_Way]
+[BoB_RA_56St_20Gruppo_353Sq.01_Way]
   NORMFLY 234764.83 231905.38 500.00 300.00
   NORMFLY 234509.31 232446.07 500.00 300.00
 [BoB_LW_KuFlGr_706.02]
@@ -107,8 +109,8 @@
   NORMFLY 232002.63 233197.59 750.00 250.00
   GATTACK_POINT 234956.35 232581.36 750.00 250.00
   NORMFLY 237391.09 232069.60 750.00 250.00
-[BoB_RAF_B_218Sqn.01]
-  Flight0  1 2
+[BoB_RA_43St_99Gruppo_243Sq.01]
+  Flight0  1 2 3
   Class Aircraft.WellingtonMkIc
   Formation LINEABREAST
   CallSign 16
@@ -117,12 +119,12 @@
   Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
   Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
   Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
-[BoB_RAF_B_218Sqn.01_Way]
-  NORMFLY 234216.38 234669.15 750.00 250.00
+[BoB_RA_43St_99Gruppo_243Sq.01_Way]
+  NORMFLY 234228.55 234669.15 750.00 250.00
   GATTACK_POINT 234979.00 232544.10 750.00 250.00
   NORMFLY 235639.95 230495.79 750.00 250.00
-[BoB_RAF_B_218Sqn.02]
-  Flight1  11
+[BoB_RA_43St_99Gruppo_243Sq.02]
+  Flight1  11 12
   Class Aircraft.BlenheimMkIV_Late
   Formation LINEABREAST
   CallSign 33
@@ -132,13 +134,45 @@
   Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
   Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
   Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
-[BoB_RAF_B_218Sqn.02_Way]
+[BoB_RA_43St_99Gruppo_243Sq.02_Way]
   NORMFLY 239563.15 232876.77 750.00 250.00
   GATTACK_POINT 234964.80 232582.89 750.00 250.00
   NORMFLY 230749.72 232396.70 750.00 250.00
+[BoB_RA_56St_20Gruppo_353Sq.04]
+  Flight2  21 22 23
+  Class Aircraft.HurricaneMkI_FB
+  Formation LINEABREAST
+  CallSign 28
+  Fuel 100
+  Weapons 1 2
+  SetOnPark 1
+  Scramble 1
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_RA_56St_20Gruppo_353Sq.04_Way]
+  FOLLOW 233216.76 227715.20 1000.00 350.00
+  GATTACK_TARG 233256.58 231765.28 0.00 350.00 Static0 0 /GAttackType SHALLOW_DIVE
+  GATTACK_TARG 233229.05 233267.50 50.00 350.00 Static0 0 /GAttackType SHALLOW_DIVE /GAttackPasses ALL_OUT
+  GATTACK_TARG 233260.04 234405.25 0.00 350.00 Static0 0 /GAttackType SHALLOW_DIVE
+  FOLLOW 233141.16 237983.80 50.00 350.00
+[BoB_RA_56St_20Gruppo_353Sq.02]
+  Flight1  11 12 13
+  Class Aircraft.HurricaneMkI_FB
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1 2
+  Detonator Bomb.Bomb_GP_40lb_MkIII 3 0 0.025
+  SetOnPark 1
+  Skill 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9
+[BoB_RA_56St_20Gruppo_353Sq.02_Way]
+  FOLLOW 247300.32 236140.27 3000.00 350.00
+  GATTACK_TARG 241432.53 239786.06 0.00 350.00 Static2 0 /GAttackType SHALLOW_DIVE
+  FOLLOW 235738.94 243729.52 100.00 350.00
 [CustomChiefs]
 [Stationary]
   Static1 Stationary.Bedford_OXA gb 235103.20 232451.92 0.00 
+  Static0 Stationary.Bedford_OXA gb 233246.89 233249.05 0.00 
+  Static2 Stationary.Bedford_OXA gb 241432.56 239786.05 0.00 
 [Buildings]
 [BuildingsLinks]
 [Trigger]

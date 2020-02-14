@@ -1,4 +1,4 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -18,85 +18,95 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static32 ShipUnit.MotorBarge_Large1 gb 237462.91 228724.78 -205.00 /sleep 0/skill 3/slowfire 1
-  Static33 ShipUnit.MotorBarge_Large1 gb 237507.73 228712.45 -190.00 /sleep 0/skill 3/slowfire 1
-  Static34 ShipUnit.Tanker_Medium1 gb 237652.13 228710.38 -170.00 /sleep 0/skill 3/slowfire 1
-  Static12 ShipUnit.MotorBarge_Large1 gb 237373.69 228776.09 -220.00 /sleep 0/skill 3/slowfire 1
-  Static31 ShipUnit.MotorBarge_Large1 gb 237413.73 228747.33 -220.00 /sleep 0/skill 3/slowfire 1
+  Static82 ShipUnit.MotorBarge_Large1 gb 237662.98 228699.06 -220.00 /sleep 0/skill 2/slowfire 1
+  Static59 Stationary.Environment.JerryCan_GER1_3 nn 237415.33 228781.86 -570.00 /hstart 20
+  Static58 Stationary.Environment.JerryCan_GER1_3 nn 237430.91 228793.27 -570.00 /hstart 20
+  Static57 Stationary.Environment.JerryCan_GER1_3 nn 237452.86 228793.41 -570.00 /hstart 20
+  Static60 Stationary.Environment.JerryCan_GER1_3 nn 237503.09 228757.03 -570.00 /hstart 20
+  Static77 Stationary.Ford_V8_E917_tent gb 237489.56 228789.19 15.00 /hstart 12
   Static25 Stationary.Environment.TelegaBallon_UK1 gb 237516.48 228775.64 15.00 /hstart 8
   Static21 ShipUnit.Tanker_Medium1 gb 237639.36 228778.38 -170.00 /sleep 0/skill 3/slowfire 1
-  Static10 ShipUnit.MotorBarge_Large1 gb 237299.52 228838.66 -230.00 /sleep 0/skill 3/slowfire 1
-  Static11 ShipUnit.MotorBarge_Large1 gb 237338.39 228806.30 -225.00 /sleep 0/skill 3/slowfire 1
+  Static54 Stationary.Environment.JerryCan_GER1_3 nn 237386.94 228851.55 -570.00 /hstart 20
+  Static53 Stationary.Environment.JerryCan_GER1_3 nn 237407.09 228846.75 -570.00 /hstart 20
+  Static52 Stationary.Environment.JerryCan_GER1_3 nn 237423.25 228855.19 -570.00 /hstart 20
+  Static56 Stationary.Environment.JerryCan_GER1_3 nn 237465.61 228804.41 -570.00 /hstart 20
+  Static76 Stationary.Ford_V8_E917_tent gb 237446.86 228834.14 15.00 /hstart 13
+  Static65 Stationary.Environment.JerryCan_GER1_3 nn 237499.86 228801.84 -570.00 /hstart 20
+  Static75 Stationary.Ford_V8_E917_tent gb 237456.03 228854.36 15.00 /hstart 14
+  Static64 Stationary.Environment.JerryCan_GER1_3 nn 237452.28 228861.28 -570.00 /hstart 20
+  Static55 Stationary.Environment.JerryCan_GER1_3 nn 237478.50 228841.98 -570.00 /hstart 20
+  Static83 ShipUnit.MotorBarge_Large1 gb 237596.42 228863.09 -220.00 /sleep 0/skill 2/slowfire 1
+  Static19 ShipUnit.MotorBarge_Large1 gb 237804.66 228830.19 -185.00 /sleep 0/skill 3/slowfire 1
+  Static73 Stationary.Airfield.blister_hangar nn 237305.47 228908.63 15.00 /hstart 10
+  Static48 Stationary.Environment.JerryCan_GER1_3 nn 237296.86 228923.30 -570.00 /hstart 20
+  Static47 Stationary.Environment.JerryCan_GER1_3 nn 237315.88 228911.73 -570.00 /hstart 20
+  Static71 Stationary.Airfield.blister_hangar gb 237362.95 228891.92 15.00 /hstart 13
+  Static46 Stationary.Environment.JerryCan_GER1_3 nn 237352.53 228912.72 -570.00 /hstart 20
+  Static45 Stationary.Environment.JerryCan_GER1_3 nn 237376.92 228884.33 -570.00 /hstart 20
+  Static44 Stationary.Environment.JerryCan_GER1_3 nn 237396.53 228888.84 -570.00 /hstart 20
+  Static74 Stationary.Ford_V8_E917_tent gb 237415.08 228887.22 15.00 /hstart 14
+  Static51 Stationary.Environment.JerryCan_GER1_3 nn 237427.25 228882.88 -570.00 /hstart 20
   Static17 Stationary.Airfield.blister_hangar gb 237435.58 228916.55 15.00 /hstart 16
   Static30 Stationary.Environment.TelegaBallon_UK1 gb 237438.56 228916.22 15.00 /hstart 18
   Static22 Stationary.Environment.TelegaBallon_UK1 gb 237486.33 228879.77 15.00 /hstart 18
-  Static14 Stationary.Airfield.blister_hangar gb 237471.98 228898.86 15.00 /hstart 17
+  Static14 Stationary.Airfield.blister_hangar nn 237471.98 228898.86 15.00 /hstart 17
   Static29 Stationary.Environment.TelegaBallon_UK1 gb 237479.52 228908.72 15.00 /hstart 18
   Static8 Stationary.Airfield.blister_hangar gb 237469.33 228921.11 15.00 /hstart 19
+  Static49 Stationary.Environment.JerryCan_GER1_3 nn 237273.28 228952.78 -570.00 /hstart 20
+  Static50 Stationary.Environment.JerryCan_GER1_3 nn 237254.50 228985.08 -570.00 /hstart 20
+  Static72 Stationary.Airfield.blister_hangar gb 237296.11 228946.55 15.00 /hstart 10
   Static24 Stationary.Environment.TelegaBallon_UK1 gb 237325.91 228946.30 15.00 /hstart 12
+  Static70 Stationary.Airfield.blister_hangar gb 237351.11 228930.58 15.00 /hstart 15
   Static5 Stationary.Ford_V8_E917_tent gb 237330.14 228956.13 10.00 /hstart 13
   Static4 Stationary.Ford_V8_E917_tent gb 237329.33 228959.73 5.00 /hstart 13
-  Static3 Stationary.Ford_V8_E917_tent gb 237328.50 228964.75 15.00 /hstart 13
+  Static3 Stationary.Ford_V8_E917_tent nn 237328.50 228964.75 15.00 /hstart 13
   Static2 Stationary.Ford_V8_E917_tent gb 237326.08 228971.23 15.00 /hstart 13
-  Static1 Stationary.Ford_V8_E917_tent gb 237324.50 228978.38 15.00 /hstart 13/dead 1
+  Static42 Stationary.Environment.JerryCan_GER1_3 nn 237358.72 228941.08 -570.00 /hstart 20
+  Static1 Stationary.Ford_V8_E917_tent nn 237324.50 228978.38 15.00 /hstart 13/dead 1
+  Static69 Stationary.Airfield.blister_hangar gb 237355.38 228968.41 15.00 /hstart 16
+  Static40 Stationary.Environment.JerryCan_GER1_3 nn 237348.91 228987.09 -570.00 /hstart 20
+  Static43 Stationary.Environment.JerryCan_GER1_3 nn 237380.69 228931.73 -570.00 /hstart 20
+  Static67 Stationary.Airfield.blister_hangar gb 237398.92 228932.23 15.00 /hstart 16
+  Static68 Stationary.Airfield.blister_hangar gb 237377.67 228954.64 15.00 /hstart 16
+  Static41 Stationary.Environment.JerryCan_GER1_3 nn 237387.97 228964.33 -570.00 /hstart 20
+  Static66 Stationary.Airfield.blister_hangar gb 237384.78 228987.97 15.00 /hstart 16
   Static15 Stationary.Airfield.blister_hangar gb 237427.36 228947.92 15.00 /hstart 24
   Static16 Stationary.Airfield.blister_hangar gb 237423.06 228971.56 15.00 /hstart 24
   Static28 Stationary.Environment.TelegaBallon_UK1 gb 237471.98 228934.73 15.00 /hstart 18
-  Static7 Stationary.Airfield.blister_hangar gb 237463.31 228944.88 15.00 /hstart 21
+  Static7 Stationary.Airfield.blister_hangar nn 237463.31 228944.88 15.00 /hstart 21
   Static18 Stationary.Airfield.blister_hangar gb 237452.95 228979.30 15.00 /hstart 22
   Static27 Stationary.Environment.TelegaBallon_UK1 gb 237464.33 228974.19 15.00 /hstart 18
   Static35 ShipUnit.Tanker_Medium1 gb 237503.83 228977.73 -255.00 /sleep 0/skill 3/slowfire 1
-  Static19 ShipUnit.MotorBarge_Large1 gb 237556.14 228700.22 -185.00 /sleep 0/skill 3/slowfire 1
+  Static39 ShipUnit.Tanker_Medium2 gb 237670.63 228947.30 -570.00 /sleep 0/skill 2/slowfire 1
+  Static80 ShipUnit.Tanker_Medium2 nn 237862.70 228956.83 -360.00 /sleep 0/skill 2/slowfire 1
+  Static63 Stationary.Environment.JerryCan_GER1_3 nn 237295.97 229006.02 -570.00 /hstart 20
+  Static61 Stationary.Environment.JerryCan_GER1_3 nn 237372.16 229017.55 -570.00 /hstart 20
   Static23 Stationary.Environment.TelegaBallon_UK1 gb 237413.39 229007.02 15.00 /hstart 18
   Static13 Stationary.Airfield.blister_hangar gb 237413.50 229009.27 15.00 /hstart 24
   Static9 Stationary.Airfield.blister_hangar gb 237426.06 229012.72 15.00 /hstart 24
   Static26 Stationary.Environment.TelegaBallon_UK1 gb 237433.42 229008.13 15.00 /hstart 18
-  Static20 ShipUnit.MotorBarge_Large1 gb 237537.56 228812.52 -255.00 /sleep 0/skill 3/slowfire 1
-  Static6 Stationary.Airfield.blister_hangar gb 237445.78 229007.59 15.00 /hstart 24
-  Static0 ShipUnit.MotorBarge_Large1 gb 237524.56 228869.14 -255.00 /sleep 0/skill 3/slowfire 1
-  Static36 ShipUnit.MotorBarge_Large1 gb 237570.83 228877.41 -255.00 /sleep 0/skill 2/slowfire 1
-  Static37 ShipUnit.MotorBarge_Large1 gb 237580.06 228822.55 -255.00 /sleep 0/skill 2/slowfire 1
-  Static38 ShipUnit.Tanker_Medium1 gb 237421.66 229065.36 -345.00 /sleep 0/skill 2/slowfire 1
-  Static39 ShipUnit.Tanker_Medium2 gb 237670.63 228947.30 -570.00 /sleep 0/skill 2/slowfire 1
-  Static40 Stationary.Environment.JerryCan_GER1_3 nn 237348.91 228987.09 -570.00 /hstart 20
-  Static41 Stationary.Environment.JerryCan_GER1_3 nn 237387.97 228964.33 -570.00 /hstart 20
-  Static42 Stationary.Environment.JerryCan_GER1_3 nn 237358.72 228941.08 -570.00 /hstart 20
-  Static43 Stationary.Environment.JerryCan_GER1_3 nn 237380.69 228931.73 -570.00 /hstart 20
-  Static44 Stationary.Environment.JerryCan_GER1_3 nn 237396.53 228888.84 -570.00 /hstart 20
-  Static45 Stationary.Environment.JerryCan_GER1_3 nn 237376.92 228884.33 -570.00 /hstart 20
-  Static46 Stationary.Environment.JerryCan_GER1_3 nn 237352.53 228912.72 -570.00 /hstart 20
-  Static47 Stationary.Environment.JerryCan_GER1_3 nn 237315.88 228911.73 -570.00 /hstart 20
-  Static48 Stationary.Environment.JerryCan_GER1_3 nn 237296.86 228923.30 -570.00 /hstart 20
-  Static49 Stationary.Environment.JerryCan_GER1_3 nn 237273.28 228952.78 -570.00 /hstart 20
-  Static50 Stationary.Environment.JerryCan_GER1_3 nn 237254.50 228985.08 -570.00 /hstart 20
-  Static51 Stationary.Environment.JerryCan_GER1_3 nn 237427.25 228882.88 -570.00 /hstart 20
-  Static52 Stationary.Environment.JerryCan_GER1_3 nn 237423.25 228855.19 -570.00 /hstart 20
-  Static53 Stationary.Environment.JerryCan_GER1_3 nn 237407.09 228846.75 -570.00 /hstart 20
-  Static54 Stationary.Environment.JerryCan_GER1_3 nn 237386.94 228851.55 -570.00 /hstart 20
-  Static55 Stationary.Environment.JerryCan_GER1_3 nn 237478.50 228841.98 -570.00 /hstart 20
-  Static56 Stationary.Environment.JerryCan_GER1_3 nn 237465.61 228804.41 -570.00 /hstart 20
-  Static57 Stationary.Environment.JerryCan_GER1_3 nn 237452.86 228793.41 -570.00 /hstart 20
-  Static58 Stationary.Environment.JerryCan_GER1_3 nn 237430.91 228793.27 -570.00 /hstart 20
-  Static59 Stationary.Environment.JerryCan_GER1_3 nn 237415.33 228781.86 -570.00 /hstart 20
-  Static60 Stationary.Environment.JerryCan_GER1_3 nn 237503.09 228757.03 -570.00 /hstart 20
-  Static61 Stationary.Environment.JerryCan_GER1_3 nn 237372.16 229017.55 -570.00 /hstart 20
   Static62 Stationary.Environment.JerryCan_GER1_3 nn 237418.67 229036.23 -570.00 /hstart 20
-  Static63 Stationary.Environment.JerryCan_GER1_3 nn 237295.97 229006.02 -570.00 /hstart 20
-  Static64 Stationary.Environment.JerryCan_GER1_3 nn 237452.28 228861.28 -570.00 /hstart 20
-  Static65 Stationary.Environment.JerryCan_GER1_3 nn 237499.86 228801.84 -570.00 /hstart 20
-  Static66 Stationary.Airfield.blister_hangar gb 237384.78 228987.97 15.00 /hstart 16
-  Static67 Stationary.Airfield.blister_hangar gb 237398.92 228932.23 15.00 /hstart 16
-  Static68 Stationary.Airfield.blister_hangar gb 237377.67 228954.64 15.00 /hstart 16
-  Static69 Stationary.Airfield.blister_hangar gb 237355.38 228968.41 15.00 /hstart 16
-  Static70 Stationary.Airfield.blister_hangar gb 237351.11 228930.58 15.00 /hstart 15
-  Static71 Stationary.Airfield.blister_hangar gb 237362.95 228891.92 15.00 /hstart 13
-  Static72 Stationary.Airfield.blister_hangar gb 237296.11 228946.55 15.00 /hstart 10
-  Static73 Stationary.Airfield.blister_hangar gb 237305.47 228908.63 15.00 /hstart 10
-  Static74 Stationary.Ford_V8_E917_tent gb 237415.08 228887.22 15.00 /hstart 14
-  Static75 Stationary.Ford_V8_E917_tent gb 237456.03 228854.36 15.00 /hstart 14
-  Static76 Stationary.Ford_V8_E917_tent gb 237446.86 228834.14 15.00 /hstart 13
-  Static77 Stationary.Ford_V8_E917_tent gb 237489.56 228789.19 15.00 /hstart 12
+  Static6 Stationary.Airfield.blister_hangar gb 237445.78 229007.59 15.00 /hstart 24
+  Static38 ShipUnit.Tanker_Medium1 gb 237421.66 229065.36 -345.00 /sleep 0/skill 2/slowfire 1
+  Static11 ShipUnit.MotorBarge_Large1 gb 237577.36 229057.58 -195.00 /sleep 0/skill 3/slowfire 1
+  Static10 ShipUnit.MotorBarge_Large1 gb 237582.34 229114.06 -185.00 /sleep 0/skill 3/slowfire 1
+  Static12 ShipUnit.MotorBarge_Large1 gb 237681.20 229087.80 -220.00 /sleep 0/skill 3/slowfire 1
+  Static31 ShipUnit.MotorBarge_Large1 gb 237379.25 229152.34 -220.00 /sleep 0/skill 3/slowfire 1
+  Static20 ShipUnit.MotorBarge_Large1 gb 237498.53 229131.67 -255.00 /sleep 0/skill 3/slowfire 1
+  Static32 ShipUnit.MotorBarge_Large1 gb 237610.58 229174.30 -265.00 /sleep 0/skill 3/slowfire 1
+  Static84 ShipUnit.MotorBarge_Large1 gb 237772.34 229132.89 -220.00 /sleep 0/skill 2/slowfire 1
+  Static79 ShipUnit.Tanker_Medium2 nn 237905.52 229137.95 -690.00 /sleep 0/skill 2/slowfire 1
+  Static33 ShipUnit.MotorBarge_Large1 gb 237611.45 229240.30 -190.00 /sleep 0/skill 3/slowfire 1
+  Static36 ShipUnit.MotorBarge_Large1 gb 237373.06 229276.23 -255.00 /sleep 0/skill 2/slowfire 1
+  Static34 ShipUnit.Tanker_Medium1 gb 237474.94 229249.11 -290.00 /sleep 0/skill 3/slowfire 1
+  Static37 ShipUnit.MotorBarge_Large1 gb 237643.59 229311.33 -255.00 /sleep 0/skill 2/slowfire 1
+  Static0 ShipUnit.MotorBarge_Large1 gb 237539.08 229360.89 -255.00 /sleep 0/skill 3/slowfire 1
+  Static78 ShipUnit.Tanker_Medium1 gb 237781.28 229320.17 -390.00 /sleep 0/skill 2/slowfire 1
+  Static81 ShipUnit.MotorBarge_Large1 gb 237691.59 229401.17 -220.00 /sleep 0/skill 2/slowfire 1
+  Static85 ShipUnit.Tanker_Medium2 gb 237080.84 228744.16 -690.00 /sleep 0/skill 2/slowfire 1
+  Static86 ShipUnit.Tanker_Medium2 nn 237513.27 228625.30 -555.00 /sleep 0/skill 2/slowfire 1
+  Static87 ShipUnit.Tanker_Medium2 nn 237280.38 228726.34 -570.00 /sleep 0/skill 2/slowfire 1
 [Buildings]
 [BuildingsLinks]
 [Trigger]
-  Folkestone TGroundDestroyed 100 237505 228904 300
+  Folkestone TGroundDestroyed 100 237398 228979 600

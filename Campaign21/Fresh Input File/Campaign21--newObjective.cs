@@ -1,4 +1,4 @@
-﻿////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
+////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-stats.cs"
 //$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
 //$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
@@ -287,10 +287,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "north"}, //Red army #1
-            { -2, "gate"}, //Blue, army #2
-            { -3, "twc2twc"}, //admin
-            { -4, "twc2twc"}, //admingrouped
+            { -1, "$$$"}, //Red army #1
+            { -2, "$$$"}, //Blue, army #2
+            { -3, "$$$"}, //admin
+            { -4, "$$$"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -11806,9 +11806,9 @@ added Rouen Flak
 
         foreach (MissionObjective value in DR)
         {
-            for (int i = 0; i< 3; i++) {
+            for (int i = 0; i< 2; i++) {
 
-                //So we take 3 circles starting at the radar location and moving towards heading 315 for Blue radars & 135 for Red radars
+                //So we take 2 circles starting at the radar location and moving towards heading 315 for Blue radars & 135 for Red radars
                 //this works pretty well for the Channel map.
                 double xadd = (double)i*value.RadarEffectiveRadius;
                 double yadd = -(double)i * value.RadarEffectiveRadius;
@@ -11850,17 +11850,69 @@ added Rouen Flak
         if (radarArmy == 1)
         {
 
-            //Red doesn't have any special denied areas for now.
-            //TODO: We could make furthest reaches of France out of radar range, or perhaps just start to remove more low-level 
-            //radar the further into France we go.
-            return true;
+            if (pos.x <= 170000)  //for the portion of the map where x< 170000 (the westernmost part) we just draw a straight line across at y=130000 and count the distance from there
+            {
+                if (pos.y >= 145000) return true; //This is within the radar horizon, so we're just ignoring it here.
+                double dist_m = 145000 - pos.y;  //we count the line y=145                                    000 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km distance back in.
+                double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
+                //Console.WriteLine("Red Radar Area (west): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
+                if (pos.z < minHeight_m) return false;
+                else return true;
+            }
+            else //for the easternmost  part of the map we draw line between point 1 & point 2, coordinates below, and count thedistance northwesterly from that line as the critical distance.
+            {
+                //(295347, 220011)
+                //(170000,145000)
 
+
+                Point2d p1 = new Point2d(170000, 145000); //we reverse the direction compared with the Blue line, so that points to the south/east of this line will return a positive distance.
+                Point2d p2 = new Point2d(295347, 220011);  
+                double dist_m = Calcs.PointToLineDistance(p1, p2, pos);  
+                if (dist_m <= 0) return false;
+                double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
+                //Console.WriteLine("Red Radar Area (east): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
+                if (pos.z > minHeight_m) return false; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
+                else return true; //the object is below the minimum height for radar detection.                
+            }
         }
 
         //BLUE army special denied areas or areas that never have radar coverage
         //TODO: Could gradually remove low-level coverage the further from the stations we go (this is realistic)
+        //Freya Radar had a range of 200km.  That is essentially enough to cover our entire map from the French coast.
+        //Freya would have had a radar horizon of roughly 45 miles, meaning it could see everything down to a few meters elevation, out to that point.
+        //After that the radar shadow (below the horizon) gradually rises in height.  the formula is
+        // minimum height for detection = (distance - sqrt(2Xheight of radarXradius of earthX 4/3)^2/(2XRadius of earth X 4/3)
+        // https://en.wikipedia.org/wiki/Radar_horizon
         else if (radarArmy == 2)
         {
+            if (pos.x <=170000)  //for the portion of the map where x< 170000 (the westernmost part) we just draw a straight line across at y=130000 and count the distance from there
+            {
+                if (pos.y <= 130000) return true; //This is within the radar horizon, so we're just ignoring it here.
+                double dist_m = pos.y - 130000;  //we count the line y=130000 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km distance back in.
+                double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
+                //Console.WriteLine("Blue Radar Area (west): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
+                if (pos.z < minHeight_m) return false;
+                else return true;
+            } else //for the easternmost  part of the map we draw line between point 1 & point 2, coordinates below, and count thedistance northwesterly from that line as the critical distance.
+            {
+                //point 1: 227132, 243249
+                //point 2: 170000, 130000 
+                //(243249-130000)/(227132-170000) x + 
+                //double a = 243249 - 139000;
+                //double b = 170000 - 227132;
+                //double c = b / -a * 130000 / 170000;
+
+                Point2d p1 = new Point2d(227132, 243249);
+                Point2d p2 = new Point2d(170000, 130000);
+                double dist_m = Calcs.PointToLineDistance(p1, p2, pos);
+                if (dist_m <= 0) return false; //Negative values mean it is on the side of the line where the radar stations are; ie, no radar shadow
+                double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
+                //Console.WriteLine("Blue Radar Area (east): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
+                if (pos.z > minHeight_m) return false; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
+                else return true; //the object is below the minimum height for radar detection.                
+            }
+
+            /*
             //BLUE radar only goes approx to English Coast.
             //This approximates that by taking a line between these points
 
@@ -11885,9 +11937,23 @@ added Rouen Flak
                 if ((pos.x - 8000) / 162000 * 14000 + 236000 < pos.y) return false;
             }
             return true;
+            */
         }
         return true;
 
+    }
+    public static double RADAR_RADIUS_OF_EARTH_m = 8494666.667;
+
+    //(distance - sqrt(2Xheight of radarXradius of earthX 4/3)^2/(2XRadius of earth X 4/3)
+    //Radar height 120 meters is a reasonable guess for both British & German radar.
+    //They usually had bluffs of around 100 meters in height to place them on.
+    //Freya radar was at least 20 meters tall above that; British masts were probably a bit taller but the practical difference is small, because ground clutter, details of topography, exact
+    //implementation of radar etc all tend to be just as important
+    //On the other hand, the 120 meter height was probably nicely operative over the ocean.  But what we're more worried about here is the
+    //penetration into the other side's land area.  There, the effective height is more like 20 meters or maybe less, because both sides are about equally high and have various hills, bluffs, etc rising 100-120 meters or so above sea level.  So we're going with the 20 meter distance which is more realistic as to how hard it was then to pick things up close to teh ground (except for, over nice flat water).
+    public double MO_minHeightForRadarDetection(double distance_m, double radarHeight_m=20)
+    {
+        return Math.Pow((distance_m - Math.Sqrt(2 * radarHeight_m * RADAR_RADIUS_OF_EARTH_m)),2) / 2 / RADAR_RADIUS_OF_EARTH_m;
     }
 
     public string ListRadarTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
@@ -11954,7 +12020,7 @@ added Rouen Flak
             MissionObjective mo = MissionObjectivesList[ID];
             if (actor.Army() != mo.OwnerArmy) continue;
             if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
-            double dist = Calcs.CalculatePointDistance(actor.Pos(), mo.Pos);
+            double dist = Calcs.CalculatePointDistance(actor.Pos(), mo.Pos);            
             if (dist > mo.radius) continue;
 
             string type = "";
@@ -13910,6 +13976,16 @@ public static class Calcs
     }
     public static double CalculatePointDistance(
                               Point2d startPoint,
+                              Point3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                              Point2d startPoint,
                               Point2d endPoint)
     {
         //Calculate the length of the adjacent and opposite
@@ -13964,6 +14040,28 @@ public static class Calcs
         double diffY = Math.Abs(startPoint.y);
 
         return distance(diffX, diffY);
+    }
+    //Given two points lp1 & lp2 that determine a line, what is the distance between single point sp and that line?
+    //if ax + by + c = 0 is the line equation, distance is
+    //abs(ax + by + c)/sqrt(a^2 + b^2)
+    //It returns values +/-.  + value means, the point is to the right side of the line, looking down the line from p1 to p2
+    // - value means, to the left side of that line
+
+    public static double PointToLineDistance(Point2d linePoint1, Point2d linePoint2, Point3d singlePoint)
+    {
+        return PointToLineDistance(linePoint1, linePoint2, new Point2d (singlePoint.x, singlePoint.y));
+    }
+
+    public static double PointToLineDistance(Point2d linePoint1, Point2d linePoint2, Point2d singlePoint)
+    {
+
+        if (linePoint1.x == linePoint2.x && linePoint1.y == linePoint2.y) return CalculatePointDistance(singlePoint,linePoint1); //Two points the same, not a line, but we can calculate the point distance
+                                                                                                               //if (lp1.x == lp2.x) return Math.Sign( lp2.y-lp1.y) * (sp.x - lp1.x);                                                                                                                
+        double a = linePoint2.y - linePoint1.y;
+        double b = -(linePoint2.x - linePoint1.x);
+        double c = (-b * linePoint1.y) - a * linePoint1.x;
+
+        return (a * singlePoint.x + b * singlePoint.y + c) / distance(a, b);  //This will be + or - depending on the orientation of the sp and lp1/lp2.  YOu can use the +/- to determine which side of the line it's on relative to vector lp1 -> lp2
     }
     /**
       * Calculates the point of interception for one object starting at point

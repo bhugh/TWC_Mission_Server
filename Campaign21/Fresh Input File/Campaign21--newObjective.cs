@@ -1,5 +1,9 @@
-////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
+﻿////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-stats.cs"
+//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
+//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
+////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
+////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
 
 
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
@@ -174,7 +178,11 @@ public class Mission : AMission, IMainMission
 
     public bool DEBUG { get; set; }
     public bool LOG { get; set; } //Whether to log debug messages to  a log file.
-    //public bool WARP_CHECK { get; set; }
+                                  //public bool WARP_CHECK { get; set; }
+
+    public ABattle gpBattle;
+    public CoverMission covermission;
+    public StatsMission statsmission;
 
     public string MISSION_FOLDER_PATH;
     public string USER_DOC_PATH;
@@ -257,6 +265,9 @@ public class Mission : AMission, IMainMission
         //outPath = "C:\\GoogleDrive\\GCVData";
         TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
 
+        covermission = new CoverMission();
+        statsmission = new StatsMission();
+
         //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
         //Also in other submission .cs like -stats.cs you can access the AMission methods of TWCMainMission by eg (TWCMainMission as AMission).OnBattleStopped();
 
@@ -276,10 +287,10 @@ public class Mission : AMission, IMainMission
         //WARP_CHECK = false;
         radarpasswords = new Dictionary<int, string>
         {
-            { -1, "###"}, //Red army #1
-            { -2, "###"}, //Blue, army #2
-            { -3, "###"}, //admin
-            { -4, "###"}, //admingrouped
+            { -1, "north"}, //Red army #1
+            { -2, "gate"}, //Blue, army #2
+            { -3, "twc2twc"}, //admin
+            { -4, "twc2twc"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -1070,21 +1081,21 @@ public class Mission : AMission, IMainMission
         }
         catch (Exception ex) { Console.WriteLine("OnStationaryKilled -main: " + ex.ToString()); }
         #endregion
-    } 
+    }
 
 
 
 
-/*****************************************************************************
-    * 
-    * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
-    * 
-    *****************************************************************************/
+    /*****************************************************************************
+        * 
+        * OnBombExplosion - handling routines for area bombing, bombing of civilian areas, and bombing of airports
+        * 
+        *****************************************************************************/
 
-//Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
-//TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
-//TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
-public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
+    //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
+    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
 
         base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
@@ -1492,7 +1503,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             if (currentEndMission == thisEndMission)
             {
                 //If the CmdExec("exit") didn't work for some reason, we can call OnBattleStoped manually to clean things up, then kill.  This is just a failsafe
-                (TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+                //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+                statsmission.OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
                 Process.GetCurrentProcess().Kill();
             }
         });
@@ -2121,19 +2133,21 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         Player[] recipients = null;
         if (player != null) recipients = new Player[] { player };
 
+        //Update scoring, 2020/02/15 - now we are ADDING 100 points (/100 = 1) to that side's current Map Mover score, and also adding the (miniscule) amount
+        //of points they get from air victories etc.  Before it was just a flat 100 points for turning the map, but now it's whatever objective points you've accumulated PLUS 100 points more.
         if (winner == "Red")
         {
             msg = "Red moved the campaign forward by achieving all Mission Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(1, outputmsg);
+            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 2000.0, outputmsg);
         }
         if (winner == "Blue")
         {
             msg = "Blue moved the campaign forward by achieving all Mission Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(-1, outputmsg);
+            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 2000.0, outputmsg);
         }
 
         if (RedTotalF > 3)
@@ -2141,14 +2155,14 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove += RedTotalF / 2000;
+            MapMove += RedTotalF / 2000.0;
         }
         if (BlueTotalF > 3)
         {
             msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove -= BlueTotalF / 2000;
+            MapMove -= BlueTotalF / 2000.0;
         }
 
         /*
@@ -2415,26 +2429,28 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                 {
                     double pcDone = calcProportionTimeComplete();
 
-                    //This adds supply in based on how many players participated and how long the mission ran (6 hrs generally) as a basis
+                    //This adds supply in based on how many players participated and how long the mission ran (15.5 hrs generally) as a basis
                     //then adjusting based on score & whether anyone has turned the map
                     int netRedCount = 15;
                     int netBlueCount = 15;
 
-                    if (TWCStatsMission != null)
-                    {
-                        //Counting lines in <netstats summary from -stats.cs to get an approximation of how many active pilots there were in-game
-                        string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, true); //last true = NEED html version bec we're counting <br>s
-                        string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, true);
-                        netRed = netRed.Replace(@"***No Netstats to report***<br>", "");
-                        //netRed.Replace()
-                        netBlue = netBlue.Replace(@"***No Netstats to report***<br>", "");
-                        //netBlue = netBlue.Replace(@"No Nets", "");
-                        string target = "<br>";//Q&D way to count how many pilots active during the mission
-                        Console.WriteLine("NR " + netRed);
-                        Console.WriteLine("NR " + netBlue);
-                        netRedCount = netRed.Select((c, i) => netRed.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
-                        netBlueCount = netBlue.Select((c, i) => netBlue.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
-                    }
+                    //if (TWCStatsMission != null)
+                    //{
+                    //Counting lines in <netstats summary from -stats.cs to get an approximation of how many active pilots there were in-game
+                    //string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, true); //last true = NEED html version bec we're counting <br>s
+                    string netRed = statsmission.Display_SessionStatsAll(null, 1, false, true); //last true = NEED html version bec we're counting <br>s
+                    //string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, true);
+                    string netBlue = statsmission.Display_SessionStatsAll(null, 2, false, true);
+                    netRed = netRed.Replace(@"***No Netstats to report***<br>", "");
+                    //netRed.Replace()
+                    netBlue = netBlue.Replace(@"***No Netstats to report***<br>", "");
+                    //netBlue = netBlue.Replace(@"No Nets", "");
+                    string target = "<br>";//Q&D way to count how many pilots active during the mission
+                    Console.WriteLine("NR " + netRed);
+                    Console.WriteLine("NR " + netBlue);
+                    netRedCount = netRed.Select((c, i) => netRed.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
+                    netBlueCount = netBlue.Select((c, i) => netBlue.Substring(i)).Count(sub => sub.StartsWith(target)) - 1;
+                    //}
 
                     Console.WriteLine("Main-ReSupply: " + netRedCount.ToString() + " " + netBlueCount.ToString());
                     if (netRedCount < 0) netRedCount = 0;
@@ -2450,8 +2466,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
 
                     //if one side turns the map they get a large increase in aircraft supply while the other side gets little or nothing
                     //if they don't turn the map there is still a slight tweak give the side with more overall victories a few more aircraft 
-                    if (winner == "Red") { redMult = 4.0; blueMult = 0.01; }
-                    else if (winner == "Blue") { blueMult = 4.0; redMult = 0.01; }
+                    if (winner == "Red") { redMult += 4.0; blueMult = 0.01; } //2020/02 - now ADDING the bonus 4.0 points instead of just replacing the normal value
+                    else if (winner == "Blue") { blueMult += 4.0; redMult = 0.01; }
                     else if (misResult > 0) redMult += misResult / 100.0;
                     else if (misResult < 0) blueMult += (-misResult) / 100.0;
                     redMult += redMultAdmin;
@@ -2543,6 +2559,268 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         if (MapState > 100000 || MapState < -100000) MapState = 0;
         CampaignMapState = MapState;
         return MapState;
+
+
+    }
+    /*  SAMPLE front markers
+
+            FrontMarker0 122130.41 99692.54 1
+          FrontMarker1 184923.58 199248.64 1
+          FrontMarker2 151050.02 106909.01 1
+          FrontMarker3 273615.78 251329.87 1
+          FrontMarker4 318170.97 309361.61 1
+          FrontMarker5 355340.23 298205.35 2
+          FrontMarker6 284329.09 226250.35 2
+          FrontMarker7 195643.43 103278.12 2
+          FrontMarker8 88262.03 60001.96 2
+          FrontMarker9 113282.01 85097.34 2
+          FrontMarker10 341348.18 266004.67 2
+          FrontMarker11 225658.13 150675.90 1
+          FrontMarker12 253901.90 109419.35 2
+          FrontMarker13 163783.69 109004.79 1
+          FrontMarker14 189714.23 113052.10 1
+          FrontMarker15 249954.27 141364.45 2
+          FrontMarker16 171903.52 90341.35 2
+          FrontMarker17 102887.45 94353.53 1
+          FrontMarker18 94502.66 92980.57 1
+          FrontMarker19 259759.88 188769.38 2
+  FrontMarker20 230005.07 198916.29 1
+
+        */
+    public void DrawFrontLinesPerMapState(double minMapState = -25, double maxMapState = 25, double? currMapState = null, string saveName = null)
+    {
+
+        //so because of CloD weirdness, the lines need to go pretty much perpendicular to the dividing line between france & england.
+        //To make the points, go into FMB, choose points WIDE apart, as wide as possible, opposite each other at the furthest
+        //extremes of where the front lines will range--one furthest to the blue side, the other furthest to the red side
+        //Choose the points in pairs (red side/blue side), and make them so that the resulting front line in the middle is
+        //nice and smooth.
+        //Then export those points from FMB, arrange them in order (left to right or whatever along the front line; FMB will likely scramble
+        //them up) and then put them into the format below.
+
+
+        List<List<Point2d>> frontPoints = new List<List<Point2d>>() {
+    
+
+
+
+            new List<Point2d>() {
+            new Point2d (10618.86,166919.06), //furthest extreme point red side (north side) of the channel - starting at the west end of the map
+            new Point2d (12535.86,80190.73), //furthest extreme point blue side (south side) of the channel
+                    },
+
+            new List<Point2d>() {
+            new Point2d (43448.8,175135.64), //next points moving east, red side
+            new Point2d (45083.75,77280.85), //blue side
+            },
+
+            new List<Point2d>() {
+            new Point2d (63424.7,167040.97), //etc
+            new Point2d (61680.21,74914.15),
+            },
+
+            new List<Point2d>() {
+            new Point2d (83910.49,175416.5),
+            new Point2d (78249.54,58702.71),
+            },
+
+            new List<Point2d>() {
+            new Point2d (99733.32,184877.35),
+            new Point2d (100949.88,42579.64),
+            },
+
+            new List<Point2d>() {
+            new Point2d (110400,190272),
+            new Point2d (126336,42672),
+            },
+
+            new List<Point2d>() {
+            new Point2d (118688.29,190680.54),
+            new Point2d (154214.29,61859.85),
+            },
+
+            new List<Point2d>() {
+            new Point2d (131659.66,192833.41),
+            new Point2d (159814.69,76825.13),
+            },
+
+            new List<Point2d>() {
+            new Point2d (153984,192960),
+            new Point2d (180864,89088),
+            },
+
+            new List<Point2d>() {
+            new Point2d (163984,189460),
+            new Point2d (190864,93588),
+            },
+
+            new List<Point2d>() {
+            new Point2d (172992,185856),
+            new Point2d (205056,97152),
+            },
+
+            new List<Point2d>() {
+            new Point2d (179601.02,194613.41),
+            new Point2d (231006.05,105485.13),
+            },
+
+            new List<Point2d>() {
+            new Point2d (188597.32,199130.55),
+            new Point2d (248621.26,119111.73),
+            },
+
+            new List<Point2d>() {
+            new Point2d (202752,202944),
+            new Point2d (258624,136320),
+            },
+
+            new List<Point2d>() {
+            new Point2d (209664,209280),
+            new Point2d (262080,165696),
+            },
+
+            new List<Point2d>() {
+            new Point2d (216576,209088),
+            new Point2d (262848,180672),
+            },
+
+            new List<Point2d>() {
+            new Point2d (223385.59,208849.89),
+            new Point2d (262894.58,192305.62),
+            },
+
+            new List<Point2d>() {
+            new Point2d (227862.38,225744.41),
+            new Point2d (264038.59,205787.15),
+            },
+
+            new List<Point2d>() {
+            new Point2d (247504.44,234638.61),
+            new Point2d (272136.04,212438.45),
+            },
+
+            new List<Point2d>() {
+            new Point2d (251813.55,243841.49),
+            new Point2d (281884.35,218378.42),
+            },
+
+            new List<Point2d>() {
+            new Point2d (258959.67,254735.81),
+            new Point2d (291874.9,221379.32),
+            },
+
+            new List<Point2d>() {
+            new Point2d (255327.62,266250.02),
+            new Point2d (302380.94,224076.27),
+            },
+
+            new List<Point2d>() {
+            new Point2d (246498.73,285932.92),
+            new Point2d (313365.97,227043.45),
+            },
+
+            new List<Point2d>() {
+            new Point2d (250024.27,298217.73),
+            new Point2d (325633.59,229383.98),
+            },
+
+            new List<Point2d>() {
+            new Point2d (269866.47,310981.62),
+            new Point2d (337857.27,235244.12),
+            },
+
+            new List<Point2d>() {
+            new Point2d (302280.98,312446.52),
+            new Point2d (347077.23,240365.27),
+            },
+
+            new List<Point2d>() {
+            new Point2d (329328.93,313006.78),
+            new Point2d (352757.32,244599.01),
+            },
+
+            new List<Point2d>() {
+            new Point2d (352896,313536),
+            new Point2d (358080,247296),
+            },
+
+
+        };
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value;
+        int count = 0;
+
+        double mapState = CampaignMapState;
+        if (currMapState.HasValue) mapState = currMapState.Value;
+        double neutral = (maxMapState - minMapState)/ 120;
+
+        double mult = (mapState - neutral - minMapState) / (maxMapState - minMapState);  //mult is for red frontline (most northerly)
+        double mult2 = (mapState + neutral - minMapState) / (maxMapState - minMapState);  //mult2 for blue, most southerly 
+        if (mult > 1) mult = 1; //We COULD go beyond 0-1 but that might get weird.  So the Frontlines are drawn using a weird thing where the front goes halfway between p1 and p2 and PERPENDICULAR to the line from p1 to p2.  So we have to pay attention to make sure p1 & p2 form the right sort of line going the right direction.
+        if (mult < 0) mult = 0;
+        if (mult2 > 1) mult2 = 1; //We COULD go beyond 0-1 but that might get weird
+        if (mult2 < 0) mult2 = 0;
+        if (mult2 == mult) mult2 = mult + 0.05; //They can't be equal or HELP!!! So it's better to be a bit above 1 than equal.
+
+        List<Point2d> lastPoints = null;
+
+        foreach (List<Point2d> initpoints in frontPoints)
+        {
+            List<List<Point2d>> newPoints = new List<List<Point2d>>();
+            
+            
+            //complicated little business to linearly interpolate one or perhaps several new points in between each existing point.
+            //This helps smooth out the boundary A LOT.
+            if (lastPoints != null)
+            {
+                double numPointsToInterpolate = 3;
+
+                for (int i = 1; i < numPointsToInterpolate; i++)
+                {
+                    //Console.WriteLine("PTI: {0} {1}", i, numPointsToInterpolate);
+                    double id = (double)i;
+                    List<Point2d> newPoint = new List<Point2d>();
+                    newPoint.Add(new Point2d(id*(initpoints[0].x - lastPoints[0].x) / numPointsToInterpolate + lastPoints[0].x, id*(initpoints[0].y - lastPoints[0].y) / numPointsToInterpolate + lastPoints[0].y));
+                    newPoint.Add(new Point2d(id*(initpoints[1].x - lastPoints[1].x) / numPointsToInterpolate + lastPoints[1].x, id*(initpoints[1].y - lastPoints[1].y) / numPointsToInterpolate + lastPoints[1].y));
+                    newPoints.Add(newPoint);
+                }
+            }
+
+            newPoints.Add(initpoints);
+
+            foreach (List<Point2d> points in newPoints)
+            {
+
+                double dist = Calcs.CalculatePointDistance(points[0], points[1]);
+
+                double x = mult * points[1].x + (1 - mult) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
+                double y = mult * points[1].y + (1 - mult) * points[0].y;
+                double x2 = mult2 * points[1].x + (1 - mult2) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
+                double y2 = mult2 * points[1].y + (1 - mult2) * points[0].y;
+
+                sect = "FrontMarker";
+                key = "FrontMarker" + count.ToString();
+                value = x.ToString("F2") + " " + y.ToString("F2") + " 1"; //1 = army 1
+                f.add(sect, key, value);
+
+                //Console.WriteLine("({0:F0}, {1:F0}) - ({2:F0}, {3:F0})", x, y, x2, y2);
+                count++;
+                y += 1000;
+                key = "FrontMarker" + count.ToString();
+                value = x2.ToString("F2") + " " + y2.ToString("F2") + " 2";
+                f.add(sect, key, value);
+                count++;
+            }
+
+            lastPoints = initpoints;
+
+        }
+        GamePlay.gpPostMissionLoad(f);
+        if (saveName != null) f.save(CLOD_PATH + FILE_PATH + "/" + saveName); //testing
+        Console.WriteLine("Drew current frontline");
 
 
     }
@@ -2820,8 +3098,9 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
 
         //try
         {
-            Console.WriteLine("BUILDING:" + title + " at " + pos.x.ToString("F0") + ", " + pos.x.ToString("F0"));
+            Console.WriteLine("BUILDING:" + title + " at " + pos.x.ToString("F0") + ", " + pos.y.ToString("F0"));
 
+            Task.Run(() => MO_HandlePointAreaObjectives(null, initiator, title, pos)); //handle building killed within PointArea area
             string BuildingName = title;
             string BuildingArmy = "";
             string PlayerArmy = "Unknown/AI";
@@ -5465,8 +5744,10 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                                 //catch (Exception ex) { Console.WriteLine("Radar Write34: " + ex.ToString()); }
 
                                 sw.WriteLine();
-                                string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
-                                string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
+                                //string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
+                                //string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
+                                string netRed = statsmission.Display_SessionStatsAll(null, 1, false, false);
+                                string netBlue = statsmission.Display_SessionStatsAll(null, 2, false, false);
                                 sw.WriteLine("PLAYER ACTIVITY SUMMARY");
                                 sw.WriteLine(netBlue);
                                 sw.WriteLine(netRed);
@@ -5633,6 +5914,17 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
 
         CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
                                             //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
+
+        
+        DrawFrontLinesPerMapState();
+        
+        //TESTING
+        for (double i = -25; i <= 25; i = i + 12.5)
+        {
+            DrawFrontLinesPerMapState(-25, 25, i, "test" + i.ToString("F0") + ".mis");
+            
+        }
+
         SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
         ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want
         if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
@@ -5845,6 +6137,12 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
     public override void Init(maddox.game.ABattle battle, int missionNumber)
     {
         base.Init(battle, missionNumber);
+
+        gpBattle = battle;
+
+        gpBattle.creatingMissionScript(covermission, missionNumber + 1);
+        gpBattle.creatingMissionScript(statsmission, missionNumber + 2);
+
         MissionNumberListener = -1; //Listen to events of every mission
                                     //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
                                     //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
@@ -5882,8 +6180,10 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         base.OnMissionLoaded(missionNumber);
         //if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
         TWCStatsMission = TWCComms.Communicator.Instance.Stats;
-        if (TWCStatsMission != null) TWCSaveIPlayerStat = TWCStatsMission.stb_ISaveIPlayerStat;
+        //if (TWCStatsMission != null) TWCSaveIPlayerStat = TWCStatsMission.stb_ISaveIPlayerStat;
+        TWCSaveIPlayerStat = statsmission.stb_ISaveIPlayerStat;
         if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
+        //STATSCS_FULL_PATH = statsmission.stb_FullPath; //for some reason, this doesn't work correctly 2020/02/14
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
         TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
         TWCCoverMission = TWCComms.Communicator.Instance.Cover;
@@ -5981,7 +6281,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         {
             //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
             //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATELY or TAKE YOU TO ANOTHER MENU
-            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session", "", "Admin Options" }, new bool[] { false, false, false, true, false, false, false, false, true });
+            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session", "Let AI take over 2nd Position", "Admin Options" }, new bool[] { false, false, false, true, false, false, false, false, true });
         }
         else
         {
@@ -6213,9 +6513,9 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             //Cover - select/start
             else if (menuItemIndex == 6)
             {
-                if (TWCCoverMission != null)
+                if (covermission != null)
                 {
-                    TWCCoverMission.checkoutCoverAircraft(player, "");
+                    covermission.checkoutCoverAircraft(player, "");
                 }
 
                 setMainMenu(player);
@@ -6223,9 +6523,9 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             //Cover - List available cover a/c
             else if (menuItemIndex == 7)
             {
-                if (TWCCoverMission != null)
+                if (covermission != null)
                 {
-                    TWCCoverMission.listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
+                    covermission.listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
                 }
                 setMainMenu(player);
 
@@ -6233,18 +6533,19 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             //Cover - Position of your cover a/c
             else if (menuItemIndex == 8)
             {
-                if (TWCCoverMission != null)
+                if (covermission != null)
                 {
-                    string res = TWCCoverMission.listPositionCurrentCoverAircraft(player);
+                    //string res = TWCCoverMission.listPositionCurrentCoverAircraft(player);
+                    string res = covermission.listPositionCurrentCoverAircraft(player);
                 }
                 setMainMenu(player);
             }
             //Cover - CLand
             else if (menuItemIndex == 9)
             {
-                if (TWCCoverMission != null)
+                if (covermission != null)
                 {
-                    TWCCoverMission.landCoverAircraft(player);
+                    covermission.landCoverAircraft(player);
                 }
                 setMainMenu(player);
             }
@@ -6357,12 +6658,12 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             else if (menuItemIndex == 6)
             {
                 //public string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false)
-                if (TWCStatsMission != null)
-                {
-                    TWCStatsMission.Display_AircraftAvailable_ByName(player, nextAC: false, display: true, html: false);
+                //if (TWCStatsMission != null)
+                //{
+                    statsmission.Display_AircraftAvailable_ByName(player, nextAC: false, display: true, html: false);
                     Timeout(2.1, () =>
                     {
-                        TWCStatsMission.Display_AircraftAvailable_ByName(player, nextAC: true, display: true, html: false);
+                        statsmission.Display_AircraftAvailable_ByName(player, nextAC: true, display: true, html: false);
                     });
                     Timeout(5.0, () =>
                     {
@@ -6370,7 +6671,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                     });
 
 
-                }
+                //}
                 setMainMenu(player);
             }
 
@@ -6421,7 +6722,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                  */
                 setMainMenu(player);
                 //if (TWCStatsMission != null) TWCStatsMission.Display_AceAndRank_ByName(player);
-                TWCStatsMission.Display_AceAndRank_ByName(player);
+                //TWCStatsMission.Display_AceAndRank_ByName(player);
+                statsmission.Display_AceAndRank_ByName(player);
             }
             else if (menuItemIndex == 2)
             {
@@ -6430,7 +6732,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                  */
                 setMainMenu(player);
                 //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStats(player);
-                TWCStatsMission.Display_SessionStats(player);
+                //TWCStatsMission.Display_SessionStats(player);
+                statsmission.Display_SessionStats(player);
             }
 
             else if (menuItemIndex == 3)
@@ -6440,7 +6743,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                  */
                 setMainMenu(player);
                 //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsAll(player, 0, true); //player, army (0=all), display or not
-                TWCStatsMission.Display_SessionStatsAll(player, 0, true, false); //player, army (0=all), display or not
+                //TWCStatsMission.Display_SessionStatsAll(player, 0, true, false); //player, army (0=all), display or not
+                statsmission.Display_SessionStatsAll(player, 0, true, false); //player, army (0=all), display or not
 
             }
             else if (menuItemIndex == 4)  //MORE (next) menu
@@ -6469,7 +6773,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                     twcLogServer(new Player[] { player }, "Red Objectives Completed (" + MissionObjectiveScore[ArmiesE.Red].ToString() + " points):" + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
                 });
                 //Then team stats (kills etc)
-                if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsTeam(player);
+                //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsTeam(player);
+                statsmission.Display_SessionStatsTeam(player);
             }
             else if (menuItemIndex == 6)
             {
@@ -6503,6 +6808,14 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
                 double newMapState = CampaignMapState + res.Item1;
                 summarizeCurrentMapstate(newMapState, true, player);
 
+            }
+            else if (menuItemIndex == 8) 
+            {
+                /*
+                 * Let AI take over player's 2nd position - essential for 110, JU-87, etc
+                 */
+
+                letAiTake2ndPosition(player);
             }
             //ADMIN sub-menu
             else if (menuItemIndex == 9)
@@ -6869,6 +7182,10 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             twcLogServer(new Player[] { player }, "To reset the value, enter <bluestock 0", null);
             blueMultAdmin = md;
 
+        }
+        else if (msg.StartsWith("<ai")) //let the player exit the secondary Place - needed for Stuka, 110, etc
+        {
+            letAiTake2ndPosition(player);
         }
         else if (msg.StartsWith("<obj"))
         {
@@ -7666,7 +7983,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
         //to OnActorCreated at all . . . But they are in fact created
         AiAircraft a = actor as AiAircraft;
 
-        int destroyminutes = 120;//Destroy AI a/c this many minutes after they are spawned in.
+        int destroyminutes = 150;//Destroy AI a/c this many minutes after they are spawned in.
         //Note that MoveBombTarget-.cs takes care of destroying aircraft when their task is set to "LANDING" and no live players
         //are nearby.  Plus, a/c are destroyed when they fly off the map & MoveBombTarget-.cs will make them do that at 
         //the end of any planned WAYPOINTS they have been given.
@@ -7683,8 +8000,22 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
               + a.TypedName() + " " 
               +  a.AirGroup().ID(), new object[] { });
             */
+            if (a == null) return;
+            bool iACP = isAiControlledPlane2(a);
+            if (!iACP)
+            {
+                if (a as AiAircraft == null) return;
+                string type = Calcs.GetAircraftType(a as AiAircraft);
+                if (type.Contains("110") || type.Contains("Ju-87"))
+                {
+                    Player[] ps = playersInPlane(a as AiAircraft).ToArray();
+                    Timeout(1.732, () => { twcLogServer(ps, "JU-87 & 110 PILOTS: Use Tab-4-4-8 or chat command <ai to let AI take over your second position.");
+                        //Console.WriteLine("Use Tab-4-4-8 or chat command <ai to let AI take over your second position.");
+                    });
+                }
+            }
 
-            if (a != null && isAiControlledPlane2(a))
+            else //AI controlled aircraft
             {
 
 
@@ -7768,6 +8099,26 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             if (aircraft.Player(i) != null) players.Add(aircraft.Player(i));
         }
         return players;
+    }
+
+    public void letAiTake2ndPosition(Player player)
+    {
+        if (player == null || player.Place() == null) return;
+        Console.WriteLine("lAT2P: {0} {1}", player.PlaceSecondary(), player.PlacePrimary());
+        Console.WriteLine("lAT2P: {0} {1} {2} ", player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        //whichever place they are NOT currently in, remove them from
+        //if (player.PersonSecondary() != null && player.Place() != (player.PersonSecondary()).Place()) player.PlaceLeave((player.PersonSecondary()).Place());
+        //else if (player.PersonPrimary() != null && player.Place() != (player.PersonPrimary()).Place()) player.PlaceLeave((player.PersonPrimary()).Place());
+
+        //Ok, that didn't work.  Just leave them in the pilot's seat always.
+        if ((player.Place() as AiCart).Player(0) == player) player.PlaceEnter(player.Place(), 0); //This should ensure they are in the pilot's seat as primary, not the gunner as primary.  Maybe, I hope?
+                                                                                      //However, if someone else is in the pilot's place it won't kick that person out & replace them with this player
+        player.PlaceLeave(player.PlaceSecondary()); //Now they're kicked from the secondary, which  should leave them in the pilot's seat.
+        twcLogServer(new Player[] { player }, "AI has taken over your gunner position.", null);
+
+        
     }
 
 
@@ -8994,7 +9345,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addTrigger(MO_ObjectiveType.Building, "Desvres Aviation Fuel", "", 2, 4, "RTargDesvresAviationFuel", "TGroundDestroyed", 9, 284580, 182275, 150, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Aire-Sur-La-Lys Chemical Refinery", "", 2, 4, "RTargAireSurLaLysChemicalRefinery", "TGroundDestroyed", 12, 323803, 181252, 100, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Etaple Fuel Refinery/Storage", "", 2, 4, "RTargEtapleFuelDump", "TGroundDestroyed", 11, 267479, 166274, 100, false, 120, 24, "", add);
-            
+
 
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             // n is the DESCRIPTIVE NAME for the target--what the player sees
@@ -9003,7 +9354,7 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             //   - for example you might have an airbase with radius 2500 meters but you want the bombs to hit more in the center of that to count, so you set rad=2500, trigrad=1000.
             // tn is the INTERNAL KEY for the object.  It can be anything you want to identify it to yourself and the computer, but it must be unique (ie,different from ALL OTHER objectives listed here).
             //orttkg = kg of ordnance that must be dumped in this area to knock it out
-            //ortt = number of objects (statics, buildings, AiActors like vehicles, trains, whatever) that must be killed within the area to knock it out.
+            //ortt = number of objects (statics, buildings, AiActors like vehicles, trains, whatever) that must be killed within the area to knock it out. Note however that there is a scoring system and for example ships count 8-20 points, artillery/tank 4, planes on the ground 2, bridge 10, trucks/armoured vehicles 2, etc.   See MO_HandlePointAreaObjectives.
             //     - if you set this higher than 0 you MUST have some objects within the radius of the area, preferably the trigger radius, or taking out the objective will be impossible
             //     - AiActors such as vehicles, ships, trains, planes, artillery, etc also count as 'objects' that count towards this goal.  BUT they must be strictly within the radius given.  If they wander outside the radius, they are no longer part of this objective
             //     - Buildings can be counted to a limited extent in the future, but for now they are not (until TF resolves the OnBuildingKilled thing, which currently works for AI but not live players
@@ -9026,8 +9377,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addPointArea(MO_ObjectiveType.IndustrialArea, "Portsmouth Large Industrial Area NE", "Port", "", 1, 5, "BTargPortsmouthLargeIndustrialArea", 77048, 193985, 850, 850, 10000, 15, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Poole North Industrial Port Area", "Pool", "", 1, 5, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 400, 550, 10000, 10, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 4, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 400, 550, 8000, 8, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "", 1, 6, "CrowboroughBunker", 167289, 224222, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "", 1, 6, "HastingsBunker", 196108, 205853, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 6, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 0, 80, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
@@ -9037,8 +9388,8 @@ public override void OnBombExplosion(string title, double mass_kg, Point3d pos, 
             addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 4, "RTargCalaisDocksArea", 284656, 217404, 250, 350, 8000, 10, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Veume Military Manufacturing Area", "", "", 2, 4, "RTargVeumeMilitaryManufacturingArea", 342180, 228344, 200, 250, 8000, 15, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "", 2, 6, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271378, 132785, 600, 1000, 12000, 5, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "", 2, 6, "LeCroytoyForestBunker", 277853, 138221, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "", 2, 6, "DieppeCliffsBunker", 238972, 107365, 30, 40, 2000, 3, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
 
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\Visual Studio 2015\Projects\ClodBLITZ-2018-01\Campaign21-MissionObjectivesInclude.cs"
 
@@ -11609,15 +11960,30 @@ added Rouen Flak
             string type = "";
             if ((actor as AiCart) != null && (actor as AiCart).InternalTypeName() != null) type = (actor as AiCart).InternalTypeName();
 
+            string groundType = "";
+            if (actor as AiGroundActor != null) groundType = (actor as AiGroundActor).Type().ToString();
+
 
 
             mo.LastHitTime_UTC = DateTime.UtcNow;
 
             double oldOONT_num = mo.ObjectsDestroyed_num;
 
+            //Damage bonuses for various specific types.  This is hard to do systematically.
+            //type - should contain the string found in the .mis file for objects, such as Environment.TelegaBallon_UK1
+            //groundType is the enum list  of type maddox.game.world.AiGroundActorType which has a bunch of the things listed below plus more
+
             double damageCount = 1;
             if (type.Contains("Barge")) damageCount = 7;
-            if (type.Contains("Tanker") || type.Contains("Cruiser")) damageCount = 12;
+            else if (type.Contains("Tanker") || type.Contains("Cruiser")) damageCount = 12;
+            else if (groundType.Contains("ShipCarrier") || groundType.Contains("ShipCruiser") || groundType.Contains("ShipDestroyer") || groundType.Contains("warship")) damageCount = 20;
+            else if (groundType.ToLower().Contains("ship")) damageCount = 9;
+            else if (groundType.Contains("AAGun") || groundType.Contains("Artillery") || groundType.Contains("Tank") || groundType.Contains("Armored") || groundType.Contains("Amphibian")) damageCount = 4;
+            else if (groundType.ToLower().Contains("truck") || groundType.ToLower().Contains("tractor") || groundType.ToLower().Contains("trailer") ) damageCount = 2;
+            else if (groundType.ToLower().Contains("radar")) damageCount = 6;
+            else if (groundType.ToLower().Contains("plane")) damageCount = 3;
+            else if (groundType.ToLower().Contains("bridge")) damageCount = 10;
+
 
             if (dist > mo.TriggerDestroyRadius) damageCount *= 0.333; //less damage effectiveness if inside radius but outside triggerradius
             mo.ObjectsDestroyed_num += damageCount;
@@ -11634,13 +12000,14 @@ added Rouen Flak
             double dst_pc_obj = 0;
             if (mo.ObjectsRequiredToTrigger_num > 0) dst_pc_obj = mo.ObjectsDestroyed_num / mo.ObjectsRequiredToTrigger_num / divisor;
 
-            if (dst_pc_obj > 50 && mo.OrdnanceRequiredToTrigger_kg < mo.OrdnanceOnTarget_kg) dst_pc_obj = 50;
-            if (dst_pc_ord > 50 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 50;
+            if (dst_pc_obj > 0.5 && mo.OrdnanceRequiredToTrigger_kg > mo.OrdnanceOnTarget_kg) dst_pc_obj = 0.5;
+            if (dst_pc_ord > 0.5 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 0.5;
 
+            double oldDestroyedPercent = mo.DestroyedPercent;
             mo.DestroyedPercent = dst_pc_obj + dst_pc_ord;
 
-            Console.WriteLine("AreaPoint Actor: {0:F0}% objects, {1:F0}% KG {2:F1} {3:F1}", dst_pc_obj * 100, dst_pc_ord * 100, damageCount, mo.ObjectsDestroyed_num);
-            
+            Console.WriteLine("AreaPoint Actor: {0:F0}% objects, {1:F0}% KG, {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0}", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
+
 
             //if (mo.ObjectsDestroyed_num > mo.ObjectsRequiredToTrigger_num)
             if (oldOONT_num < mo.ObjectsRequiredToTrigger_num && mo.ObjectsDestroyed_num >= mo.ObjectsRequiredToTrigger_num && mo.OrdnanceOnTarget_kg >= mo.OrdnanceRequiredToTrigger_kg)
@@ -11653,72 +12020,9 @@ added Rouen Flak
                 else mo.TimeToUndestroy_UTC = DateTime.UtcNow.AddHours(mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
                 MO_DestroyObjective_addTime(ID, percentdestroyed: mo.DestroyedPercent);
             }
-            ///!!!!!!!!!!!!!!!!!!! might still need ot do more things here, check the missionobjectives class.
-            ///
-            /*
-             * 
-           if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
-                if (timetofix_s > 0) OldObj.TimeToUndestroy_UTC = DateTime.UtcNow.AddSeconds(timetofix_s);
-                if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
-                if (TimeLastHit_UTC.HasValue) OldObj.LastHitTime_UTC = TimeLastHit_UTC.Value;    
-         */
-
-        }
-
-
-    }
-
-    //FOR STATIONARY TARGETS DESTROYED
-    public void MO_HandlePointAreaObjectives(GroundStationary st, AiDamageInitiator initiator)
-    {
-
-        foreach (string ID in MissionObjectivesList.Keys)
-        {
-            MissionObjective mo = MissionObjectivesList[ID];
-            if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
-            double dist = Calcs.CalculatePointDistance(st.pos, mo.Pos);
-            if (dist > mo.radius) continue;
-
-            mo.LastHitTime_UTC = DateTime.UtcNow;
-
-            double oldOONT_num = mo.ObjectsDestroyed_num;
-            
-            double damageCount = 1;
-            if (st.Name.Contains("Barge") || st.Name.Contains("Tanker") || st.Name.Contains("Cruiser")) damageCount = 10;
-            
-            if (dist > mo.TriggerDestroyRadius) damageCount *= 0.333; //less damage effectiveness if inside radius but outside triggerradius
-            mo.ObjectsDestroyed_num += damageCount;
-
-            double divisor = 1;
-            if (mo.OrdnanceRequiredToTrigger_kg > 0 && mo.ObjectsRequiredToTrigger_num > 0) divisor = 2; //If both objects & KG required to trigger, we give each of them 50% of the required 100% for destruction.
-
-            //So this is a bit complicated, but percentage destroyed due to ordinance & KG can't go above 50% UNLESS the other type of objective is completed also.
-            //The prevents, ie, showing 125% destroyed purely by bombing KG, when 0 of the 10 required targets have been killed.
-            //In that case it will show 50% complete, not 125%
-            //Now, once both sides are complete (KG & objects) then additional KG or objects killed will add more percent
-            double dst_pc_ord = 0;
-            if (mo.OrdnanceRequiredToTrigger_kg > 0) dst_pc_ord = mo.OrdnanceOnTarget_kg / mo.OrdnanceRequiredToTrigger_kg / divisor;
-            double dst_pc_obj = 0;
-            if (mo.ObjectsRequiredToTrigger_num > 0) dst_pc_obj = mo.ObjectsDestroyed_num / mo.ObjectsRequiredToTrigger_num / divisor;
-
-            if (dst_pc_obj > 50 && mo.OrdnanceRequiredToTrigger_kg < mo.OrdnanceOnTarget_kg) dst_pc_obj = 50;
-            if (dst_pc_ord > 50 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 50;
-
-            mo.DestroyedPercent = dst_pc_obj + dst_pc_ord;
-
-            Console.WriteLine("AreaPoint Stationary: {0:F0}% objects, {1:F0}% KG {2:F1} {3:F1}", dst_pc_obj*100, dst_pc_ord*100, damageCount, mo.ObjectsDestroyed_num);
-            Console.WriteLine("AreaPoint Stationary: {0}, {1}, {2}, {3}", st.Category, st.Name, st.Type, st.Title);
-
-            //if (mo.ObjectsDestroyed_num > mo.ObjectsRequiredToTrigger_num)
-            if (oldOONT_num < mo.ObjectsRequiredToTrigger_num && mo.ObjectsDestroyed_num >= mo.ObjectsRequiredToTrigger_num && mo.OrdnanceOnTarget_kg >= mo.OrdnanceRequiredToTrigger_kg)
-                MO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr * 3600); // 1 because, we always get 1 object here. //hnMO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr * 3600); //Note - MUST use >= here as it covers the case where ordnanceKG and/or object_numrequired = 0
-            else if (mo.DestroyedPercent > 100 && mo.ObjectsRequiredToTrigger_num > 0)
+            else if (Math.Floor(oldDestroyedPercent*100.0 / 25.0) % 2 != Math.Floor(mo.DestroyedPercent*100.0 / 25.0) % 2) //if crossing threshold @ 25, 50, 75% give a message with status update of objective
             {
-                mo.DestroyedPercent = 1 + damageCount / mo.ObjectsRequiredToTrigger_num / 4.0 / divisor;  // so if it's above 100% destroyed additional bombs/ordnance still add more "dead points" but not as many/ assuming much of it is already destroy, so like 1/4 as much.
-                double timeToFix_hr = (mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
-                if (mo.TimeToUndestroy_UTC.HasValue) mo.TimeToUndestroy_UTC.Value.AddHours(mo.TimetoRepairIfDestroyed_hr * damageCount / mo.ObjectsRequiredToTrigger_num / 4.0);  //just add time proportional to how many objects required to kill it 100%.  But divided by 4 since we are discounting the destruction
-                else mo.TimeToUndestroy_UTC = DateTime.UtcNow.AddHours(mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
-                MO_DestroyObjective_addTime(ID, percentdestroyed: mo.DestroyedPercent);
+                twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged, {3} kg on target", new object[] { mo.Name, (mo.DestroyedPercent*100).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.OrdnanceOnTarget_kg.ToString("F0") });
             }
             ///!!!!!!!!!!!!!!!!!!! might still need ot do more things here, check the missionobjectives class.
             ///
@@ -11735,19 +12039,114 @@ added Rouen Flak
 
     }
 
+    //FOR STATIONARY TARGETS DESTROYED ***OR*** BUILDINGS
+    //if st==null then it is a BUILDING instead of a groundstationary object
+    public void MO_HandlePointAreaObjectives(GroundStationary st, AiDamageInitiator initiator, string title = null, Point3d? BuildingPos = null)
+    {
+        Point3d pos = new Point3d(-1, -1, -1);       
 
-    //FOR BOMB EXPLOSIONS
+        if (st != null) pos = st.pos;
+        else if (BuildingPos.HasValue) pos = BuildingPos.Value;
+        else return; //both are null, so can't really do anything here as we don't have a position
+
+        string name = "";
+        if (st != null) name = st.Name;
+        else if (title != null) name = title;
+
+        foreach (string ID in MissionObjectivesList.Keys)
+        {
+            MissionObjective mo = MissionObjectivesList[ID];
+            if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
+            double dist = Calcs.CalculatePointDistance(pos, mo.Pos);
+            if (dist > mo.radius) continue;
+
+            mo.LastHitTime_UTC = DateTime.UtcNow;
+
+            double oldOONT_num = mo.ObjectsDestroyed_num;
+            
+            double damageCount = 1;
+            if (name.Contains("Barge") || name.Contains("Tanker") || name.Contains("Cruiser")) damageCount = 10;
+            
+            if (dist > mo.TriggerDestroyRadius) damageCount *= 0.333; //less damage effectiveness if inside radius but outside triggerradius
+            mo.ObjectsDestroyed_num += damageCount;
+
+            double divisor = 1;
+            if (mo.OrdnanceRequiredToTrigger_kg > 0 && mo.ObjectsRequiredToTrigger_num > 0) divisor = 2; //If both objects & KG required to trigger, we give each of them 50% of the required 100% for destruction.
+
+            //So this is a bit complicated, but percentage destroyed due to ordinance & KG can't go above 50% UNLESS the other type of objective is completed also.
+            //The prevents, ie, showing 125% destroyed purely by bombing KG, when 0 of the 10 required targets have been killed.
+            //In that case it will show 50% complete, not 125%
+            //Now, once both sides are complete (KG & objects) then additional KG or objects killed will add more percent
+            double dst_pc_ord = 0;
+            if (mo.OrdnanceRequiredToTrigger_kg > 0) dst_pc_ord = mo.OrdnanceOnTarget_kg / mo.OrdnanceRequiredToTrigger_kg / divisor;
+            double dst_pc_obj = 0;
+            if (mo.ObjectsRequiredToTrigger_num > 0) dst_pc_obj = mo.ObjectsDestroyed_num / mo.ObjectsRequiredToTrigger_num / divisor;
+
+            if (dst_pc_obj > 0.5 && mo.OrdnanceRequiredToTrigger_kg > mo.OrdnanceOnTarget_kg) dst_pc_obj = 0.5;
+            if (dst_pc_ord > 0.5 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 0.5;
+
+            double oldDestroyedPercent = mo.DestroyedPercent;
+            mo.DestroyedPercent = dst_pc_obj + dst_pc_ord;
+
+            Console.WriteLine("AreaPoint Stationary: {0:F0}% objects, {1:F0}% KG, {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0}", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
+            if (st!=null) Console.WriteLine("AreaPoint Stationary: {0}, {1}, {2}, {3}", st.Category, st.Name, st.Type, st.Title);
+            else Console.WriteLine("AreaPoint Building: {0}", name);
+
+
+            //if (mo.ObjectsDestroyed_num > mo.ObjectsRequiredToTrigger_num)
+            if (oldOONT_num < mo.ObjectsRequiredToTrigger_num && mo.ObjectsDestroyed_num >= mo.ObjectsRequiredToTrigger_num && mo.OrdnanceOnTarget_kg >= mo.OrdnanceRequiredToTrigger_kg)
+                MO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr * 3600); // 1 because, we always get 1 object here. //hnMO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr * 3600); //Note - MUST use >= here as it covers the case where ordnanceKG and/or object_numrequired = 0
+            else if (mo.DestroyedPercent > 100 && mo.ObjectsRequiredToTrigger_num > 0)
+            {
+                mo.DestroyedPercent = 1 + damageCount / mo.ObjectsRequiredToTrigger_num / 4.0 / divisor;  // so if it's above 100% destroyed additional bombs/ordnance still add more "dead points" but not as many/ assuming much of it is already destroy, so like 1/4 as much.
+                double timeToFix_hr = (mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
+                if (mo.TimeToUndestroy_UTC.HasValue) mo.TimeToUndestroy_UTC.Value.AddHours(mo.TimetoRepairIfDestroyed_hr * damageCount / mo.ObjectsRequiredToTrigger_num / 4.0);  //just add time proportional to how many objects required to kill it 100%.  But divided by 4 since we are discounting the destruction
+                else mo.TimeToUndestroy_UTC = DateTime.UtcNow.AddHours(mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
+                MO_DestroyObjective_addTime(ID, percentdestroyed: mo.DestroyedPercent);
+
+            }
+            else if (Math.Floor(oldDestroyedPercent * 100.0 / 25.0) % 2 != Math.Floor(mo.DestroyedPercent * 100.0/ 25.0) % 2) //if crossing threshold @ 25, 50, 75% give a message with status update of objective
+            {
+                twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged, {3} kg on target", new object[] { mo.Name, (mo.DestroyedPercent * 100).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.OrdnanceOnTarget_kg.ToString("F0") });
+            }
+
+                ///!!!!!!!!!!!!!!!!!!! might still need ot do more things here, check the missionobjectives class.
+                ///
+                /*
+                 * 
+               if (percentdestroyed > 0) OldObj.DestroyedPercent = percentdestroyed;
+                    if (timetofix_s > 0) OldObj.TimeToUndestroy_UTC = DateTime.UtcNow.AddSeconds(timetofix_s);
+                    if (TimetoUndestroy_UTC.HasValue) OldObj.TimeToUndestroy_UTC = TimetoUndestroy_UTC.Value;
+                    if (TimeLastHit_UTC.HasValue) OldObj.LastHitTime_UTC = TimeLastHit_UTC.Value;    
+             */
+
+            }
+
+
+    }
+
+
+    //FOR BOMB EXPLOSIONS/Total up ordnance
     public void MO_HandlePointAreaObjectives(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator)
     {
-        maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+        //maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
 
         //For now, all things we handle below are on land, so if the land type is water we just
         //get out of here immediately
-        if (landType == maddox.game.LandTypes.WATER) return;
+        //if (landType == maddox.game.LandTypes.WATER) return;  //Ok, doing ships & water type targets this doesn't really work.  So just X it out.
 
         //twcLogServer(null, "bombe 6", null);
 
-        bool blenheim = false;
+        //So, if the damager is AI and damaging their own land area, we're not going to count it.
+        //Reason is, some artillery continually hits the ground in the area where they're firing.
+        int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+        if (initiator == null || initiator.Player == null || initiator.Player.Name() == null) //It's AI
+        {
+            if (initiator.Actor != null && initiator.Actor.Army() == terr) return; //It's the same army as the territory that has been damaged
+        }
+
+
+            bool blenheim = false;
         AiAircraft aircraft = initiator.Actor as AiAircraft;
         string acType = Calcs.GetAircraftType(aircraft);
         if (acType.Contains("Blenheim")) blenheim = true;
@@ -11786,12 +12185,13 @@ added Rouen Flak
             double dst_pc_obj = 0;
             if (mo.ObjectsRequiredToTrigger_num > 0) dst_pc_obj= mo.ObjectsDestroyed_num / mo.ObjectsRequiredToTrigger_num / divisor;
 
-            if (dst_pc_obj > 50 && mo.OrdnanceRequiredToTrigger_kg < mo.OrdnanceOnTarget_kg) dst_pc_obj = 50;
-            if (dst_pc_ord > 50 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 50;
+            if (dst_pc_obj > 0.5 && mo.OrdnanceRequiredToTrigger_kg > mo.OrdnanceOnTarget_kg) dst_pc_obj = 0.5;
+            if (dst_pc_ord > 0.5 && mo.ObjectsDestroyed_num < mo.ObjectsRequiredToTrigger_num) dst_pc_ord = 0.5;
 
+            double oldDestroyedPercent = mo.DestroyedPercent;
             mo.DestroyedPercent = dst_pc_obj + dst_pc_ord;
 
-            Console.WriteLine("AreaPoint Ordnance: {0:F0}% objects, {1:F0}% KG", dst_pc_obj * 100, dst_pc_ord * 100);
+            Console.WriteLine("AreaPoint Ordnance: {0:F0}% objects, {1:F0}% KG, {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0}", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
 
             if (oldOONTkg < mo.OrdnanceRequiredToTrigger_kg && mo.OrdnanceOnTarget_kg >= mo.OrdnanceRequiredToTrigger_kg && mo.ObjectsDestroyed_num >= mo.ObjectsRequiredToTrigger_num ) MO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr*3600); //Note - MUST use >= here as it covers the case where ordnanceKG and/or object_numrequired = 0
             else if (mo.DestroyedPercent > 100 && mo.OrdnanceRequiredToTrigger_kg > 0)
@@ -11801,6 +12201,9 @@ added Rouen Flak
                 if (mo.TimeToUndestroy_UTC.HasValue) mo.TimeToUndestroy_UTC.Value.AddHours(mo.TimetoRepairIfDestroyed_hr * mass_kg / mo.OrdnanceRequiredToTrigger_kg / 4.0);  //just add time proportional to this particular bomb's kg.  But divided by 4 since we are discounting the destruction
                 else mo.TimeToUndestroy_UTC = DateTime.UtcNow.AddHours(mo.TimetoRepairIfDestroyed_hr * mo.DestroyedPercent);
                 MO_DestroyObjective_addTime(ID, percentdestroyed: mo.DestroyedPercent);
+            } else if (Math.Floor(oldDestroyedPercent * 100.0 / 25.0) % 2 != Math.Floor(mo.DestroyedPercent * 100.0 / 25.0) % 2) //if crossing threshold @ 25, 50, 75% give a message with status update of objective
+            {
+                twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged, {3} kg on target", new object[] { mo.Name, (mo.DestroyedPercent * 100).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.OrdnanceOnTarget_kg.ToString("F0") });
             }
             ///!!!!!!!!!!!!!!!!!!! might still need ot do more things here, check the missionobjectives class.
             ///
@@ -13505,7 +13908,16 @@ public static class Calcs
 
         return degAngle;
     }
+    public static double CalculatePointDistance(
+                              Point2d startPoint,
+                              Point2d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
 
+        return distance(diffX, diffY);
+    }
     public static double CalculatePointDistance(
                               Point3d startPoint,
                               Point3d endPoint)
@@ -13523,6 +13935,15 @@ public static class Calcs
         //Calculate the length of the adjacent and opposite
         double diffX = Math.Abs(endPoint.x - startPoint.x);
         double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                              Point2d startPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(startPoint.x);
+        double diffY = Math.Abs(startPoint.y);
 
         return distance(diffX, diffY);
     }
@@ -14099,6 +14520,7 @@ public static class Calcs
         list[i] = list[j];
         list[j] = temp;
     }
+
     public static async Task<bool> WriteAllTextAsyncWithBackups(string data, string fileDir_base, string fileName_base, string suffix, string ext, string backupDirStub, bool wait = false, ManualResetEvent resetEvent = null)
     {
 

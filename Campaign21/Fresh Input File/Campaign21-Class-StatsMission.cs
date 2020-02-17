@@ -151,1295 +151,1295 @@ using TWCComms;
 
 
 
-    public class StatsMission : AMission, IStatsMission
+public class StatsMission : AMission, IStatsMission
+{
+    #region Customizable Variables
+    //SERVER NAME & INFO CUSTOMIZATIONS
+    /**********************************************************************************
+    * THE TWO VARIABLES IMMEDIATELY BELOW ARE THE ONLY VARIABLES THAT YOU ****MUST*****
+    * CUSTOMIZE IN ORDER TO POINT TO YOUR .ini FILE. IF YOU POINT TO THE .INI         *
+    * FILE CORRECTLY THEN THE REMAINDER OF THE CUSTOMIZABLE VARIABLES WILL            *
+    * BE READ FROM THE .INI FILE USING METHOD stb_loadINI                             *
+    ***********************************************************************************
+    ***********************************************************************************
+    * IMPORTANT!!!!!!                                                                 *
+    *                                                                                 *
+    * Most values below are simply defaults and WILL be overridden by any values in   *
+    * your stats.ini file (or whatever you choose to name it, below                   *
+    *                                                                                 *
+    ***********************************************************************************
+    */
+    public string stb_LocalMissionIniDirectory { get; set; }
+
+    //public string stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
+    public string stb_StatsINIFilename = "stats.ini";  //If this stats.ini exists in the directory indicated, then all values in that file will be read in & replace the DEFAULT values in the section below
+
+    //NOTE: Values below are DEFAULTS and will be OVERWRITTEN by the values in the stats.ini file
+    //Check under method "public Mission ()" to see how all these strings are combined to create the actual complete directories, filenames, etc 
+
+
+    #region DEFAULTS
+    //Note: initial @ (ie @"missions\Multi\Fatal\") allows you to incorporate backslashes into the file or directory name easily. Normally c# considers \ an escape character.  Instead of using @ You could just type \\ every time you want \ but that is confusing. If you need a double-quote character " in your @string, just type "" - like @"<img src=""\mydirectory\myfile.png"">"
+    public bool stb_Debug = false;
+    public string stb_ServerName_Public = "My Server"; //The name used publicly ie on the stats web pages & in "Welcome to the XXX" type messages.
+    public string stb_ServerFilenameIdentifier = "MyServer"; //The "private" name of the server used as part of filenames. Will be combined with various suffixes to create filenames for e.g. stats files, log files for this server. Best to avoid using spaces or any strange characters that will cause trouble if part of a filename.
+    public string stb_AdminPlayernamePrefix = @"ATAG_"; //anyone whose username starts with this prefix will be allowed access to admin commands in the Chat Commands system. You could also set this to a full username if you want just one certain user to have admin access.
+    public string stb_LogStatsPublicAddressLow = "MyServer.com"; //Web address to visit for stats page. Used in announcement messages such as "Check your stats online at XXX". Used in-game, not clickable, so best to keep it simple.
+    public string stb_LocalMissionStatsDirectory = @"missions\Multi\MyMissions\"; //Local directory (ie, on the same hard drive as the CloD Server) where local copies of stats files, .htm files, log files, etc will be kept.  This is in relation to the directory where Launcher.exe /server is found.
+                                                                                  //If you specify the same directory for several missions (ie, several missions you run in rotation on your server) then all missions will share the same stats files and accumulate stats from mission to mission throughout the rotation. If you want to maintain separate stats for each separate mission, then use separate -stats.mis and -stats.cs files for each mission and modify each one ot use a different stb_LocalMissionStatsDirectory
+
+    public string stb_LogStatsUploadBasenameLow = "myserver-stats"; //Will be used as the prefix as the initial part of the filename for public web pages created by the server. Directory & suffix will be added. EX: IF you enter XXX, you will get something like http://yourserver.com/yourdirectory/XXX.htm                                                                           
+    public string stb_StatsWebPageTagLine = "<p>Visit <a href=\"http://myserver.com\">My Server</a> for more information about My Server.</p>"; //This is added at 3 points in the stats web page - allows you to link back to your main web page etc in a customizable way   
+    public string stb_StatsWebPageLinksLine = "<p><i><b>Go to:</b> <a href=\"http://myserver.com/mydirectory/myserver-stats.htm\">My Server Stats</a> - <a href=\"http://myserver.com/myotherdirectory/myotherserver-stats.htm\">My Other Server Stats</a></i></p>";//This is added at 3 points in the stats web page & allows you to link to other mission stats pages you have or basically anything else you want to insert at these points. You'll have to use full http addresses for any links. Escape any need " characters with backslash, like \"
+    public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.myserver.com/mydirectory/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
+    public string stb_LogStatsUploadUserName = "myFTPusername";  //FTP username
+    public string stb_LogStatsUploadPassword = "myFTPpassword";  //FTP password
+                                                                 //IMPORTANT NOTE: Upload sorttable.js and Style.css and the ENTIRE CONTENTS of the 'res' subdirectory to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
+
+
+
+    //FUNCTIONALITY RELATED CUSTOMIZATIONS
+    public bool stb_ResetPlayerStatsWhenKilled = true;//If TRUE: When a player is killed, all stats reset to 0 (Old stats are still avail under different "dead player" name however). If FALSE: Player stats are compiled continuously regardless of player death.
+    public string stb_LogStatsDeadPilotsSuffix = "-dead-pilots"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
+    public string stb_LogStatsTeamSuffix = "-team"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the team stats page. Generally, no need to change or customize this.
+
+    public bool stb_NoRankMessages = false;//if TRUE: Messages about rank and/or promotions will not be displayed during gameplay.
+
+    public bool stb_NoRankTracking = false;//This is not implemented yet, but when implemented setting to TRUE will turn off all rank/promotion tracking & display
+                                           /*
+
+                                               Certain features are turned from tue to false whil testing and there is no campaign going on 
+                                               these must be switched back on for Campaigm style play death rank aircraft restrictions
+                                           */
+    public bool stb_PlayerTimeoutWhenKilled = true; //Whether to give a player a "timeout" when killed--a period of time when the player can't log in & play again
+    public double stb_PlayerTimeoutWhenKilledDuration_hours = 0.08; //Time (in hours) for the player timeout on death. Only active if stb_PlayerTimeoutWhenKilled  is TRUE. 0.083334 hours = 5 minutes
+    public bool stb_PlayerTimeoutWhenKilled_OverrideAllowed = true; //Whether to give players the choice to override the death timeout
+
+    public bool stb_restrictAircraftByKills = true; //Whether to restrict A/C until a certain # of kills is reached
+                                                    //int stb_restrictAircraftByKills_RequiredKillNumber = 200; //this has been replaced by a more customizable dictionary approach now
+
+    public bool stb_restrictAircraftByRank = true; //Whether to restrict A/C until a certain ranks are reached
+                                                   //Note that stb_restrictAircraftByRank is the masterswitch for  the entire "restrict aircraft" system and 
+                                                   //stb_restrictAircraftByKills is just a little tweak you can add on to the rank system.  You can't
+                                                   //just turn on stb_restrictAircraftByKills independently if stb_restrictAircraftByRank is turned off.
+
+    public bool stb_AnnounceStatsMessages = true;
+    public int stb_AnnounceStatsMessagesFrequency = 19 * 60; //seconds
+    public bool stb_StatsServerAnnounce = true;
+    public string stb_LogStatsUploadAddressMed = "";//not available yet
+    public double stb_LogStatsDelay = 120.0;//seconds 60.0 default
+                                            //public double stb_LogStatsDelay = 10.0;//for testing
+
+    public double stb_ChangeAttackProbHigh = 1; //If being attacked, airgroups can change to attack the attacker.  This governs the probability they will do so.  At runtime Stats chooses a random value between high & low given here.  This governs all airgroups EXCEPT bombers
+    public double stb_ChangeAttackProbLow = 0.8;
+
+    public double stb_ChangeBomberAttackProbHigh = 1; //If being attacked, Bomber airgroups can change to attack the attacker.  This governs the probability they will do so.  At runtime Stats chooses a random value between high & low given here.  If the bomber airgroups do this it probably distracts them from their main mission objective (bombing or whatever) so maybe don't need to do this as often with bombers as with other airgroup types
+    public double stb_ChangeBomberAttackProbLow = 0.8;
+
+    public double stb_ChangeAttackProb_SmallGroupHigh = 1;//If being attacked, small groups can act differently from large ones.  Say there are only 2 bombers left, etc, they could be more likely to attack than if the whole group is left
+    public double stb_ChangeAttackProb_SmallGroupLow = 0.8;
+    public double stb_ChangeAttackProb_SmallGroupThresh = 2; //number of a/c in airgroup at or below which the _smallGroup prob holds, supplanting the other probs.  If you set to 0 this won't be used at all.
+
+    public double stb_ChangeAttackProb = .8; //Will be assigned randomly later between low & high
+    public double stb_ChangeBomberAttackProb = .8; //Will be assigned randomly later between low & high
+    public double stb_ChangeAttackProb_SmallGroup = .8; //Will be assigned randomly later between low & high
+                                                        //LOG RELATED CUSTOMIZATIONS
+    public bool stb_LogStats = true;//creates a local file, full stats in txt format. This is the main on/off switch for this entire module. If set to FALSE almost nothing else works--no stats collected, no files saves, etc.
+    public bool stb_LogErrors = true;//creates a local file, errors in txt format, useful for IO or upload errors    
+    public bool stb_LogStatsCreateHtmlLow = true;//creates a local file, summerized stats in html format
+    public bool stb_LogStatsCreateHtmlMed = false;//not available yet - no output even if set to true. Concept is to create a stats page with higher level of detail than HtmlLow.
+    public bool stb_LogStatsUploadHtmlLow = true;//set true to upload - this is the main stats web page in HTML format
+                                                 //Upload sorttable.js and Style.css to the same location on your site manually, created htm depends on them to be viewed properly
+    public bool stb_LogStatsUploadHtmlMed = false;//not available yet
+    #endregion
+    //END - of options that are defaults & will be overwritten by values from the stats.ini file    
+
+    //MISSION RELATED CUSTOMIZATIONS
+    //TWC is mostly not using these options currently
+    //For that reason I have not added them to the .ini file or iniread method
+    public bool stb_DestroyOnPlaceLeave = true; //This helps stats by eliminating the problem with people getting credit for a kill when actually the plane just landed.  However, works best if values af1, af2, af3, af4 are set for airfield locations, as below.  I think it will still help regardless, so leaving it on for now.  TODO: Get a list of actual airports in the mission, not just using the af1, af2, etc.
+    public bool stb_SpawnAntiAir = false;//base AAguns and defense ships
+    public double stb_SpawnAntiAirDelay = 444.0;//444.0 default, some AA guns stop firing(probably run out of ammo) in less than 250 secs
+    public bool stb_SpawnFrontline1 = false;//continuous ships @ 1.path (left)
+    public bool stb_SpawnFrontline2 = false;//continuous ships @ 2.path (left-center)
+    public bool stb_SpawnFrontline3 = false;//continuous ships @ 3.path (right-center)
+    public bool stb_SpawnFrontline4 = false;//continuous armors @ 4.path (right)
+    public bool stb_SpawnBombers = false;//loads 2 bomber missions, turnbased
+                                         //Balance Related
+    public bool stb_FighterBalanceActive = false;//false to disable balance code for fighters
+    public bool stb_BalanceFightersByRatio = false;//true for balance by ratio, false for balance by fighter count difference
+    public double stb_DesiredRatio = 2.0;//max delta fighter ratio for balance, default 2.0
+    public int stb_DesiredDelta = 5;//max delta fighter count for balance, default 5
+    public int stb_MinCountForBalance = 10;//min fighter count for balance (for both ratio and delta methods), default 10
+    public string stb_BalanceMsgRus = "Извините, Есть слишком много истребителей прямо сейчас." +
+                                       " Выберите бомбардировщиков или Изменение вашей армии или Попробуйте еще ​​раз позже.";
+    public string stb_BalanceMsgEng = "Sorry, There are too many fighters right now." +
+                                       " Choose bombers or change your army or try again later.";
+    public string stb_BalanceMsgHud = "Aircraft Disabled: There are too many fighters right now!";
+
+    public Int64 lastGpLogServerMsg_tick = 0;
+    public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
+    public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second    
+    public string stb_LogStatsUploadAddressLow;
+    public string stb_LogStatsUploadAddressExtLow;
+    public string stb_LogStatsUploadFilenameLow;
+    public string stb_LogStatsUploadFilenameDeadPilotsLow;
+    public string stb_LogStatsUploadFilenameTeamLow;
+    public string stb_LogStatsUploadFilenameTeamPrevLow;
+    public string stb_MissionServer_LogStatsUploadFilenameLow;
+    public string stb_iniFileErrorMessages;
+
+    //TODO: All these should be added to .ini file.
+    //public readonly string [] PARACHUTE_LAND_FRIENDLY_MSG = {  };
+    public readonly string[] stb_LANDED_OK_MSG = { "{0} landed in friendly territory. " };
+    public readonly string[] stb_LANDED_ENEMY_MSG = { "{0} landed in enemy territory. " };
+    public readonly string[] stb_ASR_FAIL_DROWNED = { "{0} drowned! ", "{0} tried to swim for shore, but drowned! ", "{0} drowned when the life raft deflated! " };
+    public readonly string[] stb_ASR_RESCUE_MSG = { "{0} was rescued by local fishermen! ", "{0} was rescued by friendly fishermen!", "{0} was rescued by ASR ", "{0} was rescued by a passing ship! ", "{0} was rescued after hanging onto a life raft for 28 hours! ", "{0} was rescued. Now {0} can join the Goldfish Club! " };
+    public readonly string[] stb_ASR_CAPTURE_MSG = { "{0} was captured by enemy forces! ", "{0} was captured. ", "{0} was captured and sent to spent the rest of the war in a POW camp. " };
+    public readonly string[] stb_CAPTURED_MSG = { "{0} was captured. ", "{0} was captured by enemy forces! ", "{0} was captured and sent to spent the rest of the war in a POW camp. ", };
+    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", "{0} tried to escape, but was captured again and shot.", "{0} was shot while attempting escape.", "{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", "{0} led a POW escape attempt but was caught in the act and shot on sight.", "{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
+    public readonly string[] stb_ESCAPED_MSG = { "{0} escaped capture and is hiding in a resistance fighter's hayloft! ", "{0} escaped and is hiding the forest. ", "{0} escaped and is hiding in a resistance fighter's barn! ", "{0} escaped--now has to find the way home!", "{0} was helped by a network of friendly resistance fighters and escape!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
+    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { "{0} crash landed in enemy territory. " };
+    public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { "{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
+
+    public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG = { "{0} landed in friendly territory away from an airport. To avoid having your aircraft written off, you must return it to an airport. " };
+
+    public readonly string[] stb_PARACHUTED_FRIENDLY_MSG = { "{0} parachuted into friendly territory. ", "{0} parachuted, landing in friendly territory." };
+    public readonly string[] stb_PARACHUTED_ENEMY_MSG = { "{0} parachuted into enemy territory. " };
+
+    //Setting the probability of surviving quite high, mostly bec. we haven't previously had any consequence or death for landing in water etc.
+    double stb_POW_EscapeChanceRed = 0.90;      // probability (0-1) of allied pilot escaping after landing in enemy territory
+    double stb_POW_EscapeChanceBlue = 0.90;     // probability (0-1) of LW pilot escaping after landing in enemy territory
+    double stb_ASR_RescueChanceRed = 0.90;      // probability (0-1) of allied pilot being air-sea rescued (captured) after landing in water.  Per Wikipedia, ASR rescue was in the 30-35% range during WWII
+    double stb_ASR_RescueChanceBlue = 0.90;     // probability (0-1) of LW pilot being air-sea rescued after landing in water
+    double stb_ASR_RescueChanceFriendly = 1.06;     //multiplier for ASR_RescueChance if landing in friendly waters
+    double stb_ASR_RescueChanceEnemy = .9;      //multiplier for ASR_RescueChance if landing in hostile waters
+    double stb_ParachuteFailureRecoveryChance = .99; //If CloD decides your "parachute failed" what is your chance of being able to deploy your reserve chute? 
+                                                     //CloD does something like 20-50% parachute failure rate. Wherease US AF in training in WWII found one main chute failure PER WEEK in a large training facility, so that is one per hundreds of jumps.  And that is the main chute. The reserve shoot fails maybe 1% of the time or less also.  So even .99 here is probably too LOW, certainly not too high.
+                                                     //In reality in combat it might have been somewhat less than that, but still . . . 
+    bool stb_AllowJumpIntoAIAircraft = true; //Players can jump into an already-existing AI aircraft in certain situations, such as 
+
+
+
+    #endregion
+
+    #region stb Core
+    //these variables change in runtime, do not alter their default values
+    public Point3d af1 = new Point3d(13800.0, 30890.0, 1.0);
+    public Point3d af2 = new Point3d(18180.0, 30760.0, 1.0);
+    public Point3d af3 = new Point3d(12180.0, 10520.0, 1.0);
+    public Point3d af4 = new Point3d(18830.0, 9810.0, 1.0);
+    public bool stb_BomberMissionTurn = true;
+    public int stb_RedFighters = 0;
+    public int stb_BlueFighters = 0;
+    public double stb_Ratio = 0d;
+    public double stb_Delta = 0d;
+    public string stb_AppPath = (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+    public string stb_FullPath = "";//will be created in runtime
+    public string stb_ErrorLogPath;
+    public string stb_StatsPathTxt;
+    public string stb_StatsPathHtmlLow;
+    public string stb_StatsPathHtmlExtLow;
+    public string stb_StatsPathHtmlMed;
+    public ISectionFile stb_BaseAntiAirDefenses;
+    public ISectionFile stb_Frontline1;
+    public ISectionFile stb_Frontline2;
+    public ISectionFile stb_Frontline3;
+    public ISectionFile stb_Frontline4;
+    public ISectionFile stb_Bombers1;
+    public ISectionFile stb_Bombers2;
+    public NumberFormatInfo stb_nf = new NumberFormatInfo();
+    public int stb_MissionsCount = 1;
+
+    Random stb_random = new Random();
+
+    public ABattle battle = null;
+
+    public IMainMission TWCMainMission;
+    //public AIniFile TWCIniFile;
+    public StbStatRecorder stb_StatRecorder { get; set; }
+    public IStbStatRecorder stb_IStatRecorder { get; set; }
+    public StbSaveIPlayerStat stb_SaveIPlayerStat { get; set; }
+    public IStbSaveIPlayerStat stb_ISaveIPlayerStat { get; set; }
+
+
+
+
+    //initializer method
+    public StatsMission()
     {
-        #region Customizable Variables
-        //SERVER NAME & INFO CUSTOMIZATIONS
-        /**********************************************************************************
-        * THE TWO VARIABLES IMMEDIATELY BELOW ARE THE ONLY VARIABLES THAT YOU ****MUST*****
-        * CUSTOMIZE IN ORDER TO POINT TO YOUR .ini FILE. IF YOU POINT TO THE .INI         *
-        * FILE CORRECTLY THEN THE REMAINDER OF THE CUSTOMIZABLE VARIABLES WILL            *
-        * BE READ FROM THE .INI FILE USING METHOD stb_loadINI                             *
-        ***********************************************************************************
-        ***********************************************************************************
-        * IMPORTANT!!!!!!                                                                 *
-        *                                                                                 *
-        * Most values below are simply defaults and WILL be overridden by any values in   *
-        * your stats.ini file (or whatever you choose to name it, below                   *
-        *                                                                                 *
-        ***********************************************************************************
-        */
-        public string stb_LocalMissionIniDirectory { get; set; }
+        stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
+        TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
+        TWCMainMission = TWCComms.Communicator.Instance.Main;
+        //TWCIniFile = TWCComms.Communicator.Instance.Ini;
 
-        //public string stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
-        public string stb_StatsINIFilename = "stats.ini";  //If this stats.ini exists in the directory indicated, then all values in that file will be read in & replace the DEFAULT values in the section below
+        string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
+        string stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
+        stb_loadINI(stb_FullPath_ini + stb_StatsINIFilename);
+        //stb_LogStatsUploadAddressLow = "ftp://ftp.brenthugh.com/brenthugh.com/twc/" + stb_LogStatsUploadBasenameLow;        
+        stb_LogStatsUploadAddressLow = stb_LogStatsUploadFtpBaseDirectory + stb_LogStatsUploadBasenameLow;
+        stb_LogStatsUploadAddressExtLow = ".htm";
+        stb_LogStatsUploadFilenameLow = stb_LogStatsUploadBasenameLow + stb_LogStatsUploadAddressExtLow;
+        stb_MissionServer_LogStatsUploadFilenameLow = "mission-stats" + stb_LogStatsUploadAddressExtLow;
+        stb_LogStatsUploadFilenameDeadPilotsLow = stb_LogStatsUploadBasenameLow + stb_LogStatsDeadPilotsSuffix + stb_LogStatsUploadAddressExtLow;
+        stb_LogStatsUploadFilenameTeamLow = stb_LogStatsUploadBasenameLow + stb_LogStatsTeamSuffix + stb_LogStatsUploadAddressExtLow;
+        stb_LogStatsUploadFilenameTeamPrevLow = stb_LogStatsUploadBasenameLow + stb_LogStatsTeamSuffix;
+        stb_ErrorLogPath = stb_ServerFilenameIdentifier + @"_errorlog.txt";//will be combined with fullpath in runtime
+        stb_StatsPathTxt = stb_ServerFilenameIdentifier + @"_playerstats_full.txt";//"
+        stb_StatsPathHtmlLow = stb_ServerFilenameIdentifier + @"_playerstats_low";//"
+        stb_StatsPathHtmlExtLow = @".htm";//"
+        stb_StatsPathHtmlMed = stb_ServerFilenameIdentifier + @"_playerstats_med.htm";//"          
 
-        //NOTE: Values below are DEFAULTS and will be OVERWRITTEN by the values in the stats.ini file
-        //Check under method "public Mission ()" to see how all these strings are combined to create the actual complete directories, filenames, etc 
+        //int z = 0;
+        //int maxIntValue = 2147483647;
+        //z = maxIntValue + 10;
+        //uint y = (uint)z;
+        //Console.WriteLine("overflow {0} {1} {2}", z, y, (uint)y);
 
+        stb_ChangeAttackProb = (stb_ChangeAttackProbHigh - stb_ChangeAttackProbLow) * stb_random.NextDouble() + stb_ChangeAttackProbLow;
+        stb_ChangeBomberAttackProb = (stb_ChangeBomberAttackProbHigh - stb_ChangeBomberAttackProbLow) * stb_random.NextDouble() + stb_ChangeBomberAttackProbLow;
+        stb_ChangeAttackProb_SmallGroup = (stb_ChangeAttackProb_SmallGroupHigh - stb_ChangeAttackProb_SmallGroupLow) * stb_random.NextDouble() + stb_ChangeAttackProb_SmallGroupLow;
 
-        #region DEFAULTS
-        //Note: initial @ (ie @"missions\Multi\Fatal\") allows you to incorporate backslashes into the file or directory name easily. Normally c# considers \ an escape character.  Instead of using @ You could just type \\ every time you want \ but that is confusing. If you need a double-quote character " in your @string, just type "" - like @"<img src=""\mydirectory\myfile.png"">"
-        public bool stb_Debug = false;
-        public string stb_ServerName_Public = "My Server"; //The name used publicly ie on the stats web pages & in "Welcome to the XXX" type messages.
-        public string stb_ServerFilenameIdentifier = "MyServer"; //The "private" name of the server used as part of filenames. Will be combined with various suffixes to create filenames for e.g. stats files, log files for this server. Best to avoid using spaces or any strange characters that will cause trouble if part of a filename.
-        public string stb_AdminPlayernamePrefix = @"ATAG_"; //anyone whose username starts with this prefix will be allowed access to admin commands in the Chat Commands system. You could also set this to a full username if you want just one certain user to have admin access.
-        public string stb_LogStatsPublicAddressLow = "MyServer.com"; //Web address to visit for stats page. Used in announcement messages such as "Check your stats online at XXX". Used in-game, not clickable, so best to keep it simple.
-        public string stb_LocalMissionStatsDirectory = @"missions\Multi\MyMissions\"; //Local directory (ie, on the same hard drive as the CloD Server) where local copies of stats files, .htm files, log files, etc will be kept.  This is in relation to the directory where Launcher.exe /server is found.
-                                                                                      //If you specify the same directory for several missions (ie, several missions you run in rotation on your server) then all missions will share the same stats files and accumulate stats from mission to mission throughout the rotation. If you want to maintain separate stats for each separate mission, then use separate -stats.mis and -stats.cs files for each mission and modify each one ot use a different stb_LocalMissionStatsDirectory
+        //if (stb_Debug) Console.WriteLine("stb_ChangeAttackProb: " + stb_ChangeAttackProb + " stb_ChangeBomberAttackProb:" + stb_ChangeBomberAttackProb);
 
-        public string stb_LogStatsUploadBasenameLow = "myserver-stats"; //Will be used as the prefix as the initial part of the filename for public web pages created by the server. Directory & suffix will be added. EX: IF you enter XXX, you will get something like http://yourserver.com/yourdirectory/XXX.htm                                                                           
-        public string stb_StatsWebPageTagLine = "<p>Visit <a href=\"http://myserver.com\">My Server</a> for more information about My Server.</p>"; //This is added at 3 points in the stats web page - allows you to link back to your main web page etc in a customizable way   
-        public string stb_StatsWebPageLinksLine = "<p><i><b>Go to:</b> <a href=\"http://myserver.com/mydirectory/myserver-stats.htm\">My Server Stats</a> - <a href=\"http://myserver.com/myotherdirectory/myotherserver-stats.htm\">My Other Server Stats</a></i></p>";//This is added at 3 points in the stats web page & allows you to link to other mission stats pages you have or basically anything else you want to insert at these points. You'll have to use full http addresses for any links. Escape any need " characters with backslash, like \"
-        public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.myserver.com/mydirectory/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
-        public string stb_LogStatsUploadUserName = "myFTPusername";  //FTP username
-        public string stb_LogStatsUploadPassword = "myFTPpassword";  //FTP password
-                                                                     //IMPORTANT NOTE: Upload sorttable.js and Style.css and the ENTIRE CONTENTS of the 'res' subdirectory to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
+    }
+
+    //To add a new general parameter, you need to 1. initialize the variable @ the top of this class with default value 2. Add it to the .ini file 3. Add the line in stb_loadINI to read that new variable 4. Add the name of the variable to the ini_vars string below, so that you can see it output @ console when stb_Debug is on
+    //Probably there is a smoother way to do all of this, perhaps by using a Dictionary (or 2-3 dictionaries for string, int, bool, double, etc) instead of individual variable names
+    private void stb_loadINI(string file)
+    {
 
 
+        StatsIniFile ini = new StatsIniFile(file, this);
 
-        //FUNCTIONALITY RELATED CUSTOMIZATIONS
-        public bool stb_ResetPlayerStatsWhenKilled = true;//If TRUE: When a player is killed, all stats reset to 0 (Old stats are still avail under different "dead player" name however). If FALSE: Player stats are compiled continuously regardless of player death.
-        public string stb_LogStatsDeadPilotsSuffix = "-dead-pilots"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
-        public string stb_LogStatsTeamSuffix = "-team"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the team stats page. Generally, no need to change or customize this.
+        stb_ServerName_Public = ini.IniReadValue("NAMES", "stb_ServerName_Public", stb_ServerName_Public);
+        stb_ServerFilenameIdentifier = ini.IniReadValue("NAMES", "stb_ServerFilenameIdentifier", stb_ServerFilenameIdentifier);
+        stb_AdminPlayernamePrefix = ini.IniReadValue("NAMES", "stb_AdminPlayernamePrefix", stb_AdminPlayernamePrefix);
+        stb_LogStatsPublicAddressLow = ini.IniReadValue("NAMES", "stb_LogStatsPublicAddressLow", stb_LogStatsPublicAddressLow);
+        stb_LocalMissionStatsDirectory = ini.IniReadValue("NAMES", "stb_LocalMissionStatsDirectory", stb_LocalMissionStatsDirectory);
+        stb_LogStatsUploadBasenameLow = ini.IniReadValue("NAMES", "stb_LogStatsUploadBasenameLow", stb_LogStatsUploadBasenameLow);
+        stb_StatsWebPageTagLine = ini.IniReadValue("NAMES", "stb_StatsWebPageTagLine", stb_StatsWebPageTagLine);
+        stb_StatsWebPageLinksLine = ini.IniReadValue("NAMES", "stb_StatsWebPageLinksLine", stb_StatsWebPageLinksLine);
+        stb_LogStatsUploadFtpBaseDirectory = ini.IniReadValue("NAMES", "stb_LogStatsUploadFtpBaseDirectory", stb_LogStatsUploadFtpBaseDirectory);
+        stb_LogStatsUploadUserName = ini.IniReadValue("NAMES", "stb_LogStatsUploadUserName", stb_LogStatsUploadUserName);
+        stb_LogStatsUploadPassword = ini.IniReadValue("NAMES", "stb_LogStatsUploadPassword", stb_LogStatsUploadPassword);
+        stb_NoRankMessages = ini.IniReadValue("FUNCTIONALITY", "stb_NoRankMessages", stb_NoRankMessages);
+        stb_NoRankTracking = ini.IniReadValue("FUNCTIONALITY", "stb_NoRankTracking", stb_NoRankTracking);
+        stb_LogStatsDeadPilotsSuffix = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsDeadPilotsSuffix", stb_LogStatsDeadPilotsSuffix);
+        stb_LogStatsTeamSuffix = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsTeamSuffix", stb_LogStatsTeamSuffix);
+        stb_PlayerTimeoutWhenKilled = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilled", stb_PlayerTimeoutWhenKilled);
+        stb_PlayerTimeoutWhenKilledDuration_hours = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilledDuration_hours", stb_PlayerTimeoutWhenKilledDuration_hours);
+        stb_PlayerTimeoutWhenKilled_OverrideAllowed = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilled_OverrideAllowed", stb_PlayerTimeoutWhenKilled_OverrideAllowed);
+        stb_restrictAircraftByKills = ini.IniReadValue("FUNCTIONALITY", "stb_restrictAircraftByKills", stb_restrictAircraftByKills);
+        stb_restrictAircraftByRank = ini.IniReadValue("FUNCTIONALITY", "stb_restrictAircraftByRank", stb_restrictAircraftByRank);
+        stb_AnnounceStatsMessages = ini.IniReadValue("FUNCTIONALITY", "stb_AnnounceStatsMessages", stb_AnnounceStatsMessages);
+        stb_AnnounceStatsMessagesFrequency = ini.IniReadValue("FUNCTIONALITY", "stb_AnnounceStatsMessagesFrequency", stb_AnnounceStatsMessagesFrequency);
+        stb_StatsServerAnnounce = ini.IniReadValue("FUNCTIONALITY", "stb_StatsServerAnnounce", stb_StatsServerAnnounce);
+        stb_LogStatsUploadAddressMed = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsUploadAddressMed", stb_LogStatsUploadAddressMed);
 
-        public bool stb_NoRankMessages = false;//if TRUE: Messages about rank and/or promotions will not be displayed during gameplay.
+        stb_ChangeAttackProbHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProbHigh", stb_ChangeAttackProbHigh);
+        stb_ChangeAttackProbLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProbLow", stb_ChangeAttackProbLow);
 
-        public bool stb_NoRankTracking = false;//This is not implemented yet, but when implemented setting to TRUE will turn off all rank/promotion tracking & display
-                                               /*
+        stb_ChangeBomberAttackProbHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeBomberAttackProbHigh", stb_ChangeBomberAttackProbHigh);
+        stb_ChangeBomberAttackProbLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeBomberAttackProbLow", stb_ChangeBomberAttackProbLow);
 
-                                                   Certain features are turned from tue to false whil testing and there is no campaign going on 
-                                                   these must be switched back on for Campaigm style play death rank aircraft restrictions
-                                               */
-        public bool stb_PlayerTimeoutWhenKilled = true; //Whether to give a player a "timeout" when killed--a period of time when the player can't log in & play again
-        public double stb_PlayerTimeoutWhenKilledDuration_hours = 0.08; //Time (in hours) for the player timeout on death. Only active if stb_PlayerTimeoutWhenKilled  is TRUE. 0.083334 hours = 5 minutes
-        public bool stb_PlayerTimeoutWhenKilled_OverrideAllowed = true; //Whether to give players the choice to override the death timeout
+        stb_ChangeAttackProb_SmallGroupHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProb_SmallGroupHigh", stb_ChangeAttackProb_SmallGroupHigh);
+        stb_ChangeAttackProb_SmallGroupLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProb_SmallGroupLow", stb_ChangeAttackProb_SmallGroupLow);
 
-        public bool stb_restrictAircraftByKills = true; //Whether to restrict A/C until a certain # of kills is reached
-                                                        //int stb_restrictAircraftByKills_RequiredKillNumber = 200; //this has been replaced by a more customizable dictionary approach now
-
-        public bool stb_restrictAircraftByRank = true; //Whether to restrict A/C until a certain ranks are reached
-                                                       //Note that stb_restrictAircraftByRank is the masterswitch for  the entire "restrict aircraft" system and 
-                                                       //stb_restrictAircraftByKills is just a little tweak you can add on to the rank system.  You can't
-                                                       //just turn on stb_restrictAircraftByKills independently if stb_restrictAircraftByRank is turned off.
-
-        public bool stb_AnnounceStatsMessages = true;
-        public int stb_AnnounceStatsMessagesFrequency = 19 * 60; //seconds
-        public bool stb_StatsServerAnnounce = true;
-        public string stb_LogStatsUploadAddressMed = "";//not available yet
-        public double stb_LogStatsDelay = 120.0;//seconds 60.0 default
-                                                //public double stb_LogStatsDelay = 10.0;//for testing
-
-        public double stb_ChangeAttackProbHigh = 1; //If being attacked, airgroups can change to attack the attacker.  This governs the probability they will do so.  At runtime Stats chooses a random value between high & low given here.  This governs all airgroups EXCEPT bombers
-        public double stb_ChangeAttackProbLow = 0.8;
-
-        public double stb_ChangeBomberAttackProbHigh = 1; //If being attacked, Bomber airgroups can change to attack the attacker.  This governs the probability they will do so.  At runtime Stats chooses a random value between high & low given here.  If the bomber airgroups do this it probably distracts them from their main mission objective (bombing or whatever) so maybe don't need to do this as often with bombers as with other airgroup types
-        public double stb_ChangeBomberAttackProbLow = 0.8;
-
-        public double stb_ChangeAttackProb_SmallGroupHigh = 1;//If being attacked, small groups can act differently from large ones.  Say there are only 2 bombers left, etc, they could be more likely to attack than if the whole group is left
-        public double stb_ChangeAttackProb_SmallGroupLow = 0.8;
-        public double stb_ChangeAttackProb_SmallGroupThresh = 2; //number of a/c in airgroup at or below which the _smallGroup prob holds, supplanting the other probs.  If you set to 0 this won't be used at all.
-
-        public double stb_ChangeAttackProb = .8; //Will be assigned randomly later between low & high
-        public double stb_ChangeBomberAttackProb = .8; //Will be assigned randomly later between low & high
-        public double stb_ChangeAttackProb_SmallGroup = .8; //Will be assigned randomly later between low & high
-                                                            //LOG RELATED CUSTOMIZATIONS
-        public bool stb_LogStats = true;//creates a local file, full stats in txt format. This is the main on/off switch for this entire module. If set to FALSE almost nothing else works--no stats collected, no files saves, etc.
-        public bool stb_LogErrors = true;//creates a local file, errors in txt format, useful for IO or upload errors    
-        public bool stb_LogStatsCreateHtmlLow = true;//creates a local file, summerized stats in html format
-        public bool stb_LogStatsCreateHtmlMed = false;//not available yet - no output even if set to true. Concept is to create a stats page with higher level of detail than HtmlLow.
-        public bool stb_LogStatsUploadHtmlLow = true;//set true to upload - this is the main stats web page in HTML format
-                                                     //Upload sorttable.js and Style.css to the same location on your site manually, created htm depends on them to be viewed properly
-        public bool stb_LogStatsUploadHtmlMed = false;//not available yet
-        #endregion
-        //END - of options that are defaults & will be overwritten by values from the stats.ini file    
-
-        //MISSION RELATED CUSTOMIZATIONS
-        //TWC is mostly not using these options currently
-        //For that reason I have not added them to the .ini file or iniread method
-        public bool stb_DestroyOnPlaceLeave = true; //This helps stats by eliminating the problem with people getting credit for a kill when actually the plane just landed.  However, works best if values af1, af2, af3, af4 are set for airfield locations, as below.  I think it will still help regardless, so leaving it on for now.  TODO: Get a list of actual airports in the mission, not just using the af1, af2, etc.
-        public bool stb_SpawnAntiAir = false;//base AAguns and defense ships
-        public double stb_SpawnAntiAirDelay = 444.0;//444.0 default, some AA guns stop firing(probably run out of ammo) in less than 250 secs
-        public bool stb_SpawnFrontline1 = false;//continuous ships @ 1.path (left)
-        public bool stb_SpawnFrontline2 = false;//continuous ships @ 2.path (left-center)
-        public bool stb_SpawnFrontline3 = false;//continuous ships @ 3.path (right-center)
-        public bool stb_SpawnFrontline4 = false;//continuous armors @ 4.path (right)
-        public bool stb_SpawnBombers = false;//loads 2 bomber missions, turnbased
-                                             //Balance Related
-        public bool stb_FighterBalanceActive = false;//false to disable balance code for fighters
-        public bool stb_BalanceFightersByRatio = false;//true for balance by ratio, false for balance by fighter count difference
-        public double stb_DesiredRatio = 2.0;//max delta fighter ratio for balance, default 2.0
-        public int stb_DesiredDelta = 5;//max delta fighter count for balance, default 5
-        public int stb_MinCountForBalance = 10;//min fighter count for balance (for both ratio and delta methods), default 10
-        public string stb_BalanceMsgRus = "Извините, Есть слишком много истребителей прямо сейчас." +
-                                           " Выберите бомбардировщиков или Изменение вашей армии или Попробуйте еще ​​раз позже.";
-        public string stb_BalanceMsgEng = "Sorry, There are too many fighters right now." +
-                                           " Choose bombers or change your army or try again later.";
-        public string stb_BalanceMsgHud = "Aircraft Disabled: There are too many fighters right now!";
-
-        public Int64 lastGpLogServerMsg_tick = 0;
-        public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
-        public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second    
-        public string stb_LogStatsUploadAddressLow;
-        public string stb_LogStatsUploadAddressExtLow;
-        public string stb_LogStatsUploadFilenameLow;
-        public string stb_LogStatsUploadFilenameDeadPilotsLow;
-        public string stb_LogStatsUploadFilenameTeamLow;
-        public string stb_LogStatsUploadFilenameTeamPrevLow;
-        public string stb_MissionServer_LogStatsUploadFilenameLow;
-        public string stb_iniFileErrorMessages;
-
-        //TODO: All these should be added to .ini file.
-        //public readonly string [] PARACHUTE_LAND_FRIENDLY_MSG = {  };
-        public readonly string[] stb_LANDED_OK_MSG = { "{0} landed in friendly territory. " };
-        public readonly string[] stb_LANDED_ENEMY_MSG = { "{0} landed in enemy territory. " };
-        public readonly string[] stb_ASR_FAIL_DROWNED = { "{0} drowned! ", "{0} tried to swim for shore, but drowned! ", "{0} drowned when the life raft deflated! " };
-        public readonly string[] stb_ASR_RESCUE_MSG = { "{0} was rescued by local fishermen! ", "{0} was rescued by friendly fishermen!", "{0} was rescued by ASR ", "{0} was rescued by a passing ship! ", "{0} was rescued after hanging onto a life raft for 28 hours! ", "{0} was rescued. Now {0} can join the Goldfish Club! " };
-        public readonly string[] stb_ASR_CAPTURE_MSG = { "{0} was captured by enemy forces! ", "{0} was captured. ", "{0} was captured and sent to spent the rest of the war in a POW camp. " };
-        public readonly string[] stb_CAPTURED_MSG = { "{0} was captured. ", "{0} was captured by enemy forces! ", "{0} was captured and sent to spent the rest of the war in a POW camp. ", };
-        public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", "{0} tried to escape, but was captured again and shot.", "{0} was shot while attempting escape.", "{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", "{0} led a POW escape attempt but was caught in the act and shot on sight.", "{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
-        public readonly string[] stb_ESCAPED_MSG = { "{0} escaped capture and is hiding in a resistance fighter's hayloft! ", "{0} escaped and is hiding the forest. ", "{0} escaped and is hiding in a resistance fighter's barn! ", "{0} escaped--now has to find the way home!", "{0} was helped by a network of friendly resistance fighters and escape!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
-        public readonly string[] stb_CRASHLAND_ENEMY_MSG = { "{0} crash landed in enemy territory. " };
-        public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { "{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
-
-        public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG = { "{0} landed in friendly territory away from an airport. To avoid having your aircraft written off, you must return it to an airport. " };
-
-        public readonly string[] stb_PARACHUTED_FRIENDLY_MSG = { "{0} parachuted into friendly territory. ", "{0} parachuted, landing in friendly territory." };
-        public readonly string[] stb_PARACHUTED_ENEMY_MSG = { "{0} parachuted into enemy territory. " };
-
-        //Setting the probability of surviving quite high, mostly bec. we haven't previously had any consequence or death for landing in water etc.
-        double stb_POW_EscapeChanceRed = 0.90;      // probability (0-1) of allied pilot escaping after landing in enemy territory
-        double stb_POW_EscapeChanceBlue = 0.90;     // probability (0-1) of LW pilot escaping after landing in enemy territory
-        double stb_ASR_RescueChanceRed = 0.90;      // probability (0-1) of allied pilot being air-sea rescued (captured) after landing in water.  Per Wikipedia, ASR rescue was in the 30-35% range during WWII
-        double stb_ASR_RescueChanceBlue = 0.90;     // probability (0-1) of LW pilot being air-sea rescued after landing in water
-        double stb_ASR_RescueChanceFriendly = 1.06;     //multiplier for ASR_RescueChance if landing in friendly waters
-        double stb_ASR_RescueChanceEnemy = .9;      //multiplier for ASR_RescueChance if landing in hostile waters
-        double stb_ParachuteFailureRecoveryChance = .99; //If CloD decides your "parachute failed" what is your chance of being able to deploy your reserve chute? 
-                                                         //CloD does something like 20-50% parachute failure rate. Wherease US AF in training in WWII found one main chute failure PER WEEK in a large training facility, so that is one per hundreds of jumps.  And that is the main chute. The reserve shoot fails maybe 1% of the time or less also.  So even .99 here is probably too LOW, certainly not too high.
-                                                         //In reality in combat it might have been somewhat less than that, but still . . . 
-        bool stb_AllowJumpIntoAIAircraft = true; //Players can jump into an already-existing AI aircraft in certain situations, such as 
+        stb_POW_EscapeChanceRed = ini.IniReadValue("FUNCTIONALITY", "stb_POW_EscapeChanceRed", stb_POW_EscapeChanceRed);
+        stb_POW_EscapeChanceBlue = ini.IniReadValue("FUNCTIONALITY", "stb_POW_EscapeChanceBlue", stb_POW_EscapeChanceBlue);
+        stb_ASR_RescueChanceRed = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceRed", stb_ASR_RescueChanceRed);
+        stb_ASR_RescueChanceBlue = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceBlue", stb_ASR_RescueChanceBlue);
+        stb_ASR_RescueChanceFriendly = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceFriendly", stb_ASR_RescueChanceFriendly);
+        stb_ASR_RescueChanceEnemy = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceEnemy", stb_ASR_RescueChanceEnemy);
+        stb_ParachuteFailureRecoveryChance = ini.IniReadValue("FUNCTIONALITY", "stb_ParachuteFailureRecoveryChance", stb_ParachuteFailureRecoveryChance);
+        stb_AllowJumpIntoAIAircraft = ini.IniReadValue("FUNCTIONALITY", "stb_AllowJumpIntoAIAircraft", stb_AllowJumpIntoAIAircraft);
 
 
+        stb_LogStatsDelay = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsDelay", stb_LogStatsDelay);
+        stb_LogStats = ini.IniReadValue("LOG", "stb_LogStats", stb_LogStats);
+        stb_LogErrors = ini.IniReadValue("LOG", "stb_LogErrors", stb_LogErrors);
+        stb_LogStatsCreateHtmlLow = ini.IniReadValue("LOG", "stb_LogStatsCreateHtmlLow", stb_LogStatsCreateHtmlLow);
+        stb_LogStatsCreateHtmlMed = ini.IniReadValue("LOG", "stb_LogStatsCreateHtmlMed", stb_LogStatsCreateHtmlMed);
+        stb_LogStatsUploadHtmlLow = ini.IniReadValue("LOG", "stb_LogStatsUploadHtmlLow", stb_LogStatsUploadHtmlLow);
+        stb_LogStatsUploadHtmlMed = ini.IniReadValue("LOG", "stb_LogStatsUploadHtmlMed", stb_LogStatsUploadHtmlMed);
+        stb_Debug = ini.IniReadValue("LOG", "stb_Debug", stb_Debug);
 
-        #endregion
-
-        #region stb Core
-        //these variables change in runtime, do not alter their default values
-        public Point3d af1 = new Point3d(13800.0, 30890.0, 1.0);
-        public Point3d af2 = new Point3d(18180.0, 30760.0, 1.0);
-        public Point3d af3 = new Point3d(12180.0, 10520.0, 1.0);
-        public Point3d af4 = new Point3d(18830.0, 9810.0, 1.0);
-        public bool stb_BomberMissionTurn = true;
-        public int stb_RedFighters = 0;
-        public int stb_BlueFighters = 0;
-        public double stb_Ratio = 0d;
-        public double stb_Delta = 0d;
-        public string stb_AppPath = (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-        public string stb_FullPath = "";//will be created in runtime
-        public string stb_ErrorLogPath;
-        public string stb_StatsPathTxt;
-        public string stb_StatsPathHtmlLow;
-        public string stb_StatsPathHtmlExtLow;
-        public string stb_StatsPathHtmlMed;
-        public ISectionFile stb_BaseAntiAirDefenses;
-        public ISectionFile stb_Frontline1;
-        public ISectionFile stb_Frontline2;
-        public ISectionFile stb_Frontline3;
-        public ISectionFile stb_Frontline4;
-        public ISectionFile stb_Bombers1;
-        public ISectionFile stb_Bombers2;
-        public NumberFormatInfo stb_nf = new NumberFormatInfo();
-        public int stb_MissionsCount = 1;
-
-        Random stb_random = new Random();
-
-        public ABattle battle = null;
-
-        public IMainMission TWCMainMission;
-        //public AIniFile TWCIniFile;
-        public StbStatRecorder stb_StatRecorder { get; set; }
-        public IStbStatRecorder stb_IStatRecorder { get; set; }
-        public StbSaveIPlayerStat stb_SaveIPlayerStat { get; set; }
-        public IStbSaveIPlayerStat stb_ISaveIPlayerStat { get; set; }
-
-
-
-
-        //initializer method
-        public StatsMission()
+        if (stb_Debug)
         {
-            stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
-            TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
-            TWCMainMission = TWCComms.Communicator.Instance.Main;
-            //TWCIniFile = TWCComms.Communicator.Instance.Ini;
+            string[] ini_vars = { "stb_ServerName_Public", "stb_ServerFilenameIdentifier", "stb_AdminPlayernamePrefix", "stb_LogStatsPublicAddressLow", "stb_LocalMissionStatsDirectory", "stb_LogStatsUploadBasenameLow", "stb_StatsWebPageTagLine", "stb_StatsWebPageLinksLine", "stb_LogStatsUploadFtpBaseDirectory", "stb_LogStatsUploadUserName", "stb_LogStatsUploadPassword", "stb_ResetPlayerStatsWhenKilled", "stb_NoRankTracking", "stb_ResetPlayerStatsWhenKilled", "stb_LogStatsDeadPilotsSuffix", "stb_LogStatsTeamSuffix", "stb_PlayerTimeoutWhenKilled", "stb_PlayerTimeoutWhenKilledDuration_hours", "stb_PlayerTimeoutWhenKilled_OverrideAllowed", "stb_restrictAircraftByKills", "stb_restrictAircraftByRank", "stb_AnnounceStatsMessages", "stb_AnnounceStatsMessagesFrequency", "stb_StatsServerAnnounce", "stb_LogStatsUploadAddressMed", "stb_LogStatsDelay", "stb_LogStats", "stb_LogErrors", "stb_LogStatsCreateHtmlLow", "stb_LogStatsCreateHtmlMed", "stb_LogStatsUploadHtmlLow", "stb_LogStatsUploadHtmlMed", "stb_Debug" };
+            foreach (string ini_var in ini_vars)
+            {
+                Console.WriteLine("Ini value read: {0} = {1}", ini_var, this.GetType().GetField(ini_var).GetValue(this));
+            }
+        }
 
-            string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
-            string stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
-            stb_loadINI(stb_FullPath_ini + stb_StatsINIFilename);
-            //stb_LogStatsUploadAddressLow = "ftp://ftp.brenthugh.com/brenthugh.com/twc/" + stb_LogStatsUploadBasenameLow;        
-            stb_LogStatsUploadAddressLow = stb_LogStatsUploadFtpBaseDirectory + stb_LogStatsUploadBasenameLow;
-            stb_LogStatsUploadAddressExtLow = ".htm";
-            stb_LogStatsUploadFilenameLow = stb_LogStatsUploadBasenameLow + stb_LogStatsUploadAddressExtLow;
-            stb_MissionServer_LogStatsUploadFilenameLow = "mission-stats" + stb_LogStatsUploadAddressExtLow;
-            stb_LogStatsUploadFilenameDeadPilotsLow = stb_LogStatsUploadBasenameLow + stb_LogStatsDeadPilotsSuffix + stb_LogStatsUploadAddressExtLow;
-            stb_LogStatsUploadFilenameTeamLow = stb_LogStatsUploadBasenameLow + stb_LogStatsTeamSuffix + stb_LogStatsUploadAddressExtLow;
-            stb_LogStatsUploadFilenameTeamPrevLow = stb_LogStatsUploadBasenameLow + stb_LogStatsTeamSuffix;
-            stb_ErrorLogPath = stb_ServerFilenameIdentifier + @"_errorlog.txt";//will be combined with fullpath in runtime
-            stb_StatsPathTxt = stb_ServerFilenameIdentifier + @"_playerstats_full.txt";//"
-            stb_StatsPathHtmlLow = stb_ServerFilenameIdentifier + @"_playerstats_low";//"
-            stb_StatsPathHtmlExtLow = @".htm";//"
-            stb_StatsPathHtmlMed = stb_ServerFilenameIdentifier + @"_playerstats_med.htm";//"          
 
-            //int z = 0;
-            //int maxIntValue = 2147483647;
-            //z = maxIntValue + 10;
-            //uint y = (uint)z;
-            //Console.WriteLine("overflow {0} {1} {2}", z, y, (uint)y);
 
-            stb_ChangeAttackProb = (stb_ChangeAttackProbHigh - stb_ChangeAttackProbLow) * stb_random.NextDouble() + stb_ChangeAttackProbLow;
-            stb_ChangeBomberAttackProb = (stb_ChangeBomberAttackProbHigh - stb_ChangeBomberAttackProbLow) * stb_random.NextDouble() + stb_ChangeBomberAttackProbLow;
-            stb_ChangeAttackProb_SmallGroup = (stb_ChangeAttackProb_SmallGroupHigh - stb_ChangeAttackProb_SmallGroupLow) * stb_random.NextDouble() + stb_ChangeAttackProb_SmallGroupLow;
 
-            //if (stb_Debug) Console.WriteLine("stb_ChangeAttackProb: " + stb_ChangeAttackProb + " stb_ChangeBomberAttackProb:" + stb_ChangeBomberAttackProb);
+        /*
+         * This is all remarked out because these variables are now given a default & then overridden by the values in the stats.ini file, if it exists  (see code above)
+         * These remarked-out code can probably just be removed now
+    public string stb_ServerName_Public = "TWC Training Server"; //The name used publicly ie on the stats web pages & in "Welcome to the XXX" type messages.
+    public string stb_ServerFilenameIdentifier = "TWCTRAINING"; //The "private" name of the server used as part of filenames. Will be combined with various suffixes to create filenames for e.g. stats files, log files for this server. Best to avoid using spaces or any strange characters that will cause trouble if part of a filename.
+    public string stb_AdminPlayernamePrefix = @"TWC_"; //anyone whose username starts with this prefix will be allowed access to admin commands in the Chat Commands system. You could also set this to a full username if you want just one certain user to have admin access.
+    public string stb_LogStatsPublicAddressLow = "twcpilots.com"; //Web address to visit for stats page. Used in announcement messages such as "Check your stats online at XXX". Used in-game, not clickable, so best to keep it simple.
+    public string stb_LocalMissionStatsDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where local copies of stats files, .htm files, log files, etc will be kept.  This is in relation to the directory where Launcher.exe /server is found.
+    //If you specify the same directory for several missions (ie, several missions you run in rotation on your server) then all missions will share the same stats files and accumulate stats from mission to mission throughout the rotation. If you want to maintain separate stats for each separate mission, then use separate -stats.mis and -stats.cs files for each mission and modify each one ot use a different stb_LocalMissionStatsDirectory
+    public string stb_LogStatsUploadBasenameLow = "training-server-stats"; //Will be used as the prefix as the initial part of the filename for public web pages created by the server. Directory & suffix will be added. EX: IF you enter XXX, you will get something like http://yourserver.com/yourdirectory/XXX.htm                                                                           
+    public string stb_StatsWebPageTagLine = "<p>Visit <a href=\"http://twcpilots.com\">twcpilots.com</a> for more information about TWC and the TWC Training Server.</p>"; //This is added at 3 points in the stats web page - allows you to link back to your main web page etc in a customizable way   
+    public string stb_StatsWebPageLinksLine = "<p><i><b>Go to:</b> <a href=\"http://brenthugh.com/twc/mission-server-stats.htm\">Mission Server Stats</a> - <a href=\"http://brenthugh.com/twc/training-server-stats.htm\">Training Server Stats</a> - <a href=\"http://brenthugh.com/twc/practice-server-stats.htm\">Practice Server Stats</a> - <a href=\"http://brenthugh.com/twc/stats-archive.htm\">Older Stats Archive</a></i></p>";//This is added at 3 points in the stats web page & allows you to link to other mission stats pages you have or basically anything else you want to insert at these points. You'll have to use full http addresses for any links. Escape any need " characters with backslash, like \"
+    public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.brenthugh.com/brenthugh.com/twc/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
+    public string stb_LogStatsUploadUserName = "exampleusername";  //FTP username
+    public string stb_LogStatsUploadPassword = "examplepassword";  //FTP password
+    //IMPORTANT NOTE: Upload sorttable.js and Style.css to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
+
+    //FUNCTIONALITY RELATED CUSTOMIZATIONS
+    public bool stb_ResetPlayerStatsWhenKilled = true;//If TRUE: When a player is killed, all stats reset to 0 (Old stats are still avail under different "dead player" name however). If FALSE: Player stats are compiled continuously regardless of player death.
+    public string stb_LogStatsDeadPilotsSuffix = "-dead-pilots"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
+
+    public bool stb_PlayerTimeoutWhenKilled = true; //Whether to give a player a "timeout" when killed--a period of time when the player can't log in & play again
+    public double stb_PlayerTimeoutWhenKilledDuration_hours = 0.083334; //Time (in hours) for the player timeout on death. Only active if stb_PlayerTimeoutWhenKilled  is TRUE
+    public bool stb_PlayerTimeoutWhenKilled_OverrideAllowed = true; //Whether to give players the choice to override the death timeout
+
+    public bool stb_restrictAircraftByKills = true; //Whether to restrict A/C until a certain # of kills is reached
+    //int stb_restrictAircraftByKills_RequiredKillNumber = 200; //this has been replaced by a more customizable dictionary approach now
+
+    public bool stb_restrictAircraftByRank = true; //Whether to restrict A/C until a certain ranks are reached
+
+    public bool stb_AnnounceStatsMessages = true;
+    public int stb_AnnounceStatsMessagesFrequency = 29 * 60; //seconds
+    public bool stb_StatsServerAnnounce = true;
+    public string stb_LogStatsUploadAddressMed = "";//not available yet
+    public double stb_LogStatsDelay = 120.0;//seconds 60.0 default
+                                            //public double stb_LogStatsDelay = 10.0;//for testing
+
+    //LOG RELATED CUSTOMIZATIONS
+    public bool stb_LogStats = true;//creates a local file, full stats in txt format. This is the main on/off switch for this entire module. If set to FALSE almost nothing else works--no stats collected, no files saves, etc.
+    public bool stb_LogErrors = true;//creates a local file, errors in txt format, useful for IO or upload errors    
+    public bool stb_LogStatsCreateHtmlLow = true;//creates a local file, summerized stats in html format
+    public bool stb_LogStatsCreateHtmlMed = false;//not available yet - no output even if set to true. Concept is to create a stats page with higher level of detail than HtmlLow.
+    public bool stb_LogStatsUploadHtmlLow = true;//set true to upload - this is the main stats web page in HTML format
+    //Upload sorttable.js and Style.css to the same location on your site manually, created htm depends on them to be viewed properly
+    public bool stb_LogStatsUploadHtmlMed = false;//not available yet
+
+    *** BOTTOM OF SECTION THAT IS REMARKED OUT AND INOPERATIVE (REPLACED BY STATS.INI FILE SYSTEM)
+    */
+    }
+
+    public StbContinueMissionRecorder stb_ContinueMissionRecorder;
+    public StbRankToAllowedAircraft stb_RankToAllowedAircraft;
+    //public StbSaveIPlayerStat stb_SaveIPlayerStat;
+    //public IStbSaveIPlayerStat stb_ISaveIPlayerStat;    
+    public StbAircraftParamStack stb_AircraftParamStack;
+    //public KilledActorsWrapper stb_KilledActors;
+
+
+    public struct StbContinueMission
+    {
+        public Point3d placeLeaveLoc;
+        public Point3d placeEnterLoc;
+        public bool alive;
+        public bool mayContinue;
+        public bool damagedSinceTakeoff;
+        public bool damagedOnlyBySelf;
+        public bool isInPlanePlaceChange;
+        public int selfDamageThisFlight;
+        public int flightStartTime_sec;
+        public int lastPositionEnter_sec; //seconds since 2016 or 0 if never
+        public AiActor posLeftActor;
+        public AiActor posEnterActor;
+        public bool isPlaneLeave;
+        public bool parachuted;
+        public bool isForcedPlaceMove;
+
+        public StbContinueMission(Point3d plc, bool al = true, bool mc = true)
+        {
+            placeLeaveLoc = plc;
+            placeEnterLoc = new Point3d(-100000, -100000, -100000);
+            alive = al;
+            mayContinue = mc;
+            damagedSinceTakeoff = false; //Between these two we can figure out if the only
+            damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
+            isInPlanePlaceChange = false;
+            selfDamageThisFlight = 0; //amount of self-damage sustained during the flight. Perhaps we can be merciful if the amt of self-damage is slight.
+            flightStartTime_sec = StatCalcs.TimeSince2016_sec();
+            lastPositionEnter_sec = 0;
+            posLeftActor = null;
+            posEnterActor = null;
+            isPlaneLeave = false;
+            parachuted = false;
+            isForcedPlaceMove = false;
+        }
+
+        //public override string ToString (string frmt)
+        public override string ToString()
+        {
+            string frmt = "N1";
+            return "(" + placeLeaveLoc.x.ToString(frmt) + ", "
+               + placeLeaveLoc.y.ToString(frmt) + ", "
+               + placeLeaveLoc.z.ToString(frmt) + ") "
+               + "Alive: " + alive.ToString()
+               + " MC: " + mayContinue.ToString()
+               + " Dmgd since takeoff: " + damagedSinceTakeoff.ToString()
+               + " Dmgd only by self: " + damagedOnlyBySelf.ToString()
+               + " Was it an in aircraft place switch? " + isInPlanePlaceChange.ToString()
+               + " Amt self damage this flight: " + selfDamageThisFlight.ToString()
+               + " Flight start time: " + flightStartTime_sec.ToString()
+               + " IsPlaneLeave: " + isPlaneLeave.ToString()
+               + " parachuted: " + parachuted.ToString()
+               + " isForcedPlaceMove: " + isForcedPlaceMove.ToString(); ;
+        }
+    }
+
+
+    public class AircraftParams
+    {
+
+        public Point3d Loc;
+        public Vector3d Vwld;
+        public double time_tick = 0;
+
+        public double Z_AltitudeAGL = 0;
+        public double Z_VelocityMach = 0;
+        public double Z_VelocityMPH = 0;
+        public double vel_mps = 0;
+        public double vel_mph = 0;
+        public double heading = 0;
+        public double pitch = 0;
+        public AiActor actor = null;
+
+        public AircraftParams()
+        {
+        }
+
+        public AircraftParams(Point3d l, Vector3d v, double t = 0, double agl = 0, double vm = 0, double vmps = 0, double vmph = 0, double h = 0, double p = 0, AiActor a = null)
+        {
+            Loc = l;
+            Vwld = v;
+            time_tick = StatCalcs.TimeSince2016_ticks();
+            Z_AltitudeAGL = agl;
+            Z_VelocityMach = vm;
+            Z_VelocityMPH = vm * 600;
+            vel_mps = vmps;
+            vel_mph = vmph;
+            heading = h;
+            pitch = p;
+            actor = a;
+        }
+
+        public AircraftParams(AiActor a)
+        {
+            time_tick = StatCalcs.TimeSince2016_ticks();
+            if (a == null) return;
+            actor = a;
+            Loc = actor.Pos();
+            if ((a as AiAircraft) != null)
+            {
+                AiAircraft aircraft = a as AiAircraft;
+                Z_VelocityMach = aircraft.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
+                Z_VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
+                                                                //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
+                                                                //unit invariant--it comes back as a % of mach whether we are using English or metric units
+                                                                //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
+
+
+                //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+                //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+
+                Vwld = aircraft.AirGroup().Vwld();
+                vel_mps = StatCalcs.CalculatePointDistance(Vwld);
+                vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
+                heading = (StatCalcs.CalculateBearingDegree(Vwld));
+                pitch = StatCalcs.CalculatePitchDegree(Vwld);
+
+                //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
+                //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
+                //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
+
+
+                //vel_mps vel_mph heading pitch
+
+
+            }
+
+
 
         }
 
-        //To add a new general parameter, you need to 1. initialize the variable @ the top of this class with default value 2. Add it to the .ini file 3. Add the line in stb_loadINI to read that new variable 4. Add the name of the variable to the ini_vars string below, so that you can see it output @ console when stb_Debug is on
-        //Probably there is a smoother way to do all of this, perhaps by using a Dictionary (or 2-3 dictionaries for string, int, bool, double, etc) instead of individual variable names
-        private void stb_loadINI(string file)
+
+        //public override string ToString (string frmt)
+        public override string ToString()
+        {
+            string frmt = "N1";
+            string ret = "(" + Loc.x.ToString(frmt) + ", "
+               + Loc.y.ToString(frmt) + ", "
+               + Loc.z.ToString(frmt) + ") "
+               + "(" + Vwld.x.ToString(frmt) + ", "
+               + Vwld.y.ToString(frmt) + ", "
+               + Vwld.z.ToString(frmt) + ") "
+               + "Time: " + time_tick.ToString()
+               + " Alt: " + Z_AltitudeAGL.ToString(frmt)
+               + " Vel_mps: " + vel_mps.ToString(frmt)
+               + " Vel_mph: " + vel_mph.ToString(frmt)
+               + " heading: " + heading.ToString(frmt)
+               + " pitch: " + pitch.ToString(frmt);
+
+            if (actor != null && actor.Name() != null) ret += " actor: " + actor.Name();
+            return ret;
+        }
+    }
+
+
+
+    //Save aircraft state for players periodically & save the last few seconds data, so that when something happens (ie crash, landing,
+    //whatever) we have some idea of what was going on just before that
+    public class StbAircraftParamStack
+    {
+
+        Dictionary<string, CircularArray<AircraftParams>> aircraftParams = new Dictionary<string, CircularArray<AircraftParams>>();
+        double recursInterval = 0.2; //time between saving params
+        int array_size = 6; //Number of param sets to save on the stack, for each player/aircraft
+        StatsMission mission;
+
+        public StbAircraftParamStack(StatsMission m)
+        {
+            mission = m;
+            saveAircraftParamsRecursive();
+        }
+
+        private void addParams(Player player)
         {
 
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
 
-            StatsIniFile ini = new StatsIniFile(file, this);
+            if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
 
-            stb_ServerName_Public = ini.IniReadValue("NAMES", "stb_ServerName_Public", stb_ServerName_Public);
-            stb_ServerFilenameIdentifier = ini.IniReadValue("NAMES", "stb_ServerFilenameIdentifier", stb_ServerFilenameIdentifier);
-            stb_AdminPlayernamePrefix = ini.IniReadValue("NAMES", "stb_AdminPlayernamePrefix", stb_AdminPlayernamePrefix);
-            stb_LogStatsPublicAddressLow = ini.IniReadValue("NAMES", "stb_LogStatsPublicAddressLow", stb_LogStatsPublicAddressLow);
-            stb_LocalMissionStatsDirectory = ini.IniReadValue("NAMES", "stb_LocalMissionStatsDirectory", stb_LocalMissionStatsDirectory);
-            stb_LogStatsUploadBasenameLow = ini.IniReadValue("NAMES", "stb_LogStatsUploadBasenameLow", stb_LogStatsUploadBasenameLow);
-            stb_StatsWebPageTagLine = ini.IniReadValue("NAMES", "stb_StatsWebPageTagLine", stb_StatsWebPageTagLine);
-            stb_StatsWebPageLinksLine = ini.IniReadValue("NAMES", "stb_StatsWebPageLinksLine", stb_StatsWebPageLinksLine);
-            stb_LogStatsUploadFtpBaseDirectory = ini.IniReadValue("NAMES", "stb_LogStatsUploadFtpBaseDirectory", stb_LogStatsUploadFtpBaseDirectory);
-            stb_LogStatsUploadUserName = ini.IniReadValue("NAMES", "stb_LogStatsUploadUserName", stb_LogStatsUploadUserName);
-            stb_LogStatsUploadPassword = ini.IniReadValue("NAMES", "stb_LogStatsUploadPassword", stb_LogStatsUploadPassword);
-            stb_NoRankMessages = ini.IniReadValue("FUNCTIONALITY", "stb_NoRankMessages", stb_NoRankMessages);
-            stb_NoRankTracking = ini.IniReadValue("FUNCTIONALITY", "stb_NoRankTracking", stb_NoRankTracking);
-            stb_LogStatsDeadPilotsSuffix = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsDeadPilotsSuffix", stb_LogStatsDeadPilotsSuffix);
-            stb_LogStatsTeamSuffix = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsTeamSuffix", stb_LogStatsTeamSuffix);
-            stb_PlayerTimeoutWhenKilled = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilled", stb_PlayerTimeoutWhenKilled);
-            stb_PlayerTimeoutWhenKilledDuration_hours = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilledDuration_hours", stb_PlayerTimeoutWhenKilledDuration_hours);
-            stb_PlayerTimeoutWhenKilled_OverrideAllowed = ini.IniReadValue("FUNCTIONALITY", "stb_PlayerTimeoutWhenKilled_OverrideAllowed", stb_PlayerTimeoutWhenKilled_OverrideAllowed);
-            stb_restrictAircraftByKills = ini.IniReadValue("FUNCTIONALITY", "stb_restrictAircraftByKills", stb_restrictAircraftByKills);
-            stb_restrictAircraftByRank = ini.IniReadValue("FUNCTIONALITY", "stb_restrictAircraftByRank", stb_restrictAircraftByRank);
-            stb_AnnounceStatsMessages = ini.IniReadValue("FUNCTIONALITY", "stb_AnnounceStatsMessages", stb_AnnounceStatsMessages);
-            stb_AnnounceStatsMessagesFrequency = ini.IniReadValue("FUNCTIONALITY", "stb_AnnounceStatsMessagesFrequency", stb_AnnounceStatsMessagesFrequency);
-            stb_StatsServerAnnounce = ini.IniReadValue("FUNCTIONALITY", "stb_StatsServerAnnounce", stb_StatsServerAnnounce);
-            stb_LogStatsUploadAddressMed = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsUploadAddressMed", stb_LogStatsUploadAddressMed);
+            AircraftParams ap = new AircraftParams(player.Place());
 
-            stb_ChangeAttackProbHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProbHigh", stb_ChangeAttackProbHigh);
-            stb_ChangeAttackProbLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProbLow", stb_ChangeAttackProbLow);
+            //if (mission.stb_Debug) Console.WriteLine("addParams: " + ap.ToString());
 
-            stb_ChangeBomberAttackProbHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeBomberAttackProbHigh", stb_ChangeBomberAttackProbHigh);
-            stb_ChangeBomberAttackProbLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeBomberAttackProbLow", stb_ChangeBomberAttackProbLow);
+            apa.Push(ap);
 
-            stb_ChangeAttackProb_SmallGroupHigh = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProb_SmallGroupHigh", stb_ChangeAttackProb_SmallGroupHigh);
-            stb_ChangeAttackProb_SmallGroupLow = ini.IniReadValue("FUNCTIONALITY", "stb_ChangeAttackProb_SmallGroupLow", stb_ChangeAttackProb_SmallGroupLow);
+            aircraftParams[player.Name()] = apa;
 
-            stb_POW_EscapeChanceRed = ini.IniReadValue("FUNCTIONALITY", "stb_POW_EscapeChanceRed", stb_POW_EscapeChanceRed);
-            stb_POW_EscapeChanceBlue = ini.IniReadValue("FUNCTIONALITY", "stb_POW_EscapeChanceBlue", stb_POW_EscapeChanceBlue);
-            stb_ASR_RescueChanceRed = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceRed", stb_ASR_RescueChanceRed);
-            stb_ASR_RescueChanceBlue = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceBlue", stb_ASR_RescueChanceBlue);
-            stb_ASR_RescueChanceFriendly = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceFriendly", stb_ASR_RescueChanceFriendly);
-            stb_ASR_RescueChanceEnemy = ini.IniReadValue("FUNCTIONALITY", "stb_ASR_RescueChanceEnemy", stb_ASR_RescueChanceEnemy);
-            stb_ParachuteFailureRecoveryChance = ini.IniReadValue("FUNCTIONALITY", "stb_ParachuteFailureRecoveryChance", stb_ParachuteFailureRecoveryChance);
-            stb_AllowJumpIntoAIAircraft = ini.IniReadValue("FUNCTIONALITY", "stb_AllowJumpIntoAIAircraft", stb_AllowJumpIntoAIAircraft);
+        }
 
+        //returns the player's paramstack as an array (and as a stack, ie latest params are index 0, index 1 is before that, etc)
+        public AircraftParams[] returnParamsArray(Player player)
+        {
 
-            stb_LogStatsDelay = ini.IniReadValue("FUNCTIONALITY", "stb_LogStatsDelay", stb_LogStatsDelay);
-            stb_LogStats = ini.IniReadValue("LOG", "stb_LogStats", stb_LogStats);
-            stb_LogErrors = ini.IniReadValue("LOG", "stb_LogErrors", stb_LogErrors);
-            stb_LogStatsCreateHtmlLow = ini.IniReadValue("LOG", "stb_LogStatsCreateHtmlLow", stb_LogStatsCreateHtmlLow);
-            stb_LogStatsCreateHtmlMed = ini.IniReadValue("LOG", "stb_LogStatsCreateHtmlMed", stb_LogStatsCreateHtmlMed);
-            stb_LogStatsUploadHtmlLow = ini.IniReadValue("LOG", "stb_LogStatsUploadHtmlLow", stb_LogStatsUploadHtmlLow);
-            stb_LogStatsUploadHtmlMed = ini.IniReadValue("LOG", "stb_LogStatsUploadHtmlMed", stb_LogStatsUploadHtmlMed);
-            stb_Debug = ini.IniReadValue("LOG", "stb_Debug", stb_Debug);
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
 
-            if (stb_Debug)
+            if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
+
+            return apa.ArrayStack;
+
+        }
+
+        //figures the max/min of a few key values over the life of the params - steepest pitch, highest downward/z velocity, highest speed, etc
+        public AircraftParams returnMaxes(Player player)
+        {
+
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
+
+            if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
+
+            AircraftParams apMax = new AircraftParams();
+            bool starting = true;
+
+            //return apa.ArrayStack;
+            foreach (AircraftParams ap in apa.ArrayStack)
             {
-                string[] ini_vars = { "stb_ServerName_Public", "stb_ServerFilenameIdentifier", "stb_AdminPlayernamePrefix", "stb_LogStatsPublicAddressLow", "stb_LocalMissionStatsDirectory", "stb_LogStatsUploadBasenameLow", "stb_StatsWebPageTagLine", "stb_StatsWebPageLinksLine", "stb_LogStatsUploadFtpBaseDirectory", "stb_LogStatsUploadUserName", "stb_LogStatsUploadPassword", "stb_ResetPlayerStatsWhenKilled", "stb_NoRankTracking", "stb_ResetPlayerStatsWhenKilled", "stb_LogStatsDeadPilotsSuffix", "stb_LogStatsTeamSuffix", "stb_PlayerTimeoutWhenKilled", "stb_PlayerTimeoutWhenKilledDuration_hours", "stb_PlayerTimeoutWhenKilled_OverrideAllowed", "stb_restrictAircraftByKills", "stb_restrictAircraftByRank", "stb_AnnounceStatsMessages", "stb_AnnounceStatsMessagesFrequency", "stb_StatsServerAnnounce", "stb_LogStatsUploadAddressMed", "stb_LogStatsDelay", "stb_LogStats", "stb_LogErrors", "stb_LogStatsCreateHtmlLow", "stb_LogStatsCreateHtmlMed", "stb_LogStatsUploadHtmlLow", "stb_LogStatsUploadHtmlMed", "stb_Debug" };
-                foreach (string ini_var in ini_vars)
+
+                //if (starting || ap.Vwld.z < apMax.Vwld.z) apMax.Vwld = ap.Vwld;  //Gets Vwld @ moment of max downward velocity 
+                if (starting || apMax.Vwld.z <= 0)
                 {
-                    Console.WriteLine("Ini value read: {0} = {1}", ini_var, this.GetType().GetField(ini_var).GetValue(this));
+                    apMax.Vwld = ap.Vwld;  //Gets Vwld.z just before hitting ground (ie Vwld.z = 0 or greater)
+                    apMax.vel_mph = ap.vel_mph; //also gets the overall velocity at this moment--the moment just before impact w/ the ground
+                                                //if we didn't hit the ground (say, Vwld.z is always 0 or greater) then we must have hit into something as we were flying or rolling across the ground.  In that case we get the first value on the stack which is OK--this is the speed etc just before impact.
                 }
+                //if (starting || ap.vel_mph > apMax.vel_mph) apMax.vel_mph = ap.vel_mph;  //Gets largest vel_mph
+                if (apMax.vel_mph <= 0 && ap.vel_mph > 0) apMax.vel_mph = ap.vel_mph;  //One exception--if the vel we pick up @ moment of impact is zero then we'll replace it with the previous one, if that is larger
+                                                                                       //if (starting || ap.pitch < apMax.pitch) apMax.pitch = ap.pitch;  //Gets smallest pitch (ie, most negative)
+                if (starting || apMax.pitch <= 0) apMax.pitch = ap.pitch;  //Similarly, gets pitch just before hitting ground, ie, just before pitch goes 0 or positive
+                if (starting) apMax.actor = ap.actor;
+
+                starting = false;
+
+
             }
 
+            return apMax;
 
-
-
-            /*
-             * This is all remarked out because these variables are now given a default & then overridden by the values in the stats.ini file, if it exists  (see code above)
-             * These remarked-out code can probably just be removed now
-        public string stb_ServerName_Public = "TWC Training Server"; //The name used publicly ie on the stats web pages & in "Welcome to the XXX" type messages.
-        public string stb_ServerFilenameIdentifier = "TWCTRAINING"; //The "private" name of the server used as part of filenames. Will be combined with various suffixes to create filenames for e.g. stats files, log files for this server. Best to avoid using spaces or any strange characters that will cause trouble if part of a filename.
-        public string stb_AdminPlayernamePrefix = @"TWC_"; //anyone whose username starts with this prefix will be allowed access to admin commands in the Chat Commands system. You could also set this to a full username if you want just one certain user to have admin access.
-        public string stb_LogStatsPublicAddressLow = "twcpilots.com"; //Web address to visit for stats page. Used in announcement messages such as "Check your stats online at XXX". Used in-game, not clickable, so best to keep it simple.
-        public string stb_LocalMissionStatsDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where local copies of stats files, .htm files, log files, etc will be kept.  This is in relation to the directory where Launcher.exe /server is found.
-        //If you specify the same directory for several missions (ie, several missions you run in rotation on your server) then all missions will share the same stats files and accumulate stats from mission to mission throughout the rotation. If you want to maintain separate stats for each separate mission, then use separate -stats.mis and -stats.cs files for each mission and modify each one ot use a different stb_LocalMissionStatsDirectory
-        public string stb_LogStatsUploadBasenameLow = "training-server-stats"; //Will be used as the prefix as the initial part of the filename for public web pages created by the server. Directory & suffix will be added. EX: IF you enter XXX, you will get something like http://yourserver.com/yourdirectory/XXX.htm                                                                           
-        public string stb_StatsWebPageTagLine = "<p>Visit <a href=\"http://twcpilots.com\">twcpilots.com</a> for more information about TWC and the TWC Training Server.</p>"; //This is added at 3 points in the stats web page - allows you to link back to your main web page etc in a customizable way   
-        public string stb_StatsWebPageLinksLine = "<p><i><b>Go to:</b> <a href=\"http://brenthugh.com/twc/mission-server-stats.htm\">Mission Server Stats</a> - <a href=\"http://brenthugh.com/twc/training-server-stats.htm\">Training Server Stats</a> - <a href=\"http://brenthugh.com/twc/practice-server-stats.htm\">Practice Server Stats</a> - <a href=\"http://brenthugh.com/twc/stats-archive.htm\">Older Stats Archive</a></i></p>";//This is added at 3 points in the stats web page & allows you to link to other mission stats pages you have or basically anything else you want to insert at these points. You'll have to use full http addresses for any links. Escape any need " characters with backslash, like \"
-        public string stb_LogStatsUploadFtpBaseDirectory = "ftp://ftp.brenthugh.com/brenthugh.com/twc/"; //filenames will be added to this; trailing slash required.  Used for the FTP upload (ie, the FTP directory, not the publicly visible HTTP directory)
-        public string stb_LogStatsUploadUserName = "exampleusername";  //FTP username
-        public string stb_LogStatsUploadPassword = "examplepassword";  //FTP password
-        //IMPORTANT NOTE: Upload sorttable.js and Style.css to stb_LogStatsUploadFtpBaseDirectory also--the stats web pages that will be uploaded to that directory depend on them to be viewed properly
-
-        //FUNCTIONALITY RELATED CUSTOMIZATIONS
-        public bool stb_ResetPlayerStatsWhenKilled = true;//If TRUE: When a player is killed, all stats reset to 0 (Old stats are still avail under different "dead player" name however). If FALSE: Player stats are compiled continuously regardless of player death.
-        public string stb_LogStatsDeadPilotsSuffix = "-dead-pilots"; //Will be added to stb_LogStatsUploadBasenameLow when saving stats pages for the dead pilots list. Generally, no need to change or customize th is.
-
-        public bool stb_PlayerTimeoutWhenKilled = true; //Whether to give a player a "timeout" when killed--a period of time when the player can't log in & play again
-        public double stb_PlayerTimeoutWhenKilledDuration_hours = 0.083334; //Time (in hours) for the player timeout on death. Only active if stb_PlayerTimeoutWhenKilled  is TRUE
-        public bool stb_PlayerTimeoutWhenKilled_OverrideAllowed = true; //Whether to give players the choice to override the death timeout
-
-        public bool stb_restrictAircraftByKills = true; //Whether to restrict A/C until a certain # of kills is reached
-        //int stb_restrictAircraftByKills_RequiredKillNumber = 200; //this has been replaced by a more customizable dictionary approach now
-
-        public bool stb_restrictAircraftByRank = true; //Whether to restrict A/C until a certain ranks are reached
-
-        public bool stb_AnnounceStatsMessages = true;
-        public int stb_AnnounceStatsMessagesFrequency = 29 * 60; //seconds
-        public bool stb_StatsServerAnnounce = true;
-        public string stb_LogStatsUploadAddressMed = "";//not available yet
-        public double stb_LogStatsDelay = 120.0;//seconds 60.0 default
-                                                //public double stb_LogStatsDelay = 10.0;//for testing
-
-        //LOG RELATED CUSTOMIZATIONS
-        public bool stb_LogStats = true;//creates a local file, full stats in txt format. This is the main on/off switch for this entire module. If set to FALSE almost nothing else works--no stats collected, no files saves, etc.
-        public bool stb_LogErrors = true;//creates a local file, errors in txt format, useful for IO or upload errors    
-        public bool stb_LogStatsCreateHtmlLow = true;//creates a local file, summerized stats in html format
-        public bool stb_LogStatsCreateHtmlMed = false;//not available yet - no output even if set to true. Concept is to create a stats page with higher level of detail than HtmlLow.
-        public bool stb_LogStatsUploadHtmlLow = true;//set true to upload - this is the main stats web page in HTML format
-        //Upload sorttable.js and Style.css to the same location on your site manually, created htm depends on them to be viewed properly
-        public bool stb_LogStatsUploadHtmlMed = false;//not available yet
-
-        *** BOTTOM OF SECTION THAT IS REMARKED OUT AND INOPERATIVE (REPLACED BY STATS.INI FILE SYSTEM)
-        */
         }
-
-        public StbContinueMissionRecorder stb_ContinueMissionRecorder;
-        public StbRankToAllowedAircraft stb_RankToAllowedAircraft;
-        //public StbSaveIPlayerStat stb_SaveIPlayerStat;
-        //public IStbSaveIPlayerStat stb_ISaveIPlayerStat;    
-        public StbAircraftParamStack stb_AircraftParamStack;
-        //public KilledActorsWrapper stb_KilledActors;
-
-
-        public struct StbContinueMission
-        {
-            public Point3d placeLeaveLoc;
-            public Point3d placeEnterLoc;
-            public bool alive;
-            public bool mayContinue;
-            public bool damagedSinceTakeoff;
-            public bool damagedOnlyBySelf;
-            public bool isInPlanePlaceChange;
-            public int selfDamageThisFlight;
-            public int flightStartTime_sec;
-            public int lastPositionEnter_sec; //seconds since 2016 or 0 if never
-            public AiActor posLeftActor;
-            public AiActor posEnterActor;
-            public bool isPlaneLeave;
-            public bool parachuted;
-            public bool isForcedPlaceMove;
-
-            public StbContinueMission(Point3d plc, bool al = true, bool mc = true)
-            {
-                placeLeaveLoc = plc;
-                placeEnterLoc = new Point3d(-100000, -100000, -100000);
-                alive = al;
-                mayContinue = mc;
-                damagedSinceTakeoff = false; //Between these two we can figure out if the only
-                damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
-                isInPlanePlaceChange = false;
-                selfDamageThisFlight = 0; //amount of self-damage sustained during the flight. Perhaps we can be merciful if the amt of self-damage is slight.
-                flightStartTime_sec = StatCalcs.TimeSince2016_sec();
-                lastPositionEnter_sec = 0;
-                posLeftActor = null;
-                posEnterActor = null;
-                isPlaneLeave = false;
-                parachuted = false;
-                isForcedPlaceMove = false;
-            }
-
-            //public override string ToString (string frmt)
-            public override string ToString()
-            {
-                string frmt = "N1";
-                return "(" + placeLeaveLoc.x.ToString(frmt) + ", "
-                   + placeLeaveLoc.y.ToString(frmt) + ", "
-                   + placeLeaveLoc.z.ToString(frmt) + ") "
-                   + "Alive: " + alive.ToString()
-                   + " MC: " + mayContinue.ToString()
-                   + " Dmgd since takeoff: " + damagedSinceTakeoff.ToString()
-                   + " Dmgd only by self: " + damagedOnlyBySelf.ToString()
-                   + " Was it an in aircraft place switch? " + isInPlanePlaceChange.ToString()
-                   + " Amt self damage this flight: " + selfDamageThisFlight.ToString()
-                   + " Flight start time: " + flightStartTime_sec.ToString()
-                   + " IsPlaneLeave: " + isPlaneLeave.ToString()
-                   + " parachuted: " + parachuted.ToString()
-                   + " isForcedPlaceMove: " + isForcedPlaceMove.ToString(); ;
-            }
-        }
-
-
-        public class AircraftParams
+        //returns a particular param for the player.  0 is most recent, 1 just before that etc.
+        public AircraftParams returnParams(Player player, int index)
         {
 
-            public Point3d Loc;
-            public Vector3d Vwld;
-            public double time_tick = 0;
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
 
-            public double Z_AltitudeAGL = 0;
-            public double Z_VelocityMach = 0;
-            public double Z_VelocityMPH = 0;
-            public double vel_mps = 0;
-            public double vel_mph = 0;
-            public double heading = 0;
-            public double pitch = 0;
-            public AiActor actor = null;
+            if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
 
-            public AircraftParams()
-            {
-            }
+            //return apa.GetStack(index); //Note - 10/2018 - I belive the GetStack is incorrect for this purpose & that GetStack will return the OLDEST param in the bin
+            return apa.Get(index);  //Get will return the NEWEST item, the one most recently pushed  on.  
+                                    //This doesn't seem to vital as this function is never used (?)
 
-            public AircraftParams(Point3d l, Vector3d v, double t = 0, double agl = 0, double vm = 0, double vmps = 0, double vmph = 0, double h = 0, double p = 0, AiActor a = null)
-            {
-                Loc = l;
-                Vwld = v;
-                time_tick = StatCalcs.TimeSince2016_ticks();
-                Z_AltitudeAGL = agl;
-                Z_VelocityMach = vm;
-                Z_VelocityMPH = vm * 600;
-                vel_mps = vmps;
-                vel_mph = vmph;
-                heading = h;
-                pitch = p;
-                actor = a;
-            }
-
-            public AircraftParams(AiActor a)
-            {
-                time_tick = StatCalcs.TimeSince2016_ticks();
-                if (a == null) return;
-                actor = a;
-                Loc = actor.Pos();
-                if ((a as AiAircraft) != null)
-                {
-                    AiAircraft aircraft = a as AiAircraft;
-                    Z_VelocityMach = aircraft.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
-                    Z_VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
-                                                                    //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
-                                                                    //unit invariant--it comes back as a % of mach whether we are using English or metric units
-                                                                    //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
-
-
-                    //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                    Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                    //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                    //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-                    //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                    //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-
-                    Vwld = aircraft.AirGroup().Vwld();
-                    vel_mps = StatCalcs.CalculatePointDistance(Vwld);
-                    vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
-                    heading = (StatCalcs.CalculateBearingDegree(Vwld));
-                    pitch = StatCalcs.CalculatePitchDegree(Vwld);
-
-                    //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
-                    //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
-                    //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
-
-
-                    //vel_mps vel_mph heading pitch
-
-
-                }
-
-
-
-            }
-
-
-            //public override string ToString (string frmt)
-            public override string ToString()
-            {
-                string frmt = "N1";
-                string ret = "(" + Loc.x.ToString(frmt) + ", "
-                   + Loc.y.ToString(frmt) + ", "
-                   + Loc.z.ToString(frmt) + ") "
-                   + "(" + Vwld.x.ToString(frmt) + ", "
-                   + Vwld.y.ToString(frmt) + ", "
-                   + Vwld.z.ToString(frmt) + ") "
-                   + "Time: " + time_tick.ToString()
-                   + " Alt: " + Z_AltitudeAGL.ToString(frmt)
-                   + " Vel_mps: " + vel_mps.ToString(frmt)
-                   + " Vel_mph: " + vel_mph.ToString(frmt)
-                   + " heading: " + heading.ToString(frmt)
-                   + " pitch: " + pitch.ToString(frmt);
-
-                if (actor != null && actor.Name() != null) ret += " actor: " + actor.Name();
-                return ret;
-            }
         }
 
-
-
-        //Save aircraft state for players periodically & save the last few seconds data, so that when something happens (ie crash, landing,
-        //whatever) we have some idea of what was going on just before that
-        public class StbAircraftParamStack
+        private void saveAircraftParamsRecursive()
         {
-
-            Dictionary<string, CircularArray<AircraftParams>> aircraftParams = new Dictionary<string, CircularArray<AircraftParams>>();
-            double recursInterval = 0.2; //time between saving params
-            int array_size = 6; //Number of param sets to save on the stack, for each player/aircraft
-            StatsMission mission;
-
-            public StbAircraftParamStack(StatsMission m)
-            {
-                mission = m;
-                saveAircraftParamsRecursive();
-            }
-
-            private void addParams(Player player)
+            try
             {
 
-                CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
+                mission.Timeout(recursInterval, () => { saveAircraftParamsRecursive(); });
 
-                if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
-
-                AircraftParams ap = new AircraftParams(player.Place());
-
-                //if (mission.stb_Debug) Console.WriteLine("addParams: " + ap.ToString());
-
-                apa.Push(ap);
-
-                aircraftParams[player.Name()] = apa;
-
-            }
-
-            //returns the player's paramstack as an array (and as a stack, ie latest params are index 0, index 1 is before that, etc)
-            public AircraftParams[] returnParamsArray(Player player)
-            {
-
-                CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
-
-                if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
-
-                return apa.ArrayStack;
-
-            }
-
-            //figures the max/min of a few key values over the life of the params - steepest pitch, highest downward/z velocity, highest speed, etc
-            public AircraftParams returnMaxes(Player player)
-            {
-
-                CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
-
-                if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
-
-                AircraftParams apMax = new AircraftParams();
-                bool starting = true;
-
-                //return apa.ArrayStack;
-                foreach (AircraftParams ap in apa.ArrayStack)
+                if (mission.GamePlay.gpPlayer() != null)
                 {
 
-                    //if (starting || ap.Vwld.z < apMax.Vwld.z) apMax.Vwld = ap.Vwld;  //Gets Vwld @ moment of max downward velocity 
-                    if (starting || apMax.Vwld.z <= 0)
+                    addParams(mission.GamePlay.gpPlayer());
+                } // Multiplayer
+                if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
+                {
+                    foreach (Player p in mission.GamePlay.gpRemotePlayers())
                     {
-                        apMax.Vwld = ap.Vwld;  //Gets Vwld.z just before hitting ground (ie Vwld.z = 0 or greater)
-                        apMax.vel_mph = ap.vel_mph; //also gets the overall velocity at this moment--the moment just before impact w/ the ground
-                                                    //if we didn't hit the ground (say, Vwld.z is always 0 or greater) then we must have hit into something as we were flying or rolling across the ground.  In that case we get the first value on the stack which is OK--this is the speed etc just before impact.
+
+                        addParams(p);
                     }
-                    //if (starting || ap.vel_mph > apMax.vel_mph) apMax.vel_mph = ap.vel_mph;  //Gets largest vel_mph
-                    if (apMax.vel_mph <= 0 && ap.vel_mph > 0) apMax.vel_mph = ap.vel_mph;  //One exception--if the vel we pick up @ moment of impact is zero then we'll replace it with the previous one, if that is larger
-                                                                                           //if (starting || ap.pitch < apMax.pitch) apMax.pitch = ap.pitch;  //Gets smallest pitch (ie, most negative)
-                    if (starting || apMax.pitch <= 0) apMax.pitch = ap.pitch;  //Similarly, gets pitch just before hitting ground, ie, just before pitch goes 0 or positive
-                    if (starting) apMax.actor = ap.actor;
-
-                    starting = false;
-
-
                 }
 
-                return apMax;
+
+
 
             }
-            //returns a particular param for the player.  0 is most recent, 1 just before that etc.
-            public AircraftParams returnParams(Player player, int index)
-            {
-
-                CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
-
-                if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
-
-                //return apa.GetStack(index); //Note - 10/2018 - I belive the GetStack is incorrect for this purpose & that GetStack will return the OLDEST param in the bin
-                return apa.Get(index);  //Get will return the NEWEST item, the one most recently pushed  on.  
-                                        //This doesn't seem to vital as this function is never used (?)
-
-            }
-
-            private void saveAircraftParamsRecursive()
-            {
-                try
-                {
-
-                    mission.Timeout(recursInterval, () => { saveAircraftParamsRecursive(); });
-
-                    if (mission.GamePlay.gpPlayer() != null)
-                    {
-
-                        addParams(mission.GamePlay.gpPlayer());
-                    } // Multiplayer
-                    if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
-                    {
-                        foreach (Player p in mission.GamePlay.gpRemotePlayers())
-                        {
-
-                            addParams(p);
-                        }
-                    }
-
-
-
-
-                }
-                catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
-
-            }
-
+            catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
 
         }
 
 
+    }
 
-        //This is a partial implementation of maddox.game.IPlayerStat with only the particular fields that we are interested in saving
-        //It has an additional int[] array where we can save current session values when they go into StatRecorder, thus
-        //having a record of things that happened in this session ONLY in addition to the overall/all time records in StatRecorder
-        public class Stb_PlayerSessStat
+
+
+    //This is a partial implementation of maddox.game.IPlayerStat with only the particular fields that we are interested in saving
+    //It has an additional int[] array where we can save current session values when they go into StatRecorder, thus
+    //having a record of things that happened in this session ONLY in addition to the overall/all time records in StatRecorder
+    public class Stb_PlayerSessStat
+    {
+
+        private StatsMission mission;
+        public int landings = 0;
+        public int bombsFire = 0;
+        public int bombsHit = 0;
+        public double bombsWeight = 0; //This appears to be the weight of all bombs fired, not just those that hit a target, in kg
+        public int bulletsFire = 0;
+        public int bulletsHit = 0; //bullets hitting any thing (presumably any target?)
+        public int bulletsHitAir = 0;  //bullets hitting an aircraft
+        public double fkills = 0;
+        //gkills = 0;  //presumably ground kills, though I haven't been able to get any to register.  Array of int
+        //fgkills = 0; //presumably friendly ground kills.  int[]
+        public double kills = 0;  //mirror of the kills # shown in CloD netstats
+        public int deaths = 0;
+        public int bails = 0;
+        public int ditches = 0;
+        public int planeChanges = 0;
+        public int planesWrittenOff = 0;
+        public Player player = null;
+        //public int[] sessStats = null;
+        public Dictionary<int, int> sessStats = new Dictionary<int, int>();
+
+
+
+        public Stb_PlayerSessStat(StatsMission msn)
         {
 
-            private StatsMission mission;
-            public int landings = 0;
-            public int bombsFire = 0;
-            public int bombsHit = 0;
-            public double bombsWeight = 0; //This appears to be the weight of all bombs fired, not just those that hit a target, in kg
-            public int bulletsFire = 0;
-            public int bulletsHit = 0; //bullets hitting any thing (presumably any target?)
-            public int bulletsHitAir = 0;  //bullets hitting an aircraft
-            public double fkills = 0;
-            //gkills = 0;  //presumably ground kills, though I haven't been able to get any to register.  Array of int
-            //fgkills = 0; //presumably friendly ground kills.  int[]
-            public double kills = 0;  //mirror of the kills # shown in CloD netstats
-            public int deaths = 0;
-            public int bails = 0;
-            public int ditches = 0;
-            public int planeChanges = 0;
-            public int planesWrittenOff = 0;
-            public Player player = null;
-            //public int[] sessStats = null;
-            public Dictionary<int, int> sessStats = new Dictionary<int, int>();
+            mission = msn;
+            //sessStats=new int[mission.stb_StatRecorder.stbSr_numStats];
+        }
 
 
+        //set
+        public void Set(IPlayerStat Ips)
+        {
+            //create a null IPlayerStat for initializing any player's IPStat
+            landings = Ips.landings;
+            bombsFire = Ips.bombsFire;
+            bombsHit = Ips.bombsHit;
+            bombsWeight = Ips.bombsWeight;
+            bulletsFire = Ips.bulletsFire;
+            bulletsHit = Ips.bulletsHit;
+            bulletsHitAir = Ips.bulletsHitAir;
+            fkills = Ips.fkills;
+            //gkills=Ips.gkills;
+            //fgkillIps.fgkills;
+            kills = Ips.kills;
+            deaths = Ips.deaths;
+            bails = Ips.bails;
+            ditches = Ips.ditches;
+            planeChanges = Ips.planeChanges;
+            planesWrittenOff = Ips.planesWrittenOff;
+            player = Ips.player;
 
-            public Stb_PlayerSessStat(StatsMission msn)
+            //we don't touch the existing sessStats array, which is one reason we need to update an existing sessStats here instead of just starting one afresh
+        }
+
+        //in case of null player, as for example when recording some stats for a player
+        //who is not logged in at the moment
+        public void Set(Player p)
+        {
+            //create a null IPlayerStat for initializing any player's IPStat
+            landings = 0;
+            bombsFire = 0;
+            bombsHit = 0;
+            bombsWeight = 0;
+            bulletsFire = 0;
+            bulletsHit = 0;
+            bulletsHitAir = 0;
+            fkills = 0;
+            //gkills=Ips.gkills;
+            //fgkillIps.fgkills;
+            kills = 0;
+            deaths = 0;
+            bails = 0;
+            ditches = 0;
+            planeChanges = 0;
+            planesWrittenOff = 0;
+            player = p;
+
+            //we don't touch the existing sessStats array, which is one reason we need to update an existing sessStats here instead of just starting one afresh
+        }
+
+        //Gets the value @ sessStat[index] while bumbling around the little irritating thing you have to do with Dictionaries in case the index doesn't already exist
+        public int getSessStat(int index)
+        {
+
+            int currValue = 0;
+
+            if (!sessStats.TryGetValue(index, out currValue))
             {
-
-                mission = msn;
-                //sessStats=new int[mission.stb_StatRecorder.stbSr_numStats];
+                currValue = 0;
             }
 
-
-            //set
-            public void Set(IPlayerStat Ips)
-            {
-                //create a null IPlayerStat for initializing any player's IPStat
-                landings = Ips.landings;
-                bombsFire = Ips.bombsFire;
-                bombsHit = Ips.bombsHit;
-                bombsWeight = Ips.bombsWeight;
-                bulletsFire = Ips.bulletsFire;
-                bulletsHit = Ips.bulletsHit;
-                bulletsHitAir = Ips.bulletsHitAir;
-                fkills = Ips.fkills;
-                //gkills=Ips.gkills;
-                //fgkillIps.fgkills;
-                kills = Ips.kills;
-                deaths = Ips.deaths;
-                bails = Ips.bails;
-                ditches = Ips.ditches;
-                planeChanges = Ips.planeChanges;
-                planesWrittenOff = Ips.planesWrittenOff;
-                player = Ips.player;
-
-                //we don't touch the existing sessStats array, which is one reason we need to update an existing sessStats here instead of just starting one afresh
-            }
-
-            //in case of null player, as for example when recording some stats for a player
-            //who is not logged in at the moment
-            public void Set(Player p)
-            {
-                //create a null IPlayerStat for initializing any player's IPStat
-                landings = 0;
-                bombsFire = 0;
-                bombsHit = 0;
-                bombsWeight = 0;
-                bulletsFire = 0;
-                bulletsHit = 0;
-                bulletsHitAir = 0;
-                fkills = 0;
-                //gkills=Ips.gkills;
-                //fgkillIps.fgkills;
-                kills = 0;
-                deaths = 0;
-                bails = 0;
-                ditches = 0;
-                planeChanges = 0;
-                planesWrittenOff = 0;
-                player = p;
-
-                //we don't touch the existing sessStats array, which is one reason we need to update an existing sessStats here instead of just starting one afresh
-            }
-
-            //Gets the value @ sessStat[index] while bumbling around the little irritating thing you have to do with Dictionaries in case the index doesn't already exist
-            public int getSessStat(int index)
-            {
-
-                int currValue = 0;
-
-                if (!sessStats.TryGetValue(index, out currValue))
-                {
-                    currValue = 0;
-                }
-
-                return currValue;
-
-            }
-
-            public string ToString()
-            {
-
-                return String.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13}",
-                        landings,
-                        bombsFire,
-                        bombsHit,
-                        bombsWeight,
-                        bulletsFire,
-                        bulletsHit,
-                        bulletsHitAir,
-                        fkills,
-                        //gkills,
-                        //fgkillIps.fgkills,
-                        kills,
-                        deaths,
-                        bails,
-                        ditches,
-                        planeChanges,
-                        planesWrittenOff,
-                        player);
-
-            }
+            return currValue;
 
         }
 
-        //the purpose of this class is to track certain stats that CLoD provides over the course of a mission for each player.  Clod provides a running total of these stats for the player's entire session.
-        //We save these stats for each player when the player joins, when the player quits, and a few times in between.
-        //Then we do some calculations to figure out how much of each of these various stats the player has accumulated
-        //over the course of the entire session and save the stat accumulation to our TWC stats for the player.
-        //This is complicated by the fact that we 1. Don't want to double-count stats for a player but 2. Want to save them somewhat
-        //often to ensure that they are not lost by some glitch or session end and 3. The player will sometimes die etc and
-        //for our purposes we care about stats PER LIFE not necessarily per session or per mission.  So we have to 
-        //track the CloD stats in various ways and then split them up or assign them to the player's lives at various points, being
-        //sure not to double-count
-        public class StbSaveIPlayerStat : IStbSaveIPlayerStat
+        public string ToString()
         {
-            public Dictionary<string, Stb_PlayerSessStat> stbSis_saveIPlayerStat = new Dictionary<string, Stb_PlayerSessStat>();
-            StatsMission mission;
-            private bool stbSis_LogErrors;
-            private string stbSis_ErrorLogPath;
 
-            public Stb_PlayerSessStat BlueSessStats; //the overall stats summary for both teams for <obj
-            public Stb_PlayerSessStat RedSessStats;
+            return String.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13}",
+                    landings,
+                    bombsFire,
+                    bombsHit,
+                    bombsWeight,
+                    bulletsFire,
+                    bulletsHit,
+                    bulletsHitAir,
+                    fkills,
+                    //gkills,
+                    //fgkillIps.fgkills,
+                    kills,
+                    deaths,
+                    bails,
+                    ditches,
+                    planeChanges,
+                    planesWrittenOff,
+                    player);
+
+        }
+
+    }
+
+    //the purpose of this class is to track certain stats that CLoD provides over the course of a mission for each player.  Clod provides a running total of these stats for the player's entire session.
+    //We save these stats for each player when the player joins, when the player quits, and a few times in between.
+    //Then we do some calculations to figure out how much of each of these various stats the player has accumulated
+    //over the course of the entire session and save the stat accumulation to our TWC stats for the player.
+    //This is complicated by the fact that we 1. Don't want to double-count stats for a player but 2. Want to save them somewhat
+    //often to ensure that they are not lost by some glitch or session end and 3. The player will sometimes die etc and
+    //for our purposes we care about stats PER LIFE not necessarily per session or per mission.  So we have to 
+    //track the CloD stats in various ways and then split them up or assign them to the player's lives at various points, being
+    //sure not to double-count
+    public class StbSaveIPlayerStat : IStbSaveIPlayerStat
+    {
+        public Dictionary<string, Stb_PlayerSessStat> stbSis_saveIPlayerStat = new Dictionary<string, Stb_PlayerSessStat>();
+        StatsMission mission;
+        private bool stbSis_LogErrors;
+        private string stbSis_ErrorLogPath;
+
+        public Stb_PlayerSessStat BlueSessStats; //the overall stats summary for both teams for <obj
+        public Stb_PlayerSessStat RedSessStats;
 
 
 
-            //constructor
-            public StbSaveIPlayerStat(StatsMission msn, bool le, string elp)
+        //constructor
+        public StbSaveIPlayerStat(StatsMission msn, bool le, string elp)
+        {
+
+            stbSis_LogErrors = le;
+            stbSis_ErrorLogPath = elp;
+
+            mission = msn;
+
+            BlueSessStats = new Stb_PlayerSessStat(mission);
+            RedSessStats = new Stb_PlayerSessStat(mission);
+
+        }
+
+        //run through all entries (by playername) in the dictionary, and save them. This depends on a dictionary entry each player 
+        //having been initialized at some point, so do StbSis_Save(player) for each player at some logical point, like when they connect
+        public void StbSis_SaveAll()
+        {
+            //OK, so StbSis_Save changes the value of stbSis_saveIPlayerStat during its run.  So that means
+            //we can't use stbSis_saveIPlayerStat in the foreach loop because it changes mid-loop
+            //So instead we run the loop with a temp copy
+            Dictionary<string, Stb_PlayerSessStat> stbSis_saveIPlayerStatTEMP = new Dictionary<string, Stb_PlayerSessStat>(stbSis_saveIPlayerStat);
+            //stbSis_saveIPlayerStatTEMP = stbSis_saveIPlayerStat; //doing it this way just makes them two different names for the same actual object
+
+            foreach (KeyValuePair<string, Stb_PlayerSessStat> entry in stbSis_saveIPlayerStatTEMP)
             {
-
-                stbSis_LogErrors = le;
-                stbSis_ErrorLogPath = elp;
-
-                mission = msn;
-
-                BlueSessStats = new Stb_PlayerSessStat(mission);
-                RedSessStats = new Stb_PlayerSessStat(mission);
-
+                StbSis_Save(entry.Value.player);
             }
-
-            //run through all entries (by playername) in the dictionary, and save them. This depends on a dictionary entry each player 
-            //having been initialized at some point, so do StbSis_Save(player) for each player at some logical point, like when they connect
-            public void StbSis_SaveAll()
+            /*foreach (string playername in stbSis_saveIPlayerStat.Keys.ToList())
             {
-                //OK, so StbSis_Save changes the value of stbSis_saveIPlayerStat during its run.  So that means
-                //we can't use stbSis_saveIPlayerStat in the foreach loop because it changes mid-loop
-                //So instead we run the loop with a temp copy
-                Dictionary<string, Stb_PlayerSessStat> stbSis_saveIPlayerStatTEMP = new Dictionary<string, Stb_PlayerSessStat>(stbSis_saveIPlayerStat);
-                //stbSis_saveIPlayerStatTEMP = stbSis_saveIPlayerStat; //doing it this way just makes them two different names for the same actual object
+                StbSis_Save(stbSis_saveIPlayerStat[playername]);
+            }*/
+        }
 
-                foreach (KeyValuePair<string, Stb_PlayerSessStat> entry in stbSis_saveIPlayerStatTEMP)
+        /*
+
+        //Saves by Player Name. If the stats dictionary entry for that player doesn't yet exist, it is created.
+        public void StbSis_Save(string playername)    
+        {
+            var Stats = new Stb_PlayerSessStat();
+struct
+            if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out Stats))
+            {
+                Stats = new Stb_PlayerSessStat();
+            } else StbSis_Save(Stats.player); //already has an entry in the dictionary, so we can look up the .player there & proceed
+        }
+        */
+
+        //Saves by Player. If the stats dictionary entry for that player doesn't yet exist, it is created.
+        public Stb_PlayerSessStat StbSis_Save(Player player)
+        {
+            if (player != null && player.Name() != null && player.Name().Length > 0)
+            {
+                //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
+
+                var OldStats = new Stb_PlayerSessStat(mission);
+
+                if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out OldStats))
                 {
-                    StbSis_Save(entry.Value.player);
+                    OldStats = new Stb_PlayerSessStat(mission);
+                } //See explanation for this idiom under StbSr_UpdateStatsForMission
+
+                if (player is IPlayer)
+                {
+                    IPlayerStat CurrStats = (player as IPlayer).GetBattleStat() as IPlayerStat;
+                    StbSis_WriteDiff(player as Player, OldStats, CurrStats);
+                    OldStats.Set(CurrStats);
                 }
-                /*foreach (string playername in stbSis_saveIPlayerStat.Keys.ToList())
+                else //in case this is a 'blank' player who is not logged into the game at the moment; we just have their name & army
+                     //in this case we don't need to WriteDiff because their stats are zero.  But we need to initialize their OldStats to zero for everything
                 {
-                    StbSis_Save(stbSis_saveIPlayerStat[playername]);
-                }*/
+                    OldStats.Set(player);
+                }
+                stbSis_saveIPlayerStat[player.Name()] = OldStats;  //now that we have updated the Mission stats with any new/updated values in PlayerStat, we update the PlayerStat to the current values, so we can rinse & repeat next time around.
+
+                //if (stbSis_LogErrors) 
+                //Console.WriteLine("Stats for " + player.Name() + ": " + OldStats.ToString());
+
+                //               player.Name(), st.landings, st.kills, st.fkills, st.gkills[0], st.fgkills[0], st.deaths, st.bails, st.ditches, st.planeChanges, st.planesWrittenOff, M_Health, M_CabinState, M_SystemWear, cdam, ndam, st.bombsFire, st.bombsHit, st.bombsWeight, st.bulletsFire, st.bulletsHit, st.bulletsHitAir, GetDictionary(st.killsTypes), GetDictionary(st.tTotalTypes), st.gkills[1], st.gkills[2], st.gkills[3]));
+
+                return OldStats; //OldStats is actually now current, so return it in case it is wanted.
             }
+            else return null;
+        }
 
-            /*
+        private void StbSis_WriteDiff(Player player, Stb_PlayerSessStat OldStats, IPlayerStat CurrStats)
+        {
 
-            //Saves by Player Name. If the stats dictionary entry for that player doesn't yet exist, it is created.
-            public void StbSis_Save(string playername)    
+            //Console.WriteLine("Writing DIFF {0}", player.Name());
+            StbSis_AddToMissionStat(player, 835, (int)(Math.Round((CurrStats.kills - OldStats.kills) * 100)));
+            StbSis_AddToMissionStat(player, 836, (int)(Math.Round((CurrStats.fkills - OldStats.fkills) * 100)));
+            StbSis_AddToMissionStat(player, 837, CurrStats.bulletsFire - OldStats.bulletsFire);
+            StbSis_AddToMissionStat(player, 838, CurrStats.bulletsHit - OldStats.bulletsHit);
+            StbSis_AddToMissionStat(player, 839, CurrStats.bulletsHitAir - OldStats.bulletsHitAir);
+            StbSis_AddToMissionStat(player, 840, CurrStats.bombsFire - OldStats.bombsFire);
+            StbSis_AddToMissionStat(player, 841, CurrStats.bombsHit - OldStats.bombsHit);
+
+            double bombsOnTarget_kg = 0;
+            if ((CurrStats.bombsFire - OldStats.bombsFire) > 0) bombsOnTarget_kg = (double)(CurrStats.bombsHit - OldStats.bombsHit) / (double)(CurrStats.bombsFire - OldStats.bombsFire) * (CurrStats.bombsWeight - OldStats.bombsWeight); //This is an approximation is which is exact if all bombs deployed were of the same weight, and our best guess of KG on target if the various bombs were of varying weights.  If bombs were of varying weights, we just don't have the info here about which of them were the ones that hit & which missed.
+
+
+            StbSis_AddToMissionStat(player, 842, (int)(Math.Round(bombsOnTarget_kg)));
+
+            //We do 'writeDiff' for CloD generated stats where we need to occasionally 'write the difference' to figure out what happened in the CloD stats and save the changes for this session.
+            //But for 845 we are generating this stat directly so can just save it directly using StbSis_AddSessStat so we don't need to ALSO do the writeDiff
+            //StbSis_AddToMissionStat(player, 845, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);  //Note that this is the TWC 'corrected' planes written off stat (845) NOT the raw Netstats planes written off (843)
+
+            //gkills=Ips.gkills;
+            //fgkillIps.fgkills;
+
+            //player = Ips.player;
+
+
+        }
+
+        public void StbSis_AddToMissionStat(Player player, int index, int value)
+        {
+            if (mission.stb_Debug) Console.WriteLine("Writing CloD Stats for {0}: {1} {2}", player.Name(), index, value);
+            if (value == 0) return; //If it's zero we don't need to do anything
+            StatsMission.StbStatTask sst1 = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { index, value }, player as AiActor);
+            mission.stb_StatRecorder.StbSr_EnqueueTask(sst1);
+
+            int currValue = 0;
+            //Now add the value to the team stats for this session
+            if (player.Army() == 2)
             {
-                var Stats = new Stb_PlayerSessStat();
-    struct
-                if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out Stats))
-                {
-                    Stats = new Stb_PlayerSessStat();
-                } else StbSis_Save(Stats.player); //already has an entry in the dictionary, so we can look up the .player there & proceed
+                currValue = BlueSessStats.getSessStat(index);
+                BlueSessStats.sessStats[index] = currValue + value;
             }
+            if (player.Army() == 1)
+            {
+
+                currValue = RedSessStats.getSessStat(index);
+                RedSessStats.sessStats[index] = currValue + value;
+
+            }
+
+
+
+        }
+
+        public void StbSis_IncrementSessStat(Player player, int index)
+        {
+
+            Console.WriteLine("Increment SessStat1: " + player.Name() + " " + index.ToString());
+
+            var PlayerStats = new Stb_PlayerSessStat(mission);
+
+            if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out PlayerStats))
+            {
+                PlayerStats = StbSis_Save(player);
+            }
+
+            int currValue = PlayerStats.getSessStat(index);
+
+            PlayerStats.sessStats[index] = currValue + 1;
+
+            Console.WriteLine("Increment SessStat: " + player.Name() + " " + index.ToString() + " " + currValue.ToString() + "  " + PlayerStats.sessStats[index].ToString());
+            /* if (index < 0 || index >= PlayerStats.sessStats.Length) return; // index out of range
+            PlayerStats.sessStats[index]++;
             */
 
-            //Saves by Player. If the stats dictionary entry for that player doesn't yet exist, it is created.
-            public Stb_PlayerSessStat StbSis_Save(Player player)
+            //Now add the value to the team stats for this session
+            if (player.Army() == 2)
             {
-                if (player != null && player.Name() != null && player.Name().Length > 0)
-                {
-                    //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
-
-                    var OldStats = new Stb_PlayerSessStat(mission);
-
-                    if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out OldStats))
-                    {
-                        OldStats = new Stb_PlayerSessStat(mission);
-                    } //See explanation for this idiom under StbSr_UpdateStatsForMission
-
-                    if (player is IPlayer)
-                    {
-                        IPlayerStat CurrStats = (player as IPlayer).GetBattleStat() as IPlayerStat;
-                        StbSis_WriteDiff(player as Player, OldStats, CurrStats);
-                        OldStats.Set(CurrStats);
-                    }
-                    else //in case this is a 'blank' player who is not logged into the game at the moment; we just have their name & army
-                         //in this case we don't need to WriteDiff because their stats are zero.  But we need to initialize their OldStats to zero for everything
-                    {
-                        OldStats.Set(player);
-                    }
-                    stbSis_saveIPlayerStat[player.Name()] = OldStats;  //now that we have updated the Mission stats with any new/updated values in PlayerStat, we update the PlayerStat to the current values, so we can rinse & repeat next time around.
-
-                    //if (stbSis_LogErrors) 
-                    //Console.WriteLine("Stats for " + player.Name() + ": " + OldStats.ToString());
-
-                    //               player.Name(), st.landings, st.kills, st.fkills, st.gkills[0], st.fgkills[0], st.deaths, st.bails, st.ditches, st.planeChanges, st.planesWrittenOff, M_Health, M_CabinState, M_SystemWear, cdam, ndam, st.bombsFire, st.bombsHit, st.bombsWeight, st.bulletsFire, st.bulletsHit, st.bulletsHitAir, GetDictionary(st.killsTypes), GetDictionary(st.tTotalTypes), st.gkills[1], st.gkills[2], st.gkills[3]));
-
-                    return OldStats; //OldStats is actually now current, so return it in case it is wanted.
-                }
-                else return null;
+                currValue = BlueSessStats.getSessStat(index);
+                BlueSessStats.sessStats[index] = currValue + 1;
             }
-
-            private void StbSis_WriteDiff(Player player, Stb_PlayerSessStat OldStats, IPlayerStat CurrStats)
+            if (player.Army() == 1)
             {
 
-                //Console.WriteLine("Writing DIFF {0}", player.Name());
-                StbSis_AddToMissionStat(player, 835, (int)(Math.Round((CurrStats.kills - OldStats.kills) * 100)));
-                StbSis_AddToMissionStat(player, 836, (int)(Math.Round((CurrStats.fkills - OldStats.fkills) * 100)));
-                StbSis_AddToMissionStat(player, 837, CurrStats.bulletsFire - OldStats.bulletsFire);
-                StbSis_AddToMissionStat(player, 838, CurrStats.bulletsHit - OldStats.bulletsHit);
-                StbSis_AddToMissionStat(player, 839, CurrStats.bulletsHitAir - OldStats.bulletsHitAir);
-                StbSis_AddToMissionStat(player, 840, CurrStats.bombsFire - OldStats.bombsFire);
-                StbSis_AddToMissionStat(player, 841, CurrStats.bombsHit - OldStats.bombsHit);
-
-                double bombsOnTarget_kg = 0;
-                if ((CurrStats.bombsFire - OldStats.bombsFire) > 0) bombsOnTarget_kg = (double)(CurrStats.bombsHit - OldStats.bombsHit) / (double)(CurrStats.bombsFire - OldStats.bombsFire) * (CurrStats.bombsWeight - OldStats.bombsWeight); //This is an approximation is which is exact if all bombs deployed were of the same weight, and our best guess of KG on target if the various bombs were of varying weights.  If bombs were of varying weights, we just don't have the info here about which of them were the ones that hit & which missed.
-
-
-                StbSis_AddToMissionStat(player, 842, (int)(Math.Round(bombsOnTarget_kg)));
-
-                //We do 'writeDiff' for CloD generated stats where we need to occasionally 'write the difference' to figure out what happened in the CloD stats and save the changes for this session.
-                //But for 845 we are generating this stat directly so can just save it directly using StbSis_AddSessStat so we don't need to ALSO do the writeDiff
-                //StbSis_AddToMissionStat(player, 845, CurrStats.planesWrittenOff - OldStats.planesWrittenOff);  //Note that this is the TWC 'corrected' planes written off stat (845) NOT the raw Netstats planes written off (843)
-
-                //gkills=Ips.gkills;
-                //fgkillIps.fgkills;
-
-                //player = Ips.player;
-
-
+                currValue = RedSessStats.getSessStat(index);
+                RedSessStats.sessStats[index] = currValue + 1;
             }
+        }
 
-            public void StbSis_AddToMissionStat(Player player, int index, int value)
+        public void StbSis_AddSessStat(Player player, int index, int value)
+        {
+            var PlayerStats = new Stb_PlayerSessStat(mission);
+
+            try
             {
-                if (mission.stb_Debug) Console.WriteLine("Writing CloD Stats for {0}: {1} {2}", player.Name(), index, value);
-                if (value == 0) return; //If it's zero we don't need to do anything
-                StatsMission.StbStatTask sst1 = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { index, value }, player as AiActor);
-                mission.stb_StatRecorder.StbSr_EnqueueTask(sst1);
-
-                int currValue = 0;
-                //Now add the value to the team stats for this session
-                if (player.Army() == 2)
-                {
-                    currValue = BlueSessStats.getSessStat(index);
-                    BlueSessStats.sessStats[index] = currValue + value;
-                }
-                if (player.Army() == 1)
-                {
-
-                    currValue = RedSessStats.getSessStat(index);
-                    RedSessStats.sessStats[index] = currValue + value;
-
-                }
-
-
-
+                //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
             }
+            catch (Exception ex) { Console.WriteLine("ASS ERror 1" + ex.ToString()); }
 
-            public void StbSis_IncrementSessStat(Player player, int index)
+            try
             {
-
-                Console.WriteLine("Increment SessStat1: " + player.Name() + " " + index.ToString());
-
-                var PlayerStats = new Stb_PlayerSessStat(mission);
-
                 if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out PlayerStats))
                 {
                     PlayerStats = StbSis_Save(player);
                 }
 
-                int currValue = PlayerStats.getSessStat(index);
-
-                PlayerStats.sessStats[index] = currValue + 1;
-
-                Console.WriteLine("Increment SessStat: " + player.Name() + " " + index.ToString() + " " + currValue.ToString() + "  " + PlayerStats.sessStats[index].ToString());
-                /* if (index < 0 || index >= PlayerStats.sessStats.Length) return; // index out of range
-                PlayerStats.sessStats[index]++;
-                */
-
-                //Now add the value to the team stats for this session
-                if (player.Army() == 2)
-                {
-                    currValue = BlueSessStats.getSessStat(index);
-                    BlueSessStats.sessStats[index] = currValue + 1;
-                }
-                if (player.Army() == 1)
-                {
-
-                    currValue = RedSessStats.getSessStat(index);
-                    RedSessStats.sessStats[index] = currValue + 1;
-                }
             }
+            catch (Exception ex) { Console.WriteLine("ASS ERror 2" + ex.ToString()); }
 
-            public void StbSis_AddSessStat(Player player, int index, int value)
+            int currValue = PlayerStats.getSessStat(index);
+
+            PlayerStats.sessStats[index] = currValue + value;
+
+            /*  The int[] way - but since we are saving just a very few values from a large int[] array the Dictionary approach seems better
+
+            if (index < 0 || index >= PlayerStats.sessStats.Length) return; // index out of range
+            PlayerStats.sessStats[index] += value;\
+
+            */
+
+            //Now add the value to the team stats for this session
+            if (player.Army() == 2)
             {
-                var PlayerStats = new Stb_PlayerSessStat(mission);
+                currValue = BlueSessStats.getSessStat(index);
+                BlueSessStats.sessStats[index] = currValue + value;
+            }
+            if (player.Army() == 1)
+            {
 
-                try
-                {
-                    //Console.WriteLine("statplayer: " + player.Name() + player.Army().ToString());
-                }
-                catch (Exception ex) { Console.WriteLine("ASS ERror 1" + ex.ToString()); }
-
-                try
-                {
-                    if (!stbSis_saveIPlayerStat.TryGetValue(player.Name(), out PlayerStats))
-                    {
-                        PlayerStats = StbSis_Save(player);
-                    }
-
-                }
-                catch (Exception ex) { Console.WriteLine("ASS ERror 2" + ex.ToString()); }
-
-                int currValue = PlayerStats.getSessStat(index);
-
-                PlayerStats.sessStats[index] = currValue + value;
-
-                /*  The int[] way - but since we are saving just a very few values from a large int[] array the Dictionary approach seems better
-
-                if (index < 0 || index >= PlayerStats.sessStats.Length) return; // index out of range
-                PlayerStats.sessStats[index] += value;\
-
-                */
-
-                //Now add the value to the team stats for this session
-                if (player.Army() == 2)
-                {
-                    currValue = BlueSessStats.getSessStat(index);
-                    BlueSessStats.sessStats[index] = currValue + value;
-                }
-                if (player.Army() == 1)
-                {
-
-                    currValue = RedSessStats.getSessStat(index);
-                    RedSessStats.sessStats[index] = currValue + value;
-
-                }
-
+                currValue = RedSessStats.getSessStat(index);
+                RedSessStats.sessStats[index] = currValue + value;
 
             }
+
+
+        }
+    }
+
+
+    public class StbContinueMissionRecorder
+    {
+        //private readonly Mission outer; //allows us to reference methods etc from the Mission class as 'outer'
+        public Dictionary<string, StbContinueMission> stbCmr_ContinueMissionInfo;
+        bool stbCmr_LogErrors;
+        string stbCmr_ErrorLogPath;
+        StbStatRecorder stbcmr_StatRecorder;
+        private StatsMission mission;
+
+        public StbContinueMissionRecorder(StatsMission mission, bool le, string elp)
+        {
+
+            stbCmr_ContinueMissionInfo = new Dictionary<string, StbContinueMission>();
+            stbCmr_LogErrors = le;
+            stbCmr_ErrorLogPath = elp;
+            this.mission = mission; //gets current instance of Mission for use later
+                                    //Mission.Mission.StbStatRecorder stbcmr_StatRecorder = new Mission.Mission.StbStatRecorder();
+
         }
 
 
-        public class StbContinueMissionRecorder
+        //TODO: There may be an isuse with positionenter / positionleave when
+        //bombers are involve,d becaused players often leave & enter various
+        //positions numerous times during a single flight.  Needs testing.
+        public void StbCmr_SavePositionEnter(Player player, AiActor actor)
         {
-            //private readonly Mission outer; //allows us to reference methods etc from the Mission class as 'outer'
-            public Dictionary<string, StbContinueMission> stbCmr_ContinueMissionInfo;
-            bool stbCmr_LogErrors;
-            string stbCmr_ErrorLogPath;
-            StbStatRecorder stbcmr_StatRecorder;
-            private StatsMission mission;
-
-            public StbContinueMissionRecorder(StatsMission mission, bool le, string elp)
+            try
             {
-
-                stbCmr_ContinueMissionInfo = new Dictionary<string, StbContinueMission>();
-                stbCmr_LogErrors = le;
-                stbCmr_ErrorLogPath = elp;
-                this.mission = mission; //gets current instance of Mission for use later
-                                        //Mission.Mission.StbStatRecorder stbcmr_StatRecorder = new Mission.Mission.StbStatRecorder();
-
-            }
-
-
-            //TODO: There may be an isuse with positionenter / positionleave when
-            //bombers are involve,d becaused players often leave & enter various
-            //positions numerous times during a single flight.  Needs testing.
-            public void StbCmr_SavePositionEnter(Player player, AiActor actor)
-            {
-                try
+                //Console.WriteLine("PlaceEnter: 3 ");
+                if (player is Player && actor is AiActor && player != null && actor != null && player.Name() != null)
                 {
-                    //Console.WriteLine("PlaceEnter: 3 ");
-                    if (player is Player && actor is AiActor && player != null && actor != null && player.Name() != null)
-                    {
 
-                        StbContinueMission cm = new StbContinueMission();
-                        if (stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm))
-                        { //Ok the person has newly spawned in and was previously flying, we check to see if 1. the person has died since last takeoff and 2. mayContinue is true (mayContinue is a signal from the previous event, the positionLeave in this case, that it was Ok to continue the mission @ that point). 3. Is taking off from the same place they recently landed.  If haven't died, mayContinue is true & taking off from same place, within 2000 of the place where they left their previous plane/position, they can continue the mission.
+                    StbContinueMission cm = new StbContinueMission();
+                    if (stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm))
+                    { //Ok the person has newly spawned in and was previously flying, we check to see if 1. the person has died since last takeoff and 2. mayContinue is true (mayContinue is a signal from the previous event, the positionLeave in this case, that it was Ok to continue the mission @ that point). 3. Is taking off from the same place they recently landed.  If haven't died, mayContinue is true & taking off from same place, within 2000 of the place where they left their previous plane/position, they can continue the mission.
 
-                            //This is used by onPositionLeave to determine whether the PositionLeave is the end of a flight or not
-                            //PositionLeave waits 5 seconds, then checks whether there has been a recent Position Enter.
-                            //If so , PositionLeave aborts, as this is just a bomber pilot switching positions w/in the aircraft
-                            cm.lastPositionEnter_sec = StatCalcs.TimeSince2016_sec();
-                            cm.posEnterActor = actor;
+                        //This is used by onPositionLeave to determine whether the PositionLeave is the end of a flight or not
+                        //PositionLeave waits 5 seconds, then checks whether there has been a recent Position Enter.
+                        //If so , PositionLeave aborts, as this is just a bomber pilot switching positions w/in the aircraft
+                        cm.lastPositionEnter_sec = StatCalcs.TimeSince2016_sec();
+                        cm.posEnterActor = actor;
 
-                            //Console.WriteLine("PlaceEnter: 4 ");
-                            cm.placeEnterLoc.x = actor.Pos().x;
-                            cm.placeEnterLoc.y = actor.Pos().y;
-                            double dis_meters = StatCalcs.CalculatePointDistance(cm.placeLeaveLoc, actor.Pos());
-                            bool maycont = false;
-                            if (cm.mayContinue && cm.alive && (dis_meters < 2000)) maycont = true;
-                            cm.mayContinue = maycont;
+                        //Console.WriteLine("PlaceEnter: 4 ");
+                        cm.placeEnterLoc.x = actor.Pos().x;
+                        cm.placeEnterLoc.y = actor.Pos().y;
+                        double dis_meters = StatCalcs.CalculatePointDistance(cm.placeLeaveLoc, actor.Pos());
+                        bool maycont = false;
+                        if (cm.mayContinue && cm.alive && (dis_meters < 2000)) maycont = true;
+                        cm.mayContinue = maycont;
 
-                            /* Console.WriteLine("SPE: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
-                              + " PELy: " + cm.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm.placeLeaveLoc.x.ToString("N0")
-                              + " PELy: " + cm.placeLeaveLoc.y.ToString("N0"));
-                            */
+                        /* Console.WriteLine("SPE: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
+                          + " PELy: " + cm.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm.placeLeaveLoc.x.ToString("N0")
+                          + " PELy: " + cm.placeLeaveLoc.y.ToString("N0"));
+                        */
 
-                            //Console.WriteLine("SPE: " + cm.ToString());
-                            cm.isInPlanePlaceChange = false;
-                            if (dis_meters < 15 || cm.posEnterActor == cm.posLeftActor)
-                            {
-                                cm.isInPlanePlaceChange = true; //hoping that dis_meters > 5 will catch e.g. bombers where the player switches position to position but it's still the same flight
-                                                                //Console.WriteLine("That was an in-plane place change!" + dis_meters.ToString() + " meters");
-                            }
-
-                            //we re-set these (below) here rather than on takeoff complete, bec. we want to count any take-off damage.
-                            cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
-                            cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
-                            cm.selfDamageThisFlight = 0;
-                            cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec(); //we'll reset this ontookoff, but this keeps it from being zero regardless; we don't want that 
-
-
-
-                        }
-                        else
-                        { //newly entered player; this can't be a continuation
-                          //if the player doesn't yet exist, we initialize it
-                          //with start position; so far the player is alive & bu may not continue (ie, the current flight is not a continuation of a previous successful flight)
-                          //p = player.Place() as AiAircraft;          
-                          //p.Pos().x, p.Pos().y)
-                            cm = new StbContinueMission();
-                            cm.placeLeaveLoc.x = -1000000;
-                            cm.placeLeaveLoc.y = -1000000;
-                            cm.alive = true;
-                            cm.mayContinue = false;
-                            cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
-                            cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
-                            cm.selfDamageThisFlight = 0;
-                            cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
-                            cm.lastPositionEnter_sec = cm.flightStartTime_sec;
-
-
-
+                        //Console.WriteLine("SPE: " + cm.ToString());
+                        cm.isInPlanePlaceChange = false;
+                        if (dis_meters < 15 || cm.posEnterActor == cm.posLeftActor)
+                        {
+                            cm.isInPlanePlaceChange = true; //hoping that dis_meters > 5 will catch e.g. bombers where the player switches position to position but it's still the same flight
+                                                            //Console.WriteLine("That was an in-plane place change!" + dis_meters.ToString() + " meters");
                         }
 
+                        //we re-set these (below) here rather than on takeoff complete, bec. we want to count any take-off damage.
+                        cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
+                        cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
+                        cm.selfDamageThisFlight = 0;
+                        cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec(); //we'll reset this ontookoff, but this keeps it from being zero regardless; we don't want that 
 
-                        //record time of last access while we have it handy             
-                        StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 829, 0, cm.flightStartTime_sec
-                }, player.Place() as AiActor); //putting the # in the [2] position (ie, 829, 0, MYNEWVALUE) in StbStatCommands.Mission means to set the value to that number, vs putting it in the [1] position which ADDS the value to the existing entry
-                        this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
-                        stbCmr_ContinueMissionInfo[player.Name()] = cm;
-                        //Console.WriteLine( "PosEnter: " + player.Name() + " " + cm.ToString("F0"));
+
                     }
+                    else
+                    { //newly entered player; this can't be a continuation
+                      //if the player doesn't yet exist, we initialize it
+                      //with start position; so far the player is alive & bu may not continue (ie, the current flight is not a continuation of a previous successful flight)
+                      //p = player.Place() as AiAircraft;          
+                      //p.Pos().x, p.Pos().y)
+                        cm = new StbContinueMission();
+                        cm.placeLeaveLoc.x = -1000000;
+                        cm.placeLeaveLoc.y = -1000000;
+                        cm.alive = true;
+                        cm.mayContinue = false;
+                        cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
+                        cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
+                        cm.selfDamageThisFlight = 0;
+                        cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
+                        cm.lastPositionEnter_sec = cm.flightStartTime_sec;
+
+
+
+                    }
+
+
+                    //record time of last access while we have it handy             
+                    StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 829, 0, cm.flightStartTime_sec
+                }, player.Place() as AiActor); //putting the # in the [2] position (ie, 829, 0, MYNEWVALUE) in StbStatCommands.Mission means to set the value to that number, vs putting it in the [1] position which ADDS the value to the existing entry
+                    this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+                    stbCmr_ContinueMissionInfo[player.Name()] = cm;
+                    //Console.WriteLine( "PosEnter: " + player.Name() + " " + cm.ToString("F0"));
                 }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
             }
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
+        }
 
-            private void StbCmr_SavePositionLeave_work(Player player, AiActor actor, StbContinueMission cm)
+        private void StbCmr_SavePositionLeave_work(Player player, AiActor actor, StbContinueMission cm)
+        {
+            bool endSortieDamagedAndOnlyBySelf = false;
+            cm.isPlaneLeave = true; //Yes, it IS a plane leave, NOT just a position switch.  OnPlaceLeave() will be able to detect this (using a Timeout, since this is calced 0.1 seconds after the initial onPlaceLeave() is called) and take appropriate action.
+
+
+            //p = player.Place() as AiAircraft;          
+            //p.Pos().x, p.Pos().y)
+            //Save the position where they left the a/c.  If the player is alive, the player may continue the mission, if they (can) take off from near the same location again.  Exception: If they have just had a mission where they only had self-injury (ie, they blew their rads or just crashed for no special reason) they cannot continue the mission
+
+            bool actorAlive = actor.IsAlive();
+            endSortieDamagedAndOnlyBySelf = cm.damagedSinceTakeoff && cm.damagedOnlyBySelf;
+
+            int endFlightTime_sec = StatCalcs.TimeSince2016_sec();
+            int flightDuration_sec = endFlightTime_sec - cm.flightStartTime_sec;
+            if (cm.flightStartTime_sec == 0 || flightDuration_sec > 24 * 60 * 60) flightDuration_sec = 0; //sanity check; often 'place leave' is the first time cm is initialized for a given pilot. 
+
+            //Console.WriteLine("PosLeave: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec / 60).ToString("F1"));
+
+            bool endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = false;
+
+            if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec < 10 * 60) && flightDuration_sec > 0)
+                endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true; //Short flight & all self-damage, your mission is over
+
+            if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec >= 10 * 60) && (cm.selfDamageThisFlight > 10))
+                endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true;   //OK, we're giving people a break if they have had a long flight & only a few self-damages, but if they have a LOT Of self-damage their Mission is still over
+
+            mission.Timeout(15, () =>
             {
-                bool endSortieDamagedAndOnlyBySelf = false;
-                cm.isPlaneLeave = true; //Yes, it IS a plane leave, NOT just a position switch.  OnPlaceLeave() will be able to detect this (using a Timeout, since this is calced 0.1 seconds after the initial onPlaceLeave() is called) and take appropriate action.
+                cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
+                                                            //We delay doing this, though, because leave last pos & reporting details of the last filght are happening almost simultaneously, and we don't want to 
+                                                            //change flightstarttime until we have a chance to actually record the last flight etc.  Before this change we were getting "last sortie = 0.1 minutes" which
+                                                            //might be  a result of this problem
+                });
 
-
-                //p = player.Place() as AiAircraft;          
-                //p.Pos().x, p.Pos().y)
-                //Save the position where they left the a/c.  If the player is alive, the player may continue the mission, if they (can) take off from near the same location again.  Exception: If they have just had a mission where they only had self-injury (ie, they blew their rads or just crashed for no special reason) they cannot continue the mission
-
-                bool actorAlive = actor.IsAlive();
-                endSortieDamagedAndOnlyBySelf = cm.damagedSinceTakeoff && cm.damagedOnlyBySelf;
-
-                int endFlightTime_sec = StatCalcs.TimeSince2016_sec();
-                int flightDuration_sec = endFlightTime_sec - cm.flightStartTime_sec;
-                if (cm.flightStartTime_sec == 0 || flightDuration_sec > 24 * 60 * 60) flightDuration_sec = 0; //sanity check; often 'place leave' is the first time cm is initialized for a given pilot. 
-
-                //Console.WriteLine("PosLeave: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec / 60).ToString("F1"));
-
-                bool endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = false;
-
-                if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec < 10 * 60) && flightDuration_sec > 0)
-                    endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true; //Short flight & all self-damage, your mission is over
-
-                if (endSortieDamagedAndOnlyBySelf && (flightDuration_sec >= 10 * 60) && (cm.selfDamageThisFlight > 10))
-                    endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = true;   //OK, we're giving people a break if they have had a long flight & only a few self-damages, but if they have a LOT Of self-damage their Mission is still over
-
-                mission.Timeout(15, () =>
-                {
-                    cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
-                                                                //We delay doing this, though, because leave last pos & reporting details of the last filght are happening almost simultaneously, and we don't want to 
-                                                                //change flightstarttime until we have a chance to actually record the last flight etc.  Before this change we were getting "last sortie = 0.1 minutes" which
-                                                                //might be  a result of this problem
-            });
-
-                //record the time for the flight              
-                StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 792, flightDuration_sec }, player.Place() as AiActor);
-                if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+            //record the time for the flight              
+            StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 792, flightDuration_sec }, player.Place() as AiActor);
+            if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
 
 
-                //record time of last access while we're at it               
-                sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 829, 0, endFlightTime_sec
+            //record time of last access while we're at it               
+            sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 829, 0, endFlightTime_sec
                                 }, player.Place() as AiActor);  //putting the # in the [2] position (ie, 829, 0, MYNEWVALUE) in StbStatCommands.Mission means to set the value to that number, vs putting it in the [1] position which ADDS the value to the existing entry
-                this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+            this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
-                if (cm.alive && actorAlive && !endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
-                {
-                    cm.mayContinue = true;
-                    if (!cm.isForcedPlaceMove) this.mission.Stb_Message(new Player[] { player }, "Important Notice: When you land safely at an airport and and take off again from that same airport, your Continuous Mission will continue unbroken (for stats purposes).", new object[] { });
-                    //this.mission.Stb_Message(new Player[] { player }, "If you choose to take off from a *different* airport, that ends your continuous flight. Kills-per-flight is an important factor in accelerating your promotion to higher rank. Check stats at " + this.mission.stb_LogStatsPublicAddressLow + " or in-game using commands <career and <sess.", new object[] { });
-                    if (!cm.isForcedPlaceMove) this.mission.Stb_Message(new Player[] { player }, "Your last sortie was " + ((double)flightDuration_sec / 60).ToString("F1") + " minutes long", new object[] { });
-
-
-                }
+            if (cm.alive && actorAlive && !endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
+            {
+                cm.mayContinue = true;
+                if (!cm.isForcedPlaceMove) this.mission.Stb_Message(new Player[] { player }, "Important Notice: When you land safely at an airport and and take off again from that same airport, your Continuous Mission will continue unbroken (for stats purposes).", new object[] { });
+                //this.mission.Stb_Message(new Player[] { player }, "If you choose to take off from a *different* airport, that ends your continuous flight. Kills-per-flight is an important factor in accelerating your promotion to higher rank. Check stats at " + this.mission.stb_LogStatsPublicAddressLow + " or in-game using commands <career and <sess.", new object[] { });
+                if (!cm.isForcedPlaceMove) this.mission.Stb_Message(new Player[] { player }, "Your last sortie was " + ((double)flightDuration_sec / 60).ToString("F1") + " minutes long", new object[] { });
 
 
-                //Record the fact that the sortie was ended with only self-damage.  ID=791
-                if (cm.alive && actorAlive && endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
-                {
-                    StatsMission.StbStatTask sst1 = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 791 }, player.Place() as AiActor);
-                    this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                    this.mission.Stb_Message(new Player[] { player }, "Notice: On your last sortie, you self-damaged your aircraft.  For that reason, your next sortie will start a new mission (for stats purposes).", new object[] { });
-                    //this.mission.Stb_Message(new Player[] { player }, "Self-damage was registered " + cm.selfDamageThisFlight.ToString() + " times on the last sortie.  Check stats at " + this.mission.stb_LogStatsPublicAddressLow, new object[] { });
-                    //this.mission.Stb_Message(new Player[] { player }, "Your last flight was " + ((double)flightDuration_sec / 60).ToString("F1") + " minutes long", new object[] { });
-
-                }
-
-                if (!cm.alive || !actorAlive)
-                {
-                    //OK, for some reason this message appears sometimes when the player doesn't actually die.  Maybe when they are not alive beforehand?  Possible Answer: .IsAlive() is actually for the aircraft/vehicle indicating whether it is operative or not.  Nothing to do with whether the person is alive.  This is how it works with AiAirdraft.IsKilled().
-                    //So we have moved this to a different place
-                    //this.mission.Stb_Message(new Player [] { player } , "Notice: When you die, your stats are reset. Check stats at twcpilots.com.", new object[] { });                                
-                    //this.mission.Stb_Message(new Player[] { player }, "Player death recorded. Check stats at twcpilots.com.", new object[] { });
-                }
-                //return endSortieDamagedAndOnlyBySelf;            
-                cm.isForcedPlaceMove = false; //if it was an <rr or other forced move that's over now and it's definitely not one now
-                stbCmr_ContinueMissionInfo[player.Name()] = cm;
-                //Console.WriteLine( "PosLeave: " + player.Name() + " " + cm.ToString("F0"));
             }
 
 
-            public void StbCmr_SavePositionLeave(Player player, AiActor actor, bool immed = false)
+            //Record the fact that the sortie was ended with only self-damage.  ID=791
+            if (cm.alive && actorAlive && endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage && flightDuration_sec > 0)
             {
-                //bool posLeave = false;
-                try
+                StatsMission.StbStatTask sst1 = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, player.Name(), new int[] { 791 }, player.Place() as AiActor);
+                this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                this.mission.Stb_Message(new Player[] { player }, "Notice: On your last sortie, you self-damaged your aircraft.  For that reason, your next sortie will start a new mission (for stats purposes).", new object[] { });
+                //this.mission.Stb_Message(new Player[] { player }, "Self-damage was registered " + cm.selfDamageThisFlight.ToString() + " times on the last sortie.  Check stats at " + this.mission.stb_LogStatsPublicAddressLow, new object[] { });
+                //this.mission.Stb_Message(new Player[] { player }, "Your last flight was " + ((double)flightDuration_sec / 60).ToString("F1") + " minutes long", new object[] { });
+
+            }
+
+            if (!cm.alive || !actorAlive)
+            {
+                //OK, for some reason this message appears sometimes when the player doesn't actually die.  Maybe when they are not alive beforehand?  Possible Answer: .IsAlive() is actually for the aircraft/vehicle indicating whether it is operative or not.  Nothing to do with whether the person is alive.  This is how it works with AiAirdraft.IsKilled().
+                //So we have moved this to a different place
+                //this.mission.Stb_Message(new Player [] { player } , "Notice: When you die, your stats are reset. Check stats at twcpilots.com.", new object[] { });                                
+                //this.mission.Stb_Message(new Player[] { player }, "Player death recorded. Check stats at twcpilots.com.", new object[] { });
+            }
+            //return endSortieDamagedAndOnlyBySelf;            
+            cm.isForcedPlaceMove = false; //if it was an <rr or other forced move that's over now and it's definitely not one now
+            stbCmr_ContinueMissionInfo[player.Name()] = cm;
+            //Console.WriteLine( "PosLeave: " + player.Name() + " " + cm.ToString("F0"));
+        }
+
+
+        public void StbCmr_SavePositionLeave(Player player, AiActor actor, bool immed = false)
+        {
+            //bool posLeave = false;
+            try
+            {
+
+                if (player != null && actor != null && player.Name() != null)
                 {
 
-                    if (player != null && actor != null && player.Name() != null)
-                    {
+                    StbContinueMission cm1 = new StbContinueMission();
+                    bool ret1;
+                    ret1 = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm1);
+                    if (!ret1) cm1 = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
 
-                        StbContinueMission cm1 = new StbContinueMission();
-                        bool ret1;
-                        ret1 = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm1);
-                        if (!ret1) cm1 = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+                    cm1.posLeftActor = actor;
+                    cm1.posEnterActor = null; //if they just left a position, if they are going to the same  plane they MUST to position enter.  Then we can pick that up in 0.1 seconds
+                    cm1.placeLeaveLoc.x = actor.Pos().x;
+                    cm1.placeLeaveLoc.y = actor.Pos().y;
+                    //Console.WriteLine("PLL: PositionLeave cm1 PELx: " + cm1.placeEnterLoc.x.ToString("N0")
+                    //+ " PELy: " + cm1.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm1.placeLeaveLoc.x.ToString("N0")
+                    //+ " PLLy: " + cm1.placeLeaveLoc.y.ToString("N0"));
+                    //Console.WriteLine("Pll: "+cm1.ToString()); 
 
-                        cm1.posLeftActor = actor;
-                        cm1.posEnterActor = null; //if they just left a position, if they are going to the same  plane they MUST to position enter.  Then we can pick that up in 0.1 seconds
-                        cm1.placeLeaveLoc.x = actor.Pos().x;
-                        cm1.placeLeaveLoc.y = actor.Pos().y;
-                        //Console.WriteLine("PLL: PositionLeave cm1 PELx: " + cm1.placeEnterLoc.x.ToString("N0")
-                        //+ " PELy: " + cm1.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm1.placeLeaveLoc.x.ToString("N0")
-                        //+ " PLLy: " + cm1.placeLeaveLoc.y.ToString("N0"));
-                        //Console.WriteLine("Pll: "+cm1.ToString()); 
+                    stbCmr_ContinueMissionInfo[player.Name()] = cm1;
 
-                        stbCmr_ContinueMissionInfo[player.Name()] = cm1;
+                    if (immed)
+                    { //call from onBattleStoped or similar where we know this is the end of sortie and don't need to wait/da any calculations to figure it out.  Just save the end-of-sortie stats & get out of here immediately
+                        StbCmr_SavePositionLeave_work(player, actor, cm1);
+                        //posLeave = true;
+                        //return posLeave;
+                    }
 
-                        if (immed)
-                        { //call from onBattleStoped or similar where we know this is the end of sortie and don't need to wait/da any calculations to figure it out.  Just save the end-of-sortie stats & get out of here immediately
-                            StbCmr_SavePositionLeave_work(player, actor, cm1);
-                            //posLeave = true;
-                            //return posLeave;
-                        }
-
-                        Console.WriteLine("PPI,PPS pre: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
+                    Console.WriteLine("PPI,PPS pre: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
 
-                        mission.Timeout(0.1, () =>
-                        { //this needs to be less than 0.2 bec that is what onPlaceLeave uses!!!!
+                    mission.Timeout(0.1, () =>
+                    { //this needs to be less than 0.2 bec that is what onPlaceLeave uses!!!!
                             StbContinueMission cm = new StbContinueMission();
-                            bool ret;
+                        bool ret;
 
-                            Console.WriteLine("PPI,PPS post: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1 or at least -1 0 or 2 -1 or the like
+                        Console.WriteLine("PPI,PPS post: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1 or at least -1 0 or 2 -1 or the like
 
                             ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
-                            if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+                        if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
 
                             //Console.WriteLine("Pll2: " + cm.ToString());
                             double dis_meters = StatCalcs.CalculatePointDistance(cm.placeLeaveLoc, cm.placeEnterLoc);
 
-                            Console.WriteLine("PLL2: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
-                               + " PELy: " + cm.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm.placeLeaveLoc.x.ToString("N0")
-                               + " PLLy: " + cm.placeLeaveLoc.y.ToString("N0"));
+                        Console.WriteLine("PLL2: Place Change by " + dis_meters.ToString() + " meters. PELx: " + cm.placeEnterLoc.x.ToString("N0")
+                           + " PELy: " + cm.placeEnterLoc.y.ToString("N0") + " PLLx: " + cm.placeLeaveLoc.x.ToString("N0")
+                           + " PLLy: " + cm.placeLeaveLoc.y.ToString("N0"));
 
 
                             //This is used by onPositionLeave to determine whether the PositionLeave is the end of a flight or not
@@ -1460,14 +1460,14 @@ using TWCComms;
                             //The edge cases are where 2-3 people are flying bomber together.  If one of them leaves the a/c is that the end of the flight for that player? What if they return later, etc.
 
                             bool leftPlane = false;
-                            bool parachuted = false;
-                            if (actor != null && (actor as AiAircraft) != null && mission.Stb_isAiControlledPlane(actor as AiAircraft)) leftPlane = true;
-                            if (dis_meters < 25) leftPlane = false;
-                            if (cm.posEnterActor == cm.posLeftActor) leftPlane = false;
-                            if (player.PlacePrimary() == -1) parachuted = true; //OK, this doesn't actually work. Unfortunately.                        
+                        bool parachuted = false;
+                        if (actor != null && (actor as AiAircraft) != null && mission.Stb_isAiControlledPlane(actor as AiAircraft)) leftPlane = true;
+                        if (dis_meters < 25) leftPlane = false;
+                        if (cm.posEnterActor == cm.posLeftActor) leftPlane = false;
+                        if (player.PlacePrimary() == -1) parachuted = true; //OK, this doesn't actually work. Unfortunately.                        
                             cm.parachuted = parachuted;
 
-                            if (player.PlacePrimary() == -1 && player.PlaceSecondary() == -1) leftPlane = true; //So this happens when ie clicking the flag or using function keys (ctlr-F2 etc) to exit all positions in the aircraft, but in this case you have not yet entered ANY OTHER NEW aircraft.  So for various reasons none of the above tests capture this particular situation, but -1, -1 does.  We hope.
+                        if (player.PlacePrimary() == -1 && player.PlaceSecondary() == -1) leftPlane = true; //So this happens when ie clicking the flag or using function keys (ctlr-F2 etc) to exit all positions in the aircraft, but in this case you have not yet entered ANY OTHER NEW aircraft.  So for various reasons none of the above tests capture this particular situation, but -1, -1 does.  We hope.
 
                             int currTime = StatCalcs.TimeSince2016_sec();
                             //We were using dis_meters < 10 which seems to work when actually switching positions in a bomber.  But . . . if you use ALT-F11 (ALT-F2, whatever) to
@@ -1478,7 +1478,7 @@ using TWCComms;
 
                             //So we abandon that scheme & just use the process of seeing if any of the positions in the plane are occupied
                             if (!leftPlane)
-                            { //Abort, Abort!  This is no end of flight, just a bomber pilot switching to a new position
+                        { //Abort, Abort!  This is no end of flight, just a bomber pilot switching to a new position
 
                                 //Console.WriteLine("PLACE LEAVE: Just a pilot switching positions within an a/c " + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                                 cm.isPlaneLeave = false; //not a plane leave, just a position switch.
@@ -1488,8 +1488,8 @@ using TWCComms;
                                 //return posLeave; 
                                 return; //just a position switch w/in an aircraft, not a "real" position leave
                             }
-                            else
-                            {
+                        else
+                        {
 
                                 //Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                             }
@@ -1500,515 +1500,2022 @@ using TWCComms;
                             //return posLeave;                                          
 
                         });
-                    }
-                    return;
                 }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); return; }
-
+                return;
             }
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); return; }
 
-            //OK, this one isn't really necessary/somewhat redundant, but if
-            //LeavePosition somehow doesn't trigger, this will catch any crash landings
-            //(ie, off of an official airport) and flag them as not continue
-            public void StbCmr_SaveOnCrashLanded(AiAircraft a)
+        }
+
+        //OK, this one isn't really necessary/somewhat redundant, but if
+        //LeavePosition somehow doesn't trigger, this will catch any crash landings
+        //(ie, off of an official airport) and flag them as not continue
+        public void StbCmr_SaveOnCrashLanded(AiAircraft a)
+        {
+            try
             {
-                try
+                if (!(a is AiAircraft)) return;
+                //Do this for every place/position in the a/c that took off
+                for (int i = 0; i < a.Places(); i++)
                 {
-                    if (!(a is AiAircraft)) return;
-                    //Do this for every place/position in the a/c that took off
-                    for (int i = 0; i < a.Places(); i++)
-                    {
-                        //if (aiAircraft.Player(i) != null) return false;
-                        //OK, we go through each individual player in the a/c and decide
-                        //individually whether this is a mission continuation or not
-                        if (a.Player(i) is Player && a.Player(i) != null && a.Player(i).Name() != null)
-                        {
-
-                            Player player = a.Player(i);
-                            StbContinueMission cm = new StbContinueMission();
-                            bool ret;
-                            ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
-                            if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-
-                            //p = player.Place() as AiAircraft;          
-                            //p.Pos().x, p.Pos().y)
-                            //Save the position where they left the a/c.  If the player is alive, the player may continue the mission, if they (can) take off from near the same location again.
-                            AiActor actor = a as AiActor;
-                            cm.placeLeaveLoc.x = -1000000;
-                            cm.placeLeaveLoc.y = -1000000;
-                            cm.alive = actor.IsAlive();
-                            cm.mayContinue = false;
-
-
-                            stbCmr_ContinueMissionInfo[player.Name()] = cm;
-                            //Console.WriteLine( "CrashLand: " + player.Name() + " " + cm.ToString("F0"));
-                        }
-                    }
-                }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
-            }
-
-            public void StbCmr_SavePositionDied(string playerName)
-            {
-                try
-                {
-                    if (playerName != null)
+                    //if (aiAircraft.Player(i) != null) return false;
+                    //OK, we go through each individual player in the a/c and decide
+                    //individually whether this is a mission continuation or not
+                    if (a.Player(i) is Player && a.Player(i) != null && a.Player(i).Name() != null)
                     {
 
+                        Player player = a.Player(i);
                         StbContinueMission cm = new StbContinueMission();
                         bool ret;
-                        ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+                        ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
                         if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-
-                        //End the flight & save the flight time
-                        int endFlightTime_sec = StatCalcs.TimeSince2016_sec();
-                        int flightDuration_sec = endFlightTime_sec - cm.flightStartTime_sec;
-                        if (cm.flightStartTime_sec == 0 || flightDuration_sec > 24 * 60 * 60) flightDuration_sec = 0; //sanity check; often 'place leave' is the first time cm is initialized for a given pilot. 
-
-                        //Console.WriteLine( "Died: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec/60).ToString("F1")  );
-
-                        cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
-
-                        //record the time for the flight
-                        StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, playerName, new int[] { 792, flightDuration_sec });
-                        if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
 
                         //p = player.Place() as AiAircraft;          
                         //p.Pos().x, p.Pos().y)
-                        //When the player dies they cannot continue the mission any more
-                        //Setting alive=false is the key value here
+                        //Save the position where they left the a/c.  If the player is alive, the player may continue the mission, if they (can) take off from near the same location again.
+                        AiActor actor = a as AiActor;
                         cm.placeLeaveLoc.x = -1000000;
                         cm.placeLeaveLoc.y = -1000000;
-                        cm.alive = false;
+                        cm.alive = actor.IsAlive();
                         cm.mayContinue = false;
 
 
-                        stbCmr_ContinueMissionInfo[playerName] = cm;
-
-                        //Console.WriteLine( "Died: " + playerName + " " + cm.ToString("F0"));
+                        stbCmr_ContinueMissionInfo[player.Name()] = cm;
+                        //Console.WriteLine( "CrashLand: " + player.Name() + " " + cm.ToString("F0"));
                     }
                 }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
             }
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
+        }
 
-            public bool StbCmr_OnTookOff(string playerName, AiActor actor = null)
+        public void StbCmr_SavePositionDied(string playerName)
+        {
+            try
             {
-                try
+                if (playerName != null)
                 {
-                    //if ((actor as AiAircraft).IsAirborne()) check if plane is airborn
-                    bool continueMission = true;
+
                     StbContinueMission cm = new StbContinueMission();
+                    bool ret;
+                    ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+                    if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+
+                    //End the flight & save the flight time
+                    int endFlightTime_sec = StatCalcs.TimeSince2016_sec();
+                    int flightDuration_sec = endFlightTime_sec - cm.flightStartTime_sec;
+                    if (cm.flightStartTime_sec == 0 || flightDuration_sec > 24 * 60 * 60) flightDuration_sec = 0; //sanity check; often 'place leave' is the first time cm is initialized for a given pilot. 
+
+                    //Console.WriteLine( "Died: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec/60).ToString("F1")  );
+
+                    cm.flightStartTime_sec = endFlightTime_sec; //reset the flight start time (though the 'real' flight start time is onTookOff; this is belt'n'suspenders)
+
+                    //record the time for the flight
+                    StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, playerName, new int[] { 792, flightDuration_sec });
+                    if (flightDuration_sec > 0) this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+                    //p = player.Place() as AiAircraft;          
+                    //p.Pos().x, p.Pos().y)
+                    //When the player dies they cannot continue the mission any more
+                    //Setting alive=false is the key value here
+                    cm.placeLeaveLoc.x = -1000000;
+                    cm.placeLeaveLoc.y = -1000000;
                     cm.alive = false;
                     cm.mayContinue = false;
 
-                    bool ret;
-                    ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                    if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"            
-                                                             //If the player died since last take off OR doesn't have 
-                                                             //'maycontinue' permission from the last placeEnter
-                                                             //then this is a New Mission & we increment the new mission counter
-                                                             //Otherwise, this is a continuation of a mission & we skip incrementing the mission counter            
-                    if (!cm.alive || !cm.mayContinue)
-                    {
-                        //StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 779 });
-                        //outer.stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                        continueMission = false;
-                    }
-
-
-                    //OK, we were resetin loc.x & loc.y to -1000000 on take off, just as a belt 'n suspenders thing, but actually having the real location is quite useful when we are trying to detect whether (eg bomber pilot) place enters are new sorties or just switching around within one single sortie.  So we will save the .pos when possible
-                    if (actor != null)
-                    {
-                        cm.placeLeaveLoc.x = actor.Pos().x;
-                        cm.placeLeaveLoc.y = actor.Pos().y;
-                    }
-                    else
-                    {
-                        cm.placeLeaveLoc.x = -1000000;
-                        cm.placeLeaveLoc.y = -1000000;
-                    }
-
-
-                    //This is the moment we reset alive & may continue & damagedsincetakeoff & damagedonlybyself & selfdamage this flight 
-                    //ie, successful takeoff is where the player actually
-                    //becomes 'alive' for stats & continueMission purposes
-
-                    cm.alive = true;
-                    cm.mayContinue = true;
-
-                    cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
-
-                    //we don't reset these here, but in StbCmr_SavePositionEnter, because we want to capture any self-damage on taxi & takeoff 
-                    //cm.damagedSinceTakeoff=false; //Between these two we can figure out if the only
-                    //cm.damagedOnlyBySelf=true;  //damage upon landing or de-spawning is self-inflicted
-                    //cm.selfDamageThisFlight=0;
 
                     stbCmr_ContinueMissionInfo[playerName] = cm;
 
-                    //Console.WriteLine( "TookOff: " + playerName                   + " Mission Continuing: "                   + continueMission.ToString() + " " + cm.ToString("F0"));                                            
-
-                    return continueMission;
+                    //Console.WriteLine( "Died: " + playerName + " " + cm.ToString("F0"));
                 }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); return false; }
-            } //method
+            }
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
+        }
 
-            //Keep track of whether we have just called a <rr for this player
-            public void StbCmr_SetIsForcedPlaceMove(string playerName)
+        public bool StbCmr_OnTookOff(string playerName, AiActor actor = null)
+        {
+            try
             {
+                //if ((actor as AiAircraft).IsAirborne()) check if plane is airborn
+                bool continueMission = true;
                 StbContinueMission cm = new StbContinueMission();
+                cm.alive = false;
+                cm.mayContinue = false;
+
                 bool ret;
                 ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-                cm.isForcedPlaceMove = true;
+                if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"            
+                                                         //If the player died since last take off OR doesn't have 
+                                                         //'maycontinue' permission from the last placeEnter
+                                                         //then this is a New Mission & we increment the new mission counter
+                                                         //Otherwise, this is a continuation of a mission & we skip incrementing the mission counter            
+                if (!cm.alive || !cm.mayContinue)
+                {
+                    //StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 779 });
+                    //outer.stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                    continueMission = false;
+                }
+
+
+                //OK, we were resetin loc.x & loc.y to -1000000 on take off, just as a belt 'n suspenders thing, but actually having the real location is quite useful when we are trying to detect whether (eg bomber pilot) place enters are new sorties or just switching around within one single sortie.  So we will save the .pos when possible
+                if (actor != null)
+                {
+                    cm.placeLeaveLoc.x = actor.Pos().x;
+                    cm.placeLeaveLoc.y = actor.Pos().y;
+                }
+                else
+                {
+                    cm.placeLeaveLoc.x = -1000000;
+                    cm.placeLeaveLoc.y = -1000000;
+                }
+
+
+                //This is the moment we reset alive & may continue & damagedsincetakeoff & damagedonlybyself & selfdamage this flight 
+                //ie, successful takeoff is where the player actually
+                //becomes 'alive' for stats & continueMission purposes
+
+                cm.alive = true;
+                cm.mayContinue = true;
+
+                cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
+
+                //we don't reset these here, but in StbCmr_SavePositionEnter, because we want to capture any self-damage on taxi & takeoff 
+                //cm.damagedSinceTakeoff=false; //Between these two we can figure out if the only
+                //cm.damagedOnlyBySelf=true;  //damage upon landing or de-spawning is self-inflicted
+                //cm.selfDamageThisFlight=0;
+
                 stbCmr_ContinueMissionInfo[playerName] = cm;
 
-            }
-            public void StbCmr_ClearIsForcedPlaceMove(string playerName)
-            {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret;
-                ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-                cm.isForcedPlaceMove = false;
-                stbCmr_ContinueMissionInfo[playerName] = cm;
+                //Console.WriteLine( "TookOff: " + playerName                   + " Mission Continuing: "                   + continueMission.ToString() + " " + cm.ToString("F0"));                                            
 
+                return continueMission;
             }
-            public bool StbCmr_IsForcedPlaceMove(string playerName)
-            {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret;
-                ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-                return cm.isForcedPlaceMove;
-            }
-            //onPlaceEnter is calling & needs to check if this placeEnter is a real sortie start (ie, an airspawn)
-            //or is it just a place switch within (say) different positions in one bomber
-            public bool StbCmr_IsItASortieStart(string playerName)
-            {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) return true; // if the player hasn't been flying before, all is AOK, it really is a takeoff
-                                       //Console.WriteLine(cm.ToString());
-                return !cm.isInPlanePlaceChange;  //if the placeenter was not a place change, then it IS a sortie start!
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); return false; }
+        } //method
 
-            }
-            //this would be called ie onPlaceEnter to determine if the player is still in the same aircraft as before the placeEnter.
-            public bool StbCmr_PlaceLeave_PlaceEnter_sameActor(string playerName)
+        //Keep track of whether we have just called a <rr for this player
+        public void StbCmr_SetIsForcedPlaceMove(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret;
+            ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+            cm.isForcedPlaceMove = true;
+            stbCmr_ContinueMissionInfo[playerName] = cm;
+
+        }
+        public void StbCmr_ClearIsForcedPlaceMove(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret;
+            ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+            cm.isForcedPlaceMove = false;
+            stbCmr_ContinueMissionInfo[playerName] = cm;
+
+        }
+        public bool StbCmr_IsForcedPlaceMove(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret;
+            ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
+            return cm.isForcedPlaceMove;
+        }
+        //onPlaceEnter is calling & needs to check if this placeEnter is a real sortie start (ie, an airspawn)
+        //or is it just a place switch within (say) different positions in one bomber
+        public bool StbCmr_IsItASortieStart(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) return true; // if the player hasn't been flying before, all is AOK, it really is a takeoff
+                                   //Console.WriteLine(cm.ToString());
+            return !cm.isInPlanePlaceChange;  //if the placeenter was not a place change, then it IS a sortie start!
+
+        }
+        //this would be called ie onPlaceEnter to determine if the player is still in the same aircraft as before the placeEnter.
+        public bool StbCmr_PlaceLeave_PlaceEnter_sameActor(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) Console.WriteLine("PLPE-same actor: Player hasn't been in an aircraft before, no cmINFO");
+            if (!ret) return false; // if the player hasn't been flying before, the actor is different (before it was null/nothing, now a real aircraft or other actor)
+            if (cm.posEnterActor == null || cm.posLeftActor == null)
             {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) Console.WriteLine("PLPE-same actor: Player hasn't been in an aircraft before, no cmINFO");
-                if (!ret) return false; // if the player hasn't been flying before, the actor is different (before it was null/nothing, now a real aircraft or other actor)
-                if (cm.posEnterActor == null || cm.posLeftActor == null)
+                Console.WriteLine("PLPE-same actor: one actor was null: posenter {0} posleft {1}", cm.posEnterActor == null, cm.posLeftActor == null);
+                return false; //so if either OR both are null, we're going to say you can't be entering the same aircraft as before at this point
+                              //However, this could  happen if we're called after placeleave but before placeenter, as placeleave nulls out the placenterActor
+            }
+            Console.WriteLine("PLPE-same actor: Actor names - posenter {0} - posleft {1}", cm.posEnterActor.Name(), cm.posLeftActor.Name());
+            return (cm.posEnterActor == cm.posLeftActor);  //if the two are equal, then same aircraft or actor.  Otherwise, a different a/c or actor.
+
+        }
+        public bool StbCmr_HasPlayerLeftPlane(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) return false; // if the player hasn't been flying before, we're going to say the player couldn't possible have "left" a plane recently
+                                    //Console.WriteLine(cm.ToString());
+            return cm.isPlaneLeave;
+
+        }
+        public bool StbCmr_IsPlayerDead(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) return false; // if the player hasn't been flying before, has just come in and thus is "alive".  "Not alive" = "Dead" mostly means, was just recently flying or whatever and crashed and died or was killed.  That is usually what we care about, not just that the player didn't exist at all a little while ago.
+                                    //Console.WriteLine(cm.ToString());
+            return !cm.alive;
+
+        }
+        public void StbCmr_UpdateSelfDamage(string playerName = "", bool thisIsSelfDamage = false)
+        {
+            try
+            {
+                bool prevDamage = false;
+                if (playerName != null)
                 {
-                    Console.WriteLine("PLPE-same actor: one actor was null: posenter {0} posleft {1}", cm.posEnterActor == null, cm.posLeftActor == null);
-                    return false; //so if either OR both are null, we're going to say you can't be entering the same aircraft as before at this point
-                                  //However, this could  happen if we're called after placeleave but before placeenter, as placeleave nulls out the placenterActor
-                }
-                Console.WriteLine("PLPE-same actor: Actor names - posenter {0} - posleft {1}", cm.posEnterActor.Name(), cm.posLeftActor.Name());
-                return (cm.posEnterActor == cm.posLeftActor);  //if the two are equal, then same aircraft or actor.  Otherwise, a different a/c or actor.
 
-            }
-            public bool StbCmr_HasPlayerLeftPlane(string playerName)
-            {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) return false; // if the player hasn't been flying before, we're going to say the player couldn't possible have "left" a plane recently
-                                        //Console.WriteLine(cm.ToString());
-                return cm.isPlaneLeave;
+                    StbContinueMission cm = new StbContinueMission();
+                    if (stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm))
+                    { //Ok the person has newly spawned in and was previously flying, we check to see if 1. the person has died since last takeoff and 2. mayContinue is true (mayContinue is a signal from the previous event, the positionLeave in this case, that it was Ok to continue the mission @ that point). 3. Is taking off from the same place they recently landed.  If haven't died, mayContinue is true & taking off from same place, within 2000 of the place where they left their previous plane/position, they can continue the mission.                                                  
 
-            }
-            public bool StbCmr_IsPlayerDead(string playerName)
-            {
-                StbContinueMission cm = new StbContinueMission();
-                bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
-                if (!ret) return false; // if the player hasn't been flying before, has just come in and thus is "alive".  "Not alive" = "Dead" mostly means, was just recently flying or whatever and crashed and died or was killed.  That is usually what we care about, not just that the player didn't exist at all a little while ago.
-                                        //Console.WriteLine(cm.ToString());
-                return !cm.alive;
+                        prevDamage = cm.damagedSinceTakeoff;
+                        cm.damagedSinceTakeoff = true; //Between these two we can figure out if the only damage upon landing or de-spawning is self-inflicted
+                        cm.damagedOnlyBySelf = (cm.damagedOnlyBySelf && thisIsSelfDamage);  //if even one hit of non-self-damage is received, set this to false
+                        cm.selfDamageThisFlight++; //we track how many times the self-damage happens  
 
-            }
-            public void StbCmr_UpdateSelfDamage(string playerName = "", bool thisIsSelfDamage = false)
-            {
-                try
-                {
-                    bool prevDamage = false;
-                    if (playerName != null)
-                    {
-
-                        StbContinueMission cm = new StbContinueMission();
-                        if (stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm))
-                        { //Ok the person has newly spawned in and was previously flying, we check to see if 1. the person has died since last takeoff and 2. mayContinue is true (mayContinue is a signal from the previous event, the positionLeave in this case, that it was Ok to continue the mission @ that point). 3. Is taking off from the same place they recently landed.  If haven't died, mayContinue is true & taking off from same place, within 2000 of the place where they left their previous plane/position, they can continue the mission.                                                  
-
-                            prevDamage = cm.damagedSinceTakeoff;
-                            cm.damagedSinceTakeoff = true; //Between these two we can figure out if the only damage upon landing or de-spawning is self-inflicted
-                            cm.damagedOnlyBySelf = (cm.damagedOnlyBySelf && thisIsSelfDamage);  //if even one hit of non-self-damage is received, set this to false
-                            cm.selfDamageThisFlight++; //we track how many times the self-damage happens  
-
-
-                        }
-                        else
-                        {//in case the player record doesn't exist yet; shouldn't happen too often
-                            prevDamage = false;
-                            cm = new StbContinueMission();
-                            cm.placeLeaveLoc.x = -1000000;
-                            cm.placeLeaveLoc.y = -1000000;
-                            cm.alive = true;
-                            cm.mayContinue = false;
-                            cm.damagedSinceTakeoff = true; //Between these two we can figure out if the only damage upon landing or de-spawning is self-inflicted
-                            cm.damagedOnlyBySelf = (thisIsSelfDamage);  //if even one hit of non-self-damage is received, set this to false.  Initially we can set it to the value of this damage hit.
-                            cm.selfDamageThisFlight = 1;
-                            cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
-
-
-                        }
-                        stbCmr_ContinueMissionInfo[playerName] = cm;
-                        StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, playerName, new int[] { 790 });
-                        this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
-
-                        //Console.WriteLine( "UpdSelfDamage: " + playerName + " " + cm.ToString("F0"));     
-                        if (thisIsSelfDamage && !prevDamage) this.mission.Stb_Message(null, this.mission.stb_StatRecorder.StbSr_RankFromName(playerName) + playerName + " just damaged own aircraft", new object[] { });  //Display this message TO EVERYONE but only if it is the plane's initial damage since takeoff (to avoid having it display numerous times in case of, for example, a self-crash)                       
-                    }
-                }
-                catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
-            }
-
-            public bool StbCmr_IsSelfDamage(AiAircraft aircraft = null, AiDamageInitiator initiator = null)
-            {
-                string msg = "is damaged by ";
-                bool thisIsSelfDamage = false;  //we start off by assuming this is true & then check each place in the a/c and set it to false if we find the damageinitiator in one of the places
-
-                if (aircraft != null)
-                {
-                    if (initiator != null && initiator.Player != null && initiator.Player.Name() != null)
-                    {
-
-                        msg += initiator.Player.Name();
-                        for (int i = 0; i < aircraft.Places(); i++) //check each place in the a/c etc
-                        {
-                            if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
-                            {
-                                if (aircraft.Player(i).Name() == initiator.Player.Name()) thisIsSelfDamage = true;
-                                msg = aircraft.Player(i).Name() + " " + msg;
-                            }
-                        }
 
                     }
                     else
-                    {
-                        // initiator is null or has no player, which usually means ai. So that means that the player has received damage from someone besides self. 
-                        msg += "nobody/AI  ";
-                        thisIsSelfDamage = false;
-                    }
+                    {//in case the player record doesn't exist yet; shouldn't happen too often
+                        prevDamage = false;
+                        cm = new StbContinueMission();
+                        cm.placeLeaveLoc.x = -1000000;
+                        cm.placeLeaveLoc.y = -1000000;
+                        cm.alive = true;
+                        cm.mayContinue = false;
+                        cm.damagedSinceTakeoff = true; //Between these two we can figure out if the only damage upon landing or de-spawning is self-inflicted
+                        cm.damagedOnlyBySelf = (thisIsSelfDamage);  //if even one hit of non-self-damage is received, set this to false.  Initially we can set it to the value of this damage hit.
+                        cm.selfDamageThisFlight = 1;
+                        cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec();
 
-                    if (!thisIsSelfDamage)
-                    { //this means that the damage initiator is not any of the pilots/operates of the actor.  So we can go ahead & say that this a/c has received some damage that is not self damage                 
-                        msg += "nobody/AI  ";
-                    }
 
-                    for (int i = 0; i < aircraft.Places(); i++)
+                    }
+                    stbCmr_ContinueMissionInfo[playerName] = cm;
+                    StatsMission.StbStatTask sst = new StatsMission.StbStatTask(StatsMission.StbStatCommands.Mission, playerName, new int[] { 790 });
+                    this.mission.stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+                    //Console.WriteLine( "UpdSelfDamage: " + playerName + " " + cm.ToString("F0"));     
+                    if (thisIsSelfDamage && !prevDamage) this.mission.Stb_Message(null, this.mission.stb_StatRecorder.StbSr_RankFromName(playerName) + playerName + " just damaged own aircraft", new object[] { });  //Display this message TO EVERYONE but only if it is the plane's initial damage since takeoff (to avoid having it display numerous times in case of, for example, a self-crash)                       
+                }
+            }
+            catch (Exception ex) { StbCmr_PrepareErrorMessage(ex); }
+        }
+
+        public bool StbCmr_IsSelfDamage(AiAircraft aircraft = null, AiDamageInitiator initiator = null)
+        {
+            string msg = "is damaged by ";
+            bool thisIsSelfDamage = false;  //we start off by assuming this is true & then check each place in the a/c and set it to false if we find the damageinitiator in one of the places
+
+            if (aircraft != null)
+            {
+                if (initiator != null && initiator.Player != null && initiator.Player.Name() != null)
+                {
+
+                    msg += initiator.Player.Name();
+                    for (int i = 0; i < aircraft.Places(); i++) //check each place in the a/c etc
                     {
                         if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
                         {
-                            StbCmr_UpdateSelfDamage(aircraft.Player(i).Name(), thisIsSelfDamage);  //record that fact that the a/c received damage and also whether or not it was self damage                        
+                            if (aircraft.Player(i).Name() == initiator.Player.Name()) thisIsSelfDamage = true;
+                            msg = aircraft.Player(i).Name() + " " + msg;
                         }
                     }
 
-
                 }
-                //StbCmr_LogError(msg);            
-                return thisIsSelfDamage;
-
-                //TODO: We could do this for other actor types besides aircraft, too, though not sure why it would be needed   
-            }
-
-
-            public void StbCmr_PrepareErrorMessage(Exception ex)
-            {
-                if (stbCmr_LogErrors)
+                else
                 {
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(StbCmr_LogError),
-                        //(object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.Message));
-                        (object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.ToString()));
+                    // initiator is null or has no player, which usually means ai. So that means that the player has received damage from someone besides self. 
+                    msg += "nobody/AI  ";
+                    thisIsSelfDamage = false;
                 }
-            }
 
-            public void StbCmr_LogError(object data)
-            {
-                try
+                if (!thisIsSelfDamage)
+                { //this means that the damage initiator is not any of the pilots/operates of the actor.  So we can go ahead & say that this a/c has received some damage that is not self damage                 
+                    msg += "nobody/AI  ";
+                }
+
+                for (int i = 0; i < aircraft.Places(); i++)
                 {
-
-                    /*
-                    FileInfo fi = new FileInfo(stbCmr_ErrorLogPath);
-                    StreamWriter sw;
-                    if (fi.Exists) { sw = new StreamWriter(stbCmr_ErrorLogPath, true, System.Text.Encoding.UTF8); }
-                    else { sw = new StreamWriter(stbCmr_ErrorLogPath, false, System.Text.Encoding.UTF8); }
-                    sw.WriteLine((string)data);
-                    sw.Flush();
-                    sw.Close();
-                    */
-                    if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11", null); //testing disk output for warps
-                    string date = DateTime.UtcNow.ToString("u");
-                    Task.Run(() => File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data));
-                    //File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
+                    if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
+                    {
+                        StbCmr_UpdateSelfDamage(aircraft.Player(i).Name(), thisIsSelfDamage);  //record that fact that the a/c received damage and also whether or not it was self damage                        
+                    }
                 }
-                //catch (Exception ex) { Console.WriteLine(ex.Message); };
-                catch (Exception ex) { Console.WriteLine(ex.ToString()); };
-            }
-        } //Continue Mission Recorder class
 
-        public enum StbStatCommands : int { None = 0, Damage = 1, Dead = 2, CutLimb = 3, TaskCurrent = 4, Save = 5, PlayerKilled = 6, Mission = 7 };
-
-        public struct StbStatTask
-        {
-            public StbStatCommands command;
-            public string player;
-            public AiActor actor;
-            public int[] parameters;
-            public StbStatTask(StbStatCommands cmd, string pname, int[] prms, AiActor actr = null)
-            {
-                command = cmd;
-                player = pname;
-                parameters = prms;
-                actor = actr;
 
             }
-        }
+            //StbCmr_LogError(msg);            
+            return thisIsSelfDamage;
 
-        //for use in cases where you know the aiaircraft but NOT the playername
-        //if the a/c has actual players they will get the stats.  Otherwise, nothing
-        //happens
-        public void StbStatTaskAircraft(StbStatCommands cmd, AiAircraft a, int[] prms)
-        {
-            //Console.WriteLine ("Starting Aircraft Stat Update for " + a.Type());
-
-            if (a == null) return;
-
-            HashSet<Player> players = new HashSet<Player>();
-            players = StatCalcs.playersInPlane(a);
-            // for (int i = 0; i < a.Places(); i++)
-            foreach (Player player in players)
-            {
-                //if (aiAircraft.Player(i) != null) return false;
-                //if ( a.Player(i) is Player && a.Player(i) != null && a.Player(i).Name() != null ) {
-                if (player != null && player.Name() != null)
-                {
-                    string playerName = player.Name();
-                    //Console.WriteLine ("Aircraft Stat Update for " + playerName);                                 
-                    StbStatTask sst1 = new StbStatTask(cmd, playerName, prms, a as AiActor);
-                    stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                }
-            }
+            //TODO: We could do this for other actor types besides aircraft, too, though not sure why it would be needed   
         }
 
 
-        #endregion
-
-        #region stb Methods
-
-        // Error Methods-----------------------------------------------------------------------------------------------------------
-
-        public void Stb_PrepareErrorMessage(Exception ex)
+        public void StbCmr_PrepareErrorMessage(Exception ex)
         {
-            if (stb_LogErrors)
+            if (stbCmr_LogErrors)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(Stb_LogError),
+                ThreadPool.QueueUserWorkItem(new WaitCallback(StbCmr_LogError),
                     //(object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.Message));
                     (object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.ToString()));
             }
         }
 
-        public void Stb_LogError(object data)
+        public void StbCmr_LogError(object data)
         {
             try
             {
+
                 /*
-                FileInfo fi = new FileInfo(stb_ErrorLogPath);
+                FileInfo fi = new FileInfo(stbCmr_ErrorLogPath);
                 StreamWriter sw;
-                if (fi.Exists) { sw = new StreamWriter(stb_ErrorLogPath, true, System.Text.Encoding.UTF8); }
-                else { sw = new StreamWriter(stb_ErrorLogPath, false, System.Text.Encoding.UTF8); }
+                if (fi.Exists) { sw = new StreamWriter(stbCmr_ErrorLogPath, true, System.Text.Encoding.UTF8); }
+                else { sw = new StreamWriter(stbCmr_ErrorLogPath, false, System.Text.Encoding.UTF8); }
                 sw.WriteLine((string)data);
                 sw.Flush();
                 sw.Close();
                 */
-                //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
-                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8", null); //testing disk output for warps
+                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11", null); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
-                Task.Run(() => File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data));
-                //File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
+                Task.Run(() => File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data));
+                //File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
             //catch (Exception ex) { Console.WriteLine(ex.Message); };
             catch (Exception ex) { Console.WriteLine(ex.ToString()); };
         }
+    } //Continue Mission Recorder class
 
-        // Balance Methods---------------------------------------------------------------------------------------------------------
+    public enum StbStatCommands : int { None = 0, Damage = 1, Dead = 2, CutLimb = 3, TaskCurrent = 4, Save = 5, PlayerKilled = 6, Mission = 7 };
 
-        private void Stb_BalanceUpdate(Player p, AiActor actor, int pIndex, bool entered)
+    public struct StbStatTask
+    {
+        public StbStatCommands command;
+        public string player;
+        public AiActor actor;
+        public int[] parameters;
+        public StbStatTask(StbStatCommands cmd, string pname, int[] prms, AiActor actr = null)
         {
-            try
+            command = cmd;
+            player = pname;
+            parameters = prms;
+            actor = actr;
+
+        }
+    }
+
+    //for use in cases where you know the aiaircraft but NOT the playername
+    //if the a/c has actual players they will get the stats.  Otherwise, nothing
+    //happens
+    public void StbStatTaskAircraft(StbStatCommands cmd, AiAircraft a, int[] prms)
+    {
+        //Console.WriteLine ("Starting Aircraft Stat Update for " + a.Type());
+
+        if (a == null) return;
+
+        HashSet<Player> players = new HashSet<Player>();
+        players = StatCalcs.playersInPlane(a);
+        // for (int i = 0; i < a.Places(); i++)
+        foreach (Player player in players)
+        {
+            //if (aiAircraft.Player(i) != null) return false;
+            //if ( a.Player(i) is Player && a.Player(i) != null && a.Player(i).Name() != null ) {
+            if (player != null && player.Name() != null)
             {
-                AiAircraft aircraft = actor as AiAircraft;
-                if (aircraft == null) { return; }
-                if (aircraft.Type() == AircraftType.Fighter || aircraft.Type() == AircraftType.HeavyFighter)
+                string playerName = player.Name();
+                //Console.WriteLine ("Aircraft Stat Update for " + playerName);                                 
+                StbStatTask sst1 = new StbStatTask(cmd, playerName, prms, a as AiActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst1);
+            }
+        }
+    }
+
+
+    #endregion
+
+    #region stb Methods
+
+    // Error Methods-----------------------------------------------------------------------------------------------------------
+
+    public void Stb_PrepareErrorMessage(Exception ex)
+    {
+        if (stb_LogErrors)
+        {
+            ThreadPool.QueueUserWorkItem(new WaitCallback(Stb_LogError),
+                //(object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.Message));
+                (object)("Error @ " + ex.TargetSite.Name + "  Message: " + ex.ToString()));
+        }
+    }
+
+    public void Stb_LogError(object data)
+    {
+        try
+        {
+            /*
+            FileInfo fi = new FileInfo(stb_ErrorLogPath);
+            StreamWriter sw;
+            if (fi.Exists) { sw = new StreamWriter(stb_ErrorLogPath, true, System.Text.Encoding.UTF8); }
+            else { sw = new StreamWriter(stb_ErrorLogPath, false, System.Text.Encoding.UTF8); }
+            sw.WriteLine((string)data);
+            sw.Flush();
+            sw.Close();
+            */
+            //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8", null); //testing disk output for warps
+            string date = DateTime.UtcNow.ToString("u");
+            Task.Run(() => File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data));
+            //File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
+        }
+        //catch (Exception ex) { Console.WriteLine(ex.Message); };
+        catch (Exception ex) { Console.WriteLine(ex.ToString()); };
+    }
+
+    // Balance Methods---------------------------------------------------------------------------------------------------------
+
+    private void Stb_BalanceUpdate(Player p, AiActor actor, int pIndex, bool entered)
+    {
+        try
+        {
+            AiAircraft aircraft = actor as AiAircraft;
+            if (aircraft == null) { return; }
+            if (aircraft.Type() == AircraftType.Fighter || aircraft.Type() == AircraftType.HeavyFighter)
+            {
+                if (aircraft.CrewFunctionPlace(pIndex) == CrewFunction.Pilot)
                 {
-                    if (aircraft.CrewFunctionPlace(pIndex) == CrewFunction.Pilot)
-                    {
-                        if (p.Army() == 1) { stb_RedFighters += entered ? 1 : -1; return; }
-                        if (p.Army() == 2) { stb_BlueFighters += entered ? 1 : -1; return; }
-                    }
+                    if (p.Army() == 1) { stb_RedFighters += entered ? 1 : -1; return; }
+                    if (p.Army() == 2) { stb_BlueFighters += entered ? 1 : -1; return; }
                 }
             }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private bool Stb_BalanceCheckForBan(Player p, AiActor actor, int placeIndex)
+    {
+        try
+        {
+            stb_Ratio = (stb_RedFighters > stb_BlueFighters) ?
+                ((double)stb_RedFighters / (double)stb_BlueFighters) : ((double)stb_BlueFighters / (double)stb_RedFighters);
+            stb_Delta = (stb_RedFighters > stb_BlueFighters) ?
+                (stb_RedFighters - stb_BlueFighters) : (stb_BlueFighters - stb_RedFighters);
+            if (stb_BalanceFightersByRatio)
+            {
+                if (stb_Ratio > stb_DesiredRatio &&
+                    (stb_RedFighters + stb_BlueFighters) > stb_MinCountForBalance)
+                {
+                    Stb_BalanceMessageForBan(p, actor, placeIndex); return true;
+                }
+            }
+            else
+            {
+                if (stb_Delta > stb_DesiredDelta &&
+                    (stb_RedFighters + stb_BlueFighters) > stb_MinCountForBalance)
+                {
+                    Stb_BalanceMessageForBan(p, actor, placeIndex); return true;
+                }
+            }
+            return false;
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+
+    private void Stb_BalanceMessageForBan(Player p, AiActor actor, int placeIndex)
+    {
+        try
+        {
+            GamePlay.gpLogServerBegin(new Player[] { p }, stb_BalanceMsgRus);
+            GamePlay.gpLogServerEnd();
+            GamePlay.gpLogServerBegin(new Player[] { p }, stb_BalanceMsgEng);
+            GamePlay.gpLogServerEnd();
+            GamePlay.gpHUDLogCenter(new Player[] { p }, stb_BalanceMsgHud);
+            Stb_BalanceDisableForBan(actor);
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_BalanceDisableForBan(AiActor actor)
+    {
+        try
+        {
+            AiAircraft aircraft = actor as AiAircraft;
+            if (aircraft != null)
+            {
+                Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
+                Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsAileronsDisabled);
+                Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsRudderDisabled);
+                Stb_DamagePlane(aircraft, NamedDamageTypes.Eng0TotalSeizure);
+                AiAirGroup aag = aircraft.AirGroup();
+                if (aag != null)
+                {
+                    if (aag.aircraftEnginesNum() == 2) { Stb_DamagePlane(aircraft, NamedDamageTypes.Eng1TotalSeizure); }
+                }
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    // StartUp Methods---------------------------------------------------------------------------------------------------------
+
+    private void Stb_LoadAntiAirDraftToMemory()
+    {
+        string[,] shipsRed = new string[6, 2];
+        string[,] shipsBlue = new string[6, 2];
+
+        shipsRed[0, 0] = "13630.00 31515.00 38.40  0 2 5.56";
+        shipsRed[0, 1] = "13610.00 31555.00 38.40";
+        shipsRed[1, 0] = "14210.00 31680.00 38.40  0 2 5.56";
+        shipsRed[1, 1] = "14255.00 31690.00 38.40";
+        shipsRed[2, 0] = "13100.00 31150.00 38.40  0 2 5.56";
+        shipsRed[2, 1] = "13065.00 31130.00 38.40";
+        shipsRed[3, 0] = "18600.00 31645.00 38.40  0 2 5.56";
+        shipsRed[3, 1] = "18615.00 31685.00 38.40";
+        shipsRed[4, 0] = "18035.00 31795.00 38.40  0 2 5.56";
+        shipsRed[4, 1] = "17970.00 31800.00 38.40";
+        shipsRed[5, 0] = "19030.00 31310.00 38.40  0 2 5.56";
+        shipsRed[5, 1] = "19060.00 31285.00 38.40";
+
+        shipsBlue[0, 0] = "11690.00 9905.00 38.40  0 2 5.56";
+        shipsBlue[0, 1] = "11620.00 9905.00 38.40";
+        shipsBlue[1, 0] = "13025.00 10260.00 38.40  0 2 5.56";
+        shipsBlue[1, 1] = "13075.00 10275.00 38.40";
+        shipsBlue[2, 0] = "12450.00 10030.00 38.40  0 2 5.56";
+        shipsBlue[2, 1] = "12455.00 9990.00 38.40";
+        shipsBlue[3, 0] = "18260.00 9100.00 38.40  0 2 5.56";
+        shipsBlue[3, 1] = "18240.00 9070.00 38.40";
+        shipsBlue[4, 0] = "17930.00 9345.00 38.40  0 2 5.56";
+        shipsBlue[4, 1] = "17895.00 9370.00 38.40";
+        shipsBlue[5, 0] = "18675.00 8940.00 38.40  0 2 5.56";
+        shipsBlue[5, 1] = "18695.00 8930.00 38.40";
+
+        string[] gunsRed = new string[28];
+        string[] gunsBlue = new string[28];
+
+        gunsBlue[0] = "Artillery.4_cm_Flak_28 de 18030 9660 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[1] = "Artillery.4_cm_Flak_28 de 18370 9650 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[2] = "Artillery.4_cm_Flak_28 de 18710 9640 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[3] = "Artillery.4_cm_Flak_28 de 18990 9630 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[4] = "Artillery.4_cm_Flak_28 de 19400 9620 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[5] = "Artillery.4_cm_Flak_28 de 11630 10310 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[6] = "Artillery.4_cm_Flak_28 de 11980 10400 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[7] = "Artillery.4_cm_Flak_28 de 12300 10480 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[8] = "Artillery.4_cm_Flak_28 de 12650 10570 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[9] = "Artillery.4_cm_Flak_28 de 12970 10650 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[10] = "Artillery.Flak37 de 18710 10110 240 /timeout 0/radius_hide 3000 ";
+        gunsBlue[11] = "Artillery.Flak37 de 18775 10110 -90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[12] = "Artillery.Flak37 de 18840 10110 -45 /timeout 0/radius_hide 3000 ";
+        gunsBlue[13] = "Artillery.Flak37 de 18710 10190 135 /timeout 0/radius_hide 3000 ";
+        gunsBlue[14] = "Artillery.Flak37 de 18775 10190 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[15] = "Artillery.Flak37 de 18840 10190 45 /timeout 0/radius_hide 3000 ";
+        gunsBlue[16] = "Artillery.Flak37 de 12410 10710 225 /timeout 0/radius_hide 3000 ";
+        gunsBlue[17] = "Artillery.Flak37 de 12475 10710 -90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[18] = "Artillery.Flak37 de 12540 10710 -45 /timeout 0/radius_hide 3000 ";
+        gunsBlue[19] = "Artillery.Flak37 de 12410 10790 135 /timeout 0/radius_hide 3000 ";
+        gunsBlue[20] = "Artillery.Flak37 de 12475 10790 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[21] = "Artillery.Flak37 de 12540 10790 45 /timeout 0/radius_hide 3000 ";
+        gunsBlue[22] = "Artillery.RRH_GER1 de 18710 10150 180 /timeout 0/radius_hide 3000 ";
+        gunsBlue[23] = "Artillery.RRH_GER1 de 18775 10150 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[24] = "Artillery.RRH_GER1 de 18840 10150 0 /timeout 0/radius_hide 3000 ";
+        gunsBlue[25] = "Artillery.RRH_GER1 de 12410 10750 180 /timeout 0/radius_hide 3000 ";
+        gunsBlue[26] = "Artillery.RRH_GER1 de 12475 10750 90 /timeout 0/radius_hide 3000 ";
+        gunsBlue[27] = "Artillery.RRH_GER1 de 12540 10750 0 /timeout 0/radius_hide 3000 ";
+        gunsRed[0] = "Artillery.Bofors gb 13280 30560 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[1] = "Artillery.Bofors gb 18770 30530 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[2] = "Artillery.Bofors gb 18430 30620 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[3] = "Artillery.Bofors gb 13610 30730 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[4] = "Artillery.Bofors gb 18110 30700 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[5] = "Artillery.Bofors gb 17770 30790 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[6] = "Artillery.Bofors gb 13890 30880 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[7] = "Artillery.Bofors gb 17440 30880 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[8] = "Artillery.Bofors gb 14190 31040 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[9] = "Artillery.Bofors gb 14500 31210 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[10] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13710 30610 -135 /timeout 0/radius_hide 3000 ";
+        gunsRed[11] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13775 30610 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[12] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13840 30610 -45 /timeout 0/radius_hide 3000 ";
+        gunsRed[13] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17710 30610 -135 /timeout 0/radius_hide 3000 ";
+        gunsRed[14] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17775 30610 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[15] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13710 30690 135 /timeout 0/radius_hide 3000 ";
+        gunsRed[16] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17840 30610 -45 /timeout 0/radius_hide 3000 ";
+        gunsRed[17] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13775 30690 90 /timeout 0/radius_hide 3000 ";
+        gunsRed[18] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13840 30690 45 /timeout 0/radius_hide 3000 ";
+        gunsRed[19] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17710 30690 135 /timeout 0/radius_hide 3000 ";
+        gunsRed[20] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17775 30690 90 /timeout 0/radius_hide 3000 ";
+        gunsRed[21] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17840 30690 45 /timeout 0/radius_hide 3000 ";
+        gunsRed[22] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13710 30650 180 /timeout 0/radius_hide 3000 ";
+        gunsRed[23] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13775 30650 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[24] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13840 30650 0 /timeout 0/radius_hide 3000 ";
+        gunsRed[25] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17720 30650 180 /timeout 0/radius_hide 3000 ";
+        gunsRed[26] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17775 30650 -90 /timeout 0/radius_hide 3000 ";
+        gunsRed[27] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17840 30650 0 /timeout 0/radius_hide 3000 ";
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string s = "";
+        string k = "";
+        string v = "";
+
+        s = "Chiefs";
+        v = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
+        for (int i = 0; i < 6; i++)
+        {
+            k = "baseDefenseShip_R_" + i.ToString("00");
+            f.add(s, k, v);
+        }
+        v = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
+        for (int i = 0; i < 6; i++)
+        {
+            k = "baseDefenseShip_B_" + i.ToString("00");
+            f.add(s, k, v);
         }
 
-        private bool Stb_BalanceCheckForBan(Player p, AiActor actor, int placeIndex)
+        v = "";
+        for (int i = 0; i < 6; i++)
         {
-            try
+            s = "baseDefenseShip_R_" + i.ToString("00") + "_Road";
+            k = shipsRed[i, 0];
+            f.add(s, k, v);
+            k = shipsRed[i, 1];
+            f.add(s, k, v);
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            s = "baseDefenseShip_B_" + i.ToString("00") + "_Road";
+            k = shipsBlue[i, 0];
+            f.add(s, k, v);
+            k = shipsBlue[i, 1];
+            f.add(s, k, v);
+        }
+
+        s = "Stationary";
+        for (int i = 0; i < 28; i++)
+        {
+            k = "baseDefenseGun_R_" + i.ToString("00");
+            v = gunsRed[i];
+            f.add(s, k, v);
+        }
+        for (int i = 0; i < 28; i++)
+        {
+            k = "baseDefenseGun_B_" + i.ToString("00");
+            v = gunsBlue[i];
+            f.add(s, k, v);
+        }
+
+        stb_BaseAntiAirDefenses = f;
+    }
+
+    private void Stb_LoadFrontline1DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value;
+
+        sect = "Chiefs";
+        key = "FrontShip_R1";
+        value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        key = "FrontShip_B1";
+        value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        value = "";
+
+        sect = "FrontShip_R1_Road";
+        key = "7500.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "7500.00 14400.00 38.4"; f.add(sect, key, value);
+
+        sect = "FrontShip_B1_Road";
+        key = "7500.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "7500.00 27500.00 38.40"; f.add(sect, key, value);
+
+        stb_Frontline1 = f;
+    }
+
+    private void Stb_LoadFrontline2DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value;
+
+        sect = "Chiefs";
+        key = "FrontShip_R2";
+        value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        key = "FrontShip_B2";
+        value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        value = "";
+
+        sect = "FrontShip_R2_Road";
+        key = "13600.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "13427.00 18871.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "13171.00 17635.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "13600.00 14400.00 38.4"; f.add(sect, key, value);
+
+        sect = "FrontShip_B2_Road";
+        key = "13600.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "13171.00 17635.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "13427.00 18871.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "13600.00 27500.00 38.40"; f.add(sect, key, value);
+
+        stb_Frontline2 = f;
+    }
+
+    private void Stb_LoadFrontline3DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value;
+
+        sect = "Chiefs";
+        key = "FrontShip_R3";
+        value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        key = "FrontShip_B3";
+        value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
+        f.add(sect, key, value);
+
+        value = "";
+
+        sect = "FrontShip_R3_Road";
+        key = "15900.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "15700.00 23500.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "17500.00 20600.00 38.4  0 2 5.56"; f.add(sect, key, value);
+        key = "17100.00 14400.00 38.4"; f.add(sect, key, value);
+
+        sect = "FrontShip_B3_Road";
+        key = "17100.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "17500.00 20600.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "15700.00 23500.00 38.40  0 2 5.56"; f.add(sect, key, value);
+        key = "15900.00 27500.00 38.40"; f.add(sect, key, value);
+
+        stb_Frontline3 = f;
+    }
+
+    private void Stb_LoadFrontline4DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect;
+        string key;
+        string value;
+
+        sect = "Chiefs";
+        key = "FrontArmor_R1";
+        value = "Armor.Cruiser_Mk_IVA gb /num_units 6";
+        f.add(sect, key, value);
+
+        key = "FrontArmor_B1";
+        value = "Armor.Pz_IIC de /num_units 6";
+        f.add(sect, key, value);
+
+        value = "";
+
+        sect = "FrontArmor_R1_Road";
+        key = "20700.00 25800.00 38.4  0 2 7.14"; f.add(sect, key, value);
+        key = "20900.00 25000.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "20609.00 23948.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "20849.00 23059.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21284.00 22438.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21591.00 22044.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21700.00 21400.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21638.00 20728.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21806.00 20209.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "22187.00 19677.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "22400.00 19100.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "22200.00 18400.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "22300.00 17700.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "22211.00 16941.00 38.4  0 2 3.57"; f.add(sect, key, value);
+        key = "21854.00 16291.00 38.4"; f.add(sect, key, value);
+
+        sect = "FrontArmor_B1_Road";
+        key = "21854.00 16291.00 38.40  0 2 7.14"; f.add(sect, key, value);
+        key = "22211.00 16941.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "22300.00 17700.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "22200.00 18400.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "22400.00 19100.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "22187.00 19677.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "21806.00 20209.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "21638.00 20728.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "21700.00 21400.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "21591.00 22044.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "21284.00 22438.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "20849.00 23059.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "20609.00 23948.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "20900.00 25000.00 38.40  0 2 3.57"; f.add(sect, key, value);
+        key = "20700.00 25800.00 38.40"; f.add(sect, key, value);
+
+        stb_Frontline4 = f;
+    }
+
+    //use loc.x = loc.y = loc.z 0 for default location
+    //returns the name of the newly created a/c, which actually won't be created until the isect file is loaded, so wait 1 sec. or so before using.
+    private string Stb_LoadSubAircraft(Point3d loc, string type = "SpitfireMkIa_100oct", string callsign = "26", string hullNumber = "3", string serialNumber = "001", string regiment = "gb02", string fuelStr = "", string weapons = "", double velocity = 0, string fighterbomber = "", string skin_filename = "", string delay_sec = "")
+    {
+        /*  //sample .mis file with parked a/c
+         *  [AirGroups]
+            BoB_RAF_F_141Sqn_Early.01
+            [BoB_RAF_F_141Sqn_Early.01]
+            Flight0  1
+            Class Aircraft.SpitfireMkIa_100oct
+            Formation VIC3
+            CallSign 26
+            Fuel 100
+            Weapons 1
+            SetOnPark 1
+            Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+            [BoB_RAF_F_141Sqn_Early.01_Way]
+            TAKEOFF 76923.96 179922.36 0 0 
+
+          */
+        //default spawn location is Bembridge, landed, 0 mph & on the ground
+        string locx = "76923.96";
+        //string locy = "179922.36"; //real Bembridge location
+        string locy = "178322.36"; //1600 meters off Bembridge
+        string locz = "0";
+        string vel = "0";
+
+        int hullNumber_int = 1;
+        try
+        {
+            hullNumber_int = Convert.ToInt32(hullNumber);
+        }
+        catch
+        {
+            hullNumber_int = 1;
+        }
+        //if (hullNumber_int < 1) hullNumber_int = 1; //sanity check; not sure on exact highest allowed number here  //OK, CloD seems to allow any neg or positive integer so we're leaving it at that
+
+        //Ok this is wierd. But if aiaircraft group spawn-in point is near or in the middle of the airport, then CLOD seems to use the
+        //built-in spawn points for that airport, regardless of what you have put in place.
+        //But if the given spawn-in point is like a thousand or a couple thousand meters away, then it finds the nearest airport AND uses the airdrome points that you have created in FMB
+        //So, we're going to try it.
+
+        //TODO: What we shoudl really do, if this idea works, is to #1. find the nearest airport,  #2, move our loc to 2000 meters or whatever away from it. #3. Make sure that target airport is still our nearest airport
+
+        if (loc.x != 0 && loc.y != 0 && loc.z != 0)
+        {
+            locx = (loc.x - 1000).ToString("F2"); //1000 m off the actual location
+            locy = (loc.y - 1600).ToString("F2"); //1600 m off the actual location
+            if (velocity > 0)
             {
-                stb_Ratio = (stb_RedFighters > stb_BlueFighters) ?
-                    ((double)stb_RedFighters / (double)stb_BlueFighters) : ((double)stb_BlueFighters / (double)stb_RedFighters);
-                stb_Delta = (stb_RedFighters > stb_BlueFighters) ?
-                    (stb_RedFighters - stb_BlueFighters) : (stb_BlueFighters - stb_RedFighters);
-                if (stb_BalanceFightersByRatio)
+                locz = loc.z.ToString("F2");
+                vel = velocity.ToString("F2");
+            }
+            else
+            {
+                locz = "0";
+                vel = "0";
+            }
+        }
+
+        string rnumb = ".01";
+        string regiment_isec = regiment + rnumb;
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string s = "";
+        string k = "";
+        string v = "";
+
+        s = "AirGroups";
+        k = regiment_isec; v = ""; f.add(s, k, v);
+        s = regiment_isec;
+        k = "Flight0"; v = hullNumber_int.ToString(); f.add(s, k, v);
+        k = "Class"; v = "Aircraft." + type; f.add(s, k, v);
+        k = "Formation"; v = "VIC3"; f.add(s, k, v);
+        k = "CallSign"; v = callsign; f.add(s, k, v);
+        //k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
+        //k = "Weapons"; v = weapons; f.add(s, k, v);
+
+        f = Stb_AddLoadoutForPlane(f, s, type, fighterbomber, weapons, delay_sec, fuelStr);
+
+
+        /* if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
+        {
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
+            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
+        } */
+        f.add(s, "Serial0", serialNumber);
+        if (skin_filename.Length > 0) f.add(s, "Skin0", skin_filename);
+        else f.add(s, "Skin0", "default.jpg");  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
+                                                //f.add(s, "Flight0", hullNumber);  
+        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        if (velocity <= 0)
+        {
+            k = "SetOnPark"; v = "1"; f.add(s, k, v);
+            k = "Idle"; v = "1"; f.add(s, k, v);
+        }
+
+        s = regiment_isec + "_Way";
+        if (velocity <= 0) k = "TAKEOFF";
+        else k = "NORMFLY";
+        v = locx + " " + locy + " " + locz + " " + vel; f.add(s, k, v);
+
+        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
+        //f.save(stb_FullPath + "aircraftSpawn-ISectionFile.txt"); //testing
+
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13", null); //testing disk output for warps
+                                                                                         //load it in
+        GamePlay.gpPostMissionLoad(f);
+
+        return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
+
+
+
+    }
+
+    private ISectionFile Stb_AddLoadoutForPlane(ISectionFile f, string s, string type, string fighterbomber = "", string weapons = "", string delay_sec = "", string fuelStr = "")
+    {
+        string k = "";
+        string v = "";
+
+        if (weapons == null) weapons = "";
+        if (delay_sec == null || delay_sec == "")
+        {
+            delay_sec = "1"; //1 sec should work for Blenheim but maybe not for some/all DE aircraft.  So 0.08 sec delay for the DE a/c
+            if (type.Contains("Bf-109") || type.Contains("He-111") || type.Contains("110C") || type.Contains("BR-20") || type.Contains("Ju-8")) delay_sec = "0.08";
+        }
+
+        int fuel = 100;
+        try
+        {
+            fuel = Convert.ToInt32(fuelStr);
+
+            if (fuel < 0) fuel = 100;  //negative is not sensible, we're assuming it is just nonsense
+            if (fuel > 100) fuel = 100; // We're allowing fuel=0 even though I can't imagine how this is useful to anyone
+        }
+        catch (Exception ex) //any problem with int32 conversion
+        {
+            fuel = 0;
+            //Console.WriteLine("Spawn: Using default value for fuel load, 100% or 30%");
+        }
+
+        //k = "Weapons"; v = weapons; f.add(s, k, v);
+        //"Belt" must be a CAPITOL B here in the .mis file, though it is spelled "belt" in the user.ini file . . . 
+        if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
+        {
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10 Residual 50 ResidueBelt 11 11 11 11 9");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
+            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 11 11 11 11 9");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10");
+            if (type.Contains("HurricaneMkI_FB"))
+            {
+                if (weapons.Length == 0) weapons = "1 2"; //default
+                if (fighterbomber == "f") weapons = "1 0";
+                f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 3 0 " + delay_sec);
+            }
+            else
+            {
+                if (weapons.Length == 0) weapons = "1"; //default
+                if (fighterbomber == "b") weapons = "1 2";
+            }
+
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type == ("BlenheimMkIV"))
+        {
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 10 12 9 10 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 5 0 2"; //default (updated for 4.53
+                if (fighterbomber == "f") weapons = "1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 35;
+        }
+        else if (type == ("BlenheimMkIV_Late"))
+        {
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 2 1 2"; //default
+                if (fighterbomber == "f") weapons = "1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 35;
+        }
+        else if (type == ("BlenheimMkIVF") || type == "BlenheimMkIVNF")
+        {
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 0 0 2"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+            }
+
+            if (fuel == 0) fuel = 30;
+        }
+        else if (type == ("BlenheimMkIVF_Late") || type == "BlenheimMkIVNF_Late")  //still needs update 4.5 
+        {
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 1 1 1"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 30;
+        }
+        else if (type == ("BeaufighterMkIF") || type == "BeaufighterMkINF")  //could add residuals
+        {
+
+            f.add(s, "Belt", "_Gun01 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun03 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun09 Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun08 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun00 Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1"; //default                
+            }
+            if (fuel == 0) fuel = 30;
+        }
+        else if (type == "G50")
+        {
+            f.add(s, "Belt", "_Gun00 Gun.Breda-SAFAT-12,7mm MainBelt 7 3 0 4 6 3 0 1 4 6 Residual 50 ResidueBelt 3 4 7 4 6 7 0 3 7");
+            f.add(s, "Belt", "_Gun01 Gun.Breda-SAFAT-12,7mm MainBelt 3 0 1 4 7 0 1 3 4 6 Residual 50 ResidueBelt 0 3 7 3 4 7 4 6 7");
+
+            if (weapons.Length == 0) weapons = "1"; //default
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type == "Bf-109E-1B") //we do E-1B first so that then we can cover all remaining E-1 types with type.Contains.  Similarly for E-3, E-4
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 5 5 5 1 0 0 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 0 0 4 4 4 1 5 5 5");
+            f.add(s, "Belt", "_Gun03 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 2"; //default
+                if (fighterbomber == "f") weapons = "1 1 0";
+            }
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type == "Bf-109E-3B") //we do E-3B first so that then we can cover all remaining E-3 types with type.Contains.  Similarly for E-3, E-4
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 4 3 4");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 4 1 4");
+
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 2"; //default
+                if (fighterbomber == "f") weapons = "1 1 0";
+            }
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type.Contains("Bf-109E-4B"))
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 5 3 5");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 5 1 5");
+
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 3"; //default
+                if (fighterbomber == "f") weapons = "1 1 0";
+            }
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type.Contains("Bf-109E-1"))
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 5 5 5 1 0 0 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 0 0 4 4 4 1 5 5 5");
+            f.add(s, "Belt", "_Gun03 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+
+            if (weapons.Length == 0) weapons = "1 1"; //default
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type.Contains("Bf-109E-3"))
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 4 3 4");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 4 1 4");
+
+            if (weapons.Length == 0) weapons = "1 1"; //default
+            if (fuel == 0) fuel = 100;
+
+        }
+        else if (type.Contains("Bf-109E-4"))  //also covers E-4N E-4N-Derated etc
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 5 3 5");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 5 1 5");
+
+            if (weapons.Length == 0) weapons = "1 1"; //default
+            if (fuel == 0) fuel = 100;
+
+        }
+
+        else if (type.Contains("He-111H")) //covers both H-2 & P-2 with just one line different
+        {
+            f.add(s, "Belt", "_Gun04 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun03 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2"); //Only the h-2 has Gun03; the P-2 lacks it & throws an error if it is included
+            f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 1 1 1 4"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 1 1 1 0";
+            }
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("He-111P")) //covers both H-2 & P-2 with just one line different
+        {
+            f.add(s, "Belt", "_Gun04 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 1 1 4"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 1 1 0";
+            }
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("110C-2"))
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 4 1 4");
+            f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 4 4 1");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+
+            if (weapons.Length == 0) weapons = "1 1 1"; //default
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("110C-4"))
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 5 1 5");
+            f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 5 3 5");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+
+            if (weapons.Length == 0) weapons = "1 1 1"; //default
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("110C-6")) //need to make sure this is a good load-out, copied from user-ini
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun04 Gun.Mk-101 MainBelt 0 2 0 2 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1"; //default
+                if (fighterbomber == "f") weapons = "1 1 1";
+            }
+
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("110C-7")) //also covers 110C-7-late
+        {
+            f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 5 1 5");
+            f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 5 3 5");
+            f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+
+            f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-500_A 0 -1 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 4"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 0";
+            }
+
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("BR-20"))
+        {
+            f.add(s, "Belt", "_Gun01 Gun.Breda-SAFAT-12,7mm_Turret MainBelt 8 3 5 1 6 7 3 5 1 8");
+            f.add(s, "Belt", "_Gun00 Gun.Breda-SAFAT-7,7mm MainBelt 4 3 1 2 3 4");
+            f.add(s, "Belt", "_Gun02 Gun.Breda-SAFAT-7,7mm MainBelt 1 2 3 4 1 2 3 4");
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 4"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 0";
+            }
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("Ju-87"))
+        {
+            f.add(s, "Belt", "_Gun00 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+
+            f.add(s, "Detonator", "Bomb.SC-500_GradeIII_J 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J_DivePreferred 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-250_JB 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-500_E 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-250_Type2_J 2 -1 " + delay_sec);
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 1"; //default
+                if (fighterbomber == "f") weapons = "1 1 0 0";
+            }
+            if (fuel == 0) fuel = 30;
+
+        }
+        else if (type.Contains("Ju-88"))
+        {
+            f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 2 4 0 0 2 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 1 0 2 4 4 2 4 5 5 2 5 0 2 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
+            f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 1 2 0 4 2 4 4 5 2 5 5 2 0 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
+
+            f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-250_Type1_J 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SD-500_A 0 -1 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
+
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 2 2 4"; //default
+                if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 30;
+
+        }
+        k = "Weapons"; v = weapons; f.add(s, k, v);
+        k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
+
+        return f;
+    }
+
+
+    private void Stb_LoadBombers1DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string s = "";
+        string k = "";
+        string v = "";
+
+        s = "AirGroups";
+        k = "gb02.03"; v = ""; f.add(s, k, v);
+        k = "g02.03"; v = ""; f.add(s, k, v);
+        s = "gb02.03";
+        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+        k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
+        k = "Formation"; v = "VIC3"; f.add(s, k, v);
+        k = "CallSign"; v = "26"; f.add(s, k, v);
+        k = "Fuel"; v = "66"; f.add(s, k, v);
+        k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
+        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        s = "gb02.03_Way";
+        k = "NORMFLY"; v = "19500.00 39000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "19500.00 31000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "17500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "17000.00 18000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "19500.00 39000.00 3000.00 366.00"; f.add(s, k, v);
+        s = "g02.03";
+        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+        k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
+        k = "Formation"; v = "VIC3"; f.add(s, k, v);
+        k = "CallSign"; v = "30"; f.add(s, k, v);
+        k = "Fuel"; v = "66"; f.add(s, k, v);
+        k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
+        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        s = "g02.03_Way";
+        k = "NORMFLY"; v = "10500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "10500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "12500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "13000.00 24000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "10500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
+        s = "Stationary";
+        k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+
+        stb_Bombers1 = f;
+    }
+
+    private void Stb_LoadBombers2DraftToMemory()
+    {
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string s = "";
+        string k = "";
+        string v = "";
+
+        s = "AirGroups";
+        k = "gb02.03"; v = ""; f.add(s, k, v);
+        k = "g02.03"; v = ""; f.add(s, k, v);
+        s = "gb02.03";
+        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+        k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
+        k = "Formation"; v = "VIC3"; f.add(s, k, v);
+        k = "CallSign"; v = "26"; f.add(s, k, v);
+        k = "Fuel"; v = "66"; f.add(s, k, v);
+        k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
+        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        s = "gb02.03_Way";
+        k = "NORMFLY"; v = "11600.00 38900.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "12500.00 30000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "11500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "12500.00 18000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "11600.00 38900.00 3000.00 366.00"; f.add(s, k, v);
+        s = "g02.03";
+        k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
+        k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
+        k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
+        k = "Formation"; v = "VIC3"; f.add(s, k, v);
+        k = "CallSign"; v = "30"; f.add(s, k, v);
+        k = "Fuel"; v = "66"; f.add(s, k, v);
+        k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
+        k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
+        k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
+        k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
+        s = "g02.03_Way";
+        k = "NORMFLY"; v = "20500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "20500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "18500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "18500.00 24000.00 2000.00 250.00"; f.add(s, k, v);
+        k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
+        k = "NORMFLY"; v = "20500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
+        s = "Stationary";
+        k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+        k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
+
+        stb_Bombers2 = f;
+    }
+
+    // Recursive Methods-------------------------------------------------------------------------------------------------------
+
+    private void Stb_SpawnAntiAirRecursive()
+    {
+        try
+        {
+            for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+            {
+                bool willBreak = false;
+                for (int j = 0; j < 6; j++)
                 {
-                    if (stb_Ratio > stb_DesiredRatio &&
-                        (stb_RedFighters + stb_BlueFighters) > stb_MinCountForBalance)
+                    string fullActorName = i.ToString() + ":baseDefenseShip_R_" + j.ToString("00");
+                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                }
+                for (int j = 0; j < 6; j++)
+                {
+                    string fullActorName = i.ToString() + ":baseDefenseShip_B_" + j.ToString("00");
+                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                }
+                if (willBreak) { break; }
+            }
+            for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+            {
+                bool willBreak = false;
+                for (int j = 0; j < 28; j++)
+                {
+                    string fullActorName = i.ToString() + ":baseDefenseGun_R_" + j.ToString("00");
+                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                }
+                for (int j = 0; j < 28; j++)
+                {
+                    string fullActorName = i.ToString() + ":baseDefenseGun_B_" + j.ToString("00");
+                    AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                    if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                }
+                if (willBreak) { break; }
+            }
+            GamePlay.gpPostMissionLoad(stb_BaseAntiAirDefenses);
+            Timeout(stb_SpawnAntiAirDelay, Stb_SpawnAntiAirRecursive);
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_SpawnFrontline1Recursive()
+    {
+        try
+        {
+            if (stb_SpawnFrontline1)
+            {
+                GamePlay.gpPostMissionLoad(stb_Frontline1);
+                Timeout(600.0, Stb_SpawnFrontline1Recursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_SpawnFrontline2Recursive()
+    {
+        try
+        {
+            if (stb_SpawnFrontline2)
+            {
+                GamePlay.gpPostMissionLoad(stb_Frontline2);
+                Timeout(660.0, Stb_SpawnFrontline2Recursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_SpawnFrontline3Recursive()
+    {
+        try
+        {
+            if (stb_SpawnFrontline3)
+            {
+                GamePlay.gpPostMissionLoad(stb_Frontline3);
+                Timeout(720.0, Stb_SpawnFrontline3Recursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_SpawnFrontline4Recursive()
+    {
+        try
+        {
+            if (stb_SpawnFrontline4)
+            {
+                GamePlay.gpPostMissionLoad(stb_Frontline4);
+                Timeout(420.0, Stb_SpawnFrontline4Recursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_SpawnBombersRecursive()
+    {
+        try
+        {
+            if (stb_SpawnBombers)
+            {
+                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+                {
+                    bool willBreak = false;
+                    for (int k = 0; k < 2; k++)
                     {
-                        Stb_BalanceMessageForBan(p, actor, placeIndex); return true;
+                        for (int j = 0; j < 3; j++)
+                        {
+                            string fullActorName = i.ToString() + ":g02.0" + k.ToString() + j.ToString();
+                            AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
+                            if (aiAircraft != null)
+                            {
+                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                                willBreak = true;
+                            }
+                        }
                     }
+                    for (int k = 0; k < 2; k++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            string fullActorName = i.ToString() + ":gb02.0" + k.ToString() + j.ToString();
+                            AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
+                            if (aiAircraft != null)
+                            {
+                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                                willBreak = true;
+                            }
+                        }
+                    }
+                    if (willBreak) { break; }
+                }
+                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
+                {
+                    bool willBreak = false;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        string fullActorName = i.ToString() + ":BmbArt_R" + j.ToString("0");
+                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                    }
+                    for (int j = 0; j < 4; j++)
+                    {
+                        string fullActorName = i.ToString() + ":BmbArt_B" + j.ToString("0");
+                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
+                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
+                    }
+                    if (willBreak) { break; }
+                }
+                if (stb_BomberMissionTurn)
+                {
+                    GamePlay.gpPostMissionLoad(stb_Bombers1);
+                    stb_BomberMissionTurn = !stb_BomberMissionTurn;
                 }
                 else
                 {
-                    if (stb_Delta > stb_DesiredDelta &&
-                        (stb_RedFighters + stb_BlueFighters) > stb_MinCountForBalance)
-                    {
-                        Stb_BalanceMessageForBan(p, actor, placeIndex); return true;
-                    }
+                    GamePlay.gpPostMissionLoad(stb_Bombers2);
+                    stb_BomberMissionTurn = !stb_BomberMissionTurn;
                 }
+                Timeout(600.0, Stb_SpawnBombersRecursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_LogStatsRecursive()
+    {
+        try
+        {
+            if (stb_LogStats)
+            {
+                Timeout(stb_LogStatsDelay, Stb_LogStatsRecursive);
+                //Do the regular stats save/upload business.  last "0" of 10,0,0 means do all various stats save EXCEPT the radar upload
+                StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 0 });  //3rd # means 0=no radar upload, 1=radar upload
+                stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+                //Upload RADAR files (the "1" in 10, 0, 1 indicates to radar upload) waiting 1/4 and 3/4 of the stats upload period.  so if stat save every 2 mins then
+                //radar uploads happen every 1 min but offset from the stats save/upload.  Trying to spread the joy around a bit.
+
+                Timeout(stb_LogStatsDelay / 4, () =>
+                     {
+                         StbStatTask sst1 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
+                             stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                     });
+                Timeout(stb_LogStatsDelay * 3 / 4, () =>
+                    {
+                        StbStatTask sst2 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
+                            stb_StatRecorder.StbSr_EnqueueTask(sst2);
+                    });
+
+
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+
+    private void Stb_StatsServerAnnounceRecursive()
+    {
+        try
+        {
+            if (stb_AnnounceStatsMessages)
+            {
+                string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Tab-4 menu";
+                if (stb_restrictAircraftByRank) msg += ", <ac, <nextac.";
+                Stb_Message(null, msg, new object[] { });
+                if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(5, () => { Stb_Message(null, stb_iniFileErrorMessages); }); //Also display the error message bec it is quite important & shouldn't even exist under normal circumstances
+                Timeout(stb_AnnounceStatsMessagesFrequency, Stb_StatsServerAnnounceRecursive);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+
+
+
+
+
+    // Other Methods-----------------------------------------------------------------------------------------------------------
+    public void Stb_Message(Player[] players, string msg, object[] objs = null) //gets around the fact that child objects can't reference GamePlay
+    {
+        //GamePlay.gpLogServer( players, msg, objs);
+        gpLogServerAndLog(players, msg, objs); //using the wrapper with delay etc.
+    }
+    //wrapper for Gameplay.GPLogServer so that we can do things to it, like log it, suppress all output, delay successive messages etc.
+    public void gpLogServerAndLog(Player[] to, object data, object[] third = null)
+    {
+        //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
+        //gpLogServerWithDelay(to, (string)data, third);
+
+        //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
+        string str = (string)data;
+        int maxChunkSize = 200;
+
+        IEnumerable<string> lines = StatCalcs.SplitToLines(str, maxChunkSize);
+        //for (int i = 0; i < str.Length; i += maxChunkSize)
+        //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
+
+        foreach (string line in lines) gpLogServerWithDelay(to, line, third);
+
+
+    }
+    //This is designed to space out gplogserver calls, as (say) 5-10 of these in a row will cause a very noticeable stutter
+    //It's sort of a stack for gplogserver messages
+    public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
+    {
+        //defined above:
+        //public Int64 lastGpLogServerMsg_tick = 0;
+        //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
+        //public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second
+        DateTime currentDate = DateTime.Now;
+        //currentDate.Ticks
+        Int64 nextMsg_tick = Math.Max(currentDate.Ticks, lastGpLogServerMsg_tick + GpLogServerMsgDelay_tick);
+        Int64 remainder;
+        Int64 roundTo = 1000000; //round nextMsg_tick UP to the next 1/10 second.  This is to allow different missions/modules to output at different portions of the 0.1 second interval, with the objective of avoiding stutters when messages from different .mis files or modules pile up
+        nextMsg_tick = (Math.DivRem(nextMsg_tick - 1, roundTo, out remainder) + 1) * roundTo; // -1 handles the specific but common situation where we want a 0.1 sec delay but it always rounds it up to 0.2 sec.  This makes it round up for anything greater than roundTo, rather than greater than OR EQUAL TO roundTo.
+        double nextMsgDelay_sec = (double)(nextMsg_tick - currentDate.Ticks) / 10000000;
+        //string msg = (string)data + "(Delayed: " + nextMsgDelay_sec.ToString("0.00") + ")"; //for testing
+        string msg = (string)data;
+        //GamePlay.gpLogServer(null, nextMsg_tick.ToString() + " " + nextMsgDelay_sec.ToString("0.00"), null); //for debugging
+        Timeout(nextMsgDelay_sec, () => { GamePlay.gpLogServer(to, msg, third); });
+        lastGpLogServerMsg_tick = nextMsg_tick; //Save the time_tick that this message will be displayed; next message will be at least GpLogServerMsgDelay_tick after this
+
+    }
+
+    //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
+    //the messages can be seen on the lobby/map screen
+    public void Stb_Chat(string line, Player player)
+    {
+        if (GamePlay is GameDef)
+        {
+            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
+        }
+    }
+    private void Stb_CutPlane(AiAircraft aircraft, LimbNames ln)
+    {
+        try { aircraft.cutLimb(ln); }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    private void Stb_DamagePlane(AiAircraft aircraft, NamedDamageTypes ndt)
+    {
+        try { aircraft.hitNamed(ndt); }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    public bool Stb_isAiControlledPlane(AiAircraft aircraft)
+    {
+        try
+        {
+
+            if (aircraft == null)
                 return false;
+
+            //check if a player is in any of the "places"
+            for (int i = 0; i < aircraft.Places(); i++)
+                if (aircraft.Player(i) != null)
+                    return false;
+
+            return true;
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+
+    //Makes sure no other players are in the a/c except for the given player
+    //Note: does not actually check to make sure this player is also in the a/c.  OnPlaceLeave etc the player might be gone already
+    //but we really need to make sure NO ONE ELSE is in there at this point, and the player is not still in TWO positions rather than one or zero.
+    public bool Stb_isLastPlayerInAircraftandOneOrNoPositions(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+
+
+            if (aircraft == null)
+                return false;
+            int count = 0;
+            for (int i = 0; i < aircraft.Places(); i++)
+            {
+                if (aircraft.Player(i) == null)
+                {
+                    count++;
+                    continue;
+                }
+                if (aircraft.Player(i) != player)
+                    return false;
             }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+
+            //When player is fully leaving plane this often looks like -1,-1 onPlaceLeave.  But also often 2,-1, 0,-1, etc.  Only commonality seems to be   Other possibilities if leaving only one position or switching
+            //within the aircraft etc are 0,1 0,-1 -1,1 0,1 0,2 etc.  But -1,-1 seems reliable as far as this person as left the plane entirely.
+            if (player.PlacePrimary() != null && player.PlaceSecondary() != null && (player.PlacePrimary() == -1 || player.PlaceSecondary() == -1)) return true;
+            if (aircraft.Places() == count) return true; //Case of NO live players left in plane
+            return false;
+
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+
+    //true if player is one & only player in a/c, false if more than the player in a/c, NULL in case of AI-controlled aircraft (no players)s
+    public bool? Stb_isOnlyPlayerInAircraft(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+
+
+            if (aircraft == null)
+                return null;
+            int count = 0;
+            for (int i = 0; i < aircraft.Places(); i++)
+            {
+                if (aircraft.Player(i) == null)
+                {
+                    count++;
+                    continue;
+                }
+                if (aircraft.Player(i) != player)
+                    return false;
+            }
+
+            if (aircraft.Places() == count) return null; //Case of NO live players in plane, ie, ai-controlled aircraft
+            return true;
+
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+    public bool Stb_isPlayerFirstInAircraft(AiAircraft aircraft, Player player)
+    {
+        try
+        {
+
+            if (aircraft == null)
+                return false;
+
+            //check if player is in any of the "places"
+            //and that this player is the FIRST actual player we encounter.  If so, return true
+            for (int i = 0; i < aircraft.Places(); i++)
+                if (aircraft.Player(i) == player)
+                    return true;
+                else if (aircraft.Player(i) == null) continue;
+                else return false;
+
+            return false;
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+    }
+    public void Stb_RemovePlayerFromCart(AiCart cart, Player player = null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
+                                                                            //if player = null then remove ALL players from ALL positions
+    {
+        try
+        {
+
+            if (cart == null)
+                return;
+
+            //check if the player is in any of the "places" - if so remove
+            for (int i = 0; i < cart.Places(); i++)
+            {
+                if (cart.Player(i) == null) continue;
+                if (player != null)
+                {
+                    if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
+                }
+                else
+                {
+                    cart.Player(i).PlaceLeave(i);
+                }
+            }
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
+    public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    {
+        Timeout(timeToRemove_sec, () =>
+        {
+
+                //player.PlaceLeave(0);
+                Stb_RemovePlayerFromCart(aircraft as AiCart, player);
+            Timeout(timetoDestroy_sec, () =>
+            {
+                if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);
+            }); //Destroy it a bit later--but only if no other players are in it
+
+                //Stb_DestroyPlaneUnsafe(actor as AiAircraft);  //OK, this approach seems to cause some problems when a player gets kicked out here &  then tries to click on the flags to change armies etc.
+                //Also, it can cause problems if there are TWO players in a plane & one is allowed, the other isn't.  The plane will be destroyed for both.
+                //also, if they jump into another plane (via right-click or whatever) in general that plane will just be destroyed ASAP.
+                //Stb_destroyAnyPlane(actor, false, 30);
+                //Stb_BalanceDisableForBan(actor); //can try this, too
+                //Stb_DestroyPlaneUnsafe(actor as AiAircraft);
+
+            });
+    }
+
+    //Removes ALL players from an a/c after a specified period of time (seconds)
+    public void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
+    {
+        Timeout(timeToRemove_sec, () =>
+        {
+
+                //player.PlaceLeave(0);
+
+                for (int place = 0; place < aircraft.Places(); place++)
+            {
+                if (aircraft.Player(place) != null)
+                {
+                        //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
+                        Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
+                    }
+            }
+
+        });
+    }
+
+    private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI = true, int timeToWait = 300)
+    {
+        try
+        {
+            if (actor == null || !(actor is AiAircraft))
+            {
+                return;
+            }
+
+            AiAircraft aircraft = (actor as AiAircraft);
+
+            if (checkForAI && !Stb_isAiControlledPlane(aircraft))
+            {
+                return;
+            }
+
+            if (aircraft == null)
+            {
+                return;
+            }
+
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled);
+            aircraft.hitNamed(part.NamedDamageTypes.FuelPumpFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.Eng0TotalFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.ElecPrimaryFailure);
+            aircraft.hitNamed(part.NamedDamageTypes.ElecBatteryFailure);
+
+            aircraft.hitLimb(part.LimbNames.WingL1, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL2, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL3, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL4, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL5, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL6, -0.5);
+            aircraft.hitLimb(part.LimbNames.WingL7, -0.5);
+
+            int iNumOfEngines = (aircraft.Group() as AiAirGroup).aircraftEnginesNum();
+            for (int i = 0; i < iNumOfEngines; i++)
+            {
+                aircraft.hitNamed((part.NamedDamageTypes)Enum.Parse(typeof(part.NamedDamageTypes), "Eng" + i.ToString() + "TotalFailure"));
+            }
+
+            /***Timeout (240, () =>
+                    {explodeFuelTank (aircraft);}
+                );
+                * ***/
+
+            Timeout(timeToWait, () =>
+            { Stb_DestroyPlaneUnsafe(aircraft); }
+                );
+
+        }
+        catch (Exception ex)
+        {
+            Stb_PrepareErrorMessage(ex);
         }
 
-        private void Stb_BalanceMessageForBan(Player p, AiActor actor, int placeIndex)
-        {
-            try
-            {
-                GamePlay.gpLogServerBegin(new Player[] { p }, stb_BalanceMsgRus);
-                GamePlay.gpLogServerEnd();
-                GamePlay.gpLogServerBegin(new Player[] { p }, stb_BalanceMsgEng);
-                GamePlay.gpLogServerEnd();
-                GamePlay.gpHUDLogCenter(new Player[] { p }, stb_BalanceMsgHud);
-                Stb_BalanceDisableForBan(actor);
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
+    }
 
-        private void Stb_BalanceDisableForBan(AiActor actor)
+
+
+    private void Stb_DestroyPlaneSafe(AiAircraft aircraft)
+    {
+        try
         {
-            try
+            if (aircraft == null) { return; }
+            for (int place = 0; place < aircraft.Places(); place++)
             {
-                AiAircraft aircraft = actor as AiAircraft;
-                if (aircraft != null)
+                if (aircraft.Player(place) != null) { return; }
+            }
+            if (aircraft.IsAirborne())
+            {
+                bool insideAf = false;
+                if ((aircraft.Pos().distance(ref af1) < 500.0) && (aircraft.Pos().z < 10.0)) { insideAf = true; }
+                if ((aircraft.Pos().distance(ref af2) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
+                if ((aircraft.Pos().distance(ref af3) < 500.0) && (aircraft.Pos().z < 40.0)) { insideAf = true; }
+                if ((aircraft.Pos().distance(ref af4) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
+                if (insideAf && stb_Debug) { Console.WriteLine("Destroying aircraft -stats.cs DPS1"); aircraft.Destroy(); }
+                else
                 {
                     Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
                     Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsAileronsDisabled);
@@ -2021,1608 +3528,100 @@ using TWCComms;
                     }
                 }
             }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        // StartUp Methods---------------------------------------------------------------------------------------------------------
-
-        private void Stb_LoadAntiAirDraftToMemory()
-        {
-            string[,] shipsRed = new string[6, 2];
-            string[,] shipsBlue = new string[6, 2];
-
-            shipsRed[0, 0] = "13630.00 31515.00 38.40  0 2 5.56";
-            shipsRed[0, 1] = "13610.00 31555.00 38.40";
-            shipsRed[1, 0] = "14210.00 31680.00 38.40  0 2 5.56";
-            shipsRed[1, 1] = "14255.00 31690.00 38.40";
-            shipsRed[2, 0] = "13100.00 31150.00 38.40  0 2 5.56";
-            shipsRed[2, 1] = "13065.00 31130.00 38.40";
-            shipsRed[3, 0] = "18600.00 31645.00 38.40  0 2 5.56";
-            shipsRed[3, 1] = "18615.00 31685.00 38.40";
-            shipsRed[4, 0] = "18035.00 31795.00 38.40  0 2 5.56";
-            shipsRed[4, 1] = "17970.00 31800.00 38.40";
-            shipsRed[5, 0] = "19030.00 31310.00 38.40  0 2 5.56";
-            shipsRed[5, 1] = "19060.00 31285.00 38.40";
-
-            shipsBlue[0, 0] = "11690.00 9905.00 38.40  0 2 5.56";
-            shipsBlue[0, 1] = "11620.00 9905.00 38.40";
-            shipsBlue[1, 0] = "13025.00 10260.00 38.40  0 2 5.56";
-            shipsBlue[1, 1] = "13075.00 10275.00 38.40";
-            shipsBlue[2, 0] = "12450.00 10030.00 38.40  0 2 5.56";
-            shipsBlue[2, 1] = "12455.00 9990.00 38.40";
-            shipsBlue[3, 0] = "18260.00 9100.00 38.40  0 2 5.56";
-            shipsBlue[3, 1] = "18240.00 9070.00 38.40";
-            shipsBlue[4, 0] = "17930.00 9345.00 38.40  0 2 5.56";
-            shipsBlue[4, 1] = "17895.00 9370.00 38.40";
-            shipsBlue[5, 0] = "18675.00 8940.00 38.40  0 2 5.56";
-            shipsBlue[5, 1] = "18695.00 8930.00 38.40";
-
-            string[] gunsRed = new string[28];
-            string[] gunsBlue = new string[28];
-
-            gunsBlue[0] = "Artillery.4_cm_Flak_28 de 18030 9660 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[1] = "Artillery.4_cm_Flak_28 de 18370 9650 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[2] = "Artillery.4_cm_Flak_28 de 18710 9640 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[3] = "Artillery.4_cm_Flak_28 de 18990 9630 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[4] = "Artillery.4_cm_Flak_28 de 19400 9620 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[5] = "Artillery.4_cm_Flak_28 de 11630 10310 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[6] = "Artillery.4_cm_Flak_28 de 11980 10400 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[7] = "Artillery.4_cm_Flak_28 de 12300 10480 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[8] = "Artillery.4_cm_Flak_28 de 12650 10570 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[9] = "Artillery.4_cm_Flak_28 de 12970 10650 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[10] = "Artillery.Flak37 de 18710 10110 240 /timeout 0/radius_hide 3000 ";
-            gunsBlue[11] = "Artillery.Flak37 de 18775 10110 -90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[12] = "Artillery.Flak37 de 18840 10110 -45 /timeout 0/radius_hide 3000 ";
-            gunsBlue[13] = "Artillery.Flak37 de 18710 10190 135 /timeout 0/radius_hide 3000 ";
-            gunsBlue[14] = "Artillery.Flak37 de 18775 10190 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[15] = "Artillery.Flak37 de 18840 10190 45 /timeout 0/radius_hide 3000 ";
-            gunsBlue[16] = "Artillery.Flak37 de 12410 10710 225 /timeout 0/radius_hide 3000 ";
-            gunsBlue[17] = "Artillery.Flak37 de 12475 10710 -90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[18] = "Artillery.Flak37 de 12540 10710 -45 /timeout 0/radius_hide 3000 ";
-            gunsBlue[19] = "Artillery.Flak37 de 12410 10790 135 /timeout 0/radius_hide 3000 ";
-            gunsBlue[20] = "Artillery.Flak37 de 12475 10790 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[21] = "Artillery.Flak37 de 12540 10790 45 /timeout 0/radius_hide 3000 ";
-            gunsBlue[22] = "Artillery.RRH_GER1 de 18710 10150 180 /timeout 0/radius_hide 3000 ";
-            gunsBlue[23] = "Artillery.RRH_GER1 de 18775 10150 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[24] = "Artillery.RRH_GER1 de 18840 10150 0 /timeout 0/radius_hide 3000 ";
-            gunsBlue[25] = "Artillery.RRH_GER1 de 12410 10750 180 /timeout 0/radius_hide 3000 ";
-            gunsBlue[26] = "Artillery.RRH_GER1 de 12475 10750 90 /timeout 0/radius_hide 3000 ";
-            gunsBlue[27] = "Artillery.RRH_GER1 de 12540 10750 0 /timeout 0/radius_hide 3000 ";
-            gunsRed[0] = "Artillery.Bofors gb 13280 30560 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[1] = "Artillery.Bofors gb 18770 30530 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[2] = "Artillery.Bofors gb 18430 30620 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[3] = "Artillery.Bofors gb 13610 30730 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[4] = "Artillery.Bofors gb 18110 30700 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[5] = "Artillery.Bofors gb 17770 30790 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[6] = "Artillery.Bofors gb 13890 30880 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[7] = "Artillery.Bofors gb 17440 30880 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[8] = "Artillery.Bofors gb 14190 31040 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[9] = "Artillery.Bofors gb 14500 31210 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[10] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13710 30610 -135 /timeout 0/radius_hide 3000 ";
-            gunsRed[11] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13775 30610 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[12] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13840 30610 -45 /timeout 0/radius_hide 3000 ";
-            gunsRed[13] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17710 30610 -135 /timeout 0/radius_hide 3000 ";
-            gunsRed[14] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17775 30610 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[15] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13710 30690 135 /timeout 0/radius_hide 3000 ";
-            gunsRed[16] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17840 30610 -45 /timeout 0/radius_hide 3000 ";
-            gunsRed[17] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13775 30690 90 /timeout 0/radius_hide 3000 ";
-            gunsRed[18] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 13840 30690 45 /timeout 0/radius_hide 3000 ";
-            gunsRed[19] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17710 30690 135 /timeout 0/radius_hide 3000 ";
-            gunsRed[20] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17775 30690 90 /timeout 0/radius_hide 3000 ";
-            gunsRed[21] = "Artillery.3_inch_20_CWT_QF_Mk_I gb 17840 30690 45 /timeout 0/radius_hide 3000 ";
-            gunsRed[22] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13710 30650 180 /timeout 0/radius_hide 3000 ";
-            gunsRed[23] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13775 30650 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[24] = "Artillery.SoundLocator_MkIIIV_UK1 gb 13840 30650 0 /timeout 0/radius_hide 3000 ";
-            gunsRed[25] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17720 30650 180 /timeout 0/radius_hide 3000 ";
-            gunsRed[26] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17775 30650 -90 /timeout 0/radius_hide 3000 ";
-            gunsRed[27] = "Artillery.SoundLocator_MkIIIV_UK1 gb 17840 30650 0 /timeout 0/radius_hide 3000 ";
-
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string s = "";
-            string k = "";
-            string v = "";
-
-            s = "Chiefs";
-            v = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
-            for (int i = 0; i < 6; i++)
+            else
             {
-                k = "baseDefenseShip_R_" + i.ToString("00");
-                f.add(s, k, v);
-            }
-            v = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
-            for (int i = 0; i < 6; i++)
-            {
-                k = "baseDefenseShip_B_" + i.ToString("00");
-                f.add(s, k, v);
-            }
-
-            v = "";
-            for (int i = 0; i < 6; i++)
-            {
-                s = "baseDefenseShip_R_" + i.ToString("00") + "_Road";
-                k = shipsRed[i, 0];
-                f.add(s, k, v);
-                k = shipsRed[i, 1];
-                f.add(s, k, v);
-            }
-            for (int i = 0; i < 6; i++)
-            {
-                s = "baseDefenseShip_B_" + i.ToString("00") + "_Road";
-                k = shipsBlue[i, 0];
-                f.add(s, k, v);
-                k = shipsBlue[i, 1];
-                f.add(s, k, v);
-            }
-
-            s = "Stationary";
-            for (int i = 0; i < 28; i++)
-            {
-                k = "baseDefenseGun_R_" + i.ToString("00");
-                v = gunsRed[i];
-                f.add(s, k, v);
-            }
-            for (int i = 0; i < 28; i++)
-            {
-                k = "baseDefenseGun_B_" + i.ToString("00");
-                v = gunsBlue[i];
-                f.add(s, k, v);
-            }
-
-            stb_BaseAntiAirDefenses = f;
-        }
-
-        private void Stb_LoadFrontline1DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect;
-            string key;
-            string value;
-
-            sect = "Chiefs";
-            key = "FrontShip_R1";
-            value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            key = "FrontShip_B1";
-            value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            value = "";
-
-            sect = "FrontShip_R1_Road";
-            key = "7500.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "7500.00 14400.00 38.4"; f.add(sect, key, value);
-
-            sect = "FrontShip_B1_Road";
-            key = "7500.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "7500.00 27500.00 38.40"; f.add(sect, key, value);
-
-            stb_Frontline1 = f;
-        }
-
-        private void Stb_LoadFrontline2DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect;
-            string key;
-            string value;
-
-            sect = "Chiefs";
-            key = "FrontShip_R2";
-            value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            key = "FrontShip_B2";
-            value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            value = "";
-
-            sect = "FrontShip_R2_Road";
-            key = "13600.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "13427.00 18871.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "13171.00 17635.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "13600.00 14400.00 38.4"; f.add(sect, key, value);
-
-            sect = "FrontShip_B2_Road";
-            key = "13600.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "13171.00 17635.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "13427.00 18871.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "13600.00 27500.00 38.40"; f.add(sect, key, value);
-
-            stb_Frontline2 = f;
-        }
-
-        private void Stb_LoadFrontline3DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect;
-            string key;
-            string value;
-
-            sect = "Chiefs";
-            key = "FrontShip_R3";
-            value = "Ship.Minensuchboote gb /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            key = "FrontShip_B3";
-            value = "Ship.Minensuchboote de /sleep 0/skill 0/slowfire 1";
-            f.add(sect, key, value);
-
-            value = "";
-
-            sect = "FrontShip_R3_Road";
-            key = "15900.00 27500.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "15700.00 23500.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "17500.00 20600.00 38.4  0 2 5.56"; f.add(sect, key, value);
-            key = "17100.00 14400.00 38.4"; f.add(sect, key, value);
-
-            sect = "FrontShip_B3_Road";
-            key = "17100.00 14400.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "17500.00 20600.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "15700.00 23500.00 38.40  0 2 5.56"; f.add(sect, key, value);
-            key = "15900.00 27500.00 38.40"; f.add(sect, key, value);
-
-            stb_Frontline3 = f;
-        }
-
-        private void Stb_LoadFrontline4DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect;
-            string key;
-            string value;
-
-            sect = "Chiefs";
-            key = "FrontArmor_R1";
-            value = "Armor.Cruiser_Mk_IVA gb /num_units 6";
-            f.add(sect, key, value);
-
-            key = "FrontArmor_B1";
-            value = "Armor.Pz_IIC de /num_units 6";
-            f.add(sect, key, value);
-
-            value = "";
-
-            sect = "FrontArmor_R1_Road";
-            key = "20700.00 25800.00 38.4  0 2 7.14"; f.add(sect, key, value);
-            key = "20900.00 25000.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "20609.00 23948.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "20849.00 23059.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21284.00 22438.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21591.00 22044.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21700.00 21400.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21638.00 20728.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21806.00 20209.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "22187.00 19677.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "22400.00 19100.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "22200.00 18400.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "22300.00 17700.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "22211.00 16941.00 38.4  0 2 3.57"; f.add(sect, key, value);
-            key = "21854.00 16291.00 38.4"; f.add(sect, key, value);
-
-            sect = "FrontArmor_B1_Road";
-            key = "21854.00 16291.00 38.40  0 2 7.14"; f.add(sect, key, value);
-            key = "22211.00 16941.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "22300.00 17700.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "22200.00 18400.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "22400.00 19100.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "22187.00 19677.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "21806.00 20209.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "21638.00 20728.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "21700.00 21400.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "21591.00 22044.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "21284.00 22438.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "20849.00 23059.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "20609.00 23948.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "20900.00 25000.00 38.40  0 2 3.57"; f.add(sect, key, value);
-            key = "20700.00 25800.00 38.40"; f.add(sect, key, value);
-
-            stb_Frontline4 = f;
-        }
-
-        //use loc.x = loc.y = loc.z 0 for default location
-        //returns the name of the newly created a/c, which actually won't be created until the isect file is loaded, so wait 1 sec. or so before using.
-        private string Stb_LoadSubAircraft(Point3d loc, string type = "SpitfireMkIa_100oct", string callsign = "26", string hullNumber = "3", string serialNumber = "001", string regiment = "gb02", string fuelStr = "", string weapons = "", double velocity = 0, string fighterbomber = "", string skin_filename = "", string delay_sec = "")
-        {
-            /*  //sample .mis file with parked a/c
-             *  [AirGroups]
-                BoB_RAF_F_141Sqn_Early.01
-                [BoB_RAF_F_141Sqn_Early.01]
-                Flight0  1
-                Class Aircraft.SpitfireMkIa_100oct
-                Formation VIC3
-                CallSign 26
-                Fuel 100
-                Weapons 1
-                SetOnPark 1
-                Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-                [BoB_RAF_F_141Sqn_Early.01_Way]
-                TAKEOFF 76923.96 179922.36 0 0 
-
-              */
-            //default spawn location is Bembridge, landed, 0 mph & on the ground
-            string locx = "76923.96";
-            //string locy = "179922.36"; //real Bembridge location
-            string locy = "178322.36"; //1600 meters off Bembridge
-            string locz = "0";
-            string vel = "0";
-
-            int hullNumber_int = 1;
-            try
-            {
-                hullNumber_int = Convert.ToInt32(hullNumber);
-            }
-            catch
-            {
-                hullNumber_int = 1;
-            }
-            //if (hullNumber_int < 1) hullNumber_int = 1; //sanity check; not sure on exact highest allowed number here  //OK, CloD seems to allow any neg or positive integer so we're leaving it at that
-
-            //Ok this is wierd. But if aiaircraft group spawn-in point is near or in the middle of the airport, then CLOD seems to use the
-            //built-in spawn points for that airport, regardless of what you have put in place.
-            //But if the given spawn-in point is like a thousand or a couple thousand meters away, then it finds the nearest airport AND uses the airdrome points that you have created in FMB
-            //So, we're going to try it.
-
-            //TODO: What we shoudl really do, if this idea works, is to #1. find the nearest airport,  #2, move our loc to 2000 meters or whatever away from it. #3. Make sure that target airport is still our nearest airport
-
-            if (loc.x != 0 && loc.y != 0 && loc.z != 0)
-            {
-                locx = (loc.x - 1000).ToString("F2"); //1000 m off the actual location
-                locy = (loc.y - 1600).ToString("F2"); //1600 m off the actual location
-                if (velocity > 0)
-                {
-                    locz = loc.z.ToString("F2");
-                    vel = velocity.ToString("F2");
-                }
-                else
-                {
-                    locz = "0";
-                    vel = "0";
-                }
-            }
-
-            string rnumb = ".01";
-            string regiment_isec = regiment + rnumb;
-
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string s = "";
-            string k = "";
-            string v = "";
-
-            s = "AirGroups";
-            k = regiment_isec; v = ""; f.add(s, k, v);
-            s = regiment_isec;
-            k = "Flight0"; v = hullNumber_int.ToString(); f.add(s, k, v);
-            k = "Class"; v = "Aircraft." + type; f.add(s, k, v);
-            k = "Formation"; v = "VIC3"; f.add(s, k, v);
-            k = "CallSign"; v = callsign; f.add(s, k, v);
-            //k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
-            //k = "Weapons"; v = weapons; f.add(s, k, v);
-
-            f = Stb_AddLoadoutForPlane(f, s, type, fighterbomber, weapons, delay_sec, fuelStr);
-
-
-            /* if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
-            {
-                f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11");
-                f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10");
-                f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
-                f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
-                f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
-                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
-            } */
-            f.add(s, "Serial0", serialNumber);
-            if (skin_filename.Length > 0) f.add(s, "Skin0", skin_filename);
-            else f.add(s, "Skin0", "default.jpg");  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
-                                                    //f.add(s, "Flight0", hullNumber);  
-            k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            if (velocity <= 0)
-            {
-                k = "SetOnPark"; v = "1"; f.add(s, k, v);
-                k = "Idle"; v = "1"; f.add(s, k, v);
-            }
-
-            s = regiment_isec + "_Way";
-            if (velocity <= 0) k = "TAKEOFF";
-            else k = "NORMFLY";
-            v = locx + " " + locy + " " + locz + " " + vel; f.add(s, k, v);
-
-            //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
-            //f.save(stb_FullPath + "aircraftSpawn-ISectionFile.txt"); //testing
-
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13", null); //testing disk output for warps
-                                                                                             //load it in
-            GamePlay.gpPostMissionLoad(f);
-
-            return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
-
-
-
-        }
-
-        private ISectionFile Stb_AddLoadoutForPlane(ISectionFile f, string s, string type, string fighterbomber = "", string weapons = "", string delay_sec = "", string fuelStr = "")
-        {
-            string k = "";
-            string v = "";
-
-            if (weapons == null) weapons = "";
-            if (delay_sec == null || delay_sec == "")
-            {
-                delay_sec = "1"; //1 sec should work for Blenheim but maybe not for some/all DE aircraft.  So 0.08 sec delay for the DE a/c
-                if (type.Contains("Bf-109") || type.Contains("He-111") || type.Contains("110C") || type.Contains("BR-20") || type.Contains("Ju-8")) delay_sec = "0.08";
-            }
-
-            int fuel = 100;
-            try
-            {
-                fuel = Convert.ToInt32(fuelStr);
-
-                if (fuel < 0) fuel = 100;  //negative is not sensible, we're assuming it is just nonsense
-                if (fuel > 100) fuel = 100; // We're allowing fuel=0 even though I can't imagine how this is useful to anyone
-            }
-            catch (Exception ex) //any problem with int32 conversion
-            {
-                fuel = 0;
-                //Console.WriteLine("Spawn: Using default value for fuel load, 100% or 30%");
-            }
-
-            //k = "Weapons"; v = weapons; f.add(s, k, v);
-            //"Belt" must be a CAPITOL B here in the .mis file, though it is spelled "belt" in the user.ini file . . . 
-            if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
-            {
-                f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10");
-                f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10 Residual 50 ResidueBelt 11 11 11 11 9");
-                f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
-                f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 11 11 11 11 9");
-                f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
-                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9 Residual 50 ResidueBelt 11 10 11 10 11 10 11 10");
-                if (type.Contains("HurricaneMkI_FB"))
-                {
-                    if (weapons.Length == 0) weapons = "1 2"; //default
-                    if (fighterbomber == "f") weapons = "1 0";
-                    f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 3 0 " + delay_sec);
-                }
-                else
-                {
-                    if (weapons.Length == 0) weapons = "1"; //default
-                    if (fighterbomber == "b") weapons = "1 2";
-                }
-
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type == ("BlenheimMkIV"))
-            {
-                f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 10 12 9 10 9 11 11 10 2 2");
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 5 0 2"; //default (updated for 4.53
-                    if (fighterbomber == "f") weapons = "1 1 0 0 0";
-                }
-                if (fuel == 0) fuel = 35;
-            }
-            else if (type == ("BlenheimMkIV_Late"))
-            {
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 2 1 2"; //default
-                    if (fighterbomber == "f") weapons = "1 1 0 0 0";
-                }
-                if (fuel == 0) fuel = 35;
-            }
-            else if (type == ("BlenheimMkIVF") || type == "BlenheimMkIVNF")
-            {
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 0 0 2"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
-                }
-
-                if (fuel == 0) fuel = 30;
-            }
-            else if (type == ("BlenheimMkIVF_Late") || type == "BlenheimMkIVNF_Late")  //still needs update 4.5 
-            {
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 1 1 1"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
-                }
-                if (fuel == 0) fuel = 30;
-            }
-            else if (type == ("BeaufighterMkIF") || type == "BeaufighterMkINF")  //could add residuals
-            {
-
-                f.add(s, "Belt", "_Gun01 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
-                f.add(s, "Belt", "_Gun03 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
-                f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun09 Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun02 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
-                f.add(s, "Belt", "_Gun08 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
-                f.add(s, "Belt", "_Gun00 Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1"; //default                
-                }
-                if (fuel == 0) fuel = 30;
-            }
-            else if (type == "G50")
-            {
-                f.add(s, "Belt", "_Gun00 Gun.Breda-SAFAT-12,7mm MainBelt 7 3 0 4 6 3 0 1 4 6 Residual 50 ResidueBelt 3 4 7 4 6 7 0 3 7");
-                f.add(s, "Belt", "_Gun01 Gun.Breda-SAFAT-12,7mm MainBelt 3 0 1 4 7 0 1 3 4 6 Residual 50 ResidueBelt 0 3 7 3 4 7 4 6 7");
-
-                if (weapons.Length == 0) weapons = "1"; //default
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type == "Bf-109E-1B") //we do E-1B first so that then we can cover all remaining E-1 types with type.Contains.  Similarly for E-3, E-4
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 5 5 5 1 0 0 0 4 4 4");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 0 0 4 4 4 1 5 5 5");
-                f.add(s, "Belt", "_Gun03 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 2"; //default
-                    if (fighterbomber == "f") weapons = "1 1 0";
-                }
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type == "Bf-109E-3B") //we do E-3B first so that then we can cover all remaining E-3 types with type.Contains.  Similarly for E-3, E-4
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 4 3 4");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 4 1 4");
-
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 2"; //default
-                    if (fighterbomber == "f") weapons = "1 1 0";
-                }
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type.Contains("Bf-109E-4B"))
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 5 3 5");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 5 1 5");
-
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 3"; //default
-                    if (fighterbomber == "f") weapons = "1 1 0";
-                }
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type.Contains("Bf-109E-1"))
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 5 5 5 1 0 0 0 4 4 4");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 0 0 4 4 4 1 5 5 5");
-                f.add(s, "Belt", "_Gun03 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-
-                if (weapons.Length == 0) weapons = "1 1"; //default
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type.Contains("Bf-109E-3"))
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 4 3 4");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 4 1 4");
-
-                if (weapons.Length == 0) weapons = "1 1"; //default
-                if (fuel == 0) fuel = 100;
-
-            }
-            else if (type.Contains("Bf-109E-4"))  //also covers E-4N E-4N-Derated etc
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MGFF_Wing MainBelt 5 3 5");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun03 Gun.MGFF_Wing MainBelt 5 1 5");
-
-                if (weapons.Length == 0) weapons = "1 1"; //default
-                if (fuel == 0) fuel = 100;
-
-            }
-
-            else if (type.Contains("He-111H")) //covers both H-2 & P-2 with just one line different
-            {
-                f.add(s, "Belt", "_Gun04 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun03 Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2"); //Only the h-2 has Gun03; the P-2 lacks it & throws an error if it is included
-                f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 1 1 1 4"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 1 1 1 0";
-                }
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("He-111P")) //covers both H-2 & P-2 with just one line different
-            {
-                f.add(s, "Belt", "_Gun04 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 1 1 4"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 1 1 0";
-                }
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("110C-2"))
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 4 1 4");
-                f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 4 4 1");
-                f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-
-                if (weapons.Length == 0) weapons = "1 1 1"; //default
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("110C-4"))
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 5 1 5");
-                f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 5 3 5");
-                f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-
-                if (weapons.Length == 0) weapons = "1 1 1"; //default
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("110C-6")) //need to make sure this is a good load-out, copied from user-ini
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-                f.add(s, "Belt", "_Gun04 Gun.Mk-101 MainBelt 0 2 0 2 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MG15 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-                f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1";
-                }
-
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("110C-7")) //also covers 110C-7-late
-            {
-                f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun05 Gun.MGFF MainBelt 5 1 5");
-                f.add(s, "Belt", "_Gun04 Gun.MGFF MainBelt 5 3 5");
-                f.add(s, "Belt", "_Gun03 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun00 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-
-                f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-500_A 0 -1 " + delay_sec);
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 4"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 0";
-                }
-
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("BR-20"))
-            {
-                f.add(s, "Belt", "_Gun01 Gun.Breda-SAFAT-12,7mm_Turret MainBelt 8 3 5 1 6 7 3 5 1 8");
-                f.add(s, "Belt", "_Gun00 Gun.Breda-SAFAT-7,7mm MainBelt 4 3 1 2 3 4");
-                f.add(s, "Belt", "_Gun02 Gun.Breda-SAFAT-7,7mm MainBelt 1 2 3 4 1 2 3 4");
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 4"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 0";
-                }
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("Ju-87"))
-            {
-                f.add(s, "Belt", "_Gun00 Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-                f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-
-                f.add(s, "Detonator", "Bomb.SC-500_GradeIII_J 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J_DivePreferred 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-250_JB 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-500_E 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-250_Type2_J 2 -1 " + delay_sec);
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 1"; //default
-                    if (fighterbomber == "f") weapons = "1 1 0 0";
-                }
-                if (fuel == 0) fuel = 30;
-
-            }
-            else if (type.Contains("Ju-88"))
-            {
-                f.add(s, "Belt", "_Gun00 Gun.MG15 MainBelt 4 4 2 4 0 0 2 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 2 0 2");
-                f.add(s, "Belt", "_Gun01 Gun.MG15 MainBelt 1 0 2 4 4 2 4 5 5 2 5 0 2 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
-                f.add(s, "Belt", "_Gun02 Gun.MG15 MainBelt 1 2 0 4 2 4 4 5 2 5 5 2 0 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
-
-                f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-250_Type1_J 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SD-500_A 0 -1 " + delay_sec);
-                f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
-
-                if (weapons.Length == 0)
-                {
-                    weapons = "1 1 1 2 2 4"; //default
-                    if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
-                }
-                if (fuel == 0) fuel = 30;
-
-            }
-            k = "Weapons"; v = weapons; f.add(s, k, v);
-            k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
-
-            return f;
-        }
-
-
-        private void Stb_LoadBombers1DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string s = "";
-            string k = "";
-            string v = "";
-
-            s = "AirGroups";
-            k = "gb02.03"; v = ""; f.add(s, k, v);
-            k = "g02.03"; v = ""; f.add(s, k, v);
-            s = "gb02.03";
-            k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-            k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-            k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
-            k = "Formation"; v = "VIC3"; f.add(s, k, v);
-            k = "CallSign"; v = "26"; f.add(s, k, v);
-            k = "Fuel"; v = "66"; f.add(s, k, v);
-            k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
-            k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            s = "gb02.03_Way";
-            k = "NORMFLY"; v = "19500.00 39000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "19500.00 31000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "17500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "17000.00 18000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "19500.00 39000.00 3000.00 366.00"; f.add(s, k, v);
-            s = "g02.03";
-            k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-            k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-            k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
-            k = "Formation"; v = "VIC3"; f.add(s, k, v);
-            k = "CallSign"; v = "30"; f.add(s, k, v);
-            k = "Fuel"; v = "66"; f.add(s, k, v);
-            k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
-            k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            s = "g02.03_Way";
-            k = "NORMFLY"; v = "10500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "10500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "12500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "13000.00 24000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "10500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
-            s = "Stationary";
-            k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-
-            stb_Bombers1 = f;
-        }
-
-        private void Stb_LoadBombers2DraftToMemory()
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string s = "";
-            string k = "";
-            string v = "";
-
-            s = "AirGroups";
-            k = "gb02.03"; v = ""; f.add(s, k, v);
-            k = "g02.03"; v = ""; f.add(s, k, v);
-            s = "gb02.03";
-            k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-            k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-            k = "Class"; v = "Aircraft.WellingtonMkIc"; f.add(s, k, v);
-            k = "Formation"; v = "VIC3"; f.add(s, k, v);
-            k = "CallSign"; v = "26"; f.add(s, k, v);
-            k = "Fuel"; v = "66"; f.add(s, k, v);
-            k = "Weapons"; v = "1 1 3"; f.add(s, k, v);
-            k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            s = "gb02.03_Way";
-            k = "NORMFLY"; v = "11600.00 38900.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "12500.00 30000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "11500.00 24000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "12500.00 18000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "GATTACK_POINT"; v = "15660.00 10800.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "15660.00 9800.00 2200.00 333.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "11600.00 38900.00 3000.00 366.00"; f.add(s, k, v);
-            s = "g02.03";
-            k = "Flight0"; v = "1 2 3"; f.add(s, k, v);
-            k = "Flight1"; v = "11 12 13"; f.add(s, k, v);
-            k = "Class"; v = "Aircraft.He-111H-2"; f.add(s, k, v);
-            k = "Formation"; v = "VIC3"; f.add(s, k, v);
-            k = "CallSign"; v = "30"; f.add(s, k, v);
-            k = "Fuel"; v = "66"; f.add(s, k, v);
-            k = "Weapons"; v = "1 1 1 1 1 1 2"; f.add(s, k, v);
-            k = "Skill0"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill1"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill2"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            k = "Skill10"; v = "0.88 0.88 0.88 0.88 0.88 0.88 0.99 0.99"; f.add(s, k, v);
-            k = "Skill11"; v = "0.66 0.66 0.66 0.66 0.66 0.66 0.99 0.99"; f.add(s, k, v);
-            k = "Skill12"; v = "0.44 0.44 0.44 0.44 0.44 0.44 0.99 0.99"; f.add(s, k, v);
-            s = "g02.03_Way";
-            k = "NORMFLY"; v = "20500.00 2000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "20500.00 10000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "18500.00 18000.00 2000.00 240.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "18500.00 24000.00 2000.00 250.00"; f.add(s, k, v);
-            k = "GATTACK_POINT"; v = "16300.00 31350.00 2000.00 250.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "16300.00 32350.00 2200.00 333.00"; f.add(s, k, v);
-            k = "NORMFLY"; v = "20500.00 2000.00 3000.00 366.00"; f.add(s, k, v);
-            s = "Stationary";
-            k = "BmbArt_B0"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B1"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10770 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B2"; v = "Artillery.3_7_inch_QF_Mk_I de 15630 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_B3"; v = "Artillery.3_7_inch_QF_Mk_I de 15690 10830 90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R0"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R1"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31320 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R2"; v = "Artillery.3_7_inch_QF_Mk_I gb 16270 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-            k = "BmbArt_R3"; v = "Artillery.3_7_inch_QF_Mk_I gb 16330 31380 -90 /timeout 0/radius_hide 4000"; f.add(s, k, v);
-
-            stb_Bombers2 = f;
-        }
-
-        // Recursive Methods-------------------------------------------------------------------------------------------------------
-
-        private void Stb_SpawnAntiAirRecursive()
-        {
-            try
-            {
-                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                {
-                    bool willBreak = false;
-                    for (int j = 0; j < 6; j++)
-                    {
-                        string fullActorName = i.ToString() + ":baseDefenseShip_R_" + j.ToString("00");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    for (int j = 0; j < 6; j++)
-                    {
-                        string fullActorName = i.ToString() + ":baseDefenseShip_B_" + j.ToString("00");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    if (willBreak) { break; }
-                }
-                for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                {
-                    bool willBreak = false;
-                    for (int j = 0; j < 28; j++)
-                    {
-                        string fullActorName = i.ToString() + ":baseDefenseGun_R_" + j.ToString("00");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    for (int j = 0; j < 28; j++)
-                    {
-                        string fullActorName = i.ToString() + ":baseDefenseGun_B_" + j.ToString("00");
-                        AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                        if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                    }
-                    if (willBreak) { break; }
-                }
-                GamePlay.gpPostMissionLoad(stb_BaseAntiAirDefenses);
-                Timeout(stb_SpawnAntiAirDelay, Stb_SpawnAntiAirRecursive);
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_SpawnFrontline1Recursive()
-        {
-            try
-            {
-                if (stb_SpawnFrontline1)
-                {
-                    GamePlay.gpPostMissionLoad(stb_Frontline1);
-                    Timeout(600.0, Stb_SpawnFrontline1Recursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_SpawnFrontline2Recursive()
-        {
-            try
-            {
-                if (stb_SpawnFrontline2)
-                {
-                    GamePlay.gpPostMissionLoad(stb_Frontline2);
-                    Timeout(660.0, Stb_SpawnFrontline2Recursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_SpawnFrontline3Recursive()
-        {
-            try
-            {
-                if (stb_SpawnFrontline3)
-                {
-                    GamePlay.gpPostMissionLoad(stb_Frontline3);
-                    Timeout(720.0, Stb_SpawnFrontline3Recursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_SpawnFrontline4Recursive()
-        {
-            try
-            {
-                if (stb_SpawnFrontline4)
-                {
-                    GamePlay.gpPostMissionLoad(stb_Frontline4);
-                    Timeout(420.0, Stb_SpawnFrontline4Recursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_SpawnBombersRecursive()
-        {
-            try
-            {
-                if (stb_SpawnBombers)
-                {
-                    for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                    {
-                        bool willBreak = false;
-                        for (int k = 0; k < 2; k++)
-                        {
-                            for (int j = 0; j < 3; j++)
-                            {
-                                string fullActorName = i.ToString() + ":g02.0" + k.ToString() + j.ToString();
-                                AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
-                                if (aiAircraft != null)
-                                {
-                                    Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
-                                    willBreak = true;
-                                }
-                            }
-                        }
-                        for (int k = 0; k < 2; k++)
-                        {
-                            for (int j = 0; j < 3; j++)
-                            {
-                                string fullActorName = i.ToString() + ":gb02.0" + k.ToString() + j.ToString();
-                                AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
-                                if (aiAircraft != null)
-                                {
-                                    Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
-                                    willBreak = true;
-                                }
-                            }
-                        }
-                        if (willBreak) { break; }
-                    }
-                    for (int i = (stb_MissionsCount - 1); i > (-1); i--)
-                    {
-                        bool willBreak = false;
-                        for (int j = 0; j < 4; j++)
-                        {
-                            string fullActorName = i.ToString() + ":BmbArt_R" + j.ToString("0");
-                            AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                            if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                        }
-                        for (int j = 0; j < 4; j++)
-                        {
-                            string fullActorName = i.ToString() + ":BmbArt_B" + j.ToString("0");
-                            AiGroundActor aiGroundActor = GamePlay.gpActorByName(fullActorName) as AiGroundActor;
-                            if (aiGroundActor != null) { aiGroundActor.Destroy(); willBreak = true; }
-                        }
-                        if (willBreak) { break; }
-                    }
-                    if (stb_BomberMissionTurn)
-                    {
-                        GamePlay.gpPostMissionLoad(stb_Bombers1);
-                        stb_BomberMissionTurn = !stb_BomberMissionTurn;
-                    }
-                    else
-                    {
-                        GamePlay.gpPostMissionLoad(stb_Bombers2);
-                        stb_BomberMissionTurn = !stb_BomberMissionTurn;
-                    }
-                    Timeout(600.0, Stb_SpawnBombersRecursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_LogStatsRecursive()
-        {
-            try
-            {
-                if (stb_LogStats)
-                {
-                    Timeout(stb_LogStatsDelay, Stb_LogStatsRecursive);
-                    //Do the regular stats save/upload business.  last "0" of 10,0,0 means do all various stats save EXCEPT the radar upload
-                    StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 0 });  //3rd # means 0=no radar upload, 1=radar upload
-                    stb_StatRecorder.StbSr_EnqueueTask(sst);
-
-                    //Upload RADAR files (the "1" in 10, 0, 1 indicates to radar upload) waiting 1/4 and 3/4 of the stats upload period.  so if stat save every 2 mins then
-                    //radar uploads happen every 1 min but offset from the stats save/upload.  Trying to spread the joy around a bit.
-
-                    Timeout(stb_LogStatsDelay / 4, () =>
-                         {
-                             StbStatTask sst1 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
-                       stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                         });
-                    Timeout(stb_LogStatsDelay * 3 / 4, () =>
-                        {
-                            StbStatTask sst2 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
-                      stb_StatRecorder.StbSr_EnqueueTask(sst2);
-                        });
-
-
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-
-        private void Stb_StatsServerAnnounceRecursive()
-        {
-            try
-            {
-                if (stb_AnnounceStatsMessages)
-                {
-                    string msg = "Check your Mission Stats online at " + stb_LogStatsPublicAddressLow + " or in-game using Tab-4 menu";
-                    if (stb_restrictAircraftByRank) msg += ", <ac, <nextac.";
-                    Stb_Message(null, msg, new object[] { });
-                    if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(5, () => { Stb_Message(null, stb_iniFileErrorMessages); }); //Also display the error message bec it is quite important & shouldn't even exist under normal circumstances
-                    Timeout(stb_AnnounceStatsMessagesFrequency, Stb_StatsServerAnnounceRecursive);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-
-
-
-
-
-        // Other Methods-----------------------------------------------------------------------------------------------------------
-        public void Stb_Message(Player[] players, string msg, object[] objs = null) //gets around the fact that child objects can't reference GamePlay
-        {
-            //GamePlay.gpLogServer( players, msg, objs);
-            gpLogServerAndLog(players, msg, objs); //using the wrapper with delay etc.
-        }
-        //wrapper for Gameplay.GPLogServer so that we can do things to it, like log it, suppress all output, delay successive messages etc.
-        public void gpLogServerAndLog(Player[] to, object data, object[] third = null)
-        {
-            //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
-            //gpLogServerWithDelay(to, (string)data, third);
-
-            //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
-            string str = (string)data;
-            int maxChunkSize = 200;
-
-            IEnumerable<string> lines = StatCalcs.SplitToLines(str, maxChunkSize);
-            //for (int i = 0; i < str.Length; i += maxChunkSize)
-            //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
-
-            foreach (string line in lines) gpLogServerWithDelay(to, line, third);
-
-
-        }
-        //This is designed to space out gplogserver calls, as (say) 5-10 of these in a row will cause a very noticeable stutter
-        //It's sort of a stack for gplogserver messages
-        public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
-        {
-            //defined above:
-            //public Int64 lastGpLogServerMsg_tick = 0;
-            //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
-            //public Int64 GpLogServerMsgOffset_tick = 500000; //Different modules or submissions can use a different offset to preclude sending gplogservermessages @ the same moment; 500K ticks or 0.05 second
-            DateTime currentDate = DateTime.Now;
-            //currentDate.Ticks
-            Int64 nextMsg_tick = Math.Max(currentDate.Ticks, lastGpLogServerMsg_tick + GpLogServerMsgDelay_tick);
-            Int64 remainder;
-            Int64 roundTo = 1000000; //round nextMsg_tick UP to the next 1/10 second.  This is to allow different missions/modules to output at different portions of the 0.1 second interval, with the objective of avoiding stutters when messages from different .mis files or modules pile up
-            nextMsg_tick = (Math.DivRem(nextMsg_tick - 1, roundTo, out remainder) + 1) * roundTo; // -1 handles the specific but common situation where we want a 0.1 sec delay but it always rounds it up to 0.2 sec.  This makes it round up for anything greater than roundTo, rather than greater than OR EQUAL TO roundTo.
-            double nextMsgDelay_sec = (double)(nextMsg_tick - currentDate.Ticks) / 10000000;
-            //string msg = (string)data + "(Delayed: " + nextMsgDelay_sec.ToString("0.00") + ")"; //for testing
-            string msg = (string)data;
-            //GamePlay.gpLogServer(null, nextMsg_tick.ToString() + " " + nextMsgDelay_sec.ToString("0.00"), null); //for debugging
-            Timeout(nextMsgDelay_sec, () => { GamePlay.gpLogServer(to, msg, third); });
-            lastGpLogServerMsg_tick = nextMsg_tick; //Save the time_tick that this message will be displayed; next message will be at least GpLogServerMsgDelay_tick after this
-
-        }
-
-        //This is broken (broadcasts to everyone, not just the Player) but has one BIG advantage:
-        //the messages can be seen on the lobby/map screen
-        public void Stb_Chat(string line, Player player)
-        {
-            if (GamePlay is GameDef)
-            {
-                (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
+                //Console.WriteLine("Destroying aircraft -stats.cs DPS");
+                aircraft.Destroy();
             }
         }
-        private void Stb_CutPlane(AiAircraft aircraft, LimbNames ln)
-        {
-            try { aircraft.cutLimb(ln); }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
 
-        private void Stb_DamagePlane(AiAircraft aircraft, NamedDamageTypes ndt)
+    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
+    {
+        try
         {
-            try { aircraft.hitNamed(ndt); }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        public bool Stb_isAiControlledPlane(AiAircraft aircraft)
-        {
-            try
+            if (aircraft != null)
             {
-
-                if (aircraft == null)
-                    return false;
-
-                //check if a player is in any of the "places"
-                for (int i = 0; i < aircraft.Places(); i++)
-                    if (aircraft.Player(i) != null)
-                        return false;
-
-                return true;
+                //Console.WriteLine("Destroying aircraft -stats.cs DPU");
+                aircraft.Destroy();
             }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
         }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
 
-        //Makes sure no other players are in the a/c except for the given player
-        //Note: does not actually check to make sure this player is also in the a/c.  OnPlaceLeave etc the player might be gone already
-        //but we really need to make sure NO ONE ELSE is in there at this point, and the player is not still in TWO positions rather than one or zero.
-        public bool Stb_isLastPlayerInAircraftandOneOrNoPositions(AiAircraft aircraft, Player player)
+    private void Stb_DestroyFrontShip(AiGroundActor aiGroundActor)
+    {
+        try
         {
-            try
-            {
-
-
-                if (aircraft == null)
-                    return false;
-                int count = 0;
-                for (int i = 0; i < aircraft.Places(); i++)
-                {
-                    if (aircraft.Player(i) == null)
-                    {
-                        count++;
-                        continue;
-                    }
-                    if (aircraft.Player(i) != player)
-                        return false;
-                }
-
-                //When player is fully leaving plane this often looks like -1,-1 onPlaceLeave.  But also often 2,-1, 0,-1, etc.  Only commonality seems to be   Other possibilities if leaving only one position or switching
-                //within the aircraft etc are 0,1 0,-1 -1,1 0,1 0,2 etc.  But -1,-1 seems reliable as far as this person as left the plane entirely.
-                if (player.PlacePrimary() != null && player.PlaceSecondary() != null && (player.PlacePrimary() == -1 || player.PlaceSecondary() == -1)) return true;
-                if (aircraft.Places() == count) return true; //Case of NO live players left in plane
-                return false;
-
-
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+            if (aiGroundActor != null) { if (aiGroundActor.Name().Contains("FrontShip")) { aiGroundActor.Destroy(); } }
         }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
 
-        //true if player is one & only player in a/c, false if more than the player in a/c, NULL in case of AI-controlled aircraft (no players)s
-        public bool? Stb_isOnlyPlayerInAircraft(AiAircraft aircraft, Player player)
+    private void Stb_DestroyFrontArmor(AiGroundActor aiGroundActor)
+    {
+        try
         {
-            try
-            {
-
-
-                if (aircraft == null)
-                    return null;
-                int count = 0;
-                for (int i = 0; i < aircraft.Places(); i++)
-                {
-                    if (aircraft.Player(i) == null)
-                    {
-                        count++;
-                        continue;
-                    }
-                    if (aircraft.Player(i) != player)
-                        return false;
-                }
-
-                if (aircraft.Places() == count) return null; //Case of NO live players in plane, ie, ai-controlled aircraft
-                return true;
-
-
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
+            if (aiGroundActor != null) { if (aiGroundActor.Name().Contains("FrontArmor")) { aiGroundActor.Destroy(); } }
         }
-        public bool Stb_isPlayerFirstInAircraft(AiAircraft aircraft, Player player)
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+    //Kill the player/aircraft/whatever after a specified amount of time
+    private bool Stb_killActor(AiActor actor, int waitTime = 0)
+    {
+        if (actor != null)
         {
-            try
+            Timeout(waitTime, () =>
             {
-
-                if (aircraft == null)
-                    return false;
-
-                //check if player is in any of the "places"
-                //and that this player is the FIRST actual player we encounter.  If so, return true
-                for (int i = 0; i < aircraft.Places(); i++)
-                    if (aircraft.Player(i) == player)
-                        return true;
-                    else if (aircraft.Player(i) == null) continue;
-                    else return false;
-
-                return false;
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); return false; }
-        }
-        public void Stb_RemovePlayerFromCart(AiCart cart, Player player = null) //removes a certain player from any aircraft, artillery, vehicle, ship, or whatever actor/cart the player is in.  Removes from ALL places.
-                                                                                //if player = null then remove ALL players from ALL positions
-        {
-            try
-            {
-
-                if (cart == null)
-                    return;
-
-                //check if the player is in any of the "places" - if so remove
-                for (int i = 0; i < cart.Places(); i++)
-                {
-                    if (cart.Player(i) == null) continue;
-                    if (player != null)
-                    {
-                        if (cart.Player(i).Name() == player.Name()) player.PlaceLeave(i); //we tell if they are the same player by their username.  Not sure if there is a better way.
-                    }
-                    else
-                    {
-                        cart.Player(i).PlaceLeave(i);
-                    }
-                }
-
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
-        public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
-        {
-            Timeout(timeToRemove_sec, () =>
-            {
-
-                //player.PlaceLeave(0);
-                Stb_RemovePlayerFromCart(aircraft as AiCart, player);
-                Timeout(timetoDestroy_sec, () =>
-                {
-                    if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);
-                }); //Destroy it a bit later--but only if no other players are in it
-
-                //Stb_DestroyPlaneUnsafe(actor as AiAircraft);  //OK, this approach seems to cause some problems when a player gets kicked out here &  then tries to click on the flags to change armies etc.
-                //Also, it can cause problems if there are TWO players in a plane & one is allowed, the other isn't.  The plane will be destroyed for both.
-                //also, if they jump into another plane (via right-click or whatever) in general that plane will just be destroyed ASAP.
-                //Stb_destroyAnyPlane(actor, false, 30);
-                //Stb_BalanceDisableForBan(actor); //can try this, too
-                //Stb_DestroyPlaneUnsafe(actor as AiAircraft);
-
-            });
-        }
-
-        //Removes ALL players from an a/c after a specified period of time (seconds)
-        public void Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, double timeToRemove_sec = 1.0)
-        {
-            Timeout(timeToRemove_sec, () =>
-            {
-
-                //player.PlaceLeave(0);
-
-                for (int place = 0; place < aircraft.Places(); place++)
-                {
-                    if (aircraft.Player(place) != null)
-                    {
-                        //Stb_RemovePlayerFromCart(aircraft as AiCart, aircraft.Player(place));
-                        Stb_RemovePlayerFromCart(aircraft as AiCart); //BEC. we're removing ALL players from this a/c we don't care about matching by name.  This can cause problems if the player is ie in a bomber in two different places, so better just to remove ALL no matter what.
-                    }
-                }
-
-            });
-        }
-
-        private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI = true, int timeToWait = 300)
-        {
-            try
-            {
-                if (actor == null || !(actor is AiAircraft))
-                {
-                    return;
-                }
-
-                AiAircraft aircraft = (actor as AiAircraft);
-
-                if (checkForAI && !Stb_isAiControlledPlane(aircraft))
-                {
-                    return;
-                }
-
-                if (aircraft == null)
-                {
-                    return;
-                }
-
-                aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
-                aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
-                aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled);
-                aircraft.hitNamed(part.NamedDamageTypes.FuelPumpFailure);
-                aircraft.hitNamed(part.NamedDamageTypes.Eng0TotalFailure);
-                aircraft.hitNamed(part.NamedDamageTypes.ElecPrimaryFailure);
-                aircraft.hitNamed(part.NamedDamageTypes.ElecBatteryFailure);
-
-                aircraft.hitLimb(part.LimbNames.WingL1, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL2, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL3, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL4, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL5, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL6, -0.5);
-                aircraft.hitLimb(part.LimbNames.WingL7, -0.5);
-
-                int iNumOfEngines = (aircraft.Group() as AiAirGroup).aircraftEnginesNum();
-                for (int i = 0; i < iNumOfEngines; i++)
-                {
-                    aircraft.hitNamed((part.NamedDamageTypes)Enum.Parse(typeof(part.NamedDamageTypes), "Eng" + i.ToString() + "TotalFailure"));
-                }
-
-                /***Timeout (240, () =>
-                        {explodeFuelTank (aircraft);}
-                    );
-                    * ***/
-
-                Timeout(timeToWait, () =>
-                { Stb_DestroyPlaneUnsafe(aircraft); }
-                    );
-
-            }
-            catch (Exception ex)
-            {
-                Stb_PrepareErrorMessage(ex);
-            }
-
-        }
-
-
-
-        private void Stb_DestroyPlaneSafe(AiAircraft aircraft)
-        {
-            try
-            {
-                if (aircraft == null) { return; }
-                for (int place = 0; place < aircraft.Places(); place++)
-                {
-                    if (aircraft.Player(place) != null) { return; }
-                }
-                if (aircraft.IsAirborne())
-                {
-                    bool insideAf = false;
-                    if ((aircraft.Pos().distance(ref af1) < 500.0) && (aircraft.Pos().z < 10.0)) { insideAf = true; }
-                    if ((aircraft.Pos().distance(ref af2) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
-                    if ((aircraft.Pos().distance(ref af3) < 500.0) && (aircraft.Pos().z < 40.0)) { insideAf = true; }
-                    if ((aircraft.Pos().distance(ref af4) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
-                    if (insideAf && stb_Debug) { Console.WriteLine("Destroying aircraft -stats.cs DPS1"); aircraft.Destroy(); }
-                    else
-                    {
-                        Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
-                        Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsAileronsDisabled);
-                        Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsRudderDisabled);
-                        Stb_DamagePlane(aircraft, NamedDamageTypes.Eng0TotalSeizure);
-                        AiAirGroup aag = aircraft.AirGroup();
-                        if (aag != null)
-                        {
-                            if (aag.aircraftEnginesNum() == 2) { Stb_DamagePlane(aircraft, NamedDamageTypes.Eng1TotalSeizure); }
-                        }
-                    }
-                }
-                else
-                {
-                    //Console.WriteLine("Destroying aircraft -stats.cs DPS");
-                    aircraft.Destroy();
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
-        {
-            try
-            {
-                if (aircraft != null)
-                {
-                    //Console.WriteLine("Destroying aircraft -stats.cs DPU");
-                    aircraft.Destroy();
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_DestroyFrontShip(AiGroundActor aiGroundActor)
-        {
-            try
-            {
-                if (aiGroundActor != null) { if (aiGroundActor.Name().Contains("FrontShip")) { aiGroundActor.Destroy(); } }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        private void Stb_DestroyFrontArmor(AiGroundActor aiGroundActor)
-        {
-            try
-            {
-                if (aiGroundActor != null) { if (aiGroundActor.Name().Contains("FrontArmor")) { aiGroundActor.Destroy(); } }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-        //Kill the player/aircraft/whatever after a specified amount of time
-        private bool Stb_killActor(AiActor actor, int waitTime = 0)
-        {
-            if (actor != null)
-            {
-                Timeout(waitTime, () =>
-                {
                     //Console.WriteLine("KillActor: " + actor.Name() );
                     //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
                     Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0);
-                });
+            });
 
-                return true;
+            return true;
 
-                //Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0); //or similar might do the same thing.  If instead of null AIDamageInitiator is included, that would be better . . . 
-            }
-            //Console.WriteLine("KillActor: Actor was NULL");
-            return false;
+            //Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0); //or similar might do the same thing.  If instead of null AIDamageInitiator is included, that would be better . . . 
+        }
+        //Console.WriteLine("KillActor: Actor was NULL");
+        return false;
+    }
+
+    private void Stb_KillACNowIfInAircraftKilled(AiAircraft aircraft)
+    {
+
+        if (aircraft != null && (aircraft as AiActor) != null && stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
+        {  //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
+            Stb_RemoveAllPlayersFromAircraft(aircraft, 5); //remove all players 5 sec
+            Stb_killActor((aircraft as AiActor), 7); //kill this a/c 6 sec
+            stb_aircraftKilled.Remove((aircraft as AiActor).Name());
         }
 
-        private void Stb_KillACNowIfInAircraftKilled(AiAircraft aircraft)
+    }
+
+    public void Stb_destroyAllAIAircraft()
+    {
+        //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
-
-            if (aircraft != null && (aircraft as AiActor) != null && stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
-            {  //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
-                Stb_RemoveAllPlayersFromAircraft(aircraft, 5); //remove all players 5 sec
-                Stb_killActor((aircraft as AiActor), 7); //kill this a/c 6 sec
-                stb_aircraftKilled.Remove((aircraft as AiActor).Name());
-            }
-
-        }
-
-        public void Stb_destroyAllAIAircraft()
-        {
-            //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            foreach (int army in GamePlay.gpArmies())
             {
-                foreach (int army in GamePlay.gpArmies())
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                 {
-                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                     {
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            foreach (AiActor actor in airGroup.GetItems())
                             {
-                                foreach (AiActor actor in airGroup.GetItems())
+                                if (actor is AiAircraft)
                                 {
-                                    if (actor is AiAircraft)
+                                    AiAircraft a = actor as AiAircraft;
+                                    if (a != null)
                                     {
-                                        AiAircraft a = actor as AiAircraft;
-                                        if (a != null)
-                                        {
-                                            Stb_DestroyPlaneSafe(a);
-                                            if (stb_Debug) Console.WriteLine("Destroy All AI A/C: " + actor.Name());
-                                        }
+                                        Stb_DestroyPlaneSafe(a);
+                                        if (stb_Debug) Console.WriteLine("Destroy All AI A/C: " + actor.Name());
                                     }
                                 }
                             }
@@ -3631,29 +3630,29 @@ using TWCComms;
                 }
             }
         }
-        public HashSet<AiAircraft> Stb_returnListAllAIAircraft()
+    }
+    public HashSet<AiAircraft> Stb_returnListAllAIAircraft()
+    {
+        HashSet<AiAircraft> ist = new HashSet<AiAircraft>();
+        //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
-            HashSet<AiAircraft> ist = new HashSet<AiAircraft>();
-            //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            foreach (int army in GamePlay.gpArmies())
             {
-                foreach (int army in GamePlay.gpArmies())
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                 {
-                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                     {
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            foreach (AiActor actor in airGroup.GetItems())
                             {
-                                foreach (AiActor actor in airGroup.GetItems())
+                                if (actor is AiAircraft)
                                 {
-                                    if (actor is AiAircraft)
+                                    AiAircraft a = actor as AiAircraft;
+                                    if (a != null)
                                     {
-                                        AiAircraft a = actor as AiAircraft;
-                                        if (a != null)
-                                        {
-                                            ist.Add(a);
-                                        }
+                                        ist.Add(a);
                                     }
                                 }
                             }
@@ -3661,1097 +3660,1150 @@ using TWCComms;
                     }
                 }
             }
-            return ist;
         }
+        return ist;
+    }
 
-        //Put a player into a certain place of a certain plane.
-        private bool Stb_putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
+    //Put a player into a certain place of a certain plane.
+    private bool Stb_putPlayerIntoAircraftPosition(Player player, AiActor actor, int place)
+    {
+        if (player != null && actor != null && (actor as AiAircraft != null))
         {
-            if (player != null && actor != null && (actor as AiAircraft != null))
-            {
-                AiAircraft aircraft = actor as AiAircraft;
-                player.PlaceEnter(aircraft, place);
-                return true;
-            }
-            return false;
+            AiAircraft aircraft = actor as AiAircraft;
+            player.PlaceEnter(aircraft, place);
+            return true;
         }
+        return false;
+    }
 
-        /*   public void Stb_RemoveOffMapPlayers_recurs()
-           {
-               Timeout(33, () => { Stb_RemoveOffMapPlayers_recurs(); });
-               //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-               Task.Run(() => Stb_RemoveOffMapPlayers());
-               //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
-           }
-       */
-        //Removes player aircraft if they are off the map    
-        /*   public void Stb_RemoveOffMapPlayers()
-           {
-               try
-               {
-                   //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
-                   //This should match the values in your .mis file, like
-                   //BattleArea 10000 10000 360000 310000 10000
-                   //TODO: There is probably some way to access the size of the battle area programmatically
-                   // Players are warned when they go one square off the map & destroyed if they go 2 squares off
-                   // changed to allow near bottom flying with no notice about off map Hopefully........
-                   if (GamePlay == null) return;
-                   double minX = 10000;
-                   double minY = 10000;
-                   double maxX = 360000;
-                   double maxY = 310000;
-                   //////////////Comment this out as we don`t have Your Debug mode  
-                   Console.WriteLine("Checking for Players off map, to despawn");
-                   if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-                   {
-                       foreach (int army in GamePlay.gpArmies())
-                       {
-                           if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                               foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
-                               {
-                                   if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
-                                   {
-                                       //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                                       foreach (AiActor actor in airGroup.GetItems())
-                                       {
-                                           if (actor != null && actor is AiAircraft)
-                                           {
-                                               AiAircraft a = actor as AiAircraft;
-                                               /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
-                                                  //+ a.Type() + " " 
-                                                  //+ a.TypedName() + " " 
-                                                  +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                                 );
-                                             //  */
-        /*                                        if (a != null && !Stb_isAiControlledPlane(a) &&
-                                                      (a.Pos().x <= minX ||
-                                                        a.Pos().x >= maxX ||
-                                                        a.Pos().y <= minY ||
-                                                        a.Pos().y >= maxY
-                                                      )
+    public void Stb_RemoveOffMapPlayers_recurs()
+    {
+        Timeout(14.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
+        //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
+        Task.Run(() => Stb_RemoveOffMapPlayers());
+        //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+    }
 
-                                                )   // player/non-ai aircraft only
-                                                {
-                                                    HashSet<Player> players = new HashSet<Player>();
+    public Dictionary<Player, int> numConsecutiveTimesPlayerOffMap = new Dictionary<Player, int>();
 
-                                                    string direction = "";
+    //Removes player aircraft if they are off the map    
+    public void Stb_RemoveOffMapPlayers()
+    {
+        try
+        {
+            //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
+            //This should match the values in your .mis file, like
+            //BattleArea 10000 10000 360000 310000 10000
+            //TODO: There is probably some way to access the size of the battle area programmatically
+            // Players are warned when they go one square off the map & destroyed if they go 1 square off
+            // changed to allow near bottom flying with no notice about off map Hopefully........
+            //The nominal size of our battle area is 10000,10000 to 360000, 320000
+            //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
+            //Also below a "grace area" of approx 1 square off the map is added
+            if (GamePlay == null) return;
+            double minX = 6666;
+            double minY = 6666;
+            double maxX = 362000;
+            double maxY = 312000;
+            //////////////Comment this out as we don`t have Your Debug mode  
+            Console.WriteLine("Checking for Players off map, to despawn");
+            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            {
+                foreach (int army in GamePlay.gpArmies())
+                {
+                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                        {
+                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            {
+                                //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                                foreach (AiActor actor in airGroup.GetItems())
+                                {
 
 
-                                                    if (a.Pos().y <= minY) direction += "north";
-                                                    if (a.Pos().y >= maxY) direction += "south";
-                                                    if (a.Pos().x <= minX) direction += "east";
-                                                    if (a.Pos().x >= maxX) direction += "west";
-
-
-                                                    for (int i = 0; i < a.Places(); i++)
-                                                        if (a.Player(i) != null) players.Add(a.Player(i));
-
-                                                    string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
-                                                    GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
-
-
-
-                                                    if (a.Pos().x <= minX - 1000 ||
-                                                            a.Pos().x >= maxX + 1000 ||
-                                                            a.Pos().y <= minY - 1000 ||
-                                                            a.Pos().y >= maxY + 1000
-                                                        )
-                                                    {
-                                                        foreach (Player player in players)
-                                                        {
-                                                           if (player == null) continue;
-                                                           Timeout(1, () =>
-                                                           {
-
-                                                                //Stb_RemovePlayerFromAircraftandDestroy(a, player);
-                                                                //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
-                                                                //2 = self-kill
-                                                                stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
-                                                                                                                                        //stbSr_PlayerDeath_penaltylist[playername]
-                                                                stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
-                                                                Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
-
-
-                                                                gpLogServerAndLog(null, "{0} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), a.InternalTypeName() });
-                                                                gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name(), a.InternalTypeName() });
-                                                                gpLogServerAndLog(null, "{0}'s aircraft was lost.", new object[] { player.Name(), a.InternalTypeName() });
-                                                           });
-
-                                                        }
-
-                                                    }
-                                                }
+                                    if (actor != null && actor is AiAircraft)
+                                    {
+                                        AiAircraft a = actor as AiAircraft;
+                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
+                                           //+ a.Type() + " " 
+                                           //+ a.TypedName() + " " 
+                                           +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                          );
+                                      //  
+                                      */
+                                        if (a == null) continue;
+                                        bool isAI = true;
+                                        HashSet<Player> players = new HashSet<Player>();
+                                        for (int i = 0; i < a.Places(); i++)
+                                        {
+                                            if (a.Player(i) != null)
+                                            {
+                                                players.Add(a.Player(i));
+                                                isAI = false;
                                             }
+                                        }
+                                        if (isAI) continue; // player/non-ai aircraft only
+                                        if (a.Pos().x <= minX ||
+                                            a.Pos().x >= maxX ||
+                                            a.Pos().y <= minY ||
+                                            a.Pos().y >= maxY
+                                            )
+                                        {
+                                            bool ejectThem = false;
+                                            foreach (Player player in players)
+                                            {
+                                                if (numConsecutiveTimesPlayerOffMap.ContainsKey(player)) numConsecutiveTimesPlayerOffMap[player]++;
+                                                else numConsecutiveTimesPlayerOffMap[player] = 1;
+                                                if (numConsecutiveTimesPlayerOffMap[player] > 28) ejectThem = true;  //checked ~4X per minute, so gives you 7 minutes of fooling around to get out of there.  Which is more than ample. But esp. in a slow bomber or the like, it could easily take 5 mins to fly one grid square off the grid, then get turned around, and fly back out.  So 7 minutes isn't too extremely long as a grace period.
+                                                if (numConsecutiveTimesPlayerOffMap[player] == 1)
+                                                {
+                                                    Point3d p = a.Pos();
+                                                    //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                                    //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                                    if (p.x < 10000) p.x = 10001;
+
+                                                    string sec = Calcs.correctedSectorName(this, p);
+                                                    string log_message = "{0} in a {1} has flown off the map at {2}, in contravention of the Geneva Convention.";
+                                                    gpLogServerAndLog(null, log_message, new object[] { player.Name(), StatCalcs.GetAircraftType(a), sec });
+                                                }
+                                                if (numConsecutiveTimesPlayerOffMap[player] > 20 && numConsecutiveTimesPlayerOffMap[player] % 2 == 0)
+                                                {
+                                                    Point3d p = a.Pos();
+                                                    //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                                    //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                                    if (p.x < 10000) p.x = 10001;
+                                                    string sec = Calcs.correctedSectorName(this, p);
+                                                    string log_message = "{0} in a {1} has flown off the map at {2} for over 5 minutes, in contravention of the Geneva Convention.";
+                                                    gpLogServerAndLog(null, log_message, new object[] { player.Name(), StatCalcs.GetAircraftType(a), sec });
+                                                }
+
+                                            }
+                                            string direction = "";
 
 
+                                            if (a.Pos().y <= minY) direction += "north";
+                                            if (a.Pos().y >= maxY) direction += "south";
+                                            if (a.Pos().x <= minX) direction += "east";
+                                            if (a.Pos().x >= maxX) direction += "west";
+
+
+
+
+                                            string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
+                                            GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
+                                            string pe2log_message = "You are leaving the map. PLAYERS AND COVER AIRCRAFT WHO LEAVE THE MAP ARE DESTROYED!!! Fly " + direction + " immediately to return!";
+                                            gpLogServerAndLog(players.ToArray(), pe2log_message, null);
+
+
+
+                                            if (a.Pos().x <= minX - 12500 || //Same as AI aircraft, 12500 'grace area', this is set in mainmission RemoveOffMapAIAircraft()
+                                                a.Pos().x >= maxX + 12500 ||
+                                                a.Pos().y <= minY - 12500 ||
+                                                a.Pos().y >= maxY + 12500 ||
+                                                ejectThem
+                                            )
+                                            {
+                                                foreach (Player player in players)
+                                                {
+                                                    if (player == null) continue;
+                                                    Timeout(1, () =>
+                                                    {
+
+                                                        //Stb_RemovePlayerFromAircraftandDestroy(a, player);
+                                                        //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                                                        //2 = self-kill
+                                                        stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+                                                                                                                                //stbSr_PlayerDeath_penaltylist[playername]
+                                                        stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                                                        Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+
+                                                        string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
+                                                        GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
+
+                                                        string type = StatCalcs.GetAircraftType(a);
+                                                        gpLogServerAndLog(null, "{0} flying a {1} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), type });
+                                                        gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name() });
+                                                        gpLogServerAndLog(null, "{0}'s {1} was lost.", new object[] { player.Name(), type });
+                                                    });
+
+                                                }
+
+                                            }
+                                        } else
+                                        {
+                                            foreach (Player player in players) numConsecutiveTimesPlayerOffMap[player] = 0; //the player is 'in bounds' so we reset their consecutive out-of-bounds count                                     
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString()); }
+        // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
+    } //method removeoffmapplayersaircraft
+      // temp fix for off map aircraft Fatal 1/18/19
+
+
+
+    //Experiment with changingn the airgroup target to player, seeing if they will attack better
+    //Not actually used for now
+    public void Stb_changeTargetToPlayerRecurs(Player player)
+    {
+        Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+        Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
+        Task.Run(() => Stb_changeTargetAllAIAircraft(player));
+        //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+    }
+
+    public void Stb_changeTargetAllAIAircraft(Player player)
+    {
+        return;
+        //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
+        if (player.Place() == null || (player.Place() as AiAircraft) == null) return;
+
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in GamePlay.gpArmies())
+            {
+                if (army == player.Army()) continue;
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                {
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor is AiAircraft)
+                                {
+                                    AiAircraft aircraft = actor as AiAircraft;
+                                    if (aircraft != null)
+                                    {
+                                        if (Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne())
+                                        {
+                                            //AiAirGroup.candidates()
+                                            //AiAirGroup.enemies()
+                                            //AiAirGroup.getTask()
+                                            //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
+                                            //AiAirGroup.Vwld()
+                                            //AiAirGroupTask.ATTACK_AIR
+                                            // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
+                                            //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
+                                            //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
+
+
+                                            airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                                            airGroup.changeGoalTarget(player.Place());
+                                            if (stb_Debug) Console.WriteLine("ChangeGoalTarget: " + actor.Name() + " to " + player.Name());
+
+                                            break; //each airGroup has only one target so no need to do this more than once.
                                         }
                                     }
                                 }
+                            }
                         }
                     }
                 }
-                catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString());}
-                // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
-            } //method removeoffmapplayersaircraft
-        */ // temp fix for off map aircraft Fatal 1/18/19
-
-
-
-        //Experiment with changingn the airgroup target to player, seeing if they will attack better
-        //Not actually used for now
-        public void Stb_changeTargetToPlayerRecurs(Player player)
-        {
-            Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
-            Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-            Task.Run(() => Stb_changeTargetAllAIAircraft(player));
-            //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+            }
         }
+    }
 
-        public void Stb_changeTargetAllAIAircraft(Player player)
+    //Experiment with changingn the airgroup target to player, seeing if they will attack better
+    //Not actually used for now
+    public void Stb_changeTargetToDifferentNearbyAircraft_recurs()
+    {
+        Timeout(52.34, () => { Stb_changeTargetToDifferentNearbyAircraft_recurs(); });
+        //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
+        Task.Run(() => Stb_changeTargetToDifferentNearbyAircraft());
+        //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
+    }
+
+    public void Stb_changeTargetToDifferentNearbyAircraft()
+    {
+        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
-            return;
+            foreach (int army in GamePlay.gpArmies())
+            {
+
+                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                {
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            foreach (AiActor actor in airGroup.GetItems())
+                            {
+                                if (actor is AiAircraft)
+                                {
+                                    AiAircraft aircraft = actor as AiAircraft;
+                                    if (aircraft != null)
+                                    {
+                                        if (Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne() &&
+                                            (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR ||
+                                            airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT ||
+                                            airGroup.getTask() == AiAirGroupTask.DO_NOTHING))
+
+                                        {
+                                            //AiAirGroup.candidates()
+                                            //AiAirGroup.enemies()
+                                            //AiAirGroup.getTask()
+                                            //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
+                                            //AiAirGroup.Vwld()
+                                            //AiAirGroupTask.ATTACK_AIR
+                                            // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
+                                            //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
+                                            //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
+
+                                            AiAirGroup newAG = null;
+
+                                            //If they are already attacking we select a (possibly) new target within reasonable distance
+                                            //If they are just flying straight we only select a target if they are basically right on top of it
+                                            //and even a dufus pilot would notice it
+                                            //In theory this leaves CloD's native piloting in place for the most part, but just 'improves' it a bit
+                                            if (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR)
+                                                newAG = getRandomNearbyEnemyAirGroup(airGroup, 5000, 1000, 1000);
+                                            else if (airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT || airGroup.getTask() == AiAirGroupTask.DO_NOTHING)
+                                                newAG = getRandomNearbyEnemyAirGroup(airGroup, 500, 300, 300);
+
+                                            if (newAG == null) break;
+
+
+
+                                            airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG);
+                                            airGroup.changeGoalTarget(newAG);
+                                            AiAircraft newAircraft = newAG.GetItems()[0] as AiAircraft;
+                                            string playername = newAG.Name();
+                                            if (aircraft != null && aircraft.Player(0) != null) playername = aircraft.Player(0).Name();
+                                            Console.WriteLine("Change Target to different nearby enemy aircraft: " + actor.Name() + " to " + playername);
+
+                                            break; //each airGroup has only one target so no need to do this more than once.
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Each aiairgroup can have only one goal target, which becomes kind of unrealistic.  
+    //What we do is call this to change the target to a different a/c.  We could do this based on proximity or whatever
+    //but for now we are mostly doing it based on damage or kills.  If you damage/kill one of the a/c in a group then
+    //the group will likely turn on that damager as the new target.
+    public void Stb_changeTargetOneAirgroupToPlayer(Player player, AiAircraft aircraft, string source = "", bool noTaskChange = true,
+        bool onlyAirAttackers = false, bool excludeBombers = false, bool excludeGroundAttackers = false)
+    {
+        try
+        {
+            double luck3 = stb_random.NextDouble();
+
+            if (source == "damage" && luck3 < 0.9) return;
+            if (source == "cutlimb" && luck3 < 0.5) return;
+            if (source == "dead" && luck3 < 0.5) return;
+
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
             if (player.Place() == null || (player.Place() as AiAircraft) == null) return;
+            if (aircraft == null || !Stb_isAiControlledPlane(aircraft)) return;
+            if (aircraft.Army() == player.Army()) return;
+            AiAirGroup airGroup = aircraft.AirGroup();
+            if (airGroup == null) return;
+            if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
 
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            string playername = "unknown/AI";
+            if (player != null) playername = player.Name();
+
+            //AiAirGroup.candidates()
+            //AiAirGroup.enemies()
+            //AiAirGroup.getTask()
+            //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
+            //AiAirGroup.Vwld()
+            //AiAirGroupTask.ATTACK_AIR
+            // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
+            //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
+            //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
+
+            //We set some overall variables to govern the overall probability of airgroups (bomber or otherwise) changing their current
+            //goal to attack the attacking a/c
+            double luck = stb_random.NextDouble();
+            double luck2 = stb_random.NextDouble();
+            if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: luck: " + luck.ToString("N2") + " NOfAir: " + airGroup.NOfAirc.ToString()
+            + " stb_ChangeAttackProb " + stb_ChangeAttackProb.ToString("N2") + "  stb_ChangeBomberAttackProb " + stb_ChangeBomberAttackProb.ToString("N2") + " stb_ChangeAttackProb_SmallGroup  " +
+            stb_ChangeAttackProb_SmallGroup.ToString("N2") + " PROBS: " + (airGroup.NOfAirc <= stb_ChangeAttackProb_SmallGroupThresh && luck < stb_ChangeAttackProb_SmallGroup).ToString() + " " + ((airGroup.isAircraftType(AircraftType.Bomber) && luck < stb_ChangeBomberAttackProb)).ToString() + " " + (luck < stb_ChangeAttackProb).ToString() + " source " + source, new object[] { });
+
+
+
+            if
+            (
+                    (airGroup.NOfAirc <= stb_ChangeAttackProb_SmallGroupThresh && luck < stb_ChangeAttackProb_SmallGroup)
+                    || ((airGroup.isAircraftType(AircraftType.Bomber) && luck < stb_ChangeBomberAttackProb))
+                    || (!airGroup.isAircraftType(AircraftType.Bomber) && (luck < stb_ChangeAttackProb))
+            )
             {
-                foreach (int army in GamePlay.gpArmies())
+
+
+                if (onlyAirAttackers && airGroup.getTask() != AiAirGroupTask.ATTACK_AIR) return;
+                if (excludeBombers && airGroup.isAircraftType(AircraftType.Bomber)) return;
+                if (excludeGroundAttackers && airGroup.getTask() == AiAirGroupTask.ATTACK_GROUND) return;
+
+
+                if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: CHANGING", new object[] { });
+
+                //if (!noTaskChange) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                //Not sure which is best, so we'll try them all . . .
+                if (luck2 < 0.3333) airGroup.changeGoalTarget(player.Place());
+                else if (luck2 < 0.666667) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                else if (luck2 < .83)
                 {
-                    if (army == player.Army()) continue;
-                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                    {
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
-                        {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
-                            {
-                                foreach (AiActor actor in airGroup.GetItems())
-                                {
-                                    if (actor is AiAircraft)
-                                    {
-                                        AiAircraft aircraft = actor as AiAircraft;
-                                        if (aircraft != null)
-                                        {
-                                            if (Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne())
-                                            {
-                                                //AiAirGroup.candidates()
-                                                //AiAirGroup.enemies()
-                                                //AiAirGroup.getTask()
-                                                //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
-                                                //AiAirGroup.Vwld()
-                                                //AiAirGroupTask.ATTACK_AIR
-                                                // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
-                                                //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
-                                                //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
-
-
-                                                airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                                                airGroup.changeGoalTarget(player.Place());
-                                                if (stb_Debug) Console.WriteLine("ChangeGoalTarget: " + actor.Name() + " to " + player.Name());
-
-                                                break; //each airGroup has only one target so no need to do this more than once.
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    airGroup.changeGoalTarget(player.Place());
+                    airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
                 }
+                else
+                {
+                    airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                    airGroup.changeGoalTarget(player.Place());
+                }
+
+                if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: " + StatCalcs.GetAircraftType(aircraft) + " to " + player.Name(), new object[] { });
+
+                Console.WriteLine("CHANGETARGET: " + StatCalcs.GetAircraftType(aircraft) + " to " + playername);
+            }
+
+            //Experimental!!!  IN case of bomber being attacked, we're going to get NEARBY FRIENDLY FIGHTERS to attack the attacking aircraft preferentially\
+
+            if (airGroup.isAircraftType(AircraftType.Bomber))
+            {
+                //tuple is distance meters, delta Altitude meters (+ means the fighters are higher), airgroup
+                Tuple<double?, double?, AiAirGroup> resp = getDistanceToNearestFriendlyAIFightergroup(airGroup);
+                if (resp.Item3 == null) return;
+                AiAirGroup nearbyFighterGroup = resp.Item3;
+
+                string nearbyFighterName = "(none)";
+                if (nearbyFighterGroup.GetItems() != null && nearbyFighterGroup.GetItems().Length > 0) nearbyFighterName = (nearbyFighterGroup.GetItems()[0] as AiActor).Name();
+                if (resp.Item1 < 10000 && resp.Item2 > -1750 && stb_random.NextDouble() < 0.9)
+                {
+                    Console.WriteLine("CHANGETARGET: " + (aircraft as AiActor).Name() + " bombers under attack, so got nearby AI fightergroup " + nearbyFighterName + " to attack " + playername);
+                    nearbyFighterGroup.changeGoalTarget(player.Place());
+                    nearbyFighterGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
+                }
+
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("Stats.Stb_changeTargetOneAirgroupToPlayer - Exception: " + ex.ToString());
+        }
+    }
+    /*
+     *         foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
+        {
+            if (a.Army() != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
+            }
+
+        }
+        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
+
+    */
+    //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
+    //In case of birthplace find, get the nearest birthplace regardless of friendly or not
+    private double Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
+    {
+        double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        double d2Min = d2;
+        if (actor == null) return d2Min;
+        Point3d pd = actor.Pos();
+
+        int n;
+        if (birthplacefind) n = GamePlay.gpBirthPlaces().Length;
+        else n = GamePlay.gpAirports().Length;
+
+        //AiActor[] aMinSaves = new AiActor[n + 1];
+        //int j = 0;
+        //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
+        for (int i = 0; i < n; i++)
+        {
+            AiActor a;
+            if (birthplacefind) a = (AiActor)GamePlay.gpBirthPlaces()[i];
+            else a = (AiActor)GamePlay.gpAirports()[i];
+
+            if (a == null) continue;
+            //if (actor.Army() != a.Army()) continue; //only count friendly airports
+            //if (actor.Army() != (a.Pos().x, a.Pos().y)
+            //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
+
+            //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
+
+            if (!birthplacefind && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
+
+
+            //if (!a.IsAlive()) continue;
+
+
+            Point3d pp;
+            pp = a.Pos();
+            pd.z = pp.z;
+            d2 = pd.distanceSquared(ref pp);
+            if (d2 < d2Min)
+            {
+                d2Min = d2;
+                //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
+            }
+
+        }
+        //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
+        return Math.Sqrt(d2Min);
+    }
+
+    //nearest airport to a point
+    //army=0 is neutral, meaning found airports of any army
+    //otherwise, find only airports matching that army
+    public AiAirport Stb_nearestAirport(Point3d location, int army = 0)
+    {
+        AiAirport NearestAirfield = null;
+        AiAirport[] airports = GamePlay.gpAirports();
+        Point3d StartPos = location;
+
+        if (airports != null)
+        {
+            foreach (AiAirport airport in airports)
+            {
+                AiActor a = airport as AiActor;
+                if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
+                if (NearestAirfield != null)
+                {
+                    if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
+                        NearestAirfield = airport;
+                }
+                else NearestAirfield = airport;
             }
         }
 
-        //Experiment with changingn the airgroup target to player, seeing if they will attack better
-        //Not actually used for now
-        public void Stb_changeTargetToDifferentNearbyAircraft_recurs()
+
+        //AirfieldDisable(NearestAirfield); //for testing
+        //Console.WriteLine("Destroying airfield " + NearestAirfield.Name());
+        return NearestAirfield;
+    }
+
+    //nearest airport to an actor
+    public AiAirport Stb_nearestAirport(AiActor actor, int army = 0)
+    {
+        if (actor == null) return null;
+        Point3d pd = actor.Pos();
+        return Stb_nearestAirport(pd, army);
+    }
+
+    //nearest BIRTHPLACE to a point
+    //army=0 is neutral, meaning found airports of any army
+    //otherwise, find only airports matching that army
+    public AiBirthPlace Stb_nearestBirthPlace(Point3d location, int army = 0)
+    {
+        try
         {
-            Timeout(52.34, () => { Stb_changeTargetToDifferentNearbyAircraft_recurs(); });
-            //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-            Task.Run(() => Stb_changeTargetToDifferentNearbyAircraft());
-            //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
-        }
-
-        public void Stb_changeTargetToDifferentNearbyAircraft()
-        {
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-            {
-                foreach (int army in GamePlay.gpArmies())
-                {
-
-                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                    {
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
-                        {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
-                            {
-                                foreach (AiActor actor in airGroup.GetItems())
-                                {
-                                    if (actor is AiAircraft)
-                                    {
-                                        AiAircraft aircraft = actor as AiAircraft;
-                                        if (aircraft != null)
-                                        {
-                                            if (Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne() &&
-                                                (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR ||
-                                                airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT ||
-                                                airGroup.getTask() == AiAirGroupTask.DO_NOTHING))
-
-                                            {
-                                                //AiAirGroup.candidates()
-                                                //AiAirGroup.enemies()
-                                                //AiAirGroup.getTask()
-                                                //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
-                                                //AiAirGroup.Vwld()
-                                                //AiAirGroupTask.ATTACK_AIR
-                                                // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
-                                                //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
-                                                //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
-
-                                                AiAirGroup newAG = null;
-
-                                                //If they are already attacking we select a (possibly) new target within reasonable distance
-                                                //If they are just flying straight we only select a target if they are basically right on top of it
-                                                //and even a dufus pilot would notice it
-                                                //In theory this leaves CloD's native piloting in place for the most part, but just 'improves' it a bit
-                                                if (airGroup.getTask() == AiAirGroupTask.ATTACK_AIR)
-                                                    newAG = getRandomNearbyEnemyAirGroup(airGroup, 5000, 1000, 1000);
-                                                else if (airGroup.getTask() == AiAirGroupTask.FLY_WAYPOINT || airGroup.getTask() == AiAirGroupTask.DO_NOTHING)
-                                                    newAG = getRandomNearbyEnemyAirGroup(airGroup, 500, 300, 300);
-
-                                                if (newAG == null) break;
-
-
-
-                                                airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG);
-                                                airGroup.changeGoalTarget(newAG);
-                                                AiAircraft newAircraft = newAG.GetItems()[0] as AiAircraft;
-                                                string playername = newAG.Name();
-                                                if (aircraft != null && aircraft.Player(0) != null) playername = aircraft.Player(0).Name();
-                                                Console.WriteLine("Change Target to different nearby enemy aircraft: " + actor.Name() + " to " + playername);
-
-                                                break; //each airGroup has only one target so no need to do this more than once.
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        //Each aiairgroup can have only one goal target, which becomes kind of unrealistic.  
-        //What we do is call this to change the target to a different a/c.  We could do this based on proximity or whatever
-        //but for now we are mostly doing it based on damage or kills.  If you damage/kill one of the a/c in a group then
-        //the group will likely turn on that damager as the new target.
-        public void Stb_changeTargetOneAirgroupToPlayer(Player player, AiAircraft aircraft, string source = "", bool noTaskChange = true,
-            bool onlyAirAttackers = false, bool excludeBombers = false, bool excludeGroundAttackers = false)
-        {
-            try
-            {
-                double luck3 = stb_random.NextDouble();
-
-                if (source == "damage" && luck3 < 0.9) return;
-                if (source == "cutlimb" && luck3 < 0.5) return;
-                if (source == "dead" && luck3 < 0.5) return;
-
-                //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-                if (player.Place() == null || (player.Place() as AiAircraft) == null) return;
-                if (aircraft == null || !Stb_isAiControlledPlane(aircraft)) return;
-                if (aircraft.Army() == player.Army()) return;
-                AiAirGroup airGroup = aircraft.AirGroup();
-                if (airGroup == null) return;
-                if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
-
-                string playername = "unknown/AI";
-                if (player != null) playername = player.Name();
-
-                //AiAirGroup.candidates()
-                //AiAirGroup.enemies()
-                //AiAirGroup.getTask()
-                //AiAirGroup.isAircraftType(maddox.game.world.AircraftType)
-                //AiAirGroup.Vwld()
-                //AiAirGroupTask.ATTACK_AIR
-                // && airGroup.getTask() == AiAirGroupTask.ATTACK_AIR to affect only those a/c who are in attack mode, etc.
-                //&& airGroup.getTask() != AiAirGroupTask.ATTACK_GROUND to make all attack except (ie) bombers
-                //&& !AiAirGroup.isAircraftType(AircraftType.Bomber) //to exclude bombers
-
-                //We set some overall variables to govern the overall probability of airgroups (bomber or otherwise) changing their current
-                //goal to attack the attacking a/c
-                double luck = stb_random.NextDouble();
-                double luck2 = stb_random.NextDouble();
-                if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: luck: " + luck.ToString("N2") + " NOfAir: " + airGroup.NOfAirc.ToString()
-                + " stb_ChangeAttackProb " + stb_ChangeAttackProb.ToString("N2") + "  stb_ChangeBomberAttackProb " + stb_ChangeBomberAttackProb.ToString("N2") + " stb_ChangeAttackProb_SmallGroup  " +
-                stb_ChangeAttackProb_SmallGroup.ToString("N2") + " PROBS: " + (airGroup.NOfAirc <= stb_ChangeAttackProb_SmallGroupThresh && luck < stb_ChangeAttackProb_SmallGroup).ToString() + " " + ((airGroup.isAircraftType(AircraftType.Bomber) && luck < stb_ChangeBomberAttackProb)).ToString() + " " + (luck < stb_ChangeAttackProb).ToString() + " source " + source, new object[] { });
-
-
-
-                if
-                (
-                        (airGroup.NOfAirc <= stb_ChangeAttackProb_SmallGroupThresh && luck < stb_ChangeAttackProb_SmallGroup)
-                        || ((airGroup.isAircraftType(AircraftType.Bomber) && luck < stb_ChangeBomberAttackProb))
-                        || (!airGroup.isAircraftType(AircraftType.Bomber) && (luck < stb_ChangeAttackProb))
-                )
-                {
-
-
-                    if (onlyAirAttackers && airGroup.getTask() != AiAirGroupTask.ATTACK_AIR) return;
-                    if (excludeBombers && airGroup.isAircraftType(AircraftType.Bomber)) return;
-                    if (excludeGroundAttackers && airGroup.getTask() == AiAirGroupTask.ATTACK_GROUND) return;
-
-
-                    if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: CHANGING", new object[] { });
-
-                    //if (!noTaskChange) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                    //Not sure which is best, so we'll try them all . . .
-                    if (luck2 < 0.3333) airGroup.changeGoalTarget(player.Place());
-                    else if (luck2 < 0.666667) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                    else if (luck2 < .83)
-                    {
-                        airGroup.changeGoalTarget(player.Place());
-                        airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                    }
-                    else
-                    {
-                        airGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                        airGroup.changeGoalTarget(player.Place());
-                    }
-
-                    if (stb_Debug) Stb_Message(new Player[] { player }, "CHANGETARGET: " + StatCalcs.GetAircraftType(aircraft) + " to " + player.Name(), new object[] { });
-
-                    Console.WriteLine("CHANGETARGET: " + StatCalcs.GetAircraftType(aircraft) + " to " + playername);
-                }
-
-                //Experimental!!!  IN case of bomber being attacked, we're going to get NEARBY FRIENDLY FIGHTERS to attack the attacking aircraft preferentially\
-
-                if (airGroup.isAircraftType(AircraftType.Bomber))
-                {
-                    //tuple is distance meters, delta Altitude meters (+ means the fighters are higher), airgroup
-                    Tuple<double?, double?, AiAirGroup> resp = getDistanceToNearestFriendlyAIFightergroup(airGroup);
-                    if (resp.Item3 == null) return;
-                    AiAirGroup nearbyFighterGroup = resp.Item3;
-
-                    string nearbyFighterName = "(none)";
-                    if (nearbyFighterGroup.GetItems() != null && nearbyFighterGroup.GetItems().Length > 0) nearbyFighterName = (nearbyFighterGroup.GetItems()[0] as AiActor).Name();
-                    if (resp.Item1 < 10000 && resp.Item2 > -1750 && stb_random.NextDouble() < 0.9)
-                    {
-                        Console.WriteLine("CHANGETARGET: " + (aircraft as AiActor).Name() + " bombers under attack, so got nearby AI fightergroup " + nearbyFighterName + " to attack " + playername);
-                        nearbyFighterGroup.changeGoalTarget(player.Place());
-                        nearbyFighterGroup.setTask(AiAirGroupTask.ATTACK_AIR, (player.Place() as AiAircraft).AirGroup());
-                    }
-
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine("Stats.Stb_changeTargetOneAirgroupToPlayer - Exception: " + ex.ToString());
-            }
-        }
-        /*
-         *         foreach (AiBirthPlace a in GamePlay.gpBirthPlaces())
-            {
-                if (a.Army() != actor.Army()) continue;
-
-
-                //if (!a.IsAlive()) continue;
-
-
-                Point3d pp;
-                pp = a.Pos();
-                pd.z = pp.z;
-                d2 = pd.distanceSquared(ref pp);
-                if (d2 < d2Min)
-                {
-                    d2Min = d2;
-                    //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString() + " distance " + d2.ToString("n0"), new object[] { });
-                }
-
-            }
-            //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
-            return Math.Sqrt(d2Min);
-
-        */
-        //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
-        //In case of birthplace find, get the nearest birthplace regardless of friendly or not
-        private double Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
-        {
-            double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
-            double d2Min = d2;
-            if (actor == null) return d2Min;
-            Point3d pd = actor.Pos();
-
-            int n;
-            if (birthplacefind) n = GamePlay.gpBirthPlaces().Length;
-            else n = GamePlay.gpAirports().Length;
-
-            //AiActor[] aMinSaves = new AiActor[n + 1];
-            //int j = 0;
-            //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
-            for (int i = 0; i < n; i++)
-            {
-                AiActor a;
-                if (birthplacefind) a = (AiActor)GamePlay.gpBirthPlaces()[i];
-                else a = (AiActor)GamePlay.gpAirports()[i];
-
-                if (a == null) continue;
-                //if (actor.Army() != a.Army()) continue; //only count friendly airports
-                //if (actor.Army() != (a.Pos().x, a.Pos().y)
-                //OK, so the a.Army() thing doesn't seem to be working, so we are going to try just checking whether or not it is on the territory of the Army the actor belongs to.  For some reason, airports always (or almost always?) list the army = 0.
-
-                //GamePlay.gpLogServer(null, "Checking airport " + a.Name() + " " + GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) + " " + a.Pos().x.ToString ("N0") + " " + a.Pos().y.ToString ("N0") , new object[] { });
-
-                if (!birthplacefind && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != actor.Army()) continue;
-
-
-                //if (!a.IsAlive()) continue;
-
-
-                Point3d pp;
-                pp = a.Pos();
-                pd.z = pp.z;
-                d2 = pd.distanceSquared(ref pp);
-                if (d2 < d2Min)
-                {
-                    d2Min = d2;
-                    //GamePlay.gpLogServer(null, "Checking airport / added to short list" + a.Name() + " army: " + a.Army().ToString(), new object[] { });
-                }
-
-            }
-            //GamePlay.gpLogServer(null, "Distance:" + Math.Sqrt(d2Min).ToString(), new object[] { });
-            return Math.Sqrt(d2Min);
-        }
-
-        //nearest airport to a point
-        //army=0 is neutral, meaning found airports of any army
-        //otherwise, find only airports matching that army
-        public AiAirport Stb_nearestAirport(Point3d location, int army = 0)
-        {
-            AiAirport NearestAirfield = null;
-            AiAirport[] airports = GamePlay.gpAirports();
+            AiBirthPlace NearestAirfield = null;
+            AiBirthPlace[] airports;
+            if (GamePlay != null) airports = GamePlay.gpBirthPlaces();
+            else return null;
             Point3d StartPos = location;
 
             if (airports != null)
             {
-                foreach (AiAirport airport in airports)
+                foreach (AiBirthPlace airport in airports)
                 {
-                    AiActor a = airport as AiActor;
-                    if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
-                    if (NearestAirfield != null)
+                    try
                     {
-                        if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
-                            NearestAirfield = airport;
+                        AiActor a = airport as AiActor;
+                        if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
+                        if (NearestAirfield != null)
+                        {
+                            if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
+                                NearestAirfield = airport;
+                        }
+                        else NearestAirfield = airport;
                     }
-                    else NearestAirfield = airport;
+                    catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR1: " + ex.ToString()); return null; }
                 }
             }
-
-
-            //AirfieldDisable(NearestAirfield); //for testing
-            //Console.WriteLine("Destroying airfield " + NearestAirfield.Name());
             return NearestAirfield;
         }
+        catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR: " + ex.ToString()); return null; }
+    }
 
-        //nearest airport to an actor
-        public AiAirport Stb_nearestAirport(AiActor actor, int army = 0)
+    //nearest airport to an actor
+    public AiBirthPlace Stb_nearestBirthPlace(AiActor actor, int army = 0)
+    {
+        if (actor == null) return null;
+        if (army == null) return null;
+        Point3d pd = actor.Pos();
+        //return null; //for testing
+        return Stb_nearestBirthPlace(pd, army);
+    }
+
+    //Tuple is Distance (meters), altitude difference (meters), AiAirGroup  (? == nullable)
+    public Tuple<double?, double?, AiAirGroup> getDistanceToNearestFriendlyAIFightergroup(AiAirGroup from)
+    {
+        try
         {
-            if (actor == null) return null;
-            Point3d pd = actor.Pos();
-            return Stb_nearestAirport(pd, army);
+            AiAirGroup airGroup = getNearestFriendlyAIFightergroup(from);
+            if (airGroup == null) return new Tuple<double?, double?, AiAirGroup>(null, null, null);
+            double dist = StatCalcs.CalculatePointDistance(from.Pos(), airGroup.Pos());
+            double alt_diff = from.Pos().z - airGroup.Pos().z;
+            return new Tuple<double?, double?, AiAirGroup>(dist, alt_diff, airGroup);
         }
+        catch (Exception ex) { Console.WriteLine("-stats FriendlyfighterDist ERROR: " + ex.ToString()); return new Tuple<double?, double?, AiAirGroup>(null, null, null); }
+    }
 
-        //nearest BIRTHPLACE to a point
-        //army=0 is neutral, meaning found airports of any army
-        //otherwise, find only airports matching that army
-        public AiBirthPlace Stb_nearestBirthPlace(Point3d location, int army = 0)
+    public AiAirGroup getNearestFriendlyAIFightergroup(AiAirGroup from)
+    {
+        try
         {
-            try
-            {
-                AiBirthPlace NearestAirfield = null;
-                AiBirthPlace[] airports;
-                if (GamePlay != null) airports = GamePlay.gpBirthPlaces();
-                else return null;
-                Point3d StartPos = location;
+            if (GamePlay == null) return null;
+            if (from == null) return null;
+            AiAirGroup NearestAirgroup = null;
+            AiAirGroup[] Airgroups;
+            Point3d StartPos = from.Pos();
 
-                if (airports != null)
+            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
+
+            if (Airgroups != null)
+            {
+                foreach (AiAirGroup airGroup in Airgroups)
                 {
-                    foreach (AiBirthPlace airport in airports)
+                    if (airGroup.GetItems().Length == 0) continue;
+                    AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
+                    string acType = StatCalcs.GetAircraftType(a);
+
+                    //This includes JU-87s, so it's slightly different from the configuration we've used before.  But we often have Ju-87s flying with 
+                    //escorts, which is the context here
+                    bool isHeavyBomber = false;
+                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
+                    if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
+                    if (isHeavyBomber) continue;
+                    if (NearestAirgroup != null)
                     {
-                        try
-                        {
-                            AiActor a = airport as AiActor;
-                            if (army != 0 && GamePlay.gpFrontArmy(a.Pos().x, a.Pos().y) != army) continue;
-                            if (NearestAirfield != null)
-                            {
-                                if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))
-                                    NearestAirfield = airport;
-                            }
-                            else NearestAirfield = airport;
-                        }
-                        catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR1: " + ex.ToString()); return null; }
+                        if (NearestAirgroup.Pos().distance(ref StartPos) > airGroup.Pos().distance(ref StartPos))
+                            NearestAirgroup = airGroup;
                     }
+                    else NearestAirgroup = airGroup;
                 }
-                return NearestAirfield;
+                return NearestAirgroup;
             }
-            catch (Exception ex) { Console.WriteLine("Stb_nearestBirthPlace ERROR: " + ex.ToString()); return null; }
+            else
+                return null;
         }
+        catch (Exception ex) { Console.WriteLine("-stats Friendly Fighter ERROR: " + ex.ToString()); return null; }
 
-        //nearest airport to an actor
-        public AiBirthPlace Stb_nearestBirthPlace(AiActor actor, int army = 0)
-        {
-            if (actor == null) return null;
-            if (army == null) return null;
-            Point3d pd = actor.Pos();
-            //return null; //for testing
-            return Stb_nearestBirthPlace(pd, army);
-        }
+    }
+    public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+    {
+        Point3d startPos = from.Pos();
+        List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
+        if (airGroups.Count == 0) return null;
+        int choice = stb_random.Next(airGroups.Count);
+        if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
+            choice = stb_random.Next(airGroups.Count);
+        return airGroups[choice];
 
-        //Tuple is Distance (meters), altitude difference (meters), AiAirGroup  (? == nullable)
-        public Tuple<double?, double?, AiAirGroup> getDistanceToNearestFriendlyAIFightergroup(AiAirGroup from)
+    }
+
+    //Gets all nearby enemy airgroup within distance_m (meters) and between alt - lowAlt_m & alt-highAlt_m altitude of the target
+    public List<AiAirGroup> getNearbyEnemyAirGroups(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+    {
+        try
         {
-            try
+            if (GamePlay == null) return null;
+            if (from == null) return null;
+            List<AiAirGroup> returnAirGroups = new List<AiAirGroup>();
+            AiAirGroup[] Airgroups;
+            Point3d StartPos = from.Pos();
+
+            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 2 : 1);
+
+            if (Airgroups != null)
             {
-                AiAirGroup airGroup = getNearestFriendlyAIFightergroup(from);
-                if (airGroup == null) return new Tuple<double?, double?, AiAirGroup>(null, null, null);
-                double dist = StatCalcs.CalculatePointDistance(from.Pos(), airGroup.Pos());
-                double alt_diff = from.Pos().z - airGroup.Pos().z;
-                return new Tuple<double?, double?, AiAirGroup>(dist, alt_diff, airGroup);
-            }
-            catch (Exception ex) { Console.WriteLine("-stats FriendlyfighterDist ERROR: " + ex.ToString()); return new Tuple<double?, double?, AiAirGroup>(null, null, null); }
-        }
-
-        public AiAirGroup getNearestFriendlyAIFightergroup(AiAirGroup from)
-        {
-            try
-            {
-                if (GamePlay == null) return null;
-                if (from == null) return null;
-                AiAirGroup NearestAirgroup = null;
-                AiAirGroup[] Airgroups;
-                Point3d StartPos = from.Pos();
-
-                Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
-
-                if (Airgroups != null)
+                foreach (AiAirGroup airGroup in Airgroups)
                 {
-                    foreach (AiAirGroup airGroup in Airgroups)
-                    {
-                        if (airGroup.GetItems().Length == 0) continue;
-                        AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
-                        string acType = StatCalcs.GetAircraftType(a);
+                    if (airGroup.GetItems().Length == 0) continue;
+                    //AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
 
-                        //This includes JU-87s, so it's slightly different from the configuration we've used before.  But we often have Ju-87s flying with 
-                        //escorts, which is the context here
-                        bool isHeavyBomber = false;
-                        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType == ("Ju-87")) isHeavyBomber = true;
-                        if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) isHeavyBomber = false;
-                        if (isHeavyBomber) continue;
-                        if (NearestAirgroup != null)
-                        {
-                            if (NearestAirgroup.Pos().distance(ref StartPos) > airGroup.Pos().distance(ref StartPos))
-                                NearestAirgroup = airGroup;
-                        }
-                        else NearestAirgroup = airGroup;
-                    }
-                    return NearestAirgroup;
+                    if (airGroup.Pos().z > StartPos.z - lowAlt_m && airGroup.Pos().z < StartPos.z + highAlt_m && airGroup.Pos().distance(ref StartPos) <= distance_m)
+                        returnAirGroups.Add(airGroup);
+
                 }
-                else
-                    return null;
+                return returnAirGroups;
             }
-            catch (Exception ex) { Console.WriteLine("-stats Friendly Fighter ERROR: " + ex.ToString()); return null; }
-
+            else
+                return null;
         }
-        public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+        catch (Exception ex) { Console.WriteLine("-stats getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
+
+    }
+
+
+    #endregion
+
+    // Overrides---------------------------------------------------------------------------------------------------------------
+
+    public override void Init(ABattle b, int missionNumber)
+    {
+        base.Init(b, missionNumber);
+
+        this.battle = b;
+        MissionNumberListener = -1; //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
+                                    //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
+                                    //Console.WriteLine("starting chat1");
+                                    //Start Chat Server
+        if (GamePlay is GameDef)
         {
-            Point3d startPos = from.Pos();
-            List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
-            if (airGroups.Count == 0) return null;
-            int choice = stb_random.Next(airGroups.Count);
-            if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
-                choice = stb_random.Next(airGroups.Count);
-            return airGroups[choice];
-
+            //Console.WriteLine("starting chat2");
+            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
         }
+    }
 
-        //Gets all nearby enemy airgroup within distance_m (meters) and between alt - lowAlt_m & alt-highAlt_m altitude of the target
-        public List<AiAirGroup> getNearbyEnemyAirGroups(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
-        {
-            try
-            {
-                if (GamePlay == null) return null;
-                if (from == null) return null;
-                List<AiAirGroup> returnAirGroups = new List<AiAirGroup>();
-                AiAirGroup[] Airgroups;
-                Point3d StartPos = from.Pos();
-
-                Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 2 : 1);
-
-                if (Airgroups != null)
-                {
-                    foreach (AiAirGroup airGroup in Airgroups)
-                    {
-                        if (airGroup.GetItems().Length == 0) continue;
-                        //AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
-
-                        if (airGroup.Pos().z > StartPos.z - lowAlt_m && airGroup.Pos().z < StartPos.z + highAlt_m && airGroup.Pos().distance(ref StartPos) <= distance_m)
-                            returnAirGroups.Add(airGroup);
-
-                    }
-                    return returnAirGroups;
-                }
-                else
-                    return null;
-            }
-            catch (Exception ex) { Console.WriteLine("-stats getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
-
-        }
-
-
+    //OK, this never gets called in -stats.cs files because the main .cs file loads initial submissions during OnBattleStarted!  So any initial things you need, need to be loaded elsewhere.
+    public override void OnBattleStarted()
+    {
+        #region stb
+        base.OnBattleStarted();
         #endregion
 
-        // Overrides---------------------------------------------------------------------------------------------------------------
 
-        public override void Init(ABattle b, int missionNumber)
+        //DON'T PUT ANYTHING HERE!!!!
+        //IT WILL NEVER BE CALLED!!!
+
+
+    }
+    public override void OnBattleStoped()
+    {
+        #region
+        base.OnBattleStoped();
+
+        Console.WriteLine("Stats-OnBattleStoped1");
+
+        try
         {
-            base.Init(b, missionNumber);
+            //Get list of all players, then send them to StbCmr_SavePositionLeave
+            //We don't want ot actually send them to OnPlaceLeave because that may kill them etc depending on where
+            //they are. This will just close out their stats without any chance of killing etc.
+            List<Player> Players = new List<Player>();
 
-            this.battle = b;
-            MissionNumberListener = -1; //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
-                                        //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
-                                        //Console.WriteLine("starting chat1");
-                                        //Start Chat Server
+            // Multiplayer
+            if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+            {
+                foreach (Player p in GamePlay.gpRemotePlayers())
+                {
+
+                    Players.Add(p);
+                }
+            }
+            /*
+            //Singleplayer or Dedi Server
+            if (GamePlay.gpPlayer() != null)
+            {
+
+                Players.Add(GamePlay.gpPlayer());
+            } 
+            */
+            if (Players != null && Players.Count > 0)
+            {
+
+                foreach (Player player in Players)
+                {
+                    stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
+
+                    //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
+                    //we can do this multiple times per aircraft bec. only the first one counts, but we're still going to save by only doing it for the first position encountered
+                    AiActor actor = player.Place();
+                    if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
+
+        Console.WriteLine("Stats-OnBattleStoped2");
+        //More cleanup    
+        try
+        {
+            Stb_destroyAllAIAircraft();
+
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
+        //OK, any aircraft that were previously called via onAircraftKilled, if we haven't given credit for them yet via onActorDead, we will do it now @ the end.
+
+        Console.WriteLine("Stats-OnBattleStoped3");
+
+        try
+        {
+            foreach (string aname in stb_aircraftKilled)
+            {
+                //if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
+                AiActor actor = GamePlay.gpActorByName(aname);
+                if (actor as AiAircraft != null) Stb_KillACNowIfInAircraftKilled(actor as AiAircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR2: " + ex.ToString()); }
+
+        Console.WriteLine("Stats-OnBattleStoped4");
+
+        try
+        {
+            foreach (string aname in stb_deadActors)
+            {
+                if (stb_Debug) Console.WriteLine("Actor killed this battle: " + aname);
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR3: " + ex.ToString()); }
+
+        Console.WriteLine("Stats-OnBattleStoped5");
+
+        try
+        {
             if (GamePlay is GameDef)
             {
-                //Console.WriteLine("starting chat2");
-                (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+                //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+                (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+                //If we don't remove the new EventChat when the battle is stopped
+                //we tend to get several copies of it operating, if we're not careful
+
+
             }
         }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR4: " + ex.ToString()); }
 
-        //OK, this never gets called in -stats.cs files because the main .cs file loads initial submissions during OnBattleStarted!  So any initial things you need, need to be loaded elsewhere.
-        public override void OnBattleStarted()
+        Console.WriteLine("Stats-OnBattleStoped6");
+
+        try
         {
-            #region stb
-            base.OnBattleStarted();
-            #endregion
+            stb_SaveIPlayerStat.StbSis_SaveAll(); //Save the stats CloD has been accumulating. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
+            if (stb_LogStats)
+            {
+                Console.WriteLine("OnBattleStoped - saving stats");
+                StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 0, 1, 0 }); //2nd entry "1" means final save of the mission
+                stb_StatRecorder.StbSr_EnqueueTask(sst);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
+
+        Console.WriteLine("Stats-OnBattleStoped7");
+
+        try
+        {
+            stb_StatRecorder.StbSr_FinishWaitingTasks(); //THIS CLOSES THE SECOND THREAD SO STATS WON'T WORK AT ALL AFTER THIS IS CALLED!!!
+
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR: " + ex.ToString()); } //Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
+
+        Console.WriteLine("Stats-OnBattleStoped8");
+
+        #endregion
+    }
+
+    public ISupplyMission TWCSupplyMission;
+    int stb_lastMissionLoaded = -1;
+    public override void OnMissionLoaded(int missionNumber)
+    {
+        #region stb
+        base.OnMissionLoaded(missionNumber);
+
+        //TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
+
+        //AMission TWCMainMission;
+        //IStatsMission TWCStatsMission;
+
+        //TWCMainMission = TWCComms.Communicator.Instance.Main;
+        TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+        //Console.WriteLine("GetType15: " + (TWCStatsMission.GetType().ToString()));
+        //Console.WriteLine("GetType16: " + TWCStatsMission.stb_ServerName_Public);
+        //Console.WriteLine("GetType17: ");
+        //TWCStatsMission.Inited();
+        //Console.WriteLine("GetType18: ");
+        //TWCMainMission.Inited();
+        //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
+        //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
 
 
-            //DON'T PUT ANYTHING HERE!!!!
-            //IT WILL NEVER BE CALLED!!!
+        stb_MissionsCount++;
+        stb_lastMissionLoaded = missionNumber;
+        #endregion
+        //add your code here
+
+        if (missionNumber == MissionNumber)
+        {
+            //Display any error messages that occured while reading the .ini file
+            //Wait a while to do it because usually nobody is on right @ the beginning to even see it.  It displays right away in the console anyway.
+            //if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(240, () => { Stb_Message(null, stb_iniFileErrorMessages, null); });             
+
+            //Escort21.coord.Communicate coms = new Escort21.coord.Communicate();
+
+            //Console.WriteLine("STATS: " + Communicate.test.ToString());
+            string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
+            stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"            
+            TWCComms.Communicator.Instance.stb_FullPath = stb_FullPath;
+            stb_ErrorLogPath = stb_FullPath + stb_ErrorLogPath;
+            stb_StatsPathTxt = stb_FullPath + stb_StatsPathTxt;
+            stb_StatsPathHtmlLow = stb_FullPath + stb_StatsPathHtmlLow;
+            Stb_LoadAntiAirDraftToMemory();
+            Stb_LoadFrontline1DraftToMemory();
+            Stb_LoadFrontline2DraftToMemory();
+            Stb_LoadFrontline3DraftToMemory();
+            Stb_LoadFrontline4DraftToMemory();
+            Stb_LoadBombers1DraftToMemory();
+            Stb_LoadBombers2DraftToMemory();
+            stb_StatRecorder = new StbStatRecorder(this, stb_LogStats, stb_LogStatsCreateHtmlLow, stb_LogStatsCreateHtmlMed, stb_StatsPathTxt,
+                                                    stb_LogErrors, stb_ErrorLogPath, stb_StatsPathHtmlLow, stb_StatsPathHtmlExtLow, stb_StatsPathHtmlMed,
+                                                    stb_LogStatsUploadHtmlLow, stb_LogStatsUploadHtmlMed,
+                                                    stb_LogStatsUploadAddressLow, stb_LogStatsUploadAddressExtLow, stb_LogStatsUploadAddressMed,
+                                                    stb_LogStatsUploadUserName, stb_LogStatsUploadPassword,
+                                                    stb_LogStatsUploadFilenameLow, stb_MissionServer_LogStatsUploadFilenameLow, stb_LogStatsUploadFilenameDeadPilotsLow,
+                                                    stb_LogStatsUploadFilenameTeamLow, stb_LogStatsUploadFilenameTeamPrevLow,
+                                                    stb_ResetPlayerStatsWhenKilled, stb_NoRankMessages, stb_NoRankTracking, stb_PlayerTimeoutWhenKilled, stb_PlayerTimeoutWhenKilledDuration_hours
+                                                    );
+            stb_IStatRecorder = stb_StatRecorder as IStbStatRecorder;
+            stb_IStatRecorder = stb_StatRecorder as IStbStatRecorder;
+            //stb_ISaveIPlayerStat = stb_SaveIPlayerStat;
+
+
+
+            stb_ContinueMissionRecorder = new StbContinueMissionRecorder(this, stb_LogErrors, stb_ErrorLogPath);
+            stb_RankToAllowedAircraft = new StbRankToAllowedAircraft(this, stb_LogErrors, stb_ErrorLogPath);
+            stb_SaveIPlayerStat = new StbSaveIPlayerStat(this, stb_LogErrors, stb_ErrorLogPath);
+            stb_ISaveIPlayerStat = stb_SaveIPlayerStat as IStbSaveIPlayerStat;
+            //stb_ISaveIPlayerStat = stb_SaveIPlayerStat;
+
+            stb_AircraftParamStack = new StbAircraftParamStack(this);
+
+            //stb_KilledActors = new KilledActorsWrapper(); // keeps track of all damage to actor & which actor did it, so it can be compiled for stats purposes later
+
+            if (stb_SpawnAntiAir) { Stb_SpawnAntiAirRecursive(); }
+            if (stb_SpawnFrontline1) { Stb_SpawnFrontline1Recursive(); }
+            if (stb_SpawnFrontline2) { Stb_SpawnFrontline2Recursive(); }
+            if (stb_SpawnFrontline3) { Stb_SpawnFrontline3Recursive(); }
+            if (stb_SpawnFrontline4) { Stb_SpawnFrontline4Recursive(); }
+            if (stb_SpawnBombers) { Stb_SpawnBombersRecursive(); }
+            if (stb_LogStats) { Stb_LogStatsRecursive(); }
+            if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive(); }
+            SetAirfieldTargets();
+
+            //put all aircraft in the air at start of mission into AIAircraftList - we use 
+            //this to detect if people have jumped into AI aircraft, and we pick up the rest vis onactorcreated
+            AIAircraftList.UnionWith(Stb_returnListAllAIAircraft());
+
+            Stb_RemoveOffMapPlayers_recurs();
+            Stb_changeTargetToDifferentNearbyAircraft_recurs();
+
+            Console.WriteLine("-stats.cs successfully loaded");
 
 
         }
-        public override void OnBattleStoped()
-        {
-            #region
-            base.OnBattleStoped();
 
-            Console.WriteLine("Stats-OnBattleStoped1");
+
+
+    }
+
+    void Mission_EventChat(Player from, string msg)
+    {
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
+
+        Player player = from as Player;
+        AiAircraft aircraft = null;
+        if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+
+        string msg_orig = msg;
+        msg = msg.ToLower();
+        //Stb_Message(null, "Stats msg recvd.", null);
+        if (msg.StartsWith("<deban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Stb_Message(new Player[] { player }, "Pilot restriction after death removed until end of mission.", new object[] { });
+            stb_PlayerTimeoutWhenKilled = false;
+            stb_StatRecorder.StbSr_Deban();
+        }
+        else if (msg.StartsWith("<reban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Stb_Message(new Player[] { player }, "Pilot restriction after death restored.", new object[] { });
+            stb_PlayerTimeoutWhenKilled = true;
+            stb_StatRecorder.StbSr_Reban();
+        }
+        if (msg.StartsWith("<training") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Stb_Message(new Player[] { player }, "Pilot timeout after death, aircraft restrictions by rank, stats removed until end of mission.", new object[] { });
+            stb_PlayerTimeoutWhenKilled = false;
+            stb_StatRecorder.StbSr_Deban();
+            stb_restrictAircraftByRank = false;
+            stb_LogStats = false;
+            stb_StatRecorder.StbSr_LogStats_off();
+        }
+        if (msg.StartsWith("<untraining") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Stb_Message(new Player[] { player }, "Pilot timeout after death, aircraft restrictions by rank, stats turned on again.", new object[] { });
+            stb_PlayerTimeoutWhenKilled = true;
+            stb_StatRecorder.StbSr_Reban();
+            stb_restrictAircraftByRank = true;
+            stb_LogStats = true;
+            stb_StatRecorder.StbSr_LogStats_on();
+        }
+        else if (msg.StartsWith("<lista") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+            int cnt = 0;
+            //string acEnter = Substring
+            string acEnter_str = "";
+            if (msg.Length >= 7) acEnter_str = msg.Substring(7);
+            int acEnter = -1;
 
             try
             {
-                //Get list of all players, then send them to StbCmr_SavePositionLeave
-                //We don't want ot actually send them to OnPlaceLeave because that may kill them etc depending on where
-                //they are. This will just close out their stats without any chance of killing etc.
-                List<Player> Players = new List<Player>();
+                acEnter = Convert.ToInt32(acEnter_str);
+            }
 
-                // Multiplayer
-                if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+            catch (Exception ex) //anything else
+            {
+                acEnter = -1;
+            }
+
+            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            {
+                foreach (int army in GamePlay.gpArmies())
                 {
-                    foreach (Player p in GamePlay.gpRemotePlayers())
+                    //List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
+                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                     {
-
-                        Players.Add(p);
-                    }
-                }
-                /*
-                //Singleplayer or Dedi Server
-                if (GamePlay.gpPlayer() != null)
-                {
-
-                    Players.Add(GamePlay.gpPlayer());
-                } 
-                */
-                if (Players != null && Players.Count > 0)
-                {
-
-                    foreach (Player player in Players)
-                    {
-                        stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
-
-                        //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
-                        //we can do this multiple times per aircraft bec. only the first one counts, but we're still going to save by only doing it for the first position encountered
-                        AiActor actor = player.Place();
-                        if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                    }
-                }
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
-
-            Console.WriteLine("Stats-OnBattleStoped2");
-            //More cleanup    
-            try
-            {
-                Stb_destroyAllAIAircraft();
-
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
-            //OK, any aircraft that were previously called via onAircraftKilled, if we haven't given credit for them yet via onActorDead, we will do it now @ the end.
-
-            Console.WriteLine("Stats-OnBattleStoped3");
-
-            try
-            {
-                foreach (string aname in stb_aircraftKilled)
-                {
-                    //if (stb_Debug) Console.WriteLine("This a/c was killed but wasn't registered earlier: " + aname);
-                    AiActor actor = GamePlay.gpActorByName(aname);
-                    if (actor as AiAircraft != null) Stb_KillACNowIfInAircraftKilled(actor as AiAircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
-                }
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR2: " + ex.ToString()); }
-
-            Console.WriteLine("Stats-OnBattleStoped4");
-
-            try
-            {
-                foreach (string aname in stb_deadActors)
-                {
-                    if (stb_Debug) Console.WriteLine("Actor killed this battle: " + aname);
-                }
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR3: " + ex.ToString()); }
-
-            Console.WriteLine("Stats-OnBattleStoped5");
-
-            try
-            {
-                if (GamePlay is GameDef)
-                {
-                    //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-                    (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
-                    //If we don't remove the new EventChat when the battle is stopped
-                    //we tend to get several copies of it operating, if we're not careful
-
-
-                }
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR4: " + ex.ToString()); }
-
-            Console.WriteLine("Stats-OnBattleStoped6");
-
-            try
-            {
-                stb_SaveIPlayerStat.StbSis_SaveAll(); //Save the stats CloD has been accumulating. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
-                if (stb_LogStats)
-                {
-                    Console.WriteLine("OnBattleStoped - saving stats");
-                    StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 0, 1, 0 }); //2nd entry "1" means final save of the mission
-                    stb_StatRecorder.StbSr_EnqueueTask(sst);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
-
-            Console.WriteLine("Stats-OnBattleStoped7");
-
-            try
-            {
-                stb_StatRecorder.StbSr_FinishWaitingTasks(); //THIS CLOSES THE SECOND THREAD SO STATS WON'T WORK AT ALL AFTER THIS IS CALLED!!!
-
-            }
-            catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR: " + ex.ToString()); } //Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
-
-            Console.WriteLine("Stats-OnBattleStoped8");
-
-            #endregion
-        }
-
-        public ISupplyMission TWCSupplyMission;
-        int stb_lastMissionLoaded = -1;
-        public override void OnMissionLoaded(int missionNumber)
-        {
-            #region stb
-            base.OnMissionLoaded(missionNumber);
-
-            //TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
-
-            //AMission TWCMainMission;
-            //IStatsMission TWCStatsMission;
-
-            //TWCMainMission = TWCComms.Communicator.Instance.Main;
-            TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
-            //Console.WriteLine("GetType15: " + (TWCStatsMission.GetType().ToString()));
-            //Console.WriteLine("GetType16: " + TWCStatsMission.stb_ServerName_Public);
-            //Console.WriteLine("GetType17: ");
-            //TWCStatsMission.Inited();
-            //Console.WriteLine("GetType18: ");
-            //TWCMainMission.Inited();
-            //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
-            //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
-
-
-            stb_MissionsCount++;
-            stb_lastMissionLoaded = missionNumber;
-            #endregion
-            //add your code here
-
-            if (missionNumber == MissionNumber)
-            {
-                //Display any error messages that occured while reading the .ini file
-                //Wait a while to do it because usually nobody is on right @ the beginning to even see it.  It displays right away in the console anyway.
-                //if (stb_iniFileErrorMessages != null && stb_iniFileErrorMessages.Length > 0) Timeout(240, () => { Stb_Message(null, stb_iniFileErrorMessages, null); });             
-
-                //Escort21.coord.Communicate coms = new Escort21.coord.Communicate();
-
-                //Console.WriteLine("STATS: " + Communicate.test.ToString());
-                string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
-                stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"            
-                TWCComms.Communicator.Instance.stb_FullPath = stb_FullPath;
-                stb_ErrorLogPath = stb_FullPath + stb_ErrorLogPath;
-                stb_StatsPathTxt = stb_FullPath + stb_StatsPathTxt;
-                stb_StatsPathHtmlLow = stb_FullPath + stb_StatsPathHtmlLow;
-                Stb_LoadAntiAirDraftToMemory();
-                Stb_LoadFrontline1DraftToMemory();
-                Stb_LoadFrontline2DraftToMemory();
-                Stb_LoadFrontline3DraftToMemory();
-                Stb_LoadFrontline4DraftToMemory();
-                Stb_LoadBombers1DraftToMemory();
-                Stb_LoadBombers2DraftToMemory();
-                stb_StatRecorder = new StbStatRecorder(this, stb_LogStats, stb_LogStatsCreateHtmlLow, stb_LogStatsCreateHtmlMed, stb_StatsPathTxt,
-                                                        stb_LogErrors, stb_ErrorLogPath, stb_StatsPathHtmlLow, stb_StatsPathHtmlExtLow, stb_StatsPathHtmlMed,
-                                                        stb_LogStatsUploadHtmlLow, stb_LogStatsUploadHtmlMed,
-                                                        stb_LogStatsUploadAddressLow, stb_LogStatsUploadAddressExtLow, stb_LogStatsUploadAddressMed,
-                                                        stb_LogStatsUploadUserName, stb_LogStatsUploadPassword,
-                                                        stb_LogStatsUploadFilenameLow, stb_MissionServer_LogStatsUploadFilenameLow, stb_LogStatsUploadFilenameDeadPilotsLow,
-                                                        stb_LogStatsUploadFilenameTeamLow, stb_LogStatsUploadFilenameTeamPrevLow,
-                                                        stb_ResetPlayerStatsWhenKilled, stb_NoRankMessages, stb_NoRankTracking, stb_PlayerTimeoutWhenKilled, stb_PlayerTimeoutWhenKilledDuration_hours
-                                                        );
-                stb_IStatRecorder = stb_StatRecorder as IStbStatRecorder;
-                stb_IStatRecorder = stb_StatRecorder as IStbStatRecorder;
-                //stb_ISaveIPlayerStat = stb_SaveIPlayerStat;
-
-
-
-                stb_ContinueMissionRecorder = new StbContinueMissionRecorder(this, stb_LogErrors, stb_ErrorLogPath);
-                stb_RankToAllowedAircraft = new StbRankToAllowedAircraft(this, stb_LogErrors, stb_ErrorLogPath);
-                stb_SaveIPlayerStat = new StbSaveIPlayerStat(this, stb_LogErrors, stb_ErrorLogPath);
-                stb_ISaveIPlayerStat = stb_SaveIPlayerStat as IStbSaveIPlayerStat;
-                //stb_ISaveIPlayerStat = stb_SaveIPlayerStat;
-
-                stb_AircraftParamStack = new StbAircraftParamStack(this);
-
-                //stb_KilledActors = new KilledActorsWrapper(); // keeps track of all damage to actor & which actor did it, so it can be compiled for stats purposes later
-
-                if (stb_SpawnAntiAir) { Stb_SpawnAntiAirRecursive(); }
-                if (stb_SpawnFrontline1) { Stb_SpawnFrontline1Recursive(); }
-                if (stb_SpawnFrontline2) { Stb_SpawnFrontline2Recursive(); }
-                if (stb_SpawnFrontline3) { Stb_SpawnFrontline3Recursive(); }
-                if (stb_SpawnFrontline4) { Stb_SpawnFrontline4Recursive(); }
-                if (stb_SpawnBombers) { Stb_SpawnBombersRecursive(); }
-                if (stb_LogStats) { Stb_LogStatsRecursive(); }
-                if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive(); }
-                SetAirfieldTargets();
-
-                //put all aircraft in the air at start of mission into AIAircraftList - we use 
-                //this to detect if people have jumped into AI aircraft, and we pick up the rest vis onactorcreated
-                AIAircraftList.UnionWith(Stb_returnListAllAIAircraft());
-
-                //  Stb_RemoveOffMapPlayers_recurs();
-                Stb_changeTargetToDifferentNearbyAircraft_recurs();
-
-                Console.WriteLine("-stats.cs successfully loaded");
-
-
-            }
-
-
-
-        }
-
-        void Mission_EventChat(Player from, string msg)
-        {
-            if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
-
-            Player player = from as Player;
-            AiAircraft aircraft = null;
-            if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
-
-            string msg_orig = msg;
-            msg = msg.ToLower();
-            //Stb_Message(null, "Stats msg recvd.", null);
-            if (msg.StartsWith("<deban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "Pilot restriction after death removed until end of mission.", new object[] { });
-                stb_PlayerTimeoutWhenKilled = false;
-                stb_StatRecorder.StbSr_Deban();
-            }
-            else if (msg.StartsWith("<reban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "Pilot restriction after death restored.", new object[] { });
-                stb_PlayerTimeoutWhenKilled = true;
-                stb_StatRecorder.StbSr_Reban();
-            }
-            if (msg.StartsWith("<training") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "Pilot timeout after death, aircraft restrictions by rank, stats removed until end of mission.", new object[] { });
-                stb_PlayerTimeoutWhenKilled = false;
-                stb_StatRecorder.StbSr_Deban();
-                stb_restrictAircraftByRank = false;
-                stb_LogStats = false;
-                stb_StatRecorder.StbSr_LogStats_off();
-            }
-            if (msg.StartsWith("<untraining") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "Pilot timeout after death, aircraft restrictions by rank, stats turned on again.", new object[] { });
-                stb_PlayerTimeoutWhenKilled = true;
-                stb_StatRecorder.StbSr_Reban();
-                stb_restrictAircraftByRank = true;
-                stb_LogStats = true;
-                stb_StatRecorder.StbSr_LogStats_on();
-            }
-            else if (msg.StartsWith("<lista") && player.Name().Substring(0, 4) == @"TWC_")
-            {
-                int cnt = 0;
-                //string acEnter = Substring
-                string acEnter_str = "";
-                if (msg.Length >= 7) acEnter_str = msg.Substring(7);
-                int acEnter = -1;
-
-                try
-                {
-                    acEnter = Convert.ToInt32(acEnter_str);
-                }
-
-                catch (Exception ex) //anything else
-                {
-                    acEnter = -1;
-                }
-
-                if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-                {
-                    foreach (int army in GamePlay.gpArmies())
-                    {
-                        //List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
-                        if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+
+                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                             {
 
-                                if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                                foreach (AiActor actor in airGroup.GetItems())
                                 {
 
-                                    foreach (AiActor actor in airGroup.GetItems())
+                                    if (actor is AiAircraft)
                                     {
-
-                                        if (actor is AiAircraft)
-                                        {
-                                            cnt++;
-                                            if (acEnter < 0) Stb_Message(new Player[] { player }, cnt.ToString() + ": " + actor.Name() + " " + StatCalcs.GetAircraftType(actor as AiAircraft), new object[] { });
-                                            else if (acEnter == cnt) Stb_putPlayerIntoAircraftPosition(player, actor, 0);
-                                        }
+                                        cnt++;
+                                        if (acEnter < 0) Stb_Message(new Player[] { player }, cnt.ToString() + ": " + actor.Name() + " " + StatCalcs.GetAircraftType(actor as AiAircraft), new object[] { });
+                                        else if (acEnter == cnt) Stb_putPlayerIntoAircraftPosition(player, actor, 0);
                                     }
                                 }
                             }
                         }
                     }
                 }
-
-
-
             }
-            else if (msg.StartsWith("<ent") && player.Name().Substring(0, 4) == @"TWC_")
+
+
+
+        }
+        else if (msg.StartsWith("<ent") && player.Name().Substring(0, 4) == @"TWC_")
+        {
+
+            string name = msg.Substring(5);
+            AiActor actor = GamePlay.gpActorByName(name) as AiActor;
+            if (actor != null) gpLogServerAndLog(new Player[] { player }, "Moving to " + name, new object[] { });
+            else
             {
-
-                string name = msg.Substring(5);
-                AiActor actor = GamePlay.gpActorByName(name) as AiActor;
-                if (actor != null) gpLogServerAndLog(new Player[] { player }, "Moving to " + name, new object[] { });
-                else
-                {
-                    gpLogServerAndLog(new Player[] { player }, name + " not found.  Must have exact name as reported in right-click/View Aircraft-Ships-Misc", new object[] { });
-                    gpLogServerAndLog(new Player[] { player }, "with 'Show Object Names' selected.Example: '23:BoB_RAF_F_141Sqn_Early.000'", new object[] { });
-                }
-                Stb_putPlayerIntoAircraftPosition(player, actor, 0);
-
+                gpLogServerAndLog(new Player[] { player }, name + " not found.  Must have exact name as reported in right-click/View Aircraft-Ships-Misc", new object[] { });
+                gpLogServerAndLog(new Player[] { player }, "with 'Show Object Names' selected.Example: '23:BoB_RAF_F_141Sqn_Early.000'", new object[] { });
             }
-            if (msg.StartsWith("<listp") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+            Stb_putPlayerIntoAircraftPosition(player, actor, 0);
+
+        }
+        if (msg.StartsWith("<listp") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            //Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>> stb_PilotTypeRecordbyAC = new Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>>();
+
+            string msgl;
+
+            foreach (KeyValuePair<string, Dictionary<string, List<Tuple<string, string, double>>>> ACEntry in stb_PilotTypeRecordbyAC)
             {
-                //Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>> stb_PilotTypeRecordbyAC = new Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>>();
-
-                string msgl;
-
-                foreach (KeyValuePair<string, Dictionary<string, List<Tuple<string, string, double>>>> ACEntry in stb_PilotTypeRecordbyAC)
+                msgl = ACEntry.Key + ": ";
+                foreach (KeyValuePair<string, List<Tuple<string, string, double>>> PilotEntry in ACEntry.Value)
                 {
-                    msgl = ACEntry.Key + ": ";
-                    foreach (KeyValuePair<string, List<Tuple<string, string, double>>> PilotEntry in ACEntry.Value)
+                    msgl += PilotEntry.Key + ": ";
+                    foreach (Tuple<string, string, double> PosEntry in PilotEntry.Value)
                     {
-                        msgl += PilotEntry.Key + ": ";
-                        foreach (Tuple<string, string, double> PosEntry in PilotEntry.Value)
-                        {
-                            msgl += PosEntry.ToString() + " ";
-                        }
+                        msgl += PosEntry.ToString() + " ";
                     }
-                    Stb_Message(new Player[] { player }, msgl, new object[] { });
-
                 }
+                Stb_Message(new Player[] { player }, msgl, new object[] { });
 
             }
 
-            else if (msg.StartsWith("<car") || msg.StartsWith("<ran"))  //career, rank
+        }
+
+        else if (msg.StartsWith("<car") || msg.StartsWith("<ran"))  //career, rank
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
+            stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
+        }
+        else if (msg.StartsWith("<ses"))
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
+            stb_StatRecorder.StbSr_Display_SessionStats(player);
+        }
+        else if (msg.StartsWith("<net"))
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
+            stb_StatRecorder.StbSr_Display_SessionStatsAll(player, 0); //display "Netstats" summary of current session stats for all players to this player
+        }
+        else if (msg.StartsWith("<obj"))
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
+            stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
+        }
+
+        else if (msg.StartsWith("<ac")) //aircraft available
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game career info", null);
+            Display_AircraftAvailable_ByName(player, nextAC: false, display: true, html: false);
+            /*
+            if (!stb_restrictAircraftByRank && !stb_restrictAircraftByKills)
             {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
-                stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
+                Stb_Message(new Player[] { player }, "This server has no aircraft restriction by rank or ace level.  You have access to all available aircraft.", null);
+                return;
             }
-            else if (msg.StartsWith("<ses"))
+
+            if (stb_restrictAircraftByRank)
             {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
-                stb_StatRecorder.StbSr_Display_SessionStats(player);
-            }
-            else if (msg.StartsWith("<net"))
-            {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
-                stb_StatRecorder.StbSr_Display_SessionStatsAll(player, 0); //display "Netstats" summary of current session stats for all players to this player
-            }
-            else if (msg.StartsWith("<obj"))
-            {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game stats summaries", null);
-                stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
+                string message1 = "Currently unlocked aircraft for your rank, " + stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForRank(player);
+                Stb_Message(new Player[] { player }, message1, null);
             }
 
-            else if (msg.StartsWith("<ac")) //aircraft available
+
+
+            if (stb_restrictAircraftByKills)
+            Timeout(2.0, () =>
             {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game career info", null);
-                Display_AircraftAvailable_ByName(player, nextAC: false, display: true, html: false);
-                /*
-                if (!stb_restrictAircraftByRank && !stb_restrictAircraftByKills)
-                {
-                    Stb_Message(new Player[] { player }, "This server has no aircraft restriction by rank or ace level.  You have access to all available aircraft.", null);
-                    return;
-                }
+                string message2 = stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForAce(player);
+                if (message2 == "") message2 = "(none)";
+                Stb_Message(new Player[] { player }, "Unlocked aircraft for your number of kills: " + message2, null);
+            });
+            */
 
-                if (stb_restrictAircraftByRank)
-                {
-                    string message1 = "Currently unlocked aircraft for your rank, " + stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForRank(player);
-                    Stb_Message(new Player[] { player }, message1, null);
-                }
-
-
-
-                if (stb_restrictAircraftByKills)
-                Timeout(2.0, () =>
-                {
-                    string message2 = stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForAce(player);
-                    if (message2 == "") message2 = "(none)";
-                    Stb_Message(new Player[] { player }, "Unlocked aircraft for your number of kills: " + message2, null);
-                });
-                */
-
-            }
-            else if (msg.StartsWith("<nextac") || msg.StartsWith("<nex")) //aircraft available @ next promotion
-            {
-                Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game career info", null);
-                Display_AircraftAvailable_ByName(player, nextAC: true, display: true, html: false);
+        }
+        else if (msg.StartsWith("<nextac") || msg.StartsWith("<nex")) //aircraft available @ next promotion
+        {
+            Stb_Message(new Player[] { player }, ">>>Please use Tab-4 menu for in-game career info", null);
+            Display_AircraftAvailable_ByName(player, nextAC: true, display: true, html: false);
 
             /*
             if (!stb_restrictAircraftByRank && !stb_restrictAircraftByKills)
@@ -4773,3146 +4825,3148 @@ using TWCComms;
             });
             */
         }
-            else if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed && msg.StartsWith("<override"))
+        else if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed && msg.StartsWith("<override"))
+        {
+            string message4 = "Override: Flight restriction removed - you may proceed";
+            Stb_Message(new Player[] { player }, message4, null);
+            Timeout(2, () =>
             {
-                string message4 = "Override: Flight restriction removed - you may proceed";
-                Stb_Message(new Player[] { player }, message4, null);
-                Timeout(2, () =>
-                {
-                    string message5 = "Override: Note that any stats, damage, and kills will accrue to your old career for the duration of the flight restriction time.";
-                    Stb_Message(new Player[] { player }, message5, null);
-                });
-                Timeout(4, () =>
-                {
-                    string message6 = "Override: The override period lasts for 5 minutes. If you need another override after that you'll have to make a second request.";
-                    Stb_Message(new Player[] { player }, message6, null);
-                });
-                stb_StatRecorder.StbSr_PlayerTimedOutDueToDeath_override(player.Name());
+                string message5 = "Override: Note that any stats, damage, and kills will accrue to your old career for the duration of the flight restriction time.";
+                Stb_Message(new Player[] { player }, message5, null);
+            });
+            Timeout(4, () =>
+            {
+                string message6 = "Override: The override period lasts for 5 minutes. If you need another override after that you'll have to make a second request.";
+                Stb_Message(new Player[] { player }, message6, null);
+            });
+            stb_StatRecorder.StbSr_PlayerTimedOutDueToDeath_override(player.Name());
 
-            }
-            else if (msg.StartsWith("<air"))
+        }
+        else if (msg.StartsWith("<air"))
+        {
+            Timeout(0.2, () =>
             {
+                string msg6 = "Checking your position via radar to find nearest friendly airport . . . ";
+                Stb_Message(new Player[] { player }, msg6, null);
+            });
+
+            Timeout(12, () =>
+            {
+
+                    //double d = Stb_distanceToNearestAirport(aircraft as AiActor);
+
+                    AiAirport ap = Stb_nearestAirport(aircraft as AiActor, player.Army());
+                AiActor a = ap as AiActor;
+
+                Point3d aPos = a.Pos();
+                double distanceToAirport_m = aircraft.Pos().distance(ref aPos);
+                double bearing_deg = StatCalcs.CalculateGradientAngle(aircraft.Pos(), a.Pos());
+                double bearing_deg10 = StatCalcs.GetDegreesIn10Step(bearing_deg);
+                string dis_string = (distanceToAirport_m / 1000).ToString("N0") + " km ";
+                if (player.Army() == 1) dis_string = (StatCalcs.meters2miles(distanceToAirport_m)).ToString("N0") + " mi ";
+
+                string message6 = dis_string + bearing_deg10.ToString("N0") + "° to the nearest friendly airport";
+                if (distanceToAirport_m < 2500) message6 = "You are AT the nearest friendly airport";
+                if (distanceToAirport_m > 100000000) message6 = "Nearest friendly airport not found";
+                Stb_Message(new Player[] { player }, message6, null);
+
+            });
+
+        }
+        else if (msg.StartsWith("<ter"))
+        {
+            if (player.Army() != null && aircraft != null)
+            {
+
                 Timeout(0.2, () =>
                 {
-                    string msg6 = "Checking your position via radar to find nearest friendly airport . . . ";
+                    string msg6 = "Checking your position via radar . . . ";
                     Stb_Message(new Player[] { player }, msg6, null);
                 });
 
                 Timeout(12, () =>
-                {
-
-                //double d = Stb_distanceToNearestAirport(aircraft as AiActor);
-
-                AiAirport ap = Stb_nearestAirport(aircraft as AiActor, player.Army());
-                    AiActor a = ap as AiActor;
-
-                    Point3d aPos = a.Pos();
-                    double distanceToAirport_m = aircraft.Pos().distance(ref aPos);
-                    double bearing_deg = StatCalcs.CalculateGradientAngle(aircraft.Pos(), a.Pos());
-                    double bearing_deg10 = StatCalcs.GetDegreesIn10Step(bearing_deg);
-                    string dis_string = (distanceToAirport_m / 1000).ToString("N0") + " km ";
-                    if (player.Army() == 1) dis_string = (StatCalcs.meters2miles(distanceToAirport_m)).ToString("N0") + " mi ";
-
-                    string message6 = dis_string + bearing_deg10.ToString("N0") + "° to the nearest friendly airport";
-                    if (distanceToAirport_m < 2500) message6 = "You are AT the nearest friendly airport";
-                    if (distanceToAirport_m > 100000000) message6 = "Nearest friendly airport not found";
-                    Stb_Message(new Player[] { player }, message6, null);
-
-                });
-
-            }
-            else if (msg.StartsWith("<ter"))
-            {
-                if (player.Army() != null && aircraft != null)
-                {
-
-                    Timeout(0.2, () =>
                     {
-                        string msg6 = "Checking your position via radar . . . ";
+                        int terr = GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y);
+                        string msg6 = "You are in ENEMY territory";
+                        if (terr == 00) msg6 = "You are in NEUTRAL territory";
+                        if (player.Army() == terr) msg6 = "You are in FRIENDLY territory";
                         Stb_Message(new Player[] { player }, msg6, null);
                     });
 
-                    Timeout(12, () =>
-                        {
-                            int terr = GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y);
-                            string msg6 = "You are in ENEMY territory";
-                            if (terr == 00) msg6 = "You are in NEUTRAL territory";
-                            if (player.Army() == terr) msg6 = "You are in FRIENDLY territory";
-                            Stb_Message(new Player[] { player }, msg6, null);
-                        });
-
-                }
-            }
-            else if (msg.StartsWith("<rrhelp1")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "<rrHELP: <rrf forces 'fighter mode' which means NO BOMBS will be loaded. ", new object[] { });
-                Stb_Message(new Player[] { player }, "<rrHELP: <rr always loads bombs on a/c that can carry them, so <rrf is useful for 109E-1B, Ju-87, etc if you don't want the bombs loaded.", new object[] { });
-
-                Stb_Message(new Player[] { player }, "<rrHELP: <rrb forces 'bomber mode' which means BOMBS WILL be loaded if possible for the a/c.  Useful for 109E-1B, Ju-87, etc", new object[] { });
-                Stb_Message(new Player[] { player }, "<rrHELP: Combine commands: <rrf50 - <rrb25 - rrf100 - etc.", new object[] { });
-
-            }
-            else if (msg.StartsWith("<rrhelp")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                Stb_Message(new Player[] { player }, "<rrHELP: You can <rr at any friendly airfield, active or inactive.", new object[] { });
-                Stb_Message(new Player[] { player }, "<rrHELP: You can <rr ANY aircraft, bomber or fighter. Refuel, re-arm, but no repair. Damage will be checked/listed.", new object[] { });
-                Stb_Message(new Player[] { player }, "<rrHELP: <rr30 <rr50 <rr100 etc give fuel load 30%, 50%, 100% etc. Default for <rr is 100% for fighters and 30% for heavy bombers", new object[] { });
-                Stb_Message(new Player[] { player }, "<rrHELP: <rrhelp1 for more . . . ", new object[] { });
-            }
-            else if (msg.StartsWith("<rr")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                //Rearm/Refuel per Team Fusion CLOD 4.56 instructions
-
-                if (player.Place() == null || aircraft == null)
-                {
-                    Stb_Message(new Player[] { player }, "You must be in an aircraft to R&R.", new object[] { });
-                    return;
-                }
-
-                double distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
-                bool inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
-                // double I_EngineRPM = aircraft.getParameter(part.ParameterTypes.I_EngineRPM, -1); //for some reason this doesn't work so omitting it
-
-                //Make sure they are allowed to refuel/no movement/everything off
-                if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
-                        || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
-                        || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
-                        || StatCalcs.isMoving(GamePlay, player)
-                    )
-                {
-
-
-                    string ms = "You must be stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) before you can request refuel/rearm.";
-
-                    Stb_Message(new Player[] { player }, ms, new object[] { });
-                    return;
-                }
-                string acType = StatCalcs.GetAircraftType(aircraft);
-                if (acType.Contains("Blenheim"))
-                {
-                    Stb_Message(new Player[] { player }, "IMPORTANT!!!!!! Rearmed bombs in a Blenheim will NOT be armed and will NOT explode!!!!", new object[] { });
-                    Stb_Message(new Player[] { player }, "DO NOT TRY TO BOMB with a rearmed Blenheim!!!! IMPORTANT!!!!!!", new object[] { });
-                }
-
-                //parse the chat message
-                string msgTrim = msg_orig.Replace("<rr", "");
-                bool bGunsOnly = false;
-                string fighterbomber = "f";
-
-                if (msgTrim.StartsWith("b", true, null) || msgTrim.StartsWith("f", true, null)) //case insensitive match
-                {
-                    fighterbomber = msgTrim[0].ToString().ToLower(); //'f' or 'b' depending on whether fighter-only or bomber reload was chosen
-                    msgTrim = msgTrim.Substring(1);
-                    if (fighterbomber == "f") bGunsOnly = true;
-
-                }
-
-                string fuelStr = "";
-                //get the refuel percentage
-                if (msgTrim.Length > 0) fuelStr = msgTrim.Trim();
-                int fuel = 0;
-                try
-                {
-                    fuel = Convert.ToInt32(fuelStr);
-
-                    if (fuel < 0) fuel = 100;  //negative is not sensible, we're assuming it is just nonsense
-                    if (fuel > 100) fuel = 100; // We're allowing fuel=0 even though I can't imagine how this is useful to anyone
-                }
-                catch (Exception ex) //any problem with int32 conversion
-                {
-                    fuel = 0;
-                    //Console.WriteLine("Spawn: Using default value for fuel load, 100% or 30%");
-                }
-
-                //default is 30% for bombers/large a/c and 100% for fighters
-                if (fuel == 0)
-                {
-                    //string acType = Calcs.GetAircraftType(aircraft);
-                    //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
-                    //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs and doesn't need 100% fuel.
-                    //Also Beaufighter is in this category - needs just 30% fuel or less.
-                    if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim") || acType.Contains("Beaufighter"))
-                    {
-                        fuel = 30;
-                    }
-                    else
-                    {
-                        fuel = 100;
-                    }
-                }
-
-                double heading = aircraft.getParameter(part.ParameterTypes.Z_Orientation, 0);
-                double posX = aircraft.Pos().x;
-                double posY = aircraft.Pos().y;
-
-                //if (stb_Debug) Console.WriteLine("<RR PARSE RESULTS: fb: " + fighterbomber + " f: " + fuelStr);     
-                Console.WriteLine("<RR TRUCK CREATE: fb: " + aircraft.Pos().x + " " + aircraft.Pos().y + " " + heading);
-                List<string> truck_ids = StatCalcs.createTruck(GamePlay, posX, posY, heading);
-
-                Stb_Message(new Player[] { player }, "Refueling . . . ", new object[] { });
-                bool cancelled = false;
-
-                Timeout(15.05, () =>
-                {
-                //Make sure they are STILL allowed to refuel/no movement/everything off
-                if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
-                            || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
-                            || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
-                            || StatCalcs.isMoving(GamePlay, player)
-                        )
-                    {
-                        string ms = "CHANGES DETECTED - REFUEL/REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
-
-                        Stb_Message(new Player[] { player }, ms, new object[] { });
-                        StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
-                        aircraft.RefuelPlane(fuel / 4);  //they get 1/4 of the fuel 
-                    cancelled = true;
-                        return;
-                    }
-                    else //Only list damages if they are still refueling at this point
-                {
-                        StatCalcs.listDamages(GamePlay, player, true);
-                    }
-                });
-
-
-
-
-                //Refuel
-                Timeout(35.05, () =>
-                {
-                    if (cancelled) return;
-                    distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
-                    inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
-
-                //Make sure they are STILL allowed to refuel/no movement/everything off
-                if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
-                            || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
-                            || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
-                            || StatCalcs.isMoving(GamePlay, player)
-                        )
-                    {
-                        string ms = "CHANGES DETECTED - REFUEL/REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
-
-                        Stb_Message(new Player[] { player }, ms, new object[] { });
-                        cancelled = true;
-                        StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
-                        aircraft.RefuelPlane(fuel / 2);  //they get 1/2 of the fuel
-                    return;
-                    }
-                    try
-                    {
-
-                        aircraft.RefuelPlane(fuel);
-                    //Stb_Message(new Player[] { player }, "Refueling complete.", new object[] { });
-                    Stb_Message(new Player[] { player }, "Refueling complete.  Rearming . . . ", new object[] { });
-                    }
-                    catch (Exception e) { }
-                });
-
-
-
-                Timeout(50.05, () =>
-                {
-                    if (cancelled) return;
-                //Make sure they are STILL allowed to refuel/no movement/everything off
-                if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
-                            || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
-                            || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
-                            || StatCalcs.isMoving(GamePlay, player)
-                        )
-                    {
-                        string ms = "CHANGES DETECTED - REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
-
-                        Stb_Message(new Player[] { player }, ms, new object[] { });
-                        cancelled = true;
-                        StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
-                        return;
-                    }
-                    Stb_Message(new Player[] { player }, "Rearming . . . ", new object[] { });
-                });
-
-                if (cancelled) return;
-
-                //Rearm
-                Timeout(65.05, () =>
-                {
-                    if (cancelled) return;
-                    distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
-                    inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
-
-                //Make sure they are STILL allowed to refuel/no movement/everything off
-                if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
-                            || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
-                            || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
-                            || StatCalcs.isMoving(GamePlay, player)
-                        )
-                    {
-                        string ms = "CHANGES DETECTED - REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
-
-                        Stb_Message(new Player[] { player }, ms, new object[] { });
-                        cancelled = true;
-                        StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
-                        return;
-                    }
-                    try
-                    {
-
-                        aircraft.RearmPlane(bGunsOnly);
-                        Stb_Message(new Player[] { player }, "Refuel & rearm completed. You may start your engine and proceed.", new object[] { });
-                    }
-                    catch (Exception e) { }
-                });
-
-                //We makes this separate so the truck is definitely destroyed, even if something goes awry above
-                Timeout(67.05, () =>
-                {
-                    StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
-                });
-
-            }
-            else if (msg.StartsWith("<put") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-
-                string newACActorName = msg_orig.Replace("<put ", "");
-                gpLogServerAndLog(new Player[] { player }, "Put: Putting you into " + newACActorName, new object[] { });
-                AiActor newActor = GamePlay.gpActorByName(newACActorName);
-                player.PlaceEnter(newActor, 0);
-            }
-            else if (msg.StartsWith("<land") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-
-                OnAircraftLanded(player.Place() as AiActor, player, player.Place() as AiAircraft, 0);
-            }
-            else if (msg.StartsWith("<admin") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
-            {
-                double to = 2; //make sure this comes AFTER the main mission <admin listing
-                Timeout(to, () => { gpLogServerAndLog(new Player[] { player }, "<training <untraining remove/return special server features (rank, death timeout, stats) <deban <reban temporarily turn off/on the pilot ban after death <lista or <lista 13 Get a list of current a/c in game OR enter the specified a/c", new object[] { }); });
-
-
-            }
-            else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
-            {
-                double to = 1; //make sure this comes AFTER the main mission <help listing, or WAY after if it is responding to the "<"
-                if (!msg.StartsWith("<help")) to = 5;
-
-                string msg41 = "<rr Get new a/c; <rrhelp Help for <rr; Use Tab-4 menu for various stats summaries";
-                if (stb_restrictAircraftByRank)
-                {
-                    msg41 += "; <ac check available aircraft at your current rank; <nex list aircraft you can unlock at next promotion";
-                }
-
-                Timeout(to, () => { gpLogServerAndLog(new Player[] { player }, msg41, new object[] { }); });
-                //GamePlay.gp(, from);
             }
         }
-
-
-        /***************************************************************
-         * PENALTIES FOR BOMBS DROPPED ON CIVILIAN AREAS
-         *
-         * Handle bombs dropping on civilian areas
-         * We use two special static vehicles to mark civilian areas, then here we figure out if bombs have dropped close to them.
-         *   * Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above
-         *   * Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
-         * Then we assess various penalties (negative kill points, finally kicking out of a/c) if bombs are dropped on civilian areas
-         * 
-         * TODO: Rather than actually subtracting points from various kill totals, it might be smarter to keep a separate tally of various
-         * types of penalty points, them just subtract them out when calculating things like ace, rank, whatever.  Thus we would know how many actual kills plus how many penalties received
-         * rather than just having them lumped together in an undifferentiated way.
-         ****************************************************************/
-
-        Dictionary<string, Tuple<int, DateTime>> ot_CivilianBombings = new Dictionary<string, Tuple<int, DateTime>>();
-
-        public int ot_GetCivilianBombings(string name)
+        else if (msg.StartsWith("<rrhelp1")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
         {
-            Tuple<int, DateTime> temp;
-            int infract = 0; //This is the default & will be recorded if this player is not found in the dictionary at all
-            if (ot_CivilianBombings.TryGetValue(name, out temp))
+            Stb_Message(new Player[] { player }, "<rrHELP: <rrf forces 'fighter mode' which means NO BOMBS will be loaded. ", new object[] { });
+            Stb_Message(new Player[] { player }, "<rrHELP: <rr always loads bombs on a/c that can carry them, so <rrf is useful for 109E-1B, Ju-87, etc if you don't want the bombs loaded.", new object[] { });
+
+            Stb_Message(new Player[] { player }, "<rrHELP: <rrb forces 'bomber mode' which means BOMBS WILL be loaded if possible for the a/c.  Useful for 109E-1B, Ju-87, etc", new object[] { });
+            Stb_Message(new Player[] { player }, "<rrHELP: Combine commands: <rrf50 - <rrb25 - rrf100 - etc.", new object[] { });
+
+        }
+        else if (msg.StartsWith("<rrhelp")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Stb_Message(new Player[] { player }, "<rrHELP: You can <rr at any friendly airfield, active or inactive.", new object[] { });
+            Stb_Message(new Player[] { player }, "<rrHELP: You can <rr ANY aircraft, bomber or fighter. Refuel, re-arm, but no repair. Damage will be checked/listed.", new object[] { });
+            Stb_Message(new Player[] { player }, "<rrHELP: <rr30 <rr50 <rr100 etc give fuel load 30%, 50%, 100% etc. Default for <rr is 100% for fighters and 30% for heavy bombers", new object[] { });
+            Stb_Message(new Player[] { player }, "<rrHELP: <rrhelp1 for more . . . ", new object[] { });
+        }
+        else if (msg.StartsWith("<rr")) // && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            //Rearm/Refuel per Team Fusion CLOD 4.56 instructions
+
+            if (player.Place() == null || aircraft == null)
+            {
+                Stb_Message(new Player[] { player }, "You must be in an aircraft to R&R.", new object[] { });
+                return;
+            }
+
+            double distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
+            bool inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
+            // double I_EngineRPM = aircraft.getParameter(part.ParameterTypes.I_EngineRPM, -1); //for some reason this doesn't work so omitting it
+
+            //Make sure they are allowed to refuel/no movement/everything off
+            if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
+                    || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
+                    || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
+                    || StatCalcs.isMoving(GamePlay, player)
+                )
+            {
+
+
+                string ms = "You must be stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) before you can request refuel/rearm.";
+
+                Stb_Message(new Player[] { player }, ms, new object[] { });
+                return;
+            }
+            string acType = StatCalcs.GetAircraftType(aircraft);
+            if (acType.Contains("Blenheim"))
+            {
+                Stb_Message(new Player[] { player }, "IMPORTANT!!!!!! Rearmed bombs in a Blenheim will NOT be armed and will NOT explode!!!!", new object[] { });
+                Stb_Message(new Player[] { player }, "DO NOT TRY TO BOMB with a rearmed Blenheim!!!! IMPORTANT!!!!!!", new object[] { });
+            }
+
+            //parse the chat message
+            string msgTrim = msg_orig.Replace("<rr", "");
+            bool bGunsOnly = false;
+            string fighterbomber = "f";
+
+            if (msgTrim.StartsWith("b", true, null) || msgTrim.StartsWith("f", true, null)) //case insensitive match
+            {
+                fighterbomber = msgTrim[0].ToString().ToLower(); //'f' or 'b' depending on whether fighter-only or bomber reload was chosen
+                msgTrim = msgTrim.Substring(1);
+                if (fighterbomber == "f") bGunsOnly = true;
+
+            }
+
+            string fuelStr = "";
+            //get the refuel percentage
+            if (msgTrim.Length > 0) fuelStr = msgTrim.Trim();
+            int fuel = 0;
+            try
+            {
+                fuel = Convert.ToInt32(fuelStr);
+
+                if (fuel < 0) fuel = 100;  //negative is not sensible, we're assuming it is just nonsense
+                if (fuel > 100) fuel = 100; // We're allowing fuel=0 even though I can't imagine how this is useful to anyone
+            }
+            catch (Exception ex) //any problem with int32 conversion
+            {
+                fuel = 0;
+                //Console.WriteLine("Spawn: Using default value for fuel load, 100% or 30%");
+            }
+
+            //default is 30% for bombers/large a/c and 100% for fighters
+            if (fuel == 0)
+            {
+                //string acType = Calcs.GetAircraftType(aircraft);
+                //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
+                //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs and doesn't need 100% fuel.
+                //Also Beaufighter is in this category - needs just 30% fuel or less.
+                if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim") || acType.Contains("Beaufighter"))
+                {
+                    fuel = 30;
+                }
+                else
+                {
+                    fuel = 100;
+                }
+            }
+
+            double heading = aircraft.getParameter(part.ParameterTypes.Z_Orientation, 0);
+            double posX = aircraft.Pos().x;
+            double posY = aircraft.Pos().y;
+
+            //if (stb_Debug) Console.WriteLine("<RR PARSE RESULTS: fb: " + fighterbomber + " f: " + fuelStr);     
+            Console.WriteLine("<RR TRUCK CREATE: fb: " + aircraft.Pos().x + " " + aircraft.Pos().y + " " + heading);
+            List<string> truck_ids = StatCalcs.createTruck(GamePlay, posX, posY, heading);
+
+            Stb_Message(new Player[] { player }, "Refueling . . . ", new object[] { });
+            bool cancelled = false;
+
+            Timeout(15.05, () =>
+            {
+                    //Make sure they are STILL allowed to refuel/no movement/everything off
+                    if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
+                                || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
+                                || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
+                                || StatCalcs.isMoving(GamePlay, player)
+                            )
+                {
+                    string ms = "CHANGES DETECTED - REFUEL/REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
+
+                    Stb_Message(new Player[] { player }, ms, new object[] { });
+                    StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
+                    aircraft.RefuelPlane(fuel / 4);  //they get 1/4 of the fuel 
+                    cancelled = true;
+                    return;
+                }
+                else //Only list damages if they are still refueling at this point
+                {
+                    StatCalcs.listDamages(GamePlay, player, true);
+                }
+            });
+
+
+
+
+            //Refuel
+            Timeout(35.05, () =>
+            {
+                if (cancelled) return;
+                distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
+                inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
+
+                    //Make sure they are STILL allowed to refuel/no movement/everything off
+                    if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
+                                || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
+                                || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
+                                || StatCalcs.isMoving(GamePlay, player)
+                            )
+                {
+                    string ms = "CHANGES DETECTED - REFUEL/REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
+
+                    Stb_Message(new Player[] { player }, ms, new object[] { });
+                    cancelled = true;
+                    StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
+                    aircraft.RefuelPlane(fuel / 2);  //they get 1/2 of the fuel
+                    return;
+                }
+                try
+                {
+
+                    aircraft.RefuelPlane(fuel);
+                        //Stb_Message(new Player[] { player }, "Refueling complete.", new object[] { });
+                        Stb_Message(new Player[] { player }, "Refueling complete.  Rearming . . . ", new object[] { });
+                }
+                catch (Exception e) { }
+            });
+
+
+
+            Timeout(50.05, () =>
+            {
+                if (cancelled) return;
+                    //Make sure they are STILL allowed to refuel/no movement/everything off
+                    if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
+                                || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
+                                || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
+                                || StatCalcs.isMoving(GamePlay, player)
+                            )
+                {
+                    string ms = "CHANGES DETECTED - REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
+
+                    Stb_Message(new Player[] { player }, ms, new object[] { });
+                    cancelled = true;
+                    StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
+                    return;
+                }
+                Stb_Message(new Player[] { player }, "Rearming . . . ", new object[] { });
+            });
+
+            if (cancelled) return;
+
+            //Rearm
+            Timeout(65.05, () =>
+            {
+                if (cancelled) return;
+                distToNearest = Stb_distanceToNearestAirport(aircraft as AiActor);
+                inFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y));
+
+                    //Make sure they are STILL allowed to refuel/no movement/everything off
+                    if (aircraft == null || !inFriendlyTerritory || distToNearest > 1750
+                                || !StatCalcs.hasClosedAllFuelCocks(GamePlay, player)
+                                || !StatCalcs.hasAllMagnetosOff(GamePlay, player)
+                                || StatCalcs.isMoving(GamePlay, player)
+                            )
+                {
+                    string ms = "CHANGES DETECTED - REARM CANCELLED. You must remain stopped, fuel cocks off, magnetos off, at or near a friendly airport (active or inactive) to complete refuel/rearm.";
+
+                    Stb_Message(new Player[] { player }, ms, new object[] { });
+                    cancelled = true;
+                    StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
+                    return;
+                }
+                try
+                {
+
+                    aircraft.RearmPlane(bGunsOnly);
+                    Stb_Message(new Player[] { player }, "Refuel & rearm completed. You may start your engine and proceed.", new object[] { });
+                }
+                catch (Exception e) { }
+            });
+
+            //We makes this separate so the truck is definitely destroyed, even if something goes awry above
+            Timeout(67.05, () =>
+            {
+                StatCalcs.destroyTruck(GamePlay, posX, posY, heading, truck_ids);
+            });
+
+        }
+        else if (msg.StartsWith("<put") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+
+            string newACActorName = msg_orig.Replace("<put ", "");
+            gpLogServerAndLog(new Player[] { player }, "Put: Putting you into " + newACActorName, new object[] { });
+            AiActor newActor = GamePlay.gpActorByName(newACActorName);
+            player.PlaceEnter(newActor, 0);
+        }
+        else if (msg.StartsWith("<land") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+
+            OnAircraftLanded(player.Place() as AiActor, player, player.Place() as AiAircraft, 0);
+        }
+        else if (msg.StartsWith("<admin") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            double to = 2; //make sure this comes AFTER the main mission <admin listing
+            Timeout(to, () => { gpLogServerAndLog(new Player[] { player }, "<training <untraining remove/return special server features (rank, death timeout, stats) <deban <reban temporarily turn off/on the pilot ban after death <lista or <lista 13 Get a list of current a/c in game OR enter the specified a/c", new object[] { }); });
+
+
+        }
+        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
+        {
+            double to = 1; //make sure this comes AFTER the main mission <help listing, or WAY after if it is responding to the "<"
+            if (!msg.StartsWith("<help")) to = 5;
+
+            string msg41 = "<rr Get new a/c; <rrhelp Help for <rr; Use Tab-4 menu for various stats summaries";
+            if (stb_restrictAircraftByRank)
+            {
+                msg41 += "; <ac check available aircraft at your current rank; <nex list aircraft you can unlock at next promotion";
+            }
+
+            Timeout(to, () => { gpLogServerAndLog(new Player[] { player }, msg41, new object[] { }); });
+            //GamePlay.gp(, from);
+        }
+    }
+
+
+    /***************************************************************
+     * PENALTIES FOR BOMBS DROPPED ON CIVILIAN AREAS
+     *
+     * Handle bombs dropping on civilian areas
+     * We use two special static vehicles to mark civilian areas, then here we figure out if bombs have dropped close to them.
+     *   * Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above
+     *   * Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
+     * Then we assess various penalties (negative kill points, finally kicking out of a/c) if bombs are dropped on civilian areas
+     * 
+     * TODO: Rather than actually subtracting points from various kill totals, it might be smarter to keep a separate tally of various
+     * types of penalty points, them just subtract them out when calculating things like ace, rank, whatever.  Thus we would know how many actual kills plus how many penalties received
+     * rather than just having them lumped together in an undifferentiated way.
+     ****************************************************************/
+
+    Dictionary<string, Tuple<int, DateTime>> ot_CivilianBombings = new Dictionary<string, Tuple<int, DateTime>>();
+
+    public int ot_GetCivilianBombings(string name)
+    {
+        Tuple<int, DateTime> temp;
+        int infract = 0; //This is the default & will be recorded if this player is not found in the dictionary at all
+        if (ot_CivilianBombings.TryGetValue(name, out temp))
+        {
+            infract = temp.Item1;  //Still within the delay time, so we leave the infraction count unchanged
+                                   //We also leave the time since last infraction unchanged (rather than changing it to 'now')
+        }
+
+        return infract;
+
+    }
+
+    //Records a civilian bombing infraction for a player, but only if this is a new infraction happening
+    //after a delay time specified below, and returns the number of infractions
+    //recorded for that player so far
+    //The idea is that one 'salvo' of bombs dropped rather close together in time only counts as one
+    //'infraction' for that player.
+    public int ot_IncCivilianBombings(string name)
+    {
+
+        Tuple<int, DateTime> temp;
+        int infract = 1; //This is the default & will be recorded if this player is not found in the dictionary at all
+        DateTime now = DateTime.Now;
+        DateTime newtime = now;
+
+        if (ot_CivilianBombings.TryGetValue(name, out temp))
+        {
+
+            double delay_sec = 5; //time to wait before a new infraction can be recorded
+            newtime = temp.Item2;  //We retain the time of last infraction unless we determine below that this is a new infraction
+
+
+            if (DateTime.Compare(now, temp.Item2.AddSeconds(delay_sec)) > 0)  //Is current time later than the most recent recorded infraction plus delay_sec
+            {
+
+                infract = temp.Item1 + 1; //Longer than the delay time, so we increment the infraction count
+                newtime = now; //New infraction, so we start counting time from this moment again
+            }
+            else
             {
                 infract = temp.Item1;  //Still within the delay time, so we leave the infraction count unchanged
                                        //We also leave the time since last infraction unchanged (rather than changing it to 'now')
             }
 
-            return infract;
-
         }
 
-        //Records a civilian bombing infraction for a player, but only if this is a new infraction happening
-        //after a delay time specified below, and returns the number of infractions
-        //recorded for that player so far
-        //The idea is that one 'salvo' of bombs dropped rather close together in time only counts as one
-        //'infraction' for that player.
-        public int ot_IncCivilianBombings(string name)
+        //GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { }); //just for testing
+
+        ot_CivilianBombings[name] = new Tuple<int, DateTime>(infract, newtime);
+        return infract;
+
+    }
+
+
+    //Hand out penalties for bombing civilian areas
+    //Basically no penalty for first salvo, after that there is a penalty of -1 kill points per bomb dropped on civilian areas
+    //After 4 infractions in one session the penalty doubles and after 8 infractions in one session it doubles again
+    //These negative kill points will have a bad effect on the player's rank, ace level, and also on the entire army's 
+    //point level as recorded by <obj.  Kill point totals can actually go negative for bad infractions.
+    //Also every 8 infractions the player is kicked out of the plane (usually results in player death/loss of career)
+    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg)
+    {
+        if (player == null) return;
+
+        int army = player.Army();
+        string playername = player.Name();
+        int prev_infractions = ot_GetCivilianBombings(playername);
+        int infractions = ot_IncCivilianBombings(playername);
+
+
+        /* string firetype = "BuildingFireSmall";
+        if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger */
+        string firetype = "BigSitySmoke_1";
+        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 1200, stb_FullPath);
+
+        double score = 0.5; //50 lb bomb; 22kg
+        if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
+
+
+        //GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
+        if (infractions == 1) //First infraction
         {
-
-            Tuple<int, DateTime> temp;
-            int infract = 1; //This is the default & will be recorded if this player is not found in the dictionary at all
-            DateTime now = DateTime.Now;
-            DateTime newtime = now;
-
-            if (ot_CivilianBombings.TryGetValue(name, out temp))
+            if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
-
-                double delay_sec = 5; //time to wait before a new infraction can be recorded
-                newtime = temp.Item2;  //We retain the time of last infraction unless we determine below that this is a new infraction
-
-
-                if (DateTime.Compare(now, temp.Item2.AddSeconds(delay_sec)) > 0)  //Is current time later than the most recent recorded infraction plus delay_sec
-                {
-
-                    infract = temp.Item1 + 1; //Longer than the delay time, so we increment the infraction count
-                    newtime = now; //New infraction, so we start counting time from this moment again
-                }
-                else
-                {
-                    infract = temp.Item1;  //Still within the delay time, so we leave the infraction count unchanged
-                                           //We also leave the time since last infraction unchanged (rather than changing it to 'now')
-                }
-
-            }
-
-            //GamePlay.gpLogServer(null, "Infractions for " + name + ": " + infract.ToString() + " " + newtime.ToString("O"), new object[] { }); //just for testing
-
-            ot_CivilianBombings[name] = new Tuple<int, DateTime>(infract, newtime);
-            return infract;
-
-        }
-
-
-        //Hand out penalties for bombing civilian areas
-        //Basically no penalty for first salvo, after that there is a penalty of -1 kill points per bomb dropped on civilian areas
-        //After 4 infractions in one session the penalty doubles and after 8 infractions in one session it doubles again
-        //These negative kill points will have a bad effect on the player's rank, ace level, and also on the entire army's 
-        //point level as recorded by <obj.  Kill point totals can actually go negative for bad infractions.
-        //Also every 8 infractions the player is kicked out of the plane (usually results in player death/loss of career)
-        public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg)
-        {
-            if (player == null) return;
-
-            int army = player.Army();
-            string playername = player.Name();
-            int prev_infractions = ot_GetCivilianBombings(playername);
-            int infractions = ot_IncCivilianBombings(playername);
-
-
-            /* string firetype = "BuildingFireSmall";
-            if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger */
-            string firetype = "BigSitySmoke_1";
-            loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 1200, stb_FullPath);
-
-            double score = 0.5; //50 lb bomb; 22kg
-            if (mass_kg > 0) score = 0.06303 * Math.Pow(mass_kg, 0.67);
-
-
-            //GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
-            if (infractions == 1) //First infraction
-            {
-                if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
-                {
-                    GamePlay.gpLogServer(null, "A civilian area has been bombed by " + playername + "! Penalties to you & your army.", new object[] { player });
-                    GamePlay.gpHUDLogCenter("Civilian area bombed by " + playername + "! Severe repercussions!!");
-                    stb_RecordStatsOnActorDead(initiator, 4, -.8, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-                    GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
-                }
-            }
-            else if (infractions > 0 && infractions > 8) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
-            {
-                if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
-                {
-                    GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + " despite sever warnings and penalties! You and your army have incurred very serious penalties.", new object[] { });
-                    GamePlay.gpHUDLogCenter("Civilian area bombed repeatedly by " + playername + " despite many warnings! Very serious penalties for player & army");
-                }
-                //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
-                //? Nothing here yet, needs to be added ?
-                stb_RecordStatsOnActorDead(initiator, 4, -4 * score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-                GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-4 * score).ToString("0.0") + " point penalty", new object[] { });
-
-            }
-            else if (infractions > 0 && infractions > 4) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
-            {
-                if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
-                {
-                    GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + " despite warnings! You and your army have incurred very serious penalties.", new object[] { });
-                    GamePlay.gpHUDLogCenter("Civilian area bombed repeatedly by " + playername + "! Serious penalties for player & army");
-
-                }
-                //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
-                //? Nothing here yet, needs to be added ?
-
-                stb_RecordStatsOnActorDead(initiator, 4, -2, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -2 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-                GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-2 * score).ToString("0.0") + " point penalty", new object[] { });
-
-            }
-
-            else //another infraction, more than 1 but less than 4
-            {
-                if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
-                {
-                    GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + "! Penalties become more severe.", new object[] { });
-                    GamePlay.gpHUDLogCenter("Civilian area bombed by " + playername + "! Player & army penalized");
-                }
-                //Do some actions to somewhat penalize the army.
-                //? Nothing here yet, needs to be added ?
-
-                stb_RecordStatsOnActorDead(initiator, 4, -1, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+                GamePlay.gpLogServer(null, "A civilian area has been bombed by " + playername + "! Penalties to you & your army.", new object[] { player });
+                GamePlay.gpHUDLogCenter("Civilian area bombed by " + playername + "! Severe repercussions!!");
+                stb_RecordStatsOnActorDead(initiator, 4, -.8, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
                 GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
             }
-
-
-            //After every new infraction we will actually FORCE the demotion that they have probably well earned by this point.
-            if (prev_infractions != infractions && infractions > 0)
+        }
+        else if (infractions > 0 && infractions > 8) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
+        {
+            if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
-                Timeout(2, () =>
-                {
-                    stb_StatRecorder.StbSr_Calc_AceAndRank_ByName(player.Name(), player.Place() as AiActor, false, player, true);
-                });
+                GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + " despite sever warnings and penalties! You and your army have incurred very serious penalties.", new object[] { });
+                GamePlay.gpHUDLogCenter("Civilian area bombed repeatedly by " + playername + " despite many warnings! Very serious penalties for player & army");
             }
-            //After every EIGHT infractions we will kick them out of the plane
-            if (prev_infractions != infractions && infractions > 0 && infractions % 8 == 0)
+            //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
+            //? Nothing here yet, needs to be added ?
+            stb_RecordStatsOnActorDead(initiator, 4, -4 * score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-4 * score).ToString("0.0") + " point penalty", new object[] { });
+
+        }
+        else if (infractions > 0 && infractions > 4) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
+        {
+            if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
-                Timeout(2, () =>
-                {
-                    GamePlay.gpLogServer(null, "Because of repeated bombing of civilian areas, and insubordination in disobeying orders to cease such bombing, " + playername
-                        + "'s co-pilot has ejected " + playername + " from the aircraft and assumed command.", new object[] { });
-
-                    string peHud_message = "Removed from command - repeated bombing of civilian areas & insubordination";
-                    GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null);
-                    Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
-                    Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
-                    if (player.Place() != null && player.Place() as AiAircraft != null) Stb_RemovePlayerFromAircraftandDestroy(player.Place() as AiAircraft, player, 1.0, 3.0);
-
-                });
-            }
-        }
-
-        /***************************************************************
-         * 
-         * Methods for Export
-         * 
-         * Methods that will be included in the CloDMissionCommunicator.dll so that they can be called directly in the -main.cs.
-         *  
-         * CloDMissionCommunicator.dll
-         * 
-         * **************************************************************/
-
-        public void Display_AceAndRank_ByName(Player player)
-        {
-            stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
-        }
-
-        //     string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false); //<ac
-        public string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false)
-        {
-            return stb_StatRecorder.StbSr_Display_AircraftAvailable_ByName(player, nextAC, display, html);
-        }
-
-        public void Display_SessionStats(Player player)
-        {
-            stb_StatRecorder.StbSr_Display_SessionStats(player);
-        }
-
-        public string Display_SessionStatsAll(Player player, int side = 0, bool display = true, bool html = true)
-        {
-            //Player player = null, int side = 0, bool display=true
-            return stb_StatRecorder.StbSr_Display_SessionStatsAll(player, side, display, html); //display "Netstats" summary of current session stats for all players to this player
-        }
-
-        //if player sent, displays message to the player, if player==null just return the string (html formatted with <br>)
-        public string Display_SessionStatsTeam(Player player)
-        {
-            return stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
-        }
-
-
-        /***************************************************************
-         * Handle Area Bombings
-         *
-         * "Live" areas for bombing, such as industrial or military areas.
-         * 
-         * We set up jerrycans to designate the bombable areas.  These are detected
-         * below in OnBombExplosion, then sent here to be handled.
-         * 
-         *    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
-         *    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
-         *    // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
-         *    // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
-         *    
-         *    // In MISSION BUILDER these show up as Environment Jerrycan, Environment Jerrycan x2, Environment Jerrycan x3, and Environment Jerrycan x5.
-         *    
-         *    //Do NOT use JerryCan_UK1_4-Gallon_X or any other jerry can - they will NOT register hits.
-         *    //In MISSION BUILDER these jerry cans that DO NOT REGISTER show up as Jerrycan 2-gallonxX or Jerrycan 4-gallonxX.
-         *    
-         *    Bombers receive points for bombing these areas (calculated below, depends on size of bomb etc)
-         *    Also each bomb is marked with a smoke plume.
-         *    
-         *    As of TF 4.2, 4.5, and 4.57 you can place jerrycans (stationaries) in any .mis or submission .mis file.  This will register them all.
-         *    This is in distinction to the built in CloD "triggers" which only pick up objects within the same .mis file, and then the trigger is only received by the corresponding .cs file (not necessarily -main.cs)
-         * 
-         ****************************************************************/
-
-
-        public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1, string targetType = "Ground Area", double multiplier = 1, double aircraftCorrection = 1, bool crater = false) //IsEnemy 0=friendly, 1 enemy, 2 neutral, crater = true places a crater instead of the smoke, useful for roads, railroads, etc
-        {
-            try
-            {
-                if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
-                string playername = "AI";
-                if (player != null) playername = player.Name();
-                //GamePlay.gpLogServer(new Player[] { player }, "Area bombing by " + playername + " " + mass_kg.ToString("n0") + "kg at " + pos.x.ToString("n0") + " " + pos.y.ToString("n0"), new object[] { });
-
-                //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-                //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-                // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-                //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-                //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-                //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-                //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-                //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-
-                //double scoreBase = 0.06303;
-                double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
-                                             //if (blenheim) scoreBase *= 4; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
-                scoreBase *= aircraftCorrection; //correcting for lower tonnage carried by Blenheim, HE111, etc
-                scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
-
-
-
-                if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
-                double score = scoreBase * Math.Pow(mass_kg, 0.67);
-
-                /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-                 * 
-                 * //Default is 0.5 points for ie 50 lb bomb
-                 * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-                if (mass_kg > 110) score = 1.41; //250 
-                if (mass_kg > 220) score = 2.33; //500
-                if (mass_kg > 440) score = 3.70; //1000
-                if (mass_kg > 880) score = 5.92; //2000
-                if (mass_kg > 1760) score = 9.33 ; //4000
-
-                 */
-
-                if (isEnemy == 0 || isEnemy == 2)
-                {
-                    score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                     //but, still helps destroy the objects/area (for your enemies) as usual
-                    GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
-
-                }
-
-                //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
-                ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
-
-                Timeout(0.4 + stb_random.NextDouble() * 25, () =>
-                {
-                    GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
-                }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
-
-
-                stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
-                                                                                          //TODO: More/less points depending on bomb tonnage.
-
-                //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-                // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-                string firetype = "BuildingFireSmall";
-                //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
-                if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
-
-
-                if (crater)
-                {
-                    firetype = "BombCrater_firmSoil_mediumkg";
-                    if (mass_kg > 100) firetype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                    if (mass_kg > 200) firetype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-                }
-
-                loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 20, stb_FullPath);
-                //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-                //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
+                GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + " despite warnings! You and your army have incurred very serious penalties.", new object[] { });
+                GamePlay.gpHUDLogCenter("Civilian area bombed repeatedly by " + playername + "! Serious penalties for player & army");
 
             }
-            catch (Exception ex) { Console.WriteLine("ot_Handleareabombings: " + ex.ToString()); }
+            //Do some actions penalize the army that has too many infractions by adding more objectives to their required amount or awarding an objective to their opponent (Own goal) or whatever you like
+            //? Nothing here yet, needs to be added ?
+
+            stb_RecordStatsOnActorDead(initiator, 4, -2, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -2 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-2 * score).ToString("0.0") + " point penalty", new object[] { });
 
         }
 
-        /************************************************************
-        * 
-        * handle airport bombing
-        * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
-        * 
-        * We give credit (points) for any bomb that hits within the radius of an airfield.
-        * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
-        * 
-        * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
-        * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
-        * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
-        * 
-        * //Version for -stats.cs//
-        *************************************************************/
-
-        public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
-        //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
-        //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
-
-        public void SetAirfieldTargets()
+        else //another infraction, more than 1 but less than 4
         {
-            foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
+            if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
+                GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + playername + "! Penalties become more severe.", new object[] { });
+                GamePlay.gpHUDLogCenter("Civilian area bombed by " + playername + "! Player & army penalized");
+            }
+            //Do some actions to somewhat penalize the army.
+            //? Nothing here yet, needs to be added ?
 
-                //We're just going to add ALL airfields as targets, but then make sure there are no duplicates (bec. built-in & .mis-added airports sometimes overlap).
-
-                //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
-
-                ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
-                //UPDATE 2017/11/06: We don't need this adjustment bec. we have adjusted the points received
-                //so that blenheims receive relatively more & the blue bombers relatively less.  So this 
-                //should handle the discrepancy between the sides with no further adjustment necessary
-                //int pointstoknockout = 30;
-                //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
-
-                ////Use this for MISSION SERVER  && TACTICAL SERVER 
-                int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
-
-                double radius = ap.FieldR();
-                Point3d center = ap.Pos();
+            stb_RecordStatsOnActorDead(initiator, 4, -1, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+            GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
+        }
 
 
-                //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
-                //most .mis airports are placed on top of an existing built-in airport. We check whether this airport has already been added & skip adding it if so.
-                Point3d pos = ap.Pos();
-                bool add = true;
-                foreach (AiAirport apk in AirfieldTargets.Keys)//Loop through the targets
-                {
-                    if (apk != null & apk.Pos().distance(ref pos) <= apk.FieldR())
-                    {
-                        //AirfieldTargets[apk].Item3
-                        add = false; //
-                        if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
-                        center = apk.Pos();  //We use the position of the airport set i nthe .mis file for the center, if it exists - thus we can change/move the center position as we wish
-                        break;
-                    }
-                }
+        //After every new infraction we will actually FORCE the demotion that they have probably well earned by this point.
+        if (prev_infractions != infractions && infractions > 0)
+        {
+            Timeout(2, () =>
+            {
+                stb_StatRecorder.StbSr_Calc_AceAndRank_ByName(player.Name(), player.Place() as AiActor, false, player, true);
+            });
+        }
+        //After every EIGHT infractions we will kick them out of the plane
+        if (prev_infractions != infractions && infractions > 0 && infractions % 8 == 0)
+        {
+            Timeout(2, () =>
+            {
+                GamePlay.gpLogServer(null, "Because of repeated bombing of civilian areas, and insubordination in disobeying orders to cease such bombing, " + playername
+                    + "'s co-pilot has ejected " + playername + " from the aircraft and assumed command.", new object[] { });
 
-                //We'll get the NAME of the airport from the birthplace/spawn point declare in a .mis file, if it exists
+                string peHud_message = "Removed from command - repeated bombing of civilian areas & insubordination";
+                GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null);
+                Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
+                Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
+                if (player.Place() != null && player.Place() as AiAircraft != null) Stb_RemovePlayerFromAircraftandDestroy(player.Place() as AiAircraft, player, 1.0, 3.0);
 
-                string apName = ap.Name();
-                foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-                {
-                    if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
-                    {
-                        if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE"))) apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
-                        break;
-                    }
-                }
+            });
+        }
+    }
+
+    /***************************************************************
+     * 
+     * Methods for Export
+     * 
+     * Methods that will be included in the CloDMissionCommunicator.dll so that they can be called directly in the -main.cs.
+     *  
+     * CloDMissionCommunicator.dll
+     * 
+     * **************************************************************/
+
+    public void Display_AceAndRank_ByName(Player player)
+    {
+        stb_StatRecorder.StbSr_Display_AceAndRank_ByName(player.Name(), player.Place() as AiActor, player);
+    }
+
+    //     string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false); //<ac
+    public string Display_AircraftAvailable_ByName(Player player, bool nextAC = false, bool display = true, bool html = false)
+    {
+        return stb_StatRecorder.StbSr_Display_AircraftAvailable_ByName(player, nextAC, display, html);
+    }
+
+    public void Display_SessionStats(Player player)
+    {
+        stb_StatRecorder.StbSr_Display_SessionStats(player);
+    }
+
+    public string Display_SessionStatsAll(Player player, int side = 0, bool display = true, bool html = true)
+    {
+        //Player player = null, int side = 0, bool display=true
+        return stb_StatRecorder.StbSr_Display_SessionStatsAll(player, side, display, html); //display "Netstats" summary of current session stats for all players to this player
+    }
+
+    //if player sent, displays message to the player, if player==null just return the string (html formatted with <br>)
+    public string Display_SessionStatsTeam(Player player)
+    {
+        return stb_StatRecorder.StbSr_Display_SessionStatsTeam(player);
+    }
 
 
-                if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, apName, pointstoknockout, 0, DateTime.Now, radius, center)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
-                                                                                                                                                                                        //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
-                                                                                                                                                                                        //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+    /***************************************************************
+     * Handle Area Bombings
+     *
+     * "Live" areas for bombing, such as industrial or military areas.
+     * 
+     * We set up jerrycans to designate the bombable areas.  These are detected
+     * below in OnBombExplosion, then sent here to be handled.
+     * 
+     *    //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
+     *    // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
+     *    // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
+     *    // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
+     *    
+     *    // In MISSION BUILDER these show up as Environment Jerrycan, Environment Jerrycan x2, Environment Jerrycan x3, and Environment Jerrycan x5.
+     *    
+     *    //Do NOT use JerryCan_UK1_4-Gallon_X or any other jerry can - they will NOT register hits.
+     *    //In MISSION BUILDER these jerry cans that DO NOT REGISTER show up as Jerrycan 2-gallonxX or Jerrycan 4-gallonxX.
+     *    
+     *    Bombers receive points for bombing these areas (calculated below, depends on size of bomb etc)
+     *    Also each bomb is marked with a smoke plume.
+     *    
+     *    As of TF 4.2, 4.5, and 4.57 you can place jerrycans (stationaries) in any .mis or submission .mis file.  This will register them all.
+     *    This is in distinction to the built in CloD "triggers" which only pick up objects within the same .mis file, and then the trigger is only received by the corresponding .cs file (not necessarily -main.cs)
+     * 
+     ****************************************************************/
+
+
+    public void ot_HandleAreaBombings(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, Player player, int isEnemy = 1, string targetType = "Ground Area", double multiplier = 1, double aircraftCorrection = 1, bool crater = false) //IsEnemy 0=friendly, 1 enemy, 2 neutral, crater = true places a crater instead of the smoke, useful for roads, railroads, etc
+    {
+        try
+        {
+            if (player == null) return;  //This routine only scores points so there is no point in doing it unless we have a live player bombing
+            string playername = "AI";
+            if (player != null) playername = player.Name();
+            //GamePlay.gpLogServer(new Player[] { player }, "Area bombing by " + playername + " " + mass_kg.ToString("n0") + "kg at " + pos.x.ToString("n0") + " " + pos.y.ToString("n0"), new object[] { });
+
+            //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+            //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+            // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+            //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+            //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+            //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+            //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+            //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+
+            //double scoreBase = 0.06303;
+            double scoreBase = 0.031515; //halving the score we were giving at first, since the point totals seem to be coming up quite high in comparison with fighter kills
+                                         //if (blenheim) scoreBase *= 4; //8X score for Blenheims since their bomb load is pathetic  (Blenheim = 4X 250 lb bombs, HE111 = 32X 100kg bombs  -> 4*8 = 32
+            scoreBase *= aircraftCorrection; //correcting for lower tonnage carried by Blenheim, HE111, etc
+            scoreBase *= multiplier;  //We can adjust score for various type of terrain or target areas etc by sending a different multipler
+
+
+
+            if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+            double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+            /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+             * 
+             * //Default is 0.5 points for ie 50 lb bomb
+             * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+            if (mass_kg > 110) score = 1.41; //250 
+            if (mass_kg > 220) score = 2.33; //500
+            if (mass_kg > 440) score = 3.70; //1000
+            if (mass_kg > 880) score = 5.92; //2000
+            if (mass_kg > 1760) score = 9.33 ; //4000
+
+             */
+
+            if (isEnemy == 0 || isEnemy == 2)
+            {
+                score = -score;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                 //but, still helps destroy the objects/area (for your enemies) as usual
+                GamePlay.gpLogServer(null, player.Name() + " has bombed a friendly or neutral zone. Serious repercussions for player AND team.", new object[] { });
 
             }
-            GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
-        }
 
-        public void ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false)
-        {
-            int count = 0;
-            foreach (AiAirport ap in AirfieldTargets.Keys)
+            //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
+            ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
+
+            Timeout(0.4 + stb_random.NextDouble() * 25, () =>
             {
-
-                double PointsTaken = AirfieldTargets[ap].Item4;
-                bool disabled = AirfieldTargets[ap].Item1;
-
-                if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
-                if (army != -1 & army != ap.Army()) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
-
-                count++;
-                double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                string Mission = AirfieldTargets[ap].Item2;
-                DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-                double percent = 0;
-                if (PointsToKnockOut > 0)
-                {
-                    percent = PointsTaken / PointsToKnockOut;
-                }
-
-                double timereduction = 0;
-                if (percent > 0)
-                {
-                    timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
-                }
-
-                double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                          //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                          //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                          //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                          //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                {
-                    percent = 1;
-                    timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                }
-
-                GamePlay.gpLogServer(new Player[] { player }, Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
+            }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
 
 
+            stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
+                                                                                      //TODO: More/less points depending on bomb tonnage.
+
+            //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+            // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+            string firetype = "BuildingFireSmall";
+            //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
+            if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
+
+
+            if (crater)
+            {
+                firetype = "BombCrater_firmSoil_mediumkg";
+                if (mass_kg > 100) firetype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                if (mass_kg > 200) firetype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
             }
-            if (count == 0) GamePlay.gpLogServer(new Player[] { player }, "No airports damaged or destroyed yet", new object[] { });
+
+            loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 20, stb_FullPath);
+            //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+            //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
+
         }
+        catch (Exception ex) { Console.WriteLine("ot_Handleareabombings: " + ex.ToString()); }
 
-        //stamps a rectangular pattern of craters over an airfield to disable it
-        public void AirfieldDisable(AiAirport ap)
+    }
 
+    /************************************************************
+    * 
+    * handle airport bombing
+    * most credit/script idea for airport bombing & destruction goes to reddog/Storm of War
+    * 
+    * We give credit (points) for any bomb that hits within the radius of an airfield.
+    * Also, these bomb hits are marked with a plume of smoke and additionally a bomb crater is added that is dangerous/will kill aircraft taxiing on the ground
+    * 
+    * Craters are different sizes, depending on tonnage of bomb dropped.  Also, craters will be repaired, taking a shorter time for smaller craters & a longer time for bigger craters
+    * Additionally, the more craters dropped on an airport the longer it will take to get to the next crater  & repair it.
+    * Also, if a threshold of tonnage (counted as points, which are proportional to damage done) is reached, the airport is put out of commission by severely cratering it
+    * 
+    * //Version for -stats.cs//
+    *************************************************************/
+
+    public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
+    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
+    //TODO: it would nice to have a struct or something to hold this instead of a tuple . . . 
+
+    public void SetAirfieldTargets()
+    {
+        foreach (AiAirport ap in GamePlay.gpAirports()) //Loop through all airfields in the game
         {
-            string apName = ap.Name();
+
+            //We're just going to add ALL airfields as targets, but then make sure there are no duplicates (bec. built-in & .mis-added airports sometimes overlap).
+
+            //It's going to take blue pilots more points/bombs to knock out an airfield, vs Red (Blenheims very limited as far as the # of bombs they can carry)
+
+            ////Use this for TACTICAL SERVER (where Reds only have Blenheims)
+            //UPDATE 2017/11/06: We don't need this adjustment bec. we have adjusted the points received
+            //so that blenheims receive relatively more & the blue bombers relatively less.  So this 
+            //should handle the discrepancy between the sides with no further adjustment necessary
+            //int pointstoknockout = 30;
+            //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
+
+            ////Use this for MISSION SERVER  && TACTICAL SERVER 
+            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
+
             double radius = ap.FieldR();
+            Point3d center = ap.Pos();
+
+
+            //GamePlay.gpAirports() includes both built-in airports and any new airports we have added in our .mis files. This results in duplication since
+            //most .mis airports are placed on top of an existing built-in airport. We check whether this airport has already been added & skip adding it if so.
             Point3d pos = ap.Pos();
-
-            if (AirfieldTargets.ContainsKey(ap))
+            bool add = true;
+            foreach (AiAirport apk in AirfieldTargets.Keys)//Loop through the targets
             {
-                apName = AirfieldTargets[ap].Item2;
-                radius = AirfieldTargets[ap].Item6;
-                pos = AirfieldTargets[ap].Item7;
-
+                if (apk != null & apk.Pos().distance(ref pos) <= apk.FieldR())
+                {
+                    //AirfieldTargets[apk].Item3
+                    add = false; //
+                    if (apk.FieldR() != null && apk.FieldR() > 1) radius = apk.FieldR(); //The field radius set in the .mis file becomes operative if it exists & is reasonable
+                    center = apk.Pos();  //We use the position of the airport set i nthe .mis file for the center, if it exists - thus we can change/move the center position as we wish
+                    break;
+                }
             }
 
-            //GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+            //We'll get the NAME of the airport from the birthplace/spawn point declare in a .mis file, if it exists
 
-            //
-            /** OK, instead of putting the 'peperoni pizza' pattern of craters to disable an airfield, we're just going to disable the associated spawn point **/
-            /*
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect = "Stationary";
-
-            string val1 = "Stationary";
-            string type = "BombCrater_firmSoil_largekg";
-            int count = 0;
-            string value = "";
-
-
-
-            for (double x = pos.x - radius * .6; x < pos.x + radius * .6; x = x + 50)
+            string apName = ap.Name();
+            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
             {
-                //for (double y = pos.y - radius * .6; y < pos.y + radius * .6; y = y + 100)
-                for (double y =  pos.y-Math.Abs(x); y <=pos.y+ Math.Abs(x) +1; y = y + Math.Abs(x))
-
+                if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
                 {
-                    //if (Math.Abs(x) != Math.Abs(y)) continue;
-                    string key = "Static" + count.ToString();
-                    value = val1 + ".Environment." + type + " nn " + (x - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
-                    f.add(sect, key, value);
-                    count++;
-
+                    if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE"))) apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
+                    break;
                 }
+            }
+
+
+            if (add) AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, apName, pointstoknockout, 0, DateTime.Now, radius, center)); //Adds airfield to dictionary, requires approx 2 loads of 32 X 50lb bombs of bombs to knock out.
+                                                                                                                                                                                    //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius
+                                                                                                                                                                                    //if you want to add only some airfields as targets, use something like: if (ap.Name().Contains("Manston")) { }
+
+        }
+        GamePlay.gpLogServer(null, "SetAirfieldTargets initialized.", null);
+    }
+
+    public void ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false)
+    {
+        int count = 0;
+        foreach (AiAirport ap in AirfieldTargets.Keys)
+        {
+
+            double PointsTaken = AirfieldTargets[ap].Item4;
+            bool disabled = AirfieldTargets[ap].Item1;
+
+            if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
+            if (army != -1 & army != ap.Army()) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
+
+            count++;
+            double PointsToKnockOut = AirfieldTargets[ap].Item3;
+            string Mission = AirfieldTargets[ap].Item2;
+            DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+            double percent = 0;
+            if (PointsToKnockOut > 0)
+            {
+                percent = PointsTaken / PointsToKnockOut;
+            }
+
+            double timereduction = 0;
+            if (percent > 0)
+            {
+                timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
+            }
+
+            double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                      //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                      //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                      //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                      //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+            if (PointsTaken >= PointsToKnockOut) //airport knocked out
+            {
+                percent = 1;
+                timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+            }
+
+            GamePlay.gpLogServer(new Player[] { player }, Mission + " " + (percent * 100).ToString("n0") + "% destroyed; last hit " + (timereduction / 60).ToString("n0") + " minutes ago", new object[] { });
+
+
+        }
+        if (count == 0) GamePlay.gpLogServer(new Player[] { player }, "No airports damaged or destroyed yet", new object[] { });
+    }
+
+    //stamps a rectangular pattern of craters over an airfield to disable it
+    public void AirfieldDisable(AiAirport ap)
+
+    {
+        string apName = ap.Name();
+        double radius = ap.FieldR();
+        Point3d pos = ap.Pos();
+
+        if (AirfieldTargets.ContainsKey(ap))
+        {
+            apName = AirfieldTargets[ap].Item2;
+            radius = AirfieldTargets[ap].Item6;
+            pos = AirfieldTargets[ap].Item7;
+
+        }
+
+        //GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+
+        //
+        /** OK, instead of putting the 'peperoni pizza' pattern of craters to disable an airfield, we're just going to disable the associated spawn point **/
+        /*
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+
+        string val1 = "Stationary";
+        string type = "BombCrater_firmSoil_largekg";
+        int count = 0;
+        string value = "";
+
+
+
+        for (double x = pos.x - radius * .6; x < pos.x + radius * .6; x = x + 50)
+        {
+            //for (double y = pos.y - radius * .6; y < pos.y + radius * .6; y = y + 100)
+            for (double y =  pos.y-Math.Abs(x); y <=pos.y+ Math.Abs(x) +1; y = y + Math.Abs(x))
+
+            {
+                //if (Math.Abs(x) != Math.Abs(y)) continue;
                 string key = "Static" + count.ToString();
                 value = val1 + ".Environment." + type + " nn " + (x - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
                 f.add(sect, key, value);
                 count++;
 
             }
-            f.save(stb_FullPath + "airfielddisable-ISectionFile.txt"); //testing
-            GamePlay.gpPostMissionLoad(f);
-            //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
-            */
-
-            //Now actually destroy the birthplace so ppl can't spawn in
-            AiBirthPlace bp = Stb_nearestBirthPlace(ap as AiActor, ap.Army());
-            bp.destroy();
-
+            string key = "Static" + count.ToString();
+            value = val1 + ".Environment." + type + " nn " + (x - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + (y - 25 + 50 * stb_random.NextDouble()).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + pos.z.ToString("0.00");
+            f.add(sect, key, value);
+            count++;
 
         }
-
-
-        public void LoadAirfieldSpawns()
-        {
-            return;
-
-            //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
-            //so, maybe we will do all that later, and maybe not
-            //For now we are just skipping this part altogether (return;)
-            //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
-
-            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-
-            {
-                bp.destroy();//Removes all spawnpoints
-            }
-            GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
-
-            foreach (AiAirport ap in AirfieldTargets.Keys)
-            {
-                if (AirfieldTargets[ap].Item1)
-                {
-                    //Airfield still active so load mission
-                    GamePlay.gpPostMissionLoad("missions/YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
-                }
-            }
-        }
-
-        /*************************************************
-        *
-        * Handle smoke, fire, crater ISection files for area bombing, civilian bombing, airport bombing
-        * 
-        ********************************************************/
-
-        public void loadSmokeOrFire(double x, double y, double z, string type = "", double duration_s = 300, string path = "", string type2 = "")
-        {
-            //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
-
-
-            //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
-            // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
-            // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
-            // BombCrater_firmSoil_EXlargekg doesn't actually exist but will place TWO BombCrater_firmSoil_largekg craters near each other
-            /* Samples: 
-             * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
-        Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
-        Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
-        Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
-        Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
-        Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
-        Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
-        Static0 Stationary.Environment.BombCrater_firmSoil_mediumkg nn 251217.50 257427.39 -520.00 
-        Static2 Stationary.Environment.BombCrater_firmSoil_largekg nn 251211.73 257398.98 -520.00 
-        Static1 Stationary.Environment.BombCrater_firmSoil_smallkg nn 251256.22 257410.66 -520.00
-
-            Not sure if height is above sea level or above ground level.
+        f.save(stb_FullPath + "airfielddisable-ISectionFile.txt"); //testing
+        GamePlay.gpPostMissionLoad(f);
+        //Timeout(stb_random.NextDouble() * 5, () => { GamePlay.gpPostMissionLoad(f); });
         */
-            /*
-             * OK, so the whole idea to remove the smokes after a while doesn't seem to work at all, because the smokes
-             * do not show up in the GamePlay list of stationary ground objects at all.  They don't seem to show up 
-             * in search of aigroundactors either.  So, it seems to be impossible to control or remove them once they have been loaded
-            Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
-            GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
-            Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
-            Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
-            */
-            /*
-            Timeout(duration_s, () => {
-                //GamePlay.gpLogServer(null, "Deleting object (delete4)", new object[] { });
-                Point2d P = new Point2d(x, y);
-                GamePlay.gpLogServer(null, "Deleting object (delete4) at" + P.x.ToString ("0.0") + " " + P.y.ToString("0.0"), new object[] { });
-                                    try
-                                    {
-                    //GamePlay.gpRemoveGroundStationarys(P, 10);
 
-                    //GamePlay.gpGroundStationarys(x, y, distance)
+        //Now actually destroy the birthplace so ppl can't spawn in
+        AiBirthPlace bp = Stb_nearestBirthPlace(ap as AiActor, ap.Army());
+        bp.destroy();
 
 
+    }
 
-                        foreach (GroundStationary gg in GamePlay.gpGroundStationarys(x, y, 2)) //all stationaries w/i 500000 or whatever meters of this object
+
+    public void LoadAirfieldSpawns()
+    {
+        return;
+
+        //Ok, this part would need to be placed in -MAIN.cs to work, and also know that mission ID and also we would need to set up special .mis files with each airport.
+        //so, maybe we will do all that later, and maybe not
+        //For now we are just skipping this part altogether (return;)
+        //Instead we just disable the destroyed airport in-game by covering it with the dangerous type of bomb crater
+
+        foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+
+        {
+            bp.destroy();//Removes all spawnpoints
+        }
+        GamePlay.gpPostMissionLoad("missions/London Raids/nondestroyable.mis");
+
+        foreach (AiAirport ap in AirfieldTargets.Keys)
+        {
+            if (AirfieldTargets[ap].Item1)
+            {
+                //Airfield still active so load mission
+                GamePlay.gpPostMissionLoad("missions/YOUR MISSION FOLDER/" + AirfieldTargets[ap].Item2 + ".mis");
+            }
+        }
+    }
+
+    /*************************************************
+    *
+    * Handle smoke, fire, crater ISection files for area bombing, civilian bombing, airport bombing
+    * 
+    ********************************************************/
+
+    public void loadSmokeOrFire(double x, double y, double z, string type = "", double duration_s = 300, string path = "", string type2 = "")
+    {
+        //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
+
+
+        //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
+        // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
+        // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
+        // BombCrater_firmSoil_EXlargekg doesn't actually exist but will place TWO BombCrater_firmSoil_largekg craters near each other
+        /* Samples: 
+         * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+    Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+    Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+    Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+    Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+    Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+    Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+    Static0 Stationary.Environment.BombCrater_firmSoil_mediumkg nn 251217.50 257427.39 -520.00 
+    Static2 Stationary.Environment.BombCrater_firmSoil_largekg nn 251211.73 257398.98 -520.00 
+    Static1 Stationary.Environment.BombCrater_firmSoil_smallkg nn 251256.22 257410.66 -520.00
+
+        Not sure if height is above sea level or above ground level.
+    */
+        /*
+         * OK, so the whole idea to remove the smokes after a while doesn't seem to work at all, because the smokes
+         * do not show up in the GamePlay list of stationary ground objects at all.  They don't seem to show up 
+         * in search of aigroundactors either.  So, it seems to be impossible to control or remove them once they have been loaded
+        Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
+        GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
+        Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
+        Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
+        */
+        /*
+        Timeout(duration_s, () => {
+            //GamePlay.gpLogServer(null, "Deleting object (delete4)", new object[] { });
+            Point2d P = new Point2d(x, y);
+            GamePlay.gpLogServer(null, "Deleting object (delete4) at" + P.x.ToString ("0.0") + " " + P.y.ToString("0.0"), new object[] { });
+                                try
+                                {
+                //GamePlay.gpRemoveGroundStationarys(P, 10);
+
+                //GamePlay.gpGroundStationarys(x, y, distance)
+
+
+
+                    foreach (GroundStationary gg in GamePlay.gpGroundStationarys(x, y, 2)) //all stationaries w/i 500000 or whatever meters of this object
+                    {
+                        //if (gg.Name.StartsWith(subStatPrefix))
                         {
-                            //if (gg.Name.StartsWith(subStatPrefix))
-                            {
-                                GamePlay.gpLogServer(null, "Destroying " + gg.Name, new object[] { });
-                                gg.Destroy();
-
-                            }
+                            GamePlay.gpLogServer(null, "Destroying " + gg.Name, new object[] { });
+                            gg.Destroy();
 
                         }
 
-
-
-
-                } catch (Exception ex)
-                {
-                    System.Console.WriteLine("smoke&fire - Exception: " + ex.ToString());                                    
-                }
-        }); */
-            Timeout(duration_s, () =>
-            {
-            //Console.WriteLine("Deleting stationary smokes . . . ");
-            //This should work for bomb craters but HAS NO EFFECT for smoke effects
-            //GamePlay.gpLogServer(null, "Deleting stationary bomb effects . . . ", new object[] { });
-            Point2d P = new Point2d(x, y);
-            //GamePlay.gpRemoveGroundStationarys(P, 10); //this is part of TF_extensions and doesn't work; it just fails silently when the timeout is called & entire timeout fails to run
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, 2))
-                {
-                    if (sta == null) continue;
-                    Console.WriteLine("Deleting " + sta.Name + " " + sta.Title);
-                    if (sta.Name.Contains("smoke") || sta.Title.Contains("fire") || sta.Title.Contains("crater"))
-                    {
-                        Console.WriteLine("Deleting stationary bomb effect " + sta.Name + " - end of life");
-                        sta.Destroy();
                     }
-                }
 
 
-            });
 
-            //AMission mission = GamePlay as AMission;
-            ISectionFile f = GamePlay.gpCreateSectionFile();
-            string sect = "Stationary";
-            string keybase = "Static";
-            int count = 0;
 
-            List<string> types = new List<string> { };
-            if (type.Length > 0) types.Add(type);
-            if (type2.Length > 0) types.Add(type2);
-
-            foreach (string t in types)
+            } catch (Exception ex)
             {
-
-                string ttemp = t;
-                string val1 = "Smoke";
-                if (t.Contains("BombCrater")) val1 = "Stationary";
-                int lines = 1;
-                if (t == "BombCrater_firmSoil_EXlargekg")
+                System.Console.WriteLine("smoke&fire - Exception: " + ex.ToString());                                    
+            }
+    }); */
+        Timeout(duration_s, () =>
+        {
+                //Console.WriteLine("Deleting stationary smokes . . . ");
+                //This should work for bomb craters but HAS NO EFFECT for smoke effects
+                //GamePlay.gpLogServer(null, "Deleting stationary bomb effects . . . ", new object[] { });
+                Point2d P = new Point2d(x, y);
+                //GamePlay.gpRemoveGroundStationarys(P, 10); //this is part of TF_extensions and doesn't work; it just fails silently when the timeout is called & entire timeout fails to run
+                foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, 2))
+            {
+                if (sta == null) continue;
+                Console.WriteLine("Deleting " + sta.Name + " " + sta.Title);
+                if (sta.Name.Contains("smoke") || sta.Title.Contains("fire") || sta.Title.Contains("crater"))
                 {
-                    ttemp = "BombCrater_firmSoil_largekg";
-                    lines = 2;
+                    Console.WriteLine("Deleting stationary bomb effect " + sta.Name + " - end of life");
+                    sta.Destroy();
                 }
+            }
+
+
+        });
+
+        //AMission mission = GamePlay as AMission;
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        string keybase = "Static";
+        int count = 0;
+
+        List<string> types = new List<string> { };
+        if (type.Length > 0) types.Add(type);
+        if (type2.Length > 0) types.Add(type2);
+
+        foreach (string t in types)
+        {
+
+            string ttemp = t;
+            string val1 = "Smoke";
+            if (t.Contains("BombCrater")) val1 = "Stationary";
+            int lines = 1;
+            if (t == "BombCrater_firmSoil_EXlargekg")
+            {
+                ttemp = "BombCrater_firmSoil_largekg";
+                lines = 2;
+            }
+
+            count++;
+            string key = keybase + count.ToString();
+            string value = val1 + ".Environment." + ttemp + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+            f.add(sect, key, value);
+
+            if (lines == 2)
+            {
 
                 count++;
-                string key = keybase + count.ToString();
-                string value = val1 + ".Environment." + ttemp + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+                key = keybase + count.ToString();
+                value = val1 + ".Environment." + ttemp + " nn " + (x + 9).ToString("0.00") + " " + (y - 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
                 f.add(sect, key, value);
 
-                if (lines == 2)
+                count++;
+                key = keybase + count.ToString();
+                value = val1 + ".Environment." + ttemp + " nn " + (x - 9).ToString("0.00") + " " + (y + 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
+                f.add(sect, key, value);
+            }
+        }
+
+        /*
+        sect = "Stationary";
+        key = "Static2";
+        value = "Smoke.Environment." + "Smoke1" + " nn " + x.ToString("0.00") + " " + (y  + 130).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static3";
+        value = "Smoke.Environment." + "Smoke2" + " nn " + x.ToString("0.00") + " " + (y + 260).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static4";
+        value = "Smoke.Environment." + "BuildingFireSmall" + " nn " + x.ToString("0.00") + " " + (y + 390).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static5";
+        value = "Smoke.Environment." + "BuildingFireBig" + " nn " + x.ToString("0.00") + " " + (y + 420).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static6";
+        value = "Smoke.Environment." + "BigSitySmoke_0" + " nn " + x.ToString("0.00") + " " + (y + 550).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static7";
+        value = "Smoke.Environment." + "BigSitySmoke_1" + " nn " + x.ToString("0.00") + " " + (y + 680).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+        sect = "Stationary";
+        key = "Static8";
+        value = "Smoke.Environment." + "BigSitySmoke_2" + " nn " + x.ToString("0.00") + " " + (y + 710).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+        */
+
+        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
+                                                                                        //f.save(path + "smoke-ISectionFile.txt"); //testing
+                                                                                        //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
+        Timeout(stb_random.NextDouble() * 45, () => { GamePlay.gpPostMissionLoad(f); });
+
+
+        //TODO: The part to delete smokes after a while isn't working; it never finds or stops any of the smokes.   It does delete craters, however.     
+
+
+
+    }
+
+    /*****************************************************************************
+     * 
+     * OnBombExplosion - handling points & other routines for area bombing, bombing of civilian areas, and bombing of airports
+     * 
+     *****************************************************************************/
+
+    //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
+    //TODO: Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
+    //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+    double lastBombMessageTime_sec = 0; // Calcs.TimeSince2016_sec();
+
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+
+        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+
+        //Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)); //OK, don't do this as when many bombs explode it also explodes the CPU with way too many threads at once.
+
+        //Spread them out a little over time
+        //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
+        double wait = stb_random.NextDouble() * 10;
+        Timeout(wait, () =>
+            OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
+        );
+    }
+
+    public void OnBombExplosion_DoWork(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+        try
+        {
+            //GamePlay.gpLogServer(null, "bombe 1", null);
+            bool ai = true;
+            if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+
+            //GamePlay.gpLogServer(null, "bombe 2", null);
+            int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
+            int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+            //GamePlay.gpLogServer(null, "bombe 3", null);
+            if (terr == 00) isEnemy = 2;
+            if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
+
+            /***************************
+            * 
+            * Handle bomb landing on WATER
+            * 
+            ***************************/
+            //For now, all things we handle below are on land, so if the land type is water we just
+            //get out of here immediately
+            maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+            if (landType == maddox.game.LandTypes.WATER) return;
+
+
+            //This is to give some score parity to various types of bombers, encouraging pilots to fly them.
+            //The destruction done remains proportional to tonnage of bomb etc, but they multipliers for their personal score that
+            //make up for some planes carrying far less tonnage.
+            //Factor is the max tonnage carried by each a/c under TF 4.5, scaled to JU88==1.  So ie Blenheim carries just 1/4 of that tonnage so gets a score correction factor of 1/(1/4) or 4.
+            double aircraftCorrection = 1;
+            AiAircraft aircraft = initiator.Actor as AiAircraft;
+            string acType = StatCalcs.GetAircraftType(aircraft);
+            if (acType.Contains("Blenheim")) aircraftCorrection = 4;
+            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
+            if (acType.Contains("BR-20")) aircraftCorrection = 2;
+
+            //for testing
+            //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
+
+            //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
+
+            //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
+
+            /***************************
+             * 
+             * Handle bombing civilian areas AND area bombing generally
+             * 
+             ***************************/
+            //Give penalties to players if they bomb civilian areas
+            if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
+                {
+                    if (sta == null) continue;
+                    //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
+
+
+                    double dis_m = sta.pos.distance(ref pos);  //distance from this groundstationary to the bomb detonation location, meters
+
+                    //GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title + " " + dis_m.ToString("n0"), new object[] { });
+
+                    if (sta.Title.Contains("JerryCan_GER1_1") || sta.Title.Contains("JerryCan_GER1_2") || sta.Title.Contains("JerryCan_GER1_3") || sta.Title.Contains("JerryCan_GER1_5"))
+                    {
+                        //We use jerrycans to designate area targets or bombable areas.  
+                        //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
+                        // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
+                        // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
+                        // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
+                        if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                        // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
+                        //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
+                    }
+
+
+                    //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
+                    //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
+                    //If they manage to hit a ROAD HIGHWAY or RAILROAD within a civilian area then they don't get negative points
+                    if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)
+                    {
+                        if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                        if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
+                    }
+
+
+                }
+
+
+            //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
+
+            /********************
+             * 
+             * Handle airport bombing
+             * 
+             *******************/
+
+            //GamePlay.gpLogServer(null, "bombe 5", null);
+
+            var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
+            apkeys = AirfieldTargets.Keys.ToList();
+
+            //GamePlay.gpLogServer(null, "bombe 6", null);
+
+            foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+            {
+                /* if (!AirfieldTargets[ap].Item1)
+                {//airfield has already been knocked out so do nothing
+                }
+                else
+                { */
+
+                //GamePlay.gpLogServer(null, "bombe 7", null);
+                double radius = AirfieldTargets[ap].Item6;
+                Point3d APPos = AirfieldTargets[ap].Item7;
+                double distFromCenter = 1000000000;
+                if (ap != null) distFromCenter = APPos.distance(ref pos);
+                //Check if bomb fell inside radius and if so increment up
+                if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
                 {
 
-                    count++;
-                    key = keybase + count.ToString();
-                    value = val1 + ".Environment." + ttemp + " nn " + (x + 9).ToString("0.00") + " " + (y - 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
-                    f.add(sect, key, value);
 
-                    count++;
-                    key = keybase + count.ToString();
-                    value = val1 + ".Environment." + ttemp + " nn " + (x - 9).ToString("0.00") + " " + (y + 9).ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + z.ToString("0.00");
-                    f.add(sect, key, value);
+                    //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
+                    //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
+                    // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
+                    //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
+                    //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
+                    //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
+                    //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
+                    //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
+                    //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
+
+
+                    //double scoreBase = 0.06303;
+                    double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
+                                                 //if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic      
+
+                    scoreBase *= aircraftCorrection; //Correcting tonnage effect for various types of bombers
+
+                    //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
+                    //TODO: Could also give more if exactly on the the runway, or near it, or whatever
+                    double multiplier = 0.5;
+                    if (distFromCenter <= 2 * radius / 3) multiplier = 1;
+                    if (distFromCenter <= radius / 3) multiplier = 1.5;
+
+                    //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
+                    if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+                    {
+                        multiplier = 1.6;
+                    }
+
+                    scoreBase *= multiplier;
+
+
+                    if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
+                    double score = scoreBase * Math.Pow(mass_kg, 0.67);
+
+                    /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
+                     * 
+                     * //Default is 0.5 points for ie 50 lb bomb
+                     * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
+                    if (mass_kg > 110) score = 1.41; //250 
+                    if (mass_kg > 220) score = 2.33; //500
+                    if (mass_kg > 440) score = 3.70; //1000
+                    if (mass_kg > 880) score = 5.92; //2000
+                    if (mass_kg > 1760) score = 9.33 ; //4000
+
+                    //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
+
+                     */
+
+                    //Spread out these messages to no more than 3 per second
+                    double TimeNow_sec = Time.current(); // Calcs.TimeSince2016_sec();
+                    double timeout = 0;
+                    if (TimeNow_sec - lastBombMessageTime_sec < 0.3333) timeout = lastBombMessageTime_sec - TimeNow_sec + 0.333;
+                    lastBombMessageTime_sec = TimeNow_sec + timeout + 0.333333; //Which should be the same as lastBombMessageTime_sec +1;
+                                                                                //Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
+                    if (timeout < 0) { timeout = 0; }
+
+                    double individualscore = score;
+
+                    if (!ai && (isEnemy == 0 || isEnemy == 2))
+                    {
+                        individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
+                                                             //but, still helps destroy that base (for your enemies) as usual
+                        Timeout(timeout, () =>
+                        {
+                            GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
+                        });
+                    }
+
+
+
+                    //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+                    // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
+                    string firetype = "BuildingFireSmall";
+                    if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+                    if (stb_random.NextDouble() > 0.25) firetype = "";
+                    //todo: finer grained bigger/smaller fire depending on bomb tonnage
+
+                    //set placeholder variables
+                    double PointsToKnockOut = AirfieldTargets[ap].Item3;
+                    double PointsTaken = AirfieldTargets[ap].Item4 + score;
+                    string Mission = AirfieldTargets[ap].Item2;
+                    bool disabled = AirfieldTargets[ap].Item1;
+                    DateTime lastBombHit = AirfieldTargets[ap].Item5;
+
+
+
+                    string cratertype = "BombCrater_firmSoil_mediumkg";
+                    if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
+                    if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+
+                    double percent = 0;
+                    double prev_percent = 0;
+                    double points_reduction_factor = 1;
+                    if (PointsToKnockOut > 0)
+                    {
+                        percent = PointsTaken / PointsToKnockOut;
+                        prev_percent = (PointsTaken - score) / PointsToKnockOut;
+                        if (prev_percent > 1) prev_percent = 1;
+                        if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
+                    }
+
+                    //GamePlay.gpLogServer(null, "bombe 8", null);
+
+                    individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
+
+                    if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
+
+
+                    double timereduction = 0;
+                    if (prev_percent > 0)
+                    {
+                        timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
+                    }
+
+                    double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
+                                                                              //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
+                                                                              //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
+                                                                              //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
+                                                                              //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
+
+                    if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
+
+                    if (PointsTaken >= PointsToKnockOut) //airport knocked out
+                    {
+                        percent = 1;
+                        timetofix = 24 * 60 * 60; //24 hours to repair . . . 
+                    }
+                    //Advise player of hit/percent/points
+                    //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+
+                    Timeout(timeout, () =>
+                    {
+                            /*
+                            //Experiment: removing the message to see if it helps with warps  9/28/2018
+                            if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
+
+                            //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
+                            Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
+                            */
+                        loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
+                            //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
+
+                        });
+
+
+
+                    if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
+                    {
+                        AirfieldTargets.Remove(ap);
+                        AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                        if (!disabled)
+                        {
+
+                            //We do this part only in -stats.cs and & will stamp craters all over the ap but only if the ap was disabled by LIVE pilots, not AI . . . 
+                            //UPDATE 2018/09: We don't stamp the craters but actually disable the birthplace so that it no longer functions as a spawn point
+                            //UPDATE 2020/02: We're taking care of this in the main .cs file now
+                            //AirfieldDisable(ap);
+
+
+                            //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
+                            //This airport has been destroyed, so remove the spawn point
+                            //** We do this only in the -MAIN.cs, not -stats.cs
+                            /*
+                            if (ap != null)
+                            {
+                                foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                                {
+                                    Point3d bp_pos = bp.Pos();
+                                    if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                                }
+                            }
+                            */
+
+                        }
+                    }
+                    else
+                    {
+                        AirfieldTargets.Remove(ap);
+                        AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                    }
+                    //GamePlay.gpLogServer(null, "bombe 11", null);
+                    break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
                 }
             }
 
-            /*
-            sect = "Stationary";
-            key = "Static2";
-            value = "Smoke.Environment." + "Smoke1" + " nn " + x.ToString("0.00") + " " + (y  + 130).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
+            /***************************
+            * 
+            * Handle bomb landing on ROAD, HIGHWAY, or RAIL
+            * 
+            * We save this for last because we can test for road etc in airport bombings to see if something is on the runway or whatever
+            * 
+            ***************************/
 
-            sect = "Stationary";
-            key = "Static3";
-            value = "Smoke.Environment." + "Smoke2" + " nn " + x.ToString("0.00") + " " + (y + 260).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-
-            sect = "Stationary";
-            key = "Static4";
-            value = "Smoke.Environment." + "BuildingFireSmall" + " nn " + x.ToString("0.00") + " " + (y + 390).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-
-            sect = "Stationary";
-            key = "Static5";
-            value = "Smoke.Environment." + "BuildingFireBig" + " nn " + x.ToString("0.00") + " " + (y + 420).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-
-            sect = "Stationary";
-            key = "Static6";
-            value = "Smoke.Environment." + "BigSitySmoke_0" + " nn " + x.ToString("0.00") + " " + (y + 550).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-
-            sect = "Stationary";
-            key = "Static7";
-            value = "Smoke.Environment." + "BigSitySmoke_1" + " nn " + x.ToString("0.00") + " " + (y + 680).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-
-            sect = "Stationary";
-            key = "Static8";
-            value = "Smoke.Environment." + "BigSitySmoke_2" + " nn " + x.ToString("0.00") + " " + (y + 710).ToString("0.00") + " 110.00 /height " + z.ToString("0.00");
-            f.add(sect, key, value);
-            */
-
-            //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
-                                                                                            //f.save(path + "smoke-ISectionFile.txt"); //testing
-                                                                                            //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
-            Timeout(stb_random.NextDouble() * 45, () => { GamePlay.gpPostMissionLoad(f); });
-
-
-            //TODO: The part to delete smokes after a while isn't working; it never finds or stops any of the smokes.   It does delete craters, however.     
-
-
-
-        }
-
-        /*****************************************************************************
-         * 
-         * OnBombExplosion - handling points & other routines for area bombing, bombing of civilian areas, and bombing of airports
-         * 
-         *****************************************************************************/
-
-        //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
-        //TODO: Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
-        //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
-        double lastBombMessageTime_sec = 0; // Calcs.TimeSince2016_sec();
-
-        public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-        {
-
-            base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
-
-            //Task.Run(() => OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)); //OK, don't do this as when many bombs explode it also explodes the CPU with way too many threads at once.
-
-            //Spread them out a little over time
-            //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
-            double wait = stb_random.NextDouble() * 10;
-            Timeout(wait, () =>
-                OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
-            );
-        }
-
-        public void OnBombExplosion_DoWork(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
-        {
-            try
+            if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
             {
-                //GamePlay.gpLogServer(null, "bombe 1", null);
-                bool ai = true;
-                if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
+                ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, aircraftCorrection, true);
+                return;
+            }
 
-                //GamePlay.gpLogServer(null, "bombe 2", null);
-                int isEnemy = 1; //0 friendly, 1 = enemy, 2 = neutral
-                int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
+            if (landType == maddox.game.LandTypes.RAIL)
+            {
+                ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, aircraftCorrection, true);
+                return;
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("On Bomb Explosion STATS do_work: " + ex.ToString()); }
 
-                //GamePlay.gpLogServer(null, "bombe 3", null);
-                if (terr == 00) isEnemy = 2;
-                if (!ai && initiator.Player.Army() == terr) isEnemy = 0;
-
-                /***************************
-                * 
-                * Handle bomb landing on WATER
-                * 
-                ***************************/
-                //For now, all things we handle below are on land, so if the land type is water we just
-                //get out of here immediately
-                maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
-                if (landType == maddox.game.LandTypes.WATER) return;
+    }
 
 
-                //This is to give some score parity to various types of bombers, encouraging pilots to fly them.
-                //The destruction done remains proportional to tonnage of bomb etc, but they multipliers for their personal score that
-                //make up for some planes carrying far less tonnage.
-                //Factor is the max tonnage carried by each a/c under TF 4.5, scaled to JU88==1.  So ie Blenheim carries just 1/4 of that tonnage so gets a score correction factor of 1/(1/4) or 4.
-                double aircraftCorrection = 1;
-                AiAircraft aircraft = initiator.Actor as AiAircraft;
-                string acType = StatCalcs.GetAircraftType(aircraft);
-                if (acType.Contains("Blenheim")) aircraftCorrection = 4;
-                if (acType.Contains("He-111")) aircraftCorrection = 1.5;
-                if (acType.Contains("BR-20")) aircraftCorrection = 2;
-
-                //for testing
-                //ot_HandleAreaBombings(title, mass, pos, initiator, initiator.Player); return;
-
-                //if (!ai && stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion called: " + title + " " + mass.ToString() + " " + initiator.Player.Name(), new object[] { });
-
-                //maddox.game.world.GroundStationary TF_GamePlay.gpGroundStationarys(GamePlay, new maddox.GP.Point2d(pos.x, pos.y));
-
-                /***************************
-                 * 
-                 * Handle bombing civilian areas AND area bombing generally
-                 * 
-                 ***************************/
-                //Give penalties to players if they bomb civilian areas
-                if (!ai) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
-                    {
-                        if (sta == null) continue;
-                        //if (stb_Debug) GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title, new object[] { });
-
-
-                        double dis_m = sta.pos.distance(ref pos);  //distance from this groundstationary to the bomb detonation location, meters
-
-                        //GamePlay.gpLogServer(null, "OnBombExplosion near: " + sta.Name + " " + sta.Title + " " + dis_m.ToString("n0"), new object[] { });
-
-                        if (sta.Title.Contains("JerryCan_GER1_1") || sta.Title.Contains("JerryCan_GER1_2") || sta.Title.Contains("JerryCan_GER1_3") || sta.Title.Contains("JerryCan_GER1_5"))
-                        {
-                            //We use jerrycans to designate area targets or bombable areas.  
-                            //The JerryCan_GER1_1 (static - environment - jerrycan) covers a radius of 71 meters which is just enough to fill a 100 meter square (seen in FMB at full zoom) to all corners if placed in the center of the 100m square.
-                            // JerryCan_GER1_2 covers 141m radius (covers 4 100m squares to the corners if placed in the center)
-                            // JerryCan_GER1_3 covers 282m radius (covers 16 100m squares to the corners if placed in the center)
-                            // JerryCan_GER1_5 covers 1410m radius (a 1km square to the corner if placed in the center)
-                            if (sta.Title.Contains("JerryCan_GER1_5") && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                            if (sta.Title.Contains("JerryCan_GER1_3") && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                            if (sta.Title.Contains("JerryCan_GER1_2") && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                            if (sta.Title.Contains("JerryCan_GER1_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                            // return;: Once we have found one bombable area marker, that is all we're looking for. Skip any further search for bombable area marks AND also for the civilian penalty markers; if it is within the given diestance of a jerrycan then this is by definition an enemy target zone
-                            //If we want to do anything further below, such as give credit for bombing airfields, we'll need to re-write this somehow.
-                        }
-
-
-                        //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
-                        //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
-                        //If they manage to hit a ROAD HIGHWAY or RAILROAD within a civilian area then they don't get negative points
-                        if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)
-                        {
-                            if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
-                            if (sta.Title.Contains("MG_TA") && dis_m <= 250) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);
-                        }
-
-
-                    }
-
-
-                //TF_GamePlay.gpIsLandTypeCity(maddox.game.IGamePlay, pos);       
-
-                /********************
-                 * 
-                 * Handle airport bombing
-                 * 
-                 *******************/
-
-                //GamePlay.gpLogServer(null, "bombe 5", null);
-
-                var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
-                apkeys = AirfieldTargets.Keys.ToList();
-
-                //GamePlay.gpLogServer(null, "bombe 6", null);
-
-                foreach (AiAirport ap in apkeys)//Loop through the targets; we do it on a separate copy of the keys list bec. we are changing AirfieldTargets mid-loop, below
+    /*******************************************************************
+    //We're not using their onplaceenter bec. it does balance etc etc that we don't want or need. 
+    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
+    {
+        #region stb
+        base.OnPlaceEnter(player, actor, placeIndex);
+        try
+        {
+            Stb_BalanceUpdate(player, actor, placeIndex, true);
+            if (!Stb_BalanceCheckForBan(player, actor, placeIndex))
+            {
+                if (placeIndex == 0 && player.PlacePrimary() == 0 && player.PlaceSecondary() == -1)
                 {
-                    /* if (!AirfieldTargets[ap].Item1)
-                    {//airfield has already been knocked out so do nothing
-                    }
-                    else
-                    { */
-
-                    //GamePlay.gpLogServer(null, "bombe 7", null);
-                    double radius = AirfieldTargets[ap].Item6;
-                    Point3d APPos = AirfieldTargets[ap].Item7;
-                    double distFromCenter = 1000000000;
-                    if (ap != null) distFromCenter = APPos.distance(ref pos);
-                    //Check if bomb fell inside radius and if so increment up
-                    if (ap != null & distFromCenter <= radius)//has bomb landed inside airfield check
+                    AiAircraft aircraft = actor as AiAircraft;
+                    if (aircraft != null)
                     {
-
-
-                        //So, the Sadovsky formula is a way of estimating the effect of a blast wave from an explosion. https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
-                        //Simplifying slightly, it turns out that the radius of at least partial destruction/partial collapse of buildings is:
-                        // 50 lb - 30m; 100 lb - 40 m; 250 lb - 54 m; 500 lb - 67 m; 100 lb - 85 m; etc.
-                        //Turning this radius to an 'area of destruction' (pi * r^2) gives us an "area of destruction factor" for that size bomb.  
-                        //Since we are scoring the amount of destruction in e.g. an industrialized area, counting the destruction points as area (square footage, square meters, whatever) is reasonable.
-                        //Scaling our points in proportion to this "area of destruction factor" so that a 50 lb pound bomb gives 0.5 points, then we see that destruction increases with size, but lower than linearly.
-                        //So if a 50 lb bomb gives 0.5 points, a 100 lb bomb gives 0.72 points; 250 lb 1.41 points; 500 lb 2.33 points, 1000 lb 4.0 points, 2000 lb 6.48 points, etc
-                        //The formula below is somewhat simplified from this but approximates it pretty closely and gives a reasonable value for any mass_kg
-                        //This score is also closely related to the amount of ground churn the explosive will do, which is going to be our main effect on airport closure
-
-
-                        //double scoreBase = 0.06303;
-                        double scoreBase = 0.031515; //halving the score we were giving at first, since the Bomber pilot point totals seem to be coming up quite high in comparison with fighter kills
-                                                     //if (blenheim) scoreBase *= 8; //double score for Blenheims since their bomb load is pathetic      
-
-                        scoreBase *= aircraftCorrection; //Correcting tonnage effect for various types of bombers
-
-                        //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
-                        //TODO: Could also give more if exactly on the the runway, or near it, or whatever
-                        double multiplier = 0.5;
-                        if (distFromCenter <= 2 * radius / 3) multiplier = 1;
-                        if (distFromCenter <= radius / 3) multiplier = 1.5;
-
-                        //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
-                        if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
+                        StbStatTask sst;
+                        if (player.Army() == 1 && actor.Name().Contains(":BoB_RAF_B_7Sqn.000"))
                         {
-                            multiplier = 1.6;
+                            sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 2 });
+                            GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ground Units");
                         }
-
-                        scoreBase *= multiplier;
-
-
-                        if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
-                        double score = scoreBase * Math.Pow(mass_kg, 0.67);
-
-                        /* Another way to reach the same end- probably quicker but less flexible & doesn't interpolate:
-                         * 
-                         * //Default is 0.5 points for ie 50 lb bomb
-                         * if (mass_kg > 45) score = 0.722; //100 lb  (calcs assume radius of partial/serious building destruction per Sadovsky formula, dP > 0.10, explosion on surface of ground, and that 50% of bomb weight is TNT)
-                        if (mass_kg > 110) score = 1.41; //250 
-                        if (mass_kg > 220) score = 2.33; //500
-                        if (mass_kg > 440) score = 3.70; //1000
-                        if (mass_kg > 880) score = 5.92; //2000
-                        if (mass_kg > 1760) score = 9.33 ; //4000
-
-                        //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
-
-                         */
-
-                        //Spread out these messages to no more than 3 per second
-                        double TimeNow_sec = Time.current(); // Calcs.TimeSince2016_sec();
-                        double timeout = 0;
-                        if (TimeNow_sec - lastBombMessageTime_sec < 0.3333) timeout = lastBombMessageTime_sec - TimeNow_sec + 0.333;
-                        lastBombMessageTime_sec = TimeNow_sec + timeout + 0.333333; //Which should be the same as lastBombMessageTime_sec +1;
-                                                                                    //Console.WriteLine("Airportbombing: Delay airport bomb message by " + timeout.ToString("n1"));
-                        if (timeout < 0) { timeout = 0; }
-
-                        double individualscore = score;
-
-                        if (!ai && (isEnemy == 0 || isEnemy == 2))
+                        else if (player.Army() == 2 && actor.Name().Contains(":BoB_LW_KG1_I.000"))
                         {
-                            individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
-                                                                 //but, still helps destroy that base (for your enemies) as usual
-                            Timeout(timeout, () =>
-                            {
-                                GamePlay.gpLogServer(null, initiator.Player.Name() + " has bombed a friendly or neutral airport. Serious repercussions for player AND team.", new object[] { });
-                            });
+                            sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 2 });
+                            GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ground Units");
                         }
-
-
-
-                        //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
-                        // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-                        string firetype = "BuildingFireSmall";
-                        if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
-                        if (stb_random.NextDouble() > 0.25) firetype = "";
-                        //todo: finer grained bigger/smaller fire depending on bomb tonnage
-
-                        //set placeholder variables
-                        double PointsToKnockOut = AirfieldTargets[ap].Item3;
-                        double PointsTaken = AirfieldTargets[ap].Item4 + score;
-                        string Mission = AirfieldTargets[ap].Item2;
-                        bool disabled = AirfieldTargets[ap].Item1;
-                        DateTime lastBombHit = AirfieldTargets[ap].Item5;
-
-
-
-                        string cratertype = "BombCrater_firmSoil_mediumkg";
-                        if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
-                        if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
-
-                        double percent = 0;
-                        double prev_percent = 0;
-                        double points_reduction_factor = 1;
-                        if (PointsToKnockOut > 0)
+                        else if (aircraft.Type() == AircraftType.Fighter || aircraft.Type() == AircraftType.HeavyFighter)
                         {
-                            percent = PointsTaken / PointsToKnockOut;
-                            prev_percent = (PointsTaken - score) / PointsToKnockOut;
-                            if (prev_percent > 1) prev_percent = 1;
-                            if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not very many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
-                        }
-
-                        //GamePlay.gpLogServer(null, "bombe 8", null);
-
-                        individualscore = individualscore / points_reduction_factor;  //reduce the score if needed 
-
-                        if (!ai) stb_RecordStatsOnActorDead(initiator, 4, individualscore, 1, initiator.Tool.Type);  //So they have dropped a bomb on a target so they get some point score
-
-
-                        double timereduction = 0;
-                        if (prev_percent > 0)
-                        {
-                            timereduction = (DateTime.Now.Subtract(lastBombHit)).TotalSeconds;
-                        }
-
-                        double timetofix = PointsTaken * 20 * 60 - timereduction; //50 lb bomb scores 0.5 so will take 10 minutes to repair.  Larger bombs will take longer; 250 lb about 1.4 points so 28 minutes to repeari
-                                                                                  //But . . . it is ADDITIVE. So the first 50 lb bomb takes 10 minutes, the 2nd another 10, the 3rd another 10, and so on on.  So if you drop 32 50 bl bombs it will take 320 minutes before the 32nd bomb crater is repaired.
-                                                                                  //Sources: "A crater from a 500lb bomb could be repaired and resurfaced in about 40 minutes" says one 2nd hand source. That seems about right, depending on methods & surface. https://www.airspacemag.com/multimedia/these-portable-runways-helped-win-war-pacific-180951234/
-                                                                                  //unfortunately we can repair only the bomb crater; the SMOKE will remain for the entire mission because clod internals don't allow its removal.
-                                                                                  //TODO: We could keep track of when the last bomb was dropped at each airport and deduct time here depending on how much repair had been done since the last bomb dropped
-
-                        if (timetofix < score * 20 * 60) timetofix = score * 20 * 60; //timetofix is never less than the time needed to fix this one bomb crater, even if the airport has accrued some repair time
-
-                        if (PointsTaken >= PointsToKnockOut) //airport knocked out
-                        {
-                            percent = 1;
-                            timetofix = 24 * 60 * 60; //24 hours to repair . . . 
-                        }
-                        //Advise player of hit/percent/points
-                        //if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix/3600).ToString("n1") + " hr to repair " , new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
-
-                        Timeout(timeout, () =>
-                        {
-                        /*
-                        //Experiment: removing the message to see if it helps with warps  9/28/2018
-                        if (!ai) GamePlay.gpLogServer(new Player[] { initiator.Player }, "Airport hit: " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timetofix / 3600).ToString("n1") + " hr to repair " + (percent * 100).ToString("n0") + "% destroyed " + ap.StripState(0).ToString(), new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop" + (percent * 100).ToString("n0") + "% destroyed "
-
-                        //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
-                        Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
-                        */
-                            loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
-                        //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
-
-                    });
-
-
-
-                        if (PointsTaken >= PointsToKnockOut) //has points limit to knock out the airport been reached?
-                        {
-                            AirfieldTargets.Remove(ap);
-                            AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(true, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
-                            if (!disabled)
-                            {
-
-                                //We do this part only in -stats.cs and & will stamp craters all over the ap but only if the ap was disabled by LIVE pilots, not AI . . . 
-                                //UPDATE 2018/09: We don't stamp the craters but actually disable the birthplace so that it no longer functions as a spawn point
-                                //UPDATE 2020/02: We're taking care of this in the main .cs file now
-                                //AirfieldDisable(ap);
-
-
-                                //LoadAirfieldSpawns(); //loads airfield spawns and removes inactive airfields. (on TWC this is not working/not doing anything for now)
-                                //This airport has been destroyed, so remove the spawn point
-                                //** We do this only in the -MAIN.cs, not -stats.cs
-                                /*
-                                if (ap != null)
-                                {
-                                    foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
-                                    {
-                                        Point3d bp_pos = bp.Pos();
-                                        if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
-                                    }
-                                }
-                                */
-
-                            }
+                            sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 1 });
+                            GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Aircrafts");
                         }
                         else
                         {
-                            AirfieldTargets.Remove(ap);
-                            AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(false, Mission, PointsToKnockOut, PointsTaken, DateTime.Now, radius, APPos));
+                            sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 3 });
+                            GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ships");
                         }
-                        //GamePlay.gpLogServer(null, "bombe 11", null);
-                        break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
-                    }
-                }
-
-                /***************************
-                * 
-                * Handle bomb landing on ROAD, HIGHWAY, or RAIL
-                * 
-                * We save this for last because we can test for road etc in airport bombings to see if something is on the runway or whatever
-                * 
-                ***************************/
-
-                if (landType == maddox.game.LandTypes.ROAD || landType == maddox.game.LandTypes.ROAD_MASK || landType == maddox.game.LandTypes.HIGHWAY)
-                {
-                    ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Road/Highway", .4, aircraftCorrection, true);
-                    return;
-                }
-
-                if (landType == maddox.game.LandTypes.RAIL)
-                {
-                    ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Railroad", .75, aircraftCorrection, true);
-                    return;
-                }
-            }
-            catch (Exception ex) { Console.WriteLine("On Bomb Explosion STATS do_work: " + ex.ToString()); }
-
-        }
-
-
-        /*******************************************************************
-        //We're not using their onplaceenter bec. it does balance etc etc that we don't want or need. 
-        public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
-        {
-            #region stb
-            base.OnPlaceEnter(player, actor, placeIndex);
-            try
-            {
-                Stb_BalanceUpdate(player, actor, placeIndex, true);
-                if (!Stb_BalanceCheckForBan(player, actor, placeIndex))
-                {
-                    if (placeIndex == 0 && player.PlacePrimary() == 0 && player.PlaceSecondary() == -1)
-                    {
-                        AiAircraft aircraft = actor as AiAircraft;
-                        if (aircraft != null)
-                        {
-                            StbStatTask sst;
-                            if (player.Army() == 1 && actor.Name().Contains(":BoB_RAF_B_7Sqn.000"))
-                            {
-                                sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 2 });
-                                GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ground Units");
-                            }
-                            else if (player.Army() == 2 && actor.Name().Contains(":BoB_LW_KG1_I.000"))
-                            {
-                                sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 2 });
-                                GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ground Units");
-                            }
-                            else if (aircraft.Type() == AircraftType.Fighter || aircraft.Type() == AircraftType.HeavyFighter)
-                            {
-                                sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 1 });
-                                GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Aircrafts");
-                            }
-                            else
-                            {
-                                sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 3 });
-                                GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ships");
-                            }
-                            stb_StatRecorder.StbSr_EnqueueTask(sst);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
-        }
-
-        ***************************************************************/
-
-
-
-        public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
-        {
-            #region stb
-            base.OnPlaceEnter(player, actor, placeIndex);
-            //if (stb_playersForcedOut.Contains(player.Name())) return; //This is a place enter that happened because we forced it, above in onPlaceLeave
-            try
-            {
-                //Stb_Message(null, "Player last died . . . ", new object[] { });
-                //Console.WriteLine(stb_StatRecorder.StbSr_TimeSincePlayerLastDied("TWC_Flug"));
-                //Console.WriteLine("Version: " + Environment.Version.ToString());
-                //Console.WriteLine("PlaceEnter: 1 ");
-
-
-                stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating and/or initiate the stats collection. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  Could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
-
-                //Stb_changeTargetToPlayerRecurs(player);
-
-                AiAircraft aircraft = actor as AiAircraft; //we allow them to enter artillery, tank, etc, just not an aircraft
-                string aircraft_type = StatCalcs.GetAircraftType(aircraft);
-                string airc = "aircraft";
-                if (aircraft == null) airc = "not an aircraft";
-                string person = "person";
-                AiPerson pers = actor as AiPerson;
-                if (pers == null) person = "not a person";
-                string ground = "ground actor";
-                AiGroundActor aga = actor as AiGroundActor;
-                if (aga == null) ground = "not a ground actor";
-                //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
-
-                //Set the player career type (ie bomber, fighter etc)
-                //We have a problem in that when a player bails out of an aircraft that triggers OnPlaceEnter (for some reason!?) and in that one case
-                //we don't want to change the pilot type - ie, if they are a bomber pilot, they will still be on their bomber pilot career after they
-                //parachute out until they enter another type of aircraft or actor.
-                //So we skip setPilotType ONLY IF all the following are true: NOT a ground actor NOT in an aircraft AND they just parachuted (player.PlacePrimary() != -1 seems to be best/only way to determine this?)
-                if (aga == null && aircraft == null && player.PlacePrimary() == -1)
-                {
-                    //All the above criteria are met, so do nothing, this is a person who just parachuted out
-                    //We could do anything here we wanted, to people who just bailed out of an aircraft
-                }
-                else
-                {
-                    //not parachuting out but entering some type of Actor place, so DO set pilot type
-                    stb_setPilotType(player, actor);
-
-                    //We can send the a/c to -supply.cs as often as we like, it will only register a given a/c once and sending it whenever someone enters a Place ensures we don't accidently overlook it
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, actor);
-                }
-                //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + placeIndex.ToString());
-
-                //check if the player is timed out due to a previous death
-                int TimedOut_seconds = stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(player.Name());
-
-                if (TimedOut_seconds > 0 && aircraft != null)
-                {
-                    int timeOut_minutes = (int)(TimedOut_seconds / 60);
-                    string message = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name() + " is restricted from flying. " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " remains in your pilot restriction.";
-                    //System.Console.WriteLine(message);
-                    Stb_Message(new Player[] { player }, message, null);
-                    Timeout(2.0, () => { Stb_Message(new Player[] { player }, "To encourage a more realistic approach to piloting and battle, pilots who die are grounded for a period of time. You could try operating artillery or a ground vehicle.", null); });
-                    Timeout(4.0, () => { Stb_Message(new Player[] { player }, "A pause after player death also allows us to properly wrap up player stats for your previous life.", null); });
-                    if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(6.0, () => { Stb_Message(new Player[] { player }, "If Fatal had his way you would not be able to rejoin the Campaign at all! So since this is only a simulation take a 5 min break and return <S>", null); });//enter the chat command <override to continue immediately.
-                                                                                                                                                                                                                                                                                                                          //Timeout(10.0, () => { Stb_Message(new Player[] { player }, message, null); });
-                                                                                                                                                                                                                                                                                                                          //Timeout(20.0, () => { Stb_Message(new Player[] { player }, message, null); });                
-                                                                                                                                                                                                                                                                                                                          //Force a player into a certain place:
-                                                                                                                                                                                                                                                                                                                          //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
-                                                                                                                                                                                                                                                                                                                          //player.Place() = null;//And OK--that doesn't work at all.
-                                                                                                                                                                                                                                                                                                                          //This should work: player.PlaceEnter(aircraft, place);  int place is indxplace
-                                                                                                                                                                                                                                                                                                                          // and: Player.PlaceLeave(int indxPlace)
-
-                    stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                    Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
-                    //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
-
-                    string peHud_message = "Sorry, you cannot fly--grounded for " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " due to recent death";
-                    GamePlay.gpHUDLogCenter(new Player[] { player }, message, null);
-                    Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
-                    Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
-                    Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
-                    return; //and . . . don't save new mission/sortie etc etc etc
-
-                    //} else if (stb_restrictAircraftByKills && stb_StatRecorder.StbSr_NumberOfKills(player.Name()) < stb_restrictAircraftByKills_RequiredKillNumber && (aircraft_type.Contains("Spitfire") || aircraft_type.Contains("Bf-109"))) {
-
-                }
-                else if (!stb_RankToAllowedAircraft.StbRaa_isPlayerAllowedAircraft(aircraft, player, actor) && aircraft != null)
-                {
-
-                    string playerName = stb_StatRecorder.StbSr_MassagePlayername(player.Name());
-                    string message0 = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + playerName + " is restricted from flying " + aircraft_type + " until sufficient kills OR rank have been achieved. ";
-
-                    //System.Console.WriteLine(message0);
-                    Stb_Message(new Player[] { player }, message0, null);
-                    //Stb_Message(new Player[] { player }, "Please choose a different aircraft.", null);                
-
-                    Timeout(5.0, () =>
-                    {
-                        string message2 = "Unlocked aircraft for your rank, " + stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForRank(player);
-                        Stb_Message(new Player[] { player }, message2, null);
-                    });
-
-                    Timeout(10.0, () =>
-                    {
-                        string message3 = stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForAce(player);
-                        if (message3 != "") Stb_Message(new Player[] { player }, "Unlocked aircraft for your number of kills: " + message3, null);
-                    });
-
-                    Timeout(15.0, () => { Stb_Message(new Player[] { player }, "Chat commands <ac and <nextac show your current & potential unlocked aircraft.", null); });
-
-                    stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                    Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
-
-
-                    string pe2Hud_message = "Sorry, you are restricted from " + aircraft_type + ". Read Chat Msg & Mission Briefing for details";
-                    GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null);
-                    Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
-                    Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
-                    Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
-
-                    return; //and . . . don't save new mission/sortie etc etc etc
-
-                }
-
-                if (aircraft != null && player != null && !stb_AllowJumpIntoAIAircraft)
-                {
-                    //Here we have to wait for results from OnPlaceLeave which takes like 0.1 seconds.  Otherwise we don't get a good result for StbCmr_HasPlayerLeftPlane
-                    Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
-                    {
-                        Console.WriteLine("Checking for ai jump-in");
-                        bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());  //left plane via the "isAI" method.  Not infallible, it seems.
-                    bool sortieStart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(player.Name()); //Sortie start via measuring distance moved etc
-                    bool sameActor = stb_ContinueMissionRecorder.StbCmr_PlaceLeave_PlaceEnter_sameActor(player.Name()); //Whether changed aircraft by whether the old & new actors are the same
-                    bool? onlyPlayer = Stb_isOnlyPlayerInAircraft(aircraft, player);
-                        double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                        Vector3d Vwld = aircraft.AirGroup().Vwld();
-                        double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
-                        double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
-
-                        AiBirthPlace birthPlace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
-                        Point3d bpLoc = new Point3d(0, 0, 0);
-                        if (birthPlace != null) bpLoc = birthPlace.Pos();
-                        double dist = StatCalcs.CalculatePointDistance(bpLoc, (aircraft as AiActor).Pos());
-                        double deltaAlt_m = Math.Abs(bpLoc.z - (aircraft as AiActor).Pos().z);
-
-                        bool isEnteringAIAircraft = AIAircraftList.Contains(aircraft); //So this is the definite giveaway, the person is entering an a/c that was first created as AI.
-
-                    Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5} {6}", isEnteringAIAircraft, realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
-                    //TODO: Just record whether a given aircraft is AI say 30 seconds after it is created (to give time for a player ot enter ot whatever)
-                    //then save this as a database & here we can instantly see that a player has entered an a/c that was originally created as AI
-
-                    if (isEnteringAIAircraft && realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
-                        {
-                            Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7} {8}", isEnteringAIAircraft, realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
-
-
-                            Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
-                                                     //2 = self-kill
-
-                        stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
-                            Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
-                            stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
-
-                        string pe3Hud_message = "Jumping into AI aircraft is not allowed; Career & Aircraft lost";
-                            GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
-                            Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-                            Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-                            Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-
-                            gpLogServerAndLog(null, "{0} just tried to jump into an AI aircraft in contravention of the Rules of War and the Geneva Convention.", new object[] { player.Name(), aircraft.InternalTypeName() });
-                            gpLogServerAndLog(null, "{0} reported for court martial, convicted, and sentenced to 20 years hard labor in the brig.", new object[] { player.Name(), aircraft.InternalTypeName() });
-                            gpLogServerAndLog(null, "The stolen aircraft was destroyed at a loss to the team.", new object[] { player.Name(), aircraft.InternalTypeName() });
-
-                            return; //and . . . don't save new mission/sortie etc etc etc
-
-                        /*
-                        string pe3Hud_message = "Jumping into nearby AI aircraft is not allowed - Please Don't!";
-                        GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
-                        Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-                        //Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-                        //Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
-                        gpLogServerAndLog(new Player[] { player }, "We are testing a new system to prevent pilots from jumping into nearby AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
-                        gpLogServerAndLog(new Player[] { player }, "The system detected that you just jumped into a new AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
-                        gpLogServerAndLog(new Player[] { player }, "If you did that, please don't!  If you didn't (ie, just moving to a new position in your bomber) please report the error to the admins.", new object[] { player.Name(), aircraft.InternalTypeName() });
-                        */
-
-                        }
-                    });
-
-                }
-
-                //Stb_Message(null, "Aircraft" + aircraft.TypedName() + aircraft.Type().ToString() + aircraft.Name(), null);
-
-                //if (aircraft.Type()=AircraftType.SpitfireMkI_100oct) Stb_Message(null, "Your a/c is a spitfire", null);
-
-                //Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", typeof(AircraftType).Namespace, typeof(AircraftType).Module, typeof(AircraftType).ToString(), typeof(AircraftType).IsEnum, typeof(AircraftType).IsValueType, typeof(AircraftType).GetType()); //, AircraftType.GetType()
-
-                //Note: .InternalTypeName() is the key.  But we should use Calcs.GetAircraftType(aircraft) instead - cleaner.
-                //Console.WriteLine("typedname: {0}, name: {1}, typestring: {2}, typeint: {3}, hull: {4}, itypename: {5}", aircraft.TypedName(), aircraft.Name(), aircraft.Type().ToString(), ((int)aircraft.Type()).ToString(), aircraft.HullNumber(), aircraft.InternalTypeName()); //, AircraftType.GetType()
-
-
-
-
-
-
-
-
-
-                /************* Sample TASK from volcanicisland - we're not using 
-                 *tasks for now.
-                 **************************************************************/
-                /* StbStatTask sst;
-                sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 3 });
-                GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ships");
-
-                stb_StatRecorder.StbSr_EnqueueTask(sst);
-                */
-                if (player != null)
-                {
-                    StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 787 }, player.Place() as AiActor);
-                    stb_StatRecorder.StbSr_EnqueueTask(sst1);
-
-                    /*
-                     * Trying to record the SORTIE START here but it doesnt' work because of weirdness with bomber player being in multiple places at once etc.
-                    string playerName = player.Name();
-                    bool realsortiestart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(playerName);
-                    if (realsortiestart)
-                    {                    
-                        //We record start of sortie here.  If it turns out to be less than 4 minutes later, we'll subtract it back out.
-                        StbStatTask sst00 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 844 }, player.Place() as AiActor);
-                        stb_StatRecorder.StbSr_EnqueueTask(sst00);
-                    }
-                    */
-                }
-
-
-
-
-                //set up the possibility to continue a mission over numerous sorties
-                //Console.WriteLine("PlaceEnter: 2 ");
-                stb_ContinueMissionRecorder.StbCmr_SavePositionEnter(player, actor);
-
-
-
-                /*
-                 * 2016/01/19 - moved this routine to onActorCreated, where it should work better
-                 * 
-                //Bec this has an air s pawn point, our "ontookoff" routine doesn't work, so we are 
-                //going to try to do it here instead (in addition to) the ontookoff
-                //The routine below works great for onTookOff, but in onPlaceEnter it has a serious problem, that the person
-                //might just be moving around places within (say) a bomber.  Not sure how to detect this (very common) issue.
-                //TimedOut_seconds <= 0 keeps us from counting new flights/sorties when the person is actually banned from flying right now . . . 
-                //Special for TWCTrainingFrance mission
-                if (aircraft != null && TimedOut_seconds <= 0)
-                {
-                    //770 = record a take off
-                    //We're not going to do that here, because whatever else an air spawn is, it is NOT a take off!
-                    //StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 770 });
-
-                    for (int i = 0; i < aircraft.Places(); i++)
-                    {
-                        //if (aiAircraft.Player(i) != null) return false;
-                        if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
-                        {
-                            string playerName = aircraft.Player(i).Name();
-                            //Console.WriteLine("Place Enter / Start Sortie " + playerName);
-
-
-                            bool realsortiestart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(playerName);
-                            //If this is not a continuation mission, we increment the mission counter for this player                                 
-                            if (realsortiestart && !stb_ContinueMissionRecorder.StbCmr_OnTookOff(playerName, actor))
-                            {
-
-                                //Console.WriteLine("New Mission for " + playerName);
-                                StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 779 }, actor);
-                                stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                            };
-
-                        }
-                    }
-
-
-                    //779 = Mission 
-
-                    //check if this is a continuation of the previous flight from near the
-                    //same position the a/c previously landed etc.  If so, it's not a "new mission" but a continuation of the previous mission, so don't increment the mission counter.  If not, we increment the mission counter.
-
-                }
-                */
-            }
-            //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            catch (Exception ex) { Console.WriteLine("OnPlaceEnter ERROR: " + ex.ToString()); }
-            #endregion
-            //add your code here
-        }
-
-
-        //787 Enter place
-        //788 Leave place
-        //HashSet<string> stb_playersForcedOut = new HashSet<string>();
-        public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
-        {
-            #region stb
-            base.OnPlaceLeave(player, actor, placeIndex);
-
-            //Console.WriteLine("OnPlaceLeave: place " + player.Place().Name() + " person.place " + player.PersonPrimary().Place() + " type " + player.PersonPrimary().Cart().InternalTypeName());
-            /* if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
-            else Console.WriteLine("OnPlaceLeave: place is NULL");
-            if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());  // =-1 seems to indicate parachuting situation
-            else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
-            if (player.PersonPrimary() != null) Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place().ToString());
-            else Console.WriteLine("OnPlaceLeave: primary person is NULL");
-            if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
-            */
-            //Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place());
-            //Console.WriteLine(" type " + player.PersonPrimary().Cart().InternalTypeName());
-            //if (stb_playersForcedOut.Contains(player.Name())) return; //This is a place leave that happened because we forced it, below
-            try
-            {
-
-                StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 788 }, actor);
-                stb_StatRecorder.StbSr_EnqueueTask(sst1);
-
-                //Console.WriteLine("PLACE LEAVE: " + player.Name());
-                //Stb_Chat("Place Leave", player);
-                //set up the possibility to continue a mission over numerous flights
-                stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, actor);
-
-
-                /*if (actor as AiPerson != null ) { //OK, the player is leaving a "person", ie, while parachuting down
-
-                    {
-                        AiPerson ourPerson = (actor as AiPerson);
-
-                        //Player.Place() = (actor as AiAircraft).Place(placeIndex);
-                        //we force the player back into place momentarily
-                        //stb_playersForcedOut.Add(player.Name());
-                        //player.PlaceEnter(actor as AiAircraft, placeIndex);
-
-                        Stb_Message(new Player[] { player }, "You left your parachute in the air. You get the same results as though you'd ridden it out.", new object[] { });
-                        Console.WriteLine("Player left parachute");
-                        if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(ourPerson);
-                        else OnPersonParachuteFailed(ourPerson);
-
-                        //player.PlaceLeave(placeIndex);
-                        //stb_playersForcedOut.Remove(player.Name());
-                    }
-
-                }
-                */
-
-                bool isLastPlayer = Stb_isLastPlayerInAircraftandOneOrNoPositions(actor as AiAircraft, player);
-                if (isLastPlayer) Console.WriteLine("IS last player");
-                else Console.WriteLine("Is NOT last player");
-                //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
-
-                //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
-                Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
-                {
-                //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
-                //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
-                //has judged to be nonfatal.  The game kicks them out of their place at that point, to watch the fiery explosion.
-                //If they HAVE already died then we just skip this bit.
-
-                //Stb_Chat("Checking place leave . . . ", player);
-
-                //there are a number of reasons the pilot may have left the place.  We try to sort them all out here. 
-
-                //1. if a/c crashes (ie fireball) CloD pops the pilot out for external view
-                //2. In this case, the pilot MIGHT be dead but (thanks for our merciful calculations above), also maybe not
-                //3. realPosLeave is false when it is just a move within (say) a bomber to a different position
-                int oldDeathTime = 0;
-                    int currTime = StatCalcs.TimeSince2016_sec();
-                    if (!stb_PlayerDeathAndTime.TryGetValue(player.Name(), out oldDeathTime)) oldDeathTime = 0;
-
-                    bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
-
-                    bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
-
-                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
-
-                double aircraftDamage = injuries;
-                    if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
-                if (aircraftDamage >= 0.5) aircraftDamage = 1; //Per individual stats 0.5 crash seriousness or greater is a/c write-off, so we're going with the same here
-
-                AiAircraft aircraft = actor as AiAircraft;
-                    if (aircraft != null)
-                    {
-                        Console.WriteLine("Stats, aircraft damage: {0:N2} due to injuries/crash; rpl: {1} {2}", aircraftDamage, realPosLeave, isLastPlayer);
-                        if (aircraftDamageTotal.ContainsKey(aircraft) && aircraftDamageTotal[aircraft] > 2)
-                        {
-                            Console.WriteLine("Stats, aircraft damages: {0:N0}", (double)aircraftDamageTotal[aircraft]);
-                            aircraftDamage += (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each item to repair is 15 mins.
-                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft damage", (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0);
-                        }
-                        if (aircraftCutlimbTotal.ContainsKey(aircraft))
-                        {
-                            aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
-                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
-                        }
-
-                    }
-
-                    if (aircraftDamage > 0.999 && injuries < 1) aircraftDamage = 0.999; //The most serious type of injury/damage/repair but not actually dead or destroyed completely
-
-                Console.WriteLine("Stats, aircraft damage: {0:N3} final", aircraftDamage);
-
-                    if (realPosLeave && (actor as AiAircraft) != null)
-                    {
-                    //So if we are here it's a real pos leave & we're in an aircraft.  If we're the LAST PLAYER we're going to call it
-                    //a real aircraft abandon.
-                    //Below, we will also force destruction of the aircraft in certain situations such as big crash.  But this will be our 'main' 
-                    //place to say, "Yes, the final pilot has left the aircraft"
-                    if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, forceDamage: aircraftDamage); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                }
-
-                /*
-                if (realPosLeave && isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5 )
-                {
-                    Console.WriteLine("Forcing exit 2");
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
-                }
-                */
-
-                    if (isPlayerAlreadyDead) Console.WriteLine("Checking place leave - player already dead . . . ", player);
-                    if (realPosLeave) Console.WriteLine("Checking place leave - realposleave . . . ", player);
-
-                    if (realPosLeave && !isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5) // && player.PlacePrimary() != -1)  // PlacePrimary==-1 means parachuting.  If they are doing that we just let them go
-                {
-
-                    //Stb_Chat("Checking place leave 1 . . . ", player);
-                    if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
-                        else Console.WriteLine("OnPlaceLeave: place is NULL");
-                        if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());
-                        else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
-                        if (player.PersonPrimary() != null) Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place().ToString());
-                        else Console.WriteLine("OnPlaceLeave: primary person is NULL");
-
-                        Console.WriteLine("POSLeave: " + realPosLeave.ToString() + " " + isPlayerAlreadyDead.ToString() + " " + currTime.ToString() + " " + oldDeathTime.ToString());                    //if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
-
-                    //OK, this is the place we need to deal with: player left a/c mid-flight, player lost internet connection, player landed @ some random spot then left the plane, player used the 'flag screen" to leave the plane mid-flight, etc etc etc
-                    //This a bit awkward because we are doing this in StbCmr instead of in mission itself . . . 
-
-                    //double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
-                    //if (Z_VelocityTAS == 0) OnAircraftStopped(a);
-
-                    double Z_AltitudeAGL = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-
-                        if (Z_AltitudeAGL <= 5)
-                        {
-
-
-                        //Stb_Chat("Checking place leave 2 . . . ", player);
-
-                        //this WAS here:  double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed). 
-
-                        //we force the player back into place momentarily
-                        //this is necessary in order fo the killActor() routine to work properly
-                        //stb_playersForcedOut.Add(player.Name());
-                        //player.PlaceEnter(actor as AiAircraft, placeIndex);
-
-                        /*
-                        if (injuries >= 0.5 || Stb_distanceToNearestAirport(AiActor actor) > 2000 )
-                        {
-                            Stb_Message(new Player[] { player }, "Your aircraft was written off due to damage.", new object[] { });
-                            stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, player as AiActor));
-
-                        }
-                        */
-
-                            if (injuries < 1)
-                            {
-                            //if (injuriesmission.Stb_killActor(actor, 0);  //as long as injuries<1 they shouldn't actually die, but it will be treated as though they had a ground collision OR landing at this moment.
-                            //Stb_Chat("Player left plane: Injuries <1", player);
-
-                            //Stb_Chat("Checking place leave 3 . . . ", player);
-
-                            if (injuries > 0.1)
-                                {
-                                    string line = player.Name() + " crashed with injuries.";
-                                //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
-                                Stb_Chat(line, player);
-
-                                //OnAircraftCrashLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, 
-                                OnAircraftCrashLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, 
-                                                                                                     //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
-
-                                //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
-                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                            }
-                                else
-                                {
-
-                                //Stb_Chat("Player left plane: Injuries <=0.1; treating as a normal landing", player);
-                                //OnAircraftLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, etc.
-                                string line3 = player.Name() + " landed and left the aircraft.";
-                                //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
-                                Stb_Chat(line3, player);
-                                    OnAircraftLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy,
-
-                                //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
-                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                            }
-                            }
-                            else
-                            { //injuries = 1 
-
-                            //Stb_Chat("Checking place leave 4 . . . ", player);
-                            Stb_Chat("Player left plane: Injuries = 1; player death", player);
-                                stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 1, actor, player, false);
-
-                            //Here we are forcing aircraft loss in case of severe injuries.
-                            //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
-                        }
-                        }
-
-                        else //If they actually did leave the plane just while it was in mid-air.  And they haven't recently died etc etc etc.  So this is just a person voluntarily leaving (or perhaps they lost internet connection, whatever). We treat it as though they have jumped from the plane at this moment in their parachute.  If they land in enemy territory, on water, etc then consequences will be appropriate for that action.  CloD seems to do parachute fail about 20-50% of the time, so our routines are set up to handle that, so we'll duplicate that functionality here.
-                    {
-                        /* AiPerson ourPerson = (actor as AiCart).Person(placeIndex);
-
-                        //Player.Place() = (actor as AiAircraft).Place(placeIndex);
-
-
-                        Stb_Message(new Player[] { player }, "You left your aircraft in the air. This is treated as though you suddenly parachuted from your aircraft.", new object[] { });
-                        Console.WriteLine("Player left plane: Injuries =1 and parachuting");
-                        //if (stb_random.NextDouble() < .8) OnPersonParachuteLanded((actor as AiCart).Person(placeIndex));
-                        //else OnPersonParachuteFailed((actor as AiCart).Person(placeIndex));
-                        if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(player as AiPerson);
-                        else OnPersonParachuteFailed(player as AiPerson);
-
-                        */
-
-                        //Stb_Chat("Checking place leave 5 . . . ", player);
-                        string line2 = player.Name() + " has parachuted from the aircraft.";
-                            Stb_Chat(line2, player);
-                            OnPersonParachuteLanded(actor, player);
-                            Console.WriteLine("Forcing exit 3");
-                            if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off, in case they were the last person on board AND they have just parachuted out
-
-                    }
-
-                    //Stb_Chat("Checking place leave 6 . . . ", player);
-                    //now we remove the player from the place again
-                    //player.PlaceLeave(placeIndex);
-                    //stb_playersForcedOut.Remove(player.Name());
-
-                }
-
-                });
-
-                Stb_BalanceUpdate(player, actor, placeIndex, false);
-                if (stb_DestroyOnPlaceLeave)
-                {
-                    AiAircraft aircraft = actor as AiAircraft;
-                    if (aircraft != null)
-                    {
-                        Timeout(60.0, () => { Stb_DestroyPlaneSafe(aircraft); });//works fine if you havent take off or flying in neutral zone
-                        Timeout(70.0, () => { Stb_DestroyPlaneSafe(aircraft); });//second call for cleanup
-                                                                                 //game thinks that you are still airborne after you landed inside an airfield perimeter
-                                                                                 //because we havent set landing waypoints & airfields properly
-                                                                                 //this is why we call Stb_DestroyPlaneSafe again, we could do the same by adding an ai with airport.cpp
-                                                                                 //instead of calling this method twice but airport.cpp does the cleanup by killing planes 
-                                                                                 //which leads to wrong stats collection, for ex a user who just damaged an enemy plane normally takes only
-                                                                                 //damage bonus, but with airport.cpp, if the damaged plane lands, he would also take a kill participation bonus
-                    }
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
-        }
-
-        HashSet<AiAircraft> AIAircraftList = new HashSet<AiAircraft>(); //All aircraft created as AI, used to detect if any players have entered an AI aircraft
-
-        public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
-        {
-            base.OnActorCreated(missionNumber, shortName, actor);
-
-            //Stb_Message(null, shortName + " created!", new object[] { });
-
-            //Ground objects (except AA Guns) will die after X min when counted from their birth
-
-            /*** //Experimental method to create wounded AI aicraft for testing purposes.
-            if (actor is AiAircraft)
-            {
-               Timeout(30, () =>
-               {
-                   //experimental - were damaging all AiAC to find out what happens when the crash land etc but don't die
-                   AiAircraft aircraft = actor as AiAircraft;
-                   //Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
-                   //Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsAileronsDisabled);
-                   Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsRudderDisabled);
-                   Stb_DamagePlane(aircraft, NamedDamageTypes.Eng0TotalSeizure);
-               });
-
-
-            }
-            */
-
-            /* We're counting sortie start by looking for any a/c creating & then seeing if there is a player inside.  Then this increments
-             * the sortie counter.  Later if the player leaves & the flight time was less than 4 minutes we subtract that sortie back out.
-             * This will miss a few cases:
-             *  - Offline play where the player can jump into an already-existing a/c
-             *  - Jumping into a tank or AA (it already exists)
-             *  - A 2nd/3rd player jumping into a bomber (it already exists)
-             *  */
-
-            if (actor != null && actor is AiAircraft)
-            {
-                //IsAirborne is false right now, but if we wait a little bit becomes true, when we are spawning in at an airspawn
-                /* moving this part, to detect sortie start, to onplaceenter . . .
-                    AiAircraft aircraft = actor as AiAircraft;
-                    for (int i = 0; i < aircraft.Places(); i++)
-                    {
-                        //if (aiAircraft.Player(i) != null) return false;
-                        if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
-                        {
-
-                            string playerName = aircraft.Player(i).Name();
-                            //We record start of sortie here.  If it turns out to be less than 4 minutes later, we'll subtract it back out.
-                            StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 844 }, aircraft.Player(i) as AiActor);
-                            stb_StatRecorder.StbSr_EnqueueTask(sst0);
-                        }
-                    }
-                   */
-
-                AiAircraft aircraft = actor as AiAircraft;
-
-                Timeout(0.15, () =>
-                {
-                //AiAircraft aircraft = actor as AiAircraft;
-                double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                //Console.WriteLine("Checking AirSpawn . . ." + shortName + " " + actor.Name() + " " + Z_AltitudeAGL.ToString("0.0") + " " + aircraft.IsAirborne().ToString());
-
-                if (aircraft != null && !Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne()) //aircraft + NOT aicontrolled + airborne @ creation = airspawn
-                {
-                    //this is an airspawn takeoff; thus "IsTakeOff" is false & we don't add an actual take-off to the player's stats
-                    Console.WriteLine("AirSpawn!!!!");
-                        ProcessAircraftTakeOff(aircraft: aircraft, IsTakeOff: false);
-                    }
-
-                //2018-09-24 testing system to find out weapons loadout for <rr
-                if (aircraft != null && !Stb_isAiControlledPlane(aircraft)) //live pilot has spawned in an aircraft
-                {
-
-                    //This seems the best place to detect creation of aircraft to subtract it from supply.
-                    //We already know there is a player in the a/c, but we need to know the player, and should only do this once per a/c
-                    //(ie, for the first player we find)
-                    //need to do it before the weaponsmask stuff bec. it causes an error?
-
-                    for (int i = 0; i < aircraft.Places(); i++)
-                        {
-                            if (aircraft.Player(i) is Player && aircraft.Player(i) != null)
-                            {
-                                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(aircraft.Player(i), actor);
-                            //we send it multiple times without concern; -supply.cs makes sure a single a/c is never checked out more than once.
-                            //break; //only do this ONCE although the player will probably be in two places in a multi-player
-                        }
-                        }
-                    //This is an idea about how to load aircraft loadout, however it isnt working 2018/09 flug
-                    //AiBirthplace birthplace = somebirthplacereference;
-                    Console.WriteLine("Checking Loadout/weaponsmask . . . ");
-                        AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
-                        Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
-                             + " " + aircraft.HullNumber()
-                             + " " + aircraft.CallSignNumber());
-                        System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.InternalTypeName());
-                    //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
-                    Console.WriteLine("Got loadout/weaponsmask");
-                    //Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
-                    if (weaponsmask != null) Console.WriteLine("not null");
-                        else Console.WriteLine("null");
-                        if (weaponsmask.Count > 2) Console.WriteLine("2");
-                        else Console.WriteLine("3");
-                        if (weaponsmask.Length > 2) Console.WriteLine("2");
-                        else Console.WriteLine("3");
-                        Console.WriteLine("weaponsmask  info:");
-                        Console.WriteLine("   Count:    {0}", weaponsmask.Count);
-                        Console.WriteLine("   Length:   {0}", weaponsmask.Length);
-                        Console.WriteLine("   Values:");
-                        StatCalcs.PrintValues(weaponsmask, 8);
-
-
-
-
-                    }
-
-                });
-
-                //we use 
-                //this to detect if people have jumped into AI aircraft, and we pick up the rest via onmissionloaded
-                Timeout(2, () =>
-                {
-                    if (aircraft != null && Stb_isAiControlledPlane(aircraft)) //AI Aircraft has been created
-                {
-                        AIAircraftList.Add(aircraft);
-                    }
-                });
-            }
-        }
-
-        public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
-        {
-            #region stb
-            base.OnActorDamaged(missionNumber, shortName, actor, initiator, damageType);
-            //try
-            {
-                //stb_KilledActors.Add(actor, initiator, damageType); // Save all damages/damager info for stats purposes so it will be available if/when the actor is finally killed.
-                //System.Console.WriteLine("Actor damaged: " + actor.Army() + " " + ((int)damageType).ToString() );
-                //System.Console.WriteLine("Ground Actor damaged: " + actor.Army());
-                bool willReportDamage = false;
-
-                if (initiator != null)
-                {
-                    if (initiator.Player != null)
-                    {
-                        if (initiator.Player.Army() == 1 && actor.Army() == 2) { willReportDamage = true; }
-                        if (initiator.Player.Army() == 2 && actor.Army() == 1) { willReportDamage = true; }
-                    }
-                }
-                if (willReportDamage)
-                {
-                    AiGroundActor ga = actor as AiGroundActor; //only do ground actors here because aircraft are done elsewhere
-                    if (ga != null)
-                    {
-                        if (ga.Type() == AiGroundActorType.AAGun || ga.Type() == AiGroundActorType.Artillery || ga.Type() == AiGroundActorType.Tank)
-                        {
-                            StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 2 }, actor);
-                            stb_StatRecorder.StbSr_EnqueueTask(sst);
-                        }
-                        else if (ga.Type() == AiGroundActorType.ShipBattleship || ga.Type() == AiGroundActorType.ShipCarrier ||
-                                 ga.Type() == AiGroundActorType.ShipCruiser || ga.Type() == AiGroundActorType.ShipDestroyer ||
-                                 ga.Type() == AiGroundActorType.ShipMisc || ga.Type() == AiGroundActorType.ShipSmallWarship ||
-                                 ga.Type() == AiGroundActorType.ShipSubmarine || ga.Type() == AiGroundActorType.ShipTransport)
-                        {
-                            StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 3 }, actor);
-                            stb_StatRecorder.StbSr_EnqueueTask(sst);
-                        }
-                        else //any other type of groundactor besides AA/Tank OR Ship = type 4 //bhugh
-                        {
-                            StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 4 }, actor);
-                            stb_StatRecorder.StbSr_EnqueueTask(sst);
-                        }
-                    }
-                }
-            }
-            //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
-        }
-
-        //On OnAircraftKilled is called when a plane is not longer flyable, for example if the pilot get killed or its too heavy damaged, but you get not the damager.
-        //OnActorDead is called later after a plane is hitting the ground or a GroundActor or AiPerson or AiGroup (a Ships is an AiGroup) is killed.And you can check the damagers.
-        //OnActorDestroyed is called every time a Actor is removed from the game, so its also called if a script removed a empty plane. So you should use OnAircraftKilled or OnActorDead.
-        //http://forum.1cpublishing.eu/archive/index.php/t-28611.html
-
-        HashSet<string> stb_aircraftKilled = new HashSet<string>(); //set of AiActor.Name()s
-
-        public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
-        {
-            base.OnAircraftKilled(missionNumber, shortName, aircraft);
-
-            //if it's ai controlled we consider it "killed" at this point, so go ahead & assign points.
-            if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30);
-            else
-            { //if it is player-controlled then we let nature take its course for now.  But we save the actor on a list & if it turns it it wasn't recorded later on then we record it later.
-
-                //Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0)
-                stb_aircraftKilled.Add((aircraft as AiActor).Name());
-            }
-
-        }
-
-        public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
-        {
-            base.OnActorDestroyed(missionNumber, shortName, actor);
-
-            try
-            {
-
-                Console.WriteLine("StatsOnDestroy: " + shortName + " was destroyed");
-                AiAircraft aircraft = actor as AiAircraft;
-
-                if (aircraft != null)
-                {
-                    Stb_KillACNowIfInAircraftKilled(aircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
-
-
-                    double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-
-                    if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
-                    {
-                        //if (stb_Debug) 
-                        Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
-                        Stb_killActor(actor); //it's dead, Jim
-
-                    }
-                    // crash landing in solid ground
-
-                    else if (Z_AltitudeAGL < 5 && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
-                    {
-                        //if (stb_Debug) 
-                        Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
-                        Stb_killActor(actor); //Also dead; counts as a kill
-
-                    }
-                    else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor) > 2000)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
-                    {
-                        //if (stb_Debug) 
-                        Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
-                        Stb_killActor(actor); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
-
-                    }
-                }
-
-
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-        }
-
-
-        //Simple dictionary that keeps a count of how many times each aircraft was damaged and how many times a cut limb
-        public Dictionary<AiAircraft, int> aircraftDamageTotal = new Dictionary<AiAircraft, int>();
-        public Dictionary<AiAircraft, int> aircraftCutlimbTotal = new Dictionary<AiAircraft, int>();
-
-        public override void OnAircraftDamaged(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, NamedDamageTypes damageType)
-        {
-            #region stb
-            base.OnAircraftDamaged(missionNumber, shortName, aircraft, initiator, damageType);
-            try
-            {
-                //System.Console.WriteLine("Aircraft Actor damaged: " + aircraft.Army());
-                if (aircraftDamageTotal.ContainsKey(aircraft)) aircraftDamageTotal[aircraft]++;
-                else aircraftDamageTotal[aircraft] = 1;
-
-                StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 781 }); //player damaged, 781                                                                        
-                bool willReportDamage = false;
-
-                bool selfDam = stb_ContinueMissionRecorder.StbCmr_IsSelfDamage(aircraft, initiator);
-
-                if (initiator != null)
-                {
-                    if (initiator.Player != null)
-                    {
-                        if (initiator.Player.Army() == 1 && aircraft.Army() == 2) { willReportDamage = true; }
-                        if (initiator.Player.Army() == 2 && aircraft.Army() == 1) { willReportDamage = true; }
-                    }
-                }
-                if (willReportDamage)
-                {
-                    if (initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(initiator.Player, aircraft, "damage");
-                    StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 1 }, initiator.Player.Place() as AiActor);
-                    stb_StatRecorder.StbSr_EnqueueTask(sst);
-                }
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
-        }
-
-        public override void OnAircraftCutLimb(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, LimbNames limbName)
-        {
-            #region stb
-            base.OnAircraftCutLimb(missionNumber, shortName, aircraft, initiator, limbName);
-            try
-            {
-
-                StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 782 }); //player limb cut 782
-                bool willReportCutLimb = false;
-
-                bool ret = stb_ContinueMissionRecorder.StbCmr_IsSelfDamage(aircraft, initiator);
-
-                if (aircraftCutlimbTotal.ContainsKey(aircraft)) aircraftCutlimbTotal[aircraft]++;
-                else aircraftCutlimbTotal[aircraft] = 1;
-
-                if (initiator != null && aircraft != null)
-                {
-                    if (initiator.Player != null)
-                    {
-                        //if ( ret ) Stb_Message(null, initiator.Player.Name() + " damaged self!", new object[] { });
-                        if (aircraft.Army() == 1 && initiator.Player.Army() == 2) { willReportCutLimb = true; }
-                        if (aircraft.Army() == 2 && initiator.Player.Army() == 1) { willReportCutLimb = true; }
-                    }
-                }
-                if (willReportCutLimb)
-                {
-                    if (initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(initiator.Player, aircraft, "cutlimb");
-                    if (((int)limbName > 0) && ((int)limbName < 121))
-                    {
-                        StbStatTask sst = new StbStatTask(StbStatCommands.CutLimb, initiator.Player.Name(), new int[] { (int)limbName }, initiator.Player.Place() as AiActor);
                         stb_StatRecorder.StbSr_EnqueueTask(sst);
                     }
                 }
             }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
         }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+    ***************************************************************/
 
 
-        //Take care of logging write-offs, with a method to prevent double-counting.
-        //TODO: We could check whether or not there is any enemy damage to the a/c, then additionally track
-        //"self-write-offs" as a separate/additional category
-        //TODO: Write-offs when the player crashes & dies, may be be assigned to the 'next' life rather than the previous life.  Possibly because the death is recorded
-        //prior to the write-off.  Not sure how to fix this . . . 
-        new Dictionary<string, int> stb_ACWrittenOffAndTime = new Dictionary<string, int>();
 
-        public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double injuries = 0, double distance = 0)
+    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
+    {
+        #region stb
+        base.OnPlaceEnter(player, actor, placeIndex);
+        //if (stb_playersForcedOut.Contains(player.Name())) return; //This is a place enter that happened because we forced it, above in onPlaceLeave
+        try
         {
-            int oldWrittenOffTime = 0;
-            int currTime = StatCalcs.TimeSince2016_sec();
-            if (!stb_ACWrittenOffAndTime.TryGetValue(player.Name(), out oldWrittenOffTime)) oldWrittenOffTime = 0;
-            if (currTime - oldWrittenOffTime > 30)
-            {  //prevents dup write-offs for same plane    
-                stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, actor));
-                stb_SaveIPlayerStat.StbSis_AddSessStat(player, 845, 1);//Also save this for current session stats
-
-                string reason = ". Distance to nearest friendly airport: " + distance.ToString("N0") + " meters.";
-                if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
-                Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });
-                Console.WriteLine("Forcing exit 4");
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
-                Console.WriteLine("Forcing exit 4a");
-            }
-
-            Console.WriteLine("Forcing exit 4b");
-            stb_ACWrittenOffAndTime[player.Name()] = currTime;
-            Console.WriteLine("Forcing exit 4c");
-        }
+            //Stb_Message(null, "Player last died . . . ", new object[] { });
+            //Console.WriteLine(stb_StatRecorder.StbSr_TimeSincePlayerLastDied("TWC_Flug"));
+            //Console.WriteLine("Version: " + Environment.Version.ToString());
+            //Console.WriteLine("PlaceEnter: 1 ");
 
 
-        //We want to give bomber pilots a separate career.  Possibly we could give people different careers for red/blue
-        //as well in the future.  So this dictionary records the type of career the current pilot is in.  Called from
-        //placeEnter to set the pilot type & other places as necessary to read it.
-        //First string of Tuple is (bomber) or "" ; second string is unused for now but coudl be (red) or (blue)
-        //double is the current TIME as base.Time.current() - same system used in maddox.game.world.DamagerScore and the
-        //idea is that if we want, after an actor dies we could sort out which damages where done at what time and thus 
-        //assign them to the CORRECT career.  To do thise we'll need more of a catalog of all the player's careers
-        //during this mission along with time stamps for when they change, not just the most recent change.
-        Dictionary<string, Tuple<string, string, double>> stb_PilotType = new Dictionary<string, Tuple<string, string, double>>();
+            stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating and/or initiate the stats collection. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  Could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
 
+            //Stb_changeTargetToPlayerRecurs(player);
 
-        //OK, the following dictionary is designed to solve this problem:
-        // - if a player shoots or bombs an object (ac or ground object), then leaves the server or switches to a different a/c OR switches say from fighter to bomber, then later on the ac or ground object finally dies, the original player probably doesn't get credit because they actor they used to kill that particular ac or ground object no longer exists.  Or if it DOES exist it might be credited to the wrong career because the player has switched to a new career (say (bomber)) and the ondead routine has no way to know that
+            AiAircraft aircraft = actor as AiAircraft; //we allow them to enter artillery, tank, etc, just not an aircraft
+            string aircraft_type = StatCalcs.GetAircraftType(aircraft);
+            string airc = "aircraft";
+            if (aircraft == null) airc = "not an aircraft";
+            string person = "person";
+            AiPerson pers = actor as AiPerson;
+            if (pers == null) person = "not a person";
+            string ground = "ground actor";
+            AiGroundActor aga = actor as AiGroundActor;
+            if (aga == null) ground = "not a ground actor";
+            //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
 
-        //However, there is still the problem that if the original damager actor is gone (ie, destroyed) when the damaged actor dies, then the onDead
-        //routine probably has no way to discover which player was linked to that damager actor, in order to give credit to the player. This requires more testing to determine exactly what happens in this situation.  What if the player has quite the server entirely at this point, or has left that aircraft (which is then destroyed rather quickly) and entered another a/c.
-        //A separate issue is that of knowing which of the player's CAREERs the credit should go to.  That is the problem the dictionary
-        //below is designed to solve. However, the complex structure below is probably overkill for that problem. All we need is a list
-        //of players that were (ever) in this a/c and also the relevant career tuple for that player.
-        //Below is more detailed & could be used to actually determine which player was in the a/c at which time, thus given even greater fine-grained control of who gets credit for what, except that it is missing
-        //one specific bit of info needed for that: What time the player LEFT the a/c.
-        Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>> stb_PilotTypeRecordbyAC = new Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>>();
-
-        public void stb_setPilotType(Player player, AiActor actor)
-        {
-
-            if (player.Name() == null || player.Name() == "") return;
-
-            AiAircraft aircraft = null;
-            string acType = "";
-            string playerBomberFighter = "";
-            string playerTeam = "";
-            if (actor is AiAircraft)
+            //Set the player career type (ie bomber, fighter etc)
+            //We have a problem in that when a player bails out of an aircraft that triggers OnPlaceEnter (for some reason!?) and in that one case
+            //we don't want to change the pilot type - ie, if they are a bomber pilot, they will still be on their bomber pilot career after they
+            //parachute out until they enter another type of aircraft or actor.
+            //So we skip setPilotType ONLY IF all the following are true: NOT a ground actor NOT in an aircraft AND they just parachuted (player.PlacePrimary() != -1 seems to be best/only way to determine this?)
+            if (aga == null && aircraft == null && player.PlacePrimary() == -1)
             {
-
-                aircraft = actor as AiAircraft;
-                acType = StatCalcs.GetAircraftType(aircraft);
-
-            }
-            else if (player.Place() != null && (player.Place() as AiAircraft) != null)
-            {
-                //Player player = actor as Player;
-                aircraft = player.Place() as AiAircraft;
-                acType = StatCalcs.GetAircraftType(aircraft);
-            }
-
-            //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
-            //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs.
-            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
-            {
-                playerBomberFighter = " (bomber)";
-
-            }
-
-            //Save the info needed for career type of this player at this moment (generally, the moment of entering a position)
-            stb_PilotType[player.Name()] = new Tuple<string, string, double>(playerBomberFighter, playerTeam, base.Time.current());
-            Console.WriteLine("stb_setPilotType: " + playerBomberFighter + " " + playerTeam + " " + base.Time.current().ToString());
-
-            //Save a record of all players who have entered this aircraft, along with time entered & other info about their career
-            if (aircraft != null && player.Name() != null)
-            {
-                Dictionary<string, List<Tuple<string, string, double>>> currAircraftRecord = new Dictionary<string, List<Tuple<string, string, double>>>();
-
-                if (!stb_PilotTypeRecordbyAC.TryGetValue(actor.Name(), out currAircraftRecord))
-                {
-                    currAircraftRecord = new Dictionary<string, List<Tuple<string, string, double>>>();
-                }
-
-                List<Tuple<string, string, double>> currPilotRecord = new List<Tuple<string, string, double>>();
-
-                if (!currAircraftRecord.TryGetValue(player.Name(), out currPilotRecord))
-                {
-                    currPilotRecord = new List<Tuple<string, string, double>>();
-                }
-
-                currPilotRecord.Add(stb_PilotType[player.Name()]);
-                currAircraftRecord[player.Name()] = currPilotRecord;
-                stb_PilotTypeRecordbyAC[actor.Name()] = currAircraftRecord;
-            }
-        }
-
-        public Tuple<string, string, double> stb_getPilotType(string playerName)
-        {
-            Tuple<string, string, double> temp = new Tuple<string, string, double>("", "", 0);
-
-            if (!stb_PilotType.TryGetValue(playerName, out temp))
-            {
-                temp = new Tuple<string, string, double>("", "", 0);
-            }
-
-            return temp;
-        }
-
-        public Tuple<string, string, double> stb_getPilotType(Player player)
-        {
-            if (player == null || player.Name() == null || player.Name() == "") return new Tuple<string, string, double>("", "", 0);
-
-            else return stb_getPilotType(player.Name());
-        }
-
-
-        public string stb_getPilotTypeString(string playerName)
-        {
-            Tuple<string, string, double> tmp = stb_getPilotType(playerName);
-
-            string tempStr = tmp.Item1 + tmp.Item2;
-
-            return tempStr;
-        }
-
-        public string stb_getPilotTypeString(Player player)
-        {
-            if (player == null || player.Name() == null || player.Name() == "") return "";
-
-            else return stb_getPilotTypeString(player.Name());
-        }
-
-
-
-        //OK, CloD seems a bit too willing to hand out gruesome deaths sometimes.  IE when a player runs into a hangar wall at 5MPH.
-        //So we are going to convert some of those CLOD deaths into injury situations for our stats/career purposes.
-        public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false)
-        {
-            double injuries = 1; //default assumption is 1 = yup, they're dead
-            AiAircraft aircraft1 = null;
-            if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
-            else if (actor as AiPerson != null && aircraft1 == null)
-            {
-
-                AiActor place1 = (actor as AiPerson).Player().Place();
-                if (place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
-                if (stb_Debug) System.Console.WriteLine("CalcInjuries: Person killed.");
-                if (stb_Debug && aircraft1 != null) System.Console.WriteLine("CalcInjuries: Person killed was in aircraft.");
-            }
-            if (!allowTakeBack)
-            {
-                if (stb_Debug) System.Console.WriteLine("CalcInjuries: Death takeback not allowed here, so no calculation.");
-                return injuries; //yup, they are dead
-            }
-            if (aircraft1 == null)
-            {
-
-                if (stb_Debug) System.Console.WriteLine("CalcInjuries: Not an aircraft, so no injury calc.");
-                return injuries; //we're only going to turn some deaths into injuries for aircraft; if not an a/c or person in an a/c then it is just 1 = yup, they are dead
+                //All the above criteria are met, so do nothing, this is a person who just parachuted out
+                //We could do anything here we wanted, to people who just bailed out of an aircraft
             }
             else
             {
-                if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries . . . ");
-                //AiAircraft aircraft = actor as AiAircraft;
-                //double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
-                //double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
-                double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
-                double VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
-                                                                     //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
-                                                                     //unit invariant--it comes back as a % of mach whether we are using English or metric units
-                                                                     //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
+                //not parachuting out but entering some type of Actor place, so DO set pilot type
+                stb_setPilotType(player, actor);
 
+                //We can send the a/c to -supply.cs as often as we like, it will only register a given a/c once and sending it whenever someone enters a Place ensures we don't accidently overlook it
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, actor);
+            }
+            //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + placeIndex.ToString());
 
-                //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-                //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+            //check if the player is timed out due to a previous death
+            int TimedOut_seconds = stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(player.Name());
 
-                Vector3d Vwld = aircraft1.AirGroup().Vwld();
-                double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
-                double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
-                double heading = (StatCalcs.CalculateBearingDegree(Vwld));
-                double pitch = StatCalcs.CalculatePitchDegree(Vwld);
+            if (TimedOut_seconds > 0 && aircraft != null)
+            {
+                int timeOut_minutes = (int)(TimedOut_seconds / 60);
+                string message = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name() + " is restricted from flying. " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " remains in your pilot restriction.";
+                //System.Console.WriteLine(message);
+                Stb_Message(new Player[] { player }, message, null);
+                Timeout(2.0, () => { Stb_Message(new Player[] { player }, "To encourage a more realistic approach to piloting and battle, pilots who die are grounded for a period of time. You could try operating artillery or a ground vehicle.", null); });
+                Timeout(4.0, () => { Stb_Message(new Player[] { player }, "A pause after player death also allows us to properly wrap up player stats for your previous life.", null); });
+                if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(6.0, () => { Stb_Message(new Player[] { player }, "If Fatal had his way you would not be able to rejoin the Campaign at all! So since this is only a simulation take a 5 min break and return <S>", null); });//enter the chat command <override to continue immediately.
+                                                                                                                                                                                                                                                                                                                      //Timeout(10.0, () => { Stb_Message(new Player[] { player }, message, null); });
+                                                                                                                                                                                                                                                                                                                      //Timeout(20.0, () => { Stb_Message(new Player[] { player }, message, null); });                
+                                                                                                                                                                                                                                                                                                                      //Force a player into a certain place:
+                                                                                                                                                                                                                                                                                                                      //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
+                                                                                                                                                                                                                                                                                                                      //player.Place() = null;//And OK--that doesn't work at all.
+                                                                                                                                                                                                                                                                                                                      //This should work: player.PlaceEnter(aircraft, place);  int place is indxplace
+                                                                                                                                                                                                                                                                                                                      // and: Player.PlaceLeave(int indxPlace)
 
-                //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
-                //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
-                //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
+                stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+                //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
 
+                string peHud_message = "Sorry, you cannot fly--grounded for " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " due to recent death";
+                GamePlay.gpHUDLogCenter(new Player[] { player }, message, null);
+                Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
+                Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
+                Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
+                return; //and . . . don't save new mission/sortie etc etc etc
 
-                AircraftParams maxAp = stb_AircraftParamStack.returnMaxes(player);
-
-
-
-                /* //This is the old way of doing it
-                //vel_mps vel_mph heading pitch
-
-                if (Z_AltitudeAGL < 5 && VelocityMPH < 10) injuries = 0.1;
-                else if (Z_AltitudeAGL < 4 && VelocityMPH < 30) injuries = 0.2;
-                else if (Z_AltitudeAGL < 3 && VelocityMPH < 70) injuries = 0.5;
-                else if (Z_AltitudeAGL < 2 && VelocityMPH < 100) injuries = 0.9;
-                else injuries = 1;
-
-                */
-                /* http://boards.straightdope.com/sdmb/showpost.php?p=19162752&postcount=16 
-                 * 300 fpm or less = 3.5mph, good landing
-                 * 600-800 fpm = 8 mph, slightly hard landing
-                 * 1000 fpm = 11 mph, very hard, some damage
-                 * 1500 fpm = 17 mph, definite damage, edge of much damage
-                 * 2000 fpm = 23 mph, getting into serious damage
-                 * 
-                 */
-
-                double vertSpeed_mph = StatCalcs.meterspsec2milesphour(maxAp.Vwld.z);
-                if (vertSpeed_mph >= 0) vertSpeed_mph = 0;
-                vertSpeed_mph = Math.Abs(vertSpeed_mph);
-                double operativeVel_MPH = maxAp.vel_mph + 2 * vertSpeed_mph;
-                if (Z_AltitudeAGL < 5 && operativeVel_MPH < 10) injuries = 0.1;
-                else if (Z_AltitudeAGL < 5 && operativeVel_MPH < 30) injuries = 0.2;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 50) injuries = 0.5;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 70) injuries = 0.6;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 90) injuries = 0.8;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 110) injuries = 0.9;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 130) injuries = 0.95;
-                else injuries = 1;
-
-                if (vertSpeed_mph > 26) injuries = 1;
-                else if (vertSpeed_mph > 23) injuries += 0.85;
-                else if (vertSpeed_mph > 20) injuries += 0.75;
-                else if (vertSpeed_mph > 15) injuries += 0.6;
-                else if (vertSpeed_mph > 13) injuries += 0.4;
-                else if (vertSpeed_mph > 12) injuries += 0.3;
-                else if (vertSpeed_mph > 11) injuries += 0.2;
-
-                if (injuries > 1) injuries = 1;
-
-                //We would do some probability-based kills here rather than just injuries.  Like if they are 90% injured maybe they have a 25% probability of death or whatever.
-
-                if (killType == 2 && injuries <= 0.2) injuries = injuries / 2; //If it is a self-injury on the ground and slow speed we are going to assume it is a fairly non-serious dumb thing the player did, and reduce the extent of injuries. If done by another person/player/actor, though we'll assume it is more serious 
-
-                /*if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " Army " + actor.Army() + " ZvelocityMACH in MPH " + (Z_VelocityMach * 600).ToString("0.00000") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " vel_mps " + vel_mps.ToString("N1") + " vel_mph " + vel_mph.ToString("N1") + " heading " + heading.ToString("N1") + " pitch " + pitch.ToString("N1") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
-                    + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " Mvel_mph " + maxAp.vel_mph.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " Mpitch " + maxAp.pitch.ToString("N1")
-                    );
-                */
+                //} else if (stb_restrictAircraftByKills && stb_StatRecorder.StbSr_NumberOfKills(player.Name()) < stb_restrictAircraftByKills_RequiredKillNumber && (aircraft_type.Contains("Spitfire") || aircraft_type.Contains("Bf-109"))) {
 
             }
-            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("N1"));
-            return injuries;
-        }
-
-        new Dictionary<string, int> stb_PlayerDeathAndTime = new Dictionary<string, int>();
-        new Dictionary<string, int> stb_PlayerParachute_Crashed_LandedTime = new Dictionary<string, int>();
-
-        //returns a double ranging 0 - 1.  0 means NO DEATH at all because it was previously recorded OR we have decided that even though CLOD thinks this is a death, we don't
-        //a number BETWEEN 0 and 1 indicates extent of injuries created by this incident, but as long as the return is less than 1 there is no death
-        //Note that if actor is NOT an AiAircraft (ie, a Player or Person or whatever) then this will ALWAYS record a kill and not 
-        //make any sort of determination about how hard or fatal the crash was.  This is a pretty important side effect that is used
-        //in several places (player as AiActor)
-        //killType: 2=self-kill, 1 = regular kill; we're going to say parachuting death is never a self-kill as you were
-        //PPl have been taking advantage of the fact that you can't die more than 1x in 60 seconds to do certain illegal things, so we 
-        //reduce the time to 10 sec and also allow an override of the pause on deaths via ignoreDeathLimit
-        //In case aircraftDead = true that is an indication that EVERY position in this aircraft has just been killed because the aircraft itself has been killed (not just one of the pilots in it, so that means there is no chance of return -1 meaning that one position is dead but another survives for now.
-        public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false, bool ignoreDeathLimit = false, bool aircraftDead = false)
-        {
-            try
+            else if (!stb_RankToAllowedAircraft.StbRaa_isPlayerAllowedAircraft(aircraft, player, actor) && aircraft != null)
             {
-                double recordedInjuries = 0;
-                int oldDeathTime = 0;
-                int currTime = StatCalcs.TimeSince2016_sec();
-                if (!stb_PlayerDeathAndTime.TryGetValue(playerName, out oldDeathTime)) oldDeathTime = 0;
-                if (currTime - oldDeathTime > 10 || ignoreDeathLimit)
-                { //This keeps you from killing yourself more than 1X per 10 seconds, more particularly avoids recording the same death more than once.
-                    recordedInjuries = stb_CalcExtentOfInjuriesOnActorDead(playerName, killType, actor, player, allowTakeBack);
-                    bool bothPositionsDead = true;
 
-                    //We handle the case where the player is occupying two positions and one of them is dead but the other still alive
-                    //Logic is a bit complex because we have to first check the person is occupying two positions, THEN that exactly ONE of those two is still alive
-                    //Note that ^ is EXCLUSIVE OR operator, guaranteeing that one but not both of the player's positions still has some health.
-                    if (player.PersonPrimary() != null && player.PersonSecondary() != null &&
-                        //(player.PersonPrimary().Health > 0 ^ player.PersonSecondary().Health > 0))
-                        (player.PersonPrimary().Health > 0 || player.PersonSecondary().Health > 0))
-                    {
-                        //Console.WriteLine("OnPlayerDead: Primary: " + player.PersonPrimary().Cart().InternalTypeName());
-                        //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Cart().InternalTypeName());
-                        //Console.WriteLine("OnPlayerDead: Primary: " + player.PersonPrimary().Health);
-                        //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Health);
-                        bothPositionsDead = false;
-                    }
-                    if (aircraftDead) bothPositionsDead = true;
+                string playerName = stb_StatRecorder.StbSr_MassagePlayername(player.Name());
+                string message0 = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + playerName + " is restricted from flying " + aircraft_type + " until sufficient kills OR rank have been achieved. ";
 
-                    //Console.WriteLine("OnPlayerDead: Player " + playerName + " both dead " + bothPositionsDead.ToString() + " ");
+                //System.Console.WriteLine(message0);
+                Stb_Message(new Player[] { player }, message0, null);
+                //Stb_Message(new Player[] { player }, "Please choose a different aircraft.", null);                
 
-                    //Console.WriteLine("OnPlayerDead: primary:" + player.PersonPrimary().Health.ToString("n1") + " secondary: " + player.PersonSecondary().Health.ToString("n1"));
-
-                    if (recordedInjuries == 1 && bothPositionsDead)
-                    {
-
-                        StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, actor);
-                        stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                        stb_PlayerDeathAndTime[playerName] = currTime;
-                        Console.WriteLine("Forcing exit 6");
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
-                        if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death WAS recorded because previous death recorded " + (currTime - oldDeathTime).ToString() + " seconds ago & injuries were severe & both positions were dead");
-
-                    }
-                    else if (recordedInjuries > 0 || !bothPositionsDead)
-                    {
-                        //Console.WriteLine("OnPlayerDead: Player " + playerName + " injuries were recorded, but no death");
-                        //we can do other things here, like save the injuries to the stats file and/or give them a timeout depending on how 
-                        //serious the injuries were.  But for now, we just proceed since it wasn't an actual death.
-                    }
-                    if (!aircraftDead && recordedInjuries == 1 && !bothPositionsDead)
-                    {
-                        //Console.WriteLine("OnPlayerDead: Player " + playerName + " had one position/place killed, but the other still remains alive.  So we record a death on the player's stats but don't actually kill this personality yet.");
-                        StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 778, 1 }, player.Place() as AiActor);
-                        stb_StatRecorder.StbSr_EnqueueTask(sst0);
-                        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 778, 1);//Also save this for current session stats
-                        recordedInjuries = -1; //-1 means this position was killed but another position still remains alive, for now.
-                    }
-
-                    double dist = Stb_distanceToNearestAirport(actor);
-                    if (bothPositionsDead && (recordedInjuries >= 0.5 || dist > 2000))
-                    {
-                        stb_recordAircraftWrittenOff(player, actor, recordedInjuries, dist);
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
-                    }
-
-                }
-                else
+                Timeout(5.0, () =>
                 {
-                    if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death was NOT recorded because previous death recorded just " + (currTime - oldDeathTime).ToString() + " seconds ago");
-                    recordedInjuries = 0;  //no recorded injuries because this death was previously recorded & we're doing nothing new here
-                }
+                    string message2 = "Unlocked aircraft for your rank, " + stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForRank(player);
+                    Stb_Message(new Player[] { player }, message2, null);
+                });
+
+                Timeout(10.0, () =>
+                {
+                    string message3 = stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForAce(player);
+                    if (message3 != "") Stb_Message(new Player[] { player }, "Unlocked aircraft for your number of kills: " + message3, null);
+                });
+
+                Timeout(15.0, () => { Stb_Message(new Player[] { player }, "Chat commands <ac and <nextac show your current & potential unlocked aircraft.", null); });
+
+                stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
 
 
+                string pe2Hud_message = "Sorry, you are restricted from " + aircraft_type + ". Read Chat Msg & Mission Briefing for details";
+                GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null);
+                Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
+                Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
+                Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe2Hud_message, null); });
 
-                return recordedInjuries;
+                return; //and . . . don't save new mission/sortie etc etc etc
 
             }
-            catch (Exception ex)
+
+            if (aircraft != null && player != null && !stb_AllowJumpIntoAIAircraft)
             {
-                System.Console.WriteLine("stb_RecordStatsForKilledPlayerOnActorDead - Exception: " + ex.ToString());
-                return 1;
+                //Here we have to wait for results from OnPlaceLeave which takes like 0.1 seconds.  Otherwise we don't get a good result for StbCmr_HasPlayerLeftPlane
+                Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+                {
+                    Console.WriteLine("Checking for ai jump-in");
+                    bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());  //left plane via the "isAI" method.  Not infallible, it seems.
+                    bool sortieStart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(player.Name()); //Sortie start via measuring distance moved etc
+                    bool sameActor = stb_ContinueMissionRecorder.StbCmr_PlaceLeave_PlaceEnter_sameActor(player.Name()); //Whether changed aircraft by whether the old & new actors are the same
+                    bool? onlyPlayer = Stb_isOnlyPlayerInAircraft(aircraft, player);
+                    double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    Vector3d Vwld = aircraft.AirGroup().Vwld();
+                    double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
+                    double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
+
+                    AiBirthPlace birthPlace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    Point3d bpLoc = new Point3d(0, 0, 0);
+                    if (birthPlace != null) bpLoc = birthPlace.Pos();
+                    double dist = StatCalcs.CalculatePointDistance(bpLoc, (aircraft as AiActor).Pos());
+                    double deltaAlt_m = Math.Abs(bpLoc.z - (aircraft as AiActor).Pos().z);
+
+                    bool isEnteringAIAircraft = AIAircraftList.Contains(aircraft); //So this is the definite giveaway, the person is entering an a/c that was first created as AI.
+
+                    Console.WriteLine("AI jump-in: {0} {1} {2} {3} {4} {5} {6}", isEnteringAIAircraft, realPosLeave, onlyPlayer, altAGL_m, vel_mph, dist, deltaAlt_m);
+                        //TODO: Just record whether a given aircraft is AI say 30 seconds after it is created (to give time for a player ot enter ot whatever)
+                        //then save this as a database & here we can instantly see that a player has entered an a/c that was originally created as AI
+
+                        if (isEnteringAIAircraft && realPosLeave && sortieStart && !sameActor && onlyPlayer != null && (bool)onlyPlayer && altAGL_m > 7 && vel_mph > 10 && (dist > 1500 || deltaAlt_m > 25))
+                    {
+                        Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7} {8}", isEnteringAIAircraft, realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
+
+
+                        Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                                                 //2 = self-kill
+
+                            stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                        Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+                        stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+
+                        string pe3Hud_message = "Jumping into AI aircraft is not allowed; Career & Aircraft lost";
+                        GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
+                        Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                        Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+
+                        gpLogServerAndLog(null, "{0} just tried to jump into an AI aircraft in contravention of the Rules of War and the Geneva Convention.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(null, "{0} reported for court martial, convicted, and sentenced to 20 years hard labor in the brig.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                        gpLogServerAndLog(null, "The stolen aircraft was destroyed at a loss to the team.", new object[] { player.Name(), aircraft.InternalTypeName() });
+
+                        return; //and . . . don't save new mission/sortie etc etc etc
+
+                            /*
+                            string pe3Hud_message = "Jumping into nearby AI aircraft is not allowed - Please Don't!";
+                            GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null);
+                            Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                            //Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                            //Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, pe3Hud_message, null); });
+                            gpLogServerAndLog(new Player[] { player }, "We are testing a new system to prevent pilots from jumping into nearby AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                            gpLogServerAndLog(new Player[] { player }, "The system detected that you just jumped into a new AI aircraft.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                            gpLogServerAndLog(new Player[] { player }, "If you did that, please don't!  If you didn't (ie, just moving to a new position in your bomber) please report the error to the admins.", new object[] { player.Name(), aircraft.InternalTypeName() });
+                            */
+
+                    }
+                });
+
             }
-        }
 
-        public void stb_RecordStatsOnActorDead(AiDamageInitiator initiator, int killtype, double score, double totalscore, AiDamageToolType toolType)
-        {
-            //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            //Stb_Message(null, "Aircraft" + aircraft.TypedName() + aircraft.Type().ToString() + aircraft.Name(), null);
+
+            //if (aircraft.Type()=AircraftType.SpitfireMkI_100oct) Stb_Message(null, "Your a/c is a spitfire", null);
+
+            //Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", typeof(AircraftType).Namespace, typeof(AircraftType).Module, typeof(AircraftType).ToString(), typeof(AircraftType).IsEnum, typeof(AircraftType).IsValueType, typeof(AircraftType).GetType()); //, AircraftType.GetType()
+
+            //Note: .InternalTypeName() is the key.  But we should use Calcs.GetAircraftType(aircraft) instead - cleaner.
+            //Console.WriteLine("typedname: {0}, name: {1}, typestring: {2}, typeint: {3}, hull: {4}, itypename: {5}", aircraft.TypedName(), aircraft.Name(), aircraft.Type().ToString(), ((int)aircraft.Type()).ToString(), aircraft.HullNumber(), aircraft.InternalTypeName()); //, AircraftType.GetType()
 
 
-            //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
-            int percent_score = (int)Math.Round(score / totalscore * 100);
-            if (percent_score < -3000) percent_score = -3000; //limit negative/removed points possible.  Just for sanity.
-            int percent_score_norm = (int)Math.Round((double)percent_score / (double)100);  //normed to 1=1 victory (rather than 100% = one victory)
 
-            int percent_score_fordead = 1;
-            if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
 
-            StbStatTask sst = new StbStatTask(StbStatCommands.Dead, initiator.Player.Name(), new int[] { killtype, percent_score_fordead }, initiator.Player.Place() as AiActor);
+
+
+
+
+
+            /************* Sample TASK from volcanicisland - we're not using 
+             *tasks for now.
+             **************************************************************/
+            /* StbStatTask sst;
+            sst = new StbStatTask(StbStatCommands.TaskCurrent, player.Name(), new int[] { 3 });
+            GamePlay.gpHUDLogCenter(new Player[] { player }, "Your Task: Engage Enemy Ships");
+
             stb_StatRecorder.StbSr_EnqueueTask(sst);
-
-            //Save penalty points, if that is what these are (negative points)
-            if (percent_score_norm < 0)
+            */
+            if (player != null)
             {
-                StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 847, percent_score_norm }, initiator.Player.Place() as AiActor);
-                stb_StatRecorder.StbSr_EnqueueTask(sst0);
-                stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 847, percent_score);//Also save this for current session stats
-            }
+                StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 787 }, player.Place() as AiActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst1);
 
-            StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798, percent_score }, initiator.Player.Place() as AiActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst1);
-            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798, percent_score);//Also save this for current session stats
-
-            //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-            StbStatTask sst2 = new StbStatTask();
-            //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
-            if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 }, initiator.Player.Place() as AiActor);
-            else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 }, initiator.Player.Place() as AiActor);
-            else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 }, initiator.Player.Place() as AiActor);
-            //allowing for removal of victories for bombing/damaging civilian areas
-            //Note that the -3000 puts a limit on the # of victories that can be removed using this system.
-            else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799, percent_score_norm }, initiator.Player.Place() as AiActor);
-
-            if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst2);
-
-            //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-            //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-            StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798 + killtype * 4, percent_score }, initiator.Player.Place() as AiActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst4);
-
-            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798 + killtype * 4, percent_score);//Also save this for current session stats
-
-            StbStatTask sst3 = new StbStatTask();
-            //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-            if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4 }, initiator.Player.Place() as AiActor);
-            else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 + killtype * 4 }, initiator.Player.Place() as AiActor);
-            else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 + killtype * 4 }, initiator.Player.Place() as AiActor);
-            //allowing for removal of victories for bombing/damaging civilian areas
-            else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4, percent_score_norm }, initiator.Player.Place() as AiActor);
-            if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst3);
-
-            //stb_StatRecorder.StbSr_WriteLine("3Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-            //Save the raw damage points towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
-            int rawscore = (int)Math.Round(score * 1000); //some raw scores are like .003843828
-            StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818, rawscore }, initiator.Player.Place() as AiActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst5);
-            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818, rawscore);//Also save this for current session stats
-            StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818 + killtype, rawscore }, initiator.Player.Place() as AiActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst6);
-            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818 + killtype, rawscore);//Also save this for current session stats
-
-            //stb_StatRecorder.StbSr_WriteLine("4Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-            //if (toolType.Equals(AiDamageToolType.Ordance)) stb_StatRecorder.StbSr_WriteLine("1. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
-            //Save the raw damage points specifically for BOMBS towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
-            if ((int)toolType == 2 || toolType.Equals(AiDamageToolType.Ordance))
-            {            //not sure if toolType == AiDamageToolType.Ordance or similar works? But something like (int)toolType==2 definitely does
-                StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830, rawscore }, initiator.Player.Place() as AiActor);
-                stb_StatRecorder.StbSr_EnqueueTask(sst7);
-                StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830 + killtype, rawscore }, initiator.Player.Place() as AiActor);
-                stb_StatRecorder.StbSr_EnqueueTask(sst8);
-
-                //stb_StatRecorder.StbSr_WriteLine("2. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
-            }
-        }
-
-        HashSet<string> stb_deadActors = new HashSet<string>(); //actor.Name() of actors we have already run through the onActorDead routine.  Helps prevent us from giving double credit to damagers of actors who are killed.
-
-        public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
-        {
-            #region stb
-            base.OnActorDead(missionNumber, shortName, actor, damages);
-            //try
-            if (actor == null) return; //nothing we can do here if the actor = null
-            {
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
-                // Console.WriteLine("OnActorDead: 1");
-                //avoid recording death of any actor more than once, except for players of course
-                if (actor as Player == null && actor != null)
-                {
-                    if (stb_deadActors.Contains(actor.Name()))
-                    {
-                        //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
-                        return; //This is an actor we've already 'killed' therefore we won't double count it.
-                                //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
-                    }
-                    else
-                    {
-                        //if (stb_Debug) 
-                        // Console.WriteLine("OnActorDead: 2");
-                        //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
-                        //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
-                        stb_deadActors.Add(actor.Name());
-                        //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
-                    }
+                /*
+                 * Trying to record the SORTIE START here but it doesnt' work because of weirdness with bomber player being in multiple places at once etc.
+                string playerName = player.Name();
+                bool realsortiestart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(playerName);
+                if (realsortiestart)
+                {                    
+                    //We record start of sortie here.  If it turns out to be less than 4 minutes later, we'll subtract it back out.
+                    StbStatTask sst00 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 844 }, player.Place() as AiActor);
+                    stb_StatRecorder.StbSr_EnqueueTask(sst00);
                 }
-
-                //if (stb_Debug) 
-                //Console.WriteLine("OnActorDead: 3");
-                //stb_KilledActors.Add(actor, damages); // sav
-                AiAircraft aircraft1 = null;
-                if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
-                else if (actor as AiPerson != null && (actor as AiPerson).Player() != null)
-                {
-
-                    AiActor place1 = (actor as AiPerson).Player().Place();
-                    if (place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
-                }
-
-                //if (stb_Debug) 
-                //Console.WriteLine("OnActorDead: 4");
-                if (aircraft1 != null)
-                {
-                    //AiAircraft aircraft = actor as AiAircraft;
-                    double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
-                    double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
-                    double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
-                    double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                    double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                    //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                    //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-                    double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                    double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-
-                    //System.Console.WriteLine("!!!!!ACTOR DEAD!!!!!: " + shortName + " Army " + actor.Army() + " velocityias " + Z_VelocityIAS.ToString("0.00") + " velocityTAS " + Z_VelocityTAS.ToString("0.00") + " ZvelocityMACH in MPH " + (Z_VelocityMach*600).ToString("0.00000")+  " IvelocityIAS " + I_VelocityIAS.ToString("0.00") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " S_GunReserve " + S_GunReserve.ToString("0.0") + " S_GunClipReserve " + S_GunClipReserve.ToString("0.0"));
-
-                }
-
-
-                //if (stb_Debug) 
-                //Console.WriteLine("OnActorDead: 5");
-                string msg = "killed by ";
-                bool selfKill = true;
-                List<string> deadPlayerNames = new List<string>();
-                List<Player> deadPlayers = new List<Player>();
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
-
-                /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
-                this.Actor = Actor;
-                this.Person = Person;
-                this.Player = Player;
-                this.Tool = Tool;
-                Tool.Name() string
-                Tool.Type() maddox.game.world.AiDamageToolType 
-                maddox.game.world.AiDamageToolType  enum Cannon Collision Ordance Unknown  [NOTE spelling for "Ordance" NOT "Ordnance"]
                 */
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
-                double totalscore = 0;
-                foreach (DamagerScore ds in damages)
+            }
+
+
+
+
+            //set up the possibility to continue a mission over numerous sorties
+            //Console.WriteLine("PlaceEnter: 2 ");
+            stb_ContinueMissionRecorder.StbCmr_SavePositionEnter(player, actor);
+
+
+
+            /*
+             * 2016/01/19 - moved this routine to onActorCreated, where it should work better
+             * 
+            //Bec this has an air s pawn point, our "ontookoff" routine doesn't work, so we are 
+            //going to try to do it here instead (in addition to) the ontookoff
+            //The routine below works great for onTookOff, but in onPlaceEnter it has a serious problem, that the person
+            //might just be moving around places within (say) a bomber.  Not sure how to detect this (very common) issue.
+            //TimedOut_seconds <= 0 keeps us from counting new flights/sorties when the person is actually banned from flying right now . . . 
+            //Special for TWCTrainingFrance mission
+            if (aircraft != null && TimedOut_seconds <= 0)
+            {
+                //770 = record a take off
+                //We're not going to do that here, because whatever else an air spawn is, it is NOT a take off!
+                //StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 770 });
+
+                for (int i = 0; i < aircraft.Places(); i++)
                 {
-
-                    string iName = "ai";
-                    if (ds.initiator != null && ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName = ds.initiator.Player.Name();
-                    string typename = "";
-                    if (ds.initiator.Actor != null) typename = ds.initiator.Actor.Name();
-                    int armyV = actor.Army();
-                    int armyI = 3 - armyV;
-                    if (ds.initiator.Actor != null) armyI = ds.initiator.Actor.Army();
-                    if (armyV != armyI) totalscore += ds.score; //only count damage caused by the other army in the total!  Mostly damage from own army will be self-damage, but even if it isn't, we won't count it . . .
-                                                                //stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
-                }
-                if (totalscore == 0) totalscore = 0.0001; //avoid division by zero errors.  If totalscore==0 then the individual scores must all be 0 also, so it doesn't really matter what its value is, but we don't want it to be zero since we divide by totalscore later . . . 
-                                                          //Console.WriteLine("Actor {0} killed; total damage {1} ", shortName, totalscore);
-
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 7");
-                AiAircraft aiAircraft = actor as AiAircraft;
-                if (aiAircraft != null)
-                {
-                    //Get total amt of damage recorded for the kill
-
-
-                    //get list of player names in the a/c
-                    for (int i = 0; i < aiAircraft.Places(); i++)
+                    //if (aiAircraft.Player(i) != null) return false;
+                    if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
                     {
-                        if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
+                        string playerName = aircraft.Player(i).Name();
+                        //Console.WriteLine("Place Enter / Start Sortie " + playerName);
+
+
+                        bool realsortiestart = stb_ContinueMissionRecorder.StbCmr_IsItASortieStart(playerName);
+                        //If this is not a continuation mission, we increment the mission counter for this player                                 
+                        if (realsortiestart && !stb_ContinueMissionRecorder.StbCmr_OnTookOff(playerName, actor))
                         {
-                            deadPlayerNames.Add(aiAircraft.Player(i).Name());
-                            deadPlayers.Add(aiAircraft.Player(i));
-                            msg = aiAircraft.Player(i).Name() + " " + msg;
+
+                            //Console.WriteLine("New Mission for " + playerName);
+                            StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 779 }, actor);
+                            stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                        };
+
+                    }
+                }
+
+
+                //779 = Mission 
+
+                //check if this is a continuation of the previous flight from near the
+                //same position the a/c previously landed etc.  If so, it's not a "new mission" but a continuation of the previous mission, so don't increment the mission counter.  If not, we increment the mission counter.
+
+            }
+            */
+        }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        catch (Exception ex) { Console.WriteLine("OnPlaceEnter ERROR: " + ex.ToString()); }
+        #endregion
+        //add your code here
+    }
+
+
+    //787 Enter place
+    //788 Leave place
+    //HashSet<string> stb_playersForcedOut = new HashSet<string>();
+    public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
+    {
+        #region stb
+        base.OnPlaceLeave(player, actor, placeIndex);
+
+        //Console.WriteLine("OnPlaceLeave: place " + player.Place().Name() + " person.place " + player.PersonPrimary().Place() + " type " + player.PersonPrimary().Cart().InternalTypeName());
+        /* if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
+        else Console.WriteLine("OnPlaceLeave: place is NULL");
+        if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());  // =-1 seems to indicate parachuting situation
+        else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
+        if (player.PersonPrimary() != null) Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place().ToString());
+        else Console.WriteLine("OnPlaceLeave: primary person is NULL");
+        if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
+        */
+        //Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place());
+        //Console.WriteLine(" type " + player.PersonPrimary().Cart().InternalTypeName());
+        //if (stb_playersForcedOut.Contains(player.Name())) return; //This is a place leave that happened because we forced it, below
+        try
+        {
+
+            StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 788 }, actor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst1);
+
+            //Console.WriteLine("PLACE LEAVE: " + player.Name());
+            //Stb_Chat("Place Leave", player);
+            //set up the possibility to continue a mission over numerous flights
+            stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, actor);
+
+
+            /*if (actor as AiPerson != null ) { //OK, the player is leaving a "person", ie, while parachuting down
+
+                {
+                    AiPerson ourPerson = (actor as AiPerson);
+
+                    //Player.Place() = (actor as AiAircraft).Place(placeIndex);
+                    //we force the player back into place momentarily
+                    //stb_playersForcedOut.Add(player.Name());
+                    //player.PlaceEnter(actor as AiAircraft, placeIndex);
+
+                    Stb_Message(new Player[] { player }, "You left your parachute in the air. You get the same results as though you'd ridden it out.", new object[] { });
+                    Console.WriteLine("Player left parachute");
+                    if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(ourPerson);
+                    else OnPersonParachuteFailed(ourPerson);
+
+                    //player.PlaceLeave(placeIndex);
+                    //stb_playersForcedOut.Remove(player.Name());
+                }
+
+            }
+            */
+
+            bool isLastPlayer = Stb_isLastPlayerInAircraftandOneOrNoPositions(actor as AiAircraft, player);
+            if (isLastPlayer) Console.WriteLine("IS last player");
+            else Console.WriteLine("Is NOT last player");
+            //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
+
+            //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
+            Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+            {
+                    //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
+                    //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
+                    //has judged to be nonfatal.  The game kicks them out of their place at that point, to watch the fiery explosion.
+                    //If they HAVE already died then we just skip this bit.
+
+                    //Stb_Chat("Checking place leave . . . ", player);
+
+                    //there are a number of reasons the pilot may have left the place.  We try to sort them all out here. 
+
+                    //1. if a/c crashes (ie fireball) CloD pops the pilot out for external view
+                    //2. In this case, the pilot MIGHT be dead but (thanks for our merciful calculations above), also maybe not
+                    //3. realPosLeave is false when it is just a move within (say) a bomber to a different position
+                    int oldDeathTime = 0;
+                int currTime = StatCalcs.TimeSince2016_sec();
+                if (!stb_PlayerDeathAndTime.TryGetValue(player.Name(), out oldDeathTime)) oldDeathTime = 0;
+
+                bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
+
+                bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
+
+                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+
+                double aircraftDamage = injuries;
+                if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
+                if (aircraftDamage >= 0.5) aircraftDamage = 1; //Per individual stats 0.5 crash seriousness or greater is a/c write-off, so we're going with the same here
+
+                AiAircraft aircraft = actor as AiAircraft;
+                if (aircraft != null)
+                {
+                    Console.WriteLine("Stats, aircraft damage: {0:N2} due to injuries/crash; rpl: {1} {2}", aircraftDamage, realPosLeave, isLastPlayer);
+                    if (aircraftDamageTotal.ContainsKey(aircraft) && aircraftDamageTotal[aircraft] > 2)
+                    {
+                        Console.WriteLine("Stats, aircraft damages: {0:N0}", (double)aircraftDamageTotal[aircraft]);
+                        aircraftDamage += (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each item to repair is 15 mins.
+                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft damage", (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0);
+                    }
+                    if (aircraftCutlimbTotal.ContainsKey(aircraft))
+                    {
+                        aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
+                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
+                    }
+
+                }
+
+                if (aircraftDamage > 0.999 && injuries < 1) aircraftDamage = 0.999; //The most serious type of injury/damage/repair but not actually dead or destroyed completely
+
+                Console.WriteLine("Stats, aircraft damage: {0:N3} final", aircraftDamage);
+
+                if (realPosLeave && (actor as AiAircraft) != null)
+                {
+                        //So if we are here it's a real pos leave & we're in an aircraft.  If we're the LAST PLAYER we're going to call it
+                        //a real aircraft abandon.
+                        //Below, we will also force destruction of the aircraft in certain situations such as big crash.  But this will be our 'main' 
+                        //place to say, "Yes, the final pilot has left the aircraft"
+                        if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, forceDamage: aircraftDamage); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                }
+
+                    /*
+                    if (realPosLeave && isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5 )
+                    {
+                        Console.WriteLine("Forcing exit 2");
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                    }
+                    */
+
+                if (isPlayerAlreadyDead) Console.WriteLine("Checking place leave - player already dead . . . ", player);
+                if (realPosLeave) Console.WriteLine("Checking place leave - realposleave . . . ", player);
+
+                if (realPosLeave && !isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5) // && player.PlacePrimary() != -1)  // PlacePrimary==-1 means parachuting.  If they are doing that we just let them go
+                {
+
+                        //Stb_Chat("Checking place leave 1 . . . ", player);
+                        if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
+                    else Console.WriteLine("OnPlaceLeave: place is NULL");
+                    if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());
+                    else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
+                    if (player.PersonPrimary() != null) Console.WriteLine("OnPlaceLeave: person.place " + player.PersonPrimary().Place().ToString());
+                    else Console.WriteLine("OnPlaceLeave: primary person is NULL");
+
+                    Console.WriteLine("POSLeave: " + realPosLeave.ToString() + " " + isPlayerAlreadyDead.ToString() + " " + currTime.ToString() + " " + oldDeathTime.ToString());                    //if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
+
+                        //OK, this is the place we need to deal with: player left a/c mid-flight, player lost internet connection, player landed @ some random spot then left the plane, player used the 'flag screen" to leave the plane mid-flight, etc etc etc
+                        //This a bit awkward because we are doing this in StbCmr instead of in mission itself . . . 
+
+                        //double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+                        //if (Z_VelocityTAS == 0) OnAircraftStopped(a);
+
+                        double Z_AltitudeAGL = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+
+                    if (Z_AltitudeAGL <= 5)
+                    {
+
+
+                            //Stb_Chat("Checking place leave 2 . . . ", player);
+
+                            //this WAS here:  double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed). 
+
+                            //we force the player back into place momentarily
+                            //this is necessary in order fo the killActor() routine to work properly
+                            //stb_playersForcedOut.Add(player.Name());
+                            //player.PlaceEnter(actor as AiAircraft, placeIndex);
+
+                            /*
+                            if (injuries >= 0.5 || Stb_distanceToNearestAirport(AiActor actor) > 2000 )
+                            {
+                                Stb_Message(new Player[] { player }, "Your aircraft was written off due to damage.", new object[] { });
+                                stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, player as AiActor));
+
+                            }
+                            */
+
+                        if (injuries < 1)
+                        {
+                                //if (injuriesmission.Stb_killActor(actor, 0);  //as long as injuries<1 they shouldn't actually die, but it will be treated as though they had a ground collision OR landing at this moment.
+                                //Stb_Chat("Player left plane: Injuries <1", player);
+
+                                //Stb_Chat("Checking place leave 3 . . . ", player);
+
+                                if (injuries > 0.1)
+                            {
+                                string line = player.Name() + " crashed with injuries.";
+                                    //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
+                                    Stb_Chat(line, player);
+
+                                    //OnAircraftCrashLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, 
+                                    OnAircraftCrashLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, 
+                                                                                                     //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
+
+                                    //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
+                                    //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                                }
+                            else
+                            {
+
+                                    //Stb_Chat("Player left plane: Injuries <=0.1; treating as a normal landing", player);
+                                    //OnAircraftLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, etc.
+                                    string line3 = player.Name() + " landed and left the aircraft.";
+                                    //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
+                                    Stb_Chat(line3, player);
+                                OnAircraftLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy,
+
+                                    //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
+                                    //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                                }
+                        }
+                        else
+                        { //injuries = 1 
+
+                                //Stb_Chat("Checking place leave 4 . . . ", player);
+                                Stb_Chat("Player left plane: Injuries = 1; player death", player);
+                            stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 1, actor, player, false);
+
+                                //Here we are forcing aircraft loss in case of severe injuries.
+                                //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
+                                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                         }
                     }
 
-                    //So, this reports 1 kill for everyone who had any damage at all on the kill. "Any Kill Participation" stat.
-                    // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
+                    else //If they actually did leave the plane just while it was in mid-air.  And they haven't recently died etc etc etc.  So this is just a person voluntarily leaving (or perhaps they lost internet connection, whatever). We treat it as though they have jumped from the plane at this moment in their parachute.  If they land in enemy territory, on water, etc then consequences will be appropriate for that action.  CloD seems to do parachute fail about 20-50% of the time, so our routines are set up to handle that, so we'll duplicate that functionality here.
+                    {
+                            /* AiPerson ourPerson = (actor as AiCart).Person(placeIndex);
 
+                            //Player.Place() = (actor as AiAircraft).Place(placeIndex);
+
+
+                            Stb_Message(new Player[] { player }, "You left your aircraft in the air. This is treated as though you suddenly parachuted from your aircraft.", new object[] { });
+                            Console.WriteLine("Player left plane: Injuries =1 and parachuting");
+                            //if (stb_random.NextDouble() < .8) OnPersonParachuteLanded((actor as AiCart).Person(placeIndex));
+                            //else OnPersonParachuteFailed((actor as AiCart).Person(placeIndex));
+                            if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(player as AiPerson);
+                            else OnPersonParachuteFailed(player as AiPerson);
+
+                            */
+
+                            //Stb_Chat("Checking place leave 5 . . . ", player);
+                            string line2 = player.Name() + " has parachuted from the aircraft.";
+                        Stb_Chat(line2, player);
+                        OnPersonParachuteLanded(actor, player);
+                        Console.WriteLine("Forcing exit 3");
+                        if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off, in case they were the last person on board AND they have just parachuted out
+
+                    }
+
+                        //Stb_Chat("Checking place leave 6 . . . ", player);
+                        //now we remove the player from the place again
+                        //player.PlaceLeave(placeIndex);
+                        //stb_playersForcedOut.Remove(player.Name());
+
+                    }
+
+            });
+
+            Stb_BalanceUpdate(player, actor, placeIndex, false);
+            if (stb_DestroyOnPlaceLeave)
+            {
+                AiAircraft aircraft = actor as AiAircraft;
+                if (aircraft != null)
+                {
+                    Timeout(60.0, () => { Stb_DestroyPlaneSafe(aircraft); });//works fine if you havent take off or flying in neutral zone
+                    Timeout(70.0, () => { Stb_DestroyPlaneSafe(aircraft); });//second call for cleanup
+                                                                             //game thinks that you are still airborne after you landed inside an airfield perimeter
+                                                                             //because we havent set landing waypoints & airfields properly
+                                                                             //this is why we call Stb_DestroyPlaneSafe again, we could do the same by adding an ai with airport.cpp
+                                                                             //instead of calling this method twice but airport.cpp does the cleanup by killing planes 
+                                                                             //which leads to wrong stats collection, for ex a user who just damaged an enemy plane normally takes only
+                                                                             //damage bonus, but with airport.cpp, if the damaged plane lands, he would also take a kill participation bonus
+                }
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+    HashSet<AiAircraft> AIAircraftList = new HashSet<AiAircraft>(); //All aircraft created as AI, used to detect if any players have entered an AI aircraft
+
+    public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
+    {
+        base.OnActorCreated(missionNumber, shortName, actor);
+
+        //Stb_Message(null, shortName + " created!", new object[] { });
+
+        //Ground objects (except AA Guns) will die after X min when counted from their birth
+
+        /*** //Experimental method to create wounded AI aicraft for testing purposes.
+        if (actor is AiAircraft)
+        {
+           Timeout(30, () =>
+           {
+               //experimental - were damaging all AiAC to find out what happens when the crash land etc but don't die
+               AiAircraft aircraft = actor as AiAircraft;
+               //Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
+               //Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsAileronsDisabled);
+               Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsRudderDisabled);
+               Stb_DamagePlane(aircraft, NamedDamageTypes.Eng0TotalSeizure);
+           });
+
+
+        }
+        */
+
+        /* We're counting sortie start by looking for any a/c creating & then seeing if there is a player inside.  Then this increments
+         * the sortie counter.  Later if the player leaves & the flight time was less than 4 minutes we subtract that sortie back out.
+         * This will miss a few cases:
+         *  - Offline play where the player can jump into an already-existing a/c
+         *  - Jumping into a tank or AA (it already exists)
+         *  - A 2nd/3rd player jumping into a bomber (it already exists)
+         *  */
+
+        if (actor != null && actor is AiAircraft)
+        {
+            //IsAirborne is false right now, but if we wait a little bit becomes true, when we are spawning in at an airspawn
+            /* moving this part, to detect sortie start, to onplaceenter . . .
+                AiAircraft aircraft = actor as AiAircraft;
+                for (int i = 0; i < aircraft.Places(); i++)
+                {
+                    //if (aiAircraft.Player(i) != null) return false;
+                    if (aircraft.Player(i) is Player && aircraft.Player(i) != null && aircraft.Player(i).Name() != null)
+                    {
+
+                        string playerName = aircraft.Player(i).Name();
+                        //We record start of sortie here.  If it turns out to be less than 4 minutes later, we'll subtract it back out.
+                        StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 844 }, aircraft.Player(i) as AiActor);
+                        stb_StatRecorder.StbSr_EnqueueTask(sst0);
+                    }
+                }
+               */
+
+            AiAircraft aircraft = actor as AiAircraft;
+
+            Timeout(0.15, () =>
+            {
+                    //AiAircraft aircraft = actor as AiAircraft;
+                    double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    //Console.WriteLine("Checking AirSpawn . . ." + shortName + " " + actor.Name() + " " + Z_AltitudeAGL.ToString("0.0") + " " + aircraft.IsAirborne().ToString());
+
+                    if (aircraft != null && !Stb_isAiControlledPlane(aircraft) && aircraft.IsAirborne()) //aircraft + NOT aicontrolled + airborne @ creation = airspawn
+                {
+                        //this is an airspawn takeoff; thus "IsTakeOff" is false & we don't add an actual take-off to the player's stats
+                        Console.WriteLine("AirSpawn!!!!");
+                    ProcessAircraftTakeOff(aircraft: aircraft, IsTakeOff: false);
+                }
+
+                    //2018-09-24 testing system to find out weapons loadout for <rr
+                    if (aircraft != null && !Stb_isAiControlledPlane(aircraft)) //live pilot has spawned in an aircraft
+                {
+
+                        //This seems the best place to detect creation of aircraft to subtract it from supply.
+                        //We already know there is a player in the a/c, but we need to know the player, and should only do this once per a/c
+                        //(ie, for the first player we find)
+                        //need to do it before the weaponsmask stuff bec. it causes an error?
+
+                        for (int i = 0; i < aircraft.Places(); i++)
+                    {
+                        if (aircraft.Player(i) is Player && aircraft.Player(i) != null)
+                        {
+                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(aircraft.Player(i), actor);
+                                //we send it multiple times without concern; -supply.cs makes sure a single a/c is never checked out more than once.
+                                //break; //only do this ONCE although the player will probably be in two places in a multi-player
+                            }
+                    }
+                        //This is an idea about how to load aircraft loadout, however it isnt working 2018/09 flug
+                        //AiBirthplace birthplace = somebirthplacereference;
+                        Console.WriteLine("Checking Loadout/weaponsmask . . . ");
+                    AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
+                         + " " + aircraft.HullNumber()
+                         + " " + aircraft.CallSignNumber());
+                    System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.InternalTypeName());
+                        //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
+                        Console.WriteLine("Got loadout/weaponsmask");
+                        //Console.WriteLine("Loadout/weaponsmask: " + weaponsmask.ToString());
+                        if (weaponsmask != null) Console.WriteLine("not null");
+                    else Console.WriteLine("null");
+                    if (weaponsmask.Count > 2) Console.WriteLine("2");
+                    else Console.WriteLine("3");
+                    if (weaponsmask.Length > 2) Console.WriteLine("2");
+                    else Console.WriteLine("3");
+                    Console.WriteLine("weaponsmask  info:");
+                    Console.WriteLine("   Count:    {0}", weaponsmask.Count);
+                    Console.WriteLine("   Length:   {0}", weaponsmask.Length);
+                    Console.WriteLine("   Values:");
+                    StatCalcs.PrintValues(weaponsmask, 8);
+
+
+
+
+                }
+
+            });
+
+            //we use 
+            //this to detect if people have jumped into AI aircraft, and we pick up the rest via onmissionloaded
+            Timeout(2, () =>
+            {
+                if (aircraft != null && Stb_isAiControlledPlane(aircraft)) //AI Aircraft has been created
+                {
+                    AIAircraftList.Add(aircraft);
+                }
+            });
+        }
+    }
+
+    public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
+    {
+        #region stb
+        base.OnActorDamaged(missionNumber, shortName, actor, initiator, damageType);
+        //try
+        {
+            //stb_KilledActors.Add(actor, initiator, damageType); // Save all damages/damager info for stats purposes so it will be available if/when the actor is finally killed.
+            //System.Console.WriteLine("Actor damaged: " + actor.Army() + " " + ((int)damageType).ToString() );
+            //System.Console.WriteLine("Ground Actor damaged: " + actor.Army());
+            bool willReportDamage = false;
+
+            if (initiator != null)
+            {
+                if (initiator.Player != null)
+                {
+                    if (initiator.Player.Army() == 1 && actor.Army() == 2) { willReportDamage = true; }
+                    if (initiator.Player.Army() == 2 && actor.Army() == 1) { willReportDamage = true; }
+                }
+            }
+            if (willReportDamage)
+            {
+                AiGroundActor ga = actor as AiGroundActor; //only do ground actors here because aircraft are done elsewhere
+                if (ga != null)
+                {
+                    if (ga.Type() == AiGroundActorType.AAGun || ga.Type() == AiGroundActorType.Artillery || ga.Type() == AiGroundActorType.Tank)
+                    {
+                        StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 2 }, actor);
+                        stb_StatRecorder.StbSr_EnqueueTask(sst);
+                    }
+                    else if (ga.Type() == AiGroundActorType.ShipBattleship || ga.Type() == AiGroundActorType.ShipCarrier ||
+                             ga.Type() == AiGroundActorType.ShipCruiser || ga.Type() == AiGroundActorType.ShipDestroyer ||
+                             ga.Type() == AiGroundActorType.ShipMisc || ga.Type() == AiGroundActorType.ShipSmallWarship ||
+                             ga.Type() == AiGroundActorType.ShipSubmarine || ga.Type() == AiGroundActorType.ShipTransport)
+                    {
+                        StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 3 }, actor);
+                        stb_StatRecorder.StbSr_EnqueueTask(sst);
+                    }
+                    else //any other type of groundactor besides AA/Tank OR Ship = type 4 //bhugh
+                    {
+                        StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 4 }, actor);
+                        stb_StatRecorder.StbSr_EnqueueTask(sst);
+                    }
+                }
+            }
+        }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+    //On OnAircraftKilled is called when a plane is not longer flyable, for example if the pilot get killed or its too heavy damaged, but you get not the damager.
+    //OnActorDead is called later after a plane is hitting the ground or a GroundActor or AiPerson or AiGroup (a Ships is an AiGroup) is killed.And you can check the damagers.
+    //OnActorDestroyed is called every time a Actor is removed from the game, so its also called if a script removed a empty plane. So you should use OnAircraftKilled or OnActorDead.
+    //http://forum.1cpublishing.eu/archive/index.php/t-28611.html
+
+    HashSet<string> stb_aircraftKilled = new HashSet<string>(); //set of AiActor.Name()s
+
+    public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftKilled(missionNumber, shortName, aircraft);
+
+        //if it's ai controlled we consider it "killed" at this point, so go ahead & assign points.
+        if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30);
+        else
+        { //if it is player-controlled then we let nature take its course for now.  But we save the actor on a list & if it turns it it wasn't recorded later on then we record it later.
+
+            //Stb_RemoveAllPlayersFromAircraft(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0)
+            stb_aircraftKilled.Add((aircraft as AiActor).Name());
+        }
+
+    }
+
+    public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
+    {
+        base.OnActorDestroyed(missionNumber, shortName, actor);
+
+        try
+        {
+
+            Console.WriteLine("StatsOnDestroy: " + shortName + " was destroyed");
+            AiAircraft aircraft = actor as AiAircraft;
+
+            if (aircraft != null)
+            {
+                Stb_KillACNowIfInAircraftKilled(aircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
+
+
+                double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+
+                if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
+                {
                     //if (stb_Debug) 
-                    //Console.WriteLine("OnActorDead: 8");
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
+                    Stb_killActor(actor); //it's dead, Jim
+
+                }
+                // crash landing in solid ground
+
+                else if (Z_AltitudeAGL < 5 && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
+                {
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
+                    Stb_killActor(actor); //Also dead; counts as a kill
+
+                }
+                else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor) > 2000)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
+                {
+                    //if (stb_Debug) 
+                    Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
+                    Stb_killActor(actor); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
+
+                }
+            }
+
+
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    }
+
+
+    //Simple dictionary that keeps a count of how many times each aircraft was damaged and how many times a cut limb
+    public Dictionary<AiAircraft, int> aircraftDamageTotal = new Dictionary<AiAircraft, int>();
+    public Dictionary<AiAircraft, int> aircraftCutlimbTotal = new Dictionary<AiAircraft, int>();
+
+    public override void OnAircraftDamaged(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, NamedDamageTypes damageType)
+    {
+        #region stb
+        base.OnAircraftDamaged(missionNumber, shortName, aircraft, initiator, damageType);
+        try
+        {
+            //System.Console.WriteLine("Aircraft Actor damaged: " + aircraft.Army());
+            if (aircraftDamageTotal.ContainsKey(aircraft)) aircraftDamageTotal[aircraft]++;
+            else aircraftDamageTotal[aircraft] = 1;
+
+            StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 781 }); //player damaged, 781                                                                        
+            bool willReportDamage = false;
+
+            bool selfDam = stb_ContinueMissionRecorder.StbCmr_IsSelfDamage(aircraft, initiator);
+
+            if (initiator != null)
+            {
+                if (initiator.Player != null)
+                {
+                    if (initiator.Player.Army() == 1 && aircraft.Army() == 2) { willReportDamage = true; }
+                    if (initiator.Player.Army() == 2 && aircraft.Army() == 1) { willReportDamage = true; }
+                }
+            }
+            if (willReportDamage)
+            {
+                if (initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(initiator.Player, aircraft, "damage");
+                StbStatTask sst = new StbStatTask(StbStatCommands.Damage, initiator.Player.Name(), new int[] { (int)damageType, 1 }, initiator.Player.Place() as AiActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst);
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+    public override void OnAircraftCutLimb(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, LimbNames limbName)
+    {
+        #region stb
+        base.OnAircraftCutLimb(missionNumber, shortName, aircraft, initiator, limbName);
+        try
+        {
+
+            StbStatTaskAircraft(StbStatCommands.Mission, aircraft, new int[] { 782 }); //player limb cut 782
+            bool willReportCutLimb = false;
+
+            bool ret = stb_ContinueMissionRecorder.StbCmr_IsSelfDamage(aircraft, initiator);
+
+            if (aircraftCutlimbTotal.ContainsKey(aircraft)) aircraftCutlimbTotal[aircraft]++;
+            else aircraftCutlimbTotal[aircraft] = 1;
+
+            if (initiator != null && aircraft != null)
+            {
+                if (initiator.Player != null)
+                {
+                    //if ( ret ) Stb_Message(null, initiator.Player.Name() + " damaged self!", new object[] { });
+                    if (aircraft.Army() == 1 && initiator.Player.Army() == 2) { willReportCutLimb = true; }
+                    if (aircraft.Army() == 2 && initiator.Player.Army() == 1) { willReportCutLimb = true; }
+                }
+            }
+            if (willReportCutLimb)
+            {
+                if (initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(initiator.Player, aircraft, "cutlimb");
+                if (((int)limbName > 0) && ((int)limbName < 121))
+                {
+                    StbStatTask sst = new StbStatTask(StbStatCommands.CutLimb, initiator.Player.Name(), new int[] { (int)limbName }, initiator.Player.Place() as AiActor);
+                    stb_StatRecorder.StbSr_EnqueueTask(sst);
+                }
+            }
+        }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+
+    //Take care of logging write-offs, with a method to prevent double-counting.
+    //TODO: We could check whether or not there is any enemy damage to the a/c, then additionally track
+    //"self-write-offs" as a separate/additional category
+    //TODO: Write-offs when the player crashes & dies, may be be assigned to the 'next' life rather than the previous life.  Possibly because the death is recorded
+    //prior to the write-off.  Not sure how to fix this . . . 
+    new Dictionary<string, int> stb_ACWrittenOffAndTime = new Dictionary<string, int>();
+
+    public void stb_recordAircraftWrittenOff(Player player, AiActor actor, double injuries = 0, double distance = 0)
+    {
+        int oldWrittenOffTime = 0;
+        int currTime = StatCalcs.TimeSince2016_sec();
+        if (!stb_ACWrittenOffAndTime.TryGetValue(player.Name(), out oldWrittenOffTime)) oldWrittenOffTime = 0;
+        if (currTime - oldWrittenOffTime > 30)
+        {  //prevents dup write-offs for same plane    
+            stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, actor));
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 845, 1);//Also save this for current session stats
+
+            string reason = ". Distance to nearest friendly airport: " + distance.ToString("N0") + " meters.";
+            if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
+            Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });
+            Console.WriteLine("Forcing exit 4");
+            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            Console.WriteLine("Forcing exit 4a");
+        }
+
+        Console.WriteLine("Forcing exit 4b");
+        stb_ACWrittenOffAndTime[player.Name()] = currTime;
+        Console.WriteLine("Forcing exit 4c");
+    }
+
+
+    //We want to give bomber pilots a separate career.  Possibly we could give people different careers for red/blue
+    //as well in the future.  So this dictionary records the type of career the current pilot is in.  Called from
+    //placeEnter to set the pilot type & other places as necessary to read it.
+    //First string of Tuple is (bomber) or "" ; second string is unused for now but coudl be (red) or (blue)
+    //double is the current TIME as base.Time.current() - same system used in maddox.game.world.DamagerScore and the
+    //idea is that if we want, after an actor dies we could sort out which damages where done at what time and thus 
+    //assign them to the CORRECT career.  To do thise we'll need more of a catalog of all the player's careers
+    //during this mission along with time stamps for when they change, not just the most recent change.
+    Dictionary<string, Tuple<string, string, double>> stb_PilotType = new Dictionary<string, Tuple<string, string, double>>();
+
+
+    //OK, the following dictionary is designed to solve this problem:
+    // - if a player shoots or bombs an object (ac or ground object), then leaves the server or switches to a different a/c OR switches say from fighter to bomber, then later on the ac or ground object finally dies, the original player probably doesn't get credit because they actor they used to kill that particular ac or ground object no longer exists.  Or if it DOES exist it might be credited to the wrong career because the player has switched to a new career (say (bomber)) and the ondead routine has no way to know that
+
+    //However, there is still the problem that if the original damager actor is gone (ie, destroyed) when the damaged actor dies, then the onDead
+    //routine probably has no way to discover which player was linked to that damager actor, in order to give credit to the player. This requires more testing to determine exactly what happens in this situation.  What if the player has quite the server entirely at this point, or has left that aircraft (which is then destroyed rather quickly) and entered another a/c.
+    //A separate issue is that of knowing which of the player's CAREERs the credit should go to.  That is the problem the dictionary
+    //below is designed to solve. However, the complex structure below is probably overkill for that problem. All we need is a list
+    //of players that were (ever) in this a/c and also the relevant career tuple for that player.
+    //Below is more detailed & could be used to actually determine which player was in the a/c at which time, thus given even greater fine-grained control of who gets credit for what, except that it is missing
+    //one specific bit of info needed for that: What time the player LEFT the a/c.
+    Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>> stb_PilotTypeRecordbyAC = new Dictionary<string, Dictionary<string, List<Tuple<string, string, double>>>>();
+
+    public void stb_setPilotType(Player player, AiActor actor)
+    {
+
+        if (player.Name() == null || player.Name() == "") return;
+
+        AiAircraft aircraft = null;
+        string acType = "";
+        string playerBomberFighter = "";
+        string playerTeam = "";
+        if (actor is AiAircraft)
+        {
+
+            aircraft = actor as AiAircraft;
+            acType = StatCalcs.GetAircraftType(aircraft);
+
+        }
+        else if (player.Place() != null && (player.Place() as AiAircraft) != null)
+        {
+            //Player player = actor as Player;
+            aircraft = player.Place() as AiAircraft;
+            acType = StatCalcs.GetAircraftType(aircraft);
+        }
+
+        //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
+        //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs.
+        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
+        {
+            playerBomberFighter = " (bomber)";
+
+        }
+
+        //Save the info needed for career type of this player at this moment (generally, the moment of entering a position)
+        stb_PilotType[player.Name()] = new Tuple<string, string, double>(playerBomberFighter, playerTeam, base.Time.current());
+        Console.WriteLine("stb_setPilotType: " + playerBomberFighter + " " + playerTeam + " " + base.Time.current().ToString());
+
+        //Save a record of all players who have entered this aircraft, along with time entered & other info about their career
+        if (aircraft != null && player.Name() != null)
+        {
+            Dictionary<string, List<Tuple<string, string, double>>> currAircraftRecord = new Dictionary<string, List<Tuple<string, string, double>>>();
+
+            if (!stb_PilotTypeRecordbyAC.TryGetValue(actor.Name(), out currAircraftRecord))
+            {
+                currAircraftRecord = new Dictionary<string, List<Tuple<string, string, double>>>();
+            }
+
+            List<Tuple<string, string, double>> currPilotRecord = new List<Tuple<string, string, double>>();
+
+            if (!currAircraftRecord.TryGetValue(player.Name(), out currPilotRecord))
+            {
+                currPilotRecord = new List<Tuple<string, string, double>>();
+            }
+
+            currPilotRecord.Add(stb_PilotType[player.Name()]);
+            currAircraftRecord[player.Name()] = currPilotRecord;
+            stb_PilotTypeRecordbyAC[actor.Name()] = currAircraftRecord;
+        }
+    }
+
+    public Tuple<string, string, double> stb_getPilotType(string playerName)
+    {
+        Tuple<string, string, double> temp = new Tuple<string, string, double>("", "", 0);
+
+        if (!stb_PilotType.TryGetValue(playerName, out temp))
+        {
+            temp = new Tuple<string, string, double>("", "", 0);
+        }
+
+        return temp;
+    }
+
+    public Tuple<string, string, double> stb_getPilotType(Player player)
+    {
+        if (player == null || player.Name() == null || player.Name() == "") return new Tuple<string, string, double>("", "", 0);
+
+        else return stb_getPilotType(player.Name());
+    }
+
+
+    public string stb_getPilotTypeString(string playerName)
+    {
+        Tuple<string, string, double> tmp = stb_getPilotType(playerName);
+
+        string tempStr = tmp.Item1 + tmp.Item2;
+
+        return tempStr;
+    }
+
+    public string stb_getPilotTypeString(Player player)
+    {
+        if (player == null || player.Name() == null || player.Name() == "") return "";
+
+        else return stb_getPilotTypeString(player.Name());
+    }
+
+
+
+    //OK, CloD seems a bit too willing to hand out gruesome deaths sometimes.  IE when a player runs into a hangar wall at 5MPH.
+    //So we are going to convert some of those CLOD deaths into injury situations for our stats/career purposes.
+    public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false)
+    {
+        double injuries = 1; //default assumption is 1 = yup, they're dead
+        AiAircraft aircraft1 = null;
+        if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
+        else if (actor as AiPerson != null && aircraft1 == null)
+        {
+
+            AiActor place1 = (actor as AiPerson).Player().Place();
+            if (place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
+            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Person killed.");
+            if (stb_Debug && aircraft1 != null) System.Console.WriteLine("CalcInjuries: Person killed was in aircraft.");
+        }
+        if (!allowTakeBack)
+        {
+            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Death takeback not allowed here, so no calculation.");
+            return injuries; //yup, they are dead
+        }
+        if (aircraft1 == null)
+        {
+
+            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Not an aircraft, so no injury calc.");
+            return injuries; //we're only going to turn some deaths into injuries for aircraft; if not an a/c or person in an a/c then it is just 1 = yup, they are dead
+        }
+        else
+        {
+            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries . . . ");
+            //AiAircraft aircraft = actor as AiAircraft;
+            //double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
+            //double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+            double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
+            double VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
+                                                                 //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
+                                                                 //unit invariant--it comes back as a % of mach whether we are using English or metric units
+                                                                 //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
+
+
+            //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+            double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+            //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+            //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+            //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+            //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+
+            Vector3d Vwld = aircraft1.AirGroup().Vwld();
+            double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
+            double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
+            double heading = (StatCalcs.CalculateBearingDegree(Vwld));
+            double pitch = StatCalcs.CalculatePitchDegree(Vwld);
+
+            //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
+            //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
+            //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
+
+
+            AircraftParams maxAp = stb_AircraftParamStack.returnMaxes(player);
+
+
+
+            /* //This is the old way of doing it
+            //vel_mps vel_mph heading pitch
+
+            if (Z_AltitudeAGL < 5 && VelocityMPH < 10) injuries = 0.1;
+            else if (Z_AltitudeAGL < 4 && VelocityMPH < 30) injuries = 0.2;
+            else if (Z_AltitudeAGL < 3 && VelocityMPH < 70) injuries = 0.5;
+            else if (Z_AltitudeAGL < 2 && VelocityMPH < 100) injuries = 0.9;
+            else injuries = 1;
+
+            */
+            /* http://boards.straightdope.com/sdmb/showpost.php?p=19162752&postcount=16 
+             * 300 fpm or less = 3.5mph, good landing
+             * 600-800 fpm = 8 mph, slightly hard landing
+             * 1000 fpm = 11 mph, very hard, some damage
+             * 1500 fpm = 17 mph, definite damage, edge of much damage
+             * 2000 fpm = 23 mph, getting into serious damage
+             * 
+             */
+
+            double vertSpeed_mph = StatCalcs.meterspsec2milesphour(maxAp.Vwld.z);
+            if (vertSpeed_mph >= 0) vertSpeed_mph = 0;
+            vertSpeed_mph = Math.Abs(vertSpeed_mph);
+            double operativeVel_MPH = maxAp.vel_mph + 2 * vertSpeed_mph;
+            if (Z_AltitudeAGL < 5 && operativeVel_MPH < 10) injuries = 0.1;
+            else if (Z_AltitudeAGL < 5 && operativeVel_MPH < 30) injuries = 0.2;
+            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 50) injuries = 0.5;
+            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 70) injuries = 0.6;
+            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 90) injuries = 0.8;
+            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 110) injuries = 0.9;
+            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 130) injuries = 0.95;
+            else injuries = 1;
+
+            if (vertSpeed_mph > 26) injuries = 1;
+            else if (vertSpeed_mph > 23) injuries += 0.85;
+            else if (vertSpeed_mph > 20) injuries += 0.75;
+            else if (vertSpeed_mph > 15) injuries += 0.6;
+            else if (vertSpeed_mph > 13) injuries += 0.4;
+            else if (vertSpeed_mph > 12) injuries += 0.3;
+            else if (vertSpeed_mph > 11) injuries += 0.2;
+
+            if (injuries > 1) injuries = 1;
+
+            //We would do some probability-based kills here rather than just injuries.  Like if they are 90% injured maybe they have a 25% probability of death or whatever.
+
+            if (killType == 2 && injuries <= 0.2) injuries = injuries / 2; //If it is a self-injury on the ground and slow speed we are going to assume it is a fairly non-serious dumb thing the player did, and reduce the extent of injuries. If done by another person/player/actor, though we'll assume it is more serious 
+
+            /*if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " Army " + actor.Army() + " ZvelocityMACH in MPH " + (Z_VelocityMach * 600).ToString("0.00000") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " vel_mps " + vel_mps.ToString("N1") + " vel_mph " + vel_mph.ToString("N1") + " heading " + heading.ToString("N1") + " pitch " + pitch.ToString("N1") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
+                + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " Mvel_mph " + maxAp.vel_mph.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " Mpitch " + maxAp.pitch.ToString("N1")
+                );
+            */
+
+        }
+        if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("N1"));
+        return injuries;
+    }
+
+    new Dictionary<string, int> stb_PlayerDeathAndTime = new Dictionary<string, int>();
+    new Dictionary<string, int> stb_PlayerParachute_Crashed_LandedTime = new Dictionary<string, int>();
+
+    //returns a double ranging 0 - 1.  0 means NO DEATH at all because it was previously recorded OR we have decided that even though CLOD thinks this is a death, we don't
+    //a number BETWEEN 0 and 1 indicates extent of injuries created by this incident, but as long as the return is less than 1 there is no death
+    //Note that if actor is NOT an AiAircraft (ie, a Player or Person or whatever) then this will ALWAYS record a kill and not 
+    //make any sort of determination about how hard or fatal the crash was.  This is a pretty important side effect that is used
+    //in several places (player as AiActor)
+    //killType: 2=self-kill, 1 = regular kill; we're going to say parachuting death is never a self-kill as you were
+    //PPl have been taking advantage of the fact that you can't die more than 1x in 60 seconds to do certain illegal things, so we 
+    //reduce the time to 10 sec and also allow an override of the pause on deaths via ignoreDeathLimit
+    //In case aircraftDead = true that is an indication that EVERY position in this aircraft has just been killed because the aircraft itself has been killed (not just one of the pilots in it, so that means there is no chance of return -1 meaning that one position is dead but another survives for now.
+    public double stb_RecordStatsForKilledPlayerOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false, bool ignoreDeathLimit = false, bool aircraftDead = false)
+    {
+        try
+        {
+            double recordedInjuries = 0;
+            int oldDeathTime = 0;
+            int currTime = StatCalcs.TimeSince2016_sec();
+            if (!stb_PlayerDeathAndTime.TryGetValue(playerName, out oldDeathTime)) oldDeathTime = 0;
+            if (currTime - oldDeathTime > 10 || ignoreDeathLimit)
+            { //This keeps you from killing yourself more than 1X per 10 seconds, more particularly avoids recording the same death more than once.
+                recordedInjuries = stb_CalcExtentOfInjuriesOnActorDead(playerName, killType, actor, player, allowTakeBack);
+                bool bothPositionsDead = true;
+
+                //We handle the case where the player is occupying two positions and one of them is dead but the other still alive
+                //Logic is a bit complex because we have to first check the person is occupying two positions, THEN that exactly ONE of those two is still alive
+                //Note that ^ is EXCLUSIVE OR operator, guaranteeing that one but not both of the player's positions still has some health.
+                if (player.PersonPrimary() != null && player.PersonSecondary() != null &&
+                    //(player.PersonPrimary().Health > 0 ^ player.PersonSecondary().Health > 0))
+                    (player.PersonPrimary().Health > 0 || player.PersonSecondary().Health > 0))
+                {
+                    //Console.WriteLine("OnPlayerDead: Primary: " + player.PersonPrimary().Cart().InternalTypeName());
+                    //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Cart().InternalTypeName());
+                    //Console.WriteLine("OnPlayerDead: Primary: " + player.PersonPrimary().Health);
+                    //Console.WriteLine("OnPlayerDead: Secondary: " + player.PersonSecondary().Health);
+                    bothPositionsDead = false;
+                }
+                if (aircraftDead) bothPositionsDead = true;
+
+                //Console.WriteLine("OnPlayerDead: Player " + playerName + " both dead " + bothPositionsDead.ToString() + " ");
+
+                //Console.WriteLine("OnPlayerDead: primary:" + player.PersonPrimary().Health.ToString("n1") + " secondary: " + player.PersonSecondary().Health.ToString("n1"));
+
+                if (recordedInjuries == 1 && bothPositionsDead)
+                {
+
+                    StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, actor);
+                    stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                    stb_PlayerDeathAndTime[playerName] = currTime;
+                    Console.WriteLine("Forcing exit 6");
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
+                    if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death WAS recorded because previous death recorded " + (currTime - oldDeathTime).ToString() + " seconds ago & injuries were severe & both positions were dead");
+
+                }
+                else if (recordedInjuries > 0 || !bothPositionsDead)
+                {
+                    //Console.WriteLine("OnPlayerDead: Player " + playerName + " injuries were recorded, but no death");
+                    //we can do other things here, like save the injuries to the stats file and/or give them a timeout depending on how 
+                    //serious the injuries were.  But for now, we just proceed since it wasn't an actual death.
+                }
+                if (!aircraftDead && recordedInjuries == 1 && !bothPositionsDead)
+                {
+                    //Console.WriteLine("OnPlayerDead: Player " + playerName + " had one position/place killed, but the other still remains alive.  So we record a death on the player's stats but don't actually kill this personality yet.");
+                    StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 778, 1 }, player.Place() as AiActor);
+                    stb_StatRecorder.StbSr_EnqueueTask(sst0);
+                    stb_SaveIPlayerStat.StbSis_AddSessStat(player, 778, 1);//Also save this for current session stats
+                    recordedInjuries = -1; //-1 means this position was killed but another position still remains alive, for now.
+                }
+
+                double dist = Stb_distanceToNearestAirport(actor);
+                if (bothPositionsDead && (recordedInjuries >= 0.5 || dist > 2000))
+                {
+                    stb_recordAircraftWrittenOff(player, actor, recordedInjuries, dist);
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
+                }
+
+            }
+            else
+            {
+                if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + playerName + " death was NOT recorded because previous death recorded just " + (currTime - oldDeathTime).ToString() + " seconds ago");
+                recordedInjuries = 0;  //no recorded injuries because this death was previously recorded & we're doing nothing new here
+            }
+
+
+
+            return recordedInjuries;
+
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("stb_RecordStatsForKilledPlayerOnActorDead - Exception: " + ex.ToString());
+            return 1;
+        }
+    }
+
+    public void stb_RecordStatsOnActorDead(AiDamageInitiator initiator, int killtype, double score, double totalscore, AiDamageToolType toolType)
+    {
+        //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+
+
+        //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
+        int percent_score = (int)Math.Round(score / totalscore * 100);
+        if (percent_score < -3000) percent_score = -3000; //limit negative/removed points possible.  Just for sanity.
+        int percent_score_norm = (int)Math.Round((double)percent_score / (double)100);  //normed to 1=1 victory (rather than 100% = one victory)
+
+        int percent_score_fordead = 1;
+        if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
+
+        StbStatTask sst = new StbStatTask(StbStatCommands.Dead, initiator.Player.Name(), new int[] { killtype, percent_score_fordead }, initiator.Player.Place() as AiActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+        //Save penalty points, if that is what these are (negative points)
+        if (percent_score_norm < 0)
+        {
+            StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 847, percent_score_norm }, initiator.Player.Place() as AiActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst0);
+            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 847, percent_score);//Also save this for current session stats
+        }
+
+        StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798, percent_score }, initiator.Player.Place() as AiActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst1);
+        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798, percent_score);//Also save this for current session stats
+
+        //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        StbStatTask sst2 = new StbStatTask();
+        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
+        if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 }, initiator.Player.Place() as AiActor);
+        else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 }, initiator.Player.Place() as AiActor);
+        else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 }, initiator.Player.Place() as AiActor);
+        //allowing for removal of victories for bombing/damaging civilian areas
+        //Note that the -3000 puts a limit on the # of victories that can be removed using this system.
+        else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799, percent_score_norm }, initiator.Player.Place() as AiActor);
+
+        if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst2);
+
+        //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+        StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798 + killtype * 4, percent_score }, initiator.Player.Place() as AiActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst4);
+
+        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798 + killtype * 4, percent_score);//Also save this for current session stats
+
+        StbStatTask sst3 = new StbStatTask();
+        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+        if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4 }, initiator.Player.Place() as AiActor);
+        else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 + killtype * 4 }, initiator.Player.Place() as AiActor);
+        else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 + killtype * 4 }, initiator.Player.Place() as AiActor);
+        //allowing for removal of victories for bombing/damaging civilian areas
+        else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4, percent_score_norm }, initiator.Player.Place() as AiActor);
+        if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst3);
+
+        //stb_StatRecorder.StbSr_WriteLine("3Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        //Save the raw damage points towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
+        int rawscore = (int)Math.Round(score * 1000); //some raw scores are like .003843828
+        StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818, rawscore }, initiator.Player.Place() as AiActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst5);
+        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818, rawscore);//Also save this for current session stats
+        StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818 + killtype, rawscore }, initiator.Player.Place() as AiActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst6);
+        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818 + killtype, rawscore);//Also save this for current session stats
+
+        //stb_StatRecorder.StbSr_WriteLine("4Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        //if (toolType.Equals(AiDamageToolType.Ordance)) stb_StatRecorder.StbSr_WriteLine("1. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
+        //Save the raw damage points specifically for BOMBS towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
+        if ((int)toolType == 2 || toolType.Equals(AiDamageToolType.Ordance))
+        {            //not sure if toolType == AiDamageToolType.Ordance or similar works? But something like (int)toolType==2 definitely does
+            StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830, rawscore }, initiator.Player.Place() as AiActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst7);
+            StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830 + killtype, rawscore }, initiator.Player.Place() as AiActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst8);
+
+            //stb_StatRecorder.StbSr_WriteLine("2. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
+        }
+    }
+
+    HashSet<string> stb_deadActors = new HashSet<string>(); //actor.Name() of actors we have already run through the onActorDead routine.  Helps prevent us from giving double credit to damagers of actors who are killed.
+
+    public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
+    {
+        #region stb
+        base.OnActorDead(missionNumber, shortName, actor, damages);
+        //try
+        if (actor == null) return; //nothing we can do here if the actor = null
+        {
+            //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
+            // Console.WriteLine("OnActorDead: 1");
+            //avoid recording death of any actor more than once, except for players of course
+            if (actor as Player == null && actor != null)
+            {
+                if (actor.Name() != null && stb_deadActors.Contains(actor.Name()))
+                {
+                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
+                    return; //This is an actor we've already 'killed' therefore we won't double count it.
+                            //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
+                }
+                else
+                {
+                    //if (stb_Debug) 
+                    // Console.WriteLine("OnActorDead: 2");
+                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
+                    //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
+                    if (actor.Name() != null) stb_deadActors.Add(actor.Name());
+                    //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
+                }
+            }
+
+            //if (stb_Debug) 
+            //Console.WriteLine("OnActorDead: 3");
+            //stb_KilledActors.Add(actor, damages); // sav
+            AiAircraft aircraft1 = null;
+            if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
+            else if (actor as AiPerson != null && (actor as AiPerson).Player() != null)
+            {
+
+                AiActor place1 = (actor as AiPerson).Player().Place();
+                if (place1 != null && place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
+            }
+
+            //if (stb_Debug) 
+            //Console.WriteLine("OnActorDead: 4");
+            if (aircraft1 != null)
+            {
+                //AiAircraft aircraft = actor as AiAircraft;
+                double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
+                double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+                double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
+                double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+                double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+
+                //System.Console.WriteLine("!!!!!ACTOR DEAD!!!!!: " + shortName + " Army " + actor.Army() + " velocityias " + Z_VelocityIAS.ToString("0.00") + " velocityTAS " + Z_VelocityTAS.ToString("0.00") + " ZvelocityMACH in MPH " + (Z_VelocityMach*600).ToString("0.00000")+  " IvelocityIAS " + I_VelocityIAS.ToString("0.00") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " S_GunReserve " + S_GunReserve.ToString("0.0") + " S_GunClipReserve " + S_GunClipReserve.ToString("0.0"));
+
+            }
+
+
+            //if (stb_Debug) 
+            //Console.WriteLine("OnActorDead: 5");
+            string msg = "killed by ";
+            bool selfKill = true;
+            List<string> deadPlayerNames = new List<string>();
+            List<Player> deadPlayers = new List<Player>();
+            //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
+
+            /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+            this.Actor = Actor;
+            this.Person = Person;
+            this.Player = Player;
+            this.Tool = Tool;
+            Tool.Name() string
+            Tool.Type() maddox.game.world.AiDamageToolType 
+            maddox.game.world.AiDamageToolType  enum Cannon Collision Ordance Unknown  [NOTE spelling for "Ordance" NOT "Ordnance"]
+            */
+            //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
+            double totalscore = 0;
+            foreach (DamagerScore ds in damages)
+            {
+
+                string iName = "ai";
+                if (ds.initiator != null && ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName = ds.initiator.Player.Name();
+                string typename = "";
+                if (ds.initiator.Actor != null && ds.initiator.Actor.Name() != null) typename = ds.initiator.Actor.Name();
+                int armyV = actor.Army();
+                int armyI = 3 - armyV;
+                if (ds.initiator.Actor != null) armyI = ds.initiator.Actor.Army();
+                if (armyV != armyI) totalscore += ds.score; //only count damage caused by the other army in the total!  Mostly damage from own army will be self-damage, but even if it isn't, we won't count it . . .
+                                                            //stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
+            }
+            if (totalscore == 0) totalscore = 0.0001; //avoid division by zero errors.  If totalscore==0 then the individual scores must all be 0 also, so it doesn't really matter what its value is, but we don't want it to be zero since we divide by totalscore later . . . 
+                                                      //Console.WriteLine("Actor {0} killed; total damage {1} ", shortName, totalscore);
+
+            //if (stb_Debug) Console.WriteLine("OnActorDead: 7");
+            AiAircraft aiAircraft = actor as AiAircraft;
+            if (aiAircraft != null)
+            {
+                //Get total amt of damage recorded for the kill
+
+
+                //get list of player names in the a/c
+                for (int i = 0; i < aiAircraft.Places(); i++)
+                {
+                    if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
+                    {
+                        deadPlayerNames.Add(aiAircraft.Player(i).Name());
+                        deadPlayers.Add(aiAircraft.Player(i));
+                        msg = aiAircraft.Player(i).Name() + " " + msg;
+                    }
+                }
+
+                //So, this reports 1 kill for everyone who had any damage at all on the kill. "Any Kill Participation" stat.
+                // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
+
+                //if (stb_Debug) 
+                //Console.WriteLine("OnActorDead: 8");
+                foreach (DamagerScore ds in damages)
+                {
+                    bool willReportDead = false;
+                    if (ds.initiator != null)
+                    {
+                        int initiatorArmy = 0;
+                        if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
+                        if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
+
+
+                        if (ds.initiator.Player != null)
+                        {
+                            if (aiAircraft.Army() == 1 && initiatorArmy == 2) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats
+                            if (aiAircraft.Army() == 2 && initiatorArmy == 1) { willReportDead = true; }
+
+                            msg += ds.initiator.Player.Name() + " ";
+                            if (!deadPlayerNames.Contains(ds.initiator.Player.Name())) selfKill = false; // if even one other player contributed to the kill, it's not a self kill! 
+                        }
+                        else
+                        {
+                            selfKill = false; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
+                            msg += "nobody/AI  ";
+                        }
+                    }
+                    if (willReportDead)
+                    {
+                        int dc = damages.Count();
+                        if (dc == 0) dc = 1;
+                        if (ds.initiator != null && ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
+                        stb_RecordStatsOnActorDead(ds.initiator, 1, ds.score, totalscore, ds.initiator.Tool.Type); //type 1 is aerial kill
+                    }
+                }
+                //Stb_LogError (msg); //OK, we can't really just do Stb_LogError.  Instead you must "prepare message" etc which queues it up.
+
+
+                // if (player.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
+                //p = player.Place() as AiAircraft;
+                //if (stb_Debug) Console.WriteLine("OnActorDead: 9");
+                List<Player> playersInAircraft = new List<Player>();
+                for (int i = 0; i < aiAircraft.Places(); i++)
+                {
+                    //if (aiAircraft.Player(i) != null) return false;
+                    if (aiAircraft.Player(i) != null && aiAircraft.Player(i) is Player && aiAircraft.Player(i).Name() != null)
+                    {
+                        string playerName = aiAircraft.Player(i).Name();
+                        Player player = aiAircraft.Player(i);
+                        //StbSr_UpdateStatsForKilledPlayer(playerName);
+                        if (playersInAircraft.Contains(player)) continue; //only do this once for any given player in the a/c
+                        playersInAircraft.Add(player);
+
+                        if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) > 0) continue; //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves in the few seconds they are allowed in before disappearing
+
+                        /*
+                        StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, aiAircraft.Player(i) as AiActor);
+                        stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                        */
+
+
+                        int killType = 1;
+                        if (selfKill) killType = 2;
+
+                        double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
+
+                        bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
+
+                        //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
+                        //-1 means one Player Position killed but the other still alive. BUT that is a logical impossibility here because this is the situation where the 
+                        //AIRCRAFT has crashed/died so ALL positiosn with the a/c are now dead.  So we treat -1 same as 1
+                        //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
+                        if (injuriesExtent == -1) injuriesExtent = 1;
+                        if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
+                        else if (injuriesExtent < 1 && injuriesExtent > 0)
+                        {
+                            string severity = "slightly ";
+                            if (injuriesExtent > .2) severity = "seriously ";
+                            if (injuriesExtent >= .5) severity = "very seriously ";
+                            string msg4 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible terrible incident, but you somehow survived--for now . . . ";
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                            stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+                            OnAircraftLanded(actor, aiAircraft.Player(i));
+                            continue;
+                        }
+                        /*
+                         * //So it was a mistake to treat injuriesExtent==-1 here, it is a logical impossibility because here is where the AIRCRAFT has been declared dead
+                         * //The possibility of injuriesExtent==-1 is really only for when the PLAYER is the actor who is dead.
+                        else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
+                        {
+                            string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                            stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+                        */
+
+                        else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
+
+
+                        msg = "";
+                        if (selfKill)
+                        {
+                            //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
+                            //msg = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
+                            msg = "Self-kill: " + playerName + ". ";
+                        }
+                        else
+                        {
+                            //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
+                            //msg = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " killed or captured. ";
+                            msg = playerName + " killed or captured. ";
+                        }
+                        stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+
+                        if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+
+                        if (stb_ResetPlayerStatsWhenKilled && !(injuriesExtent == -1))
+                        {
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                        }
+                        else
+                        {
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                        }
+
+
+                        if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
+                        {
+                            msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60));
+                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+                        }
+
+                        if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
+
+                        Console.WriteLine("Forcing exit 7");
+                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
+
+
+
+                        //And now that they have died, they can't continue their mission
+                        //for stats purposes
+                        stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
+
+
+                    }
+                }
+
+            }
+            else
+            {
+                //if (stb_Debug) 
+                //Console.WriteLine("OnActorDead: 10");
+                AiGroundActor aiGroundActor = actor as AiGroundActor;
+                if (aiGroundActor != null)
+                {
+                    //For now we're not recording deaths of players when they are playing in AiGround. We're just reporting kills for players who KILL an AiGround
+                    if (shortName.Length == 12) { Timeout(99.9, () => { Stb_DestroyFrontShip(aiGroundActor); }); }
+                    else if (shortName.Length == 14) { Timeout(99.9, () => { Stb_DestroyFrontArmor(aiGroundActor); }); }
+
+                    //if (stb_Debug) Console.WriteLine("OnActorDead: 11");
                     foreach (DamagerScore ds in damages)
                     {
                         bool willReportDead = false;
                         if (ds.initiator != null)
                         {
-                            int initiatorArmy = 0;
-                            if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
-                            if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
-
-
                             if (ds.initiator.Player != null)
                             {
-                                if (aiAircraft.Army() == 1 && initiatorArmy == 2) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats
-                                if (aiAircraft.Army() == 2 && initiatorArmy == 1) { willReportDead = true; }
-
-                                msg += ds.initiator.Player.Name() + " ";
-                                if (!deadPlayerNames.Contains(ds.initiator.Player.Name())) selfKill = false; // if even one other player contributed to the kill, it's not a self kill! 
-                            }
-                            else
-                            {
-                                selfKill = false; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
-                                msg += "nobody/AI  ";
+                                if (aiGroundActor.Army() == 1 && ds.initiator.Player.Army() == 2) { willReportDead = true; }
+                                if (aiGroundActor.Army() == 2 && ds.initiator.Player.Army() == 1) { willReportDead = true; }
                             }
                         }
                         if (willReportDead)
                         {
-                            int dc = damages.Count();
-                            if (dc == 0) dc = 1;
-                            if (ds.initiator != null && ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
-                            stb_RecordStatsOnActorDead(ds.initiator, 1, ds.score, totalscore, ds.initiator.Tool.Type); //type 1 is aerial kill
-                        }
-                    }
-                    //Stb_LogError (msg); //OK, we can't really just do Stb_LogError.  Instead you must "prepare message" etc which queues it up.
-
-
-                    // if (player.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
-                    //p = player.Place() as AiAircraft;
-                    //if (stb_Debug) Console.WriteLine("OnActorDead: 9");
-                    List<Player> playersInAircraft = new List<Player>();
-                    for (int i = 0; i < aiAircraft.Places(); i++)
-                    {
-                        //if (aiAircraft.Player(i) != null) return false;
-                        if (aiAircraft.Player(i) != null && aiAircraft.Player(i) is Player && aiAircraft.Player(i).Name() != null)
-                        {
-                            string playerName = aiAircraft.Player(i).Name();
-                            Player player = aiAircraft.Player(i);
-                            //StbSr_UpdateStatsForKilledPlayer(playerName);
-                            if (playersInAircraft.Contains(player)) continue; //only do this once for any given player in the a/c
-                            playersInAircraft.Add(player);
-
-                            if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) > 0) continue; //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves in the few seconds they are allowed in before disappearing
-
-                            /*
-                            StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, aiAircraft.Player(i) as AiActor);
-                            stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                            */
-
-
-                            int killType = 1;
-                            if (selfKill) killType = 2;
-
-                            double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
-
-                            bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
-
-                            //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
-                            //-1 means one Player Position killed but the other still alive. BUT that is a logical impossibility here because this is the situation where the 
-                            //AIRCRAFT has crashed/died so ALL positiosn with the a/c are now dead.  So we treat -1 same as 1
-                            //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
-                            if (injuriesExtent == -1) injuriesExtent = 1;
-                            if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
-                            else if (injuriesExtent < 1 && injuriesExtent > 0)
+                            if (aiGroundActor.Type() == AiGroundActorType.AAGun ||
+                                aiGroundActor.Type() == AiGroundActorType.Artillery ||
+                                aiGroundActor.Type() == AiGroundActorType.Tank)
                             {
-                                string severity = "slightly ";
-                                if (injuriesExtent > .2) severity = "seriously ";
-                                if (injuriesExtent >= .5) severity = "very seriously ";
-                                string msg4 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible terrible incident, but you somehow survived--for now . . . ";
-                                if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
-                                stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-                                OnAircraftLanded(actor, aiAircraft.Player(i));
-                                continue;
+                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 2 }, ds.initiator.Player.Place() as AiActor);
+                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 2, ds.score, totalscore, ds.initiator.Tool.Type); //type 2 is aa, artillery, tank
                             }
-                            /*
-                             * //So it was a mistake to treat injuriesExtent==-1 here, it is a logical impossibility because here is where the AIRCRAFT has been declared dead
-                             * //The possibility of injuriesExtent==-1 is really only for when the PLAYER is the actor who is dead.
-                            else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
+                            else if (aiGroundActor.Type() == AiGroundActorType.ShipBattleship ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipCarrier ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipCruiser ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipDestroyer ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipMisc ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipSmallWarship ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipSubmarine ||
+                                     aiGroundActor.Type() == AiGroundActorType.ShipTransport)
                             {
-                                string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
-                                if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
-                                stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-                            */
-
-                            else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
-
-
-                            msg = "";
-                            if (selfKill)
-                            {
-                                //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
-                                //msg = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
-                                msg = "Self-kill: " + playerName + ". ";
+                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 3 }, ds.initiator.Player.Place() as AiActor);
+                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 3, ds.score, totalscore, ds.initiator.Tool.Type); //type 3 is ships/naval
                             }
-                            else
+                            else //All other ground types except those specified above are type 4 //bhugh, 2016/09
                             {
-                                //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
-                                //msg = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " killed or captured. ";
-                                msg = playerName + " killed or captured. ";
+                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 4 }, ds.initiator.Player.Place() as AiActor);
+                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore, ds.initiator.Tool.Type); //type 4 is any other ground actor kill except those listed above
                             }
-                            stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
-
-                            if (stb_ResetPlayerStatsWhenKilled && !(injuriesExtent == -1))
-                            {
-                                if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
-                            }
-                            else
-                            {
-                                if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
-                            }
-
-
-                            if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
-                            {
-                                msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60));
-                                if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
-                            }
-
-                            if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
-
-                            Console.WriteLine("Forcing exit 7");
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
-
-
-
-                            //And now that they have died, they can't continue their mission
-                            //for stats purposes
-                            stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
-
 
                         }
                     }
-
                 }
                 else
                 {
-                    //if (stb_Debug) 
-                    //Console.WriteLine("OnActorDead: 10");
-                    AiGroundActor aiGroundActor = actor as AiGroundActor;
-                    if (aiGroundActor != null)
-                    {
-                        //For now we're not recording deaths of players when they are playing in AiGround. We're just reporting kills for players who KILL an AiGround
-                        if (shortName.Length == 12) { Timeout(99.9, () => { Stb_DestroyFrontShip(aiGroundActor); }); }
-                        else if (shortName.Length == 14) { Timeout(99.9, () => { Stb_DestroyFrontArmor(aiGroundActor); }); }
-
-                        //if (stb_Debug) Console.WriteLine("OnActorDead: 11");
-                        foreach (DamagerScore ds in damages)
-                        {
-                            bool willReportDead = false;
-                            if (ds.initiator != null)
-                            {
-                                if (ds.initiator.Player != null)
-                                {
-                                    if (aiGroundActor.Army() == 1 && ds.initiator.Player.Army() == 2) { willReportDead = true; }
-                                    if (aiGroundActor.Army() == 2 && ds.initiator.Player.Army() == 1) { willReportDead = true; }
-                                }
-                            }
-                            if (willReportDead)
-                            {
-                                if (aiGroundActor.Type() == AiGroundActorType.AAGun ||
-                                    aiGroundActor.Type() == AiGroundActorType.Artillery ||
-                                    aiGroundActor.Type() == AiGroundActorType.Tank)
-                                {
-                                    //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 2 }, ds.initiator.Player.Place() as AiActor);
-                                    //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                    if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 2, ds.score, totalscore, ds.initiator.Tool.Type); //type 2 is aa, artillery, tank
-                                }
-                                else if (aiGroundActor.Type() == AiGroundActorType.ShipBattleship ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipCarrier ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipCruiser ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipDestroyer ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipMisc ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipSmallWarship ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipSubmarine ||
-                                         aiGroundActor.Type() == AiGroundActorType.ShipTransport)
-                                {
-                                    //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 3 }, ds.initiator.Player.Place() as AiActor);
-                                    //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                    if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 3, ds.score, totalscore, ds.initiator.Tool.Type); //type 3 is ships/naval
-                                }
-                                else //All other ground types except those specified above are type 4 //bhugh, 2016/09
-                                {
-                                    //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 4 }, ds.initiator.Player.Place() as AiActor);
-                                    //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                    if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore, ds.initiator.Tool.Type); //type 4 is any other ground actor kill except those listed above
-                                }
-
-                            }
-                        }
-                    }
-                    else
+                    try
                     {
 
                         //if (stb_Debug) 
@@ -8033,13 +8087,17 @@ using TWCComms;
                         }
 
                     }
+                    catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
                 }
 
             }
-            //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
-        }
+        } 
+
+    }
+    //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+    #endregion
+    //add your code here
+
 
         //OnBuildingKilled(string title, maddox.GP.Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
 

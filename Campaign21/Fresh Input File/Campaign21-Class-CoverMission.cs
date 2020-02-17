@@ -39,35 +39,47 @@ using TWCComms;
  * ******************************************/
 
 
-    //CoverMission covermission = new CoverMission();
-    public class CoverMission : AMission, ICoverMission
-    {
-        public IMainMission TWCMainMission;
-        public ISupplyMission TWCSupplyMission;
-        public IStatsMission TWCStatsMission;
-        public IStbStatRecorder TWCStbStatRecorder;
-        public IKnickebeinMission TWCKnickebeinMission;
-        public Random ran;
-        public int minimumAircraftRequiredForCoverDuty { get; set; }
-        public int maximumAircraftAllowedPerMission { get; set; }
-        public int maximumCheckoutsAllowedAtOnce { get; set; }
-        public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
-        public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
-        public int numPlayersToIncreaseCover { get; set; } //below this number there are additional cover a/c available.  usually this is small, like = 1, 2, 3 - lower than numPlayersToReduceCover
+//CoverMission covermission = new CoverMission();
+public class CoverMission : AMission, ICoverMission
+{
+    public IMainMission TWCMainMission;
+    public ISupplyMission TWCSupplyMission;
+    public IStatsMission TWCStatsMission;
+    public IStbStatRecorder TWCStbStatRecorder;
+    public IKnickebeinMission TWCKnickebeinMission;
+    public Random ran;
+    public int minimumAircraftRequiredForCoverDuty { get; set; }
+    public int maximumAircraftAllowedPerMission { get; set; }
+    public int maximumCheckoutsAllowedAtOnce { get; set; }
+    public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
+    public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
+    public int numPlayersToIncreaseCover { get; set; } //below this number there are additional cover a/c available.  usually this is small, like = 1, 2, 3 - lower than numPlayersToReduceCover
 
-        public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
-        public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
-        public Dictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new Dictionary<AiAirGroup, Player>();
-        public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new Dictionary<AiAirGroup, Point3d>();
-        public Dictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new Dictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
+    public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
+    public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
+    public Dictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new Dictionary<AiAirGroup, Player>();
+    public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new Dictionary<AiAirGroup, Point3d>();
+    public Dictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new Dictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
 
-        //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
-        double twcmap_minX = 10000;
-        double twcmap_minY = 10000;
-        double twcmap_maxX = 360000;
-        double twcmap_maxY = 310000;
+    //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
+    //double twcmap_minX = 10000;  //orig values.
+    //double twcmap_minY = 10000;
+    //double twcmap_maxX = 360000;
+    //double twcmap_maxY = 310000;
+    //TODO: One variable in MainMission that sets these values for all subclasses
+    double twcmap_minX = 6666; //working on player off map penalties, we expanded the boundaries just slightly to match what is shown on in-game and radar maps
+    double twcmap_minY = 6666; //This should match what is in -main.cs AND -stats.cs OR SCREWUPS ensue.
+    double twcmap_maxX = 362000;
+    double twcmap_maxY = 312000;
+    /*
+     *  double minX = 6666; //from -main.cs
+        double minY = 6666;
+        double maxX = 362000;
+        double maxY = 312000;
+     * 
+     * */
 
-        public CoverMission()
+    public CoverMission()
         {
             try
             {
@@ -205,44 +217,47 @@ using TWCComms;
             }
         }
 
-        public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
-        {
-            base.OnAircraftLanded(missionNumber, shortName, aircraft);
+    public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftLanded(missionNumber, shortName, aircraft);
 
-            AiActor actor = aircraft as AiActor;
-            if (actor == null) return;
+        AiActor actor = aircraft as AiActor;
+        if (actor == null) return;
 
-            if (coverAircraftActorsCheckedOut.ContainsKey(actor))
-            {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
-                numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                coverAircraftActorsCheckedOut.Remove(actor);
-            }
-        }
-        public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
+        if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
-            base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
-            AiActor actor = aircraft as AiActor;
-            if (actor == null) return;
-            if (coverAircraftActorsCheckedOut.ContainsKey(actor))
-            {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
-                                                                                                                                             //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
-                coverAircraftActorsCheckedOut.Remove(actor);
-            }
+            Console.WriteLine("OnAircraftLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
+            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
+            numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
+            coverAircraftActorsCheckedOut.Remove(actor);
         }
-        public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
+    }
+    public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+        AiActor actor = aircraft as AiActor;
+        if (actor == null) return;
+        if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
-            base.OnAircraftKilled(missionNumber, shortName, aircraft);
-            if (aircraft == null) return;
-            AiActor actor = aircraft as AiActor;
-            if (coverAircraftActorsCheckedOut.ContainsKey(actor))
-            {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
-                                                                                                                                             //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
-                coverAircraftActorsCheckedOut.Remove(actor);
-            }
+            Console.WriteLine("OnAircraftCrashLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
+            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                                                                                                                                         //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
+            coverAircraftActorsCheckedOut.Remove(actor);
         }
+    }
+    public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftKilled(missionNumber, shortName, aircraft);
+        if (aircraft == null) return;
+        AiActor actor = aircraft as AiActor;
+        if (coverAircraftActorsCheckedOut.ContainsKey(actor))
+        {
+            Console.WriteLine("OnAircraftKilled: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
+            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                                                                                                                                         //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
+            coverAircraftActorsCheckedOut.Remove(actor);
+        }
+    }
 
         public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
         {
@@ -262,7 +277,7 @@ using TWCComms;
                 //AiActor actor = aircraft as AiActor;
                 if (coverAircraftActorsCheckedOut.ContainsKey(actor))
                 {
-                    //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was checked out by Cover");
+                    Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was checked out by Cover");
 
                     AiAircraft aircraft = actor as AiAircraft;
 
@@ -2415,58 +2430,64 @@ using TWCComms;
             return f;
         }
 
-        public void EscortMakeLand(AiAirGroup airGroup, AiAirGroup targetAirGroup = null, AiAirWayPointType aawpt = AiAirWayPointType.LANDING, double altDiff_m = 1000,
-            double AltDiff_range_m = 700, bool nodupe = true)
+    public void EscortMakeLand(AiAirGroup airGroup, AiAirGroup targetAirGroup = null, AiAirWayPointType aawpt = AiAirWayPointType.LANDING, double altDiff_m = 1000,
+        double AltDiff_range_m = 700, bool nodupe = true)
+    {
+        if (airGroup == null || !coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
+        try
         {
-            if (airGroup == null || !coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
-            List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-            NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.FOLLOW));
-            NewWaypoints.Add(EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe));
-            airGroup.SetWay(NewWaypoints.ToArray());
-            airGroup.setTask(AiAirGroupTask.LANDING, null); //try to force it . . . .
-            Timeout(60, () =>
-           {
+            Console.WriteLine("EscortMakeLand: " + airGroup.Name(), coverAircraftActorsCheckedOut[airGroup as AiActor].Name());
+        }
+        catch (Exception ex) { }
+
+        List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.FOLLOW));
+        NewWaypoints.Add(EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe));
+        airGroup.SetWay(NewWaypoints.ToArray());
+        airGroup.setTask(AiAirGroupTask.LANDING, null); //try to force it . . . .
+        Timeout(60, () =>
+       {
                //Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
                if (airGroup != null) airGroup.setTask(AiAirGroupTask.LANDING, null);
-           });
-            Timeout(120, () =>
-            {
+       });
+        Timeout(120, () =>
+        {
                 //Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
                 if (airGroup != null) airGroup.setTask(AiAirGroupTask.LANDING, null);
-            });
+        });
 
-            //Return aircraft to supply as this is the point when the player is not longer responsible for it
-            if (airGroup.GetItems().Length > 0)
+        //Return aircraft to supply as this is the point when the player is not longer responsible for it
+        if (airGroup.GetItems().Length > 0)
+        {
+            foreach (AiAircraft a in airGroup.GetItems())
             {
-                foreach (AiAircraft a in airGroup.GetItems())
-                {
 
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
-                }
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
             }
+        }
 
-            coverAircraftAirGroupsActive.Remove(airGroup);
+        coverAircraftAirGroupsActive.Remove(airGroup);
 
-            Timeout(240, () =>
-            //Timeout(6, () =>  //for testing
-            {
+        Timeout(240, () =>
+        //Timeout(6, () =>  //for testing
+        {
                 //Console.WriteLine("-cover Aborting LANDING: Sending off map now " + airGroup.Name(), airGroup.getTask());
                 fixWayPoints(airGroup);
-            });
+        });
 
-        }
+    }
 
-        public void BomberUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, Point3d newTargetPoint, AiAirWayPointType aawptstart = AiAirWayPointType.FOLLOW, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 20,
-            double AltDiff_range_m = 50, bool nodupe = true)
-        {
-            List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-            
-            Tuple<AiAirWayPoint, AiAirWayPoint, double> aaPs = BomberPosWaypoint(player, airGroup, targetAirGroup, newTargetPoint, aawpttarget, aawptcontinue, altDiff_m, AltDiff_range_m, nodupe);
-            NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3));
-            NewWaypoints.Add(aaPs.Item1);
-            NewWaypoints.Add(aaPs.Item2);
-            airGroup.SetWay(NewWaypoints.ToArray());
-        }
+    public void BomberUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, Point3d newTargetPoint, AiAirWayPointType aawptstart = AiAirWayPointType.FOLLOW, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 20,
+        double AltDiff_range_m = 50, bool nodupe = true)
+    {
+        List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
+
+        Tuple<AiAirWayPoint, AiAirWayPoint, double> aaPs = BomberPosWaypoint(player, airGroup, targetAirGroup, newTargetPoint, aawpttarget, aawptcontinue, altDiff_m, AltDiff_range_m, nodupe);
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3));
+        NewWaypoints.Add(aaPs.Item1);
+        NewWaypoints.Add(aaPs.Item2);
+        airGroup.SetWay(NewWaypoints.ToArray());
+    }
 
         Dictionary<AiAirGroup, AiActor> airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
         Dictionary<AiAirGroup, GroundStationary> airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
@@ -2492,7 +2513,7 @@ using TWCComms;
                 bool heavyBomber = isHeavyBomber(airGroup) || isDiveBomber(airGroup);
                 double targetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), playerAirGroup.Pos());
 
-            Tuple<double,double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber);
+            Tuple<double,double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
             double vel_mps = ret.Item1;
             double angleTargetToGroup = ret.Item2;
 
@@ -2831,7 +2852,7 @@ using TWCComms;
                     //Console.WriteLine ("After Target Waypoint: {0:F0} {1:F0} {2} {3} {4} for " + airGroup.Name(), new object[] { (nextWP2 as AiAirWayPoint).P.x, (nextWP2 as AiAirWayPoint).P.y, (nextWP2 as AiAirWayPoint).GAttackPasses, (nextWP2 as AiAirWayPoint).GAttackType, (nextWP2 as AiAirWayPoint).Action.ToString() });
                     /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
 
-                    //Console.WriteLine("BomberPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5} {6} LONG: {7:n0} {8:n0} {9:n0}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackType, nextWP2.P.x, nextWP2.P.y, nextWP2.P.z});
+                    Console.WriteLine("BomberPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5} {6} LONG: {7:n0} {8:n0} {9:n0}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackType, nextWP2.P.x, nextWP2.P.y, nextWP2.P.z});
                 }
                 catch (Exception ex)
                 {
@@ -2855,24 +2876,27 @@ using TWCComms;
 
                 Vector3d Vwld = airGroup.Vwld();
                 double vel_mps = coverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                double save_vel = vel_mps;
                 if (requested_vel_mps >= 0) vel_mps = requested_vel_mps; //if we pass a requested velocity along (as we do for escorts etc) then use that.
 
+            Console.WriteLine("Cover currposwp vel:req_vel:curr_vel {0:F0} : {1:F0} : {2:F0}",  vel_mps, requested_vel_mps, save_vel);
 
-                //Not sure if all this velocity thing is really necessary. Maybe this should just match the current cover a/c velocity & the next POS waypoint gives the speed it will try to change to
 
-                /*
-                if (targetAirGroup != null)
-                {
-                    Vector3d targetVwld = targetAirGroup.Vwld();
-                    double target_vel_mps = Calcs.CalculatePointDistance(targetVwld); //Not 100% sure mps is the right unit here?
+            //Not sure if all this velocity thing is really necessary. Maybe this should just match the current cover a/c velocity & the next POS waypoint gives the speed it will try to change to
 
-                    double targetDist_m = Calcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
-                    if (target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5; //Go at least 20% faster than the group they're escorting, if possible
-                    if (targetDist_m > 500 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5; //Go 2X as fast, if possible, the target gets more than 1km off
-                }
-                */
+            /*
+            if (targetAirGroup != null)
+            {
+                Vector3d targetVwld = targetAirGroup.Vwld();
+                double target_vel_mps = Calcs.CalculatePointDistance(targetVwld); //Not 100% sure mps is the right unit here?
 
-                if (vel_mps < 55) vel_mps = 55;
+                double targetDist_m = Calcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
+                if (target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5; //Go at least 20% faster than the group they're escorting, if possible
+                if (targetDist_m > 500 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5; //Go 2X as fast, if possible, the target gets more than 1km off
+            }
+            */
+
+            if (vel_mps < 55) vel_mps = 55;
                 if (vel_mps > 175) vel_mps = 175;
 
                 Point3d CurrentPos = airGroup.Pos();
@@ -2880,12 +2904,12 @@ using TWCComms;
                 aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
                 aaWP.Action = aawpt;
-                if (aawpt == AiAirWayPointType.ESCORT && targetAirGroup.GetItems().Length > 0)
+                if ((aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW ) && targetAirGroup.GetItems().Length > 0)
                 {
                     aaWP.Target = targetAirGroup.GetItems()[0];
                 }
 
-                //Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+                Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
 
                 return aaWP;
             }
@@ -2946,7 +2970,7 @@ using TWCComms;
                 double target_vel_mps = coverCalcs.CalculatePointDistance(targetVwld2);
 
                 targetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
-                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber);
+                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
                 vel_mps = ret.Item1;
                 double angleTargetToGroup = ret.Item2;
 
@@ -3060,13 +3084,13 @@ using TWCComms;
             //aawpt = AiAirWayPointType.ESCORT; //EXPERIMENTAL !! 
             aaWP.Action = aawpt;
             aaWP2.Action = aawpt;
-            if (aawpt == AiAirWayPointType.ESCORT && targetAirGroup.GetItems().Length > 0)
+            if ((aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW ) && targetAirGroup.GetItems().Length > 0)
             {
                 aaWP.Target = targetAirGroup.GetItems()[0];
                 aaWP2.Target = targetAirGroup.GetItems()[0];
             }
 
-            //Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0} {3:n0} {4:n0} {5:n0} LONG: {6:n0} {7:n0} {8:n0} {9:n0} {10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name(), new object[] {(aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP2.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, CurrentPos.x, CurrentPos.y, CurrentPos.z });
+            Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0} {3:n0} {4:n0} {5:n0} LONG: {6:n0} {7:n0} {8:n0} {9:n0} {10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name(), new object[] {(aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP2.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, CurrentPos.x, CurrentPos.y, CurrentPos.z });
 
             return new Tuple<AiAirWayPoint, AiAirWayPoint, double>(aaWP, aaWP2, vel_mps);
         }
@@ -3122,11 +3146,26 @@ using TWCComms;
     //Calculate the speed needed for the cover group to catch up to and then fly along with the player/target group.
     //Speed up a lot when far behind, slow down when ahead, gradually match target a/c speed when close in front or behind
     //return new Tuple<double,double> (vel_mps, angleTargetToGroup);
-    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps, double targetDist_m, bool heavyBomber)
+    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps_TAS, double targetDist_m, bool heavyBomber, Player player)
     {
         double vel_mps = 125;
         //Point3d directionVectorTarget = new Point3d(targetVwld.x , targetVwld.y, 0); //This would set velocity based on whether the cover a/c is in front of or behind the main a/c
         Point3d directionVectorTarget = new Point3d(Vwld.x, Vwld.y, 0); //this sets it depending on whether or not the cover a/c is headed towards OR away from the main a/c
+
+        double alt_m = targetAirGroup.Pos().z;
+        double alt_1000s = coverCalcs.Feet2Angels(coverCalcs.meters2feet(alt_m));
+        //rough IAS to TAS is IAS + 2% per 1000 feet altitude = TAS.
+        //double iasMult = 1 + alt_1000s * 2.0 / 100.0;
+        //double target_vel_mps_IAS = target_vel_mps_TAS / iasMult;
+
+        //more precise 1 + alt_m * mult, where mult = 0.000037758346582
+        //determined from in-game figures.  0.00005039179621558  seems to be a little more accurate
+        //double iasMult = 1 + alt_m * 0.000037758346582;
+        double iasMult = 1 + alt_m * 0.00005039179621558
+;
+
+        double target_vel_mps_IAS = target_vel_mps_TAS / iasMult;
+
 
         Point3d deltaPosTarget = new Point3d((airGroup.Pos().x - targetAirGroup.Pos().x), (airGroup.Pos().y - targetAirGroup.Pos().y), 0);
         /*
@@ -3136,42 +3175,79 @@ using TWCComms;
         double angleTargetToGroup = Calcs.RadiansToDegrees(Math.Acos((deltaPosTarget.x * directionVectorTarget.x + deltaPosTarget.y * directionVectorTarget.y)/divisor)); //Angle of the bomber group relative to the main aircraft/target.  Ranges =0-180, where 0 is straight ahead and 180 is straight behind.  Note that it doesn't differentiate betweem left/right (ie 45 degrees might be 45 left or 45 right).
         */
 
+        Vector3d agVwld = airGroup.Vwld();
+        double ag_vel_mps = coverCalcs.CalculatePointDistance(agVwld);
+        
 
         double angleTargetToGroup = coverCalcs.CalculateDifferenceAngle(directionVectorTarget, deltaPosTarget); //So this gives the heading angle from the cover a/c to the  main a/c.  180 degrees means the cover a/c is heading directly away from the mai na/c               
 
-        if (angleTargetToGroup < 90 || angleTargetToGroup > 270) //cover a/c headed straight towards main a/c, more or less
+        double frontBackDist_m = Math.Abs(targetDist_m * Math.Cos(coverCalcs.DegreesToRadians(angleTargetToGroup))); //so, really, we only care about the front/back distance when they are catching up/matching speed/position.  Sometimes they are 100 meters or more off the the side & that part of the distance is irrelevant.  frontBackDist_m
+
+        bool inFront = false;
+        if (angleTargetToGroup > 90 && angleTargetToGroup < 270) inFront = true;
+        double overSpeed = ag_vel_mps / target_vel_mps_IAS;
+
+
+
+        if (!inFront) //IN BACK, ie, cover a/c headed straight towards main a/c, more or less
         {
-            vel_mps = target_vel_mps * 1.08; //Go 95% as fast as main aircraft when behind but kinda close
-            if (targetDist_m > 750 && target_vel_mps * 1.12 > vel_mps) vel_mps = target_vel_mps * 1.12; //Go at least 20% faster than the group they're escorting, if possible
-            if (targetDist_m > 1500 && target_vel_mps * 1.2 > vel_mps) vel_mps = target_vel_mps * 1.2; //Go at least 20% faster than the group they're escorting, if possible
-            if (targetDist_m > 3000 && target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5; //Go at least 20% faster than the group they're escorting, if possible
-            if (targetDist_m > 4500 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5; //Go 2X as fast, if possible, the target gets more than 1km off
+            vel_mps = target_vel_mps_IAS * 0.999; //This is the actual resting point/stability point we're shooting for 0 to 30 meters behind the main a/c.
+            if (frontBackDist_m > 30 && target_vel_mps_IAS * 1.03 > vel_mps) vel_mps = target_vel_mps_IAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 250 && target_vel_mps_IAS * 1.05 > vel_mps) vel_mps = target_vel_mps_IAS * 1.05; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 400 && target_vel_mps_IAS * 1.1 > vel_mps) vel_mps = target_vel_mps_IAS * 1.1; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 600 && target_vel_mps_IAS * 1.2 > vel_mps) vel_mps = target_vel_mps_IAS * 1.2; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 1200 && target_vel_mps_IAS * 1.3 > vel_mps) vel_mps = target_vel_mps_IAS * 1.3; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 2000 && target_vel_mps_IAS * 1.4 > vel_mps) vel_mps = target_vel_mps_IAS * 1.4; //Go at least 20% faster than the group they're escorting, if possible
+            if (frontBackDist_m > 4500 && target_vel_mps_IAS * 1.5 > vel_mps) vel_mps = target_vel_mps_IAS * 1.5; //Go 2X as fast, if possible, the target gets more than 1km off //try BIG BRAKES for one cycle
+            if (frontBackDist_m > 6500 && target_vel_mps_IAS * 1.7 > vel_mps) vel_mps = target_vel_mps_IAS * 1.7; //Go 1.7X as fast, if possible, the target gets more than 1km off
+            if (frontBackDist_m > 10000 && target_vel_mps_IAS * 2.0 > vel_mps) vel_mps = target_vel_mps_IAS * 2.0; //etc
+            if (frontBackDist_m > 18000 && target_vel_mps_IAS * 3.0 > vel_mps) vel_mps = target_vel_mps_IAS * 3.0; 
 
             if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                               //closer to the main a/c which is more how we keep it in the right area
             {
-                vel_mps = target_vel_mps * 1.4; //Generally fighters go a fair but faster than the bombers
-                if (targetDist_m > 1000 && target_vel_mps * 1.5 > vel_mps) vel_mps = target_vel_mps * 1.5;
-                if (targetDist_m > 3000 && target_vel_mps * 2.5 > vel_mps) vel_mps = target_vel_mps * 2.5;
+                vel_mps = target_vel_mps_IAS * 1.1; //Generally fighters go a fair but faster than the bombers//2020-02-16 - cutting this back to try to keep them closer in
+                if (targetDist_m > 1000 && target_vel_mps_IAS * 1.0 > vel_mps) vel_mps = target_vel_mps_IAS * 1.0;
+                if (targetDist_m > 3000 && target_vel_mps_IAS * 2.5 > vel_mps) vel_mps = target_vel_mps_IAS * 2.5;
 
             }
         }
-        else if (angleTargetToGroup >= 90 && angleTargetToGroup <= 270)  //cover a/c headed straight away from main a/c, more or less
+        else //IN FRONT, ie, cover a/c headed straight away from main a/c, more or less
         {
-            vel_mps = target_vel_mps * 0.90; //Go 95% as fast as main aircraft when ahead but kinda close
-            if (targetDist_m > 750 && target_vel_mps * .8 < vel_mps) vel_mps = target_vel_mps * 0.8; //Go 80% as fast when the target a/c gets more than 750m off
-            if (targetDist_m > 1500 && target_vel_mps * .6 < vel_mps) vel_mps = target_vel_mps * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
-            if (targetDist_m > 2500 && target_vel_mps * .4 < vel_mps) vel_mps = target_vel_mps * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
+            vel_mps = target_vel_mps_IAS * 0.99; //Go 75% as fast as main aircraft when ahead but kinda close
+            if (frontBackDist_m > 30 && target_vel_mps_IAS * .98 < vel_mps) vel_mps = target_vel_mps_IAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
+            if (frontBackDist_m > 80 && target_vel_mps_IAS * .95 < vel_mps) vel_mps = target_vel_mps_IAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
+            if (frontBackDist_m > 120 && target_vel_mps_IAS * .85 < vel_mps) vel_mps = target_vel_mps_IAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
+            if (frontBackDist_m > 300 && target_vel_mps_IAS * .8 < vel_mps) vel_mps = target_vel_mps_IAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
+            if (frontBackDist_m > 500 && target_vel_mps_IAS * .75 < vel_mps) vel_mps = target_vel_mps_IAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
+            if (frontBackDist_m > 1500 && target_vel_mps_IAS * .6 < vel_mps) vel_mps = target_vel_mps_IAS * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
+            if (frontBackDist_m > 2500 && target_vel_mps_IAS * .4 < vel_mps) vel_mps = target_vel_mps_IAS * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
 
             if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                               //closer to the main a/c which is more how we keep it in the right area
             {
-                vel_mps = target_vel_mps * 1.3; //Generally fighters go a fair but faster than the bombers, but if they get TOO far away and are going in the wrong direction, slow down
-                if (targetDist_m > 3000 && target_vel_mps * 1 > vel_mps) vel_mps = target_vel_mps * 1;
-                if (targetDist_m > 7000 && target_vel_mps * 0.7 > vel_mps) vel_mps = target_vel_mps * 0.8;
+                vel_mps = target_vel_mps_IAS * 1.1; //Generally fighters go a fair but faster than the bombers, but if they get TOO far away and are going in the wrong direction, slow down
+                if (targetDist_m > 3000 && target_vel_mps_IAS * 1 > vel_mps) vel_mps = target_vel_mps_IAS * 1;
+                if (targetDist_m > 7000 && target_vel_mps_IAS * 0.7 > vel_mps) vel_mps = target_vel_mps_IAS * 0.7;
 
             }
         }
+        double vel_save = vel_mps;
+
+        /*
+        //The banhammer drops if the bomber formation members are going too fast
+        if (heavyBomber)
+        {
+            if ((frontBackDist_m < 6000 || inFront) && overSpeed > 1.2) vel_mps = target_vel_mps_IAS * 0.4; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c speed, then put brakes on HARD
+            else if ((frontBackDist_m < 3000 || inFront) && overSpeed > 1.1) vel_mps = target_vel_mps_IAS * 0.7; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
+            else if ((frontBackDist_m < 1500 || inFront) && overSpeed > 1.05) vel_mps = target_vel_mps_IAS * 0.85;
+            else if ((frontBackDist_m > 100 && inFront) && overSpeed > 1) vel_mps = target_vel_mps_IAS * 0.9;
+            //else if (inFront && overSpeed > 1) vel_mps = target_vel_mps_IAS * 0.95; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
+        }
+        */
+
+        double vel_save2 = vel_mps;
+
 
         //Get an angle that tells us whether we are little behind or a little in front of 90 degrees off the main a/c (right or left/ doesn't matter)
         double ninetyDiff = angleTargetToGroup;
@@ -3179,14 +3255,30 @@ using TWCComms;
         ninetyDiff = ninetyDiff - 90;
         ninetyDiff = Math.Abs(ninetyDiff);
 
+        double sign = -1;
+        if (angleTargetToGroup >= 90 && angleTargetToGroup <= 270) sign = 1;
 
-        if (targetDist_m < 100) vel_mps = (vel_mps - target_vel_mps) * targetDist_m / 100 + target_vel_mps; // if close enough in distance to main A/C gradually go same speed as main A/C
-        else if (ninetyDiff < 3) vel_mps = (vel_mps - target_vel_mps) * ninetyDiff / 3 + target_vel_mps; // if close enough in ANGLE to main A/C gradually go same speed as main A/C                
+        //if (frontBackDist_m < 1000) vel_mps = (vel_mps -target_vel_mps) * frontBackDist_m / 1000 + target_vel_mps; // if close enough in distance to main A/C gradually go same speed as main A/C
+
+        //Only do this when close AND within 2% of the correct speed.  Trying to rather eaxtly match the speed.
+        if (frontBackDist_m < 400 && Math.Abs(target_vel_mps_IAS*0.9999 - ag_vel_mps) < target_vel_mps_IAS/9) vel_mps = ( target_vel_mps_IAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + 0.9999*target_vel_mps_IAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
+                                                                                                                                                                                                  //else if (ninetyDiff < 10) vel_mps = (vel_mps - target_vel_mps) * ninetyDiff / 3 + target_vel_mps; // if close enough in ANGLE to main A/C gradually go same speed as main A/C   
+
+        AiAircraft targetAircraft = player.Place() as AiAircraft;
+        double ias = 0;
+        double tas = 0;
+        double mach = 0;
+
+        if (targetAircraft != null) tas = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+        if (targetAircraft != null) ias = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityIAS, -1);
+        if (targetAircraft != null) mach = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityMach, -1);
+
+        Console.WriteLine("Cover vel before:after:target:gp dist ang #{9:D3} Req:{1:D3} : {0:D3} : {8:D3} {10:D3} {11:D3} {12:F2} | TTAS:{2:D3} TIAS:{13:D3} CMPS{3:D3} | {4:F0} FBD:{5:F0} | {6:F0} {7:F0}", (int)vel_save, (int)vel_mps, (int)target_vel_mps_TAS, (int)ag_vel_mps, (int)targetDist_m, frontBackDist_m, angleTargetToGroup, ninetyDiff, (int)vel_save2,airGroup.ID(), (int)tas, (int)ias, (int)mach, (int)target_vel_mps_IAS);
 
 
         if (vel_mps < 45) vel_mps = 45;
         if (vel_mps > 175) vel_mps = 175;
-        if (target_vel_mps < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
+        if (target_vel_mps_IAS < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
         return new Tuple<double, double>(vel_mps, angleTargetToGroup);
     }
 
@@ -3237,65 +3329,74 @@ using TWCComms;
 
 
 
-        //If ai cover aircraft come close to the map edge we're going to say they survived & re-add them to stock.
+    //If ai cover aircraft come close to the map edge we're going to say they survived & re-add them to stock.
 
-        public void AddOffMapAIAircraftBackToSupply_recur()
+    public void AddOffMapAIAircraftBackToSupply_recur()
+    {
+        Timeout(60.123232, () => AddOffMapAIAircraftBackToSupply_recur());
+
+        try
         {
-            Timeout(60.123232, () => AddOffMapAIAircraftBackToSupply_recur());
+            int numremoved = 0;
 
-            try
+            //BattleArea 10000 10000 350000 310000 10000
+            //TODO: There is probably some way to access the size of the battle area programmatically
+            /* double twcmap_minX = 10000;
+            double twcmap_minY = 10000;
+            double twcmap_maxX = 360000;
+            double twcmap_maxY = 310000;
+            */
+
+            double minX = twcmap_minX - 12500; //20000 //So -main & -stats both give a 12500m buffer beyond the map edge "grace area".  So we should do the same here            
+            double minY = twcmap_minY - 12500; //20000 //TODO: Set a variable for grace area & use the same for all 3 places
+            double maxX = twcmap_maxX + 12500; //340000;
+            double maxY = twcmap_maxY + 12500; // 300000;
+
+            //Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
+            foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
             {
-                int numremoved = 0;
+                AiAircraft a = actor as AiAircraft;
+                /*Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
+                + actor.Name() + " "
+                + a.Type() + " "
+                + a.TypedName() + " "
+                + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                  );
+                  */
 
-                //BattleArea 10000 10000 350000 310000 10000
-                //TODO: There is probably some way to access the size of the battle area programmatically
-                /* double twcmap_minX = 10000;
-                double twcmap_minY = 10000;
-                double twcmap_maxX = 360000;
-                double twcmap_maxY = 310000;
-                */
 
-                double minX = twcmap_minX; //20000
-                double minY = twcmap_minY; //20000
-                double maxX = twcmap_maxX; //340000;
-                double maxY = twcmap_maxY; // 300000;
 
-                //Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
-                foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
+                if (a != null &&
+                      (actor.Pos().x <= minX ||
+                        actor.Pos().x >= maxX ||
+                        actor.Pos().y <= minY ||
+                        actor.Pos().y >= maxY
+                      )
+
+                )
                 {
-                    AiAircraft a = actor as AiAircraft;
-                    /*Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
-                    + actor.Name() + " "
-                    + a.Type() + " "
-                    + a.TypedName() + " "
-                    + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                      );
-                      */
 
+                    Console.WriteLine("Cover AI Aircraft off map, checking back in: " + Calcs.GetAircraftType(a) + " "
+                        + actor.Name() + " "
+                        + a.Type() + " "
+                        + a.TypedName() + " "
+                        + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0"));
 
+                    EscortMakeLand(a.AirGroup(), null); //fixing bug - cover aircraft flew off map & were 'returned' but they were actually still in the air & following the main a/c.                    
 
-                    if (a != null &&
-                          (actor.Pos().x <= minX ||
-                            actor.Pos().x >= maxX ||
-                            actor.Pos().y <= minY ||
-                            actor.Pos().y >= maxY
-                          )
-
-                    )
-                    {
-                        numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
-                                                                                                                                                 //Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
-                        Timeout(0.1, () => { coverAircraftActorsCheckedOut.Remove(actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
-                    }
-
-
+                    numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
+                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
+                                                                                                                                             //Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
+                    Timeout(0.1, () => { coverAircraftActorsCheckedOut.Remove(actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
                 }
-            }
-            catch (Exception ex) { Console.WriteLine("Cover removeoffmap: " + ex.ToString()); }
 
-            // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
-        } //method removeoffmapaiaircraft
+
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Cover removeoffmap: " + ex.ToString()); }
+
+        // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
+    } //method removeoffmapaiaircraft
 
         //returns distance to nearest friendly airport to actor, in meters. Count all friendly airports, alive or not.
         //In case of birthplace find, get the nearest birthplace regardless of friendly or not

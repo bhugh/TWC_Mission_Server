@@ -5919,11 +5919,13 @@ public class Mission : AMission, IMainMission
         DrawFrontLinesPerMapState();
         
         //TESTING
+        /*
         for (double i = -25; i <= 25; i = i + 12.5)
         {
             DrawFrontLinesPerMapState(-25, 25, i, "test" + i.ToString("F0") + ".mis");
             
         }
+        */
 
         SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
         ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want
@@ -8132,10 +8134,13 @@ public class Mission : AMission, IMainMission
         //This should match the values in your .mis file, like
         //BattleArea 10000 10000 360000 310000 10000
         //TODO: There is probably some way to access the size of the battle area programmatically
-        double minX = 10000;
-        double minY = 10000;
-        double maxX = 360000;
-        double maxY = 310000;
+        //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
+        //Also below a "grace area" of approx 1 square off the map is added
+        if (GamePlay == null) return;
+        double minX = 6666;
+        double minY = 6666;
+        double maxX = 362000;
+        double maxY = 312000;        
         //////////////Comment this out as we don`t have Your Debug mode  
         DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
         if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
@@ -8185,10 +8190,10 @@ public class Mission : AMission, IMainMission
                                             if
                                           (
                                             (Z_AltitudeAGL < 5 && Z_VelocityTAS < 10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not landing
-                                            a.Pos().x <= minX ||
-                                            a.Pos().x >= maxX ||
-                                            a.Pos().y <= minY ||
-                                            a.Pos().y >= maxY
+                                            a.Pos().x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
+                                            a.Pos().x >= maxX + 12500 ||
+                                            a.Pos().y <= minY - 12500 ||
+                                            a.Pos().y >= maxY + 12500
                                           )
                                             // ai aircraft only
                                             {
@@ -9106,39 +9111,39 @@ public class Mission : AMission, IMainMission
 
             //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID, Days to repair, Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-200), comment) {
             //weights change 0-200, many weights below adjusted, 2020-01
-            addRadar("Westgate Radar", "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 35000, false, 30, "", add);
-            addRadar("Sandwich Radar", "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 35000, false, 30, "", add);
-            addRadar("Deal Radar", "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 35000, false, 30, "", add);
-            addRadar("Dover Radar", "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 35000, false, 30, "", add);
-            addRadar("Brookland Radar", "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 35000, false, 30, "", add);
-            addRadar("Dungeness Radar", "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 35000, false, 30, "", add);
-            addRadar("Eastbourne Radar", "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 35000, false, 10, "", add);
-            addRadar("Littlehampton Radar", "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 50000, false, 10, "", add);
-            addRadar("Ventnor Radar", "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 50000, false, 10, "", add);
+            addRadar("Westgate Radar", "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 30, "", add);
+            addRadar("Sandwich Radar", "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 25000, false, 30, "", add);
+            addRadar("Deal Radar", "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 30, "", add);
+            addRadar("Dover Radar", "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 30, "", add);
+            addRadar("Brookland Radar", "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 30, "", add);
+            addRadar("Dungeness Radar", "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 30, "", add);
+            addRadar("Eastbourne Radar", "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 10, "", add);
+            addRadar("Littlehampton Radar", "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 35000, false, 10, "", add);
+            addRadar("Ventnor Radar", "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 35000, false, 10, "", add);
             addRadar("Radar Communications HQ", "HQR", 1, 6, 3, "BTarget28", "TGroundDestroyed", 61, 180207, 288435, 200, 350000, false, 5, "", add);
-            addRadar("Radar Poole", "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed", 75, 15645, 170552, 200, 50000, false, 5, "", add);
+            addRadar("Radar Poole", "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed", 75, 15645, 170552, 200, 35000, false, 5, "", add);
 
 
-            addRadar("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 30000, false, 35, "", add);
-            addRadar("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 30000, false, 35, "", add);
-            addRadar("Dunkirk Radar #2", "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 30000, false, 35, "", add);
-            //    addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, 2, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 30000, false, 35, "", add);
-            addRadar("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 30000, false, 35, "", add); //Mission in mission file
-            addRadar("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Dieppee", "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 50, 30000, false, 5, "", add); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
-            addRadar("Radar Le Treport", "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531, 50, 30000, false, 15, "", add); // Mission in mission file
-            addRadar("Radar Somme River", "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar AMBETEUSE", "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar BOULOGNE", "BlgR", 2, 4, 2, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674, 50, 30000, false, 35, "", add); //Mission in mission file           
-            addRadar("Radar Le Touquet", "L2kR", 2, 4, 2, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Dieppe", "FreR", 2, 4, 2, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 30000, false, 15, "", add); //Mission in mission file
-            addRadar("Veulettes-sur-Mer Radar", "VeuR", 2, 4, 2, "RTarget48R", "TGroundDestroyed", 100, 195165, 93441, 50, 30000, false, 5, "", add);//Mission in mission file
-            addRadar("Le Havre Freya Radar", "LhvR", 2, 4, 2, "RTarget49R", "TGroundDestroyed", 100, 157636, 60683, 50, 30000, false, 15, "", add);//Mission in mission file
-            addRadar("Ouistreham Freya Radar", "OuiR", 2, 4, 2, "RTarget50R", "TGroundDestroyed", 100, 135205, 29918, 50, 30000, false, 15, "", add);// Mission in mission file
-            addRadar("Bayeux Beach Freya Radar", "BayR", 2, 4, 2, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580, 50, 30000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Tatihou", "TatR", 2, 4, 2, "RTarget53R", "TGroundDestroyed", 77, 60453, 63873, 50, 40000, false, 5, "", add); //Mission in mission file
-            addRadar("Radar Querqueville", "QueR", 2, 4, 2, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666, 50, 40000, false, 15, "", add); // Mission in mission file
+            addRadar("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 20000, false, 35, "", add);
+            addRadar("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 20000, false, 35, "", add);
+            addRadar("Dunkirk Radar #2", "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 20000, false, 35, "", add);
+            //    addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, 2, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 20000, false, 35, "", add);
+            addRadar("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 20000, false, 35, "", add); //Mission in mission file
+            addRadar("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppee", "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 50, 20000, false, 5, "", add); //Mission in mission file; this is aduplicate of Radar DiEPPE, remove one or the other here AND in the .mis file
+            addRadar("Radar Le Treport", "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531, 50, 20000, false, 15, "", add); // Mission in mission file
+            addRadar("Radar Somme River", "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar AMBETEUSE", "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar BOULOGNE", "BlgR", 2, 4, 2, "RTarget45R", "TGroundDestroyed", 85, 264494, 188674, 50, 20000, false, 35, "", add); //Mission in mission file           
+            addRadar("Radar Le Touquet", "L2kR", 2, 4, 2, "RTarget46R", "TGroundDestroyed", 66, 265307, 171427, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Dieppe", "FreR", 2, 4, 2, "RTarget47R", "TGroundDestroyed", 99, 232580, 103325, 50, 20000, false, 15, "", add); //Mission in mission file
+            addRadar("Veulettes-sur-Mer Radar", "VeuR", 2, 4, 2, "RTarget48R", "TGroundDestroyed", 100, 195165, 93441, 50, 20000, false, 5, "", add);//Mission in mission file
+            addRadar("Le Havre Freya Radar", "LhvR", 2, 4, 2, "RTarget49R", "TGroundDestroyed", 100, 157636, 60683, 50, 20000, false, 15, "", add);//Mission in mission file
+            addRadar("Ouistreham Freya Radar", "OuiR", 2, 4, 2, "RTarget50R", "TGroundDestroyed", 100, 135205, 29918, 50, 20000, false, 15, "", add);// Mission in mission file
+            addRadar("Bayeux Beach Freya Radar", "BayR", 2, 4, 2, "RTarget51R", "TGroundDestroyed", 100, 104279, 36659, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52R", "TGroundDestroyed", 100, 65364, 43580, 50, 20000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Tatihou", "TatR", 2, 4, 2, "RTarget53R", "TGroundDestroyed", 77, 60453, 63873, 50, 30000, false, 5, "", add); //Mission in mission file
+            addRadar("Radar Querqueville", "QueR", 2, 4, 2, "RTarget54R", "TGroundDestroyed", 100, 17036, 77666, 50, 30000, false, 15, "", add); // Mission in mission file
 
             /*
             BTarget15R TGroundDestroyed 75 248739 253036 200
@@ -11868,11 +11873,11 @@ added Rouen Flak
                 Point2d p1 = new Point2d(170000, 145000); //we reverse the direction compared with the Blue line, so that points to the south/east of this line will return a positive distance.
                 Point2d p2 = new Point2d(295347, 220011);  
                 double dist_m = Calcs.PointToLineDistance(p1, p2, pos);  
-                if (dist_m <= 0) return false;
+                if (dist_m <= 0) return true; //on the "home base" side of the line, meaning that radar (and/or observer network) is always good/active
                 double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
                 //Console.WriteLine("Red Radar Area (east): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
-                if (pos.z > minHeight_m) return false; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
-                else return true; //the object is below the minimum height for radar detection.                
+                if (pos.z > minHeight_m) return true; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
+                else return false; //the object is below the minimum height for radar detection.                
             }
         }
 
@@ -11905,11 +11910,11 @@ added Rouen Flak
                 Point2d p1 = new Point2d(227132, 243249);
                 Point2d p2 = new Point2d(170000, 130000);
                 double dist_m = Calcs.PointToLineDistance(p1, p2, pos);
-                if (dist_m <= 0) return false; //Negative values mean it is on the side of the line where the radar stations are; ie, no radar shadow
+                if (dist_m <= 0) return true; //Negative values mean it is on the side of the line where the radar stations are; ie, no radar shadow
                 double minHeight_m = MO_minHeightForRadarDetection(dist_m + 45000);
                 //Console.WriteLine("Blue Radar Area (east): {0:F0} {1:F0} {2:F0} {3:F0} {4:F0}", pos.x, pos.y, pos.z, dist_m, minHeight_m);
-                if (pos.z > minHeight_m) return false; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
-                else return true; //the object is below the minimum height for radar detection.                
+                if (pos.z > minHeight_m) return true; //we count the line defined by p1 & p2 as the radar horizon; the radar horizon is ~ 45km from the radar device.  So we add the 45km back in here.
+                else return false; //the object is below the minimum height for radar detection.                
             }
 
             /*
@@ -14277,7 +14282,7 @@ public static class Calcs
         return (int)number;
     }
 
-    public static string correctedSectorNameDoubleKeypad(Mission msn, Point3d p)
+    public static string correctedSectorNameDoubleKeypad(AMission msn, Point3d p)
     {
 
         string s = correctedSectorName(msn, p) + "." + doubleKeypad(p);
@@ -14285,7 +14290,7 @@ public static class Calcs
 
     }
 
-    public static string correctedSectorNameKeypad(Mission msn, Point3d p)
+    public static string correctedSectorNameKeypad(AMission msn, Point3d p)
     {
 
         string s = correctedSectorName(msn, p) + "." + singleKeypad(p);
@@ -14296,7 +14301,7 @@ public static class Calcs
     //This make a  larger, somewhat random block of sectors, with the initial point in it somewhere. 
     //MaxSectorWidth 4x10000 actually gives sector blocks 5 wide sometimes (0.5 to 4.5, say -- takes in sectors 0,1,2,3,4)
     //So, we subract 1.
-    public static string makeBigSector(Mission msn, Point3d p, int maxSectorWidth = 4)
+    public static string makeBigSector(AMission msn, Point3d p, int maxSectorWidth = 4)
     {
         Point3d p1 = new Point3d(p.x - clc_random.Next((maxSectorWidth-1) * 10000), p.y - clc_random.Next((maxSectorWidth - 1) * 10000), p.z);
         if (p1.x < 0) p1.x = 0;
@@ -14332,7 +14337,7 @@ public static class Calcs
     //This is also the way the TWC online radar map works, so if you do it that way the in-game map & offline 
     //radar map will match.
 
-    public static string correctedSectorName(Mission msn, Point3d p)
+    public static string correctedSectorName(AMission msn, Point3d p)
     {
 
         string sector = msn.GamePlay.gpSectorName(p.x, p.y);
@@ -14474,7 +14479,7 @@ public static class Calcs
         // Return the hexadecimal string.
         return sBuilder.ToString();
     }
-    public static Player PlayerFromName(Mission msn, string name)
+    public static Player PlayerFromName(AMission msn, string name)
     {   // Purpose: Returns Player player given string name of player
         
         //multiplayer
@@ -14792,7 +14797,7 @@ public static class Calcs
         }
     }
 
-    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type="BuildingFireBig", double duration_s = 300)
+    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, string type="BuildingFireBig", double duration_s = 300)
     {
         /* Sample: Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24 
          possible types: Smoke1 Smoke2 BuildingFireSmall BuildingFireBig BigSitySmoke_0 BigSitySmoke_1
@@ -14814,7 +14819,7 @@ public static class Calcs
 
     }
 
-    public static void loadStatic(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type = "Stationary.Opel_Blitz_cargo", double heading = 0, string side = "nn")
+    public static void loadStatic(maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, string type = "Stationary.Opel_Blitz_cargo", double heading = 0, string side = "nn")
     {
         /*  side = nn , gb, or de
          * Examples: https://theairtacticalassaultgroup.com/forum/showthread.php?t=8493
@@ -14849,7 +14854,7 @@ public static class Calcs
 
     private static int staticCount = 0;
 
-    public static ISectionFile makeStatic(ISectionFile f, maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type = "Stationary.Opel_Blitz_cargo", double heading = 0, string side = "nn")
+    public static ISectionFile makeStatic(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, string type = "Stationary.Opel_Blitz_cargo", double heading = 0, string side = "nn")
     {
         /*  side = nn , gb, or de
          * Examples: https://theairtacticalassaultgroup.com/forum/showthread.php?t=8493

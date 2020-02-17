@@ -1194,7 +1194,7 @@ public class CoverMission : AMission, ICoverMission
 
                 //hurri FB registers as a heavy bomber so that you can lead formations of them.  But you can't lead
                 //a formation as a hurriFB pilot, only heavy bombers can lead.  They could bring Hurri FB's with them, though.
-                if (!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) && !coverCalcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
+                if ((!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) ) || coverCalcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
 
 
                 if (numCheckedOut >= maximumCheckoutsAllowedAtOnce)
@@ -1437,6 +1437,8 @@ public class CoverMission : AMission, ICoverMission
             else return 0;
         }
 
+        //If we kept all of each player's aircraft executing their task routine simultaneously, it might help in keeping the player's group
+        //more coordinated & executing manuevers together etc.
         public void keepAircraftOnTask_recurs(AiAirGroup airGroup, AiAirGroupTask task = AiAirGroupTask.DO_NOTHING, AiAirWayPointType aawpt = AiAirWayPointType.ESCORT, Player player = null, double delay = 16.2354, bool heavyBomber = false, double AltDiff_m = 1000, double AltDiff_range_m = 100, double AltDiffBomber_m = 1000, double AltDiffBomber_range_m = 100)
         {
             AiAirGroup tasktarget = null;
@@ -2904,7 +2906,7 @@ public class CoverMission : AMission, ICoverMission
                 aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
                 //aaWP.Action = AiAirWayPointType.NORMFLY;
                 aaWP.Action = aawpt;
-                if ((aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW ) && targetAirGroup.GetItems().Length > 0)
+                if ((targetAirGroup != null && aawpt != null && aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW ) && targetAirGroup.GetItems().Length > 0)
                 {
                     aaWP.Target = targetAirGroup.GetItems()[0];
                 }

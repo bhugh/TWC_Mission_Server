@@ -2125,6 +2125,8 @@ public class Mission : AMission, IMainMission
      ******************************************************************************/
 
     //CalcMapMove - returns a double with DOUBLE the current mission score and STRING the text message detailing the score
+    //This figures the score at intermediate points during the session, but also the final score at end of session or when
+    //one team or the other turns the map
     public Tuple<double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null)
     {
         double MapMove = 0;
@@ -2137,14 +2139,14 @@ public class Mission : AMission, IMainMission
         //of points they get from air victories etc.  Before it was just a flat 100 points for turning the map, but now it's whatever objective points you've accumulated PLUS 100 points more.
         if (winner == "Red")
         {
-            msg = "Red moved the campaign forward by achieving all Mission Objectives and turning the map!";
+            msg = "Red moved the campaign forward by achieving all Primary Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
             return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 2000.0, outputmsg);
         }
         if (winner == "Blue")
         {
-            msg = "Blue moved the campaign forward by achieving all Mission Objectives and turning the map!";
+            msg = "Blue moved the campaign forward by achieving all Primary Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
             return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 2000.0, outputmsg);
@@ -2152,14 +2154,14 @@ public class Mission : AMission, IMainMission
 
         if (RedTotalF > 3)
         {
-            msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total victories!";
+            msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total air/ground/naval victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
             MapMove += RedTotalF / 2000.0;
         }
         if (BlueTotalF > 3)
         {
-            msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total victories!";
+            msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total air/ground/naval victories!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
             MapMove -= BlueTotalF / 2000.0;
@@ -2223,18 +2225,18 @@ public class Mission : AMission, IMainMission
 
         if (MissionObjectiveScore[ArmiesE.Red] > 0)
         {
-            msg = "Red has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points by destroying Mission Objectives!";
+            msg = "Over the past few days, Red has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points by destroying Mission Objectives!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove += MissionObjectiveScore[ArmiesE.Red] / 100;
+            //MapMove += MissionObjectiveScore[ArmiesE.Red] / 100; //2020-02 - with the persistent campaign, we don't add this at the end of each session any more.  It is saved from session to session and only added in when the map is turned by this team (their full objective score + 100 points)
         }
 
         if (MissionObjectiveScore[ArmiesE.Blue] > 0)
         {
-            msg = "Blue has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points by destroying Mission Objectives!";
+            msg = "Over the past few days, Blue has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points by destroying Mission Objectives!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove -= MissionObjectiveScore[ArmiesE.Blue] / 100;
+            //MapMove -= MissionObjectiveScore[ArmiesE.Blue] / 100; //2020-02 - with the persistent campaign, we don't add this at the end of each session any more.  It is saved from session to session and only added in when the map is turned by this team (their full objective score + 100 points)
         }
         if (RedPlanesWrittenOffI >= 3)
         {
@@ -2282,27 +2284,29 @@ public class Mission : AMission, IMainMission
         */
 
         //We can move AT MOST one notch (one map) in either direction, per mission
-        if (MapMove > 1) MapMove = 1;
-        if (MapMove < -1) MapMove = -1;
+        //UPDATE 2020/02 - with persistent missions we are removing this restriction.  The objective points + bonus a team gets is
+        //typically accumulated over many days/sessions.
+        //if (MapMove > 1) MapMove = 1;
+        //if (MapMove < -1) MapMove = -1;
 
         string word = "Currently, ";
         if (final) word = "Altogether, ";
 
         if (MapMove > 0)
         {
-            msg = word + "this mission has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
+            msg = word + "this sessions has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
         }
         if (MapMove < 0)
         {
-            msg = word + "this mission has improved Blue's campaign position by " + (-MapMove * 100).ToString("n0") + " points.";
+            msg = word + "this session has improved Blue's campaign position by " + (-MapMove * 100).ToString("n0") + " points.";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
         }
         if (MapMove == 0)
         {
-            msg = word + "this mission is a COMPLETE STALEMATE!";
+            msg = word + "this session is a COMPLETE STALEMATE!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
         }

@@ -1694,13 +1694,18 @@ public class Mission : AMission
 
     //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
     //the aircraft down low and off the map north (Red) or south (Blue)
+    //TODO: This exactly duplicates a function in Class-CoverMission, so now that we can call methods of other mission classes we should consolidate the two,
+    //and probably several other functions similar/identical in both classes.
     public void fixWayPoints(AiAirGroup airGroup)
     {
         try
         {
+
             if (airGroup == null || airGroup.GetWay() == null) return; //Not sure what else to do?
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
             //Maybe just exit?
+
+            double offMapBuffer = 25000;
 
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
             if (!isAiControlledAirGroup(airGroup)) return;
@@ -1764,16 +1769,16 @@ public class Mission : AMission
                 try
                 {
                     //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
-                    if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX -9999|| nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                    if (nextWP.P.x > twcmap_maxX + offMapBuffer || nextWP.P.y > twcmap_maxY + offMapBuffer || nextWP.P.x < twcmap_minX -offMapBuffer|| nextWP.P.y < twcmap_minY - offMapBuffer || nextWP.P.z < 0 || nextWP.P.z > 50000)
                     {
                         //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                         update = true;
                         if (nextWP.P.z < 0) nextWP.P.z = 0;
                         if (nextWP.P.z > 50000) nextWP.P.z = 50000;
-                        if (nextWP.P.x > twcmap_maxX + 9999) nextWP.P.x = twcmap_maxX + 9999;
-                        if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
-                        if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
-                        if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
+                        if (nextWP.P.x > twcmap_maxX + offMapBuffer) nextWP.P.x = twcmap_maxX + offMapBuffer;
+                        if (nextWP.P.y > twcmap_maxY + offMapBuffer) nextWP.P.y = twcmap_maxY + offMapBuffer;
+                        if (nextWP.P.x < twcmap_minX - offMapBuffer) nextWP.P.x = twcmap_minX - offMapBuffer;
+                        if (nextWP.P.y < twcmap_minY - offMapBuffer) nextWP.P.y = twcmap_minY - offMapBuffer;
                         //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                     }
                 }
@@ -1797,28 +1802,35 @@ public class Mission : AMission
                 double distance_m = 100000000000;
                 double tempDistance_m = 100000000000;
 
+                //so we expanded the grace area for players to fly off the map, to 10,000m plus the actual sides of the map
+                //And we made AI match
+                //as shown.  So . . . now sending them 9000m off the map isn't getting them off far enough.
+                //So, make it a solid 25000 just to be safe
+                //However, I'm a bit worried about what will happen with negative numbers in the map coordinates.  Not sure if it is possible.
+                
+
                 for (int i = 1; i < 13; i++)
                 {
 
                     if (ran.NextDouble() > 0.5)
                     {
-                        if (army == 1) endPos.y = twcmap_maxY + 9000;
-                        else if (army == 2) endPos.y = twcmap_minY - 9000;
-                        else endPos.y = twcmap_maxY + 9000;
+                        if (army == 1) endPos.y = twcmap_maxY + offMapBuffer;
+                        else if (army == 2) endPos.y = twcmap_minY - offMapBuffer;
+                        else endPos.y = twcmap_maxY + offMapBuffer;
                         endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
-                        if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
-                        if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                        if (endPos.x > twcmap_maxX + offMapBuffer) endPos.x = twcmap_maxX + offMapBuffer;
+                        if (endPos.x < twcmap_minX - offMapBuffer) endPos.x = twcmap_minX - offMapBuffer;
                     }
                     else
                     {
-                        if (army == 1) endPos.x = twcmap_minX - 9000;
-                        else if (army == 2) endPos.x = twcmap_maxX + 9000;
-                        else endPos.x = twcmap_maxX + 9000;
+                        if (army == 1) endPos.x = twcmap_minX - offMapBuffer;
+                        else if (army == 2) endPos.x = twcmap_maxX + offMapBuffer;
+                        else endPos.x = twcmap_maxX + offMapBuffer;
                         endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
                         if (army == 1) endPos.y += 80000;
                         else if (army == 2) endPos.y -= 10000;
-                        if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
-                        if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
+                        if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
+                        if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
                     }
                     //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
                     //so if we hit a distance < 120km we call it good enough

@@ -970,7 +970,7 @@ public class CoverMission : AMission, ICoverMission
                 double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
                 if (!msg.StartsWith("<help")) to = 5.2;
 
-                string msg41 = "<cover - request cover fighters to join you";
+                string msg41 = "<cover - request cover bombers/fighters to join you";
 
                 Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
                 //GamePlay.gp(, from);
@@ -1259,8 +1259,8 @@ public class CoverMission : AMission, ICoverMission
 
                 double distanceToSpawn_m = dtS.Item1;
                 int maxSpawnDistance_m = 2800;
-                if (dtS.Item3) maxSpawnDistance_m = 4200; //in case it's an airspawn point, make the area a bit bigger
-                if (!spawnInFriendlyTerritory && distanceToSpawn_m > maxSpawnDistance_m)
+                if (dtS.Item3) maxSpawnDistance_m = 6200; //in case it's an airspawn point, make the area a bit bigger
+                if (!spawnInFriendlyTerritory || distanceToSpawn_m > maxSpawnDistance_m)
                 {
                     if (distanceToSpawn_m > maxSpawnDistance_m) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
                     else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
@@ -2869,19 +2869,27 @@ public class CoverMission : AMission, ICoverMission
 
 
 
-        public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double requested_vel_mps = -1)
+    public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double requested_vel_mps = -1)
+    {
+        try
         {
-            try
-            {
-                AiAirWayPoint aaWP = null;
-                //double speed = (airGroup.GetItems()[0] as AiAircraft).getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+            if (airGroup == null) return null;
 
-                Vector3d Vwld = airGroup.Vwld();
-                double vel_mps = coverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
-                double save_vel = vel_mps;
-                if (requested_vel_mps >= 0) vel_mps = requested_vel_mps; //if we pass a requested velocity along (as we do for escorts etc) then use that.
+            AiAirWayPoint aaWP = null;
+            //double speed = (airGroup.GetItems()[0] as AiAircraft).getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+            
 
-            Console.WriteLine("Cover currposwp vel:req_vel:curr_vel {0:F0} : {1:F0} : {2:F0}",  vel_mps, requested_vel_mps, save_vel);
+            Vector3d Vwld = airGroup.Vwld();
+            double vel_mps = coverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+            double save_vel = vel_mps;
+            if (requested_vel_mps >= 0) vel_mps = requested_vel_mps; //if we pass a requested velocity along (as we do for escorts etc) then use that. -1 means, nothing special requested
+            //when asking AI aircraft ot change speed, it seems to help a lot to put the requested speed in the current waypoint, not the NEXT waypoing.  If you don't
+            //put it in the current waypoint, it waits until getting to the next waypoint to change speed.
+            //Also . . .hard learned bit of info, the requested airspeed is (apparently?) in IAS *****NOT****** TAS.
+            //So you get thee current velocity by way of Vwld and it is, of course, True Airspeed.  But apparently
+            //What the system expects a waypoint velocity to be, is indicated airspeed - what the pilot would see on the dial in the cockpit.  2020/02.
+
+            Console.WriteLine("Cover currposwp vel:req_vel:curr_vel {0:F0} : {1:F0} : {2:F0}", vel_mps, requested_vel_mps, save_vel);
 
 
             //Not sure if all this velocity thing is really necessary. Maybe this should just match the current cover a/c velocity & the next POS waypoint gives the speed it will try to change to
@@ -2899,38 +2907,41 @@ public class CoverMission : AMission, ICoverMission
             */
 
             if (vel_mps < 55) vel_mps = 55;
-                if (vel_mps > 175) vel_mps = 175;
+            if (vel_mps > 175) vel_mps = 175;
 
-                Point3d CurrentPos = airGroup.Pos();
+            Point3d CurrentPos = airGroup.Pos();
 
-                aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
-                //aaWP.Action = AiAirWayPointType.NORMFLY;
-                aaWP.Action = aawpt;
-                if ((targetAirGroup != null && aawpt != null && aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW ) && targetAirGroup.GetItems().Length > 0)
-                {
-                    aaWP.Target = targetAirGroup.GetItems()[0];
-                }
-
-                Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
-
-                return aaWP;
+            aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
+            //aaWP.Action = AiAirWayPointType.NORMFLY;
+            aaWP.Action = aawpt;
+            if ((targetAirGroup != null && aawpt != null && aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW) && targetAirGroup.GetItems().Length > 0)
+            {
+                aaWP.Target = targetAirGroup.GetItems()[0];
             }
-            catch (Exception ex) { Console.WriteLine("Cover/MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
+            try
+            {
+                Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} for " + airGroup.Name(), new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+            }
+            catch (Exception ex) { Console.WriteLine("CurrentPosWaypoint - error writing debug string " + ex.ToString());}
+
+            return aaWP;
         }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
+    }
 
-        public void EscortUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000,
-            double AltDiff_range_m = 700, bool nodupe = true)
-        {
+    public void EscortUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000,
+        double AltDiff_range_m = 700, bool nodupe = true)
+    {
 
-            List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-            //NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt));
-            Tuple<AiAirWayPoint, AiAirWayPoint, double> aaWPs = EscortPosWaypoint(player, airGroup, targetAirGroup, aawpt, altDiff_m, AltDiff_range_m, nodupe);
-            NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt, aaWPs.Item3));
-            NewWaypoints.Add(aaWPs.Item1);
-            NewWaypoints.Add(aaWPs.Item2);
+        List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
+        //NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt));
+        Tuple<AiAirWayPoint, AiAirWayPoint, double> aaWPs = EscortPosWaypoint(player, airGroup, targetAirGroup, aawpt, altDiff_m, AltDiff_range_m, nodupe);
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt, aaWPs.Item3));
+        NewWaypoints.Add(aaWPs.Item1);
+        NewWaypoints.Add(aaWPs.Item2);
 
-            airGroup.SetWay(NewWaypoints.ToArray());
-        }
+        airGroup.SetWay(NewWaypoints.ToArray());
+    }
     public Tuple<AiAirWayPoint, AiAirWayPoint, double> EscortPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000, double AltDiff_range_m = 700, bool nodupe = true)
     {
         try
@@ -3562,7 +3573,7 @@ public class CoverMission : AMission, ICoverMission
             try
             {
                 //AiAirGroup airGroup = intc.attackingAirGroup;
-                if (airGroup == null || airGroup.GetWay() == null) return; //Not sure what else to do?
+                if (airGroup == null || airGroup.GetWay() == null || airGroup.GetCurrentWayPoint() == null ) return; //Not sure what else to do?
                 AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
                                                                    //Maybe just exit?
 
@@ -3649,7 +3660,7 @@ public class CoverMission : AMission, ICoverMission
                 }
                 */
                 //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
-                if (nextWP.P.x > twcmap_minX && nextWP.P.x < twcmap_maxX && nextWP.P.y > twcmap_minY && nextWP.P.y < twcmap_maxY)
+                if (nextWP.P.x > twcmap_minX - 10000 && nextWP.P.x < twcmap_maxX + 10000 && nextWP.P.y > twcmap_minY - 10000 && nextWP.P.y < twcmap_maxY + 10000)
                 {
                     update = true;
                     int army = airGroup.getArmy();
@@ -3661,27 +3672,34 @@ public class CoverMission : AMission, ICoverMission
                     double distance_m = 100000000000;
                     double tempDistance_m = 100000000000;
 
+                    //so we expanded the grace area for players to fly off the map, to 10,000m plus the actual sides of the map
+                    //And we made AI match
+                    //as shown.  So . . . now sending them 9000m off the map isn't getting them off far enough.
+                    //So, make it a solid 25000 just to be safe
+                    //However, I'm a bit worried about what will happen with negative numbers in the map coordinates.  Not sure if it is possible.
+                    double offMapBuffer = 25000;
                     for (int i = 1; i < 13; i++)
                     {
                         if (ran.NextDouble() > 0.5)
                         {
-                            if (army == 1) endPos.y = twcmap_maxY + 9000;
-                            else if (army == 2) endPos.y = twcmap_minY - 9000;
-                            else endPos.y = twcmap_maxY + 9000;
+                               
+                            if (army == 1) endPos.y = twcmap_maxY + offMapBuffer;
+                            else if (army == 2) endPos.y = twcmap_minY - offMapBuffer;
+                            else endPos.y = twcmap_maxY + offMapBuffer;
                             endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
-                            if (endPos.x > twcmap_maxX + 9000) endPos.x = twcmap_maxX + 9000;
-                            if (endPos.x < twcmap_minX - 9000) endPos.x = twcmap_minX - 9000;
+                            if (endPos.x > twcmap_maxX + offMapBuffer) endPos.x = twcmap_maxX + offMapBuffer;
+                            if (endPos.x < twcmap_minX - offMapBuffer) endPos.x = twcmap_minX - offMapBuffer;
                         }
                         else
                         {
-                            if (army == 1) endPos.x = twcmap_minX - 9000;
-                            else if (army == 2) endPos.x = twcmap_maxX + 9000;
-                            else endPos.x = twcmap_maxX + 9000;
+                            if (army == 1) endPos.x = twcmap_minX - offMapBuffer;
+                            else if (army == 2) endPos.x = twcmap_maxX + offMapBuffer;
+                            else endPos.x = twcmap_maxX + offMapBuffer;
                             endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
                             if (army == 1) endPos.y += 80000;
                             else if (army == 2) endPos.y -= 10000;
-                            if (endPos.y > twcmap_maxY + 9000) endPos.y = twcmap_maxY + 9000;
-                            if (endPos.y < twcmap_minY - 9000) endPos.y = twcmap_minY - 9000;
+                            if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
+                            if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
                         }
                         //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
                         //so if we hit a distance < 120km we call it good enough

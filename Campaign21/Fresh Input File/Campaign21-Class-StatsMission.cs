@@ -3761,6 +3761,7 @@ struct
                                                     //We want to be sure the sector isn't like >><LKZF mumbled up.
                                                     //Sectors larger than 32 & BI work fine, but less than AA is like >
                                                     if (p.x < 10000) p.x = 10001;
+                                                    if (p.y < 10000) p.y = 10001;
 
                                                     string sec = Calcs.correctedSectorName(this, p);
                                                     string log_message = "{0} in a {1} has flown off the map at {2}, in contravention of the Geneva Convention.";

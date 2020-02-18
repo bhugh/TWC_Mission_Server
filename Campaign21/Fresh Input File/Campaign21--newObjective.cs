@@ -345,7 +345,7 @@ public class Mission : AMission, IMainMission
     public void SaveCampaignStateIntermediate()
     {
 
-        Timeout(667, () => { SaveCampaignStateIntermediate(); });
+        Timeout(302.78, () => { SaveCampaignStateIntermediate(); }); //every 5 minutes or so, save
         if (!MISSION_STARTED) return;
         if (SaveCampaignStateIntermediate_firstRun)
         {
@@ -1813,6 +1813,12 @@ public class Mission : AMission, IMainMission
         if (player != null)
         {
             setMainMenu(player);
+            //if (placeIndex == 0) placeIndex++;
+
+            //string PlayerPlace = Enum.GetName(typeof(CrewFunction), (actor as AiCart).CrewFunctionPlace(placeIndex));
+            //tells the name of the position their in - Pilot, Bombardier, Nose Gunner, etc.
+
+            //GamePlay.gpHUDLogCenter(PlayerPlace + " " + placeIndex.ToString("F0"));
 
             /*
              * TESTING STUFF FOR aPlayer Player extension
@@ -2142,14 +2148,14 @@ public class Mission : AMission, IMainMission
             msg = "Red moved the campaign forward by achieving all Primary Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 2000.0, outputmsg);
+            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 2000.0, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at this time, plus we're adding in the individual victory bonus 2X
         }
         if (winner == "Blue")
         {
             msg = "Blue moved the campaign forward by achieving all Primary Objectives and turning the map!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 2000.0, outputmsg);
+            return new Tuple<double, string>(-1 - MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 2000.0, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather SUBTRACTING since this is the blue side) in the objective points at this time, plus we're adding in the individual victory bonus 2X
         }
 
         if (RedTotalF > 3)
@@ -2238,14 +2244,14 @@ public class Mission : AMission, IMainMission
             if (output) gpLogServerAndLog(recipients, msg, null);
             //MapMove -= MissionObjectiveScore[ArmiesE.Blue] / 100; //2020-02 - with the persistent campaign, we don't add this at the end of each session any more.  It is saved from session to session and only added in when the map is turned by this team (their full objective score + 100 points)
         }
-        if (RedPlanesWrittenOffI >= 3)
+        if (RedPlanesWrittenOffI >= 3 && winner != "Red") //subtract for planes written off, but only if they didn't turn the map this sssion
         {
             msg = "Red has lost ground by losing " + RedPlanesWrittenOffI.ToString() + " aircraft in battle!";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
             MapMove -= (double)RedPlanesWrittenOffI / 200;  //These are LOSSES, so - points for red & + points for blue
         }
-        if (BluePlanesWrittenOffI >= 3)
+        if (BluePlanesWrittenOffI >= 3 && winner != "Blue") //subtract for planes written off, but only if they didn't turn the map this sssion
         {
             msg = "Blue has lost ground by losing " + BluePlanesWrittenOffI.ToString() + " aircraft in battle!";
             outputmsg += msg + Environment.NewLine;
@@ -7681,13 +7687,13 @@ public class Mission : AMission, IMainMission
             //Don't give our help when any of these typical -stats.cs chat commands are entered
             !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
             || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac")
-            || msg.StartsWith("<net") || msg.StartsWith("<k"))
+            || msg.StartsWith("<net") || msg.StartsWith("<k") || msg.StartsWith("<cov"))
 
             )
         {
             Timeout(0.1, () =>
             {
-                string m = "Commands: <tl Time Left; <rr Rearm/reload; <recon take recon photo; <record send recon photos to HQ";
+                string m = "Commands: <tl Time Left; <rr Rearm/reload; <ai let AI take over gunner position; <recon take recon photo; <record send recon photos to HQ";
                 if (admin_privilege_level(player) >= 2) m += "; <admin";
                 twcLogServer(new Player[] { player }, m, new object[] { });
                 //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
@@ -8110,17 +8116,23 @@ public class Mission : AMission, IMainMission
     public void letAiTake2ndPosition(Player player)
     {
         if (player == null || player.Place() == null) return;
-        Console.WriteLine("lAT2P: {0} {1}", player.PlaceSecondary(), player.PlacePrimary());
-        Console.WriteLine("lAT2P: {0} {1} {2} ", player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
-        Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
-        Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        //Console.WriteLine("lAT2P: {0} {1}", player.PlaceSecondary(), player.PlacePrimary());
+        //Console.WriteLine("lAT2P: {0} {1} {2} ", player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        //Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
+        //Console.WriteLine("lAT2P: {0} {1} {2} {3}", player.PersonSecondary().Place(), player.PersonPrimary().Place(), player.PlaceSecondary(), player.PlacePrimary());
         //whichever place they are NOT currently in, remove them from
         //if (player.PersonSecondary() != null && player.Place() != (player.PersonSecondary()).Place()) player.PlaceLeave((player.PersonSecondary()).Place());
         //else if (player.PersonPrimary() != null && player.Place() != (player.PersonPrimary()).Place()) player.PlaceLeave((player.PersonPrimary()).Place());
 
         //Ok, that didn't work.  Just leave them in the pilot's seat always.
-        if ((player.Place() as AiCart).Player(0) == player) player.PlaceEnter(player.Place(), 0); //This should ensure they are in the pilot's seat as primary, not the gunner as primary.  Maybe, I hope?
+        //if ((player.Place() as AiCart).Player(0) == player) player.PlaceEnter(player.Place(), 1); //This should ensure they are in the pilot's seat as primary, not the gunner as primary.  Maybe, I hope?
                                                                                       //However, if someone else is in the pilot's place it won't kick that person out & replace them with this player
+        //As long as there is only one player in the aircraft, I **believe** that placeprimary is always the pilot seat.  Placesecondary is whatever other 
+        //seat they might be in.  So leaving PlaceSecondary will empty out the second position (gunner or bombadier or whatever) and leave the player in the pilot
+        //seat only.  AI will take over the functions of the other seat.
+        //Now, you don't want to do this in reverse--remove player from PlacePrimary & leave them in PlaceSecondary.
+        //Reason is, now AI will take over the pilot's seat and fly the aircraft. Not what we want!
+        //What happens with more than one player in the aircraft, I can't really say for certain.
         player.PlaceLeave(player.PlaceSecondary()); //Now they're kicked from the secondary, which  should leave them in the pilot's seat.
         twcLogServer(new Player[] { player }, "AI has taken over your gunner position.", null);
 

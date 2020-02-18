@@ -3747,53 +3747,20 @@
   Static3367 Stationary.Environment.JerryCan_GER1_1 gb 35835.64 236791.14 65.00 
   Static3314 Stationary.Environment.CamoNetPlaneBig nn 35835.37 236798.33 65.00 
   Static3366 Stationary.Environment.JerryCan_GER1_1 gb 35843.51 236784.95 65.00 
-  Static1217 Stationary.Environment.JerryCan_GER1_1 gb 245444.69 233474.19 659.10 
-  Static1100 Stationary.Environment.JerryCan_GER1_1 gb 245453.97 233480.83 659.10 
-  Static1105 Stationary.Environment.JerryCan_GER1_1 gb 245446.92 233492.00 659.10 
-  Static1108 Stationary.Environment.TelegaBallon_UK1 gb 245453.55 233486.38 659.10 
-  Static1101 Stationary.Environment.JerryCan_GER1_1 gb 245465.14 233479.66 659.10 
-  Static1104 Stationary.Environment.JerryCan_GER1_1 gb 245458.67 233490.81 659.10 
-  Static1212 Stationary.Environment.JerryCan_GER1_1 gb 245448.56 233505.44 659.10 
-  Static1103 Stationary.Environment.JerryCan_GER1_1 gb 245456.33 233499.05 659.10 
-  Static1102 Stationary.Environment.JerryCan_GER1_1 gb 245466.91 233494.34 659.10 
-  Static1106 Stationary.Environment.JerryCan_GER1_1 gb 245475.72 233489.06 659.10 
-  Static1224 Stationary.Environment.JerryCan_GER1_1 gb 245451.58 233513.63 659.10 
-  Static1211 Stationary.Environment.JerryCan_GER1_1 gb 245464.94 233509.95 659.10 
+  Static1217 Stationary.Environment.JerryCan_GER1_1 nn 245444.69 233474.19 659.10 
+  Static1104 Stationary.Environment.JerryCan_GER1_1 gb 245458.67 233490.81 659.10  
+  Static1211 Stationary.Environment.JerryCan_GER1_1 nn 245464.94 233509.95 659.10 
   Static1219 Stationary.Environment.JerryCan_GER1_1 gb 245478.94 233502.42 659.10 
-  Static1350 Stationary.Environment.JerryCan_GER1_1 gb 245500.92 233492.50 659.10 
-  Static1227 Stationary.Environment.JerryCan_GER1_1 gb 245493.59 233510.39 659.10 
-  Static1226 Stationary.Environment.JerryCan_GER1_1 gb 245484.77 233528.92 659.10 
-  Static1367 Stationary.Environment.JerryCan_GER1_1 gb 245541.67 233496.22 659.10 
-  Static1353 Stationary.Environment.JerryCan_GER1_1 gb 245559.23 233486.78 659.10 
+  Static1353 Stationary.Environment.JerryCan_GER1_1 nn 245559.23 233486.78 659.10 
   Static1099 Stationary.Environment.JerryCan_GER1_1 gb 245551.95 233496.72 659.10 
-  Static1176 Stationary.Environment.TelegaBallon_UK1 gb 245564.88 233494.70 659.10 
-  Static1354 Stationary.Environment.JerryCan_GER1_1 gb 245550.47 233509.53 659.10 
-  Static1094 Stationary.Environment.JerryCan_GER1_1 gb 245557.98 233502.14 659.10 
-  Static1098 Stationary.Environment.JerryCan_GER1_1 gb 245567.88 233501.89 659.10 
   Static1175 Stationary.Environment.TelegaBallon_UK1 gb 245564.34 233508.23 659.10 
-  Static1366 Stationary.Environment.JerryCan_GER1_1 gb 245554.92 233519.66 659.10 
-  Static1097 Stationary.Environment.JerryCan_GER1_1 gb 245562.06 233516.50 659.10 
-  Static1359 Stationary.Environment.JerryCan_GER1_1 gb 245573.02 233478.55 659.10 
-  Static1095 Stationary.Environment.JerryCan_GER1_1 gb 245571.91 233488.38 659.10 
-  Static1356 Stationary.Environment.JerryCan_GER1_1 gb 245588.89 233487.06 659.10 
+  Static1366 Stationary.Environment.JerryCan_GER1_1 nn 245554.92 233519.66 659.10 
   Static1096 Stationary.Environment.JerryCan_GER1_1 gb 245575.48 233501.31 659.10 
-  Static1107 Stationary.Environment.JerryCan_GER1_1 gb 245586.28 233503.30 659.10 
-  Static1355 Stationary.Environment.JerryCan_GER1_1 gb 245576.86 233519.23 659.10 
-  Static1790 Stationary.Environment.JerryCan_GER1_1 gb 245634.42 233523.36 659.10 /hstart 2
-  Static1791 Stationary.Environment.JerryCan_GER1_1 gb 245651.13 233508.30 659.10 /hstart 2
   Static1210 Stationary.Environment.TelegaBallon_UK1 gb 245656.84 233515.73 659.10 
-  Static1127 Stationary.Environment.JerryCan_GER1_1 gb 245666.05 233512.17 659.10 /hstart 2
-  Static1179 Stationary.Environment.TelegaBallon_UK1 gb 245673.30 233531.63 659.10 
-  Static1789 Stationary.Environment.JerryCan_GER1_1 gb 245624.56 233549.53 659.10 
-  Static1119 Stationary.Environment.JerryCan_GER1_1 gb 245625.06 233579.91 659.10 /hstart 5
-  Static1128 Stationary.Environment.JerryCan_GER1_1 gb 245641.59 233543.72 659.10 
-  Static1177 Stationary.Environment.TelegaBallon_UK1 gb 245635.58 233552.86 659.10 
-  Static1178 Stationary.Environment.TelegaBallon_UK1 gb 245652.09 233538.53 659.10 
-  Static1126 Stationary.Environment.JerryCan_GER1_1 gb 245677.13 233536.80 659.10 /hstart 2
-  Static1125 Stationary.Environment.JerryCan_GER1_1 gb 245661.28 233559.94 659.10 
+  Static1128 Stationary.Environment.JerryCan_GER1_1 nn 245641.59 233543.72 659.10 
   Static1793 Stationary.Environment.JerryCan_GER1_1 gb 245643.45 233585.28 659.10 
-  Static1792 Stationary.Environment.JerryCan_GER1_1 gb 245675.52 233555.98 659.10 /hstart 2
-  Static1368 Stationary.Environment.JerryCan_GER1_1 gb 245680.27 233568.88 659.10 /hstart 2
+  Static1792 Stationary.Environment.JerryCan_GER1_1 nn 245675.52 233555.98 659.10 /hstart 2
+  Static1368 Stationary.Environment.JerryCan_GER1_1 nn 245680.27 233568.88 659.10 /hstart 2
   Static885 Stationary.Radar.Wotan_I de 339812.59 232699.05 0.00 
   Static504 Artillery.20_mm_Flak_38 de 341746.06 232715.09 65.00 /timeout 0/radius_hide 0
   Static57 Stationary.Radar.Wotan_I de 341863.59 232723.92 65.00 

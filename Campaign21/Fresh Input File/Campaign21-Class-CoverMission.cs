@@ -335,7 +335,7 @@ public class CoverMission : AMission, ICoverMission
                             //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died in enemy territory.");
 
                         }
-                        else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestAirport(actor).Item1 > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
+                        else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestFriendlyAirport(actor).Item1 > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
                         {
                             if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                          //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
@@ -1246,7 +1246,7 @@ public class CoverMission : AMission, ICoverMission
                 GamePlay.gpLogServer(new Player[] { player }, "Cover: Call " + numAC.ToString() + " " + plane + " in " + formation, new object[] { });
                 //Point3d ac1loc = (aircraft as AiActor).Pos();
 
-                Tuple<double, Point3d, bool> dtS = Stb_distanceToNearestAirport(aircraft as AiActor, birthplacefind: true); //<distance, airport/birthplace location, isAirSpawn> //allow birthplace to function as airport; allows cover aircraft at air spawn points
+                Tuple<double, Point3d, bool> dtS = Stb_distanceToNearestFriendlyAirport(aircraft as AiActor, birthplacefind: true); //<distance, airport/birthplace location, isAirSpawn> //allow birthplace to function as airport; allows cover aircraft at air spawn points; this returns ONLY friendly airports  birthplaces, so don't have to worry about anything on enemy ground.
 
                 //AiAirport ap = Stb_nearestAirport(actor.Pos(), actor.Army());
                 //if (ap != null) { loc = ap.Pos(); loc.z = 150; } //starting low, as though taking off.  Not actually taking off, though
@@ -1255,15 +1255,15 @@ public class CoverMission : AMission, ICoverMission
                 if (dtS.Item3 && actor != null) loc.z = dtS.Item2.z + ran.Next(100) - 50; //actor.Pos().z;//In case of airspawn we spawn them in at or near the airspawn altitude, though.            
 
 
-                bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(dtS.Item2.x, dtS.Item2.y));
+                //bool spawnInFriendlyTerritory = (player.Army() == GamePlay.gpFrontArmy(dtS.Item2.x, dtS.Item2.y)); //Don't need to do this as we are getting FRIENDLY airports & airspawns only now.  But sometime airspawns are over enemy territory, which is OK.  So we actually don't want to do this check.
 
                 double distanceToSpawn_m = dtS.Item1;
                 int maxSpawnDistance_m = 2800;
                 if (dtS.Item3) maxSpawnDistance_m = 6200; //in case it's an airspawn point, make the area a bit bigger
-                if (!spawnInFriendlyTerritory || distanceToSpawn_m > maxSpawnDistance_m)
+                if (distanceToSpawn_m > maxSpawnDistance_m)
                 {
                     if (distanceToSpawn_m > maxSpawnDistance_m) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you were too far from the nearest friendly airfield to call in cover (" + distanceToSpawn_m.ToString("N0") + " meters)", new object[] { }); });
-                    else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
+                    //else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
                     return;
                 }
             //regiment determines which ARMY the new aircraft will be in BOB_RAF British, BOB_LW German. BoB_RA = Italian?
@@ -3416,7 +3416,7 @@ public class CoverMission : AMission, ICoverMission
         //2020-01 - rewrote so that birthplaces work.  They worked before, I thought?  Maybe something changed with CloD 4.5+?
         //Finds either airports alone OR airports & birthplaces/spawn points.  
         //Double is distance, bool is true if closest airport is an AIRSPAWN
-        private Tuple<double, Point3d, bool> Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
+        private Tuple<double, Point3d, bool> Stb_distanceToNearestFriendlyAirport(AiActor actor, bool birthplacefind = false)  //<distance, location, whether or not an airspawn
         {
             double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
             double d2Min = d2;
@@ -3426,7 +3426,7 @@ public class CoverMission : AMission, ICoverMission
             int pArmy = actor.Army();
             bool isAirSpawn = false;
 
-
+            //int retArmy = 0; //0 indicates no army, aiairfields don't have army included; you have to get it from the location.  But Birthplaces do.
             int n;
 
             n = GamePlay.gpAirports().Length;
@@ -3444,7 +3444,7 @@ public class CoverMission : AMission, ICoverMission
                 a = (AiActor)GamePlay.gpAirports()[i];
                 if (a == null) continue;
                 ps = a.Pos();
-                aArmy = a.Army();
+                //aArmy = a.Army();
 
 
                 //if (actor.Army() != a.Army()) continue; //only count friendly airports

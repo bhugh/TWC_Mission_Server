@@ -9243,16 +9243,13 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.Building, "Queensborough Radio Transmission Booster", "Quee", 1, 4, "BTarget46", "TGroundDestroyed", 74, 204570, 265131, 50, false, 100, 24, "", add); //  "Queensborough radio Transmission booster"
             addTrigger(MO_ObjectiveType.Building, "Queensborough Electrical Research Facility", "Quee", 1, 4, "BTarget47", "TGroundDestroyed", 74, 204716, 265140, 50, false, 100, 24, "", add); //  "Queensborough Electrical Research Facility"
             addTrigger(MO_ObjectiveType.Building, "Littlestone Research Facility", "Litt", 1, 4, "littlestonehang", "TGroundDestroyed", 66, 221988, 221642, 50, false, 100, 24, "", add); //  "Littlestone research facility"
-
-            addTrigger(MO_ObjectiveType.Building, "Dover Ammo Dump", "Dove", 1, 3, "BTargDoverAmmo", "TGroundDestroyed", 8, 245461, 233488, 50, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Diehl Military Train Station", "Dove", 1, 4, "BTargDiehlTrainStation", "TGroundDestroyed", 10, 251138, 245883, 50, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Dover Naval Operations Fuel", "Dove", 1, 4, "BTargDoverFuel", "TGroundDestroyed", 11, 245695, 233573, 100, false, 120, 24, "", add);
+            
+            addTrigger(MO_ObjectiveType.Building, "Diehl Military Train Station", "Dove", 1, 4, "BTargDiehlTrainStation", "TGroundDestroyed", 10, 251138, 245883, 50, false, 120, 24, "", add);            
             addTrigger(MO_ObjectiveType.Building, "Broadstairs Train Station Military Complex", "Mans", 1, 4, "BTargBroadstairsTrainStation", "TGroundDestroyed", 10, 252836, 261369, 50, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Brighton Army Recruitment Station", "Shor", 1, 4, "BTargBrightonMilitaryRecruitment", "TGroundDestroyed", 11, 144654, 198443, 50, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Brighton Gasoline Storage", "Shor", 1, 4, "BTargBrightonFuel", "TGroundDestroyed", 21, 144738, 198233, 50, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Tenterden Chemical Manufacture", "Litt", 1, 4, "BTargTenterdenChemicalFactory", "TGroundDestroyed", 12, 194591, 220821, 150, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Minster Synthetic Case Oil Manufacture", "Mans", 1, 4, "BTargMinsterCaseOilManufacturing", "TGroundDestroyed", 10, 240203, 256964, 100, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", 1, 3, "BTargDoverNavalOffice", "TGroundDestroyed", 10, 245567, 233499, 50, false, 120, 24, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Minster Synthetic Case Oil Manufacture", "Mans", 1, 4, "BTargMinsterCaseOilManufacturing", "TGroundDestroyed", 10, 240203, 256964, 100, false, 120, 24, "", add);      
             addTrigger(MO_ObjectiveType.Building, "Battle Commando Training Center", "Shor", 1, 3, "BTargBattleCommandoTrainingCenter", "TGroundDestroyed", 11, 185093, 219403, 50, false, 120, 24, "", add);
             //addTrigger(MO_ObjectiveType.Building, "Shoreham Submarine Base", "", 1, 3, "BTargShorehamSubmarineBase", "TGroundDestroyed", 10, 137054, 198034, 50, false, 120, 24, "", add);           
 
@@ -9391,6 +9388,9 @@ public class Mission : AMission, IMainMission
             //fnib = number of guns in each battery (if a primary target)
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
+            addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
+            addPointArea(MO_ObjectiveType.Building, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
+            addPointArea(MO_ObjectiveType.Building, "Dover Naval Operations Fuel", "Dove", "", 1, 4, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 120, 48, true, true, 4, 7, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Southhampton Docks Industrial Area", "Sout", "", 1, 4, "SouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Submarine Base", "", "", 1, 3, "BTargShorehamSubmarineBase", 137054, 198034, 90, 150, 2000, 5, 120, 24, true, true, 8, 10, "", add);
 

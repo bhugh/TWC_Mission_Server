@@ -49,8 +49,10 @@ public class CoverMission : AMission, ICoverMission
     public IKnickebeinMission TWCKnickebeinMission;
     public Random ran;
     public int minimumAircraftRequiredForCoverDuty { get; set; }
-    public int maximumAircraftAllowedPerMission { get; set; }
-    public int maximumCheckoutsAllowedAtOnce { get; set; }
+    public int maximumAircraftAllowedPerMission_BomberPilots { get; set; }
+    public int maximumCheckoutsAllowedAtOnce_BomberPilots { get; set; }
+    public int maximumAircraftAllowedPerMission_FighterPilots { get; set; }
+    public int maximumCheckoutsAllowedAtOnce_FighterPilots { get; set; }
     public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
     public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
     public int numPlayersToIncreaseCover { get; set; } //below this number there are additional cover a/c available.  usually this is small, like = 1, 2, 3 - lower than numPlayersToReduceCover
@@ -80,28 +82,33 @@ public class CoverMission : AMission, ICoverMission
      * */
 
     public CoverMission()
+    {
+        try
         {
-            try
-            {
-                TWCMainMission = TWCComms.Communicator.Instance.Main;
-                TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission                        
+            TWCMainMission = TWCComms.Communicator.Instance.Main;
+            TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission                        
 
-                //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
-                ran = new Random();
+            //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
+            ran = new Random();
 
-                MissionNumberListener = -1;
-                minimumAircraftRequiredForCoverDuty = 50; //2020-01; was 200
-                maximumAircraftAllowedPerMission = 20; //2020-01; was 6, then 10
-                                                       //maximumAircraftAllowedPerMission = 136; //for testing        
-                maximumCheckoutsAllowedAtOnce = 8; //this was flights when flights were set to 2, but now is aircraft (the # of a/c per flight can be set per user)
-                maxPlayersToAllowCover = 26; //2020-01; was 12 //Number of players online in players' army, above this number no cover will be allowed
-                numPlayersToReduceCover = 14; //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
-                numPlayersToIncreaseCover = 8; //This number of players online in players' army OR FEWER, the number of allowed cover per mission will be increased even more;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
+            MissionNumberListener = -1;
+            minimumAircraftRequiredForCoverDuty = 50; //2020-01; was 200
+            maximumAircraftAllowedPerMission_BomberPilots = 20; //2020-01; was 6, then 10
+                                                                //maximumAircraftAllowedPerMission_BomberPilots = 136; //for testing        
+            maximumCheckoutsAllowedAtOnce_BomberPilots = 8;     //this was flights when flights were set to 2, but now is aircraft (the # of a/c per flight can be set per user)
 
-                Console.WriteLine("-cover.cs successfully constructed");
-            }
-            catch (Exception ex) { Console.WriteLine("Cover Mission(): " + ex.ToString()); }
+            maximumAircraftAllowedPerMission_FighterPilots = 8; //For fighter pilots, bombers allowed
+                                                                //maximumAircraftAllowedPerMission_FighterPilots = 136; //for testing        
+            maximumCheckoutsAllowedAtOnce_FighterPilots = 3;    //this was flights when flights were set to 2, but now is aircraft (the # of a/c per flight can be set per user)
+
+            maxPlayersToAllowCover = 26; //2020-01; was 12 //Number of players online in players' army, above this number no cover will be allowed
+            numPlayersToReduceCover = 14; //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
+            numPlayersToIncreaseCover = 8; //This number of players online in players' army OR FEWER, the number of allowed cover per mission will be increased even more;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
+
+            Console.WriteLine("-cover.cs successfully constructed");
         }
+        catch (Exception ex) { Console.WriteLine("Cover Mission(): " + ex.ToString()); }
+    }
 
         public override void Init(ABattle b, int missionNumber)
         {
@@ -392,6 +399,8 @@ public class CoverMission : AMission, ICoverMission
         // {bob."aircraft as known to game name",whether available for use as an escort aircraft or not},
         //mostly, bombers aren't available as escorts, or bomber-enabled fighter variants
         //also rare or very valuable aircraft are not available
+        //TODO: could make this dictionary to include info as to whether allowed as a cover aircraft, whether it is a bomber or fighter as cover a/c, whether players flying
+        //that plane are allowed to have cover a/c as a fighter or a bomber pilot
 		
         {"bob:Aircraft.BeaufighterMkIF", true},
         {"bob:Aircraft.BeaufighterMkINF",true},
@@ -723,7 +732,7 @@ public class CoverMission : AMission, ICoverMission
 
             int numCheckedOut = numberAircraftCurrentlyCheckedOutPlayer(player);
 
-            GamePlay.gpLogServer(new Player[] { player }, "You have {0} aircraft escorting you, of {1} maximum allowed at one time.", new object[] { numCheckedOut, maximumCheckoutsAllowedAtOnce });
+            GamePlay.gpLogServer(new Player[] { player }, "You have {0} aircraft escorting you, of {1} maximum allowed at one time.", new object[] { numCheckedOut, maximumCheckoutsAllowedAtOnce_BomberPilots });
 
             return retmsg;
         }
@@ -741,12 +750,12 @@ public class CoverMission : AMission, ICoverMission
         }
         public int acAvailableToPlayer_num(Player player)
         {
-            int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
+            int acAllowedThisPlayer = maximumAircraftAllowedPerMission_BomberPilots;
             int numPlayer = coverCalcs.numPlayersInArmy(player.Army(), this);
 
             if (numPlayer > maxPlayersToAllowCover) { return 0; }
 
-            if (numPlayer <= numPlayersToIncreaseCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling(maximumAircraftAllowedPerMission * 1.5));
+            if (numPlayer <= numPlayersToIncreaseCover) acAllowedThisPlayer = Convert.ToInt32(Math.Ceiling(maximumAircraftAllowedPerMission_BomberPilots * 1.5));
 
             string rankExpl = "";
             if (TWCStbStatRecorder != null)
@@ -976,7 +985,49 @@ public class CoverMission : AMission, ICoverMission
                 //GamePlay.gp(, from);
             }
         }
-        private bool isHeavyBomber(AiAircraft aircraft)
+        private bool isFighterAllowedCover (AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = coverCalcs.GetAircraftType(aircraft);
+        return isFighterAllowedCover(acType);
+    }
+    private bool isFighterAllowedCover(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isFighterAllowedCover(aircraft);
+
+    }
+    private bool isFighterAllowedCover(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        if ( acType.Contains("HurricaneMkI_FB") || acType.Contains("Bf-109E-1B") || acType.Contains("Bf-109E-3B") || acType.Contains("Bf-110C-4B") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = true;
+        return ret;
+    }
+
+    private bool isBomberAllowedCover(AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = coverCalcs.GetAircraftType(aircraft);
+        return isFighterAllowedCover(acType);
+    }
+    private bool isBomberAllowedCover(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isFighterAllowedCover(aircraft);
+
+    }
+    private bool isBomberAllowedCover(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington") ) ret = true;
+        if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
+        return ret;
+    }
+    private bool isHeavyBomber(AiAircraft aircraft)
         {
             if (aircraft == null) return false;
             string acType = coverCalcs.GetAircraftType(aircraft);
@@ -1146,7 +1197,7 @@ public class CoverMission : AMission, ICoverMission
                 //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC1 " + numAC.ToString(), new object[] { });
 
                 int numCheckedOut = numberAircraftCurrentlyCheckedOutPlayer(player);
-                if (numAC + numCheckedOut > maximumCheckoutsAllowedAtOnce) numAC = maximumCheckoutsAllowedAtOnce - numCheckedOut;
+                if (numAC + numCheckedOut > maximumCheckoutsAllowedAtOnce_BomberPilots) numAC = maximumCheckoutsAllowedAtOnce_BomberPilots - numCheckedOut;
                 //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC2 " + numAC.ToString(), new object[] { });
 
                 int acAvailable = acAvailableToPlayer_num(player);
@@ -1197,12 +1248,12 @@ public class CoverMission : AMission, ICoverMission
                 if ((!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) ) || coverCalcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
 
 
-                if (numCheckedOut >= maximumCheckoutsAllowedAtOnce)
+                if (numCheckedOut >= maximumCheckoutsAllowedAtOnce_BomberPilots)
                 {
 
                     GamePlay.gpLogServer(new Player[] { player }, "You already have {0} aircraft currently escorting you--the maximum allowed.", new object[] { numCheckedOut });
                     GamePlay.gpLogServer(new Player[] { player }, "When you release your escorts to return to base, you may be able to check out more.", new object[] { numCheckedOut });
-                    GamePlay.gpLogServer(new Player[] { player }, "Use Tab-4 menu or Chat Command <cland to make your cover fighters land.", new object[] { numCheckedOut });
+                    GamePlay.gpLogServer(new Player[] { player }, "Use Tab-4 menu or Chat Command <cland to make your cover aircraft land.", new object[] { numCheckedOut });
                     return;
                 }
 
@@ -1358,9 +1409,9 @@ public class CoverMission : AMission, ICoverMission
                             }
                             catch (Exception ex) { Console.WriteLine("Cover2 <cover: " + ex.ToString()); }
 
-                            GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use Tab-4 menu or Chat Command <cland", new object[] { });
+                            if (numCheckedOut > 0) GamePlay.gpLogServer(new Player[] { player }, "Remember to preserve your aircraft supply by instructing your escorts to land when you land, crash, or die - use Tab-4 menu or Chat Command <cland", new object[] { });
 
-                            if (isHeavyBomber(newActor as AiAircraft))
+                            if (isHeavyBomber(newActor as AiAircraft) &&  numCheckedOut > 0) //show only for bombers, and only for first aircraft checked out each time (numCheckedOut is the # of aircraft checked out BEFORE the current group.
                             {
 
                                 Timeout(2.05, () =>
@@ -3352,7 +3403,7 @@ public class CoverMission : AMission, ICoverMission
         {
             int numremoved = 0;
 
-            //BattleArea 10000 10000 350000 310000 10000
+            //BattleArea 10000 10000 360000 310000 10000
             //TODO: There is probably some way to access the size of the battle area programmatically
             /* double twcmap_minX = 10000;
             double twcmap_minY = 10000;

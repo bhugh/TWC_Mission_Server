@@ -1,4 +1,4 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
@@ -21,7 +21,7 @@
 [Buildings]
 [BuildingsLinks]
 [BirthPlace]
-  "Testing AirSpawn" 2 53638 202545 750 1 1 1 . . . 1
+  "Testing AirSpawn" 2 56676 201134 750 1 1 1 . . . 1
   "Red Testing Air Spawn" 1 261840 192657 300 1 1 1 . . . 1
   "Shoreham Testing AirSpawn" 2 137089 196820 750 1 1 1 . . . 1
   "Abbeville Airspawn Testing" 1 291070 120814 750 1 1 1 . . . 0
@@ -37,3 +37,10 @@
   BirthPlace_9 1 319409 228582 649 1 0 1 . . . 0
   BirthPlace_10 1 342532 230122 750 1 0 1 . . . 0
   BirthPlace_11 1 283867 218848 750 1 0 1 . . . 0
+  BirthPlace_12 2 72192 171436 300 1 0 1 . . . 0
+  BirthPlace_13 2 76999 190115 333 1 0 1 . . . 0
+  BirthPlace_14 2 113750 192777 333 1 0 1 . . . 0
+  BirthPlace_15 1 164928 85631 333 1 0 1 . . . 0
+  BirthPlace_16 1 152064 45503 333 1 0 1 . . . 0
+  BirthPlace_17 1 83328 44735 333 1 0 1 . . . 0
+  BirthPlace_18 1 41665 77951 333 1 0 1 . . . 0

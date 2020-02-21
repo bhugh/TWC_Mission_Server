@@ -1,0 +1,38 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 150000 100000 100000 150000 1000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Airfield.Fuel_Storage gb 167293.14 224223.53 0.00 
+  Static1 Stationary.Environment.GuardTower_UK-GER_1 gb 167280.06 224208.22 0.00 
+  Static2 Stationary.Environment.GuardTower_UK-GER_1 gb 167293.16 224246.11 25.00 
+  Static3 Stationary.Airfield.blister_hangar gb 167289.30 224222.58 0.00 
+  Static4 Stationary.Environment.Roadway_gate_UK-GER_1 nn 167286.91 224248.67 -65.00 
+  Static5 Stationary.Scammell_Pioneer_R100 gb 167283.03 224236.16 -90.00 
+  Static6 Stationary.Opel_Blitz_cargo gb 167286.58 224235.88 -90.00 
+  Static7 Stationary.Morris_CS8_tent gb 167289.73 224235.03 -90.00 
+  Static8 Stationary.Morris_CS8_tent gb 167292.47 224235.05 -90.00 
+  Static9 Stationary.Morris_CS8_tent gb 167295.58 224234.98 -90.00 
+  Static10 Stationary.Airfield.Fuel_Storage gb 167286.39 224223.27 -180.00 
+  Static11 Stationary.Trenches.Trench_direct nn 167282.89 224245.00 -240.00 
+  Static12 Stationary.Trenches.Trench_direct nn 167276.91 224241.42 -240.00 
+  Static13 Stationary.Trenches.Trench_direct nn 167279.77 224243.28 -240.00 
+  Static14 Stationary.Trenches.Trench_direct nn 167292.36 224249.59 -250.00 
+  Static15 Stationary.Trenches.Trench_direct nn 167296.50 224250.69 -260.00 
+  Static16 Stationary.Trenches.Trench_direct nn 167301.20 224251.41 -260.00 
+  Static17 Stationary.Trenches.Trench_direct nn 167305.38 224251.98 -260.00 
+  Static19 Stationary.Environment.JerryCan_GER1_5 nn 167136.48 223922.36 0.00 
+  Static18 Stationary.Environment.JerryCan_GER1_5 nn 167497.27 224583.77 0.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+

@@ -1,10 +1,10 @@
-﻿[PARTS]
+[PARTS]
   core.100
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 10000 10000 360000 310000 10000
-  TIME 5.31553
+  TIME 4.50000
   WeatherIndex 1
   CloudsHeight 1500
   BreezeActivity 0
@@ -2144,82 +2144,46 @@
   Static611 Artillery.20_mm_Flak_38 de 264679.84 178315.94 65.00 /timeout 0/radius_hide 0
   Static3423 Stationary.AEC_Regent_II gb 78198.91 181637.44 0.00 
   Static3420 Stationary.AEC_Regent_II gb 63283.99 182023.41 0.00 
-  Static6073 Stationary.Morris_CS8_tent gb 13764.24 183226.50 525.00 
-  Static6049 Stationary.Environment.JerryCan_GER1_1 gb 13737.44 183266.91 705.00 /hstart 2
-  Static6065 Stationary.Environment.JerryCan_GER1_1 gb 13788.30 183240.50 705.00 /hstart 2
-  Static6050 Stationary.Environment.JerryCan_GER1_1 gb 13774.17 183292.30 705.00 /hstart 2
-  Static6066 Stationary.Environment.JerryCan_GER1_1 gb 13551.85 183310.20 705.00 /hstart 2
-  Static6048 Stationary.Environment.JerryCan_GER1_1 gb 13597.07 183311.20 705.00 /hstart 2
-  Static6074 Stationary.Morris_CS8_tent gb 13647.29 183318.41 525.00 
-  Static6054 Stationary.Environment.JerryCan_GER1_1 gb 13700.70 183349.80 705.00 /hstart 2
-  Static6051 Stationary.Environment.JerryCan_GER1_1 gb 13787.36 183348.80 705.00 /hstart 2
-  Static6047 Stationary.Environment.JerryCan_GER1_1 gb 13565.99 183363.91 705.00 /hstart 2
-  Static6046 Stationary.Environment.JerryCan_GER1_1 gb 13620.62 183411.00 705.00 /hstart 2
+  Static6073 Stationary.Morris_CS8_tent nn 13764.24 183226.50 525.00 
+  Static6049 Stationary.Environment.JerryCan_GER1_1 nn 13737.44 183266.91 705.00 /hstart 2  
+  Static6074 Stationary.Morris_CS8_tent nn 13647.29 183318.41 525.00 
+  Static6046 Stationary.Environment.JerryCan_GER1_1 nn 13620.62 183411.00 705.00 /hstart 2
   Static6064 Stationary.Environment.JerryCan_GER1_1 gb 13728.96 183383.70 705.00 /hstart 2
   Static6069 Stationary.Morris_CS8_tent gb 13714.42 183415.00 525.00 
   Static6063 Stationary.Environment.JerryCan_GER1_1 gb 13831.64 183414.80 705.00 /hstart 2
-  Static6078 Stationary.Morris_CS8_tent gb 13871.74 183405.80 420.00 
-  Static6055 Stationary.Environment.JerryCan_GER1_1 gb 13696.93 183432.70 705.00 /hstart 2
-  Static6052 Stationary.Environment.JerryCan_GER1_1 gb 13730.84 183438.30 705.00 /hstart 2
-  Static6045 Stationary.Environment.JerryCan_GER1_1 gb 13759.10 183461.91 705.00 /hstart 2
+  Static6078 Stationary.Morris_CS8_tent nn 13871.74 183405.80 420.00 
+  Static6045 Stationary.Environment.JerryCan_GER1_1 nn 13759.10 183461.91 705.00 /hstart 2
   Static6071 Stationary.Morris_CS8_tent gb 13789.17 183424.91 525.00 
-  Static6072 Stationary.Morris_CS8_tent gb 13782.41 183480.20 525.00 
+  Static6072 Stationary.Morris_CS8_tent nn 13782.41 183480.20 525.00 
   Static6044 Stationary.Environment.JerryCan_GER1_1 gb 13889.10 183432.70 705.00 /hstart 2
-  Static6070 Stationary.Morris_CS8_tent gb 13672.10 183509.50 525.00 
+  Static6070 Stationary.Morris_CS8_tent nn 13672.10 183509.50 525.00 
   Static6059 Stationary.Environment.JerryCan_GER1_1 gb 13625.33 183579.59 705.00 /hstart 2
   Static6076 Stationary.Morris_CS8_tent gb 13649.76 183574.91 435.00 
-  Static6053 Stationary.Environment.JerryCan_GER1_1 gb 13642.29 183588.09 705.00 /hstart 2
-  Static6056 Stationary.Environment.JerryCan_GER1_1 gb 13763.81 183558.91 705.00 /hstart 2
-  Static6077 Stationary.Morris_CS8_tent gb 13768.42 183599.30 435.00 
-  Static6058 Stationary.Environment.JerryCan_GER1_1 gb 13597.07 183642.80 705.00 /hstart 2
-  Static6041 Stationary.Environment.JerryCan_GER1_1 gb 13628.60 183643.41 705.00 /hstart 2
+  Static6077 Stationary.Morris_CS8_tent nn 13768.42 183599.30 435.00 
   Static6075 Stationary.Morris_CS8_tent gb 13682.69 183624.91 435.00 
-  Static6067 Stationary.Morris_CS8_tent gb 13727.95 183647.80 435.00 
-  Static6060 Stationary.Environment.JerryCan_GER1_1 gb 13857.07 183666.30 705.00 /hstart 2
-  Static6043 Stationary.Environment.JerryCan_GER1_1 gb 13645.12 183736.00 705.00 /hstart 2
-  Static6042 Stationary.Environment.JerryCan_GER1_1 gb 13725.19 183724.70 705.00 /hstart 2
-  Static6068 Stationary.Morris_CS8_tent gb 13755.32 183719.70 525.00 
-  Static6057 Stationary.Environment.JerryCan_GER1_1 gb 13766.64 183682.30 705.00 /hstart 2
-  Static6061 Stationary.Environment.JerryCan_GER1_1 gb 13798.67 183699.30 705.00 /hstart 2
-  Static6062 Stationary.Environment.JerryCan_GER1_1 gb 13636.64 183760.50 705.00 /hstart 2
-  Static6022 Stationary.Environment.JerryCan_GER1_1 gb 14627.48 184454.91 705.00 /hstart 2
-  Static6011 Stationary.Environment.JerryCan_GER1_1 gb 14618.57 184476.30 705.00 /hstart 2
+  Static6067 Stationary.Morris_CS8_tent nn 13727.95 183647.80 435.00 
+  Static6068 Stationary.Morris_CS8_tent nn 13755.32 183719.70 525.00 
+  Static6061 Stationary.Environment.JerryCan_GER1_1 nn 13798.67 183699.30 705.00 /hstart 2
   Static6021 Stationary.Environment.JerryCan_GER1_1 gb 14604.31 184519.09 705.00 /hstart 2
-  Static6039 Stationary.Morris_CS8_tent gb 14607.19 184548.00 585.00 
-  Static6030 Stationary.Environment.JerryCan_GER1_1 gb 14625.76 184570.91 705.00 /hstart 2
-  Static6015 Stationary.Environment.JerryCan_GER1_1 gb 14493.82 184627.80 705.00 /hstart 2
+  Static6039 Stationary.Morris_CS8_tent nn 14607.19 184548.00 585.00 
+  Static6015 Stationary.Environment.JerryCan_GER1_1 nn 14493.82 184627.80 705.00 /hstart 2
   Static6031 Stationary.Morris_CS8_tent nn 14525.23 184616.91 705.00 
-  Static6010 Stationary.Environment.JerryCan_GER1_1 gb 14534.81 184593.91 705.00 /hstart 2
-  Static6020 Stationary.Environment.JerryCan_GER1_1 gb 14613.22 184579.59 705.00 /hstart 2
+  Static6020 Stationary.Environment.JerryCan_GER1_1 nn 14613.22 184579.59 705.00 /hstart 2
   Static6040 Stationary.Morris_CS8_tent nn 14367.80 184689.09 585.00 
-  Static6007 Stationary.Environment.JerryCan_GER1_1 gb 14464.34 184670.00 705.00 /hstart 2
-  Static6018 Stationary.Environment.JerryCan_GER1_1 gb 14559.76 184654.50 705.00 /hstart 2
-  Static6009 Stationary.Environment.JerryCan_GER1_1 gb 14639.95 184647.41 705.00 /hstart 2
   Static6014 Stationary.Environment.JerryCan_GER1_1 gb 14344.12 184727.59 705.00 /hstart 2
   Static6032 Stationary.Morris_CS8_tent gb 14454.63 184708.59 705.00 
-  Static6037 Stationary.Morris_CS8_tent gb 14469.23 184743.50 585.00 
-  Static6029 Stationary.Environment.JerryCan_GER1_1 gb 14499.56 184714.00 705.00 /hstart 2
-  Static6016 Stationary.Environment.JerryCan_GER1_1 gb 14497.38 184718.70 705.00 /hstart 2
-  Static6027 Stationary.Environment.JerryCan_GER1_1 gb 14545.50 184718.70 705.00 /hstart 2
-  Static6005 Stationary.Environment.JerryCan_GER1_1 gb 14597.18 184709.70 705.00 /hstart 2
-  Static6008 Stationary.Environment.JerryCan_GER1_1 gb 14370.85 184768.59 705.00 /hstart 2
-  Static6028 Stationary.Environment.JerryCan_GER1_1 gb 14418.97 184782.80 705.00 /hstart 2
-  Static6033 Stationary.Morris_CS8_tent gb 14431.09 184812.50 585.00 
-  Static6017 Stationary.Environment.JerryCan_GER1_1 gb 14433.23 184829.09 705.00 /hstart 2
-  Static6025 Stationary.Environment.JerryCan_GER1_1 gb 14518.77 184779.30 705.00 /hstart 2
-  Static6012 Stationary.Environment.JerryCan_GER1_1 gb 14488.47 184818.50 705.00 /hstart 2
-  Static6024 Stationary.Environment.JerryCan_GER1_1 gb 14590.05 184770.30 705.00 /hstart 2
+  Static6037 Stationary.Morris_CS8_tent nn 14469.23 184743.50 585.00 
+  Static6028 Stationary.Environment.JerryCan_GER1_1 nn 14418.97 184782.80 705.00 /hstart 2
+  Static6033 Stationary.Morris_CS8_tent nn 14431.09 184812.50 585.00 
+  Static6024 Stationary.Environment.JerryCan_GER1_1 nn 14590.05 184770.30 705.00 /hstart 2
   Static6038 Stationary.Morris_CS8_tent nn 14559.31 184805.20 585.00 
-  Static6013 Stationary.Environment.JerryCan_GER1_1 gb 14349.47 184868.30 705.00 /hstart 2
+  Static6013 Stationary.Environment.JerryCan_GER1_1 nn 14349.47 184868.30 705.00 /hstart 2
   Static6034 Stationary.Morris_CS8_tent nn 14396.20 184859.59 585.00 
-  Static6026 Stationary.Environment.JerryCan_GER1_1 gb 14525.90 184857.70 705.00 /hstart 2
-  Static6019 Stationary.Environment.JerryCan_GER1_1 gb 14525.90 184880.80 705.00 /hstart 2
-  Static6006 Stationary.Environment.JerryCan_GER1_1 gb 14566.88 184852.30 705.00 /hstart 2
   Static6003 Stationary.Environment.JerryCan_GER1_1 gb 14417.19 184920.00 705.00 /hstart 2
   Static6036 Stationary.Morris_CS8_tent nn 14439.21 184925.30 585.00 
   Static6004 Stationary.Environment.JerryCan_GER1_1 gb 14491.36 184901.20 705.00 /hstart 2
   Static6035 Stationary.Morris_CS8_tent gb 14500.88 184955.30 585.00 
-  Static6023 Stationary.Environment.JerryCan_GER1_1 gb 14488.47 184966.41 705.00 /hstart 2
+  Static6023 Stationary.Environment.JerryCan_GER1_1 nn 14488.47 184966.41 705.00 /hstart 2
   Static1930 Stationary.Environment.JerryCan_GER1_1 de 323733.84 181207.88 720.00 /hstart 2
   Static1759 Stationary.Industrial.Oxygen_Facility nn 323767.84 181186.08 720.00 
   Static1931 Stationary.Environment.JerryCan_GER1_1 de 323761.03 181201.64 720.00 /hstart 2
@@ -4651,17 +4615,12 @@
   Static2616 Stationary.RadioBeacon.GenericLongRangeMast nn 180099.55 288466.00 659.10 /radioFreq 300
   Static126 Stationary.Industrial.Railroad.SmallFactory nn 180125.89 288511.53 659.10 
   Static3438 Stationary.AEC_Regent_II gb 64424.88 300597.31 0.00 
-  Static7003 Stationary.Environment.JerryCan_GER1_1 gb 137016.44 198052.97 815.00 
-  Static7004 Stationary.Environment.JerryCan_GER1_1 gb 137072.84 198048.14 815.00 
-  Static7005 Stationary.Environment.JerryCan_GER1_1 gb 137070.44 198019.13 815.00 
-  Static7006 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 198019.95 815.00 
+  Static7003 Stationary.Environment.JerryCan_GER1_1 gb 137016.44 198052.97 815.00   
+  Static7005 Stationary.Environment.JerryCan_GER1_1 nn 137070.44 198019.13 815.00 
   Static7007 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 198040.89 815.00 
-  Static7008 Stationary.Environment.JerryCan_GER1_1 gb 137068.83 198033.64 815.00 
-  Static7009 Stationary.Environment.JerryCan_GER1_1 gb 137094.61 198036.86 815.00 
+  Static7008 Stationary.Environment.JerryCan_GER1_1 nn 137068.83 198033.64 815.00 
   Static7010 Stationary.Environment.JerryCan_GER1_1 gb 137046.25 198048.94 815.00 
-  Static7011 Stationary.Environment.JerryCan_GER1_1 gb 137048.67 198014.30 815.00 
-  Static7012 Stationary.Environment.JerryCan_GER1_1 gb 137034.17 198035.25 815.00 
-  Static7013 Stationary.Environment.JerryCan_GER1_1 gb 137055.92 198028.00 815.00 
+  Static7012 Stationary.Environment.JerryCan_GER1_1 nn 137034.17 198035.25 815.00 
   Static7014 Stationary.Environment.JerryCan_GER1_1 gb 137027.72 198019.13 815.00
 [Buildings]
   0_bld buildings.House$Trench03-D6 1 221161.73 214038.59 -90.00
@@ -5242,6 +5201,32 @@
   575_bld buildings.House$Oil_Bunker-Middle 1 137082.23 198004.59 -180.00
   576_bld buildings.House$Oil_Bunker-Middle 1 137061.34 197997.16 -180.00
   577_bld buildings.House$Oil_Bunker-Small 1 137079.01 197982.28 -180.00
+  578_bld buildings.House$Oil_Bunker-Big 1 247108.01 233650.18 225.00
+  579_bld buildings.House$Oil_Bunker-Big 1 247101.19 233556.18 225.00
+  580_bld buildings.House$Oil_Bunker-Big 1 246978.95 233533.29 225.00
+  581_bld buildings.House$Oil_Bunker-Big 1 246268.36 233581.51 225.00
+  582_bld buildings.House$Oil_Bunker-Big 1 246143.78 233653.89 225.00
+  583_bld buildings.House$Oil_Bunker-Big 1 246172.07 233554.33 225.00
+  584_bld buildings.House$Oil_Bunker-Big 1 246110.76 233174.80 225.00
+  585_bld buildings.House$Oil_Bunker-Big 1 246043.03 233102.25 225.00
+  586_bld buildings.House$Oil_Bunker-Big 1 246306.03 233160.21 225.00
+  587_bld buildings.House$Oil_Bunker-Big 1 246415.61 233165.08 225.00
+  588_bld buildings.House$Oil_Bunker-Big 1 246527.63 233096.40 225.00
+  589_bld buildings.House$Oil_Bunker-Big 1 246619.68 233178.71 225.00
+  590_bld buildings.House$Oil_Bunker-Big 1 246347.43 233093.48 225.00  
+  591_bld buildings.House$Oil_Bunker-Big 1 237313.60 229034.71 -20.00
+  592_bld buildings.House$Oil_Bunker-Big 1 237383.74 228909.27 -20.00
+  593_bld buildings.House$Oil_Bunker-Big 1 237331.35 228790.57 -20.00
+  594_bld buildings.House$Oil_Bunker-Big 1 237780.39 228804.19 -20.00
+  595_bld buildings.House$Oil_Bunker-Big 1 237666.14 228786.15 -20.00
+  596_bld buildings.House$Oil_Bunker-Big 1 237608.58 228701.11 -20.00
+  597_bld buildings.House$Oil_Bunker-Big 1 237802.73 228738.91 -20.00
+  598_bld buildings.House$Oil_Bunker-Big 1 237593.12 229246.59 -20.00
+  599_bld buildings.House$Oil_Bunker-Big 1 237658.36 229426.84 -20.00
+  600_bld buildings.House$Oil_Bunker-Big 1 237555.07 229318.04 -20.00
+  601_bld buildings.House$Oil_Bunker-Big 1 237908.09 228793.93 -20.00
+  602_bld buildings.House$Oil_Bunker-Big 1 237319.11 229213.34 15.00
+  603_bld buildings.House$Oil_Bunker-Big 1 237490.17 228957.50 -20.00
 [BuildingsLinks]
 [Airdromes]
   airdrome0 298383.34 127504.47 2 500 500 0
@@ -5310,16 +5295,16 @@
   BTarget12S TGroundDestroyed 42 157904 275242 50
   BTarget13S TGroundDestroyed 43 157088 275313 50
   BTarget14A TGroundDestroyed 29 159762 274952 100
-  BTarget14R TGroundDestroyed 20 244791 262681 150
-  BTarget15R TGroundDestroyed 39 248579 253159 100
-  BTarget16R TGroundDestroyed 40 249454 247913 200
-  BTarget17R TGroundDestroyed 24 246777 235751 250
-  BTarget18R TGroundDestroyed 38 212973 220079 200
-  BTarget19R TGroundDestroyed 13 221278 214167 200
-  BTarget20R TGroundDestroyed 37 178778 197288 200
-  BTarget21R TGroundDestroyed 34 123384 196295 200
-  BTarget22R TGroundDestroyed 32 70423 171706 200
-  BTarget23R TGroundDestroyed 37 15645 170552 200
+  BTarget14R TGroundDestroyed 70 244791 262681 150
+  BTarget15R TGroundDestroyed 70 248579 253159 100
+  BTarget16R TGroundDestroyed 70 249454 247913 200
+  BTarget17R TGroundDestroyed 70 246777 235751 250
+  BTarget18R TGroundDestroyed 70 212973 220079 200
+  BTarget19R TGroundDestroyed 70 221278 214167 200
+  BTarget20R TGroundDestroyed 70 178778 197288 200
+  BTarget21R TGroundDestroyed 70 123384 196295 200
+  BTarget22R TGroundDestroyed 70 70423 171706 200
+  BTarget23R TGroundDestroyed 70 15645 170552 200
   BTarget24 TGroundDestroyed 37 185027 252619 100
   BTarget25 TGroundDestroyed 38 186057 251745 100
   BTarget26 TGroundDestroyed 10 189272 249311 50
@@ -5399,22 +5384,22 @@
   RTarget36 TGroundDestroyed 53 314482 223882 200
   RTarget37 TGroundDestroyed 50 313878 223421 100
   RTarget38 TGroundDestroyed 46 161702 52073 100
-  RTarget39R TGroundDestroyed 33 264882 178115 50
-  RTarget40R TGroundDestroyed 34 263234 153713 50
-  RTarget41R TGroundDestroyed 32 232727 103248 50
-  RTarget42R TGroundDestroyed 38 250599 116531 50
-  RTarget43R TGroundDestroyed 37 260798 131885 50
-  RTarget44R TGroundDestroyed 40 266788 197956 50
-  RTarget45R TGroundDestroyed 35 264494 188674 50
-  RTarget46R TGroundDestroyed 21 265307 171427 50
-  RTarget47R TGroundDestroyed 24 232580 103325 50
-  RTarget48R TGroundDestroyed 35 195165 93441 50
-  RTarget49R TGroundDestroyed 24 157636 60683 50
-  RTarget50R TGroundDestroyed 25 135205 29918 50
-  RTarget51R TGroundDestroyed 27 104279 36659 50
-  RTarget52R TGroundDestroyed 29 65364 43580 50
-  RTarget53R TGroundDestroyed 25 60453 63873 50
-  RTarget54R TGroundDestroyed 100 17036 77666 50
+  RTarget39R TGroundDestroyed 75 264882 178115 50
+  RTarget40R TGroundDestroyed 75 263234 153713 50
+  RTarget41R TGroundDestroyed 75 232727 103248 50
+  RTarget42R TGroundDestroyed 75 250599 116531 50
+  RTarget43R TGroundDestroyed 75 260798 131885 50
+  RTarget44R TGroundDestroyed 75 266788 197956 50
+  RTarget45R TGroundDestroyed 75 264494 188674 50
+  RTarget46R TGroundDestroyed 75 265307 171427 50
+  RTarget47R TGroundDestroyed 75 232580 103325 50
+  RTarget48R TGroundDestroyed 75 195165 93441 50
+  RTarget49R TGroundDestroyed 75 157636 60683 50
+  RTarget50R TGroundDestroyed 75 135205 29918 50
+  RTarget51R TGroundDestroyed 75 104279 36659 50
+  RTarget52R TGroundDestroyed 75 65364 43580 50
+  RTarget53R TGroundDestroyed 75 60453 63873 50
+  RTarget54R TGroundDestroyed 75 17036 77666 50
   RTargMarquiseFuelDump TGroundDestroyed 13 274209 199150 100
   RTargCalaisUBootRepair TGroundDestroyed 10 284999 216446 100
   RTargCalaisDocksArea TGroundDestroyed 5 284656 217404 350

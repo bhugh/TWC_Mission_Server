@@ -5526,7 +5526,7 @@ struct
             //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
 
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 65;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
+            int pointstoknockout = 90;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - AHA, this was 30 in the -main.cs and 65 here.  So this seemed to easy on both ends, trying 90 instead.  whatever is here needs to be in -main.cs corresponding place also.
 
             double radius = ap.FieldR();
             Point3d center = ap.Pos();

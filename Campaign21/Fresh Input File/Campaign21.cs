@@ -73,6 +73,38 @@ using TF_Extensions;
 using System.Timers;                 /// <= Needed for Rearm/Refuel
 
 
+    /*****************************************************************************
+     * TODO  / Ideas
+     * 
+     * Allow fighters to call in a few bombers to escort
+     * XXX Turn off certain % of objectives @ start of each day.  Disabled.  If  possible make them disappear also.  Also make a new field for probability/chance of being chosen as disabled.
+     *     - For now nothing disappears (todo)
+     * Make difficulty/tonnage required to take out airports somewhat harder.  Maybe 50%, 75%?  It is now easy to take out an airport with one formation of bombers, probably should take at least 2 formations
+     *    - Remove/merge duplicate code for radar damage between -stats & -main
+     * Some way to make it harder to take out radar, such as including 2 radar towers positioned randomly or something and BOTH have to be taken out (For DE side, don't know what ot do about GB; but maybe they have a smaller lowered powered antenna or unit nearby that needs to be taken out also; it could be randomly placed)
+     *    - For DE it would be easy to randomly move the radar by up to say 2km each day.
+     *    - XXX Increase flak @ radar (done).  Could be increased more?
+     * Put in some Spitfire factory, 109 factory, bomber factory type of targets that reduce the output of those a/c for a while if taken out
+     * 2-3 naval objectives like Folkestone Harbor that basically appear/disappear pretty much daily.
+     * Also could have a PointArea target that consists of ships sailing somewhere.  As long as the pointarea is large enough the ships are always staying in it, it will work
+     *  - Could have 2-3 of these for each side, and again they appear/disappear pretty much daily.
+     *  - Not sure how mission objectives could work with such regular appear/disappear, as right now they'll be chosen and primary but then un-chosen when they disappear.  Maybe just keep them as 'chosen' even though they are disabled and then when re-enabled, they will still be chosen & the primary obj. will just have to be rearranged to compensate each time.
+     * Randomly placed objectives that spawn in with a preset kind of configuration, a bit like the General's Staff
+     * Keep the mission going continuously, even when one side turns the map.  Just give a message and keep on going.
+     *   - Radar can be turned on again immediately
+     *   - Airports could have their craters removed and have a basic pre-set spawnpoint put in place
+     *   
+     * Keep a list of all players who have contributed towards taking out a given objective, as part of MO_objectives, and then ALSO list those contributing players in the final session summary.  Similar to the scoutedplayers list.
+     *   
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * ***************************************************************************/
+
 //////////////////simply change the////////////////////////
 //////////////////GamePlay.gpHUDLogCenter("Do 17's traveling towards Lympne");///////////////
 /////////////////into/////////////////////////////
@@ -256,6 +288,9 @@ public class Mission : AMission, IMainMission
 
     public bool MISSION_STARTED = false;
     public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
+    public double MAP_WIN_POINTS = 4500; //number of campaign points required to win the campaign.  This is used to draw the front line in the middle of the Channel at +MAP_WIN_POINTS it will be moved all the way in Red's favor; at -MAP_WIN_POINTS it will be moved all the way towards GB in blue's favor.
+    public int MO_Objective_Percent_To_Disable = 20; //How many of the mission objectives on the list to randomly disable on a given day.
+    //public int MO_Objective_Percent_To_Disable = 0; //for testing
     public int START_MISSION_TICK = -1;
     //So 20:15/8:15 pm is about the latest you can run a mission and still have any light.
     //5:00AM IS GOOD FOR START, 4:45AM IS GOOD ENOUGH & NICE LOOKING.  4:30AM IS REALLY NICe looking, esp once in air, but probably too dark to taxi reasonably.   The sun is just up at 4:30am.
@@ -264,8 +299,11 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1680000; //14 Hours
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     public int END_MISSION_TICK = 1890000; //15.75 Hours, starting at 4:30am and ending at 8:15pm.  Could possibly go even 15 mins earlier to 4:15?  And a little later?
+    //public int END_MISSION_TICK = 720; //TESTING
     public double END_MISSION_TIME_HRS = 20.25; //So this means, the server will never run past 20.15 hours (8:15pm) server time, regardless of then it starts.  Reason is, it gets too dark after that.  So the mission will run either to ENDMISSION_TIME **OR** END_MISSION_TICK, whichever happens first.  END_MISSION_TICK is really redundant now but maybe it is a good failsafe to prevent everlasting missions?  Also we could use it to set a runtime shorter than the absolute max possible, thus we could start at different times of day and run a certain amount of time designated by END_MISSION_TICK, but never start earlier than DESIRED_MISSION_START_TIME or run later than ENDMISSION_TIME
+    //public double END_MISSION_TIME_HRS = 4.51; //TESTING
     public double EARLIEST_MISSION_START_TIME_HRS = 4.5; //The time we would like to/plan to start the mission.  0430 hours, 4:30am. This will be used as the start time unless the mission previously ended/stopped/crashed/was turned at some different time; in which case it will start again at the time it crashed unless it is too late in the day (see SHORTEST_MISSION_LENGTH_ALLOWED)
+    //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
     public double SHORTEST_MISSION_LENGTH_ALLOWED_HRS = 5;  //if the mission restarts and there are less than this many hours remaining until END_MISSION_TIME_HRS , then it will just restart at the DESIRED_MISSION_START_TIME.  This has the effect of guarantteeing that missions will run at least this many hours, and also that missions won't start or run later than END_MISSION_TIME_HRS
 
     public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2020, 2, 7); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
@@ -558,6 +596,7 @@ public class Mission : AMission, IMainMission
         }
     }
 
+    bool OnTick_End_Mission_Triggered = false;
     public override void OnTickGame()
     {
         base.OnTickGame();
@@ -729,10 +768,11 @@ public class Mission : AMission, IMainMission
         }
 
         //So, this could be done every minute or whatever, instead of every tick . . . _recurs
-        if (tickSinceStarted == END_MISSION_TICK || GamePlay.gpTimeofDay() > END_MISSION_TIME_HRS)// Red battle Success.
+        if ((tickSinceStarted >= END_MISSION_TICK || GamePlay.gpTimeofDay() >= END_MISSION_TIME_HRS) && !OnTick_End_Mission_Triggered)//End mission at EITHER: End_mission_tick OR if End_misison_time_hours is in the past.
                                                  //if (Time.tickCounter() == 720)// Red battle Success.  //For testing/very short mission
         {
-
+            
+            Console.WriteLine("EndMissTick/Time: {0} {1} {2} {3} {4} ", tickSinceStarted, END_MISSION_TICK, GamePlay.gpTimeofDay(), END_MISSION_TIME_HRS, START_MISSION_TICK);
             //WriteResults_Out_File("3");
             Task.Run(() => WriteResults_Out_File("3"));
             Timeout(10, () =>
@@ -741,6 +781,7 @@ public class Mission : AMission, IMainMission
                 GamePlay.gpHUDLogCenter("The match ends in a tie! Objectives still left for both sides!!!");
             });
             EndMission(70, "");
+            OnTick_End_Mission_Triggered = true; //This can only be triggered once, for various reasons.  So stop it from triggering repeatedly.
         }
 
         //Ticks below write out TOPHAT radar files for red, blue, & admin
@@ -845,7 +886,7 @@ public class Mission : AMission, IMainMission
 
             ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 30;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large
+            int pointstoknockout = 90;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - this was 30 points, but with the new cover bomber system 60 points seems more reasonable.  Maybe needs to be even higher?.  //2020-02, OK so in -stats.cs it was 65 and here 30.  Thus . . . the discrepancy in airport scores. So now they are both 90 as it still seemed quite too easy.
 
             double radius = ap.FieldR();
             Point3d center = ap.Pos();
@@ -5989,7 +6030,7 @@ public class Mission : AMission, IMainMission
                                             //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
 
         
-        DrawFrontLinesPerMapState();
+        DrawFrontLinesPerMapState(-MAP_WIN_POINTS/100, MAP_WIN_POINTS/100);
         
         //TESTING
         /*
@@ -8652,8 +8693,8 @@ public class Mission : AMission, IMainMission
     //Points required, assuming they are doing it entirely with Primary Targets; ie, secondary or other targets do not count towards this total
     //at all
     public Dictionary<ArmiesE, double> MO_PointsRequired = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 45 },
-        {ArmiesE.Blue, 45 }
+        {ArmiesE.Red, 55 },
+        {ArmiesE.Blue, 55 }
     };
     //////////////////////******************************************/////////////////////////////
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
@@ -8662,8 +8703,8 @@ public class Mission : AMission, IMainMission
     //Generally thise should be more than MO_PointsRequired
     //If it's less than MO_PointsRequired then the MO_PercentPrimaryTargetsRequired becomes more the operative factor in determining the map turn
     public Dictionary<ArmiesE, double> MO_PointsRequiredWithMissingPrimary = new Dictionary<ArmiesE, double>() {
-        {ArmiesE.Red, 58 },
-        {ArmiesE.Blue, 58 }
+        {ArmiesE.Red, 75 },
+        {ArmiesE.Blue, 75 }
     };
 
     public Dictionary<ArmiesE, string> MO_IntelligenceLeakNearMissionEnd = new Dictionary<ArmiesE, string>() {
@@ -8775,7 +8816,7 @@ public class Mission : AMission, IMainMission
             Name = n;
             FlakID = flak;
             AutoFlakIfPrimary = true;
-            AutoFlak = false;
+            AutoFlak = true;
             NumFlakBatteries = 6;
             NumInFlakBattery = 6;
 
@@ -8791,12 +8832,12 @@ public class Mission : AMission, IMainMission
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
-                LOGMessage = "Heavy damage to " + Name + " - out of action about " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + " days. Good job " + ArmiesL[AttackingArmy] + "!!!";
+                LOGMessage = "Heavy damage to " + Name + " - out of action about " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + "hours. Good job " + ArmiesL[AttackingArmy] + "!!!";
             }
             else
             {
                 HUDMessage = Name + " was destroyed";
-                LOGMessage = Name + " was destroyed, " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + " days to repair. " + pts + " awarded " + ArmiesL[AttackingArmy];
+                LOGMessage = Name + " was destroyed, " + this.TimetoRepairIfDestroyed_hr.ToString("F1") + " hours to repair. " + pts + " awarded " + ArmiesL[AttackingArmy];
             }
 
             Points = pts;
@@ -9577,20 +9618,24 @@ public class Mission : AMission, IMainMission
             //fnib = number of guns in each battery (if a primary target)
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
+            //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
             addPointArea(MO_ObjectiveType.Building, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
             addPointArea(MO_ObjectiveType.Building, "Dover Naval Operations Fuel", "Dove", "", 1, 4, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 120, 48, true, true, 4, 7, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Southhampton Docks Industrial Area", "Sout", "", 1, 4, "SouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Submarine Base", "", "", 1, 3, "BTargShorehamSubmarineBase", 137054, 198034, 90, 150, 2000, 5, 120, 24, true, true, 8, 10, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Artillery Assembly Factory", "", "Campaign21-LOADONCALL-shoreham-artillery-assembly-objective.mis", 1, 3, "BTargShorehamArtilleryFactory", 137046, 200038, 150, 90, 3000, 5, 120, 24, true, true, 6, 8, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Submarine Base", "", "", 1, 3, "BTargShorehamSubmarineBase", 137054, 198034, 150, 90, 3000, 3, 120, 24, true, true, 8, 10, "", add);
 
             addPointArea(MO_ObjectiveType.IndustrialArea, "Portsmouth Small Industrial Area SW", "Port", "", 1, 4, "BTargPortsmouthSmallIndustrialArea", 75235, 193676, 350, 350, 8000, 10, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Portsmouth Large Industrial Area NE", "Port", "", 1, 5, "BTargPortsmouthLargeIndustrialArea", 77048, 193985, 850, 850, 10000, 15, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole North Industrial Port Area", "Pool", "", 1, 5, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 400, 550, 10000, 10, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 4, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 400, 550, 8000, 8, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "", 1, 6, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 0, 80, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  Ships in the harbor count for 10 and there are 7-8 of them, so getting 50 points on ships = not that hard.
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole North Industrial Port Area", "Pool", "", 1, 5, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 550, 400, 10000, 10, 120, 24, true, true, 8, 10, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 4, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 120, 24, true, true, 8, 10, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Crowborough RAF High Command Bunker", "", "Campaign21-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Hastings Local Auxiliary Bunker", "", "Campaign21-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Folkestone Navy Docks Area", "Folk", "Campaign21-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 6, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 70, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
+
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dover Naval Docks Area", "Dove", "Campaign21-LOADONCALL-dover-naval-docks-objective5.mis", 1, 6, "BTargDoverNavyDocks", 246653, 233348, 800, 750, 7000, 70, 160, 24, true, true, 8, 10, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 150, 200, 2000, 1, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 150, 200, 2000, 1, 120, 24, true, true, 8, 10, "", add);
@@ -9598,8 +9643,8 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 4, "RTargCalaisDocksArea", 284656, 217404, 250, 350, 8000, 10, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Veume Military Manufacturing Area", "", "", 2, 4, "RTargVeumeMilitaryManufacturingArea", 342180, 228344, 200, 250, 8000, 15, 120, 24, true, true, 8, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "", 2, 6, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271378, 132785, 600, 1000, 12000, 5, 120, 24, true, true, 8, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "Campaign21-LOADONCALL-lecrotyoy-forest-bunker-objective.mis", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Campaign21-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 10, 12, "", add);
 
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\Visual Studio 2015\Projects\ClodBLITZ-2018-01\Campaign21-MissionObjectivesInclude.cs"
 
@@ -10151,7 +10196,7 @@ added Rouen Flak
     public static Dictionary<ArmiesE, string[]> GeneralStaffNames = new Dictionary<ArmiesE, string[]>() //army here is the TARGETING army, so General etc is from the opposite army
     {
         {ArmiesE.Red, new string [] { "Generalfeldmarschall Kesselring and his staff", "Generalfeldmarschall Sperrle and his staff", "Generalfeldmarschall Kesselring and a few high Luftwaffe officers", "General Jeschonnek and his personal aides", "Luftwaffe General Kreipe and his aides" } },
-        {ArmiesE.Blue, new string [] {"Air Chief Marshal Dowding and a small staff", "Air Vice-Marshal Park and his aides, checking on fighter preparations", "Air Chief Marshall Leigh-Mallory and and high-ranking RAF officers", "Air Vice-Marshal Brand and his staff", "Air Chief Marshall Breadner and his aides" }}
+        {ArmiesE.Blue, new string [] {"Air Chief Marshal Dowding and a small staff", "Air Vice-Marshal Park and his aides, checking on fighter preparations,", "Air Chief Marshall Leigh-Mallory and and high-ranking RAF officers", "Air Vice-Marshal Brand and his staff", "Air Chief Marshall Breadner and his aides" }}
     };
 
 
@@ -10382,17 +10427,29 @@ added Rouen Flak
 
 
 
-            Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2}", mo.ID, mo.Pos.x, mo.Pos.y);
+            Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy);
             Point3d newPos = mo.Pos;
 
             int nfb = mo.NumFlakBatteries;
             int nib = mo.NumInFlakBattery;
 
             //too much flak seems to bring the server to it's knees, so if not a primary just 2x2 flak, otherwise what is requested
-            if (!mo.IsEnabled || !mo.IsPrimaryTarget)
+            if (!mo.IsEnabled || !mo.IsPrimaryTarget )
             {
-                nfb = 2;
-                nib = 2;
+                if (mo.MOObjectiveType == MO_ObjectiveType.Radar) //radar needs more flak to protect it, so just half the req amount if not primary.
+                {
+                    nfb = nfb/2;
+                    nib = nib/3;
+                    if (nfb < 2) nfb = 2;
+                    if (nib < 2) nib = 2;
+                    //Console.WriteLine("RADAR autoFlakPlacement  {0} {1} ", nfb, nib);
+
+                }
+                else //for everything else, just a little bit.
+                {
+                    nfb = 2;
+                    nib = 2;
+                }
             }
 
             ISectionFile f = GamePlay.gpCreateSectionFile();
@@ -10423,8 +10480,9 @@ added Rouen Flak
                     if (landType != maddox.game.LandTypes.WATER && dist > 1499 && dist > apRadius) break;
                 }
 
-                string enemy = "de";
-                if (mo.AttackingArmy == 2) enemy = "gb";
+                string owner = "nn";
+                if (mo.OwnerArmy == 1) owner = "gb";
+                if (mo.OwnerArmy == 2) owner = "de";
 
                 var flak = new List<string> { "Artillery.37mm_PaK_35_36", /*"Artillery.Flak37",*/ "Artillery.Bofors_StandAlone", "Artillery.3_7_inch_QF_Mk_I", "Artillery.Flak30_Shield", };
 
@@ -10443,7 +10501,7 @@ added Rouen Flak
                     double nex = newPos.x + Math.Cos(angle1) * radius2;
                     double ney = newPos.y + Math.Sin(angle1) * radius2;
 
-                    string side = enemy;
+                    string side = owner;
 
                     //Timeout(30 + 2 * i, () =>
                     //{
@@ -11357,9 +11415,11 @@ added Rouen Flak
                 objectivesIDed.Add(key);
 
                 //Console.WriteLine("RCRec: #5");                
+                if (!mo.IsEnabled && mo.Scouted) { mo.Scouted = false; continue; } //There are a lot of possible things to do here, but for now just remove from the scouted list so that it doesn't show up there as a nice target to visit any more.
+                if (!mo.IsEnabled) continue;
 
                 if (!mo.IsPrimaryTarget && repeatRandom.Next(4) != 0) continue;  //only "find" 1/4 of the objectives in the scouted area.  But **always** find the primary targets; always skip disabled.  Add the mo to the processed list first, THEN determine if it is one of the 1/4 identified.  Otherwise each mo could get multiple chances to be picked, if the player has taken multiple photos of the same area.
-                if (!mo.IsEnabled) continue;  
+                
 
                 if (ct != objectivesIDed.Count) //only bother doing all this stuff if it's new/unique object not before identified during this photo processing run from this player
                 {
@@ -11574,10 +11634,10 @@ added Rouen Flak
                 if (MO_flakMissionsLoaded.Contains(flakID)) continue;  //Make sure we load each mission just once at most
                 MO_flakMissionsLoaded.Add(flakID);
 
-                if (File.Exists(CLOD_PATH + FILE_PATH + flakMission)) {
+                if (File.Exists(CLOD_PATH + FILE_PATH + "/" + flakMission)) {
                    Timeout(48, () =>
                    {
-                       GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + flakMission);
+                       GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "/" + flakMission);
                        DebugAndLog(flakMission + " file loaded");
                        Console.WriteLine(flakMission + " file loaded");
                    });
@@ -11599,6 +11659,14 @@ added Rouen Flak
         {
 
             MissionObjective mo = entry.Value;
+            mo.IsEnabled = true;
+            if (mo.MOObjectiveType!=MO_ObjectiveType.Radar && mo.MOObjectiveType != MO_ObjectiveType.Airfield && random.Next(100) < MO_Objective_Percent_To_Disable) //randomly turn off say 20% of objectives each day.  But, can't turn off radar or airports, they are more of less fixed.  For now.
+            {
+                mo.IsEnabled = false;
+                Console.WriteLine("Mo_InitializeAllObjectives: Objective {0} {1} is disabled/removed from the objectives list for this session", mo.ID, mo.Name);
+                //We could also do other things here such as removing all the nearby statics or whatever.  Or even just some types of statics.
+            }
+
             //Console.WriteLine("Initialize - checking " + mo.ID + " " + mo.Name + " {0} {1} {2}", mo.AutoFlak, mo.AutoFlakIfPrimary, mo.IsPrimaryTarget);
             if (mo.IsEnabled)
             {
@@ -11606,9 +11674,13 @@ added Rouen Flak
                 //load submission if requested
                 if (mo.InitSubmissionName != null && mo.InitSubmissionName.Length > 0)
                 {
-                    string s = CLOD_PATH + FILE_PATH + mo.InitSubmissionName;
-                    GamePlay.gpPostMissionLoad(s);
-                    Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
+                    string s = CLOD_PATH + FILE_PATH + "/" + mo.InitSubmissionName;
+                    try
+                    {
+                        GamePlay.gpPostMissionLoad(s);
+                        Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
+                    } catch (Exception ex) { Console.WriteLine("MO_InitializeAllObjectives ERROR InitSubmission for Objective NOT loaded: {0} \n\n {1}", s, ex.ToString()); }
+                        
                 }
                 if (mo.MOTriggerType == MO_TriggerType.PointArea)
                 {
@@ -12365,7 +12437,7 @@ added Rouen Flak
 
             MissionObjective mo = MissionObjectivesList[ID];
             if (actor.Army() != mo.OwnerArmy) continue;
-            if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
+            if (mo.MOTriggerType != MO_TriggerType.PointArea || !mo.IsEnabled) continue;
             double dist = Calcs.CalculatePointDistance(actor.Pos(), mo.Pos);            
             if (dist > mo.radius) continue;
 
@@ -12467,7 +12539,7 @@ added Rouen Flak
         foreach (string ID in MissionObjectivesList.Keys)
         {
             MissionObjective mo = MissionObjectivesList[ID];
-            if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
+            if (mo.MOTriggerType != MO_TriggerType.PointArea || !mo.IsEnabled) continue;
             double dist = Calcs.CalculatePointDistance(pos, mo.Pos);
             if (dist > mo.radius) continue;
 
@@ -12573,7 +12645,7 @@ added Rouen Flak
         foreach (string ID in MissionObjectivesList.Keys)
         {
             MissionObjective mo = MissionObjectivesList[ID];
-            if (mo.MOTriggerType != MO_TriggerType.PointArea) continue;
+            if (mo.MOTriggerType != MO_TriggerType.PointArea || !mo.IsEnabled) continue;
             //if (mo.OrdnanceRequiredToTrigger_kg == 0) continue; //0 means, don't use ordinance KG to determine destruction [nevermind, we can still track it even though not actively using it.  If 0
             double dist = Calcs.CalculatePointDistance(pos, mo.Pos);
             if ( dist > mo.radius) continue;

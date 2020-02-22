@@ -3017,8 +3017,8 @@ public class CoverMission : AMission, ICoverMission
 
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
-            aaWP.Action = aawpt;
-            if ((targetAirGroup != null && aawpt != null && aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW) && targetAirGroup.GetItems().Length > 0)
+            if (aawpt != null) aaWP.Action = aawpt;
+            if ((targetAirGroup != null && aawpt != null && aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW) && targetAirGroup.GetItems() != null && targetAirGroup.GetItems().Length > 0)
             {
                 aaWP.Target = targetAirGroup.GetItems()[0];
             }

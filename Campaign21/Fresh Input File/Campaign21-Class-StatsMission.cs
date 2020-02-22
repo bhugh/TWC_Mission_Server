@@ -3163,11 +3163,13 @@ struct
                      {
                          StbStatTask sst1 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
                              stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                            Console.WriteLine("Stats: uploading RADAR ftp");
                      });
                 Timeout(stb_LogStatsDelay * 3 / 4, () =>
                     {
                         StbStatTask sst2 = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 10, 0, 1 });  //3rd # means 0=no radar upload, 1=radar upload
                             stb_StatRecorder.StbSr_EnqueueTask(sst2);
+                            Console.WriteLine("Stats: uploading RADAR ftp");
                     });
 
 
@@ -4565,13 +4567,14 @@ struct
             stb_ErrorLogPath = stb_FullPath + stb_ErrorLogPath;
             stb_StatsPathTxt = stb_FullPath + stb_StatsPathTxt;
             stb_StatsPathHtmlLow = stb_FullPath + stb_StatsPathHtmlLow;
-            Stb_LoadAntiAirDraftToMemory();
-            Stb_LoadFrontline1DraftToMemory();
-            Stb_LoadFrontline2DraftToMemory();
-            Stb_LoadFrontline3DraftToMemory();
-            Stb_LoadFrontline4DraftToMemory();
-            Stb_LoadBombers1DraftToMemory();
-            Stb_LoadBombers2DraftToMemory();
+
+            //Stb_LoadAntiAirDraftToMemory();
+            //Stb_LoadFrontline1DraftToMemory();
+            //Stb_LoadFrontline2DraftToMemory();
+            //Stb_LoadFrontline3DraftToMemory();
+            //Stb_LoadFrontline4DraftToMemory();
+            //Stb_LoadBombers1DraftToMemory();
+            //Stb_LoadBombers2DraftToMemory();
             stb_StatRecorder = new StbStatRecorder(this, stb_LogStats, stb_LogStatsCreateHtmlLow, stb_LogStatsCreateHtmlMed, stb_StatsPathTxt,
                                                     stb_LogErrors, stb_ErrorLogPath, stb_StatsPathHtmlLow, stb_StatsPathHtmlExtLow, stb_StatsPathHtmlMed,
                                                     stb_LogStatsUploadHtmlLow, stb_LogStatsUploadHtmlMed,
@@ -4597,12 +4600,13 @@ struct
 
             //stb_KilledActors = new KilledActorsWrapper(); // keeps track of all damage to actor & which actor did it, so it can be compiled for stats purposes later
 
-            if (stb_SpawnAntiAir) { Stb_SpawnAntiAirRecursive(); }
-            if (stb_SpawnFrontline1) { Stb_SpawnFrontline1Recursive(); }
-            if (stb_SpawnFrontline2) { Stb_SpawnFrontline2Recursive(); }
-            if (stb_SpawnFrontline3) { Stb_SpawnFrontline3Recursive(); }
-            if (stb_SpawnFrontline4) { Stb_SpawnFrontline4Recursive(); }
-            if (stb_SpawnBombers) { Stb_SpawnBombersRecursive(); }
+            //if (stb_SpawnAntiAir) { Stb_SpawnAntiAirRecursive(); }
+            //if (stb_SpawnFrontline1) { Stb_SpawnFrontline1Recursive(); }
+            //if (stb_SpawnFrontline2) { Stb_SpawnFrontline2Recursive(); }
+            //if (stb_SpawnFrontline3) { Stb_SpawnFrontline3Recursive(); }
+            //if (stb_SpawnFrontline4) { Stb_SpawnFrontline4Recursive(); }
+            //if (stb_SpawnBombers) { Stb_SpawnBombersRecursive(); }
+
             if (stb_LogStats) { Stb_LogStatsRecursive(); }
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive(); }
             SetAirfieldTargets();
@@ -5526,7 +5530,7 @@ struct
             //if (ap.Army() != null && ap.Army() == 1) pointstoknockout = 65;
 
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 90;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - AHA, this was 30 in the -main.cs and 65 here.  So this seemed to easy on both ends, trying 90 instead.  whatever is here needs to be in -main.cs corresponding place also.
+            int pointstoknockout = 200;  //30 pts is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - AHA, this was 30 in the -main.cs and 65 here.  So this seemed to easy on both ends, trying 90 instead.  90 is about 4 JU88 or BLenheim loads well placed. whatever is here needs to be in -main.cs corresponding place also.
 
             double radius = ap.FieldR();
             Point3d center = ap.Pos();
@@ -8212,57 +8216,59 @@ struct
 
 
                 bool willReportDead = false;
-                if (initiator != null)
+            if (initiator != null)
+            {
+                if (initiator.Player != null)
                 {
-                    if (initiator.Player != null)
+                    int statArmy = GamePlay.gpFrontArmy(stationary.pos.x, stationary.pos.y);
+                    msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
+
+                    //Ok, this is not really working as it should.  What we should do is use the stationary.pos() info 
+                    //to check which side of enemy lines it is on, and if on the enemy side then we save it as as kill, ie
+                    //if (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y)) // friendly territory
+
+                    //When the player makes a ground kill, we need to decide whether it was a friendly kill or an enemy kill.  This is not always very easy to do in CLOD.  For one thing, there isn't a method GroundStationary.Army() to just tell us what army they are in.  So we use a series of kludges, as outlined below.
+
+                    //OK, the below lines don't work because CLOD does not report the stationary.country that the mission
+                    //designer assigns (and it also doesn't report stationary.army at all, even though FMB allows it to 
+                    // be set).  Instead, it reports the country as set internally somehow.  So e.g. in this .mis code:
+                    //     Static109 Stationary.Environment.JerryCan_GER1_1 gb 269430.19 165952.20 720.00 /hstart -2
+                    // Static109 will always be reported as DE even though the mission designer as specified it as gb
+                    // And static110 will  always be reported as GB even though the mission designer as specified it as de
+                    // Other stationaries are reported as NN or whatever, even though the mission designates them to a certain country/army
+                    //  So for now, this code is remm-ed out and unused.
+                    //Mission designers will need to consider that any stationaries simply belong to whichever army depending
+                    //on which side of the front lines they are on
+
+                    // if ((stationary.country == "de" || stationary.country == "it") && initiator.Player.Army() == 1) { willReportDead = true; }
+                    //if ((stationary.country == "gb" || stationary.country == "us") && initiator.Player.Army() == 2) { willReportDead = true; }
+
+                    //Since the scheme above does not work, we use this: We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.
+                    //
+                    //if ( (stationary.country == "nn") || (stationary.country == "fr") &&  
+                    if
+                      (
+                        (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
+
+                      )
                     {
-                        int statArmy = GamePlay.gpFrontArmy(stationary.pos.x, stationary.pos.y);
-                        msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
 
-                        //Ok, this is not really working as it should.  What we should do is use the stationary.pos() info 
-                        //to check which side of enemy lines it is on, and if on the enemy side then we save it as as kill, ie
-                        //if (player.Army() == GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y)) // friendly territory
+                        willReportDead = true;
+                        msg += "(enemy ground target)";
 
-                        //When the player makes a ground kill, we need to decide whether it was a friendly kill or an enemy kill.  This is not always very easy to do in CLOD.  For one thing, there isn't a method GroundStationary.Army() to just tell us what army they are in.  So we use a series of kludges, as outlined below.
-
-                        //OK, the below lines don't work because CLOD does not report the stationary.country that the mission
-                        //designer assigns (and it also doesn't report stationary.army at all, even though FMB allows it to 
-                        // be set).  Instead, it reports the country as set internally somehow.  So e.g. in this .mis code:
-                        //     Static109 Stationary.Environment.JerryCan_GER1_1 gb 269430.19 165952.20 720.00 /hstart -2
-                        // Static109 will always be reported as DE even though the mission designer as specified it as gb
-                        // And static110 will  always be reported as GB even though the mission designer as specified it as de
-                        // Other stationaries are reported as NN or whatever, even though the mission designates them to a certain country/army
-                        //  So for now, this code is remm-ed out and unused.
-                        //Mission designers will need to consider that any stationaries simply belong to whichever army depending
-                        //on which side of the front lines they are on
-
-                        // if ((stationary.country == "de" || stationary.country == "it") && initiator.Player.Army() == 1) { willReportDead = true; }
-                        //if ((stationary.country == "gb" || stationary.country == "us") && initiator.Player.Army() == 2) { willReportDead = true; }
-
-                        //Since the scheme above does not work, we use this: We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.
-                        //
-                        //if ( (stationary.country == "nn") || (stationary.country == "fr") &&  
-                        if
-                          (
-                            (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
-
-                          )
-                        {
-
-                            willReportDead = true;
-                            msg += "(enemy ground target)";
-
-                        }
-                        else
-                        {
-                            msg += "(friendly ground target)";
-                        }
                     }
                     else
                     {
-                        msg += "nobody/AI  ";
+                        msg += "(friendly ground target)";
                     }
                 }
+                else
+                {
+                    msg += "AI ";
+                    if (initiator != null && initiator.Actor != null && initiator.Actor.Name() != null) msg += initiator.Actor.Name() + "  " + (initiator.Actor as AiCart).InternalTypeName() + " ";
+                    if (initiator != null && initiator.Tool != null && initiator.Tool.Name != null) msg += initiator.Tool.Name + "  ";
+                }
+            }
 
                 int score = 1;
 
@@ -11206,10 +11212,13 @@ struct
             StatsMission.Stb_PlayerSessStat RS = mission.stb_SaveIPlayerStat.RedSessStats;
             string ms = "";
 
+            /*
             //Write out the current Red & Blue TEAM totals so that -main.cs can use them as part of mission objectives etc.
             try
             {
                 if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX2", null); //testing disk output for warps
+                Console.WriteLine("STATS: Writing " + mission.stb_FullPath + "SessStats.txt");
+                StbSr_WriteLine("STATS: Writing " + mission.stb_FullPath + "SessStats.txt");
                 using (StreamWriter sw = new StreamWriter(mission.stb_FullPath + "SessStats.txt"))
                 {
 
@@ -11233,6 +11242,7 @@ struct
                 }
             }
             catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "stbsr_writeSessStats.txt"); }
+            */
 
 
 
@@ -11402,7 +11412,7 @@ struct
                 //StbSr_AlwaysWriteLine("Saving 2.5");
                 StbSr_SavePlayerStatsStringToFileFull(p);
                 StbSr_Display_SessionStatsTeam(null); //need to do this every 2 minutes or so or the -MAIN.cs file complains
-                                                      //StbSr_AlwaysWriteLine("Saving 3");
+                                                      StbSr_AlwaysWriteLine("Saving 3");
                                                       //Only save HTML files once every 7X (or if this is the final save of the session), to save a bit on uploading/server capacity.  If stats save time is 2 minutes this gives 14 minute stats updates
                 StbSr_SPSCount++;
                 if (StbSr_SPSCount % 7 == 0 || p[1] == 1)
@@ -12598,7 +12608,7 @@ struct
                             StbSr_UpdateStatsForTaskCurrent(task.player, task.parameters, task.actor);
                             break;
                         case StatsMission.StbStatCommands.Save:
-                            StbSr_SavePlayerStats(task.parameters);
+                        StbSr_SavePlayerStats(task.parameters);
                             break;
                         default:
                             break;

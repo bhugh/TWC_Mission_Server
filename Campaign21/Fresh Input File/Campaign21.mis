@@ -4,7 +4,7 @@
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 10000 10000 360000 310000 10000
-  TIME 4.50000
+  TIME 7.50000
   WeatherIndex 1
   CloudsHeight 1500
   BreezeActivity 0
@@ -1724,8 +1724,10 @@
   Static3112 Stationary.Environment.JerryCan_GER1_1 de 293861.63 85056.51 659.10 
   Static628 Artillery.20_mm_Flak_38 de 293114.72 88844.06 65.00 /timeout 0/radius_hide 0
   Static4033 Stationary.AEC_Regent_II nn 194066.59 92714.38 0.00 
-  Static3769 Stationary.Environment.JerryCan_GER1_1 gb 195166.97 93431.41 659.10 
+  Static3769 Stationary.Environment.JerryCan_GER1_1 nn 195164.97 93425.41 659.10 
   Static3289 Stationary.Radar.Wotan_I de 195168.77 93438.43 65.00 
+  Static6769 Stationary.Environment.JerryCan_GER1_1 nn 195176.97 93445.41 659.10
+  Static6770 Stationary.Environment.JerryCan_GER1_1 nn 195172.97 93442.41 659.10
   Static2659 Stationary.AEC_Regent_II de 319881.34 94906.13 659.10 
   Static629 Artillery.20_mm_Flak_38 de 229645.80 96327.30 65.00 /timeout 0/radius_hide 0
   Static2658 Stationary.AEC_Regent_II de 316676.47 95245.23 659.10 
@@ -3412,17 +3414,17 @@
   Static3079 Stationary.Weapons_.Destructing_Bomb nn 313870.72 223440.05 659.10 
   Static3216 Stationary.AEC_Regent_II nn 320435.38 223475.34 659.10 
   Static3196 Stationary.Environment.JerryCan_GER1_1 de 312133.66 223650.66 659.10 
-  Static3197 Stationary.Environment.JerryCan_GER1_1 de 312167.09 223620.27 659.10 
+  Static3197 Stationary.Environment.JerryCan_GER1_1 nn 312167.09 223620.27 659.10 
   Static3193 Stationary.Environment.TelegaBallon_UK1 de 312159.50 223641.53 285.00 
   Static3200 Stationary.Environment.JerryCan_GER1_1 de 312490.75 223665.84 659.10 
   Static3201 Stationary.Environment.JerryCan_GER1_1 de 312527.22 223652.17 659.10 
   Static3195 Stationary.Environment.TelegaBallon_UK1 de 312524.19 223670.41 285.00 
   Static3202 Stationary.Environment.JerryCan_GER1_1 de 312460.38 223687.11 659.10 
-  Static2963 Stationary.Environment.JerryCan_GER1_1 de 312492.91 223690.86 659.10 
+  Static2963 Stationary.Environment.JerryCan_GER1_1 nn 312492.91 223690.86 659.10 
   Static3073 Stationary.Environment.JerryCan_GER1_1 de 312430.50 223802.06 659.10 
   Static2959 Stationary.AEC_Regent_II nn 316604.97 223719.59 659.10 
   Static3063 Stationary.Environment.JerryCan_GER1_1 de 314460.47 223752.14 659.10 
-  Static3075 Stationary.Environment.JerryCan_GER1_1 de 312442.59 223867.39 659.10 
+  Static3075 Stationary.Environment.JerryCan_GER1_1 nn 312442.59 223867.39 659.10 
   Static3074 Stationary.Environment.JerryCan_GER1_1 de 312481.31 223833.52 659.10 
   Static3162 Stationary.Environment.TelegaBallon_UK1 de 312470.13 223860.41 285.00 
   Static3055 Stationary.AEC_Regent_II nn 321513.13 223691.95 659.10 
@@ -3431,23 +3433,23 @@
   Static3140 Stationary.Opel_Blitz_fuel de 314499.31 223856.00 659.10 
   Static3077 Stationary.Environment.JerryCan_GER1_1 de 312408.72 223923.05 659.10 
   Static3161 Stationary.Environment.TelegaBallon_UK1 de 312438.13 223906.95 285.00 
-  Static3076 Stationary.Environment.JerryCan_GER1_1 de 312445.03 223927.89 659.10 
+  Static3076 Stationary.Environment.JerryCan_GER1_1 nn 312445.03 223927.89 659.10 
   Static3060 Stationary.Environment.JerryCan_GER1_1 de 314483.06 223880.91 659.10 
   Static3061 Stationary.Environment.JerryCan_GER1_1 de 314488.31 223938.33 659.10 
-  Static1787 Stationary.Environment.JerryCan_GER1_1 de 315292.63 223996.97 659.10 
+  Static1787 Stationary.Environment.JerryCan_GER1_1 nn 315292.63 223996.97 659.10 
   Static1786 Stationary.Environment.JerryCan_GER1_1 de 315351.09 223998.75 659.10 
   Static3192 Stationary.Environment.TelegaBallon_UK1 de 312708.03 224006.22 285.00 
   Static2962 Stationary.Environment.JerryCan_GER1_1 de 313200.72 224044.77 659.10 
   Static2960 Stationary.AEC_Regent_II nn 318944.59 223963.52 659.10 
   Static1780 Stationary.Environment.JerryCan_GER1_1 de 315188.13 224037.72 659.10 
   Static1788 Stationary.Environment.JerryCan_GER1_1 de 315200.53 224002.28 659.10 
-  Static1785 Stationary.Environment.JerryCan_GER1_1 de 315359.94 224039.48 659.10 
+  Static1785 Stationary.Environment.JerryCan_GER1_1 nn 315359.94 224039.48 659.10 
   Static1781 Stationary.Environment.JerryCan_GER1_1 de 315207.63 224076.69 659.10 
   Static1783 Stationary.Environment.JerryCan_GER1_1 de 315239.50 224074.91 659.10 
   Static1778 Stationary.Environment.JerryCan_GER1_1 de 315237.72 224119.19 659.10 
-  Static1782 Stationary.Environment.JerryCan_GER1_1 de 315290.88 224071.38 659.10 
+  Static1782 Stationary.Environment.JerryCan_GER1_1 nn 315290.88 224071.38 659.10 
   Static1777 Stationary.Environment.JerryCan_GER1_1 de 315290.88 224117.42 659.10 
-  Static1784 Stationary.Environment.JerryCan_GER1_1 de 315338.69 224069.59 659.10 
+  Static1784 Stationary.Environment.JerryCan_GER1_1 nn 315338.69 224069.59 659.10 
   Static1776 Stationary.Environment.JerryCan_GER1_1 de 315370.56 224113.88 659.10 
   Static3137 Stationary.Opel_Blitz_fuel de 315069.13 224140.16 659.10 
   Static3065 Stationary.Environment.JerryCan_GER1_1 de 315080.97 224144.75 659.10 
@@ -3456,30 +3458,30 @@
   Static3157 Stationary.Environment.TelegaBallon_UK1 de 315096.59 224145.89 285.00 
   Static1779 Stationary.Environment.JerryCan_GER1_1 de 315211.16 224142.22 659.10 
   Static1772 Stationary.Environment.JerryCan_GER1_1 de 315205.84 224179.42 659.10 
-  Static1773 Stationary.Environment.JerryCan_GER1_1 de 315264.28 224181.19 659.10 
+  Static1773 Stationary.Environment.JerryCan_GER1_1 nn 315264.28 224181.19 659.10 
   Static1774 Stationary.Environment.JerryCan_GER1_1 de 315356.41 224181.19 659.10 
-  Static1775 Stationary.Environment.JerryCan_GER1_1 de 315381.19 224174.11 659.10 
+  Static1775 Stationary.Environment.JerryCan_GER1_1 nn 315381.19 224174.11 659.10 
   Static3128 Stationary.Environment.JerryCan_GER1_1 de 312238.06 224236.08 659.10 
-  Static1769 Stationary.Environment.JerryCan_GER1_1 de 315220.00 224234.33 659.10 
+  Static1769 Stationary.Environment.JerryCan_GER1_1 nn 315220.00 224234.33 659.10 
   Static1771 Stationary.Environment.JerryCan_GER1_1 de 315301.50 224234.33 659.10 
   Static1770 Stationary.Environment.JerryCan_GER1_1 de 315377.66 224227.23 659.10 
   Static1768 Stationary.Environment.JerryCan_GER1_1 de 315207.63 224273.30 659.10 
-  Static1767 Stationary.Environment.JerryCan_GER1_1 de 315227.09 224273.30 659.10 
+  Static1767 Stationary.Environment.JerryCan_GER1_1 nn 315227.09 224273.30 659.10 
   Static1761 Stationary.Environment.JerryCan_GER1_1 de 315211.16 224301.64 659.10 
   Static1766 Stationary.Environment.JerryCan_GER1_1 de 315290.88 224273.30 659.10 
-  Static1762 Stationary.Environment.JerryCan_GER1_1 de 315283.78 224303.41 659.10 
+  Static1762 Stationary.Environment.JerryCan_GER1_1 nn 315283.78 224303.41 659.10 
   Static1765 Stationary.Environment.JerryCan_GER1_1 de 315335.16 224264.44 659.10 
   Static1764 Stationary.Environment.JerryCan_GER1_1 de 315375.88 224278.61 659.10 
   Static1763 Stationary.Environment.JerryCan_GER1_1 de 315367.03 224301.64 659.10 
   Static3139 Stationary.Opel_Blitz_fuel de 314786.50 224430.38 659.10 
   Static3138 Stationary.Opel_Blitz_fuel de 314801.69 224422.78 659.10 
   Static3158 Stationary.Environment.TelegaBallon_UK1 de 314796.88 224427.75 285.00 
-  Static3167 Stationary.Environment.TelegaBallon_UK1 de 316623.94 224552.70 285.00 
+  Static3167 Stationary.Environment.TelegaBallon_UK1 nn 316623.94 224552.70 285.00 
   Static3163 Stationary.Environment.TelegaBallon_UK1 de 315303.31 224686.52 285.00 
-  Static3179 Stationary.Environment.TelegaBallon_UK1 de 319729.63 224605.16 285.00 
+  Static3179 Stationary.Environment.TelegaBallon_UK1 nn 319729.63 224605.16 285.00 
   Static3180 Stationary.Environment.TelegaBallon_UK1 de 319379.88 224659.20 285.00 
   Static3164 Stationary.Environment.TelegaBallon_UK1 de 315355.69 224712.69 285.00 
-  Static3184 Stationary.Environment.TelegaBallon_UK1 de 316772.72 224711.27 285.00 
+  Static3184 Stationary.Environment.TelegaBallon_UK1 nn 316772.72 224711.27 285.00 
   Static3178 Stationary.Environment.TelegaBallon_UK1 de 319438.25 224732.19 285.00 
   Static3054 Stationary.AEC_Regent_II nn 322644.53 224736.95 659.10 
   Static3165 Stationary.Environment.TelegaBallon_UK1 de 315003.72 224872.69 285.00 
@@ -3487,31 +3489,31 @@
   Static3185 Stationary.Environment.TelegaBallon_UK1 de 316502.25 224934.63 285.00 
   Static3221 Stationary.AEC_Regent_II nn 324771.59 224879.66 659.10 
   Static3166 Stationary.Environment.TelegaBallon_UK1 de 315876.34 225085.03 285.00 
-  Static3177 Stationary.Environment.TelegaBallon_UK1 de 320419.34 224966.39 285.00 
+  Static3177 Stationary.Environment.TelegaBallon_UK1 nn 320419.34 224966.39 285.00 
   Static3182 Stationary.Environment.TelegaBallon_UK1 de 316567.59 225089.63 285.00 
   Static3168 Stationary.Environment.TelegaBallon_UK1 de 316399.94 225320.64 285.00 
-  Static3175 Stationary.Environment.TelegaBallon_UK1 de 318425.19 225304.16 285.00 
+  Static3175 Stationary.Environment.TelegaBallon_UK1 nn 318425.19 225304.16 285.00 
   Static3186 Stationary.Environment.TelegaBallon_UK1 de 316907.97 225428.47 285.00 
-  Static3169 Stationary.Environment.TelegaBallon_UK1 de 316359.22 225538.80 285.00 
+  Static3169 Stationary.Environment.TelegaBallon_UK1 nn 316359.22 225538.80 285.00 
   Static3223 Stationary.Environment.CamoNetPlaneBig de 315736.50 225588.08 210.00 
   Static3243 Stationary.Environment.TelegaBallon_UK1 de 315744.19 225617.06 285.00 
-  Static3226 Stationary.Environment.CamoNetPlaneBig de 315769.56 225618.42 210.00 
-  Static3263 Stationary.Environment.JerryCan_GER1_2 gb 315775.41 225638.95 659.10 
+  Static3226 Stationary.Environment.CamoNetPlaneBig nn 315769.56 225618.42 210.00 
+  Static3263 Stationary.Environment.JerryCan_GER1_2 nn 315775.41 225638.95 659.10 
   Static3260 Stationary.Environment.TelegaBallon_UK1 de 315770.16 225644.19 285.00 
   Static3229 Stationary.Environment.CamoNetPlaneBig de 315802.47 225652.08 210.00 
-  Static3261 Stationary.Environment.TelegaBallon_UK1 de 315802.47 225673.05 285.00 
+  Static3261 Stationary.Environment.TelegaBallon_UK1 nn 315802.47 225673.05 285.00 
   Static3239 Stationary.Environment.CamoNetPlaneBig de 315837.69 225694.02 210.00 
   Static3267 Stationary.Environment.JerryCan_GER1_5 de 315837.94 225689.58 659.10 
-  Static3262 Stationary.Environment.TelegaBallon_UK1 de 315856.91 225665.75 285.00 
+  Static3262 Stationary.Environment.TelegaBallon_UK1 nn 315856.91 225665.75 285.00 
   Static3170 Stationary.Environment.TelegaBallon_UK1 de 316257.41 225675.52 285.00 
-  Static2967 Stationary.Environment.JerryCan_GER1_5 gb 316452.50 225286.05 659.10 
-  Static3187 Stationary.Environment.TelegaBallon_UK1 de 316473.38 225785.55 285.00 
+  Static2967 Stationary.Environment.JerryCan_GER1_5 nn 316452.50 225286.05 659.10 
+  Static3187 Stationary.Environment.TelegaBallon_UK1 nn 316473.38 225785.55 285.00 
   Static3181 Stationary.Environment.TelegaBallon_UK1 de 318521.66 225782.52 285.00 
   Static3053 Stationary.AEC_Regent_II nn 322953.09 225679.11 659.10 
-  Static3174 Stationary.Environment.TelegaBallon_UK1 de 318583.22 225817.75 285.00 
-  Static3173 Stationary.Environment.TelegaBallon_UK1 de 318595.38 225907.41 285.00 
+  Static3174 Stationary.Environment.TelegaBallon_UK1 nn 318583.22 225817.75 285.00 
+  Static3173 Stationary.Environment.TelegaBallon_UK1 nn 318595.38 225907.41 285.00 
   Static3171 Stationary.Environment.TelegaBallon_UK1 de 317840.19 226019.84 285.00 
-  Static3172 Stationary.Environment.TelegaBallon_UK1 de 317764.22 226177.88 285.00 
+  Static3172 Stationary.Environment.TelegaBallon_UK1 nn 317764.22 226177.88 285.00 
   Static2976 Stationary.Environment.JerryCan_GER1_5 de 320283.38 226206.63 659.10 
   Static3176 Stationary.Environment.TelegaBallon_UK1 de 320249.63 226256.11 285.00 
   Static2860 Stationary.AEC_Regent_II gb 229374.45 227998.08 659.10 
@@ -5227,6 +5229,19 @@
   601_bld buildings.House$Oil_Bunker-Big 1 237908.09 228793.93 -20.00
   602_bld buildings.House$Oil_Bunker-Big 1 237319.11 229213.34 15.00
   603_bld buildings.House$Oil_Bunker-Big 1 237490.17 228957.50 -20.00
+  604_bld buildings.House$Oil_Bunker-Big 1 138941.09 197804.55 175.00
+  605_bld buildings.House$Oil_Bunker-Big 1 139538.69 197657.97 175.00
+  606_bld buildings.House$Oil_Bunker-Big 1 138721.76 197828.84 175.00
+  607_bld buildings.House$Oil_Bunker-Big 1 138099.96 197829.37 255.00
+  608_bld buildings.House$Oil_Bunker-Big 1 137964.11 197835.22 255.00
+  609_bld buildings.House$Oil_Bunker-Big 1 139315.25 197679.19 255.00
+  610_bld buildings.House$Oil_Bunker-Big 1 138397.50 197822.79 245.00
+  611_bld buildings.House$Oil_Bunker-Big 1 139708.36 197617.64 240.00
+  612_bld buildings.House$Oil_Bunker-Big 1 137452.40 197829.95 225.00
+  613_bld buildings.House$Oil_Bunker-Big 1 137541.89 197841.20 225.00
+  614_bld buildings.House$Oil_Bunker-Big 1 137288.83 197807.81 230.00
+  615_bld buildings.House$Oil_Bunker-Big 1 137726.65 197853.92 225.00
+  616_bld buildings.House$Oil_Bunker-Big 1 137615.65 197852.58 225.00  
 [BuildingsLinks]
 [Airdromes]
   airdrome0 298383.34 127504.47 2 500 500 0

@@ -451,16 +451,35 @@ public void ReadSupply(string suffix)
         return retHS;
     }
 
+    //OK, this is a kludge until we get SupplyEndMission tied into -main.cs
+    //but redMult=-1000000 or blueMult=-1000000 means, it is an intermediate win & ignore that red or blue value
+    //but add in the other one.  so that is used for intermediate victories, where we add in aircraft gains for one side, but not the other, mid-mission.
+    //Also, don't do MIssionEnd stuff in that case.
+    //Arghhh.
     public bool SupplyEndMission(double redMult = 1, double blueMult = 1)
     {
+        double magicNumber = -1000000;
         Console.WriteLine("SupplyEndMission: Red: " + redMult.ToString() + " Blue: " + blueMult.ToString());
-        ReturnDamagedAircraftToSupplyAtMissionEnd();
-        ReturnAircraftToSupplyAtMissionEnd();
-        ListAircraftLost(0, null, true, false, match: "");
-        GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult * 100.0).ToString("F0"), new object[] { });  //NEVER multiply by an integer.  100.0<<<<<
-        GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100.0).ToString("F0"), new object[] { }); //100 = par (ie, 1.00) for resupply, as shown to players
-        AddIncrease(ArmiesE.Red, redMult);
-        AddIncrease(ArmiesE.Blue, blueMult);
+        bool doMissionEnd = true;
+        if (redMult == magicNumber || blueMult == magicNumber) doMissionEnd = false;
+        if (doMissionEnd)
+        {
+            ReturnDamagedAircraftToSupplyAtMissionEnd();
+            ReturnAircraftToSupplyAtMissionEnd();
+            ListAircraftLost(0, null, true, false, match: "");
+        }
+        if (redMult != magicNumber)
+        {
+            GamePlay.gpLogServer(null, "Red aircraft resupplied at strength " + (redMult * 100.0).ToString("F0"), new object[] { });  //NEVER multiply by an integer.  100.0<<<<<
+            AddIncrease(ArmiesE.Red, redMult);
+        }
+        if (blueMult != magicNumber)
+        {
+            GamePlay.gpLogServer(null, "Blue aircraft resupplied at strength " + (blueMult * 100.0).ToString("F0"), new object[] { }); //100 = par (ie, 1.00) for resupply, as shown to players
+            AddIncrease(ArmiesE.Blue, blueMult);
+        }
+        
+        
         return WritePrimarySupply(supplySuffix);
     }
 

@@ -1,4 +1,4 @@
-﻿#define DEBUG  
+#define DEBUG  
 #define TRACE  
 //#undef TRACE
 /******************************************************************************************************************
@@ -4638,7 +4638,17 @@ struct
         string msg_orig = msg;
         msg = msg.ToLower();
         //Stb_Message(null, "Stats msg recvd.", null);
-        if (msg.StartsWith("<deban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+
+        
+        
+        if (msg.StartsWith("<smk") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
+        {
+            Console.WriteLine("Making quick delete smoke");
+            Point3d pos = new Point3d(284703, 125257, 0);
+            string firetype = "BigSitySmoke_1";
+            //double r = 9000;
+            loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 12, stb_FullPath);
+        } else if (msg.StartsWith("<deban") && player.Name().Substring(0, stb_AdminPlayernamePrefix.Length) == stb_AdminPlayernamePrefix)
         {
             Stb_Message(new Player[] { player }, "Pilot restriction after death removed until end of mission.", new object[] { });
             stb_PlayerTimeoutWhenKilled = false;
@@ -11412,7 +11422,7 @@ struct
                 //StbSr_AlwaysWriteLine("Saving 2.5");
                 StbSr_SavePlayerStatsStringToFileFull(p);
                 StbSr_Display_SessionStatsTeam(null); //need to do this every 2 minutes or so or the -MAIN.cs file complains
-                                                      StbSr_AlwaysWriteLine("Saving 3");
+                                                      //StbSr_AlwaysWriteLine("Saving 3");
                                                       //Only save HTML files once every 7X (or if this is the final save of the session), to save a bit on uploading/server capacity.  If stats save time is 2 minutes this gives 14 minute stats updates
                 StbSr_SPSCount++;
                 if (StbSr_SPSCount % 7 == 0 || p[1] == 1)

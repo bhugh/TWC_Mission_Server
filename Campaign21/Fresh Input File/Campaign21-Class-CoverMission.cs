@@ -935,7 +935,29 @@ public class CoverMission : AMission, ICoverMission
 
         }
         */
-        if (msg.StartsWith("<cland"))
+        if (msg.StartsWith("<lactors") && (admin_privilege_level(player) > 1))
+        {
+            Console.WriteLine("Actor list - starting...");
+            Point3d p = new Point3d(284703, 125257, 0);
+            double r = 9000;
+
+            string[] words = msg_orig.Split(' ');
+
+            //Calcs.listStatics(GamePlay, new List<string>() { "smoke", "fire", "crater", "jerry" });
+            List<AiActor> closeStaticActors = new List<AiActor>(coverCalcs.gpGetAllGroundActorsNear(allStaticActors, p,r).ToList()); //1000?
+                                                                                                                                     //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
+            foreach (AiActor act in closeStaticActors) Console.WriteLine("Actor: {0} {1}", act.Name(), (act as AiCart).InternalTypeName());
+
+        }
+
+        /*
+         * \
+          List<AiActor> closeStaticActors = new List<AiActor>(coverCalcs.gpGetAllGroundActorsNear(allStaticActors, pos, maxMove_m).ToList()); //1000?
+                                                                                                                                                                    //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
+                                coverCalcs.Shuffle(closeStaticActors);
+                                foreach (AiActor act in closeStaticActors)
+         * */
+        else if (msg.StartsWith("<cland"))
         {
             landCoverAircraft(player, msg);
 
@@ -4832,6 +4854,11 @@ public static class coverCalcs
                 if (subActor != null)
                 {
                     result.Add(subActor);
+                }
+                GroundStationary subStat = msn.GamePlay.gpActorByName(subName) as GroundStationary;
+                if (subStat != null)
+                {
+                    Console.WriteLine("GroundStationary {0} ", subStat.Name);
                 }
             }
         }

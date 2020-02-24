@@ -11211,7 +11211,9 @@ added Rouen Flak
             string side = "nn";
             if (random.Next(100) < percentSide) side = ownerside; //setting them as enemy makes them show up as black dots. So some, but not all.
 
-            Point3d thingPos = new Point3d(0, 0, 0);
+            double angle1 = 0;
+
+            Point3d thingPos = new Point3d(newPos.x, newPos.y, newPos.z);
             if (radius_m <= 5)
             {
                 thingPos.x = newPos.x + (random.NextDouble() * 2.0 - 1.0) * radius_m;
@@ -11219,7 +11221,7 @@ added Rouen Flak
             }
             else
             {
-                double angle1 = i * 2.0 / howmany * Math.PI + random.NextDouble() / howmany * Math.PI * 2.0/3.0;
+                angle1 = i * 2.0 / howmany * Math.PI + random.NextDouble() / howmany * Math.PI * 2.0/3.0;
                 double radius2 = (random.NextDouble() * 2.0 - 1.0) * variance_m + radius_m; //vary by say 20% of the radius placement
 
                 thingPos.x = newPos.x + Math.Cos(angle1) * radius2;
@@ -11228,7 +11230,8 @@ added Rouen Flak
 
             double subsubHeading = subHeading + random.Next(24) - 12;
             if (subHeading == -1) subsubHeading = random.Next(360);
-            if (subHeading == -2) subsubHeading = angle1 + Math.PI / 2; //90 degrees to radius of circle we're currently doing.
+            if (subHeading == -2) subsubHeading = Calcs.RadiansToDegrees(angle1); //Same angle as we're doing seems to align them with the tangent of the circle
+            Console.WriteLine("Cirles: {0:F2} {1:F2} {2:F2} " + howmany.ToString(), angle1, subHeading, subsubHeading);
 
 
             int ranThing = random.Next(things.Count);
@@ -11386,6 +11389,11 @@ added Rouen Flak
             double subHeading = masterHeading + random.Next(40) - 20;
 
             if (t == MO_MobileObjectiveThings.Sandbags || t == MO_MobileObjectiveThings.Trenches || t == MO_MobileObjectiveThings.Hedgehogs) subHeading = -2; //meaning, align them with the circle rather than the prevailing angle
+
+            if (t == MO_MobileObjectiveThings.Humans) newPos.z = 1;
+            else newPos.z = 0;
+
+            Console.WriteLine("Cirles: " + t.ToString() + " " + subHeading.ToString());
 
             f = PlaceObjectsInCircles(f, mttnr.things, newPos, mttnr.radius_m, mttnr.range_m, Convert.ToInt32(mttnr.howmany + random.Next(Convert.ToInt32(mttnr.howmany/4.0))+mttnr.howmany/2.0), mo.OwnerArmy, subHeading: subHeading, percentSide: 33);
 

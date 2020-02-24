@@ -7600,7 +7600,7 @@ public class Mission : AMission, IMainMission
                 twcLogServer(new Player[] { player }, "Creating an airspawn above the objective ", new object[] { words[1], MissionObjectivesList[words[1]].Name });
                 ISectionFile f2 = GamePlay.gpCreateSectionFile();
                 MissionObjective mo = MissionObjectivesList[words[1]];
-                string bname = mo.ID.Substring(0, 5) + "_airspawn"; //apparently birhtplace names can't be too long?
+                string bname = mo.ID.Substring(0, 13) + "_airspawn" + random.Next(10,99).ToString("F0"); //apparently birthplace names can't be too long?
                 f2 = Calcs.CreateBirthPlace(f2, bname, mo.Pos.x, mo.Pos.y, 1000, mo.AttackingArmy);
                 GamePlay.gpPostMissionLoad(f2);
                 f2.save(CLOD_PATH + FILE_PATH + "/" + bname);
@@ -9068,7 +9068,7 @@ public class Mission : AMission, IMainMission
             AutoFlakIfPrimary = true;
             AutoFlak = false;
             NumFlakBatteries = 3;
-            NumInFlakBattery = 5;
+            NumInFlakBattery = 3;
             //for testing
             //NumFlakBatteries = 3;
             //NumInFlakBattery = 4;
@@ -11032,18 +11032,22 @@ added Rouen Flak
         public List<string> things { set; get; }
         public int howmany { set; get; } //approx how many to place
         public double radius_m { set; get; } //approx radius from center to place them.  This will vary by +/- 20% or so
+        public double range_m { set; get;  } //Range this far in/out from the radius.  So radius 10m, range 10m will place the objects from 0 to 20m from the center.
 
-        public MO_ThingsTypeNumberRadius(List<string> t, int hm = 7, double rm = 25)
+        public MO_ThingsTypeNumberRadius(List<string> t, int hm = 7, double rm = 25, double rn = 25)
         {
             things = t;
             howmany = hm;
             radius_m = rm;
+            range_m = rn;
         }
         public MO_ThingsTypeNumberRadius(MO_ThingsTypeNumberRadius mttnr)
         {
             things = mttnr.things;
             howmany = mttnr.howmany;    
             radius_m = mttnr.radius_m;
+            range_m = mttnr.range_m;
+
         }
     }
 
@@ -11052,13 +11056,13 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAirbaseGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 55) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 35) },
-                { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 100) },
-                { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 125) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 605) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 55, 50) },
+                { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 17 ) },
+                { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 62, 20 ) },
+                { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 102, 20) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 600, 1) },
 
             }
         },
@@ -11066,13 +11070,13 @@ added Rouen Flak
         { MO_MobileObjectiveType.SecretAirbaseDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 55) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 35) },
-                { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 2, 100) },
-                { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 2, 125) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 605) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 30,30) },
+                { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 20) },
+                { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
+                { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 3, 95, 20) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 600, 1) },
 
             }
         },
@@ -11081,13 +11085,13 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 25) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 55) },
-                { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 90) },
-                { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 125) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 400) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 405) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 15, 12) },
+                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
+                { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
+                { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 85, 20) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 400, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 400, 1) },
 
             }
          },
@@ -11095,13 +11099,13 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 25) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 55) },
-                { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 90) },
-                { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 125) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 400) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 405) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 15, 12) },
+                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
+                { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 60, 20) },
+                { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 80, 20) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 350, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 350, 1) },
 
             }
         },
@@ -11109,13 +11113,13 @@ added Rouen Flak
         { MO_MobileObjectiveType.ArmyEncampment,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 5) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 5, 5) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 5, 25) },
-                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 7, 35) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 12, 58) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 30, 62) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 15, 12) },
+                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 5, 10, 8) },
+                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 5, 25, 10) },
+                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 7, 35, 5) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50, 2) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 12, 50, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 30, 50, 1) },
 
             }
         },
@@ -11123,12 +11127,12 @@ added Rouen Flak
         { MO_MobileObjectiveType.SmallArmourGroup,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 5) },                
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 15) },
-                { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 7, 30) },
-                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 40) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 45) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 10, 8) },                
+                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 15, 10) },
+                { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 7, 30, 5) },
+                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22, 18) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 45, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 45, 1) },
 
             }
         },
@@ -11136,12 +11140,12 @@ added Rouen Flak
             { MO_MobileObjectiveType.LargeArmourGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 15, 10) },
-                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20) },
-                    { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 15, 35) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 30) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 55) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 60) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 15, 10, 8) },
+                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20, 15) },
+                    { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 15, 40, 5) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 25, 20) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60, 1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 60, 1 ) },
 
 
                 }
@@ -11149,36 +11153,36 @@ added Rouen Flak
             { MO_MobileObjectiveType.CamoGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 10, 8) },
-                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17) },
-                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 35) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 12, 40) },
-                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 55) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 80) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 10, 15, 12) },
+                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17, 12) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 40, 25) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 12, 40, 35) },
+                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 70, 2) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75, 1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 75, 1) },
                 }
             },
             { MO_MobileObjectiveType.MobileRadar1,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 10 )},
-                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 40 )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
-                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 10 )},
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 65) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 12, 7 )},
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 40, 10 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 15, 7 )},
+                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 65, 1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 65, 1) },
 
                 }
             },
                     { MO_MobileObjectiveType.MobileRadar2,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
-                    { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3 )},
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 20 )},
-                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50 )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
-                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 50 )},
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 80) },
+                    { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3, 3 )},
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 25, 20 )},
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50, 20 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
+                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 30, 20 )},
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75, 1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 75, 1) },
 
                 }
             },
@@ -11196,8 +11200,10 @@ added Rouen Flak
         if (army == 1) ownerside = "gb";
         
 
-        Calcs.Shuffle(things);
-        howmany += howmany + random.Next(howmany / 4) - howmany / 8; //slightly randomize howmany
+        //Calcs.Shuffle(things);
+        howmany += random.Next(howmany / 4) - howmany / 8; //slightly randomize howmany
+        //Console.WriteLine("Cirles: " + howmany.ToString());
+
         for (int i = 0; i < howmany; i++)
         {
 
@@ -11220,16 +11226,17 @@ added Rouen Flak
                 double radius2 = (random.NextDouble() * 2.0 - 1.0) * radius_m * 0.2 + radius_m; //vary by say 20% of the radius placement
 
                 thingPos.x = newPos.x + Math.Cos(angle1) * radius2;
-                thingPos.x = newPos.y + Math.Sin(angle1) * radius2;
+                thingPos.y = newPos.y + Math.Sin(angle1) * radius2;
             }
 
-            f = Calcs.makeStatic(f, GamePlay, this, thingPos.x + random.Next(2), thingPos.y + random.Next(2), thingPos.z, type: things[0], heading: subsubHeading, side: side);
+            int ranThing = random.Next(things.Count);
+            f = Calcs.makeStatic(f, GamePlay, this, thingPos.x + random.Next(2), thingPos.y + random.Next(2), thingPos.z, type: things[ranThing], heading: subsubHeading, side: side);
             
         }
         return f;
     }
 
-    public void MO_RemoveMobileObjective(MissionObjective mo)
+    public double MO_CalcMobileObjRadius_m (MissionObjective mo)
     {
         var things = mo_mobileobjectivethings[mo.MOMobileObjectiveType];
 
@@ -11240,6 +11247,30 @@ added Rouen Flak
             MO_ThingsTypeNumberRadius mttnr = new MO_ThingsTypeNumberRadius(things[t]);
             if (mttnr.radius_m > searchRadius_m) searchRadius_m = mttnr.radius_m;
         }
+        return searchRadius_m;
+    }
+
+    public bool MO_WaterInRadius (Point3d p, double radius_m)
+    {
+        Point3d testPos = new Point3d(0, 0, 0);
+        for (int i = 1; i < 300; i++)
+        {
+            double angle1 = i; //radians
+            double radius2 = i * radius_m / 200.0;
+            testPos.x = p.x + Math.Cos(angle1) * radius2;
+            testPos.y = p.y + Math.Sin(angle1) * radius2;
+            maddox.game.LandTypes landType = GamePlay.gpLandType(testPos.x, testPos.y);
+            if (landType == maddox.game.LandTypes.WATER)  return true;
+        }
+        return false;
+    }
+
+    public void MO_RemoveMobileObjective(MissionObjective mo)
+    {
+        var things = mo_mobileobjectivethings[mo.MOMobileObjectiveType];
+
+        double searchRadius_m = MO_CalcMobileObjRadius_m(mo);
+
         List<GroundStationary> gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList();
         foreach (GroundStationary g in gs) Timeout(random.Next(20, 1200), () => { g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
         //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping it
@@ -11291,6 +11322,7 @@ added Rouen Flak
             Point3d nePos = mo.MobileNEPoint;
 
 
+            double searchRadius_m = MO_CalcMobileObjRadius_m(mo);
 
             //try to find a place that is not water, not near an airport, outwards at least mo.radius + adder_m from the center of the objective
             //try it a bunch of times if no success
@@ -11306,11 +11338,7 @@ added Rouen Flak
                 }
 
                 newPos.x = swPos.x + random.NextDouble() * (nePos.x - swPos.x);
-                newPos.y = swPos.y + random.NextDouble() * (nePos.y - swPos.y);
-
-
-                maddox.game.LandTypes landType = GamePlay.gpLandType(newPos.x, newPos.y);
-
+                newPos.y = swPos.y + random.NextDouble() * (nePos.y - swPos.y);                
 
                 double dist = 5000;
                 try
@@ -11320,7 +11348,10 @@ added Rouen Flak
                 }
                 catch (Exception ex) { Console.WriteLine("ERROR MOBILE OBJECTIVE PLACEMENT! " + ex.ToString()); }
 
-                if (landType != maddox.game.LandTypes.WATER && dist > 3500) break;
+
+                if (dist - searchRadius_m < 3500) continue;
+
+                if (!MO_WaterInRadius(newPos,searchRadius_m)) break;
                 if (i == 249)
                 {
                     Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water. Placing at center of area as last resort.");
@@ -11349,6 +11380,8 @@ added Rouen Flak
 
         GamePlay.gpPostMissionLoad(f);
 
+        f.save(CLOD_PATH + FILE_PATH + "/mobileobj_" + mo.ID); //testing)
+
         mo.Sector = Calcs.correctedSectorNameDoubleKeypad(this, newPos);
         mo.bigSector = Calcs.makeBigSector(this, newPos);
         
@@ -11368,6 +11401,8 @@ added Rouen Flak
 
             int nfb = mo.NumFlakBatteries;
             int nib = mo.NumInFlakBattery;
+
+
 
             //too much flak seems to bring the server to it's knees, so if not a primary just 2x2 flak, otherwise what is requested
             if (!mo.IsEnabled || !mo.IsPrimaryTarget )
@@ -13203,7 +13238,7 @@ added Rouen Flak
             if (dist_m > 5000)
             {
                 ISectionFile f2 = GamePlay.gpCreateSectionFile();
-                string bname = ID.Substring(0, 15) + " (restored) " + random.Next(10, 99).ToString("F0");
+                string bname = ID.Substring(0, 14) + " (temp) " + random.Next(10, 99).ToString("F0");
                 f2 = Calcs.CreateBirthPlace(f2, bname, Pos.x, Pos.y, 0, OwnerArmy);
                 GamePlay.gpPostMissionLoad(f2);
                 f2.save(CLOD_PATH + FILE_PATH + "/" + bname);

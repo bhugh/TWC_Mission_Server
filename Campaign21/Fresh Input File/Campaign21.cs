@@ -244,6 +244,7 @@ public class aPlayer : Player
     */
 }
 
+//public class Mission : AMission, IMainMission
 public class Mission : AMission, IMainMission
 //public class Mission : BaseMission, IMainMission
 {
@@ -353,6 +354,8 @@ public class Mission : AMission, IMainMission
     //Constructor
     public Mission()
     {
+        try { 
+        //Console.WriteLine("#1");
         //INITIALIZE OTHER MAJOR MISSION OBJECTS 
         TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
 
@@ -428,6 +431,11 @@ public class Mission : AMission, IMainMission
         GiantSectorOverview[1] = new int[10, 2];
         GiantSectorOverview[2] = new int[10, 2];
 
+        }
+        catch (Exception ex) { Console.WriteLine("ERROR #!: " + ex.ToString()); }
+            
+
+
     }
 
     public Dictionary<string, IMissionObjective> SMissionObjectivesList()
@@ -457,6 +465,7 @@ public class Mission : AMission, IMainMission
         {
             //StartupSave doesn't try to calculate supply adjustments etc        
             Task.Run(() => SaveMapState("", intermediateSave: true));
+            //SaveMapState("", intermediateSave: true);
             //Task.Run(() => MO_WriteMissionObjects()); //no need to run this so early, there is nothing to save yet anyway
             SaveCampaignStateIntermediate_firstRun = false;
         } else
@@ -6055,157 +6064,160 @@ public class Mission : AMission, IMainMission
     public override void OnBattleStarted()
     {
         base.OnBattleStarted();
-
-        //listen to events from all missions.
-        //Note: this is in Init now, so disabling it here.  See note in Init (below).
-        //MissionNumberListener = -1;
-
-        //When battle is started we re-start the Mission tick clock - setting it up to start events
-        //happening when the first player connects
-
-        CheckAndChangeStartTime(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
-
-
-        MISSION_STARTED = true;
-        if (WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED) MISSION_STARTED = false;
-        START_MISSION_TICK = -1;
-
-        COOP_START_MODE = false;
-        if (COOP_START_MODE_ENABLED) COOP_START_MODE = true;
-        START_COOP_TICK = -1;
-        CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
-
-        CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
-                                            //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
-
-
-        DrawFrontLinesPerMapState(-MAP_WIN_POINTS / 100, MAP_WIN_POINTS / 100);
-
-        //TESTING
-        /*
-        for (double i = -25; i <= 25; i = i + 12.5)
+        try
         {
-            DrawFrontLinesPerMapState(-25, 25, i, "test" + i.ToString("F0") + ".mis");
-            
-        }
-        */
+            //listen to events from all missions.
+            //Note: this is in Init now, so disabling it here.  See note in Init (below).
+            //MissionNumberListener = -1;
 
-        SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
-        ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want
-        if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
+            //When battle is started we re-start the Mission tick clock - setting it up to start events
+            //happening when the first player connects
 
-        mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
-
-        if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
+            CheckAndChangeStartTime(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
 
 
-        LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
+            MISSION_STARTED = true;
+            if (WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED) MISSION_STARTED = false;
+            START_MISSION_TICK = -1;
+
+            COOP_START_MODE = false;
+            if (COOP_START_MODE_ENABLED) COOP_START_MODE = true;
+            START_COOP_TICK = -1;
+            CheckCoop();  //Start the routine to enforce the coop start/no takeoffs etc
+
+            CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
+                                                //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
 
 
-        //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
-        EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
+            DrawFrontLinesPerMapState(-MAP_WIN_POINTS / 100, MAP_WIN_POINTS / 100);
 
-
-        ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
-        ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
-
-        SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
-
-        /// CONFIGURE REARM/REFUEL
-        /// Duration in seconds for full rearm
-        // RearmRefuelConfig.REARM_DURATION = 150;
-
-        /// Duration in seconds for 100% refuel
-        /// Lesser fuel amounts result in relative fractions of that.
-        /// Note: see REFUEL_MIN_DURATION below
-        // RearmRefuelConfig.REFUEL_DURATION =  270;
-
-        /// Minimum duration in seconds for refuel
-        /// Refuel time cannot be shorter than that
-        // RearmRefuelConfig.REFUEL_MIN_DURATION = 150;
-
-        /// Interval in seconds of "... complete in Min::Sec messages
-        // RearmRefuelConfig.MESSAGE_INTERVAL = 15;
-
-        /// The visible airfields are sometimes bigger than the technical value configured.
-        /// Even spawn points may sometimes be outside of that technical perimeter
-        /// Technical airfield perimeter is multiplied with this.
-        // RearmRefuelConfig.AIRFIELD_PERIMETER_ADJUST = 1.5;
-
-        /// Allowable deviation from airfield's elevation in meter.
-        /// To check if we're actually on the ground, we need to check plane's elevation
-        /// against the airfield's. Unfortunately airfield elevation is not homogenous, en
-        /// extreme is Maidstone with places up to 7m different from technical elevation.
-        /// Note: This is strictly not necessary, because speed=0 within airfield
-        ///       perimeter would mean the same, but for user friendliness we say 
-        ///       'land on airfield' first and 'set chokes' later
-        /// value in meters
-        // public static double AIRFIELD_ELEVATION_ADJUST = 7;
-
-        /// maximum engines to check (tanks, fuelcocks, magnetos, etc.)
-        // RearmRefuelConfig.MAX_ENGINE_COUNT = 2;
-
-        /// output debugging messages
-        // public static bool DEBUG_MESSAGES = false;
-
-
-
-        if (GamePlay is GameDef)
-        {
-            //Calcs.RemoveDelegates((GamePlay as GameDef).EventChat as object);
-            //(GamePlay as GameDef).EventChat.ResetSubscriptions;
-            //(GamePlay as GameDef).EventChat--;
-            //(GamePlay as GameDef).EventChat = c1;
-            //(GamePlay as GameDef).EventChat = delegate { };
-            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-            (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
-            //Console.WriteLine((GamePlay as GameDef).EventChat.ToString());
-            //(GamePlay as GameDef).EventChat = null;
-
-
-            //Various attempts to hut up chat messages.
-            //cevent.RemoveAllEventHandlers((GamePlay as GameDef).EventChat as object);
-            //cevent.cEventHelper.RemoveAllEventHandlers((GamePlay as GameDef).EventChat as object);
-            //Component[] cmp = this.components.Components;
-
-
-            //Calcs.GetEventKeysList(Component);
-            //System.Reflection.PropertyInfo eventsProp = typeof(Component).GetProperty("Events", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            //TESTING
             /*
-
-            List<Component> cmps = (from field in GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                                    where typeof(Component).IsAssignableFrom(field.FieldType)
-                                    let component = (Component)field.GetValue(this)
-                                    where component != null
-                                    select component).ToList();
-
-            foreach (Component c in cmps) Console.WriteLine("COMP EVENTS PROPS HI!" + c.ToString());
-
-
-            System.Reflection.PropertyInfo eventsProp = typeof(Component).GetProperty("Events", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            //eventsProp.
-            //Calcs.GetEventKeysList(GamePlay);
-            Console.WriteLine("COMP EVENTS PROPS " + cmps.ToString());
-            */
-            /*
-            EventHandlerList events = (EventHandlerList)eventsProp.GetValue((GamePlay as GameDef).EventChat, null);
-            
-            foreach (EventHandler ehl in eventsProp ){
-                Console.WriteLine("EVENTS PROPS " + ehl.ToString());
-            }
-            */
-            /*
-            Delegate[] dary = (GamePlay as GameDef).EventChat.GetInvocationList();
-
-            if (dary != null)
+            for (double i = -25; i <= 25; i = i + 12.5)
             {
-                foreach (Delegate del in dary)
-                {
-                    (GamePlay as GameDef).EventChat -= (Action)del;
-                }
+                DrawFrontLinesPerMapState(-25, 25, i, "test" + i.ToString("F0") + ".mis");
+
             }
             */
+
+            SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
+            ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want
+            if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
+
+            mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
+
+            if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
+
+
+            LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
+
+
+            //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
+            EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
+
+
+            ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
+            ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
+
+            SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
+
+            /// CONFIGURE REARM/REFUEL
+            /// Duration in seconds for full rearm
+            // RearmRefuelConfig.REARM_DURATION = 150;
+
+            /// Duration in seconds for 100% refuel
+            /// Lesser fuel amounts result in relative fractions of that.
+            /// Note: see REFUEL_MIN_DURATION below
+            // RearmRefuelConfig.REFUEL_DURATION =  270;
+
+            /// Minimum duration in seconds for refuel
+            /// Refuel time cannot be shorter than that
+            // RearmRefuelConfig.REFUEL_MIN_DURATION = 150;
+
+            /// Interval in seconds of "... complete in Min::Sec messages
+            // RearmRefuelConfig.MESSAGE_INTERVAL = 15;
+
+            /// The visible airfields are sometimes bigger than the technical value configured.
+            /// Even spawn points may sometimes be outside of that technical perimeter
+            /// Technical airfield perimeter is multiplied with this.
+            // RearmRefuelConfig.AIRFIELD_PERIMETER_ADJUST = 1.5;
+
+            /// Allowable deviation from airfield's elevation in meter.
+            /// To check if we're actually on the ground, we need to check plane's elevation
+            /// against the airfield's. Unfortunately airfield elevation is not homogenous, en
+            /// extreme is Maidstone with places up to 7m different from technical elevation.
+            /// Note: This is strictly not necessary, because speed=0 within airfield
+            ///       perimeter would mean the same, but for user friendliness we say 
+            ///       'land on airfield' first and 'set chokes' later
+            /// value in meters
+            // public static double AIRFIELD_ELEVATION_ADJUST = 7;
+
+            /// maximum engines to check (tanks, fuelcocks, magnetos, etc.)
+            // RearmRefuelConfig.MAX_ENGINE_COUNT = 2;
+
+            /// output debugging messages
+            // public static bool DEBUG_MESSAGES = false;
+
+
+
+            if (GamePlay is GameDef)
+            {
+                //Calcs.RemoveDelegates((GamePlay as GameDef).EventChat as object);
+                //(GamePlay as GameDef).EventChat.ResetSubscriptions;
+                //(GamePlay as GameDef).EventChat--;
+                //(GamePlay as GameDef).EventChat = c1;
+                //(GamePlay as GameDef).EventChat = delegate { };
+                //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+                (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+                //Console.WriteLine((GamePlay as GameDef).EventChat.ToString());
+                //(GamePlay as GameDef).EventChat = null;
+
+
+                //Various attempts to hut up chat messages.
+                //cevent.RemoveAllEventHandlers((GamePlay as GameDef).EventChat as object);
+                //cevent.cEventHelper.RemoveAllEventHandlers((GamePlay as GameDef).EventChat as object);
+                //Component[] cmp = this.components.Components;
+
+
+                //Calcs.GetEventKeysList(Component);
+                //System.Reflection.PropertyInfo eventsProp = typeof(Component).GetProperty("Events", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                /*
+
+                List<Component> cmps = (from field in GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                                        where typeof(Component).IsAssignableFrom(field.FieldType)
+                                        let component = (Component)field.GetValue(this)
+                                        where component != null
+                                        select component).ToList();
+
+                foreach (Component c in cmps) Console.WriteLine("COMP EVENTS PROPS HI!" + c.ToString());
+
+
+                System.Reflection.PropertyInfo eventsProp = typeof(Component).GetProperty("Events", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                //eventsProp.
+                //Calcs.GetEventKeysList(GamePlay);
+                Console.WriteLine("COMP EVENTS PROPS " + cmps.ToString());
+                */
+                /*
+                EventHandlerList events = (EventHandlerList)eventsProp.GetValue((GamePlay as GameDef).EventChat, null);
+
+                foreach (EventHandler ehl in eventsProp ){
+                    Console.WriteLine("EVENTS PROPS " + ehl.ToString());
+                }
+                */
+                /*
+                Delegate[] dary = (GamePlay as GameDef).EventChat.GetInvocationList();
+
+                if (dary != null)
+                {
+                    foreach (Delegate del in dary)
+                    {
+                        (GamePlay as GameDef).EventChat -= (Action)del;
+                    }
+                }
+                */
+            }
         }
+        catch (Exception ex) { Console.WriteLine("MO_Destroy error3: " + ex.Message); };
 
         //Delete any old CampaignSummary.txt files so that they are not hanging around causing trouble
         try
@@ -6302,34 +6314,38 @@ public class Mission : AMission, IMainMission
     public override void Init(maddox.game.ABattle battle, int missionNumber)
     {
         base.Init(battle, missionNumber);
+        try
+        {
 
-        gpBattle = battle;
+            gpBattle = battle;
 
-        gpBattle.creatingMissionScript(covermission, missionNumber + 1);
-        gpBattle.creatingMissionScript(statsmission, missionNumber + 2);
+            gpBattle.creatingMissionScript(covermission, missionNumber + 1);
+            gpBattle.creatingMissionScript(statsmission, missionNumber + 2);
 
-        MissionNumberListener = -1; //Listen to events of every mission
-                                    //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
-                                    //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
-                                    //Initialize the mission objectives etc but wait until after initial submissions are loaded
+            MissionNumberListener = -1; //Listen to events of every mission
+                                        //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
+                                        //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
+                                        //Initialize the mission objectives etc but wait until after initial submissions are loaded
 
-        //This needs to be in Init (not Mission constructor) because it relies on some Battle. stuff that isn't initialized yet at Mission constructor
-        //(For now this is unnecessary but in future we might load things in initial submissions & then mission_objectives potentially affected by them afterwards)
-        //Timeout(30, () => { mission_objectives = new MissionObjectives(this); });
-        //Timeout(1, () => { mission_objectives = new MissionObjectives(this); }); //testing
-
-
-        //For testing
-        /*
-        Timeout(30, () => {MO_DestroyObjective("BTarget14R");
-            MO_DestroyObjective("BTarget22R");
-            MO_DestroyObjective("RTarget28R");
-            MO_DestroyObjective("RTarget29R");
+            //This needs to be in Init (not Mission constructor) because it relies on some Battle. stuff that isn't initialized yet at Mission constructor
+            //(For now this is unnecessary but in future we might load things in initial submissions & then mission_objectives potentially affected by them afterwards)
+            //Timeout(30, () => { mission_objectives = new MissionObjectives(this); });
+            //Timeout(1, () => { mission_objectives = new MissionObjectives(this); }); //testing
 
 
-        });
-        */
+            //For testing
+            /*
+            Timeout(30, () => {MO_DestroyObjective("BTarget14R");
+                MO_DestroyObjective("BTarget22R");
+                MO_DestroyObjective("RTarget28R");
+                MO_DestroyObjective("RTarget29R");
 
+
+            });
+            */
+
+        }
+        catch (Exception ex) { Console.WriteLine("MO_Destroy error3: " + ex.Message); };
 
 
     }
@@ -6343,63 +6359,67 @@ public class Mission : AMission, IMainMission
     public override void OnMissionLoaded(int missionNumber)
     {
         base.OnMissionLoaded(missionNumber);
-        //if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
-        TWCStatsMission = TWCComms.Communicator.Instance.Stats;
-        //if (TWCStatsMission != null) TWCSaveIPlayerStat = TWCStatsMission.stb_ISaveIPlayerStat;
-        TWCSaveIPlayerStat = statsmission.stb_ISaveIPlayerStat;
-        if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
-        //STATSCS_FULL_PATH = statsmission.stb_FullPath; //for some reason, this doesn't work correctly 2020/02/14
-        TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
-        TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
-        TWCCoverMission = TWCComms.Communicator.Instance.Cover;
-        //TWCStbSaveIPlayerStat = TWCComms.Communicator.Instance.Cover
-        //TWCComms.Communicator.Instance.Main = this;
-        //TWCMainMission = TWCComms.Communicator.Instance.Main;
-        //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
-        //string s1= TWCComms.Communicator.Instance.string1;
-        //Console.WriteLine("Statsstring: " + s1);
-        //Console.WriteLine("GetType1: " + GetType().ToString());
-        //Console.WriteLine("GetType2: " + s1.GetType().ToString());
-        //Console.WriteLine("GetType3: " + TWCMainMission.GetType().ToString());
-        //Console.WriteLine("GetType4: " + (TWCComms.Communicator.Instance.Stats == null).ToString());
-        //Console.WriteLine("GetType5: " + (TWCComms.Communicator.Instance.Main.GetType().ToString()));
-        //Console.WriteLine("GetType6: " + TWCStatsMission.stb_LocalMissionIniDirectory);
-        //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
-        //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
 
-        //Assembly a = new Assembly();
-        //Assembly assembly = typeof(maddox.game.AMission).Assembly;
-        //Assembly assembly = Assembly.GetExecutingAssembly();
-        //Assembly assembly = Assembly.GetCallingAssembly();
-        //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        //var namespaces = assembly.GetTypes().Select(t => t.Namespace).Distinct();
-        /*
-        foreach (var assembly in assemblies)
+        try
         {
-            var namespaces = assembly.GetTypes();
-            foreach (var n in namespaces)
+            //if (TWCComms.Communicator.Instance.Stats != null && TWCStatsMission == null) TWCStatsMission = TWCComms.Communicator.Instance.Stats; 
+            TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+            //if (TWCStatsMission != null) TWCSaveIPlayerStat = TWCStatsMission.stb_ISaveIPlayerStat;
+            TWCSaveIPlayerStat = statsmission.stb_ISaveIPlayerStat;
+            if (TWCComms.Communicator.Instance.stb_FullPath != null && TWCComms.Communicator.Instance.stb_FullPath.Length > 0) STATSCS_FULL_PATH = TWCComms.Communicator.Instance.stb_FullPath;
+            //STATSCS_FULL_PATH = statsmission.stb_FullPath; //for some reason, this doesn't work correctly 2020/02/14
+            TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+            TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
+            TWCCoverMission = TWCComms.Communicator.Instance.Cover;
+            //TWCStbSaveIPlayerStat = TWCComms.Communicator.Instance.Cover
+            //TWCComms.Communicator.Instance.Main = this;
+            //TWCMainMission = TWCComms.Communicator.Instance.Main;
+            //TWCStatsMission = TWCComms.Communicator.Instance.Stats;
+            //string s1= TWCComms.Communicator.Instance.string1;
+            //Console.WriteLine("Statsstring: " + s1);
+            //Console.WriteLine("GetType1: " + GetType().ToString());
+            //Console.WriteLine("GetType2: " + s1.GetType().ToString());
+            //Console.WriteLine("GetType3: " + TWCMainMission.GetType().ToString());
+            //Console.WriteLine("GetType4: " + (TWCComms.Communicator.Instance.Stats == null).ToString());
+            //Console.WriteLine("GetType5: " + (TWCComms.Communicator.Instance.Main.GetType().ToString()));
+            //Console.WriteLine("GetType6: " + TWCStatsMission.stb_LocalMissionIniDirectory);
+            //Console.WriteLine("GetType19: " + TWCStatsMission.stb_LocalMissionIniDirectory);
+            //Console.WriteLine("GetType20: " + TWCStatsMission.ot_GetCivilianBombings("TWC_Flug"));
+
+            //Assembly a = new Assembly();
+            //Assembly assembly = typeof(maddox.game.AMission).Assembly;
+            //Assembly assembly = Assembly.GetExecutingAssembly();
+            //Assembly assembly = Assembly.GetCallingAssembly();
+            //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //var namespaces = assembly.GetTypes().Select(t => t.Namespace).Distinct();
+            /*
+            foreach (var assembly in assemblies)
             {
-                Console.WriteLine("NS " + n.ToString());
+                var namespaces = assembly.GetTypes();
+                foreach (var n in namespaces)
+                {
+                    Console.WriteLine("NS " + n.ToString());
 
-            }
-        }*/
-        //coord.Singleton.Instance.Main = this;
+                }
+            }*/
+            //coord.Singleton.Instance.Main = this;
 
 
-        //String executablePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //Console.WriteLine("NS " + executablePath);
+            //String executablePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //Console.WriteLine("NS " + executablePath);
 
-        //Mission m = Battle.missions[missionNumber];
-        /* if (m.stb_StatsINIFilename !=null & m.stb_StatsINIFilename=="stats.ini")
-        {
-            TWCStatsMission = m;
-            Console.WriteLine("StatsMission! " + m.stb_StatsINIFilename);
-        }*/
+            //Mission m = Battle.missions[missionNumber];
+            /* if (m.stb_StatsINIFilename !=null & m.stb_StatsINIFilename=="stats.ini")
+            {
+                TWCStatsMission = m;
+                Console.WriteLine("StatsMission! " + m.stb_StatsINIFilename);
+            }*/
 
-        /* 
-         * ban LOAD blacklist.txt
-         * */
-
+            /* 
+             * ban LOAD blacklist.txt
+             * */
+        }
+        catch (Exception ex) { Console.WriteLine("OnMission ERROR: " + ex.Message); };
 
     }
 
@@ -7218,13 +7238,17 @@ public class Mission : AMission, IMainMission
     }
     public override void Inited()
     {
-        if (MissionNumber > -1)
+        try
         {
+            if (MissionNumber > -1)
+            {
 
-            setMainMenu(GamePlay.gpPlayer());
-            twcLogServer(null, "Welcome to " + CAMPAIGN_ID, new object[] { });
+                setMainMenu(GamePlay.gpPlayer());
+                twcLogServer(null, "Welcome to " + CAMPAIGN_ID, new object[] { });
 
+            }
         }
+        catch (Exception ex) { Console.WriteLine("MO_Destroy error3: " + ex.Message); };
     }
 
 
@@ -8846,6 +8870,9 @@ public class Mission : AMission, IMainMission
                                                                                                                                                                                                                                                              //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
     public enum MO_ProducerOrStorageType { None, Beaufighter, SpitfireII, SpitfireIa, Spitfire, Blenheim, Wellington, Hurricane, BF109_3, BF109_1, BF109_4, BF109, BF110, HE111, G50, JU88, JU87, fighter, bomber, fuel, bullets_shells, bombs };
 
+    public enum MO_MobileObjectiveType { None, ArmyEncampment, MobileRadar1, MobileRadar2, CamoGroup, SmallArmourGroup, LargeArmourGroup, SecretAirbaseGB, SecretAirbaseDE, SecretAircraftResearchGB, SecretAircraftResearchDE };
+    public enum MO_MobileObjectiveThings { Humans, Items, Trucks, Tents, Tables, Buildings, Radar, Sentry, Trenches, Sandbags, Armor_Tanks, Cars, Jerrycans, GBFighters, GBBombers, DEFighters, DEBombers, Hedgehogs, Misc, Camo, Detritus };
+
 
     [DataContract()]
     public class MissionObjective : IMissionObjective
@@ -8920,12 +8947,13 @@ public class Mission : AMission, IMainMission
                                                                                 //Point3d.x & y are the point, .z is the radius.  TODO: This is not working yet        
         [DataMember] public double StaticRemoveDelay_sec { get; set; } //how long to wait after target destruction before removing static objects in list
         [DataMember] public double StaticRemoveSpread_sec { get; set; } //how long to spread out the static target destruction
-
+        
         [DataMember] public MO_MobileObjectiveType MOMobileObjectiveType { get; set; } //MO_MobileOBjectiveType.None if it's not mobile/movable
         [DataMember] public double MobileMoveTime_hrs { get; set; } //Time between moves of this objective (hours)
         [DataMember] public DateTime? MobileNextMoveTime_dt { get; set; } //Next date/time this mobile objective should be moved;
         [DataMember] public Point3d MobileSWPoint { get; set; } //area the MobileObjectiveType can roam is defined bya rectangle; these two points give the SW & NE corners of the rect
         [DataMember] public Point3d MobileNEPoint { get; set; } 
+        
 
         [DataMember] public string Comment { get; set; } //PRIVATE comment, ie for developers, internal notes, etc, not for display to end users
         public Mission msn;
@@ -9989,6 +10017,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "Campaign21-LOADONCALL-lecrotyoy-forest-bunker-objective.mis", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Campaign21-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
 
+            
             addMobile(MO_ObjectiveType.MilitaryArea, "Samer Mobile Army Camp", "", 2, 4, "RSamerMobileArmyCamp", 270276, 169671, 150, 100, 10000, 40, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 4, "BHastingsMobileArmyCamp", 179965, 204219, 150, 100, 10000, 40, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 4, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 15, 189965, 204219, 199201, 214392, MO_ProducerOrStorageType.None, "", add);
@@ -10005,6 +10034,7 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryArea, "Lee-Over-Sands Large Mobile Armour", "", 1, 5, "BLeeOverSandsLargeMobileArmour", 224606, 305877, 125, 85, 12000, 60, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 224606, 305877, 231297, 310088, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Quend Plage Invasion Training Center", "", 2, 5, "RQuendPlageCamo", 262939, 143597, 150, 100, 4000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 262939, 143597, 265939, 146597, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Courtsend Secret Resistance Training Center", "", 1, 5, "BCourtsendCamoGroup", 212979, 282491, 150, 100, 4000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 212979, 282491, 218902, 288639, MO_ProducerOrStorageType.None, "", add);
+            
 
 
             ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\Visual Studio 2015\Projects\ClodBLITZ-2018-01\Campaign21-MissionObjectivesInclude.cs"
@@ -10938,32 +10968,9 @@ added Rouen Flak
 
         }
     }
-    public enum MO_MobileObjectiveType { None, ArmyEncampment, MobileRadar1, MobileRadar2, CamoGroup, SmallArmourGroup, LargeArmourGroup, SecretAirbaseGB, SecretAirbaseDE, SecretAircraftResearchGB, SecretAircraftResearchDE };
-    public enum MO_MobileObjectiveThings { Humans, Items, Trucks, Tents, Tables, Buildings, Radar, Sentry, Trenches, Sandbags, Armor_Tanks, Cars, Jerrycans, GBFighters, GBBombers, DEFighters, DEBombers, Hedgehogs, Misc, Camo, Detritus };
 
-    /*
-    public Dictionary<MO_MobileObjectiveType, Dictionary<MO_MobileObjectiveThings, List<string>>> mo_mobileobjectivethings = new Dictionary<MO_MobileObjectiveType, Dictionary<MO_MobileObjectiveThings, List<string>>>()
-    {
-         MO_MobileObjectiveType.Army_Encampment, new Dictionary<MO_MobileObjectiveThings, List<string>> ()
-            
-                { MO_MobileObjectiveThings.Humans,
-                    new List<string>() { "Stationary.Humans.150_cm_SearchLight_Gunner_1", "Stationary.Humans.Soldier_Flak38_Gunner", "Stationary.Humans.RRH_Gunner_1",
-                    "Stationary.Humans.Em_4m_R(H)34_Gunner_3",
-                     "Stationary.Environment.Table_empty_UK-GER_1",
-                    "Stationary.Environment.Table_empty_UK-GER_1",
-                    "Stationary.Environment.Table_w_chess_UK-GER_1",
-                    "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                    "Stationary.Environment.Table_empty_UK-GER_1",
-                    "Stationary.Environment.Table_w_chess_UK-GER_1",
-                    "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                    "Stationary.Environment.Table_empty_UK-GER_1",
-                    "Stationary.Environment.Table_w_chess_UK-GER_1",
-                    "Stationary.Environment.Table_w_dinner_UK-GER_1",}
-                 },
-            
-     
-   };
-   */
+
+
     public static List<string> MO_Trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Matilda_2A", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Fordson_Sussex_w_ballon", "Stationary.Panzerbefehlswagen_I", "Stationary.Environment.CamoNetTank", "Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER", "Stationary.Ford_G917", "Stationary.Ford_V8_E917_tent", "Stationary.Unic_P107", "Stationary.Fordson_Sussex_w_o_ballon","Stationary.Guy_Quad-Ant","Stationary.Horch_108_Typ_1A", "Stationary.Guy_Lizard", "Stationary.GER_Fuel_Column", "Stationary.Kubelwagen", "Stationary.Krupp_L2H43_Protze_Kfz69","Stationary.Horch_108_Typ_1A_open", "Stationary.Opel_Blitz_radio", "Stationary.SdKfz_9_Crane", "Stationary.FIAT_OCI_708", "Stationary.Truck_Renault_UE", "Stationary.Opel_Blitz_radio", };
 
     public static List<string> MO_Armor_Tanks = new List<string> { "Stationary.SdKfz_10_1", "Stationary.SdKfz_231_6Rad", "Stationary.SdKfz_263_6Rad", "Stationary.SdKfz_263_6Rad", "Stationary.SdKfz_7", "Stationary.SdKfz_9", "Stationary.Thorneycroft_Bison", "Stationary.Bataille_B1_Bis", "Stationary.Breen_Carrier_Mk_I", "Stationary.Cruiser_Mk_IV", "Stationary.Pz_IIIF", "Stationary.Renault_Ft17", "Stationary.Somua_S35", "Stationary.Panzerbefehlswagen_I", "Stationary.SdKfz_232_8Rad", "Stationary.StuG_IIIA", "Stationary.Valentine_I", "Stationary.Vickers_Mk_VIB", "Stationary.Vickers_Mk_VIC", };
@@ -11019,41 +11026,7 @@ added Rouen Flak
     public static List<string> MO_Sentry = new List<string> { "Stationary.Environment.Sentry-Box_UK-GER_1", "Stationary.Environment.GuardTower_UK-GER_1"};
 
     public static List<string> MO_Detritus = new List<string> { "Stationary.Environment.SandBagWall_Line_4m", "Stationary.Environment.FuelDrum_UK1_9", "Stationary.Environment.Zwillingssockel36_Base_GER1", "Stationary.DamagedCar.Opel_Blitz_tent_MDG", "Stationary.Environment.Anlasswagen_(starter)_GER1_DMG1", "Stationary.Environment.Anlasswagen_(starter)_GER1_DMG1", "Stationary.Environment.TentStaffSmall_GER1_DMG1", "Stationary.Environment.TentTroopLarge_GER1_DMG1", "Stationary.Environment.TentZeltbahnBig_GER1_DMG1", "Stationary.Environment.TentMedicLarge_UK1_DMG1", "Stationary.Environment.Starter_UK1_DMG1", "Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1", "Stationary.Environment.Ladder_UK2_DMG1", "Stationary.Environment.Maschinensatz_15_KW_GER1_DMG1", "Stationary.Environment.TelegaBallon_UK1_DMG1", "Stationary.Environment.Gulaschkanone_GER1_DMG1", "Stationary.Environment.BombSled_GER1_DMG1", "Stationary.Environment.Telega_UK-GER_1_DMG1", "Stationary.Damaged.Airfield.Planelifter_UK2_DMG1", "Stationary.Environment.FieldKitchen_UK1_DMG1", "Stationary.Environment.Ladder_UK1_DMG1", "Stationary.Environment.RRH_GER1_DMG1", };
-    /*
-    public static Dictionary<MO_MobileObjectiveThings, List<string>>  mmot = new Dictionary <MO_MobileObjectiveThings, List<string>>() { 
 
-                    { MO_MobileObjectiveThings.Humans,
-                        new List<string>() { 
-                         "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",}
-                     },
-         };
-        public static Dictionary<MO_MobileObjectiveThings, List<string>> mmor = new Dictionary<MO_MobileObjectiveThings, List<string>>() {
-
-                    { MO_MobileObjectiveThings.Humans,
-                        new List<string>() { "Stationary.Humans.150_cm_SearchLight_Gunner_1", "Stationary.Humans.Soldier_Flak38_Gunner", "Stationary.Humans.RRH_Gunner_1",
-                        "Stationary.Humans.Em_4m_R(H)34_Gunner_3",
-                         "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",
-                        "Stationary.Environment.Table_empty_UK-GER_1",
-                        "Stationary.Environment.Table_w_chess_UK-GER_1",
-                        "Stationary.Environment.Table_w_dinner_UK-GER_1",}
-                     },
-         };
-         */
     public class MO_ThingsTypeNumberRadius
     {
         public List<string> things { set; get; }
@@ -11089,6 +11062,7 @@ added Rouen Flak
 
             }
         },
+
         { MO_MobileObjectiveType.SecretAirbaseDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
@@ -11102,6 +11076,8 @@ added Rouen Flak
 
             }
         },
+
+
          { MO_MobileObjectiveType.SecretAircraftResearchGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
@@ -11114,7 +11090,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 405) },
 
             }
-        },
+         },
+
          { MO_MobileObjectiveType.SecretAircraftResearchDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
@@ -11128,6 +11105,7 @@ added Rouen Flak
 
             }
         },
+
         { MO_MobileObjectiveType.ArmyEncampment,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
@@ -11141,80 +11119,76 @@ added Rouen Flak
 
             }
         },
+
         { MO_MobileObjectiveType.SmallArmourGroup,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
                 { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 5) },                
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 15) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 7, 30) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 40) },
+                { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 7, 30) },
+                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 40) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 45) },
 
-
             }
         },
-        { MO_MobileObjectiveType.LargeArmourGroup,
-            new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 15, 10) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 15, 35) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 30) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 55) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 60) },
+            { MO_MobileObjectiveType.LargeArmourGroup,
+                new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
+
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 15, 10) },
+                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20) },
+                    { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 15, 35) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 30) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 55) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 60) },
 
 
-            }
-        },
-        { MO_MobileObjectiveType.CamoGroup,
-            new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
+                }
+            },
+            { MO_MobileObjectiveType.CamoGroup,
+                new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 10, 8) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17) },
-                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 35) },
-                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 12, 40) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 55) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 80) },
-            }
-        },
-        { MO_MobileObjectiveType.MobileRadar1,
-            new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
-
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 10 )},
-                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 40 )},
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
-                { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 10 )},
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 65) },
-
-            }
-        },
-                { MO_MobileObjectiveType.MobileRadar2,
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 10, 8) },
+                    { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 35) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 12, 40) },
+                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 55) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 80) },
+                }
+            },
+            { MO_MobileObjectiveType.MobileRadar1,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
-                { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3 )},
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 20 )},
-                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50 )},
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
-                { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 50 )},
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 80) },
 
-            }
-        },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 10 )},
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 40 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
+                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 10 )},
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 65) },
 
-    };
+                }
+            },
+                    { MO_MobileObjectiveType.MobileRadar2,
+                    new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
+                    { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3 )},
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 20 )},
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25 )},
+                    { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 50 )},
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 80) },
+
+                }
+            },
+
+        };
+        
 
 
-    /*   
 
-    string enemy = "de";
-            if (a == 2) enemy = "gb";
-
-            var trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463" };
-            */
-            //subHeading less than zero means, choose a random heading for each object
+    //subHeading less than zero means, choose a random heading for each object
     public ISectionFile PlaceObjectsInCircles (ISectionFile f, List<string> things, Point3d newPos, double radius_m, int howmany, int army, int percentSide = 33, double subHeading = -1)
     {
         string ownerside = "nn";
@@ -17107,6 +17081,7 @@ public class CircularArray<T>
     }
 }
 
+/*
 namespace cevent
 {
     //--------------------------------------------------------------------------------
@@ -17163,7 +17138,7 @@ namespace cevent
                     }
                   }
                   if (t.BaseType != null)
-                    BuildEventFields(t.BaseType, lst);*/
+                    BuildEventFields(t.BaseType, lst); * ///
         }
 
         //--------------------------------------------------------------------------------
@@ -17233,3 +17208,5 @@ namespace cevent
         //--------------------------------------------------------------------------------
     }
 }
+*/
+ 

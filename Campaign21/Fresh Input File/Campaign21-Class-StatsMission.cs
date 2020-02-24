@@ -5730,6 +5730,16 @@ struct
     {
         //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
 
+        /*
+        NOTE THAT as of CloD 4.57 you can create these objects but you can't get their handle back via groundstationarys to delete/remove/destroy them later.
+        These are the only groundstationaries I know about that have this problem.
+
+        Example of how to get groundstationaries within a distance of a given point--except not that it will NOT list any smoke or fire groundstationaries!
+        [code]
+        GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Find all groundstationaries within 1000 meters of map coordinate (250000,252000)
+        [/code]
+        */
+
 
         //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
         // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 

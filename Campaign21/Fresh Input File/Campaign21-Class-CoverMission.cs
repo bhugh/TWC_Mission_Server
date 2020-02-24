@@ -2065,7 +2065,7 @@ public class CoverMission : AMission, ICoverMission
 
 
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt", new object[] { }); //testing
-        f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
+        //f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
 
         //
 

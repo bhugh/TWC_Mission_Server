@@ -11060,9 +11060,9 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 17 ) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 62, 20 ) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 102, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600, 1) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 600, 1) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 175, 1) },
 
             }
         },
@@ -11074,9 +11074,9 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 3, 95, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 550, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 600, 1) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 600, 1) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 175, 1) },
 
             }
         },
@@ -11089,9 +11089,9 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 85, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 400, 1) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 400, 1) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 166, 1) },
 
             }
          },
@@ -11103,9 +11103,9 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 60, 20) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 80, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 350, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 350, 1) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 350, 1) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 1) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 155, 1) },
 
             }
         },
@@ -11192,8 +11192,9 @@ added Rouen Flak
 
 
 
-    //subHeading less than zero means, choose a random heading for each object
-    public ISectionFile PlaceObjectsInCircles (ISectionFile f, List<string> things, Point3d newPos, double radius_m, int howmany, int army, int percentSide = 33, double subHeading = -1)
+    //subHeading -1, choose a random heading for each object
+    //subHeading -2 means align with the circle perimeter
+    public ISectionFile PlaceObjectsInCircles (ISectionFile f, List<string> things, Point3d newPos, double radius_m, double variance_m, int howmany,  int army, int percentSide = 33, double subHeading = -1)
     {
         string ownerside = "nn";
         if (army == 2) ownerside = "de";
@@ -11205,11 +11206,7 @@ added Rouen Flak
         //Console.WriteLine("Cirles: " + howmany.ToString());
 
         for (int i = 0; i < howmany; i++)
-        {
-
-            
-            double subsubHeading = subHeading + random.Next(24) - 12;
-            if (subHeading < 0) subsubHeading = random.Next(360);
+        {          
 
             string side = "nn";
             if (random.Next(100) < percentSide) side = ownerside; //setting them as enemy makes them show up as black dots. So some, but not all.
@@ -11223,11 +11220,16 @@ added Rouen Flak
             else
             {
                 double angle1 = i * 2.0 / howmany * Math.PI + random.NextDouble() / howmany * Math.PI * 2.0/3.0;
-                double radius2 = (random.NextDouble() * 2.0 - 1.0) * radius_m * 0.2 + radius_m; //vary by say 20% of the radius placement
+                double radius2 = (random.NextDouble() * 2.0 - 1.0) * variance_m + radius_m; //vary by say 20% of the radius placement
 
                 thingPos.x = newPos.x + Math.Cos(angle1) * radius2;
                 thingPos.y = newPos.y + Math.Sin(angle1) * radius2;
             }
+
+            double subsubHeading = subHeading + random.Next(24) - 12;
+            if (subHeading == -1) subsubHeading = random.Next(360);
+            if (subHeading == -2) subsubHeading = angle1 + Math.PI / 2; //90 degrees to radius of circle we're currently doing.
+
 
             int ranThing = random.Next(things.Count);
             f = Calcs.makeStatic(f, GamePlay, this, thingPos.x + random.Next(2), thingPos.y + random.Next(2), thingPos.z, type: things[ranThing], heading: subsubHeading, side: side);
@@ -11276,7 +11278,7 @@ added Rouen Flak
         //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping it
         
         ISectionFile f = GamePlay.gpCreateSectionFile();
-        f = PlaceObjectsInCircles(f, MO_Detritus, mo.Pos, searchRadius_m / 2, 8 + random.Next(6), mo.OwnerArmy, percentSide: 90, subHeading: -1);
+        f = PlaceObjectsInCircles(f, MO_Detritus, mo.Pos, searchRadius_m / 2, 4.0*searchRadius_m / 5.0, 8 + random.Next(6), mo.OwnerArmy, percentSide: 90, subHeading: -1);
 
         GamePlay.gpPostMissionLoad(f);
 
@@ -11312,6 +11314,7 @@ added Rouen Flak
 
         if (!mo.MobileNextMoveTime_dt.HasValue || (mo.MobileNextMoveTime_dt.HasValue && mo.MobileNextMoveTime_dt.Value.CompareTo(currTime) <= 0)) //if move time is null OR it exists & is in the past, then reset it now AND select the new location now
         {
+            Console.WriteLine("Picking a new location for mobile objective {0:F0} {1:F0}" + mo.Name, newPos.x, newPos.y);
             mo.MobileNextMoveTime_dt = currTime.AddHours(mo.MobileMoveTime_hrs);
 
 
@@ -11338,7 +11341,9 @@ added Rouen Flak
                 }
 
                 newPos.x = swPos.x + random.NextDouble() * (nePos.x - swPos.x);
-                newPos.y = swPos.y + random.NextDouble() * (nePos.y - swPos.y);                
+                newPos.y = swPos.y + random.NextDouble() * (nePos.y - swPos.y);
+
+                Console.WriteLine("Trying location {0:F0} {1:F0} for " + mo.Name, newPos.x, newPos.y);
 
                 double dist = 5000;
                 try
@@ -11350,6 +11355,8 @@ added Rouen Flak
 
 
                 if (dist - searchRadius_m < 3500) continue;
+
+                ////!!!!!! TODO !!!!!!! Also check that this isn't close to any other existing mobile objective
 
                 if (!MO_WaterInRadius(newPos,searchRadius_m)) break;
                 if (i == 249)
@@ -11363,7 +11370,11 @@ added Rouen Flak
 
         var things = mo_mobileobjectivethings[mo.MOMobileObjectiveType];
 
-        double masterHeading = random.Next(360); 
+        double masterHeading = random.Next(360);
+
+        mo.Pos = newPos;
+        mo.Sector = Calcs.correctedSectorNameDoubleKeypad(this, newPos);
+        mo.bigSector = Calcs.makeBigSector(this, newPos);
 
         //Now actually PLACE mobile objective.
         ISectionFile f = GamePlay.gpCreateSectionFile();
@@ -11374,7 +11385,9 @@ added Rouen Flak
 
             double subHeading = masterHeading + random.Next(40) - 20;
 
-            f = PlaceObjectsInCircles(f, mttnr.things, newPos, mttnr.radius_m, Convert.ToInt32(mttnr.howmany + random.Next(Convert.ToInt32(mttnr.howmany/4.0))+mttnr.howmany/2.0), mo.OwnerArmy, subHeading: subHeading, percentSide: 33);
+            if (t == MO_MobileObjectiveThings.Sandbags || t == MO_MobileObjectiveThings.Trenches || t == MO_MobileObjectiveThings.Hedgehogs) subHeading = -2; //meaning, align them with the circle rather than the prevailing angle
+
+            f = PlaceObjectsInCircles(f, mttnr.things, newPos, mttnr.radius_m, mttnr.range_m, Convert.ToInt32(mttnr.howmany + random.Next(Convert.ToInt32(mttnr.howmany/4.0))+mttnr.howmany/2.0), mo.OwnerArmy, subHeading: subHeading, percentSide: 33);
 
         }
 
@@ -11382,10 +11395,7 @@ added Rouen Flak
 
         f.save(CLOD_PATH + FILE_PATH + "/mobileobj_" + mo.ID); //testing)
 
-        mo.Sector = Calcs.correctedSectorNameDoubleKeypad(this, newPos);
-        mo.bigSector = Calcs.makeBigSector(this, newPos);
-        
-        Console.WriteLine("The mobile objective {0} is at ({1:F0},{2:F0})", new object[] { mo.Name, newPos.x, newPos.y });
+        Console.WriteLine("The mobile objective {0} is at ({1:F0},{2:F0})", new object[] { mo.Name, mo.Pos.x, mo.Pos.y });
 
     }
     
@@ -11402,6 +11412,10 @@ added Rouen Flak
             int nfb = mo.NumFlakBatteries;
             int nib = mo.NumInFlakBattery;
 
+            //TESTING!!!!
+            nfb = 2;
+            nib = 2;
+
 
 
             //too much flak seems to bring the server to it's knees, so if not a primary just 2x2 flak, otherwise what is requested
@@ -11410,7 +11424,7 @@ added Rouen Flak
                 if (mo.MOObjectiveType == MO_ObjectiveType.Radar) //radar needs more flak to protect it, so just half the req amount if not primary.
                 {
                     nfb = nfb/3;
-                    nib = nib;
+                    nib = nib/2;
                     if (nfb < 2) nfb = 2;
                     if (nib < 2) nib = 2;
                     //Console.WriteLine("RADAR autoFlakPlacement  {0} {1} ", nfb, nib);
@@ -13733,7 +13747,7 @@ added Rouen Flak
             double oldDestroyedPercent = mo.DestroyedPercent;
             mo.DestroyedPercent = dst_pc_obj + dst_pc_ord;
 
-            Console.WriteLine("PointArea Stationary: {0:F0}% objects, {1:F0}% KG, {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0} {6}", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num, mo.Name);
+            Console.WriteLine("PointArea Stationary: {0:F0}% objects, {1:F0}% KG, {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0} {6} ({7:F0},{8:F0})", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num, mo.Name, mo.Pos.x, mo.Pos.y);
             if (st!=null) Console.WriteLine("AreaPoint Stationary: {0}, {1}, {2}, {3}", st.Category, st.Name, st.Type, st.Title);
             else Console.WriteLine("AreaPoint Building: {0}", name);
 

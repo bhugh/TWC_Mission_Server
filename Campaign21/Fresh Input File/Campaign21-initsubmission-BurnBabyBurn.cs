@@ -1,7 +1,9 @@
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
+//$reference parts/core/CloDMissionCommunicator.dll
+
 
 using System;
 using System.Collections.Generic;
@@ -13,21 +15,28 @@ using maddox.GP;
 using maddox.game.page;
 using part;
 
-using TF_Extensions;
+//using maddox.game.page;
+//using part;
 
-
+//using TF_Extensions;
 
 public class Mission : AMission
 {
 
-    private static string PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/Campaign21/Fresh Input File/";
+    private static string PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/Campaign21/Fresh Input File/";
 
     public List<string> BannedPlayerList;
     public Mission()
     {
-        string[] banned = File.ReadAllLines(PATH + "bannedPlayers.txt");
+        string[] banned = new string[] { };
+        try
+        {
+            banned = File.ReadAllLines(PATH + "bannedPlayers.txt");
+        } catch (Exception ex) { Console.WriteLine("BurnBabyBurn ERROR reading bannedPlayers.txt file - it may be missing or empty: " + ex.ToString()); }
+
         BannedPlayerList = new List<string>(banned);
         BannedPlayerList = BannedPlayerList.ConvertAll(d => d.ToUpper());
+        Console.WriteLine("BurnBabyBurn loaded . . . ");        
     }
 
     /* public override void Inited()
@@ -40,7 +49,7 @@ public class Mission : AMission
 
         }
         */
-
+        
     public override void OnBattleStarted()
     {
         base.OnBattleStarted();
@@ -118,9 +127,8 @@ public class Mission : AMission
 
 
     }
+
     
-
-
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
         base.OnPlaceEnter(player, actor, placeIndex);
@@ -165,10 +173,10 @@ public class Mission : AMission
 
             }
 
-                    player.PlaceLeave(player.PlacePrimary());
+            player.PlaceLeave(player.PlacePrimary());
             player.PlaceLeave(placeIndex);
             player.PlaceLeave(player.PlaceSecondary());
-                player.PlaceLeave(0);
+            player.PlaceLeave(0);
 
 
 
@@ -209,18 +217,21 @@ public class Mission : AMission
                 //aircraft.hitNamed(part.NamedDamageTypes.FuelTank0Fire);
                 //aircraft.hitNamed(part.NamedDamageTypes.FuelTank1Fire); //can't do fueltank1 if only 1 engine
                 //aircraft.hitNamed(part.NamedDamageTypes.Eng0OilLineBroken);
-                /*
-                 * //so these don't work, not sure why not.
+                
+                 //so these don't work, not sure why not.
+                 /*
                 aircraft.hitNamed(part.NamedDamageTypes.ControlsRudderDisabled); //NamedDamageTypes.ControlsAileronsDisabled
                 aircraft.hitNamed(part.NamedDamageTypes.ControlsAileronsDisabled);
                 aircraft.hitNamed(part.NamedDamageTypes.ControlsElevatorDisabled);
                 */
+                
 
                 aircraft.hitNamed(NamedDamageTypes.Machinegun00BeltBroken);
                 aircraft.RearmPlane(true); //guns only, take away the bombs
                 aircraft.RefuelPlane(2);
 
                 //These work REAL good.
+                
                 /*
                 aircraft.cutLimb(part.LimbNames.AileronL0);
                 aircraft.cutLimb(part.LimbNames.AileronR0);
@@ -317,109 +328,12 @@ public class Mission : AMission
                  * 
                  * ******************************************************************/
 
-                /*
-                 * public class Mission : AMission {
-	
-                    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex) {
-                        base.OnPlaceEnter(player, actor, placeIndex);
-
-                        AiAircraft aircraft = player.Place() as AiAircraft;
-
-                        GamePlay.gpLogServer(null, aircraft.ToString(), new object [] { });
-
-                        if (aircraft.Player(0) != null) {
-                            player = aircraft.Player(0);
-
-                            GamePlay.gpLogServer(null, player.ToString(), new object [] { });
-
-                            /// Remove the player from the aircraft for a few ms.
-                            /// A workaround to do damage to player aircraft.
-                            player.PlaceLeave(0);
-
-                            Timeout(0.1, () => {
-                
-                                aircraft.hitNamed(part.NamedDamageTypes.Eng0CylinderHeadFire);
-                                aircraft.hitNamed(part.NamedDamageTypes.Eng0FuelSecondariesFire);
-                                aircraft.hitNamed(part.NamedDamageTypes.Eng0OilSecondariesFire);
-
-                                player.PlaceEnter(aircraft, 0);
-                            });
-                        }
-                   */
-
-                /*
-                    using System.Collections.Generic;
-
-                    using maddox.game;
-                    using maddox.game.world;
-                    using maddox.GP;
-
-                    public class Mission : AMission
-                    {
-                        /// choose aircraft to be damaged
-                        string targetAiAircraft = "Wellington";
-
-                        /// choose delay for damage 
-                        int delayInSeconds = 10;
-
-                        public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
-                        {
-                            base.OnPlaceEnter(player, actor, placeIndex);
-
-                            if (player.Place() != null)
-                                {
-
-                                    Point3d playerPos3d = player.Place().Pos();
-
-                                    DamageTargetAiAircraft(playerPos3d, delayInSeconds, targetAiAircraft);
-                                }
-
-
-                        }
-
-
-                        public void DamageTargetAiAircraft(Point3d playerPos3d, int timeInSeconds, string targetType)
-                        {
-
-                            foreach (int army in GamePlay.gpArmies())
-                            {
-                                if (GamePlay.gpAirGroups(army) != null)
-
-                                    foreach (AiAirGroup group in GamePlay.gpAirGroups(army))
-                                    {
-                                        if (group.GetItems() != null)
-
-                                            foreach (AiActor actor in group.GetItems())
-                                            {
-                                                if ((actor as AiAircraft) != null
-                                                        && (actor as AiAircraft).InternalTypeName().Contains(targetType))
-                                                {
-                                                    Timeout(timeInSeconds, () => {
-
-                                                        AiAircraft aircraft = actor as AiAircraft;
-
-                                                        aircraft.hitNamed(part.NamedDamageTypes.Eng1CylinderHeadFire);
-                                                        aircraft.hitNamed(part.NamedDamageTypes.Eng1FuelSecondariesFire);
-                                                        aircraft.hitNamed(part.NamedDamageTypes.Eng1OilSecondariesFire);
-
-                                                    });
-                                                }
-                                            }
-                                    }
-                            }
-                        }
-                    } 
-
-                 * */
-
-
-
-
-
 
             }
         }
+
     }
+
 
 
 
@@ -450,7 +364,8 @@ public class Mission : AMission
         }
         catch (Exception ex) { Console.WriteLine(ex.ToString()); };
     }
-
+    
+    
     public void logToFile(object data, string messageLogPath)
     {
         try
@@ -465,6 +380,7 @@ public class Mission : AMission
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); };
     }
+        
 
 
 }

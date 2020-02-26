@@ -3570,6 +3570,32 @@ struct
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
     }
 
+    //Save the final version of the stats, which we do either #!1 When one team has turned the map/completed their objectives or #2. At end of session/shutdown.
+    public void Stb_SaveAllStatsMapTurnOrFinal(bool immediate_save = true,  bool intermediate_win = false)
+    {
+        try
+        {
+
+            stb_SaveIPlayerStat.StbSis_SaveAll(); //Save the stats CloD has been accumulating. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
+            if (stb_LogStats)
+            {
+                Console.WriteLine("OnBattleStoped OR end of session OR team has completed objectives/turned map - saving stats");
+
+                int[] par = new int[] { 0, 0, 0, 0 };
+                if (immediate_save) par[1] = 1; //par[1] "1" means immediate save, as for the last save of the session
+                if (intermediate_win) par[3] = 1; //par[3] "1" means intermediate win, as turning the map & need report on the victory in stats
+                StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", par); 
+                stb_StatRecorder.StbSr_EnqueueTask(sst);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Stb_SaveAllStatsMapTurnOrFinal ERROR: ");
+            Stb_PrepareErrorMessage(ex);
+        } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
+
+    }
+
     //Kill the player/aircraft/whatever after a specified amount of time
     private bool Stb_killActor(AiActor actor, int waitTime = 0)
     {
@@ -3577,9 +3603,9 @@ struct
         {
             Timeout(waitTime, () =>
             {
-                    //Console.WriteLine("KillActor: " + actor.Name() );
-                    //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
-                    Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0);
+                //Console.WriteLine("KillActor: " + actor.Name() );
+                //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
+                Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0);
             });
 
             return true;
@@ -4395,6 +4421,8 @@ struct
         //DON'T PUT ANYTHING HERE!!!!
         //IT WILL NEVER BE CALLED!!!
 
+        //Update!  with new $Include system it probably WILL be called now.  2020/20.
+
 
     }
     public override void OnBattleStoped()
@@ -4499,13 +4527,7 @@ struct
 
         try
         {
-            stb_SaveIPlayerStat.StbSis_SaveAll(); //Save the stats CloD has been accumulating. We need to call this (at MIN! when the player first arrives on the server & when the player leaves and/or the server shuts down. We also call it on player death.  could be called more times at convenient intervals or whatever, which could prevent any stats from being lost in case of unexpected shutdown etc.
-            if (stb_LogStats)
-            {
-                Console.WriteLine("OnBattleStoped - saving stats");
-                StbStatTask sst = new StbStatTask(StbStatCommands.Save, "noname", new int[] { 0, 1, 0 }); //2nd entry "1" means final save of the mission
-                stb_StatRecorder.StbSr_EnqueueTask(sst);
-            }
+            Stb_SaveAllStatsMapTurnOrFinal(immediate_save: true);
         }
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
 
@@ -4550,8 +4572,7 @@ struct
         stb_MissionsCount++;
         stb_lastMissionLoaded = missionNumber;
         #endregion
-        //add your code here
-
+        //add your code here        
         if (missionNumber == MissionNumber)
         {
             //Display any error messages that occured while reading the .ini file
@@ -5934,7 +5955,7 @@ struct
 
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
-        double wait = stb_random.NextDouble() * 10;
+        double wait = stb_random.NextDouble() * 20;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
         );
@@ -5964,6 +5985,7 @@ struct
             //For now, all things we handle below are on land, so if the land type is water we just
             //get out of here immediately
             maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
+            Console.WriteLine("bomb expl on: " + landType.ToString());
             if (landType == maddox.game.LandTypes.WATER) return;
 
 
@@ -6036,8 +6058,12 @@ struct
              * 
              * Handle airport bombing
              * 
+             * NB:: Airport bombing is not handled entirely in -main.cs, which just calls stats to record the points
+             * 2020-02-25.  If this works we can just remove this commented-out section altogether
+             * 
              *******************/
 
+            /*
             //GamePlay.gpLogServer(null, "bombe 5", null);
 
             var apkeys = new List<AiAirport>(AirfieldTargets.Keys.Count);
@@ -6052,7 +6078,7 @@ struct
                 }
                 else
                 { */
-
+                /*
                 //GamePlay.gpLogServer(null, "bombe 7", null);
                 double radius = AirfieldTargets[ap].Item6;
                 Point3d APPos = AirfieldTargets[ap].Item7;
@@ -6111,7 +6137,7 @@ struct
                     //UPDATE 5 Nov 2017: Bomber scores seem relatively too high so cutting this in half (though doubling it for Blennies since they are bomb-impaired)
 
                      */
-
+                     /*
                     //Spread out these messages to no more than 3 per second
                     double TimeNow_sec = Time.current(); // Calcs.TimeSince2016_sec();
                     double timeout = 0;
@@ -6203,6 +6229,7 @@ struct
                             //Sometimes, advise all players of percent destroyed, but only when crossing 25, 50, 75, 100% points
                             Timeout(0.3, () => { if (percent * 100 % 25 < prev_percent * 100 % 25) GamePlay.gpLogServer(null, ap.Name() + " " + (percent * 100).ToString("n0") + "% destroyed ", new object[] { }); });
                             */
+                            /*
                         loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
                             //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, 180, stb_FullPath); //for testing, they are supposed to disappear after 180 seconds
 
@@ -6236,6 +6263,7 @@ struct
                                 }
                             }
                             */
+                            /*
 
                         }
                     }
@@ -6248,6 +6276,7 @@ struct
                     break;  //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
                 }
             }
+            */
 
             /***************************
             * 
@@ -7592,6 +7621,19 @@ struct
     {
         //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
 
+        //return; //TESTING
+
+        Player player = null;
+        string playerName = "";
+        AiActor playerPlaceActor = null;
+        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) {
+            player = initiator.Player;
+            playerName = initiator.Player.Name();
+        }
+        else return; //not much to do if we don't have player
+
+        if (initiator.Player.Place() != null && initiator.Player.Place() as AiActor != null) playerPlaceActor = initiator.Player.Place() as AiActor;
+
 
         //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
         int percent_score = (int)Math.Round(score / totalscore * 100);
@@ -7601,67 +7643,68 @@ struct
         int percent_score_fordead = 1;
         if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
 
-        StbStatTask sst = new StbStatTask(StbStatCommands.Dead, initiator.Player.Name(), new int[] { killtype, percent_score_fordead }, initiator.Player.Place() as AiActor);
+
+        StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst);
 
         //Save penalty points, if that is what these are (negative points)
         if (percent_score_norm < 0)
         {
-            StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 847, percent_score_norm }, initiator.Player.Place() as AiActor);
+            StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 847, percent_score_norm }, playerPlaceActor);
             stb_StatRecorder.StbSr_EnqueueTask(sst0);
-            stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 847, percent_score);//Also save this for current session stats
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 847, percent_score);//Also save this for current session stats
         }
 
-        StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798, percent_score }, initiator.Player.Place() as AiActor);
+        StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798, percent_score },playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst1);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798, percent_score);//Also save this for current session stats
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798, percent_score);//Also save this for current session stats
 
         //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
         StbStatTask sst2 = new StbStatTask();
         //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
-        if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 }, initiator.Player.Place() as AiActor);
-        else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 }, initiator.Player.Place() as AiActor);
-        else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 }, initiator.Player.Place() as AiActor);
+        if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 }, playerPlaceActor);
+        else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 }, playerPlaceActor);
+        else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 }, playerPlaceActor);
         //allowing for removal of victories for bombing/damaging civilian areas
         //Note that the -3000 puts a limit on the # of victories that can be removed using this system.
-        else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799, percent_score_norm }, initiator.Player.Place() as AiActor);
+        else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799, percent_score_norm }, playerPlaceActor);
 
         if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst2);
 
         //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
         //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-        StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 798 + killtype * 4, percent_score }, initiator.Player.Place() as AiActor);
+        StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798 + killtype * 4, percent_score }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst4);
 
-        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 798 + killtype * 4, percent_score);//Also save this for current session stats
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798 + killtype * 4, percent_score);//Also save this for current session stats
 
         StbStatTask sst3 = new StbStatTask();
         //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-        if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4 }, initiator.Player.Place() as AiActor);
-        else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 800 + killtype * 4 }, initiator.Player.Place() as AiActor);
-        else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 801 + killtype * 4 }, initiator.Player.Place() as AiActor);
+        if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4 }, playerPlaceActor);
+        else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 + killtype * 4 }, playerPlaceActor);
+        else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 + killtype * 4 }, playerPlaceActor);
         //allowing for removal of victories for bombing/damaging civilian areas
-        else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 799 + killtype * 4, percent_score_norm }, initiator.Player.Place() as AiActor);
+        else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4, percent_score_norm }, playerPlaceActor);
         if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst3);
 
         //stb_StatRecorder.StbSr_WriteLine("3Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
         //Save the raw damage points towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
         int rawscore = (int)Math.Round(score * 1000); //some raw scores are like .003843828
-        StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818, rawscore }, initiator.Player.Place() as AiActor);
+        StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818, rawscore }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst5);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818, rawscore);//Also save this for current session stats
-        StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 818 + killtype, rawscore }, initiator.Player.Place() as AiActor);
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818, rawscore);//Also save this for current session stats
+        StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818 + killtype, rawscore }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst6);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(initiator.Player, 818 + killtype, rawscore);//Also save this for current session stats
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818 + killtype, rawscore);//Also save this for current session stats
 
         //stb_StatRecorder.StbSr_WriteLine("4Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
         //if (toolType.Equals(AiDamageToolType.Ordance)) stb_StatRecorder.StbSr_WriteLine("1. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
         //Save the raw damage points specifically for BOMBS towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
         if ((int)toolType == 2 || toolType.Equals(AiDamageToolType.Ordance))
         {            //not sure if toolType == AiDamageToolType.Ordance or similar works? But something like (int)toolType==2 definitely does
-            StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830, rawscore }, initiator.Player.Place() as AiActor);
+            StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830, rawscore }, playerPlaceActor);
             stb_StatRecorder.StbSr_EnqueueTask(sst7);
-            StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, initiator.Player.Name(), new int[] { 830 + killtype, rawscore }, initiator.Player.Place() as AiActor);
+            StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830 + killtype, rawscore }, playerPlaceActor);
             stb_StatRecorder.StbSr_EnqueueTask(sst8);
 
             //stb_StatRecorder.StbSr_WriteLine("2. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
@@ -7740,6 +7783,7 @@ struct
             //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
 
             /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+             * so ds.initiator.Player . . . etc  Check if each is/is not null before proceeding
             this.Actor = Actor;
             this.Person = Person;
             this.Player = Player;
@@ -11405,6 +11449,7 @@ struct
         int StbSr_SPSCount = 0;
         public void StbSr_SavePlayerStats(int[] p) //p[0] is the time delay requested, p[1]=1 means this is end-of-session stats requested, so force immediate save
                                                    //p[2]=1 means do the uploadsituationmaps bit only, and then exit, if p[2]==1 doesn't exist then DON'T do the uploadsituationmaps
+                                                   //p[3] = 1 means an intermediate win, so we have to write out team totals etc and a message saying TEAM VICTORY blah blah, but not final and not end of session
         {
             try
             {
@@ -11435,7 +11480,7 @@ struct
                                                       //StbSr_AlwaysWriteLine("Saving 3");
                                                       //Only save HTML files once every 7X (or if this is the final save of the session), to save a bit on uploading/server capacity.  If stats save time is 2 minutes this gives 14 minute stats updates
                 StbSr_SPSCount++;
-                if (StbSr_SPSCount % 7 == 0 || p[1] == 1)
+                if (StbSr_SPSCount % 7 == 0 || p[1] == 1 || p[3] == 1) //p[1] is immediate save, p[3] is intermediate win, which requires immediate save
                 {
                     StbSr_SavePlayerStatsStringToFileMedium(p);
                     StbSr_SavePlayerStatsStringToFileLow(p);
@@ -11683,9 +11728,11 @@ struct
             {
                 bool immediate_save = false;
                 if (p.Length >= 2 && p[1] == 1) immediate_save = true;
+                bool intermediate_win = false;
+                if (p.Length >= 3 && p[3] == 1) intermediate_win = true;
                 try
                 {
-                    StbSr_SaveTeamStatsStringToFileLowFilter(mission.stb_LogStatsTeamSuffix, immediate_save);
+                    StbSr_SaveTeamStatsStringToFileLowFilter(mission.stb_LogStatsTeamSuffix, immediate_save, intermediate_win);
                 }
                 catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "statsTeamSave"); }
                 try
@@ -12247,7 +12294,7 @@ struct
          ***********************************************/
 
         string StbSr_STSS_old_ms = "";
-        public void StbSr_SaveTeamStatsStringToFileLowFilter(string fileSuffix, bool immediate_save)
+        public void StbSr_SaveTeamStatsStringToFileLowFilter(string fileSuffix, bool immediate_save, bool intermediate_win = false)
         {
             try
             {
@@ -12262,7 +12309,11 @@ struct
                         //string previous_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + "-previous" + stbSr_PlayerStatsPathHtmlExtLow;
 
                         string prev_date_for_filename = DateTime.Now.AddDays(-1).ToUniversalTime().ToString("-yyyy-MM-dd");
+                        string today_date_for_filename = DateTime.Now.ToUniversalTime().ToString("-yyyy-MM-dd");
+                        string next_date_for_filename = DateTime.Now.AddDays(+1).ToUniversalTime().ToString("-yyyy-MM-dd");
                         string previous_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + prev_date_for_filename + stbSr_PlayerStatsPathHtmlExtLow;
+                        string today_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + prev_date_for_filename + stbSr_PlayerStatsPathHtmlExtLow;
+                        string next_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + next_date_for_filename + stbSr_PlayerStatsPathHtmlExtLow;
                         bool file_exists = File.Exists(filename);
                         bool prev_file_exists = File.Exists(previous_filename);
                         DateTime lastwrite = new DateTime(0);
@@ -12320,7 +12371,7 @@ struct
 
                         }
                         //Add on the NetStats summary of all player action, but only for the FINAL save of the game
-                        if (immediate_save)
+                        if (immediate_save || intermediate_win)
                         {
                             ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
 
@@ -12329,7 +12380,7 @@ struct
                         }
 
                         //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
-                        if (file_exists && !immediate_save && (lastwrite.AddMinutes(save_min) > now || !changed)) return;
+                        if (file_exists && !immediate_save && !intermediate_win && (lastwrite.AddMinutes(save_min) > now || !changed)) return;
 
                         if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5", null); //testing disk output for warps
                         using (StreamWriter sw = new StreamWriter(filename, append, System.Text.Encoding.UTF8))
@@ -12363,7 +12414,9 @@ struct
 
 
                                 sw.WriteLine("<p>For " + DateTime.Now.ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + " - scroll to end for most recent stats</p>");
-                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + prev_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to Team Stats for " + DateTime.Now.AddDays(-1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a>" + "</p>");
+                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + prev_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to Team Stats for " + DateTime.Now.AddDays(-1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a> - ");
+
+                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + next_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to " + DateTime.Now.AddDays(1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a>" + "</p>");
 
                                 sw.WriteLine(this.mission.stb_StatsWebPageLinksLine);
                                 string alive_dead_pilots_line = "<p><i><b>Click for " + this.mission.stb_ServerName_Public + ":</b> <a href=\"" + stbSr_LogStatsUploadFilenameLow + "\">Current ALIVE pilots stats list</a> - <a href=\"" + stbSr_LogStatsUploadFilenameDeadPilotsLow + "\">DEAD pilots stats list (archive)</a></i></p>";
@@ -12378,7 +12431,8 @@ struct
 
 
                             sw.WriteLine("<table style=\"\" border =\"1\" cellpadding=\"0\" cellspacing=\"1\">");
-                            if (immediate_save) sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "FINAL TEAM TOTALS for mission ending at " + DateTime.Now.ToUniversalTime().ToString("R") + "</h3></td></tr>");
+                            if (immediate_save && !intermediate_win) sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "FINAL TEAM TOTALS for mission ending at " + DateTime.Now.ToUniversalTime().ToString("R") + "</h3></td></tr>");
+                            else if (intermediate_win) sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "TEAM TOTALS for TEAM VICTORY at " + DateTime.Now.ToUniversalTime().ToString("R") + "</h3></td></tr>");
                             else sw.WriteLine("<tr class=\"\"><td class=\"\"><h3>" + "TEAM Totals for " + DateTime.Now.ToUniversalTime().ToString("R") + "</h3></td></tr>");
                             sw.WriteLine("<tr class=\"\"><td class=\"\">" + ms + "</td></tr>");
                             sw.WriteLine("</table>");
@@ -12390,6 +12444,10 @@ struct
                             StbSr_UploadSSL(stbSr_LogStatsUploadAddressLow + fileSuffix + stbSr_LogStatsUploadAddressExtLow,
                               stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
                               filename);
+                            //upload the main file as 'today's date' file
+                            StbSr_UploadSSL(stbSr_LogStatsUploadAddressLow + fileSuffix + today_date_for_filename + stbSr_LogStatsUploadAddressExtLow,
+                                stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+                                filename);
                             //upload the 'previous' file
                             StbSr_UploadSSL(stbSr_LogStatsUploadAddressLow + fileSuffix + prev_date_for_filename + stbSr_LogStatsUploadAddressExtLow,
                               stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,

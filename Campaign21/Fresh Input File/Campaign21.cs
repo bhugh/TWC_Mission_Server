@@ -2,6 +2,7 @@
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-stats.cs"
 //$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
 //$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
+//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
 
@@ -288,6 +289,7 @@ public class Mission : AMission, IMainMission
     public ABattle gpBattle;
     public CoverMission covermission;
     public StatsMission statsmission;
+    public AIRadarMission airadarmission;
 
     public string MISSION_FOLDER_PATH;
     public string USER_DOC_PATH;
@@ -381,8 +383,9 @@ public class Mission : AMission, IMainMission
             //INITIALIZE OTHER MAJOR MISSION OBJECTS 
             TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
 
-            covermission = new CoverMission();
+            covermission = new CoverMission(); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
             statsmission = new StatsMission();
+            airadarmission = new AIRadarMission();
 
             //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
             //Also in other submission .cs like -stats.cs you can access the AMission methods of TWCMainMission by eg (TWCMainMission as AMission).OnBattleStopped();
@@ -6470,6 +6473,7 @@ public class Mission : AMission, IMainMission
 
             gpBattle.creatingMissionScript(covermission, missionNumber + 1);
             gpBattle.creatingMissionScript(statsmission, missionNumber + 2);
+            gpBattle.creatingMissionScript(airadarmission, missionNumber + 3);
 
             MissionNumberListener = -1; //Listen to events of every mission
                                         //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
@@ -6615,11 +6619,11 @@ public class Mission : AMission, IMainMission
         {
             //ADMIN option is set to #9 for two reasons: #1. We can add or remove other options before it, up to 8 other options, without changing the Tab-4-4-9 admin access.  #2. To avoid accessing the admin menu (and it's often DANGEROUS options) by accident
             //{true/false bool array}: TRUE here indicates that the choice is a SUBMENU so that when it is selected the user menu will be shown.  If FALSE the user menu will disappear.  Also it affects the COLOR of the menu items, which seems to be designed to indicate whether the choice is going to DO SOMETHING IMMEDIATELY or TAKE YOU TO ANOTHER MENU
-            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session", "Let AI take over 2nd Position", "Admin Options" }, new bool[] { false, false, false, true, false, false, false, false, true });
+            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Aerial Intcpt Radar", "Current Campaign Status", "Detail Campaign Team/Session", "Let AI take over 2nd Position", "Admin Options" }, new bool[] { false, false, false, true, true, false, false, false, true });
         }
         else
         {
-            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Team Session Summary", "Current Campaign Status", "Detail Campaign Team/Session" }, new bool[] { false, false, false, true, false, false, false });
+            GamePlay.gpSetOrderMissionMenu(player, true, 2, new string[] { "Your Career Summary", "Your Session Summary", "Netstats/All Player Summary", "More...", "Aerial Intcpt Radar", "Current Campaign Status", "Detail Campaign Team/Session" }, new bool[] { false, false, false, true, true, false, false });
         }
     }
     private void setSubMenu3(Player player)
@@ -7010,8 +7014,7 @@ public class Mission : AMission, IMainMission
             }
 
             else if (menuItemIndex == 7)
-            {
-
+            {                
                 setMainMenu(player);
                 if (TWCSupplyMission != null) TWCSupplyMission.ListAircraftLost(player.Army(), player, true, false);
 
@@ -7088,30 +7091,12 @@ public class Mission : AMission, IMainMission
             else if (menuItemIndex == 5)
             {
                 /*
-                 * Detailed Team Stats for Session
+                 * Aerial Interception Radar (in-plane radar)
                  */
-                setMainMenu(player);
-                //First objectives completed/Campaign points
-                Timeout(0.2, () =>
-                {
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-                    //THIS ITEMS DUPLICATES TAB 4-5 & could be changed to something more useful!!!!
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    //if (player.Army() == 2) twcLogServer(new Player[] { player }, "Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue], new object[] { });
-                    //MO_ListRemainingPrimaryObjectives(player, player.Army());
-                    twcLogServer(new Player[] { player }, "Blue Objectives Completed (" + MissionObjectiveScore[ArmiesE.Blue].ToString("F0") + " points):" + MissionObjectivesCompletedString[ArmiesE.Blue], new object[] { });
-                });
+                //setMainMenu(player);
+                if (airadarmission != null) airadarmission.handleAIRadarRequest(player);
+                setSubMenu2(player); //KEEPS IT ON THE SAME MENU INSTEAD OF RETURN TO main menu
 
-                Timeout(1.2, () =>
-                {
-
-                    //if (player.Army() == 1) twcLogServer(new Player[] { player }, "Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red], new object[] { });
-
-                    twcLogServer(new Player[] { player }, "Red Objectives Completed (" + MissionObjectiveScore[ArmiesE.Red].ToString("F0") + " points):" + MissionObjectivesCompletedString[ArmiesE.Red], new object[] { });
-                });
-                //Then team stats (kills etc)
-                //if (TWCStatsMission != null) TWCStatsMission.Display_SessionStatsTeam(player);
-                statsmission.Display_SessionStatsTeam(player);
             }
             else if (menuItemIndex == 6)
             {
@@ -13167,9 +13152,9 @@ added Rouen Flak
                     double y = Math.Sin(angle) * (mo.TriggerDestroyRadius - 2.5) + mo.Pos.y;
 
                     ISectionFile f = GamePlay.gpCreateSectionFile();
-                    f = Calcs.makeStatic(f, GamePlay, this, x, y, mo.Pos.z, "Stationary.Radar.Wotan_I");
+                    f = Calcs.makeStatic(f, GamePlay, this, x, y, mo.Pos.z, "Stationary.Radar.Wotan_I", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x + 2, y + 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");//Give them a couple small black dots to find
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 2, y + 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1");
+                    f = Calcs.makeStatic(f, GamePlay, this, x - 2, y + 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x - 2, y - 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x + 2, y - 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
                     GamePlay.gpPostMissionLoad(f);
@@ -13857,7 +13842,7 @@ added Rouen Flak
         //restoreRadar(mo.ID, mo.Name, mo.OwnerArmy, mo.Pos);
         if (DestroyedRadar[(ArmiesE)mo.OwnerArmy].Contains(mo)) DestroyedRadar[(ArmiesE)mo.OwnerArmy].Remove(mo);
     }
-
+    
     /*  AACk this doesn't work
     public void restoreRadar(string ID, string Name, int OwnerArmy, Point3d Pos)
     {
@@ -13867,7 +13852,7 @@ added Rouen Flak
     }
     */
 
-    bool MO_ObjectiveUndestroy_recurs_firstrun = true;
+    private bool MO_ObjectiveUndestroy_recurs_firstrun = true;
 
     //Undestroys & also checks up on any mobile objective moves needed.
     public void MO_ObjectiveUndestroy_recurs()
@@ -17191,7 +17176,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                                                                                         //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
         msn.Timeout(clc_random.NextDouble() * 45, () => {
             GamePlay.gpPostMissionLoad(f);
-            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/craters_smoke"+clc_random.Next(10,99).ToString()); //testing
+            //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/craters_smoke"+clc_random.Next(10,99).ToString()); //testing
         });
 
 
@@ -17230,7 +17215,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         f.add(sect, key, value);
 
         GamePlay.gpPostMissionLoad(f);
-        f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "loadStatic" + random.Next(0, 9)); //testing
+        //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "loadStatic" + random.Next(0, 9)); //testing
 
     }
 

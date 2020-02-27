@@ -184,21 +184,34 @@ public class KnickebeinTarget
         //if (distFromCrossBeam_m < 16000 && mission.ran.NextDouble() * 6000 < distFromCrossBeam_m - 10000) noshow = false;
 
         int deltaDist_km = Convert.ToInt32(Math.Round(distFromCrossBeam_m / 1000));
-        if (deltaDist_km > 10) deltaDist_km = 10;        
+        if (deltaDist_km > 10) deltaDist_km = 10;
         //if (deltaDist_km == 0) return new Tuple<double, string>(currentTargetdistance_m, "=");
-        
-        char c = '|';
-        //if (noshow) c = ' ';
-        string ret = new string(c, deltaDist_km);
 
-        if (distFromCrossBeam_m < 1000)
+
+            char c = '|';
+            //if (noshow) c = ' ';
+            string ret = new string(c, deltaDist_km);
+        try
         {
-            c = '.';
-            ret = new string(c, Convert.ToInt32(Math.Round(distFromCrossBeam_m / 100)));
+            if (distFromCrossBeam_m < 5000 && distFromCrossBeam_m >= 1000)
+            {
+                c = '.';
+                ret += " " + new string(c, Convert.ToInt32(Math.Round((distFromCrossBeam_m % 1000) / 100)));
+            }
+            else
+            if (distFromCrossBeam_m < 1000)
+            {
+                c = '.';
+                ret = new string(c, Convert.ToInt32(Math.Round(distFromCrossBeam_m / 100)));
+            }
+            if (distFromCrossBeam_m < 100) ret = "*";
+            if (ret.Length < 16) ret += new string(' ', 16 - ret.Length);
+            //ret += distFromCrossBeam_m.ToString("F1") + " " + ret.Length.ToString(); //FOR TESTING
+            
         }
-        if (distFromCrossBeam_m < 100) ret = "*";
-        ret += new string(' ', 11 - ret.Length);
-        return new Tuple <double,string> (distFromCrossBeam_m, ret);
+        catch (Exception ex) { Console.WriteLine("Knickebein DFCB: " + ex.ToString()); }
+
+        return new Tuple<double, string>(distFromCrossBeam_m, ret);
     }
 
     public double displayPips(Player player=null)
@@ -220,8 +233,9 @@ public class KnickebeinTarget
         if (!this.turnedOn) return;
         double t = 5.3;
         double dist = displayPips();
-        if (dist < 10000 && dist > 0) t = dist/10000*5;
-        if (t < 0.05) t = 0.05;
+        if (dist < 10000 && dist >= 5000) t = dist/10000*5;
+        else if (dist < 5000 ) t = 0.1;
+        //if (t < 0.05) t = 0.05;
         mission.Timeout(t, () => display_recurs());
         //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);
         

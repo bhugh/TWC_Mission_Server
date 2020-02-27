@@ -3734,7 +3734,7 @@ struct
             double maxX = 362000;
             double maxY = 312000;
             //////////////Comment this out as we don`t have Your Debug mode  
-            Console.WriteLine("Checking for Players off map, to despawn");
+            //Console.WriteLine("Checking for Players off map, to despawn");
             if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
                 foreach (int army in GamePlay.gpArmies())
@@ -4582,6 +4582,7 @@ struct
             //Escort21.coord.Communicate coms = new Escort21.coord.Communicate();
 
             //Console.WriteLine("STATS: " + Communicate.test.ToString());
+            Console.WriteLine("stats mission LOADED");
             string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
             stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"            
             TWCComms.Communicator.Instance.stb_FullPath = stb_FullPath;

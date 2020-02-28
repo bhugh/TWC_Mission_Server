@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
-using System.Linq;
 using maddox.GP;
 using maddox.game;
 using maddox.game.world;
@@ -22,24 +21,20 @@ using part;
 using TWCComms;
 
 
-
 public class AIRadarTarget
 {
-    public static double AIRadarRadius_m = 8000; //historicall it was 4000m
-    public static double AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
     public AiAircraft aircraft { get; set;}
     public AiActor actor { get; set;}
     public Point3d aircraftPos { get; set;}
     public Player player { get; set;}
     public AiActor place { get; set;}
     public Point3d playerPos { get; set;}
-    public Vector3d playerVwld { get; set; }
-    public double targetRelativeAngle_deg { get; set;} //angle from player to target, relative to the player's current direction   
+    public double targetBearingAngle_deg { get; set;} //angle from player to target in bearing    
     public double targetHeightAngle_deg { get; set;} //angle from player in altitude/height
     public double targetDistance_m { get; set;} //distance from player to target in km
 
     public double XDist_m { get; set;} //distance front/back of target from player direction
-    public double YDist_m { get; set; } //distance left/right of target from player direction
+    public double YDist_m { get; private set; } //distance left/right of target from player direction
     public double ZDist_m { get; set;} //altitude distance player to target
 
     public string DirectionPip { get; set;}
@@ -53,7 +48,6 @@ public class AIRadarTarget
 
     public AIRadarTarget(Player player, AiAircraft aircraft, AMission mission)
     {
-        //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
         this.player = player;
         this.aircraft = aircraft;
         this.actor = aircraft as AiActor;
@@ -84,19 +78,16 @@ public class AIRadarTarget
         this.aircraftPos = actor.Pos();
         this.playerPos = place.Pos();
 
-        if ((place.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
-        else { this.playerVwld = (place.Group() as AiAirGroup).Vwld(); } //player.Place().Group() as AiAirGroup;
+        this.targetDistance_m = Calcs.CalculatePointDistance(this.playerPos, this.aircraftPos);
 
-        this.targetDistance_m = AIRadarCalcs.CalculatePointDistance(this.playerPos, this.aircraftPos);
-
-        this.targetRelativeAngle_deg = 180 + AIRadarCalcs.CalculateDifferenceAngle(playerVwld, this.playerPos, this.aircraftPos);
-        if (targetRelativeAngle_deg > 180) targetRelativeAngle_deg -= 360;
-        if (targetRelativeAngle_deg < -180) targetRelativeAngle_deg += 360;
-        this.XDist_m = targetDistance_m * Math.Cos(AIRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
-        this.YDist_m = targetDistance_m * Math.Sin(AIRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        this.targetBearingAngle_deg = Calcs.CalculateGradientAngle(this.playerPos, this.aircraftPos);
+        if (targetBearingAngle_deg > 180) targetBearingAngle_deg -= 360;
+        if (targetBearingAngle_deg < -180) targetBearingAngle_deg += 360;
+        this.XDist_m = targetDistance_m * Math.Cos(Calcs.DegreesToRadians(targetBearingAngle_deg));
+        this.YDist_m = targetDistance_m * Math.Sin(Calcs.DegreesToRadians(targetBearingAngle_deg));
         this.ZDist_m = aircraftPos.z - playerPos.z;
 
-        this.targetHeightAngle_deg = AIRadarCalcs.CalculatePitchDegree(this.playerPos, aircraftPos);
+        this.targetHeightAngle_deg = Calcs.CalculatePitchDegree(this.playerPos, aircraftPos);
         if (targetHeightAngle_deg > 180) targetHeightAngle_deg -= 360;
         if (targetHeightAngle_deg < -180) targetHeightAngle_deg += 360;
 
@@ -104,8 +95,8 @@ public class AIRadarTarget
         return this.calculatePips();
     }
 
-    //Call recacalculate which calls this - NOT this directly
-    private bool calculatePips() {        
+    private bool calculatePips() {
+
         inRange = true;
         checkInScope();
         calcDistancePip();
@@ -125,13 +116,10 @@ public class AIRadarTarget
             return;
         }
 
-        if ( Math.Pow(XDist_m - AIRadarRadius_m, 2) + Math.Pow(YDist_m, 2) > AIRadarRadiusSq_m2
-             || Math.Pow(XDist_m - AIRadarRadius_m, 2) + Math.Pow(ZDist_m, 2) > AIRadarRadiusSq_m2
+        if (Math.Pow(XDist_m - 4000, 2) + Math.Pow(YDist_m, 2) > 16000000 
+        || (Math.Pow(XDist_m - 4000, 2) + Math.Pow(ZDist_m, 2) > 16000000)
         )
-        {
-            //Console.WriteLine("air outofrange scope: {0:F0} {1:F0}", XDist_m, YDist_m);
-            inRange = false;
-        }
+        inRange = false; //4000^2
     }
 
     private void calcDistancePip()
@@ -139,26 +127,15 @@ public class AIRadarTarget
 
         //max range of the AI was: ~25000ft, OR the altitude the aircraft was flying (ie if flying at 10000ft it couldn't see more than 10000ft forward)
         //min range was 400 feet - closer than that the image merged with the transmission pulse (ie, the radar aircraft)
-        if (this.targetDistance_m >  2*AIRadarRadius_m || this.targetDistance_m > playerPos.z * 2.5)
+        if (this.targetDistance_m >  7500 || this.targetDistance_m > playerPos.z || this.targetDistance_m < 133)
         {
-            inRange = false;
-            //Console.WriteLine("air outofrange DISTANCE: {0:F0} {1:F0}", targetDistance_m, playerPos.z);
-            return;
-        }
-
-        if (Math.Abs(targetDistance_m) <= AIRadarRadius_m / 10)
-        {
-            //DirectionPip = new string(' ', 11) + "=";
-            DistancePip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(targetDistance_m / (AIRadarRadius_m / 100))))) + "=";
-            if (targetDistance_m < 133) DistancePip = "="; //It stops working about 400 feet out, that's when it merges with the source blip
-
+            inRange = false;            
             return;
         }
 
         char c = '|';
-        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(targetDistance_m / (AIRadarRadius_m/5.0)))));
-        string pad = "";
-        //if (ret.Length < 12) pad = new string(' ', 12 - ret.Length);
+        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(targetDistance_m / 800))));
+        string pad = new string(' ', 12 - ret.Length);
         DistancePip = pad + ret;
 
 
@@ -166,88 +143,70 @@ public class AIRadarTarget
 
     private void calcDirectionPip()
     {
-
-        if (Math.Abs(YDist_m) <= AIRadarRadius_m/20)
+        if ( 
+               (targetBearingAngle_deg < -90 || targetBearingAngle_deg > 90) 
+           )
         {
-            //DirectionPip = new string(' ', 11) + "=";
-            DirectionPip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(YDist_m / (AIRadarRadius_m / 200)))));// + "=";
+            inRange = false;            
+            return;
+        }
 
-            if (YDist_m < 0) DirectionPip += "=";  //Put the dots on left or right side depending on which side the target a/c is on
-            else DirectionPip = "=" + DirectionPip;
-
-
+        if (Math.Abs(YDist_m) <= 400)
+        {
+            DirectionPip = new string(' ', 11) + "=";
             return;
         }
 
         char c = '-';
         if (YDist_m > 0) c = '+';
-        string ret = new string(c,Convert.ToInt32( Math.Round(Math.Abs(YDist_m/(AIRadarRadius_m/10)))));
-        string pad = "";
-        if (ret.Length<18) pad = new string(' ', 18 - ret.Length);
+        string ret = new string(c,Convert.ToInt32( Math.Round(Math.Abs(YDist_m/400))));
+        string pad = new string(' ', 12 - ret.Length);
         DirectionPip = pad + ret;
     }
 
     private void calcAltitudePip()
     {
-        if (this.aircraftPos.z < 250 )  //less than 1000ft altitude everything got lost in the ground clutter
+        if (targetHeightAngle_deg < -90 || targetHeightAngle_deg > 90)
         {
             inRange = false;
-            //Console.WriteLine("air outofrange Altitude: {0:F0}", this.aircraftPos.z);
-            return;
-        }
-
-        if (Math.Abs(ZDist_m) <= AIRadarRadius_m / 20)
-        {
-            //AltitudePip =  "=" + new string(' ', 12);
-            AltitudePip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(ZDist_m / (AIRadarRadius_m / 200.0))))); //add ... for more precise location when quite close
-
-            if (ZDist_m < 0) AltitudePip += "=";  //Put the dots on left or right side depending on which side the target a/c is on
-            else AltitudePip = "=" + AltitudePip;
-
             return;
         }
 
         char c = '-';
         if (ZDist_m > 0) c = '+';
-        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(ZDist_m / (AIRadarRadius_m/10.0)))));
-        string pad = "";
-        if (ret.Length < 12) pad = new string(' ', 12 - ret.Length);
+        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(ZDist_m / 400))));
+        string pad = new string(' ', 12 - ret.Length);
         AltitudePip = ret + pad;
     }
 
     private void setOutOfRangePips()
     {
-        DistancePip = new string(' ', 1) + "?" + new string(' ', 1);
-        AltitudePip = new string(' ', 1) + "?" + new string(' ', 1);
-        if (this.targetDistance_m > 2.5 * AIRadarRadius_m || this.aircraftPos.z < 200 )  //So, we're giving them a break and giving the direction to target (only) starting @ 2.5x the radar distance
-            DirectionPip = new string(' ', 1) + "?" + new string(' ', 1);
-        else calcDirectionPip();
+        DistancePip = new string(' ', 6) + "?" + new string(' ', 6);
+        AltitudePip = new string(' ', 6) + "?" + new string(' ', 6);
+        DirectionPip = new string(' ', 6) + "?" + new string(' ', 6); 
     }
 
 
     public double displayPips()
     {
         if (actor == null) return 0;
-        recalculate();
+        calculatePips();
         //Tuple<double, string> distT = new Tuple<double, string>(targetDistance_m, sbyte);
         string disp = DirectionPip + " " + DistancePip + " " + AltitudePip;
-        //disp += " " + (XDist_m / 1000.0).ToString("F1") + " " + (YDist_m / 1000.0).ToString("F1") + " " + (ZDist_m / 1000.0).ToString("F1") + " " + targetRelativeAngle_deg.ToString("F0"); //FOR TESTING
+        disp += " " + (XDist_m / 1000.0).ToString("F1") + " " + (YDist_m / 1000.0).ToString("F1") + " " + (ZDist_m / 1000.0).ToString("F1");
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, disp);
-        //Console.WriteLine(disp);
         return targetDistance_m;
     }
 
     private void display_recurs()
     {
         if (!this.turnedOn) return;
-        double t = 2.1;
-        //double dist = displayPips();        
-        if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
-        if (t < 0.5) t = 0.5;//Not sure what the frequency of display update was on the real radar units, we'll say 0.5 second refresh at best?
-        mission.Timeout(t, () => display_recurs());
-        
+        double t = 5.3;
+        //double dist = displayPips();
         displayPips();
-        //Console.WriteLine("air: {0:F1} {1:F1}", t, targetDistance_m);
+        if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
+        if (t < 1) t = 1;//Not sure what the frequency of display update was on the real radar units, we'll say one second refresh at best?
+        mission.Timeout(t, () => display_recurs());
         //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);        
     }
 }
@@ -304,7 +263,6 @@ public class AIRadarMission : AMission
             if (GamePlay is GameDef)
             {
                 //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-                Console.WriteLine("Aerial Radar initializing eventchat.");
                 (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
             }
 
@@ -329,7 +287,9 @@ public class AIRadarMission : AMission
             //we tend to get several copies of it operating, if we're not careful
         }
     }
-      
+    
+
+    Dictionary<Player,Tuple<AIRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<AIRadarTarget, int>>();
     
     void Mission_EventChat(Player player, string msg)
     {
@@ -345,7 +305,56 @@ public class AIRadarMission : AMission
         if (msg.StartsWith("<an"))
 
         {
-            handleAIRadarRequest(player);
+            try
+            {
+                if (player == null || player.Place() == null)
+                {
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+                    //Here we can restrict this to certain aircraft etc.
+                    return;
+                }
+                var playerAirGroup = player.Place().Group() as AiAirGroup;
+
+                if (playerAirGroup == null) return;
+
+                int acNum = 0;
+                AIRadarTarget AIRT = null;
+
+                if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player))
+                {
+                    //PlayerCurrentAC[player]++;
+                    var tup = PlayerCurrentAIRadarTargetandACnum[player];
+                    acNum = tup.Item2 + 1; //advance to the next ac #
+                    AIRT = tup.Item1;
+                } 
+                var aircraftList = Calcs.AllAircraftNearSorted(this, player.Place().Pos(), playerAirGroup.Vwld(), 4000, 4000);
+                if (aircraftList == null || aircraftList.Count == 0)
+                {
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No aircraft nearby to track, sorry.", new object[] { });
+                    return;
+                }
+                else
+                {
+                    if (AIRT != null && acNum < aircraftList.Count && aircraftList.Keys[acNum] == AIRT.aircraft) acNum++; //we're trying to skip past the current AC, so if we have hit it again, we advance the acNum
+
+                    if (acNum >= aircraftList.Count) //means, turn OFF the AIRadar
+                    {
+                        if (AIRT != null) AIRT.turnOff();                                               
+                        //PlayerCurrentAIRadarTargetandACnum[player] = new Tuple<AIRadarTarget, int>(AIRT, 0);
+                        GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No targets or past last target - radar off", new object[] { });
+                        if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player)) PlayerCurrentAIRadarTargetandACnum.Remove(player);
+                        return;
+
+                    } else { //means, turn ON the AIRadar on this target #
+                        AIRT = new AIRadarTarget(player, aircraftList.Keys[acNum], this);
+                        AIRT.turnOn();
+                        PlayerCurrentAIRadarTargetandACnum.Add(player, new Tuple<AIRadarTarget, int>(AIRT, acNum));
+                        GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Radar on - changed to next target", new object[] { });
+                    }
+                    
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("AIRadar: " + ex.ToString()); }
         }
         
         else if (msg.StartsWith("<ahelp6") || msg.StartsWith("<kh6"))
@@ -427,77 +436,13 @@ public class AIRadarMission : AMission
         }
         
     }
-
-    Dictionary<Player, Tuple<AIRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<AIRadarTarget, int>>();
-
-    public void handleAIRadarRequest(Player player)
-    {
-        Console.WriteLine("Aerial Radar command received.");
-        try
-        {
-            int acNum = 0;
-            AIRadarTarget AIRT = null;
-
-            if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player))
-            {
-                //PlayerCurrentAC[player]++;
-                var tup = PlayerCurrentAIRadarTargetandACnum[player];
-                acNum = tup.Item2 + 1; //advance to the next ac #
-                AIRT = tup.Item1;
-                AIRT.turnOff();
-                PlayerCurrentAIRadarTargetandACnum.Remove(player);
-            }
-
-            if (player == null || player.Place() == null)
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
-                //Here we can restrict this to certain aircraft etc.
-                return;
-            }
-
-            var playerAirGroup = player.Place().Group() as AiAirGroup;
-
-            if (playerAirGroup == null) return;
-
-
-            var aircraftList = AIRadarCalcs.AllAircraftNearSorted(this, player.Place().Pos(), playerAirGroup.Vwld(), AIRadarTarget.AIRadarRadius_m/2.0, AIRadarTarget.AIRadarRadius_m*3.0); //Break to connect to a/c @ 3X the radar radius
-            if (aircraftList == null || aircraftList.Count == 0)
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No aircraft nearby to track, sorry.", new object[] { }); //aircraftList.Count
-                return;
-            }
-            else
-            {
-                if (AIRT != null && acNum < aircraftList.Count && aircraftList[acNum] == AIRT.aircraft) acNum++; //we're trying to skip past the current AC, so if we have hit it again, we advance the acNum
-
-                if (acNum >= aircraftList.Count) //means, turn OFF the AIRadar
-                {
-                    //if (AIRT != null) AIRT.turnOff();                                               
-                    //PlayerCurrentAIRadarTargetandACnum[player] = new Tuple<AIRadarTarget, int>(AIRT, 0);
-                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No targets or past last target - radar off", new object[] { });
-                    //if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player)) PlayerCurrentAIRadarTargetandACnum.Remove(player);
-                    return;
-
-                }
-                else
-                { //means, turn ON the AIRadar on this target #
-                    AIRT = new AIRadarTarget(player, aircraftList[acNum], this);
-                    AIRT.turnOn();
-                    PlayerCurrentAIRadarTargetandACnum[player] = new Tuple<AIRadarTarget, int>(AIRT, acNum);
-                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Radar on - changed to next target", new object[] { });
-                }
-
-            }
-        }
-        catch (Exception ex) { Console.WriteLine("AIRadar: " + ex.ToString()); }
-    }
       
 }
 
 
 
 //Various helpful calculations, formulas, etc.
-public static class AIRadarCalcs
+public static class Calcs
 {
     //Various public/static methods
     //http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
@@ -645,40 +590,6 @@ public static class AIRadarCalcs
         return degAngle;
     }
 
-    //Vwld is the direction an aircraft is going, say from their Vwld
-    //point1 is the location of the aircraft.  Point2 is the location of the target aircraft
-    //return angle is the degrees left/right from the primary a/c current course that a/c must turn to point at the 2nd aircraft point
-    public static double CalculateDifferenceAngle( Vector3d Vwld,
-                      Point3d point1,
-                      Point3d point2)
-    {
-
-        Point3d v1 = new Point3d(Vwld.x, Vwld.y, Vwld.z);
-        Point3d v2 = new Point3d (point2.x-point1.x, point2.y-point1.y, 0);
-        return CalculateDifferenceAngle(v1, v2);
-    }
-    //returns difference angle etween two vectors; vector1 is primary, angle from primary to secondary, 0-360, angle degrees like a compass
-    public static double CalculateDifferenceAngle(
-                          Point3d vector1,
-                          Point3d vector2)
-    {
-
-
-
-
-        double radAngle = Math.Atan2(vector1.x, vector1.y) - Math.Atan2(vector2.x, vector2.y);
-
-        //Converts the radians in degrees
-        double degAngle = RadiansToDegrees(radAngle);
-
-        degAngle = 180 - degAngle; //This seems necessary to align it with compass directions (siwtch from counterclocwise to clockwise, plus the 180 makes the orientation work for v1 vs v2.
-        if (degAngle < 0) degAngle = degAngle + 360;
-        if (degAngle > 360) degAngle = degAngle - 360;
-
-
-        return degAngle;
-    }
-
     public static int GetDegreesIn10Step(double degrees)
     {
         degrees = Math.Round((degrees / 10), MidpointRounding.AwayFromZero) * 10;
@@ -735,8 +646,8 @@ public static class AIRadarCalcs
                         Point3d startPoint, double angle_deg, double dist)
     {
         Point3d ret = startPoint;
-        ret.x = startPoint.x + Math.Sin(AIRadarCalcs.DegreesToRadians(angle_deg)) * dist;
-        ret.y = startPoint.y + Math.Cos(AIRadarCalcs.DegreesToRadians(angle_deg)) * dist;
+        ret.x = startPoint.x + Math.Sin(Calcs.DegreesToRadians(angle_deg)) * dist;
+        ret.y = startPoint.y + Math.Cos(Calcs.DegreesToRadians(angle_deg)) * dist;
         return ret;
     }
 
@@ -1113,7 +1024,7 @@ public static class AIRadarCalcs
 
     //so this figures all aircraft in a circle of radius_m that is in front of the given position by distance_m. "In front of" defined by
     //the vector Vwld.  Sorted by DISTANCE from point pos.
-    public static List<AiAircraft> AllAircraftNearSorted(AMission msn, Point3d pos, Vector3d Vwld, double distance_m, double radius_m)
+    public static SortedList<AiAircraft, double> AllAircraftNearSorted(AMission msn, Point3d pos, Vector3d Vwld, double distance_m, double radius_m)
     {
         double dist = distance(Vwld.x, Vwld.y);
 
@@ -1121,23 +1032,18 @@ public static class AIRadarCalcs
 
         if (dist > 0) {
 
-            point2 = new Point3d(Vwld.x / dist * distance_m + pos.x, Vwld.y / dist * distance_m+ pos.y, pos.z);
+            point2 = new Point3d(Vwld.x / dist * distance_m, Vwld.y / dist * distance_m, pos.z);
         }
 
         var alist = AllAircraftNear(msn, point2, radius_m);
-        var retdict = new SortedList<double, AiAircraft>();
+        var retlist = new SortedList<AiAircraft, double>();
 
         foreach (AiAircraft a in alist)
         {
-            Point3d actorPos = (a as AiActor).Pos();
-            if (pos.x == actorPos.x && pos.y == actorPos.y && pos.z == actorPos.z) continue; //the player aircraft, don't knoclue it
-            double d = CalculatePointDistance(pos, actorPos);
-            Console.WriteLine("AIR: Looking at " + GetAircraftType(a) + " " + d.ToString("F0") + " " + (a as AiActor).Pos().x.ToString("F0") + " " + (a as AiActor).Pos().y.ToString("F0"));
-            retdict[d]= a;
+            double d = CalculatePointDistance(pos, (a as AiActor).Pos());
+            retlist.Add(a, d);
         }
-
-        //var ListOrderedByDistance = retdict.OrderBy(kvp => kvp.Value).ToList();
-        return retdict.Values.ToList();
+        return retlist;
     }
 
     public static List<AiAircraft> AllAircraftNear(AMission msn, Point3d pos, double radius_m)
@@ -1147,9 +1053,7 @@ public static class AIRadarCalcs
         var allAc = AllAircraftInGame(msn);
         foreach (AiAircraft a in allAc)
         {
-            double d = CalculatePointDistance((a as AiActor).Pos(), pos);
-            if (d <= radius_m ) ret.Add(a);
-            Console.WriteLine("AIR: Near looking at " + GetAircraftType(a) + " " + d.ToString("F0") );
+            if (CalculatePointDistance((a as AiActor).Pos(), pos) <= radius_m ) ret.Add(a);
         }
 
         return ret;
@@ -1246,3 +1150,4 @@ public static class AIRadarCalcs
 
 
 }
+

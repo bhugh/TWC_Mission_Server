@@ -5,7 +5,7 @@
 //$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
-
+////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
@@ -93,6 +93,7 @@ using System.Timers;                 /// <= Needed for Rearm/Refuel
  *       https://www.sas1946.com/images/imageshit/img204/4231/aimkiv2.jpg
  *       https://www.sas1946.com/images/imageshit/img163/3200/aimkiv1.jpg
  *       
+ * Cover - available a/c listing, but a delay in so it doens't just flash up/cause stutter      
  *   
  * Listing of how much damage, % destroyed, and/or objects/KG destroyed for all your and/or enemy objectives.
  * Allow recon or some way for teams to find out where the enemy has been attacking **in their own territory**
@@ -1355,7 +1356,7 @@ public class Mission : AMission, IMainMission
 
             double aircraftCorrection = 1;
 
-            if (acType.Contains("Blenheim")) aircraftCorrection = 4;
+            if (acType.Contains("Blenheim") || acType.Contains("Hurricane")) aircraftCorrection = 4;
             if (acType.Contains("He-111")) aircraftCorrection = 1.5;
             if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
@@ -9928,6 +9929,7 @@ public class Mission : AMission, IMainMission
 
             //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID, Days to repair, Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-200), comment) {
             //weights change 0-200, many weights below adjusted, 2020-01
+            //Prior to 2/15/2020 I had moved most Red Radar trigger % to about 40%.  Then 2/24 moved up to 70% to make it harder.  Now moved to 80% to make it even harder.  2020/02/27.
             addRadar("Westgate Radar", "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 30, "", add);
             addRadar("Sandwich Radar", "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 25000, false, 30, "", add);
             addRadar("Deal Radar", "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 30, "", add);
@@ -9943,34 +9945,34 @@ public class Mission : AMission, IMainMission
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             //addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
             //NOTE: renaming the radar targets as "RPA in stead of just "R" so they no longer match the .mis file trigger names (which WILL still trigger if they are still in the file).
-            addRadarPointArea("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28RPA", "", 1000, 4, 294183, 219444, 33, 20000, false, 35, "", add);
-            addRadarPointArea("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29RPA", "", 1000, 4, 276566, 214150, 33, 20000, false, 35, "", add);
-            addRadarPointArea("Dunkirk Radar #2", "DuRN", 2, 4, 2, "RTarget30RPA", "", 1000, 4, 341887, 232695, 100, 20000, false, 35, "", add);
+            addRadarPointArea("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28RPA", "", 1000, 4, 294183, 219444, 200, 20000, false, 35, "", add);
+            addRadarPointArea("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29RPA", "", 1000, 4, 276566, 214150, 200, 20000, false, 35, "", add);
+            addRadarPointArea("Dunkirk Radar #2", "DuRN", 2, 4, 2, "RTarget30RPA", "", 1000, 4, 341887, 232695, 200, 20000, false, 35, "", add);
             //    addRadarPointArea("Dunkirk Freya RadaRPA",           "DuRN", 2, 1, 2, "RTarget38RPA",  "", 1000, 4, 77, 339793, 232797,  100, 20000, false, 35, "", add);
-            addRadarPointArea("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39RPA", "", 1000, 4, 264882, 178115, 33, 20000, false, 35, "", add); //Mission in mission file
-            addRadarPointArea("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40RPA", "", 1000, 4, 263234, 153713, 33, 20000, false, 5, "", add); //Mission in mission file
-            //addRadarPointArea("Radar Dieppe", "DieR", 2, 4, 2, "RTarget41RPA",  "", 1000, 4, 232727, 103248, 33, 20000, false, 5, "", add); //This trigger exists in the .mis file but I don't believe there are any actual radars/stationaries in this area at all
-            addRadarPointArea("Radar Le Treport", "TreR", 2, 4, 2, "RTarget42RPA", "", 1000, 4, 250599, 116531, 33, 20000, false, 15, "", add); // Mission in mission file
-            addRadarPointArea("Radar Somme River", "SomR", 2, 4, 2, "RTarget43RPA", "", 1000, 4, 260798, 131885, 33, 20000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Radar AMBETEUSE", "AmbR", 2, 4, 2, "RTarget44RPA", "", 1000, 4, 266788, 197956, 33, 20000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Radar BOULOGNE", "BlgR", 2, 4, 2, "RTarget45RPA", "", 1000, 4, 264494, 188674, 33, 20000, false, 35, "", add); //Mission in mission file           
-            addRadarPointArea("Radar Le Touquet", "L2kR", 2, 4, 2, "RTarget46RPA", "", 1000, 4, 265307, 171427, 33, 20000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Radar Dieppe", "FreR", 2, 4, 2, "RTarget47RPA", "", 1000, 4, 232580, 103325, 33, 20000, false, 15, "", add); //Mission in mission file
-            addRadarPointArea("Veulettes-sur-Mer Radar", "VeuR", 2, 4, 2, "RTarget48RPA", "", 1000, 4, 195165, 93441, 33, 20000, false, 5, "", add);//Mission in mission file
-            addRadarPointArea("Le Havre Freya Radar", "LhvR", 2, 4, 2, "RTarget49RPA", "", 1000, 4, 157636, 60683, 33, 20000, false, 15, "", add);//Mission in mission file
-            addRadarPointArea("Ouistreham Freya Radar", "OuiR", 2, 4, 2, "RTarget50RPA", "", 1000, 4, 135205, 29918, 33, 20000, false, 15, "", add);// Mission in mission file
-            addRadarPointArea("Bayeux Beach Freya Radar", "BayR", 2, 4, 2, "RTarget51RPA", "", 1000, 4, 104279, 36659, 33, 20000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52RPA", "", 1000, 4, 65364, 43580, 33, 20000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Radar Tatihou", "TatR", 2, 4, 2, "RTarget53RPA", "", 1000, 4, 60453, 63873, 33, 30000, false, 5, "", add); //Mission in mission file
-            addRadarPointArea("Radar Querqueville", "QueR", 2, 4, 2, "RTarget54RPA", "", 1000, 4, 17036, 77666, 33, 30000, false, 15, "", add); // Mission in mission file
+            addRadarPointArea("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39RPA", "", 1000, 4, 264882, 178115, 200, 20000, false, 35, "", add); //Mission in mission file
+            addRadarPointArea("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40RPA", "", 1000, 4, 263234, 153713, 200, 20000, false, 5, "", add); //Mission in mission file
+            //addRadarPointArea("Radar Dieppe", "DieR", 2, 4, 2, "RTarget41RPA",  "", 1000, 4, 232727, 103248, 200, 20000, false, 5, "", add); //This trigger exists in the .mis file but I don't believe there are any actual radars/stationaries in this area at all
+            addRadarPointArea("Radar Le Treport", "TreR", 2, 4, 2, "RTarget42RPA", "", 1000, 4, 250599, 116531, 200, 20000, false, 15, "", add); // Mission in mission file
+            addRadarPointArea("Radar Somme River", "SomR", 2, 4, 2, "RTarget43RPA", "", 1000, 4, 260798, 131885, 200, 20000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Radar AMBETEUSE", "AmbR", 2, 4, 2, "RTarget44RPA", "", 1000, 4, 266788, 197956, 200, 20000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Radar BOULOGNE", "BlgR", 2, 4, 2, "RTarget45RPA", "", 1000, 4, 264494, 188674, 200, 20000, false, 35, "", add); //Mission in mission file           
+            addRadarPointArea("Radar Le Touquet", "L2kR", 2, 4, 2, "RTarget46RPA", "", 1000, 4, 265307, 171427, 200, 20000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Radar Dieppe", "FreR", 2, 4, 2, "RTarget47RPA", "", 1000, 4, 232580, 103325, 200, 20000, false, 15, "", add); //Mission in mission file
+            addRadarPointArea("Veulettes-sur-Mer Radar", "VeuR", 2, 4, 2, "RTarget48RPA", "", 1000, 4, 195165, 93441, 200, 20000, false, 5, "", add);//Mission in mission file
+            addRadarPointArea("Le Havre Freya Radar", "LhvR", 2, 4, 2, "RTarget49RPA", "", 1000, 4, 157636, 60683, 200, 20000, false, 15, "", add);//Mission in mission file
+            addRadarPointArea("Ouistreham Freya Radar", "OuiR", 2, 4, 2, "RTarget50RPA", "", 1000, 4, 135205, 29918, 200, 20000, false, 15, "", add);// Mission in mission file
+            addRadarPointArea("Bayeux Beach Freya Radar", "BayR", 2, 4, 2, "RTarget51RPA", "", 1000, 4, 104279, 36659, 200, 20000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Beauguillot Beach Freya Radar", "BchR", 2, 4, 2, "RTarget52RPA", "", 1000, 4, 65364, 43580, 200, 20000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Radar Tatihou", "TatR", 2, 4, 2, "RTarget53RPA", "", 1000, 4, 60453, 63873, 200, 30000, false, 5, "", add); //Mission in mission file
+            addRadarPointArea("Radar Querqueville", "QueR", 2, 4, 2, "RTarget54RPA", "", 1000, 4, 17036, 77666, 200, 30000, false, 15, "", add); // Mission in mission file
             /*
-            addRadar("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 50, 20000, false, 35, "", add);
-            addRadar("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 50, 20000, false, 35, "", add);
+            addRadar("Oye Plage Freya Radar", "OypR", 2, 4, 2, "RTarget28R", "TGroundDestroyed", 61, 294183, 219444, 100, 20000, false, 35, "", add);
+            addRadar("Coquelles Freya Radar", "CoqR", 2, 4, 2, "RTarget29R", "TGroundDestroyed", 63, 276566, 214150, 100, 20000, false, 35, "", add);
             addRadar("Dunkirk Radar #2", "DuRN", 2, 4, 2, "RTarget30R", "TGroundDestroyed", 77, 341887, 232695, 100, 20000, false, 35, "", add);
             //    addRadar("Dunkirk Freya Radar",           "DuRN", 2, 1, 2, "RTarget38R", "TGroundDestroyed", 77, 339793, 232797,  100, 20000, false, 35, "", add);
-            addRadar("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 50, 20000, false, 35, "", add); //Mission in mission file
-            addRadar("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 50, 20000, false, 5, "", add); //Mission in mission file
-            //addRadar("Radar Dieppe", "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 50, 20000, false, 5, "", add); //This trigger exists in the .mis file but I don't believe there are any actual radars/stationaries in this area at all
+            addRadar("Herderlot-Plage Freya Radar", "HePR", 2, 4, 2, "RTarget39R", "TGroundDestroyed", 85, 264882, 178115, 100, 20000, false, 35, "", add); //Mission in mission file
+            addRadar("Berck Freya Radar", "BrkR", 2, 4, 2, "RTarget40R", "TGroundDestroyed", 86, 263234, 153713, 100, 20000, false, 5, "", add); //Mission in mission file
+            //addRadar("Radar Dieppe", "DieR", 2, 4, 2, "RTarget41R", "TGroundDestroyed", 85, 232727, 103248, 100, 20000, false, 5, "", add); //This trigger exists in the .mis file but I don't believe there are any actual radars/stationaries in this area at all
             addRadar("Radar Le Treport", "TreR", 2, 4, 2, "RTarget42R", "TGroundDestroyed", 86, 250599, 116531, 50, 20000, false, 15, "", add); // Mission in mission file
             addRadar("Radar Somme River", "SomR", 2, 4, 2, "RTarget43R", "TGroundDestroyed", 86, 260798, 131885, 50, 20000, false, 5, "", add); //Mission in mission file
             addRadar("Radar AMBETEUSE", "AmbR", 2, 4, 2, "RTarget44R", "TGroundDestroyed", 86, 266788, 197956, 50, 20000, false, 5, "", add); //Mission in mission file
@@ -10736,7 +10738,8 @@ added Rouen Flak
         //int NumNearbyTargets = MissionObjectivesNear();
 
         int count = AirfieldTargets.Count;
-        double weight = (double)300 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets
+        double weight = (double)200 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets.  2020/02/27 was 300/count, made it 200/count to slightly decrease airports chosen for mission objectives.  There ARE a lot of them typically; maybe a little too many?  Also increased points given to airport destruction from 3 to 5 now that it takes much more tonnage to take
+           //out an airport.  So that should reduce the # of airports in a given mission objectives list because more points.
         int num_added = 0;
         int num_updated = 0;
         var allKeys = new List<AiAirport>(AirfieldTargets.Keys);
@@ -10756,7 +10759,7 @@ added Rouen Flak
                     Point3d Pos = AirfieldTargets[ap].Item7;
                     int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
                     if (Pos.x > 210000 && Pos.y > 180000 && Pos.x < 321000 && Pos.y < 270000) IndWeight = 200; //vastly increase # of airports as mission objectives, in the 'main' campaign area. 2020-01
-                    MissionObjectivesList.Add(af_name, new MissionObjective(msn, 3, IndWeight, ap, army, AirfieldTargets[ap]));
+                    MissionObjectivesList.Add(af_name, new MissionObjective(msn, 5, IndWeight, ap, army, AirfieldTargets[ap]));
                     num_added++;
                 } else if (MissionObjectivesList.ContainsKey(af_name))
                 {
@@ -11811,7 +11814,7 @@ added Rouen Flak
             int nib = mo.NumInFlakBattery;
 
             //TESTING!!!!
-            nfb = 1;
+            nfb = 2;
             nib = 3;
 
 
@@ -13148,8 +13151,8 @@ added Rouen Flak
                 { //create another radar just at the radius of the trigger area, that also must be destroyed. Then adjust points in addradarpointarea to match 90% of the total objects that are there.
                     //Going to be hard.
                     double angle = random.NextDouble() * 2 * Math.PI;
-                    double x = Math.Cos(angle) * (mo.TriggerDestroyRadius - 2.5) + mo.Pos.x; //place another radar just inside the triggerradius;
-                    double y = Math.Sin(angle) * (mo.TriggerDestroyRadius - 2.5) + mo.Pos.y;
+                    double x = Math.Cos(angle) * (mo.TriggerDestroyRadius/3) + mo.Pos.x; //place another radar SOMEWHERE INSIDE the triggerradius;
+                    double y = Math.Sin(angle) * (mo.TriggerDestroyRadius/3) + mo.Pos.y;
 
                     ISectionFile f = GamePlay.gpCreateSectionFile();
                     f = Calcs.makeStatic(f, GamePlay, this, x, y, mo.Pos.z, "Stationary.Radar.Wotan_I", side: "de");
@@ -13168,10 +13171,10 @@ added Rouen Flak
                     */
 
                     //takes a while to gpload files, so must wait a bit.
-                    Timeout(45, () =>
+                    Timeout(60, () =>
                     {
                         double numTargets = 0;
-                        GroundStationary[] gs = GamePlay.gpGroundStationarys(x, y, mo.TriggerDestroyRadius);
+                        GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
                         if (gs != null) numTargets = gs.Length;
                         int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.8))); // require 80% of the groundstationaries in the target area.  This should be quite hard.
 

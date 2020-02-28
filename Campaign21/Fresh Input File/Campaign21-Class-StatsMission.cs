@@ -5986,7 +5986,7 @@ struct
             //For now, all things we handle below are on land, so if the land type is water we just
             //get out of here immediately
             maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
-            Console.WriteLine("bomb expl on: " + landType.ToString());
+            //Console.WriteLine("bomb expl on: " + landType.ToString());
             if (landType == maddox.game.LandTypes.WATER) return;
 
 

@@ -183,7 +183,7 @@ public class KnickebeinTarget
         //if (distFromCrossBeam_m > 10000) noshow = true; //The wide 'guide beam' (ie similar to X-gerat) is let's say 6000m from the center
         //if (distFromCrossBeam_m < 16000 && mission.ran.NextDouble() * 6000 < distFromCrossBeam_m - 10000) noshow = false;
 
-        int deltaDist_km = Convert.ToInt32(Math.Round(distFromCrossBeam_m / 1000));
+        int deltaDist_km = Convert.ToInt32(Math.Floor(distFromCrossBeam_m / 1000));
         if (deltaDist_km > 10) deltaDist_km = 10;
         //if (deltaDist_km == 0) return new Tuple<double, string>(currentTargetdistance_m, "=");
 

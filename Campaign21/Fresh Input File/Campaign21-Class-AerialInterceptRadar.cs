@@ -60,7 +60,7 @@ public class AIRadarTarget
         this.player = player;
         this.place = player.Place();        
         this.mission = mission;
-        this.recalculate();
+        this.recalculateAndDisplay();
     }
 
 
@@ -79,7 +79,7 @@ public class AIRadarTarget
     }
 
     //regets player & target aircraft position & then recalculates the angles & pips
-    public bool recalculate()
+    public bool recalculateAndDisplay()
     {
         this.aircraftPos = actor.Pos();
         this.playerPos = place.Pos();
@@ -104,7 +104,7 @@ public class AIRadarTarget
         return this.calculatePips();
     }
 
-    //Call recacalculate which calls this - NOT this directly
+    //Call recacalculateAndDisplay which calls this - NOT this directly
     private bool calculatePips() {        
         inRange = true;
         checkInScope();
@@ -219,7 +219,7 @@ public class AIRadarTarget
     {
         DistancePip = new string(' ', 1) + "?" + new string(' ', 1);
         AltitudePip = new string(' ', 1) + "?" + new string(' ', 1);
-        if (this.targetDistance_m > 2.5 * AIRadarRadius_m || this.aircraftPos.z < 200 )  //So, we're giving them a break and giving the direction to target (only) starting @ 2.5x the radar distance
+        if (this.targetDistance_m > 2.25 * AIRadarRadius_m || this.aircraftPos.z < 200 )  //So, we're giving them a break and giving the direction to target (only) starting @ 2.25x the radar distance and also front AND back instead of just front
             DirectionPip = new string(' ', 1) + "?" + new string(' ', 1);
         else calcDirectionPip();
     }
@@ -228,7 +228,7 @@ public class AIRadarTarget
     public double displayPips()
     {
         if (actor == null) return 0;
-        recalculate();
+        recalculateAndDisplay();
         //Tuple<double, string> distT = new Tuple<double, string>(targetDistance_m, sbyte);
         string disp = DirectionPip + " " + DistancePip + " " + AltitudePip;
         //disp += " " + (XDist_m / 1000.0).ToString("F1") + " " + (YDist_m / 1000.0).ToString("F1") + " " + (ZDist_m / 1000.0).ToString("F1") + " " + targetRelativeAngle_deg.ToString("F0"); //FOR TESTING
@@ -245,7 +245,7 @@ public class AIRadarTarget
         if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
         if (t < 0.5) t = 0.5;//Not sure what the frequency of display update was on the real radar units, we'll say 0.5 second refresh at best?
         mission.Timeout(t, () => display_recurs());
-        
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         displayPips();
         //Console.WriteLine("air: {0:F1} {1:F1}", t, targetDistance_m);
         //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);        

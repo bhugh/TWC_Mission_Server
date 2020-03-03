@@ -231,14 +231,18 @@ public class KnickebeinTarget
     private void display_recurs()
     {
         if (!this.turnedOn) return;
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("KBXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         double t = 5.3;
         double dist = displayPips();
         if (dist < 10000 && dist >= 5000) t = dist/10000*5;
-        else if (dist < 5000 ) t = 0.1;
-        //if (t < 0.05) t = 0.05;
+        else if (dist < 5000 ) t = 0.33;
+        if (t < 0.33) t = 0.33;
+        //Based on experimentation, frequency faster than maybe 1/3 or 1/4 just led to server slowdown/lockup.  The 
         mission.Timeout(t, () => display_recurs());
-        //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);
         
+        
+        //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);
+
     }
 
 

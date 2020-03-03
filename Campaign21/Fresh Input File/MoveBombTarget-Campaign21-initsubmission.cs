@@ -1056,6 +1056,7 @@ public class Mission : AMission
          ************************************************/
 
         Timeout(187, () => { checkAirgroupsIntercept_recur(); });
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MBTXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
 
         //Timeout(27, () => { checkAirgroupsIntercept_recur(); }); //for testing
 

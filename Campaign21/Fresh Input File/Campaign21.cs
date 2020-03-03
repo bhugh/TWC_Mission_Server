@@ -77,7 +77,13 @@ using System.Timers;                 /// <= Needed for Rearm/Refuel
 /*****************************************************************************
  * TODO  / Ideas
  * 
+ * Not sure if airport repair thing is really working.  Airports don't seem to be repaired after victory.
+ * Give some list of targets partially damages, or at least primary targets.  Maybe just on primary target list, %
+ * Renew all Winners damage on the next morning after a Victory.  Probably just save the winner(s) of the previous campaign in a file & then check on startup and repair all their damage if thye are there.  Much like the previous "turned the map".
+ * Also maybe repair all the damage after a victory within the next X hours rather than over the entire day.  Maybe 6 hours or 4 hours. 
+ * 
  * Set a certain max distance each mobile unit can move each day or each time it moves.  So 5km per day or 20km per day or maybe 200km per day, whatever.
+ *  - also could implement fatal's idea that some types are a camp one day, then a traveling caravan the next, then a camp, etc.
  * Allow each objective to set how often it will be enabled or disabled.  So you have some that appear only 20% of days, some 50%, some 90%, some 100%, whatever.
  * Put in some Spitfire factory, 109 factory, bomber factory type of targets that reduce the output of those a/c for a while if taken out
  *   - This is mostly set up on MissionObjective but just needs to be implemented for some objectives AND the -supply.cs bits taken care of
@@ -383,6 +389,7 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("#1");
             //INITIALIZE OTHER MAJOR MISSION OBJECTS 
             TWCComms.Communicator.Instance.Main = (IMainMission)this; //allows -stats.cs to access this instance of Mission
+            TWCComms.Communicator.Instance.WARP_CHECK = true;
 
             covermission = new CoverMission(); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
             statsmission = new StatsMission();
@@ -486,6 +493,7 @@ public class Mission : AMission, IMainMission
     {
 
         Timeout(182.78, () => { SaveCampaignStateIntermediate(); }); //every 3 minutes or so, save
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MOSXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         if (!MISSION_STARTED) return;
         if (SaveCampaignStateIntermediate_firstRun)
         {
@@ -764,8 +772,8 @@ public class Mission : AMission, IMainMission
                 //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
                 //RADAR_REALISM = 0;
 
-                Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), 1, true, radar_realism: 0));
-                Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), 1, false, radar_realism: 0));
+                //Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), 1, true, radar_realism: 0));
+                //Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), 1, false, radar_realism: 0));
                 //listPositionAllAircraft(GamePlay.gpPlayer(), 1, true, radar_realism: 0);
                 //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false, radar_realism: 0);
                 //RADAR_REALISM = saveRealism;
@@ -844,7 +852,7 @@ public class Mission : AMission, IMainMission
             //RADAR_REALISM = -1;
             //listPositionAllAircraft(GamePlay.gpPlayer(), -1, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army        
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
-
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX4  " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -1, false, radar_realism: -1));
             //listPositionAllAircraft(GamePlay.gpPlayer(), -1, false, radar_realism: -1);
             //RADAR_REALISM = saveRealism;
@@ -857,6 +865,7 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("Writing current radar returns to file");
             //RADAR_REALISM = -1;
             //listPositionAllAircraft(GamePlay.gpPlayer(), -2, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -2, false, radar_realism: -1));
             //listPositionAllAircraft(GamePlay.gpPlayer(), -2, false, radar_realism: -1);
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -870,6 +879,7 @@ public class Mission : AMission, IMainMission
                                              //Console.WriteLine("Writing current radar returns to file");
                                              //RADAR_REALISM = -1;
                                              //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1));
             //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1);
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -883,6 +893,7 @@ public class Mission : AMission, IMainMission
                                              //Console.WriteLine("Writing current radar returns to file");
                                              //RADAR_REALISM = -1;
                                              //listPositionAllAircraft(GamePlay.gpPlayer(), -3, false, radar_realism: -1); //-1 & false will list ALL aircraft of either army
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             Task.Run(() => listPositionAllAircraft(GamePlay.gpPlayer(), -4, false, radar_realism: -1));
             //listPositionAllAircraft(GamePlay.gpPlayer(), -4, false, radar_realism: -1);
             //listPositionAllAircraft(GamePlay.gpPlayer(), 1, false);
@@ -935,7 +946,10 @@ public class Mission : AMission, IMainMission
 
             ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 200;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - this was 30 points, but with the new cover bomber system 60 points seems more reasonable.  Maybe needs to be even higher?.  //2020-02, OK so in -stats.cs it was 65 and here 30.  Thus . . . the discrepancy in airport scores. So now they are both 90 as it still seemed quite too easy.
+            int pointstoknockout = 190;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - this was 30 points, but with the new cover bomber system 60 points seems more reasonable.  Maybe needs to be even higher?.  //2020-02, OK so in -stats.cs it was 65 and here 30.  Thus . . . the discrepancy in airport scores. So now they are both 90 as it still seemed quite too easy.
+            //UPDATE 2020/02 - now setting pointstoknockout via MO_MissionObjectiveAirfieldsSetup
+            //this is still set but DOES NOTHING.  hopefully.
+
 
             double radius = ap.FieldR();
             Point3d center = ap.Pos();
@@ -1080,9 +1094,12 @@ public class Mission : AMission, IMainMission
             TimeSpan timetofix_ts = new TimeSpan(0);
             if (mo.TimeToUndestroy_UTC.HasValue) timetofix_ts = mo.TimeToUndestroy_UTC.Value - DateTime.UtcNow;
 
+            string msg2 = "";
 
-            string msg2 = " (" + (Math.Ceiling(timetofix_ts.TotalDays * 2.0) / 2.0).ToString("F1") + " days)";
+            if (timetofix_ts.TotalSeconds >= 0) msg2 = " (" + (Math.Ceiling(timetofix_ts.TotalDays * 4.0) / 4.0).ToString("F1") + " days)"; //don't display NEGATIVE time to fix days; it's been fixed.
 
+            
+            
             if (PointsTaken >= PointsToKnockOut) //airport knocked out
             {
                 percent = 1;
@@ -1227,7 +1244,7 @@ public class Mission : AMission, IMainMission
         Timeout(70 + random.Next(70,150), ()=> GamePlay.gpPostMissionLoad(f2));
 
 
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7"); //Testing for potential causes of warping
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.txt"); //testing
 
     }
@@ -2580,7 +2597,7 @@ public class Mission : AMission, IMainMission
 
         if (MapMove > 0)
         {
-            msg = word + "this sessions has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
+            msg = word + "this session has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
             outputmsg += msg + Environment.NewLine;
             if (output) gpLogServerAndLog(recipients, msg, null);
         }
@@ -2641,7 +2658,7 @@ public class Mission : AMission, IMainMission
         {
 
             //Console.WriteLine("Map Save #1");
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX8"); //Testing for potential causes of warping
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX8 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
 
             //Take care of updating Aircraft Supply here, based on Mission results
             //Also we can use the various failsafes in place to ensure mapsave happens, but no "double mapsave"
@@ -2860,7 +2877,7 @@ public class Mission : AMission, IMainMission
 
         try
         {
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX2"); //Testing for potential causes of warping
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             using (StreamReader sr = new StreamReader(STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapState.txt"))
             {
                 res = sr.ReadLine();
@@ -3772,6 +3789,7 @@ public class Mission : AMission, IMainMission
 
         //Timeout(31, () => { Task.Run(() => groupAllAircraft()); });
         Timeout(31, () => { groupAllAircraft_recurs(); });
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         //Console.WriteLine("groupAllAircraft: -1");
         Task.Run(() => groupAllAircraft());
     }
@@ -3782,6 +3800,8 @@ public class Mission : AMission, IMainMission
     {
         try
         {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("GPAAXX2-1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+
             Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = new Dictionary<AiAirGroup, AirGroupInfo>();
 
             //First go through & identify which airgroups are nearby to which others individually
@@ -4244,6 +4264,8 @@ public class Mission : AMission, IMainMission
             }
             //Console.WriteLine("groupAllAircraft: 7");
             airGroupInfoCircArr.Push(airGroupInfoDict);  //We save the last ~4 iterations of infodict on a circular array, so that we can go back & look @ what airgroups/leaders were doing in the last few minutes
+
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("GPAAXX2-2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         } catch (Exception ex)
         { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
     }
@@ -4319,6 +4341,7 @@ public class Mission : AMission, IMainMission
 
         Timeout(127, () => { aiAirGroupRadarReturns_recurs(); });
         //Console.WriteLine("groupAllAircraft: -1");
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() => aiAirGroupRadarReturns());
         //aiAirGroupRadarReturns();
 
@@ -5925,7 +5948,7 @@ public class Mission : AMission, IMainMission
                     {
                         //try
                         {
-                            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX9"); //Testing for potential causes of warping
+                            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX9 " + DateTime.UtcNow.TimeOfDay.ToString("T")); //Testing for potential causes of warping
                             string typeSuff = "";
                             if (playerArmy == -3) typeSuff = "_ADMIN";
                             if (playerArmy == -4) typeSuff = "_ADMINGROUP";
@@ -5937,6 +5960,10 @@ public class Mission : AMission, IMainMission
                             //For now the try/catch should take care of any problems, but we'll see.
                             string filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_radar.txt";
                             if (File.Exists(filepath)) { File.Delete(filepath); }
+
+                            //Ok, now this has been replaced with an async write, see below.
+
+                            /*
                             fi = new System.IO.FileInfo(filepath); //file to write to
                             sw = fi.CreateText(); // Writes Lat long & other info to file
 
@@ -5951,7 +5978,11 @@ public class Mission : AMission, IMainMission
 
                             sw.Close();
                             sw.Dispose();
+                            */
 
+                            string bigMess = "";
+                            foreach (var mess in radar_messages) bigMess += mess.Value + Environment.NewLine;
+                            Calcs.WriteAllTextAsync(filepath, bigMess);
 
                             //And, now we create a file with the list of players:
                             //TODO: This probably could/should be a separate method that we just call here
@@ -5961,8 +5992,11 @@ public class Mission : AMission, IMainMission
                             //For now the try/catch should take care of any problems, but we'll see.
                             filepath = STATSCS_FULL_PATH + SERVER_ID_SHORT.ToUpper() + typeSuff + "_players.txt";
                             if (File.Exists(filepath)) { File.Delete(filepath); }
-                            fi = new System.IO.FileInfo(filepath); //file to write to
+
+
+                            //fi = new System.IO.FileInfo(filepath); //file to write to
                             //try
+                            /*
                             {
                                 sw = fi.CreateText(); // Writes Lat long & other info to file
                                 sw.WriteLine("[[" + DateTime.UtcNow.ToString("u").Trim() + "]] " + showTimeLeft(null, false).Item1);
@@ -6026,15 +6060,15 @@ public class Mission : AMission, IMainMission
 
                                 /***TODO: Need to include some kind of current mission & campaign summary here
                                  * 
-                                 */
+                                 * /
 
-                                /*
-                                if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
-                                if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);
-                                sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
-                                sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
-                                //sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
-                                */
+                                
+                                //if (playerArmy == -2 || playerArmy == -3) sw.WriteLine(osk_BlueObjDescription);
+                                //if (playerArmy == -1 || playerArmy == -3) sw.WriteLine(osk_RedObjDescription);
+                                //sw.WriteLine("Blue Objectives complete: " + osk_BlueObjCompleted);
+                                //sw.WriteLine("Red Objectives complete: " + osk_RedObjCompleted);
+                                /////sw.WriteLine("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1"));
+                                
 
                                 sw.WriteLine(CAMPAIGN_ID.ToUpper() + " CAMPAIGN SUMMARY");
 
@@ -6119,6 +6153,164 @@ public class Mission : AMission, IMainMission
 
                             sw.Close();
                             sw.Dispose();
+                        */
+
+                            {
+                                bigMess = "";
+                                bigMess += ("[[" + DateTime.UtcNow.ToString("u").Trim() + "]] " + showTimeLeft(null, false).Item1) + Environment.NewLine;
+                                bigMess += Environment.NewLine;
+
+                                int pycount = 0;
+                                int pyinplace = 0;
+                                string msg = "";
+                                if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+                                {
+
+                                    foreach (Player py in GamePlay.gpRemotePlayers())
+                                    {
+                                        pycount++;
+                                        string pl = "(none)";
+                                        if (py.Place() != null)
+                                        {
+                                            pyinplace++;
+                                            AiActor act = py.Place();
+                                            if (act == null) continue; // no point in going on if nothing here
+
+                                            if (act as AiAircraft != null)
+                                            {
+                                                AiAircraft acf = act as AiAircraft;
+                                                string acType = Calcs.GetAircraftType(acf);
+                                                pl = acType;
+                                            }
+
+                                            if (playerArmy == -3 || playerArmy == -4)
+                                            {
+                                                //Point3d ps = Calcs.Il2Point3dToLongLat(act.Pos());
+                                                //pl += " " + ps.y.ToString("n2") + " " + ps.x.ToString("n2");
+                                                pl += " " + act.Pos().x.ToString("n0") + " " + act.Pos().y.ToString("n0");  //2018/09/20 - switching order of x & y & now need to do the same in radar.php
+                                            }
+
+                                        }
+                                        msg += py.Name() + " " + py.Army() + " " + pl + "\n";
+
+                                    }
+
+                                }
+
+                                bigMess += ("Players logged in: " + pycount.ToString() + " Active: " + pyinplace.ToString()) + Environment.NewLine;
+                                bigMess += Environment.NewLine;
+
+                                bigMess += (CAMPAIGN_ID.ToUpper() + " MISSION SUMMARY") + Environment.NewLine;
+
+                                bigMess += (string.Format("BLUE session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", BlueTotalF,
+              BlueAirF, BlueAAF, BlueNavalF, BlueGroundF)) + Environment.NewLine;
+                                bigMess += (string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
+              RedAirF, RedAAF, RedNavalF, RedGroundF)) + Environment.NewLine;
+                                bigMess += Environment.NewLine;
+
+                                bigMess += ("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue])) + Environment.NewLine;
+                                bigMess += Environment.NewLine;
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]) + Environment.NewLine;
+
+                                bigMess += ("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red])) + Environment.NewLine;
+                                bigMess += Environment.NewLine;
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]) + Environment.NewLine;
+
+                                /***TODO: Need to include some kind of current mission & campaign summary here
+                                 * 
+                                 */
+
+                                
+                                //if (playerArmy == -2 || playerArmy == -3) bigMess += (osk_BlueObjDescription) + Environment.NewLine;
+                                //if (playerArmy == -1 || playerArmy == -3) bigMess += (osk_RedObjDescription) + Environment.NewLine;
+                                //bigMess += ("Blue Objectives complete: " + osk_BlueObjCompleted) + Environment.NewLine;
+                                //bigMess += ("Red Objectives complete: " + osk_RedObjCompleted) + Environment.NewLine;
+                                /////bigMess += ("Blue/Red total score: " + (BlueTotalF).ToString("N1") + "/" + (RedTotalF).ToString("N1")) + Environment.NewLine;
+                                
+
+                                bigMess += (CAMPAIGN_ID.ToUpper() + " CAMPAIGN SUMMARY") + Environment.NewLine;
+
+                                Tuple<double, string> res = CalcMapMove("", false, false, null);
+                                bigMess += (res.Item2) + Environment.NewLine;
+                                double newMapState = CampaignMapState + res.Item1;
+                                bigMess += (summarizeCurrentMapstate(newMapState + MissionObjectiveScore[ArmiesE.Red] / 100.0 - MissionObjectiveScore[ArmiesE.Blue] / 100.0, false, null)) + Environment.NewLine; //We don't add in the objective points any more until map turned/ so for display purposes we can add them here.
+
+
+                                if (msg.Length > 0)
+                                {
+                                    bigMess += Environment.NewLine;
+                                    bigMess += ("PLAYER SUMMARY") + Environment.NewLine;
+                                    bigMess += (msg) + Environment.NewLine;
+                                }
+
+                                //try
+                                {
+                                    msg = ListRadarTargetDamage(null, -1, false, false); //Add the list of current radar airport conditions
+                                    msg += Environment.NewLine;
+                                    msg += ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
+                                    if (msg.Length > 0)
+                                    {
+                                        bigMess += Environment.NewLine;
+                                        bigMess += ("RADAR AND AIRFIELD CONDITION SUMMARY");
+                                        bigMess += (msg);
+                                    }
+                                }
+                                //catch (Exception ex) { Console.WriteLine("Radar Write34: " + ex.ToString()); }
+
+                                bigMess += Environment.NewLine;
+                                //string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
+                                //string netBlue = TWCStatsMission.Display_SessionStatsAll(null, 2, false, false);
+                                string netRed = statsmission.Display_SessionStatsAll(null, 1, false, false);
+                                string netBlue = statsmission.Display_SessionStatsAll(null, 2, false, false);
+                                bigMess += ("PLAYER ACTIVITY SUMMARY") + Environment.NewLine;
+                                bigMess += (netBlue) + Environment.NewLine;
+                                bigMess += (netRed) + Environment.NewLine;
+
+                                if (TWCSupplyMission != null)
+                                {
+                                    bigMess += Environment.NewLine;
+                                    if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) bigMess += (TWCSupplyMission.ListAircraftLost(2, null, false, false)) + Environment.NewLine;//bigMess += ("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]) + Environment.NewLine;
+                                                                                                                                                                         //if (playerArmy == -3 || playerArmy == -4) bigMess += Environment.NewLine;
+                                    if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) bigMess += (TWCSupplyMission.ListAircraftLost(1, null, false, false)) + Environment.NewLine;//bigMess += ("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]) + Environment.NewLine;
+
+
+                                }
+
+
+                                msg = "";
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) msg += MO_ListScoutedObjectives(null, 2) + Environment.NewLine;
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) msg += MO_ListScoutedObjectives(null, 1) + Environment.NewLine;
+
+                                if (msg.Length > 0)
+                                {
+                                    bigMess += Environment.NewLine;
+                                    bigMess += (CAMPAIGN_ID.ToUpper() + " RECONNAISSANCE SUMMARY") + Environment.NewLine;
+                                    bigMess += (msg) + Environment.NewLine;
+                                }
+
+
+                                msg = "";
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4)
+                                {
+                                    if (TWCSupplyMission != null) msg += (TWCSupplyMission.DisplayNumberOfAvailablePlanes(2, null, false)) + Environment.NewLine;
+                                }
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4)
+                                {
+                                    if (TWCSupplyMission != null) msg += (TWCSupplyMission.DisplayNumberOfAvailablePlanes(1, null, false)) + Environment.NewLine;
+                                }
+
+                                if (msg.Length > 0)
+                                {
+                                    bigMess += Environment.NewLine;
+                                    bigMess += (CAMPAIGN_ID.ToUpper() + " CURRENT AIRCRAFT STOCK LEVELS") + Environment.NewLine;
+                                    bigMess += (msg) + Environment.NewLine;
+                                }
+
+                            }
+
+                            Calcs.WriteAllTextAsync(filepath, bigMess);
+
+                            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX9-2 " + DateTime.UtcNow.TimeOfDay.ToString("T")); //Testing for potential causes of warping
 
 
                         }
@@ -6181,8 +6373,8 @@ public class Mission : AMission, IMainMission
                     Console.WriteLine("Radar ERROR37: " + ex.ToString());
                 }*/
 
-            }
-        } /* catch (Exception ex)
+                            }
+                        } /* catch (Exception ex)
         {
             Console.WriteLine("Radar ERROR: " + ex.ToString());
         }*/
@@ -8442,7 +8634,7 @@ public class Mission : AMission, IMainMission
     {
         try
         {
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX3"); //Testing for potential causes of warping
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             FileInfo fi = new FileInfo(messageLogPath);
             StreamWriter sw;
             if (fi.Exists) { sw = new StreamWriter(messageLogPath, true, System.Text.Encoding.UTF8); }
@@ -9930,17 +10122,18 @@ public class Mission : AMission, IMainMission
             //MissionObjective(Name,          Flak ID, OwnerArmy,points,ID, Days to repair, Trigger Type,Trigger percentage, location x, location y, trigger radius, radar effective radius, isPrimaryTarget, PrimaryTargetWeight (0-200), comment) {
             //weights change 0-200, many weights below adjusted, 2020-01
             //Prior to 2/15/2020 I had moved most Red Radar trigger % to about 40%.  Then 2/24 moved up to 70% to make it harder.  Now moved to 80% to make it even harder.  2020/02/27.
-            addRadar("Westgate Radar", "WesR", 1, 4, 3, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 30, "", add);
-            addRadar("Sandwich Radar", "SanR", 1, 4, 3, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 25000, false, 30, "", add);
-            addRadar("Deal Radar", "DeaR", 1, 4, 3, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 30, "", add);
-            addRadar("Dover Radar", "DovR", 1, 4, 3, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 30, "", add);
-            addRadar("Brookland Radar", "BroR", 1, 4, 3, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 30, "", add);
-            addRadar("Dungeness Radar", "DunR", 1, 4, 3, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 30, "", add);
-            addRadar("Eastbourne Radar", "EasR", 1, 4, 3, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 10, "", add);
-            addRadar("Littlehampton Radar", "LitR", 1, 4, 3, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 35000, false, 10, "", add);
-            addRadar("Ventnor Radar", "VenR", 1, 4, 3, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 35000, false, 10, "", add);
+            //Note that these are in the .mis file.
+            addRadar("Westgate Radar", "WesR", 1, 4, 2, "BTarget14R", "TGroundDestroyed", 39, 244791, 262681, 150, 25000, false, 30, "", add);
+            addRadar("Sandwich Radar", "SanR", 1, 4, 2, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 25000, false, 30, "", add);
+            addRadar("Deal Radar", "DeaR", 1, 4, 2, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 30, "", add);
+            addRadar("Dover Radar", "DovR", 1, 4, 2, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 30, "", add);
+            addRadar("Brookland Radar", "BroR", 1, 4, 2, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 30, "", add);
+            addRadar("Dungeness Radar", "DunR", 1, 4, 2, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 30, "", add);
+            addRadar("Eastbourne Radar", "EasR", 1, 4, 2, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 10, "", add);
+            addRadar("Littlehampton Radar", "LitR", 1, 4, 2, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 35000, false, 10, "", add);
+            addRadar("Ventnor Radar", "VenR", 1, 4, 2, "BTarget22R", "TGroundDestroyed", 75, 70423, 171706, 200, 35000, false, 10, "", add);
             addRadar("Radar Communications HQ", "HQR", 1, 6, 3, "BTarget28", "TGroundDestroyed", 61, 180207, 288435, 200, 350000, false, 5, "", add);
-            addRadar("Radar Poole", "PooR", 1, 6, 3, "BTarget23R", "TGroundDestroyed", 75, 15645, 170552, 200, 35000, false, 5, "", add);
+            addRadar("Radar Poole", "PooR", 1, 6, 2, "BTarget23R", "TGroundDestroyed", 75, 15645, 170552, 200, 35000, false, 5, "", add);
 
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             //addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
@@ -10514,6 +10707,7 @@ added Rouen Flak
         SaveMapState(ArmiesL[(int)army], intermediateSave: true, intermediateWin: true); //This calcs the new mapstate & saves to disk.  
         MO_MissionObjectiveRollingWinnersReward(army); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
         MO_SelectPrimaryObjectives((int)army, 0, fresh: true);
+        MO_WritePrimaryObjectives(); //POSSIBLE BUG - this might erase other army's objectives?  Shouldn't but might.
         mission_objectives.SelectSuggestedObjectives(army);
         Timeout(10, () => //delay this so it synchronizes with the HUD & LOG messages.  This must happen after SaveMapState (intermediateWin: true) which updates the current MapState.
         {
@@ -10758,7 +10952,7 @@ added Rouen Flak
                                                                              //Console.WriteLine("AP: " + AirfieldTargets[ap].Item2 + "_airfield");
                     Point3d Pos = AirfieldTargets[ap].Item7;
                     int army = GamePlay.gpFrontArmy(Pos.x, Pos.y);
-                    if (Pos.x > 210000 && Pos.y > 180000 && Pos.x < 321000 && Pos.y < 270000) IndWeight = 200; //vastly increase # of airports as mission objectives, in the 'main' campaign area. 2020-01
+                    if (Pos.x > 210000 && Pos.y > 180000 && Pos.x < 321000 && Pos.y < 270000) IndWeight = 150; //vastly increase # of airports as mission objectives, in the 'main' campaign area. 2020-01. Was 200, now adjusting to 150.  2020/02/28
                     MissionObjectivesList.Add(af_name, new MissionObjective(msn, 5, IndWeight, ap, army, AirfieldTargets[ap]));
                     num_added++;
                 } else if (MissionObjectivesList.ContainsKey(af_name))
@@ -10772,10 +10966,11 @@ added Rouen Flak
                     //damagePoints = mo.DestroyedPercent * oldAp.Item3;  //so if the airport was partially knocked out before, it still remains that way
                     //between this & the last-hit time the airport routine can calculate airport repair time accurately.
                     //so if the airport was partially knocked out before, it still remains that way
-                    double PointsTaken = oldAp.Item4;
-                    double PointsToKnockout = oldAp.Item3;                    
-                    bool apDestroyed = false;
-                    DateTime lastHitTime = DateTime.UtcNow; //time of last damage hit; IF we don't have this, we set it to right now
+                    //double PointsTaken = oldAp.Item4;
+                    double PointsTaken = 0; //default value
+                    double PointsToKnockout = 190; //Was 30, then 30 for blue airfields & 65 for red, then bombing adjustment by bomber, then both were 65, then 90 when cover bombers introduced, then 200 as 90 seemed far too easy with cover bombers, then backing it off a bit to 190.
+                    bool apDestroyed = false; //default valiue
+                    DateTime lastHitTime = DateTime.UtcNow; //default value for time of last damage hit; IF we don't have this, we set it to right now
 
                     //These are the two things saved to disk in MissionObjectivesList & that we MUST transfer over the AP list:
                     if (mo.LastHitTime_UTC.HasValue) lastHitTime = mo.LastHitTime_UTC.Value;
@@ -10793,41 +10988,25 @@ added Rouen Flak
                             mo.OrdnanceOnTarget_kg = 0;
                             mo.ObjectsDestroyed_num = 0;
                             PointsTaken = 0;
-                        } else //it is still destroyed, so we need to mark it destroyed & actually destroy it
-                        {
-                            apDestroyed = true;
-                            /*
-                              Unfortunately we must reverse engineer the damage point total from time remaining to repair
-                              here is the formula:
-                                  timetofix = 24 * 60 * 60; //24 hours to repair . . . if they achieve 100% knockout.  That is a little bonus beyond what the actual formula says, due ot total knockout
-                                  timetofix += (PointsTaken - PointsToKnockOut) * 20 * 60; //Plus they achieve any additional knockout/repair time due to additional bombing beyond 100%, because those will have to be 
-                              */
-                            //with airports, we just leave damage points in place & keep accruing them.  There is a formula (complicated!)
-                            //in the ap routine the keeps adding more points & more time until repair, depending on previous repairs & how much time
-                            //since last bomb dropped etc.  So it keeps track of how much time left until it will be undestroyed via this method.
-                            //Changing the % & damagePoints amount etc just messes this up.
-                            /*
-                          double perc = 1.0;// if it's knocked out, we start there.  100%
-                          double hrs = mo.TimeToUndestroy_UTC.Value.Subtract(DateTime.UtcNow).TotalHours;
-                          if (hrs > ) perc += (hrs - 24) / 24; //If it's knocked out more than 24 hours it mus t have more damage poitns than just pointstoknockout
-                                                                 //figuring this allows ppl to keep piling on damage points if they so wish
-                          damagePoints = oldAp.Item3 * perc;
-                          */
-
-                            AirfieldDisable(ap, 1);
-
                         }
-                    } else if (PointsTaken > 0) //damaged but not completely destroyed.  So we scatter some craters in proportion to how destroyed it is.
+                        else //it is still destroyed, so we need to mark it destroyed & actually destroy it
+                        {
+                            AirfieldDisable(ap, 1);
+                        }
+                    }
+                    else if (PointsTaken > 0) //damaged but not completely destroyed.  So we scatter some craters in proportion to how destroyed it is.
+                                              //TODO: Here we COULD save the old crater pattern exactly as it was @ mission start, and then restore it exactly . . .
                     {
                         double percent = PointsTaken / PointsToKnockout;
                         AirfieldDisable(ap, percent);
 
                     }
+
                     AirfieldTargets.Remove(ap); //not sure if this is 100% necessary??
                     AirfieldTargets[ap] = new Tuple<bool, string, double, double, DateTime, double, Point3d>(
-                        apDestroyed, //bool disabled
+                        mo.Destroyed, //bool disabled
                         oldAp.Item2, //name
-                        oldAp.Item3, //pointstoknockout
+                        PointsToKnockout, //pointstoknockout
                         PointsTaken, //damage point total
                         lastHitTime,
                         oldAp.Item6, // airfield radius
@@ -12283,7 +12462,7 @@ added Rouen Flak
         string filepath_old = STATSCS_FULL_PATH + CAMPAIGN_ID + "_MapObjectives_old.ini";
         string currentContent = String.Empty;
 
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX5"); //Testing for potential causes of warping
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX5 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         //Save most recent copy of Campaign Map Score with suffix _old
         try
         {
@@ -12772,7 +12951,7 @@ added Rouen Flak
                 if (entry.Key.Item3 == null) continue;
                 //Console.WriteLine("RCRec: #3da");
                 //if (entry.Key.Item3.name == null) continue;
-                Console.WriteLine("RCRec: #3da");
+                //Console.WriteLine("RCRec: #3da");
                 //if (entry.Key.Item3.army == null) continue;
                 /* Console.WriteLine("RCRec: #3da");
                 Console.WriteLine("RCRec: #3db" + aplayer.name);
@@ -12945,11 +13124,17 @@ added Rouen Flak
 
             if (numDisplayed >= numToDisplay) break;
             MissionObjective mo = entry.Value;
-            if (!mo.ObjectiveAchievedForPoints && mo.AttackingArmy == army && mo.IsPrimaryTarget && mo.IsEnabled)
+            if (!mo.ObjectiveAchievedForPoints && mo.AttackingArmy == army && mo.IsPrimaryTarget)
             {
 
                 string msg1 = "Recon area: " + mo.bigSector;
-                if (mo.Scouted) msg1 = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")";
+                if (mo.Scouted)
+                {
+                    string pc = "";
+                    if (mo.DestroyedPercent > 0) pc = " " + (mo.DestroyedPercent * 100.0).ToString("F0") + "%";
+
+                    msg1 = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")" + pc;
+                }
                 retmsg += msg1 + newline;
                 totDelay += delay;
                 if (display)
@@ -13025,7 +13210,7 @@ added Rouen Flak
 
         }
 
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX6"); //Testing for potential causes of warping
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX6 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         try
         {
             string filepath = CLOD_PATH + FILE_PATH + @"/" + filename;
@@ -13861,6 +14046,7 @@ added Rouen Flak
     public void MO_ObjectiveUndestroy_recurs()
     {
         Timeout(316.3, () => { MO_ObjectiveUndestroy_recurs(); });
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MMOXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         DateTime currTime_UTC = DateTime.UtcNow;
         List<string> molk = new List<string>(MissionObjectivesList.Keys.ToList());
         foreach (string ID in molk)
@@ -16097,7 +16283,7 @@ added Rouen Flak
     {
         try
         {
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX4"); //Testing for potential causes of warping
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX4 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             using (StreamWriter file = new StreamWriter(RESULTS_OUT_FILE, false))
             {
                 file.WriteLine(result);
@@ -17174,9 +17360,9 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         }
 
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
-                                                                                        //f.save(path + "smoke-ISectionFile.txt"); //testing
-                                                                                        //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                                                                                                                   //f.save(path + "smoke-ISectionFile.txt"); //testing
+                                                                                                                   //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
         msn.Timeout(clc_random.NextDouble() * 45, () => {
             GamePlay.gpPostMissionLoad(f);
             //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/craters_smoke"+clc_random.Next(10,99).ToString()); //testing

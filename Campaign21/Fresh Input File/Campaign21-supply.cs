@@ -336,6 +336,7 @@ public class Mission : AMission, ISupplyMission
         Timeout(33.33, () => { SaveSupplyRecursive(false); } );
         //WritePrimarySupply(supplySuffix, false, firstTime);
 
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SUXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() => WritePrimarySupply(supplySuffix, false, firstTime));
     }
 
@@ -531,7 +532,7 @@ public void ReadSupply(string suffix)
         DateTime dt = DateTime.UtcNow;
         string date = dt.ToString("u");
         bool ret = true;
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("UXX1"); //Testing for potential causes of warping
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("UXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
 
         //Console.WriteLine("MO_Write #2");
 

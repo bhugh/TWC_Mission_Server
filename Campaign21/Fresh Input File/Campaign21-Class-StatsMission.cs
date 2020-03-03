@@ -1846,7 +1846,7 @@ struct
                 sw.Flush();
                 sw.Close();
                 */
-                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11", null); //testing disk output for warps
+                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX11 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
                 string date = DateTime.UtcNow.ToString("u");
                 Task.Run(() => File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data));
                 //File.AppendAllText(stbCmr_ErrorLogPath, "\n" + date + " - " + (string)data);
@@ -1931,7 +1931,7 @@ struct
             sw.Close();
             */
             //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8", null); //testing disk output for warps
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX8 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
             string date = DateTime.UtcNow.ToString("u");
             Task.Run(() => File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data));
             //File.AppendAllText(stb_ErrorLogPath, "\n" + date + " - " + (string)data);
@@ -2433,8 +2433,8 @@ struct
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
         //f.save(stb_FullPath + "aircraftSpawn-ISectionFile.txt"); //testing
 
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13", null); //testing disk output for warps
-                                                                                         //load it in
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                                                                                                                    //load it in
         GamePlay.gpPostMissionLoad(f);
 
         return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
@@ -5924,9 +5924,9 @@ struct
         */
 
         //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
-                                                                                        //f.save(path + "smoke-ISectionFile.txt"); //testing
-                                                                                        //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
+        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                                                                                                                   //f.save(path + "smoke-ISectionFile.txt"); //testing
+                                                                                                                   //load the file after a random wait (to avoid jamming them all in together on mass bomb drop
         Timeout(stb_random.NextDouble() * 45, () => { GamePlay.gpPostMissionLoad(f); });
 
 
@@ -9655,8 +9655,8 @@ struct
                 sw.Close();
                 */
                 //TODO: Should just AppendAllText(    string path,    string contents ) instead of all the above
-                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX10", null); //testing disk output for warps
-                string date = DateTime.UtcNow.ToString("u");
+                if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX10 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+            string date = DateTime.UtcNow.ToString("u");
                 Task.Run(() => File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data));
                 //File.AppendAllText(stbRaa_ErrorLogPath, "\n" + date + " - " + (string)data);
             }
@@ -10218,8 +10218,8 @@ struct
                     FileInfo fi = new FileInfo(stbSr_PlayerStatsPathTxt);
                     if (fi.Exists)
                     {
-                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX1", null); //testing disk output for warps
-                        StreamReader sr = File.OpenText(stbSr_PlayerStatsPathTxt);
+                        //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX1 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                    StreamReader sr = File.OpenText(stbSr_PlayerStatsPathTxt);
                         string s = sr.ReadToEnd();
                         sr.Close();
                         if (s == null) return;
@@ -11277,7 +11277,7 @@ struct
             StatsMission.Stb_PlayerSessStat RS = mission.stb_SaveIPlayerStat.RedSessStats;
             string ms = "";
 
-            /*
+            /*f
             //Write out the current Red & Blue TEAM totals so that -main.cs can use them as part of mission objectives etc.
             try
             {
@@ -11644,8 +11644,8 @@ struct
                     int currTime_sec = StatCalcs.TimeSince2016_sec();
 
 
-                    if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX3", null); //testing disk output for warps
-                    int numLines = (int)Math.Ceiling((stbSr_numStats / (double)50)); //numStats should be a mult of 50 but we round up here just in case.
+                    //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX3 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                int numLines = (int)Math.Ceiling((stbSr_numStats / (double)50)); //numStats should be a mult of 50 but we round up here just in case.
                     using (StreamWriter sw = new StreamWriter(stbSr_PlayerStatsPathTxt + ".tmp", false, System.Text.Encoding.UTF8))
                     {
                         foreach (KeyValuePair<string, int[]> entry in stbSr_AllPlayerStats)
@@ -11770,8 +11770,8 @@ struct
                 {
                     if (stbSr_LogStatsCreateHtmlLow)
                     {
-                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX4", null); //testing disk output for warps
-                        using (StreamWriter sw = new StreamWriter(stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow, false, System.Text.Encoding.UTF8))
+                        //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX4 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                    using (StreamWriter sw = new StreamWriter(stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow, false, System.Text.Encoding.UTF8))
                         {
                             sw.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
                             sw.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
@@ -12303,8 +12303,8 @@ struct
                 {
                     if (stbSr_LogStatsCreateHtmlLow)
                     {
-                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX8", null); //testing disk output for warps
-                        int save_min = 15;
+                        //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX8 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                    int save_min = 15;
                         string filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow;
 
                         //string previous_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + "-previous" + stbSr_PlayerStatsPathHtmlExtLow;
@@ -12383,8 +12383,8 @@ struct
                         //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
                         if (file_exists && !immediate_save && !intermediate_win && (lastwrite.AddMinutes(save_min) > now || !changed)) return;
 
-                        if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5", null); //testing disk output for warps
-                        using (StreamWriter sw = new StreamWriter(filename, append, System.Text.Encoding.UTF8))
+                        //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                    using (StreamWriter sw = new StreamWriter(filename, append, System.Text.Encoding.UTF8))
                         {
 
                             if (!append)
@@ -12415,9 +12415,9 @@ struct
 
 
                                 sw.WriteLine("<p>For " + DateTime.Now.ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + " - scroll to end for most recent stats</p>");
-                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + prev_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to Team Stats for " + DateTime.Now.AddDays(-1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a> - ");
+                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + prev_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to Team Stats for " + DateTime.Now.AddDays(-1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a> <<<<=====>>>> ");
 
-                                sw.WriteLine("<p><a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + next_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to " + DateTime.Now.AddDays(1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a>" + "</p>");
+                                sw.WriteLine("<a href=\"" + stbSr_LogStatsUploadFilenameTeamPrevLow + next_date_for_filename + mission.stb_LogStatsUploadAddressExtLow + "\">Go to " + DateTime.Now.AddDays(1).ToUniversalTime().ToString("ddd, dd MMM yyyy 'GMT'") + "</a>" + "</p>");
 
                                 sw.WriteLine(this.mission.stb_StatsWebPageLinksLine);
                                 string alive_dead_pilots_line = "<p><i><b>Click for " + this.mission.stb_ServerName_Public + ":</b> <a href=\"" + stbSr_LogStatsUploadFilenameLow + "\">Current ALIVE pilots stats list</a> - <a href=\"" + stbSr_LogStatsUploadFilenameDeadPilotsLow + "\">DEAD pilots stats list (archive)</a></i></p>";
@@ -12467,8 +12467,8 @@ struct
             string ms = "";
             try
             {
-                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX12", null); //testing disk output for warps
-                string filepath = mission.stb_FullPath + "CampaignSummary.txt";
+                //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX12 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+            string filepath = mission.stb_FullPath + "CampaignSummary.txt";
                 string campaignSummary = "";
                 if (File.Exists(filepath))
                 {
@@ -12553,8 +12553,8 @@ struct
             try
             {
                 //StbSr_WriteLine("Stats: Uploading stats via sftp.");
-                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX14");
-                if (String.IsNullOrWhiteSpace(filename))
+                //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX14 " + DateTime.UtcNow.ToString("T"));
+            if (String.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("Source filename missing.");
 
                 //if (String.IsNullOrWhiteSpace(destFilePath))
@@ -12569,9 +12569,9 @@ struct
                 // get the object used to communicate with the server.
                 FtpWebRequest request = CreateFtpRequest(serverUri, WebRequestMethods.Ftp.UploadFile, username, password);
 
-                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX6", null); //testing disk output for warps
-                                                                                                    // read file into byte array
-                StreamReader sourceStream = new StreamReader(filename);
+                //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX6 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                                                                                                                               // read file into byte array
+            StreamReader sourceStream = new StreamReader(filename);
                 byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
                 sourceStream.Close();
                 request.ContentLength = fileContents.Length;
@@ -12730,8 +12730,8 @@ struct
                 sw.Flush();
                 sw.Close();
                 */
-                if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX7", null); //testing disk output for warps
-                string date = DateTime.UtcNow.ToString("u");
+                //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX7 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+            string date = DateTime.UtcNow.ToString("u");
 
                 Task.Run(() => File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data));
             }
@@ -13167,8 +13167,8 @@ struct
             //maybe this part dies silently some times, due to f.save or perhaps section file load?  PRobably needs try/catch
             //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
             //f.save(path + "smoke-ISectionFile.txt"); //testing
-            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9", null); //testing disk output for warps
-            GamePlay.gpPostMissionLoad(f);
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX9 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+        GamePlay.gpPostMissionLoad(f);
 
 
             //TODO: This part isn't working; it never finds any of the smokes again.

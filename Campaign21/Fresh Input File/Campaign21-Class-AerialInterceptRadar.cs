@@ -21,6 +21,36 @@ using part;
 
 using TWCComms;
 
+/*
+ * 
+ * //Ok, this is promising I think.  Just convert down all the nearby contacts to x/y coordinates & plot like this, then display via the chat window:
+        string chatPip = @"
+        - symbol seems best as far as matching length with a variety of fonts.  
+ *   +++++++++6+++++
+ *   ++7++++++++++++
+ *   +++++++++++++++
+ *   +++++++++++++++
+ *   +++4+++++++++++
+ *   ++++++++++++1++
+ *   ++++0++++++++++
+ * 
+ *   .........6.....
+ *   ..7............
+ *   ...............
+ *   ...............
+ *   ...4...........
+ *   ............1..
+ *   ....0..........
+ *   
+ *   ---------6-----
+ *   --7------------
+ *   ---------------
+ *   ---------------
+ *   ---4-----------
+ *   ------------1--
+ *   ----0----------
+ * 
+ * */
 
 
 public class AIRadarTarget
@@ -76,7 +106,7 @@ public class AIRadarTarget
     {
         this.turnedOn = false;
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
-    }
+    }    
 
     //regets player & target aircraft position & then recalculates the angles & pips
     public bool recalculateAndDisplay()
@@ -233,7 +263,22 @@ public class AIRadarTarget
         string disp = DirectionPip + " " + DistancePip + " " + AltitudePip;
         //disp += " " + (XDist_m / 1000.0).ToString("F1") + " " + (YDist_m / 1000.0).ToString("F1") + " " + (ZDist_m / 1000.0).ToString("F1") + " " + targetRelativeAngle_deg.ToString("F0"); //FOR TESTING
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, disp);
-        //Console.WriteLine(disp);
+
+/* //Ok, this is promising I think.  Just convert down all the nearby contacts to x/y coordinates & plot like this, then display via the chat window:
+        string chatPip = @"
+---------6----------------7---
+--7----------------2----------
+------------------------------
+---------------------5-----3--
+---4--------------------------
+------------1-----------7-----
+----0-------------------3-----";
+
+        mission.GamePlay.gpLogServer(new Player[] { player }, chatPip, null);
+        
+
+        Console.WriteLine(chatPip);
+        */
         return targetDistance_m;
     }
 
@@ -250,6 +295,363 @@ public class AIRadarTarget
         //Console.WriteLine("air: {0:F1} {1:F1}", t, targetDistance_m);
         //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);        
     }
+}
+
+
+public class AIRadarTargetArray
+{
+    public static double AIRadarRadius_m = 8000; //historically it was 4000m.  We're actually saying this a "square" rather than "circle" radius here as our display area is a square/rectangle
+    public static double AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+
+    public static int GridHeight = 14; //Note the Height+1 rows will be created; bottom row a brief indicator of what's behind
+    public static int GridWidth = 21; //Note that GridWidth should be ODD as that will place the main a/c right in the center column
+    //In this font _ = + # are all roughly same width.  - ^ * are all about half that width
+    public static char GridChar = '_';
+    public static char GridBackChar = '=';
+    public static char GridOriginChar = '#';
+    public static char GridBackIndicatorChar = '+';
+    public static char GridEqualAltCharacter = '=';
+    public static char GridGroundClutterCharacter = '~';
+
+    public double delay_s = 7;
+
+
+    public char[,] Grid = new char[GridWidth, GridHeight + 1];
+        
+    public Player player { get; set; }
+    public AiActor place { get; set; }
+    public Point3d playerPos { get; set; }
+    public Vector3d playerVwld { get; set; }
+
+    public List<AiAircraft> aircraftList { get; set;  }
+
+    public double targetRelativeAngle_deg { get; set; } //angle from player to target, relative to the player's current direction   
+    public double targetHeightAngle_deg { get; set; } //angle from player in altitude/height
+    public double targetDistance_m { get; set; } //distance from player to target in km
+
+    public double XDist_m { get; set; } //distance front/back of target from player direction
+    public double YDist_m { get; set; } //distance left/right of target from player direction
+    public double ZDist_m { get; set; } //altitude distance player to target
+
+    public string DirectionPip { get; set; }
+    public string AltitudePip { get; set; }
+    public string DistancePip { get; set; }
+
+    public bool inRange { get; set; }
+    public bool turnedOn { get; set; }
+
+    public AMission mission { set; get; }
+
+    public AIRadarTargetArray(Player player, AMission mission, double delay_s = 7)
+    {
+        //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+        this.player = player;                       
+        this.place = player.Place();
+        this.mission = mission;
+        this.delay_s = delay_s;
+    }
+
+
+    //start display
+    public void turnOn()
+    {
+        this.turnedOn = true;
+        display_recurs();
+    }
+
+    //end display
+    public void turnOff()
+    {
+        this.turnedOn = false;
+        //if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+    }
+
+    public void getAircraftList() {
+        this.aircraftList = AIRadarCalcs.AllAircraftNearSorted(mission, playerPos, playerVwld, 0, AIRadarTargetArray.AIRadarRadius_m * 1.414); //get a/c in radius*1.414 centered at player a/c
+    }
+
+    public virtual void initGrid()
+    {
+        for (int i = 0; i < GridWidth; i++)
+            for (int j = 0; j <= GridHeight; j++)
+            {
+                Grid[i, j] = GridChar;
+                if (j==0) Grid[i, j] = GridBackChar; //the brief display of what's behind
+            }
+
+        Grid[(GridWidth - 1) / 2, 1] = GridOriginChar;//The center, where the main a/c is
+    }
+
+    public virtual void displayGrid()
+    {
+        double distanceLimit_m = (playerPos.z * 1.5); //approximating that the radar couldn't see out further than the plane was tall
+        int XLimitPos = Convert.ToInt32(Math.Round(distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2.0)) + 1;
+        int XLimitNeg =  Convert.ToInt32(Math.Round(-distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1 )/ 2.0)) - 1 ;
+        int YLimit = Convert.ToInt32(Math.Round((distanceLimit_m * 1.5) / AIRadarRadius_m * ((double)GridHeight))) + 1;
+
+        Console.WriteLine("Grid limits: {0} {1} {2} ", XLimitNeg, XLimitPos, YLimit);
+
+        double delay = 0.0;
+        for (int j = GridHeight -1 ; j >= 0; j--)
+        {
+            if (j > YLimit) continue; //the early radar could only see out about as far as the altitude of the a/c; after that overwhelmed by ground return.  So this approximates that.
+            string line = "";// new string(Grid[, j]);
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; // line += GridGroundClutterCharacter;
+                else line += Grid[i, j];
+            }
+            mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
+            delay += 0.01;
+        }        
+    }
+
+    public virtual void placeItemInGrid(Point3d p)
+    {
+        //int XPos, YPos, Zpos = 0;       //so 0,0,0 is our "ERROR" or too large value, as we can't place an item at 0,0,0.
+                                        //if (Math.Abs(XDist_m)<=AIRadarRadius_m)
+        int XPos = Convert.ToInt32(Math.Round(p.y / AIRadarRadius_m * ((double)GridWidth-1)/2.0 + (double)GridWidth/2.0));
+        int YPos = Convert.ToInt32(Math.Round(p.x / AIRadarRadius_m * ((double)GridHeight)));
+        double origtemp = (p.z / AIRadarRadius_m * 5) + 5.0;
+        double temp = Math.Sign(p.z) * Math.Floor(Math.Sqrt(Math.Abs(p.z / AIRadarRadius_m)) * 5) + 5.0;
+        Console.WriteLine("ZP dbl: {0} {1}", temp, origtemp);
+        int ZPos = 5;
+        try
+        {
+            ZPos = Convert.ToInt32(temp); //Height will always be represented 0-9, so 5 digits in each direction.  Sqrt gives us more resolution near the players altitude and compresses the alt difference at more distant altitudes.
+        } catch (Exception ex) { Console.WriteLine("AIRadar Int conversion error on ZP dbl: {0} ", temp); ZPos = 5; }
+
+
+        if (XPos >= 0 && XPos < GridWidth && ZPos >= -15 & ZPos <= 15)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  //If in front, place # 0-9 in the right place in the grid to indicate the position
+            {
+                char zind = '>';
+                if (ZPos < 0) zind = '<';
+                else if (ZPos < 10)
+                {
+                    zind = Convert.ToChar(ZPos.ToString());
+                    if (Math.Abs(p.z) < 100) zind = GridEqualAltCharacter;
+                }
+
+                if (XPos == (GridWidth - 1) / 2 && YPos == 0 && ZPos < 7 && ZPos > 2) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+                 
+                Grid[XPos, YPos + 1] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            else if (YPos < 0 && YPos >= -GridHeight/4  && ZPos<9 && ZPos >1)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                Grid[XPos, 0] = GridBackIndicatorChar;
+            }
+        }
+    }
+
+    public void getPlayerACData() {
+            
+        this.playerPos = place.Pos();
+
+        if ((place.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
+        else  this.playerVwld = (place.Group() as AiAirGroup).Vwld();
+   }
+
+    //regets player & target aircraft position & then recalculates the angles & pips
+    public Point3d? calcAircraftRelativePosition(AiActor actor)
+    {
+        if (actor == null) return null;
+        Point3d aircraftPos = actor.Pos();
+        if (aircraftPos.z < 250) return null; // couldn't detect a/c close than about 1000 ft to the ground; ground clutter
+
+        double targetDistance_m = AIRadarCalcs.CalculatePointDistance(this.playerPos, aircraftPos);
+
+        double targetRelativeAngle_deg = 180 + AIRadarCalcs.CalculateDifferenceAngle(this.playerVwld, this.playerPos, aircraftPos);
+        if (targetRelativeAngle_deg > 180) targetRelativeAngle_deg -= 360;
+        if (targetRelativeAngle_deg < -180) targetRelativeAngle_deg += 360;
+        double XDist_m = targetDistance_m * Math.Cos(AIRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        double YDist_m = targetDistance_m * Math.Sin(AIRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        double ZDist_m = aircraftPos.z - playerPos.z;
+
+        //Console.WriteLine("AC at {0:F0} {1:F0} {2:F0} {4:F0} {5:F0} {6:F0} {7:F0} {8:F0} {9:F0} to {3}", XDist_m, YDist_m, ZDist_m, player.Name(), this.playerPos.x,
+        //    this.playerPos.y, this.playerPos.z, this.playerVwld.x, this.playerVwld.y, this.playerVwld.z);
+
+        return new Point3d(XDist_m, YDist_m, ZDist_m);
+
+        
+
+        /*
+        double targetHeightAngle_deg = AIRadarCalcs.CalculatePitchDegree(this.playerPos, aircraftPos);
+        if (targetHeightAngle_deg > 180) targetHeightAngle_deg -= 360;
+        if (targetHeightAngle_deg < -180) targetHeightAngle_deg += 360;
+        */
+
+    }
+
+    //Call recacalculateAndDisplay which calls this - NOT this directly
+    public virtual void calculateGrid()
+    {
+        initGrid();
+        getPlayerACData();
+        getAircraftList();
+        foreach(AiAircraft aircraft in aircraftList)
+        {
+            Point3d? p = calcAircraftRelativePosition(aircraft as AiActor);
+            if (p.HasValue)
+            {
+                placeItemInGrid(p.Value);
+            }
+        }
+    }
+
+
+    public virtual void display_recurs()
+    {
+        if (!this.turnedOn) return;
+        mission.Timeout(delay_s, () => display_recurs());
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        calculateGrid();
+        displayGrid();        
+    }
+}
+
+public class AIRadarAuthenticArray : AIRadarTargetArray
+{
+    public char[,] AltGrid = new char[GridWidth, GridHeight + 1];
+
+    public AIRadarAuthenticArray (Player player, AMission mission, double delay_s = 7) : base (player, mission, delay_s)
+    {        
+    }
+    
+    public override void initGrid()
+    {
+        for (int i = 0; i < GridWidth; i++)
+            for (int j = 0; j <= GridHeight; j++)
+            {
+                Grid[i, j] = GridChar;
+                if (j == 0) Grid[i, j] = GridBackChar; //the brief display of what's behind
+
+                AltGrid[i, j] = GridChar;
+                if (j == 0) AltGrid[i, j] = GridBackChar; //the brief display of what's behind
+            }
+
+        Grid[(GridWidth - 1) / 2, 1] = GridOriginChar;//The center, where the main a/c is
+        AltGrid[(GridWidth - 1) / 2, 1] = GridOriginChar;//The center, where the main a/c is
+    }
+
+    public override void displayGrid()
+    {
+        double distanceLimit_m = (playerPos.z * 1.5); //approximating that the radar couldn't see out further than the plane was tall
+        int XLimitPos = Convert.ToInt32(Math.Round(distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2.0)) + 1;
+        int XLimitNeg = Convert.ToInt32(Math.Round(-distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth -1 ) / 2.0)) - 1;
+        int YLimit = Convert.ToInt32(Math.Round((distanceLimit_m * 1.5) / AIRadarRadius_m * ((double)GridHeight))) + 1;
+
+        Console.WriteLine("Grid limits AUTH: {0} {1} {2} ", XLimitNeg, XLimitPos, YLimit);
+
+        double delay = 0.0;
+        for (int j = GridHeight - 1; j >= 0; j--)
+        {
+            if (j > YLimit) continue; //the early radar could only see out about as far as the altitude of the a/c; after that overwhelmed by ground return.  So this approximates that.
+            string line = "";// new string(Grid[, j]);
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; // line += GridGroundClutterCharacter;
+                else line += Grid[i, j];
+            }
+
+            line += " | ";
+
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; //line += GridGroundClutterCharacter;
+                else line += AltGrid[i, j];                
+            }
+
+            mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
+            delay += 0.01;
+        }
+    }
+
+    public override void placeItemInGrid(Point3d p)
+    {
+        //int XPos, YPos, Zpos = 0;       //so 0,0,0 is our "ERROR" or too large value, as we can't place an item at 0,0,0.
+        //if (Math.Abs(XDist_m)<=AIRadarRadius_m)
+        int XPos = Convert.ToInt32(Math.Round(p.y / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + (double)GridWidth / 2.0));
+        int YPos = Convert.ToInt32(Math.Round(p.x / AIRadarRadius_m * ((double)GridHeight)));
+
+        int ZPos = Convert.ToInt32(Math.Round(p.z / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + (double)GridWidth / 2.0));
+
+        /*
+        double origtemp = (p.z / AIRadarRadius_m * 5) + 5.0;
+        double temp = Math.Sign(p.z) * Math.Floor(Math.Sqrt(Math.Abs(p.z / AIRadarRadius_m)) * 5) + 5.0;
+
+        catch (Exception ex) { Console.WriteLine("AIRadar Int conversion error on ZP dbl: {0} ", temp); ZPos = 5; }
+        */
+
+        //Place the item on the x/y coordinate grid
+        if (XPos >= 0 && XPos < GridWidth)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  //If in front, place # 0-9 in the right place in the grid to indicate the position
+            {
+                char zind = '+';
+
+
+                if (XPos == (GridWidth - 1) / 2 && YPos == 0) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+
+                Grid[XPos, YPos + 1] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            else if (YPos < 0 && YPos >= -GridHeight / 4)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                Grid[XPos, 0] = GridBackIndicatorChar;
+            }
+        }
+
+        //Place the item on the y/alt coordinate gride
+        if (ZPos >= 0 && ZPos < GridWidth)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  //If in front, place # 0-9 in the right place in the grid to indicate the position
+            {
+                char zind = '+';
+
+
+                if (ZPos == (GridWidth - 1) / 2 && YPos == 0) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+
+                AltGrid[ZPos, YPos + 1] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            else if (YPos < 0 && YPos >= -GridHeight / 4)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                AltGrid[ZPos, 0] = GridBackIndicatorChar;
+            }
+        }
+
+
+    }
+
+    //Call recacalculateAndDisplay which calls this - NOT this directly
+    public override void calculateGrid()
+    {
+        initGrid();
+        getPlayerACData();
+        getAircraftList();
+        foreach (AiAircraft aircraft in aircraftList)
+        {
+            Point3d? p = calcAircraftRelativePosition(aircraft as AiActor);
+            if (p.HasValue)
+            {
+                placeItemInGrid(p.Value);
+            }
+        }
+    }
+
+
+    public override void display_recurs()
+    {
+        if (!this.turnedOn) return;
+        mission.Timeout(delay_s, () => display_recurs());
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        calculateGrid();
+        displayGrid();
+    }
+
 }
 
 
@@ -345,9 +747,43 @@ public class AIRadarMission : AMission
         if (msg.StartsWith("<an"))
 
         {
-            handleAIRadarRequest(player);
+            handleAIRadarRequest(player);            
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Started. <AStop or <as to stop.", null);
         }
-        
+        if (msg.StartsWith("<as"))
+
+        {
+            handleAIRadarRequest(player, stop: true);
+        }
+
+        if (msg.StartsWith("<ag")) //array-chat system
+        {
+            string ss = "";
+            if (msg.Length>2) ss = msg.Substring(3);
+            double delay_s = 7;
+            double cdel = 7;
+            try
+            {
+                 cdel = Convert.ToDouble(ss);
+            } catch (Exception ex) { cdel = 7; }
+            if (cdel > 0.5 && cdel < 120) delay_s = cdel;
+            handleAIRadarArrayRequest(player, delay_s);
+        }
+        if (msg.StartsWith("<aa")) //array-chat AUTHENTIC system
+        {
+            string ss = "";
+            if (msg.Length > 2) ss = msg.Substring(3);
+            double delay_s = 7;
+            double cdel = 7;
+            try
+            {
+                cdel = Convert.ToDouble(ss);
+            }
+            catch (Exception ex) { cdel = 7; }
+            if (cdel > 0.5 && cdel < 120) delay_s = cdel;
+            handleAIRadarAuthenticArrayRequest(player, delay_s);
+        }
+
         else if (msg.StartsWith("<ahelp6") || msg.StartsWith("<kh6"))
         {
             GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 6/6)", null);
@@ -428,9 +864,72 @@ public class AIRadarMission : AMission
         
     }
 
+    Dictionary<Player, AIRadarTargetArray> PlayerCurrentAIRadarTargetArray = new Dictionary<Player, AIRadarTargetArray>();
+
+    public void handleAIRadarArrayRequest(Player player, double delay_s = 7)
+    {
+        Console.WriteLine("Aerial Radar Array command received.");
+
+        //AIRadarTargetArray AIRTA = null;
+
+        if (PlayerCurrentAIRadarTargetArray.ContainsKey(player))
+        {
+            //PlayerCurrentAC[player]++;
+            AIRadarTargetArray AIRTA = PlayerCurrentAIRadarTargetArray[player];
+            
+            AIRTA.turnOff();
+            PlayerCurrentAIRadarTargetArray.Remove(player);
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+            return;
+        }
+
+        if (player == null || player.Place() == null)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+            //Here we can restrict this to certain aircraft etc.
+            return;
+        }
+
+        PlayerCurrentAIRadarTargetArray[player] = new AIRadarTargetArray(player, this, delay_s);
+        PlayerCurrentAIRadarTargetArray[player].turnOn();
+
+    }
+
+    Dictionary<Player, AIRadarAuthenticArray> PlayerCurrentAIRadarAuthenticArray = new Dictionary<Player, AIRadarAuthenticArray>();
+
+    public void handleAIRadarAuthenticArrayRequest(Player player, double delay_s = 7)
+    {
+        Console.WriteLine("Airborn Radar (Authentic) command received.");
+
+        //AIRadarTargetArray AIRTA = null;
+
+        if (PlayerCurrentAIRadarAuthenticArray.ContainsKey(player))
+        {
+            //PlayerCurrentAC[player]++;
+            AIRadarAuthenticArray AIRTA = PlayerCurrentAIRadarAuthenticArray[player];
+
+            AIRTA.turnOff();
+            PlayerCurrentAIRadarAuthenticArray.Remove(player);
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+            return;
+        }
+
+        if (player == null || player.Place() == null)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+            //Here we can restrict this to certain aircraft etc.
+            return;
+        }
+
+        PlayerCurrentAIRadarAuthenticArray[player] = new AIRadarAuthenticArray(player, this, delay_s);
+        PlayerCurrentAIRadarAuthenticArray[player].turnOn();
+
+    }
+
+
     Dictionary<Player, Tuple<AIRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<AIRadarTarget, int>>();
 
-    public void handleAIRadarRequest(Player player)
+    public void handleAIRadarRequest(Player player, bool stop = false)
     {
         Console.WriteLine("Aerial Radar command received.");
         try
@@ -446,6 +945,11 @@ public class AIRadarMission : AMission
                 AIRT = tup.Item1;
                 AIRT.turnOff();
                 PlayerCurrentAIRadarTargetandACnum.Remove(player);
+                if (stop)
+                {
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Stopped", null);
+                    return;
+                }
             }
 
             if (player == null || player.Place() == null)
@@ -1132,7 +1636,7 @@ public static class AIRadarCalcs
             Point3d actorPos = (a as AiActor).Pos();
             if (pos.x == actorPos.x && pos.y == actorPos.y && pos.z == actorPos.z) continue; //the player aircraft, don't knoclue it
             double d = CalculatePointDistance(pos, actorPos);
-            Console.WriteLine("AIR: Looking at " + GetAircraftType(a) + " " + d.ToString("F0") + " " + (a as AiActor).Pos().x.ToString("F0") + " " + (a as AiActor).Pos().y.ToString("F0"));
+            //Console.WriteLine("AIR: Looking at " + GetAircraftType(a) + " " + d.ToString("F0") + " " + (a as AiActor).Pos().x.ToString("F0") + " " + (a as AiActor).Pos().y.ToString("F0"));
             retdict[d]= a;
         }
 
@@ -1149,7 +1653,7 @@ public static class AIRadarCalcs
         {
             double d = CalculatePointDistance((a as AiActor).Pos(), pos);
             if (d <= radius_m ) ret.Add(a);
-            Console.WriteLine("AIR: Near looking at " + GetAircraftType(a) + " " + d.ToString("F0") );
+            //Console.WriteLine("AIR: Near looking at " + GetAircraftType(a) + " " + d.ToString("F0") );
         }
 
         return ret;

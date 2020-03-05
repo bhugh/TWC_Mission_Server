@@ -993,7 +993,10 @@ public class Mission : AMission, IMainMission
         Console.WriteLine("SetAirfieldTargets initialized (-main)", null);
     }
 
-    public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true)
+    //all = true lists all airports, damaged or not
+    //display = whether or not to display in chat screen or just return the string
+    //condensed leaves out "closed" and "last damaged time" to make the chat screen less cluttered
+    public string ListAirfieldTargetDamage(Player player = null, int army = -1, bool all = false, bool display = true, bool condensed = true)
     {
         //Console.WriteLine("LATD starting");
         int count = 0;
@@ -1100,7 +1103,7 @@ public class Mission : AMission, IMainMission
 
             
             
-            if (PointsTaken >= PointsToKnockOut) //airport knocked out
+            if (PointsTaken >= PointsToKnockOut && !condensed) //airport knocked out
             {
                 percent = 1;
                 //timetofix = 24 * 60 * 60; //24 hours to repair . . . if they achieve 100% knockout.  That is a little bonus beyond what the actual formula says, due ot total knockout
@@ -1115,15 +1118,16 @@ public class Mission : AMission, IMainMission
 
 
 
-            string msg = mo.Name + " " + (percent * 100).ToString("n0") + "% destroyed";
-            if (percent > 0) msg += "; last hit " + lastbombhit_ts.ToString("h'hr'm'm'") + " ago" + msg2;
+            string msg = mo.Name + " " + (percent * 100).ToString("n0") + "%";
+            if (percent > 0 && !condensed) msg += "; last: " + lastbombhit_ts.ToString("h'hr'm'm'");
+            if (percent > 0) msg += msg2;
             returnmsg += msg + "\n";
 
             //if (mo.LastHitTime_UTC.HasValue) msg += " " + mo.LastHitTime_UTC.Value.ToString("yyyy-MM-dd-HHmmss") + " " + PointsTaken.ToString(); //for testing //this doesn't work if 
 
             if (display)
             {
-                delay += 0.02;
+                delay += 0.06;
                 Timeout(delay, () => { twcLogServer(new Player[] { player }, msg, new object[] { }); });
             }
 
@@ -6247,11 +6251,11 @@ public class Mission : AMission, IMainMission
                                 {
                                     msg = ListRadarTargetDamage(null, -1, false, false); //Add the list of current radar airport conditions
                                     msg += Environment.NewLine;
-                                    msg += ListAirfieldTargetDamage(null, -1, false, false); //Add the list of current airport conditions
+                                    msg += ListAirfieldTargetDamage(null, -1, all: false, display: false, condensed: false); //Add the list of current airport conditions
                                     if (msg.Length > 0)
                                     {
                                         bigMess += Environment.NewLine;
-                                        bigMess += ("RADAR AND AIRFIELD CONDITION SUMMARY");
+                                        bigMess += ("RADAR AND AIRFIELD CONDITION SUMMARY") + Environment.NewLine; 
                                         bigMess += (msg);
                                     }
                                 }
@@ -6825,7 +6829,7 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu4(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { true, false, false, true, false, false, false, false, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Pause/Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { true, true, false, true, false, false, false, false, false });
     }
 
 
@@ -13332,7 +13336,12 @@ added Rouen Flak
                 {
                     MO_PlaceAppropriateJerrycan(mo);
                 }
-                if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2 && mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)
+
+                bool isMobile = false;
+                if ((mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)) isMobile = true;
+
+                //for Blue radars, but only non-mobile radar types
+                if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2 && !isMobile  )
                 { //create another radar just at the radius of the trigger area, that also must be destroyed. Then adjust points in addradarpointarea to match 90% of the total objects that are there.
                     //Going to be hard.
                     double angle = random.NextDouble() * 2 * Math.PI;
@@ -13343,7 +13352,7 @@ added Rouen Flak
                     f = Calcs.makeStatic(f, GamePlay, this, x, y, mo.Pos.z, "Stationary.Radar.Wotan_I", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x + 2, y + 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");//Give them a couple small black dots to find
                     f = Calcs.makeStatic(f, GamePlay, this, x - 2, y + 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 2, y - 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
+                    f = Calcs.makeStatic(f, GamePlay, this, x - 2, y - 2, mo.Pos.z, "Stationary. Environment.JerryCan_GER1_1", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x + 2, y - 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
                     GamePlay.gpPostMissionLoad(f);
                     f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE.txt"); //testing

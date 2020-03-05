@@ -32,12 +32,14 @@ using TWCComms;
 
 public class KnickebeinTarget
 {
+    public enum ChatOrHud {Chat, Hud };
     public Point3d initialPoint;
     public Point3d targetPoint;
     public double targetBearingAngle_deg; //angle from initial to target points
     public double targetBearingAngle_magnetic_deg; //equivalent of this on pilot's magnetic compass
     public Player player;
     public bool turnedOn;
+    public ChatOrHud chatOrHud;
     Mission mission;
     
     public KnickebeinTarget(Player player, Point3d initialPoint, Point3d targetPoint, Mission mission)
@@ -47,12 +49,14 @@ public class KnickebeinTarget
         this.targetPoint = targetPoint;
         this.targetBearingAngle_deg = Calcs.CalculateGradientAngle(this.initialPoint, this.targetPoint);
         this.targetBearingAngle_magnetic_deg = Calcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
+        chatOrHud = ChatOrHud.Hud;
         this.mission = mission;
         
     }
     public KnickebeinTarget(Player player, Point3d targetPoint, Mission mission)
     {
         this.mission = mission;
+        chatOrHud = ChatOrHud.Hud;
         this.player = player;        
         this.targetPoint = targetPoint;
         this.initialPoint = new Point3d (0,0,0);
@@ -64,6 +68,7 @@ public class KnickebeinTarget
     public KnickebeinTarget(Player player, double angle_deg, double dist, Mission mission)
     {
         this.mission = mission;
+        chatOrHud = ChatOrHud.Hud;
         this.player = player;
         this.initialPoint = new Point3d(0, 0, 0);
         if (player.Place() != null) this.initialPoint = player.Place().Pos();
@@ -82,6 +87,7 @@ public class KnickebeinTarget
     public void turnOn()
     {
         this.turnedOn = true;
+        this.chatOrHud = ChatOrHud.Hud; //Always turn on to HUD mode.  Then it can be switched to CHAT mode later if desired.
         display_recurs();
     }
     //end display
@@ -89,6 +95,22 @@ public class KnickebeinTarget
     {
         this.turnedOn = false;
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+    }
+
+    //switch display to Chat
+    public void toChat()
+    {
+        bool oldHUD = false;
+        if (this.chatOrHud == ChatOrHud.Hud) oldHUD = true;
+
+        this.chatOrHud = ChatOrHud.Chat;
+        if (mission.GamePlay != null && this.turnedOn && oldHUD) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+    }
+
+    //switch display to HUD
+    public void toHud()
+    {        
+        this.chatOrHud = ChatOrHud.Hud;        
     }
 
     public void resetInitialPoint(Player player)
@@ -222,8 +244,12 @@ public class KnickebeinTarget
 
         Tuple<double, string> distT = distancePip(player);
         double dist = distT.Item1;
-        string disp = directionPip(player) + " " + distT.Item2;        
-        if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, disp);
+        string disp = directionPip(player) + " " + distT.Item2;
+        if (mission.GamePlay != null)
+        {
+            if (this.chatOrHud == ChatOrHud.Chat) mission.GamePlay.gpLogServer(new Player[] { player }, disp, new object[] { }); 
+            else mission.GamePlay.gpHUDLogCenter(new Player[] { player }, disp);
+        }
         return dist;
 
     }
@@ -236,8 +262,15 @@ public class KnickebeinTarget
         double dist = displayPips();
         if (dist < 10000 && dist >= 5000) t = dist/10000*5;
         else if (dist < 5000 ) t = 0.33;
-        if (t < 0.33) t = 0.33;
-        //Based on experimentation, frequency faster than maybe 1/3 or 1/4 just led to server slowdown/lockup.  The 
+
+        if (t < 0.33) t = 0.33; //Based on experimentation, frequency faster than maybe 1/3 or 1/4 just led to server slowdown/lockup.  The 
+
+        if (this.chatOrHud == ChatOrHud.Chat)
+        {
+            t *= 2.5;
+            if (t < 5) t = 5; //IN case of chat, make the KNI messages much less frequent.
+        }
+        
         mission.Timeout(t, () => display_recurs());
         
         
@@ -306,11 +339,19 @@ public class Knickebeinholder
     public void KniStop(Player player, bool display = true)
     {
         //Distance is auto adjusted to miles for Red & km for Blue
-        if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display turned off.", new object[] { });
-        if (!knickebeins.ContainsKey(player)) return;        
+        
+        if (!knickebeins.ContainsKey(player)) return;    
+        if (knickebeins[player].chatOrHud == KnickebeinTarget.ChatOrHud.Hud)
+        {
+            knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Chat;
+            if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display switched to chat (repeat command to turn off).", new object[] { });
+            return;
+        }
+        knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Hud;
         knickebeins[player].turnOff();
-        
-        
+        if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display turned off.", new object[] { });
+
+
         //startKnickebein_recurs(player);
     }
     public void KniTest()
@@ -504,7 +545,8 @@ public class Knickebeinholder
     public Point3d KniPoint(Player player)
     {
 
-        if (!knickebeins.ContainsKey(player) || !knickebeins[player].turnedOn)
+        //Returns the null point if no KB point, OR turned off, OR turned to chat mode
+        if (!knickebeins.ContainsKey(player) || !knickebeins[player].turnedOn || knickebeins[player].chatOrHud==KnickebeinTarget.ChatOrHud.Chat)
         {
             //if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: No Knickebein Waypoint is currently active", null);
             return new Point3d(-1,-1,-1);
@@ -546,6 +588,24 @@ public class Knickebeinholder
         if (knickebeinWaypoints.ContainsKey(player)) knickebeinWaypoints.Remove(player);
         if (knickebeinCurrentWaypoint.ContainsKey(player)) knickebeinCurrentWaypoint.Remove(player);
         if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "All Knickebein Waypoints cleared!", new object[] { });
+    }
+    public void KniToChat(Player player)
+    {
+        if (player == null) return;
+        if (knickebeins.ContainsKey(player))
+        {
+            knickebeins[player].toChat();            
+        }        
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein switched to Chat mode - Cover bombers will NOT attack the point", new object[] { });
+    }
+    public void KniToHud(Player player)
+    {
+        if (player == null) return;
+        if (knickebeins.ContainsKey(player))
+        {
+            knickebeins[player].toHud();
+        }
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein switched to Hud mode - Cover bombers WILL attack the point", new object[] { });
     }
     public string KniList(Player player, bool display = true, bool html = false )
     {
@@ -875,6 +935,14 @@ public class Mission : AMission, IKnickebeinMission
                 GamePlay.gpLogServer(new Player[] { player }, "I didn't understand your <kdel command; no waypoints deleted.", null);
                 GamePlay.gpLogServer(new Player[] { player }, "<khelp for help", null);
             }
+        }
+        else if (msg.StartsWith("<kchat"))
+        {
+            knickeb.KniToChat(player);            
+        }
+        else if (msg.StartsWith("<khud"))
+        {
+            knickeb.KniToHud(player);
         }
         else if (msg.StartsWith("<kc")) //<kclear
         {

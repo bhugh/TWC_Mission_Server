@@ -712,9 +712,17 @@ public class CoverMission : AMission, ICoverMission
         string retmsg = "";
         if (army != ArmiesE.Blue && army != ArmiesE.Red) return "Cover: No cover aircraft/bombers available because you are not in an army";
         if (CoverAircraftCurrentlyAvailable[army] == null) return "Cover: Aircraft availability not initialized";
+        double delay = 0.02;
 
         AiAircraft aircraft = null;
         if (player != null) aircraft = player.Place() as AiAircraft;
+
+        if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)))
+        {
+            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, & fighter-bombers only!****";
+            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            return m;
+        }
 
         List<ArmiesE> armylist = new List<ArmiesE>();
         if (army == ArmiesE.Blue || army == ArmiesE.Red) armylist.Add(army);
@@ -737,7 +745,16 @@ public class CoverMission : AMission, ICoverMission
                 if (aircraft != null && isFighterAllowedCover(aircraft) && !isHeavyBomber(key)) continue; //for fighter-bombers, they are only allowed ot choose heavy bombers to cover, no fighters.
                 i++;
                 string msg = string.Format("#{0} {1} {2}", i, coverCalcs.ParseTypeName(key), CoverAircraftCurrentlyAvailable[a][key]);
-                if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg, null);
+
+                if (display)
+                {
+                    delay += 0.06;
+                    Timeout(delay, () =>
+                    {
+
+                        if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg, null);
+                    });
+                }
                 retmsg += msg + nl;
             }
             if (i == 0)
@@ -745,13 +762,6 @@ public class CoverMission : AMission, ICoverMission
                 string msg1 = string.Format("***No cover aircraft/bombers available for {0} - aircraft available for cover & bomber squadron duty only if {1} or more remain in supply. Use chat command <stock to check supply***", a, minimumAircraftRequiredForCoverDuty);
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, msg1, null);
             }
-        }
-
-        if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)))
-        {
-            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, & fighter-bombers only!****";
-            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
-            return m;
         }
 
         string msg3 = acAvailableToPlayer_msg(player);
@@ -1830,7 +1840,9 @@ public class CoverMission : AMission, ICoverMission
         if (aircraftChangeDisband || player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null || distToLeadAircraft > 40000)  //Was about 20,000, seemed to small. 50,000 seems too large.  
         {
             //Console.WriteLine("Cover KeepAconTask: Cover exiting {0} {1} {2} {3:N0} ", player == null, player.Place() == null, (player.Place() as AiAircraft).AirGroup() == null, distToLeadAircraft);
+            
             AiAircraft leadAircraft = (player.Place() as AiAircraft);
+            if (aircraftChangeDisband) leadAircraft = null;
 
             //EscortMake Land sets the necessary waypoints & also removes the a/c from coverAircraftAirGroupsActive
             if (leadAircraft == null)

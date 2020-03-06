@@ -428,10 +428,10 @@ public class Mission : AMission, IMainMission
             //WARP_CHECK = false;
             radarpasswords = new Dictionary<int, string>
         {
-            { -1, "$$$"}, //Red army #1
-            { -2, "$$$"}, //Blue, army #2
-            { -3, "$$$"}, //admin
-            { -4, "$$$"}, //admingrouped
+            { -1, "north"}, //Red army #1
+            { -2, "gate"}, //Blue, army #2
+            { -3, "twc2twc"}, //admin
+            { -4, "twc2twc"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -3161,6 +3161,7 @@ public class Mission : AMission, IMainMission
             lastPoints = initpoints;
 
         }
+        saveName = "frontfile.txt";
         GamePlay.gpPostMissionLoad(f);
         if (saveName != null) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + saveName); //testing
         Console.WriteLine("Drew current frontline");
@@ -12665,6 +12666,12 @@ added Rouen Flak
                     //msg6 += (mo.lastTimeScouted_hist_dt.Value).ToString("d'.'MM'.'yy' 'HH':'mm)");
                     msg6 += (Math.Round(diff.TotalHours * 2.0) / 2.0).ToString("F1") + "hr";
                 }
+
+                string pc = "";
+                if (mo.DestroyedPercent > 0) pc = " " + (mo.DestroyedPercent * 100.0).ToString("F0") + "%";
+
+                msg6 += pc;
+
                 retmsg += msg6 + Environment.NewLine;
                 numDisplayed++;
                 Timeout(totDelay, () =>
@@ -13034,6 +13041,11 @@ added Rouen Flak
                     int time = 360;
                     if (test) time = 10;
 
+                    //make sure they're all recorded before the mission ends.
+                    int timeleft_sec = calcTimeLeft_min() * 60;
+                    if (time > timeleft_sec) time = timeleft_sec;
+                    if (time < 1) time = 1;//Sometimes timeleft is <0, maybe?
+
                     Timeout(random.Next(time), () =>
                     {
                         mo.makeScouted(player);
@@ -13137,7 +13149,7 @@ added Rouen Flak
                     string pc = "";
                     if (mo.DestroyedPercent > 0) pc = " " + (mo.DestroyedPercent * 100.0).ToString("F0") + "%";
 
-                    msg1 = mo.Sector + " " + mo.Name + " (" + mo.Pos.x.ToString("F0") + ", " + mo.Pos.y.ToString("F0") + ")" + pc;
+                    msg1 = mo.Sector + " " + mo.Name + " (" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ")" + pc;                    
                 }
                 retmsg += msg1 + newline;
                 totDelay += delay;

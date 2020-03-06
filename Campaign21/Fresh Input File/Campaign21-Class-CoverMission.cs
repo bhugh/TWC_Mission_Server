@@ -1826,8 +1826,11 @@ public class CoverMission : AMission, ICoverMission
 
         if (!coverAircraftAirGroupsReleased.ContainsKey(airGroup)) coverAircraftAirGroupsReleased[airGroup] = false;
 
+        bool bombersContinuingFinalRun = false;
+        if (heavyBomber && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1)) bombersContinuingFinalRun = true;
+
         bool aircraftChangeDisband = false;
-        if ((!isBomberAllowedCover(player) && !isFighterAllowedCover(player)))
+        if ((!isBomberAllowedCover(player) && !isFighterAllowedCover(player) && !bombersContinuingFinalRun))
         {
             // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = TWCSupplyMission.aircraftCheckedOutInfo[actor];
             //This could be made tighter . . . right now they can still jump in a bomber, grab cover, then switch to fighter-bomber to fly them.
@@ -1848,13 +1851,13 @@ public class CoverMission : AMission, ICoverMission
             if (leadAircraft == null)
             {
 
-                if (heavyBomber && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1))
+                if (bombersContinuingFinalRun)
                 {
                     //This is to let any bombers on their bomb runs just continue it for 5 more minutes after the main a/c (live pilot) has been
                     //killed or crashed.  So they will continue and maybe hit the target, then be released.
                     //Timeout is bit of  kludge here, waiting 5 minutes this timer will be set a few times rather than just the once                    
                     coverAircraftAirGroupsReleased[airGroup] = false;
-                    Timeout(7 * 60, () =>
+                    Timeout(8 * 60, () =>
                       {
                           coverAircraftAirGroupsTargetPoint[airGroup] = new Point3d(-1, -1, -1);
                           coverAircraftAirGroupsReleased[airGroup] = true;

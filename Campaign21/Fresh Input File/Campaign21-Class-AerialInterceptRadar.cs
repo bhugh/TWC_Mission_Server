@@ -523,7 +523,8 @@ public class AIRadarTargetArray
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos,nullP3d)) turnOff();
+            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos,nullP3d)) turnOff();
+            if (this.playerPlace == null) turnOff();
             calculateGrid();
             displayGrid();
         });     
@@ -667,7 +668,8 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos, nullP3d)) turnOff();
+            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos, nullP3d)) turnOff();
+            if (this.playerPlace == null) turnOff();
             calculateGrid();
             displayGrid();
         });
@@ -807,7 +809,7 @@ public class AIRadarMission : AMission
         else if (msg.StartsWith("<ahelp6") || msg.StartsWith("<ah6"))
         {
             GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 5/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "This <ac radar screen shows same three targets as <aa in <ahelp5: ", null);
+            GamePlay.gpLogServer(new Player[] { player }, "This <ag radar screen shows same three targets as <aa in <ahelp5: ", null);
             GamePlay.gpLogServer(new Player[] { player }, "#1 to the left & co-alt, #2 to the right and higher, #3 behind right and unknown altitude.", null);
             GamePlay.gpLogServer(new Player[] { player }, @"_=_____", null);
             GamePlay.gpLogServer(new Player[] { player }, @"______7", null);
@@ -824,7 +826,8 @@ public class AIRadarMission : AMission
             GamePlay.gpLogServer(new Player[] { player }, @"______+ | ______+", null);
             GamePlay.gpLogServer(new Player[] { player }, @"___#___ | ___#___", null);
             GamePlay.gpLogServer(new Player[] { player }, @"====+== | ==+====", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<ahelp6 for <ac example.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "This display is the most similar to authentic 1940 airborne radar.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp6 for <ag example.", null);
         }
         else if (msg.StartsWith("<ahelp4") || msg.StartsWith("<ah4"))
         {
@@ -832,7 +835,7 @@ public class AIRadarMission : AMission
             GamePlay.gpLogServer(new Player[] { player }, "Airborne Intercept Radar display do not have a definite distance scale.", null);
             GamePlay.gpLogServer(new Player[] { player }, "Displays allow you to estimate rough distances forward, left/right, above/below.", null);
             GamePlay.gpLogServer(new Player[] { player }, "Look behind capabilities are very limited.  Look behind radar came later in the war.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<ahelp5 for <aa example and <ahelp6 for <ac example.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp5 for <aa example and <ahelp6 for <ag example.", null);
         }
         else if (msg.StartsWith("<ahelp3") || msg.StartsWith("<ah3"))
         {
@@ -850,16 +853,16 @@ public class AIRadarMission : AMission
             GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 2/6)", null);
             GamePlay.gpLogServer(new Player[] { player }, "Historic airborne intercept radar from the Battle of Britain era was rudimentary.  It was used primarily for  night intercept.", null);
             GamePlay.gpLogServer(new Player[] { player }, "A typical early radar display showed target distance, right/left distance, and altitude difference--looking forward only.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<aa & <ac: # indicates your position; ==== is very limited 'look behind' radar; coverage area increases as you gain altitude.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<aa & <ag: # indicates your position; ==== is very limited 'look behind' radar; coverage area increases as you gain altitude.", null);
             GamePlay.gpLogServer(new Player[] { player }, "<aa: Left screen shows distance & left/right position; right screen distance & altitude difference.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<ac: One screen showing aircraft relative position and altitude difference via numbers: 1-4 are lower; = co-alt; 5-9 higher.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ag: One screen showing aircraft relative position and altitude difference via numbers: 1-4 are lower; = co-alt; 5-9 higher.", null);
             GamePlay.gpLogServer(new Player[] { player }, "<ahelp3 for more", null);
         }
         else if (msg.StartsWith("<ahelp") || msg.StartsWith("<ah"))
         {
 
             GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION", null);
-            GamePlay.gpLogServer(new Player[] { player }, "3 types available (experimental): <aa (authentic/chat table) <ac (alternate/chat table) <an (alternate/HUD) <as (stop HUD)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "3 types available (experimental): <aa (authentic/chat table) <ag (alternate/chat table) <an (alternate/HUD) <as (stop HUD)", null);
             GamePlay.gpLogServer(new Player[] { player }, "Tab-4-4-5 is same as <aa.  Repeat the command to turn the radar off (or for <an, to move to next target)", null);
             GamePlay.gpLogServer(new Player[] { player }, "<ahelp2 for more . . . ", null);
         }

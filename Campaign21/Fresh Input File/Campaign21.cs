@@ -762,7 +762,7 @@ public class Mission : AMission, IMainMission
         if ((tickSinceStarted) % 2100 == 0 && tickSinceStarted > 0)
         {
 
-            RemoveOffMapAIAircraft();
+            Task.Run(() => RemoveOffMapAIAircraft());
 
 
         }
@@ -951,7 +951,7 @@ public class Mission : AMission, IMainMission
 
             ////Use this for MISSION SERVER (where Reds have access to HE111 and JU88)
             ////Use this for MISSION SERVER  && TACTICAL SERVER 
-            int pointstoknockout = 190;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - this was 30 points, but with the new cover bomber system 60 points seems more reasonable.  Maybe needs to be even higher?.  //2020-02, OK so in -stats.cs it was 65 and here 30.  Thus . . . the discrepancy in airport scores. So now they are both 90 as it still seemed quite too easy.
+            int pointstoknockout = 180;  //This is about two HE111 or JU88 loads (or 1 full load & just a little more) and about 4 Blennie loads, but it depends on how accurate the bombs are, and how large //2020-02 - this was 30 points, but with the new cover bomber system 60 points seems more reasonable.  Maybe needs to be even higher?.  //2020-02, OK so in -stats.cs it was 65 and here 30.  Thus . . . the discrepancy in airport scores. So now they are both 90 as it still seemed quite too easy.
             //UPDATE 2020/02 - now setting pointstoknockout via MO_MissionObjectiveAirfieldsSetup
             //this is still set but DOES NOTHING.  hopefully.
 
@@ -1132,7 +1132,7 @@ public class Mission : AMission, IMainMission
 
             if (display)
             {
-                delay += 0.06;
+                delay += 0.08;
                 Timeout(delay, () => { twcLogServer(new Player[] { player }, msg, new object[] { }); });
             }
 
@@ -1151,110 +1151,113 @@ public class Mission : AMission, IMainMission
     public void AirfieldDisable(AiAirport ap, double percent = 1.0)
 
     {
-        string apName = ap.Name();
-        double radius = ap.FieldR();
-        Point3d pos = ap.Pos();
-
-        //Console.WriteLine("Disabling airport {0} {1:F0} {2:F0}", new Object[] {ap.Name(), ap.Pos().x, ap.Pos().y });
-
-        if (AirfieldTargets.ContainsKey(ap))
+        Task.Run(() =>
         {
-            apName = AirfieldTargets[ap].Item2;
-            radius = AirfieldTargets[ap].Item6;
-            pos = AirfieldTargets[ap].Item7;
+            string apName = ap.Name();
+            double radius = ap.FieldR();
+            Point3d pos = ap.Pos();
 
-        }
+            //Console.WriteLine("Disabling airport {0} {1:F0} {2:F0}", new Object[] {ap.Name(), ap.Pos().x, ap.Pos().y });
 
-        if (percent >= 1)
-        {
-            //disable any associated birthplace - thus, no spawning here
-            foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+            if (AirfieldTargets.ContainsKey(ap))
             {
-                Point3d bp_pos = bp.Pos();
-                if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                apName = AirfieldTargets[ap].Item2;
+                radius = AirfieldTargets[ap].Item6;
+                pos = AirfieldTargets[ap].Item7;
+
             }
 
-            foreach (GroundStationary gg in GamePlay.gpGroundStationarys(pos.x, pos.y, radius)) //all stationaries w/i 10 or whatever meters of this object
+            if (percent >= 1)
             {
-                if (random.Next(3) < 1)
+                //disable any associated birthplace - thus, no spawning here
+                foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
                 {
-                    //Console.WriteLine("Airfield dest: Removing airfield item " + gg.Name);
-                    gg.Destroy();
+                    Point3d bp_pos = bp.Pos();
+                    if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                }
+
+                foreach (GroundStationary gg in GamePlay.gpGroundStationarys(pos.x, pos.y, radius)) //all stationaries w/i 10 or whatever meters of this object
+                {
+                    if (random.Next(3) < 1)
+                    {
+                        //Console.WriteLine("Airfield dest: Removing airfield item " + gg.Name);
+                        gg.Destroy();
+                    }
                 }
             }
-        }
 
 
-        //GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
+            //GamePlay.gpHUDLogCenter(null, "Airfield " + apName + " has been disabled");
 
-        ISectionFile f2 = GamePlay.gpCreateSectionFile();
+            ISectionFile f2 = GamePlay.gpCreateSectionFile();
 
-        string sect = "Stationary";
+            string sect = "Stationary";
 
-        string val1 = "Stationary";
-        string type = "BombCrater_firmSoil_largekg";
-        int count = 0;
-        string value = "";
+            string val1 = "Stationary";
+            string type = "BombCrater_firmSoil_largekg";
+            int count = 0;
+            string value = "";
 
-        int rounds = Convert.ToInt32(Math.Ceiling(percent * 5));
+            int rounds = Convert.ToInt32(Math.Ceiling(percent * 5));
 
-        int stripesCount = 0;
+            int stripesCount = 0;
 
-        double craterSpacing_m = 41 + random.NextDouble() * 10;
-        bool resetCount = true;
-        int delay = 1;
+            double craterSpacing_m = 41 + random.NextDouble() * 10;
+            bool resetCount = true;
+            int delay = 1;
 
-        count = 1000; //Smoke starts at 0 so this gives room for those to be below 1000.
+            count = 1000; //Smoke starts at 0 so this gives room for those to be below 1000.
 
-        for (int round = 0; round < rounds; round++)
-        {
-
-            double xpos = pos.x - 400 + 800 * stb_random.NextDouble();
-            double ypos = pos.y - 400 + 800 * stb_random.NextDouble();
-            double angle = random.NextDouble() * 2.0 * Math.PI;
-            Point3d vec = new Point3d(Math.Cos(angle) * craterSpacing_m, Math.Sin(angle) * craterSpacing_m, 0);
-            //Point3d vec90deg = new Point3d(-vec.y, vec.x, vec.z);
-
-            int stripes = random.Next(4) + 1;
-            for (int stripe = 0; stripe < stripes; stripe++)
+            for (int round = 0; round < rounds; round++)
             {
-                if (stripesCount > rounds) break; //we don't really need more than this many stripes altogether                
 
-                Point3d startPos = new Point3d(xpos + 150 - 300 * stb_random.NextDouble(), ypos + 150 - 300 * stb_random.NextDouble(), vec.z);
-                int craters = random.Next(10) + 12;
+                double xpos = pos.x - 400 + 800 * stb_random.NextDouble();
+                double ypos = pos.y - 400 + 800 * stb_random.NextDouble();
+                double angle = random.NextDouble() * 2.0 * Math.PI;
+                Point3d vec = new Point3d(Math.Cos(angle) * craterSpacing_m, Math.Sin(angle) * craterSpacing_m, 0);
+                //Point3d vec90deg = new Point3d(-vec.y, vec.x, vec.z);
 
-
-
-                for (int crater = 0; crater < craters; crater++)
+                int stripes = random.Next(4) + 1;
+                for (int stripe = 0; stripe < stripes; stripe++)
                 {
-                    double randAdd = random.NextDouble() * 1.8 - 0.9;
+                    if (stripesCount > rounds) break; //we don't really need more than this many stripes altogether                
 
-                    //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2:F0} {3:F0} {4:F0} {5:F0} {6:F0}", new Object[] { startPos.x.ToString("0.00"), startPos.y.ToString("0.00"), vec.x.ToString("0.00"), vec.y.ToString("0.00"), crater, randAdd, craterSpacing_m/10 });
-                    Point3d craterPos = new Point3d(startPos.x + vec.x * (crater + randAdd), startPos.y + vec.y * (crater + randAdd) + random.NextDouble() * craterSpacing_m / 10, vec.z);
-                    string key = "Static" + count.ToString();
-                    value = val1 + ".Environment." + type + " nn " + craterPos.x.ToString("0.00") + " " + craterPos.y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + craterPos.z.ToString("0.00");
-                    f2.add(sect, key, value);
+                    Point3d startPos = new Point3d(xpos + 150 - 300 * stb_random.NextDouble(), ypos + 150 - 300 * stb_random.NextDouble(), vec.z);
+                    int craters = random.Next(10) + 12;
 
-                    //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2} {3} {4}", new Object []  { craterPos.x.ToString("0.00"), craterPos.y.ToString("0.00"), round, stripe, crater });
 
-                    if (random.Next(7) < 1)
+
+                    for (int crater = 0; crater < craters; crater++)
                     {
-                        f2 = Calcs.loadSmokeOrFire(GamePlay, this, craterPos.x, craterPos.y, craterPos.z, "BuildingFireSmall", random.Next(5 * 3600) + 3600, f: f2, resetCount: resetCount);
-                        resetCount = false;
+                        double randAdd = random.NextDouble() * 1.8 - 0.9;
+
+                        //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2:F0} {3:F0} {4:F0} {5:F0} {6:F0}", new Object[] { startPos.x.ToString("0.00"), startPos.y.ToString("0.00"), vec.x.ToString("0.00"), vec.y.ToString("0.00"), crater, randAdd, craterSpacing_m/10 });
+                        Point3d craterPos = new Point3d(startPos.x + vec.x * (crater + randAdd), startPos.y + vec.y * (crater + randAdd) + random.NextDouble() * craterSpacing_m / 10, vec.z);
+                        string key = "Static" + count.ToString();
+                        value = val1 + ".Environment." + type + " nn " + craterPos.x.ToString("0.00") + " " + craterPos.y.ToString("0.00") + " " + stb_random.Next(0, 181).ToString("0.0") + " /height " + craterPos.z.ToString("0.00");
+                        f2.add(sect, key, value);
+
+                        //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2} {3} {4}", new Object []  { craterPos.x.ToString("0.00"), craterPos.y.ToString("0.00"), round, stripe, crater });
+
+                        if (random.Next(7) < 1)
+                        {
+                            f2 = Calcs.loadSmokeOrFire(GamePlay, this, craterPos.x, craterPos.y, craterPos.z, "BuildingFireSmall", random.Next(5 * 3600) + 3600, f: f2, resetCount: resetCount);
+                            resetCount = false;
+                        }
+                        count++;
                     }
-                    count++;
-                }              
 
-                stripesCount++;
+                    stripesCount++;
 
+                }
             }
-        }
 
-        Timeout(70 + random.Next(70,150), ()=> GamePlay.gpPostMissionLoad(f2));
+            Timeout(70 + random.Next(70, 150), () => GamePlay.gpPostMissionLoad(f2));
 
 
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.txt"); //testing
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+            //f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.txt"); //testing
+        });
 
     }
 
@@ -1274,7 +1277,7 @@ public class Mission : AMission, IMainMission
             Console.WriteLine("Stationary");
             //Task.Run(() => //AHA  - task.running things has blown up the threads before
 
-            double wait = stb_random.NextDouble() * 20;
+            double wait = stb_random.NextDouble() * 45;
             Timeout(wait, () =>
                 MO_HandlePointAreaObjectives(stationary, initiator)
             );
@@ -1312,7 +1315,7 @@ public class Mission : AMission, IMainMission
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
         Console.WriteLine("Bomb");
-        double wait = stb_random.NextDouble() * 10;
+        double wait = stb_random.NextDouble() * 45;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
         );
@@ -1339,6 +1342,7 @@ public class Mission : AMission, IMainMission
 
         try
         {
+            Console.WriteLine("main_bombexp_DoWork");
             //twcLogServer(null, "bombe 1", null);
             //twcLogServer(null, string.Format("bombe {0:N0} {1:N0} {2:N0}", pos.x, pos.y, pos.z), null);
             bool ai = true;
@@ -2458,6 +2462,10 @@ public class Mission : AMission, IMainMission
         Player[] recipients = null;
         if (player != null) recipients = new Player[] { player };
 
+        double delay_s = 0;
+
+    
+
         //Update scoring, 2020/02/15 - now we are ADDING 100 points (/100 = 1) to that side's current Map Mover score, and also adding the (miniscule) amount
         //of points they get from air victories etc.  Before it was just a flat 100 points for turning the map, but now it's whatever objective points you've accumulated PLUS 100 points more.
         if (winner == "Red")
@@ -2465,30 +2473,34 @@ public class Mission : AMission, IMainMission
             //msg = "Red moved the campaign forward by achieving all Primary Objectives and turning the map!";
             //outputmsg += msg + Environment.NewLine;
             //if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 2000.0, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at this time, plus we're adding in the individual victory bonus 2X
+            return new Tuple<double, string>(1.2 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 1000.0, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at this time, plus we're adding in the individual victory bonus 2X
         }
         if (winner == "Blue")
         {
             //msg = "Blue moved the campaign forward by achieving all Primary Objectives and turning the map!";
             //outputmsg += msg + Environment.NewLine;
             //if (output) gpLogServerAndLog(recipients, msg, null);
-            return new Tuple<double, string>(-1 - MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 2000.0, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather SUBTRACTING since this is the blue side) in the objective points at this time, plus we're adding in the individual victory bonus 2X
+            return new Tuple<double, string>(-1.2 - MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 1000.0, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather SUBTRACTING since this is the blue side) in the objective points at this time, plus we're adding in the individual victory bonus 2X
         }
 
         if (RedTotalF > 3)
         {
-            msg = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total air/ground/naval victories!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove += RedTotalF / 2000.0;
+            string msg1 = "Red has moved the campaign forward through its " + RedTotalF.ToString("n1") + " total air/ground/naval victories!";
+            outputmsg += msg1 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg1, null); });
+            delay_s += 0.04;
+            MapMove += RedTotalF / 1000.0;
         }
         if (BlueTotalF > 3)
         {
-            msg = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total air/ground/naval victories!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove -= BlueTotalF / 2000.0;
+            string msg2 = "Blue has moved the campaign forward through its " + BlueTotalF.ToString("n1") + " total air/ground/naval victories!";
+            outputmsg += msg2 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg2, null); });
+            delay_s += 0.04;
+            MapMove -= BlueTotalF / 1000.0;
         }
+
+        
 
         /*
         double difference = RedTotalF - BlueTotalF;
@@ -2548,32 +2560,36 @@ public class Mission : AMission, IMainMission
 
         if (MissionObjectiveScore[ArmiesE.Red] > 0)
         {
-            msg = "Over the past few days, Red has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points by destroying Mission Objectives!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
+            string msg3 = "Red: " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points Mission Objectives!";
+            outputmsg += msg3 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg3, null); });
+            delay_s += 0.04;
             //MapMove += MissionObjectiveScore[ArmiesE.Red] / 100; //2020-02 - with the persistent campaign, we don't add this at the end of each session any more.  It is saved from session to session and only added in when the map is turned by this team (their full objective score + 100 points)
         }
 
         if (MissionObjectiveScore[ArmiesE.Blue] > 0)
         {
-            msg = "Over the past few days, Blue has moved the campaign forward " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points by destroying Mission Objectives!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
+            string msg4 = "Blue: " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points Mission Objectives!";
+            outputmsg += msg4 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg4, null); });
+            delay_s += 0.04;
             //MapMove -= MissionObjectiveScore[ArmiesE.Blue] / 100; //2020-02 - with the persistent campaign, we don't add this at the end of each session any more.  It is saved from session to session and only added in when the map is turned by this team (their full objective score + 100 points)
         }
         if (RedPlanesWrittenOffI >= 3 && winner != "Red") //subtract for planes written off, but only if they didn't turn the map this sssion
         {
-            msg = "Red has lost ground by losing " + RedPlanesWrittenOffI.ToString() + " aircraft in battle!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove -= (double)RedPlanesWrittenOffI / 200;  //These are LOSSES, so - points for red & + points for blue
+            string msg5 = "Red: " + RedPlanesWrittenOffI.ToString() + " aircraft lost";
+            outputmsg += msg5 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg5, null); });
+            delay_s += 0.04;
+            MapMove -= (double)RedPlanesWrittenOffI / 300;  //These are LOSSES, so - points for red & + points for blue
         }
         if (BluePlanesWrittenOffI >= 3 && winner != "Blue") //subtract for planes written off, but only if they didn't turn the map this sssion
         {
-            msg = "Blue has lost ground by losing " + BluePlanesWrittenOffI.ToString() + " aircraft in battle!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
-            MapMove += (double)BluePlanesWrittenOffI / 200; //These are LOSSES, so - points for red & + points for blue
+            string msg6 = "Blue: " + BluePlanesWrittenOffI.ToString() + " aircraft lost";
+            outputmsg += msg6 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg6, null); });
+            delay_s += 0.04;
+            MapMove += (double)BluePlanesWrittenOffI / 300; //These are LOSSES, so - points for red & + points for blue
         }
 
         /*
@@ -2617,26 +2633,30 @@ public class Mission : AMission, IMainMission
 
         if (MapMove > 0)
         {
-            msg = word + "this session has improved Red's campaign position by " + (MapMove * 100).ToString("n0") + " points.";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
+            string msg7 = word + "Red's campaign position is up " + (MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg7 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg7, null); });
+            delay_s += 0.04;
         }
         if (MapMove < 0)
         {
-            msg = word + "this session has improved Blue's campaign position by " + (-MapMove * 100).ToString("n0") + " points.";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
+            string msg7 = word + "Blue's campaign position is up " + (-MapMove * 100).ToString("n0") + " points.";
+            outputmsg += msg7 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg7, null); });
+            delay_s += 0.04;
         }
         if (MapMove == 0)
         {
-            msg = word + "this session is a COMPLETE STALEMATE!";
-            outputmsg += msg + Environment.NewLine;
-            if (output) gpLogServerAndLog(recipients, msg, null);
+            string msg7 = word + "this session is a COMPLETE STALEMATE!";
+            outputmsg += msg7 + Environment.NewLine;
+            if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg7, null); });
+            delay_s += 0.04;
         }
 
         return new Tuple<double, string>(MapMove, outputmsg);
 
     }
+
     public string summarizeCurrentMapstate(double ms, bool output = true, Player player = null)
     {
         string outputmsg = "";
@@ -2948,17 +2968,18 @@ public class Mission : AMission, IMainMission
         */
     public void DrawFrontLinesPerMapState(double minMapState = -25, double maxMapState = 25, double? currMapState = null, string saveName = null)
     {
+        Task.Run(() =>
+        {
+            //so because of CloD weirdness, the lines need to go pretty much perpendicular to the dividing line between france & england.
+            //To make the points, go into FMB, choose points WIDE apart, as wide as possible, opposite each other at the furthest
+            //extremes of where the front lines will range--one furthest to the blue side, the other furthest to the red side
+            //Choose the points in pairs (red side/blue side), and make them so that the resulting front line in the middle is
+            //nice and smooth.
+            //Then export those points from FMB, arrange them in order (left to right or whatever along the front line; FMB will likely scramble
+            //them up) and then put them into the format below.
 
-        //so because of CloD weirdness, the lines need to go pretty much perpendicular to the dividing line between france & england.
-        //To make the points, go into FMB, choose points WIDE apart, as wide as possible, opposite each other at the furthest
-        //extremes of where the front lines will range--one furthest to the blue side, the other furthest to the red side
-        //Choose the points in pairs (red side/blue side), and make them so that the resulting front line in the middle is
-        //nice and smooth.
-        //Then export those points from FMB, arrange them in order (left to right or whatever along the front line; FMB will likely scramble
-        //them up) and then put them into the format below.
 
-
-        List<List<Point2d>> frontPoints = new List<List<Point2d>>() {
+            List<List<Point2d>> frontPoints = new List<List<Point2d>>() {
 
 
 
@@ -3106,81 +3127,82 @@ public class Mission : AMission, IMainMission
 
         };
 
-        ISectionFile f = GamePlay.gpCreateSectionFile();
-        string sect;
-        string key;
-        string value;
-        int count = 0;
+            ISectionFile f = GamePlay.gpCreateSectionFile();
+            string sect;
+            string key;
+            string value;
+            int count = 0;
 
-        double mapState = CampaignMapState;
-        if (currMapState.HasValue) mapState = currMapState.Value;
-        double neutral = (maxMapState - minMapState) / 120;
+            double mapState = CampaignMapState;
+            if (currMapState.HasValue) mapState = currMapState.Value;
+            double neutral = (maxMapState - minMapState) / 120;
 
-        double mult = (mapState - neutral - minMapState) / (maxMapState - minMapState);  //mult is for red frontline (most northerly)
-        double mult2 = (mapState + neutral - minMapState) / (maxMapState - minMapState);  //mult2 for blue, most southerly 
-        if (mult > 1) mult = 1; //We COULD go beyond 0-1 but that might get weird.  So the Frontlines are drawn using a weird thing where the front goes halfway between p1 and p2 and PERPENDICULAR to the line from p1 to p2.  So we have to pay attention to make sure p1 & p2 form the right sort of line going the right direction.
-        if (mult < 0) mult = 0;
-        if (mult2 > 1) mult2 = 1; //We COULD go beyond 0-1 but that might get weird
-        if (mult2 < 0) mult2 = 0;
-        if (mult2 == mult) mult2 = mult + 0.05; //They can't be equal or HELP!!! So it's better to be a bit above 1 than equal.
+            double mult = (mapState - neutral - minMapState) / (maxMapState - minMapState);  //mult is for red frontline (most northerly)
+            double mult2 = (mapState + neutral - minMapState) / (maxMapState - minMapState);  //mult2 for blue, most southerly 
+            if (mult > 1) mult = 1; //We COULD go beyond 0-1 but that might get weird.  So the Frontlines are drawn using a weird thing where the front goes halfway between p1 and p2 and PERPENDICULAR to the line from p1 to p2.  So we have to pay attention to make sure p1 & p2 form the right sort of line going the right direction.
+            if (mult < 0) mult = 0;
+            if (mult2 > 1) mult2 = 1; //We COULD go beyond 0-1 but that might get weird
+            if (mult2 < 0) mult2 = 0;
+            if (mult2 == mult) mult2 = mult + 0.05; //They can't be equal or HELP!!! So it's better to be a bit above 1 than equal.
 
-        List<Point2d> lastPoints = null;
+            List<Point2d> lastPoints = null;
 
-        foreach (List<Point2d> initpoints in frontPoints)
-        {
-            List<List<Point2d>> newPoints = new List<List<Point2d>>();
-
-
-            //complicated little business to linearly interpolate one or perhaps several new points in between each existing point.
-            //This helps smooth out the boundary A LOT.
-            if (lastPoints != null)
+            foreach (List<Point2d> initpoints in frontPoints)
             {
-                double numPointsToInterpolate = 3;
+                List<List<Point2d>> newPoints = new List<List<Point2d>>();
 
-                for (int i = 1; i < numPointsToInterpolate; i++)
+
+                //complicated little business to linearly interpolate one or perhaps several new points in between each existing point.
+                //This helps smooth out the boundary A LOT.
+                if (lastPoints != null)
                 {
-                    //Console.WriteLine("PTI: {0} {1}", i, numPointsToInterpolate);
-                    double id = (double)i;
-                    List<Point2d> newPoint = new List<Point2d>();
-                    newPoint.Add(new Point2d(id * (initpoints[0].x - lastPoints[0].x) / numPointsToInterpolate + lastPoints[0].x, id * (initpoints[0].y - lastPoints[0].y) / numPointsToInterpolate + lastPoints[0].y));
-                    newPoint.Add(new Point2d(id * (initpoints[1].x - lastPoints[1].x) / numPointsToInterpolate + lastPoints[1].x, id * (initpoints[1].y - lastPoints[1].y) / numPointsToInterpolate + lastPoints[1].y));
-                    newPoints.Add(newPoint);
+                    double numPointsToInterpolate = 3;
+
+                    for (int i = 1; i < numPointsToInterpolate; i++)
+                    {
+                        //Console.WriteLine("PTI: {0} {1}", i, numPointsToInterpolate);
+                        double id = (double)i;
+                        List<Point2d> newPoint = new List<Point2d>();
+                        newPoint.Add(new Point2d(id * (initpoints[0].x - lastPoints[0].x) / numPointsToInterpolate + lastPoints[0].x, id * (initpoints[0].y - lastPoints[0].y) / numPointsToInterpolate + lastPoints[0].y));
+                        newPoint.Add(new Point2d(id * (initpoints[1].x - lastPoints[1].x) / numPointsToInterpolate + lastPoints[1].x, id * (initpoints[1].y - lastPoints[1].y) / numPointsToInterpolate + lastPoints[1].y));
+                        newPoints.Add(newPoint);
+                    }
                 }
+
+                newPoints.Add(initpoints);
+
+                foreach (List<Point2d> points in newPoints)
+                {
+
+                    double dist = Calcs.CalculatePointDistance(points[0], points[1]);
+
+                    double x = mult * points[1].x + (1 - mult) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
+                    double y = mult * points[1].y + (1 - mult) * points[0].y;
+                    double x2 = mult2 * points[1].x + (1 - mult2) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
+                    double y2 = mult2 * points[1].y + (1 - mult2) * points[0].y;
+
+                    sect = "FrontMarker";
+                    key = "FrontMarker" + count.ToString();
+                    value = x.ToString("F2") + " " + y.ToString("F2") + " 1"; //1 = army 1
+                    f.add(sect, key, value);
+
+                    //Console.WriteLine("({0:F0}, {1:F0}) - ({2:F0}, {3:F0})", x, y, x2, y2);
+                    count++;
+                    y += 1000;
+                    key = "FrontMarker" + count.ToString();
+                    value = x2.ToString("F2") + " " + y2.ToString("F2") + " 2";
+                    f.add(sect, key, value);
+                    count++;
+                }
+
+                lastPoints = initpoints;
+
             }
-
-            newPoints.Add(initpoints);
-
-            foreach (List<Point2d> points in newPoints)
-            {
-
-                double dist = Calcs.CalculatePointDistance(points[0], points[1]);
-
-                double x = mult * points[1].x + (1 - mult) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
-                double y = mult * points[1].y + (1 - mult) * points[0].y;
-                double x2 = mult2 * points[1].x + (1 - mult2) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
-                double y2 = mult2 * points[1].y + (1 - mult2) * points[0].y;
-
-                sect = "FrontMarker";
-                key = "FrontMarker" + count.ToString();
-                value = x.ToString("F2") + " " + y.ToString("F2") + " 1"; //1 = army 1
-                f.add(sect, key, value);
-
-                //Console.WriteLine("({0:F0}, {1:F0}) - ({2:F0}, {3:F0})", x, y, x2, y2);
-                count++;
-                y += 1000;
-                key = "FrontMarker" + count.ToString();
-                value = x2.ToString("F2") + " " + y2.ToString("F2") + " 2";
-                f.add(sect, key, value);
-                count++;
-            }
-
-            lastPoints = initpoints;
-
-        }
-        saveName = "frontfile.txt";
-        GamePlay.gpPostMissionLoad(f);
-        if (saveName != null) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + saveName); //testing
-        Console.WriteLine("Drew current frontline");
+            saveName = "frontfile.txt";
+            GamePlay.gpPostMissionLoad(f);
+            if (saveName != null) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + saveName); //testing
+            Console.WriteLine("Drew current frontline");
+        });
 
 
     }
@@ -3384,45 +3406,47 @@ public class Mission : AMission, IMainMission
     //this will destroy ALL ai controlled aircraft on the server
     public void destroyAIAircraft(Player player)
     {
-
-
-        //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        Task.Run(() =>
         {
-            foreach (int army in GamePlay.gpArmies())
+
+            //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
+            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
-                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                foreach (int army in GamePlay.gpArmies())
                 {
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                     {
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            foreach (AiActor actor in airGroup.GetItems())
+                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                             {
-                                if (actor is AiAircraft)
+                                foreach (AiActor actor in airGroup.GetItems())
                                 {
-                                    AiAircraft a = actor as AiAircraft;
-                                    if (a != null && isAiControlledPlane2(a))
+                                    if (actor is AiAircraft)
                                     {
+                                        AiAircraft a = actor as AiAircraft;
+                                        if (a != null && isAiControlledPlane2(a))
+                                        {
 
 
-                                        /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " "                                          
-                                         + a.Type() + " " 
-                                         + a.TypedName() + " " 
-                                         +  a.AirGroup().ID(), new object[] { });
-                                        */
-                                        a.Destroy();
+                                            /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " "                                          
+                                             + a.Type() + " " 
+                                             + a.TypedName() + " " 
+                                             +  a.AirGroup().ID(), new object[] { });
+                                            */
+                                            a.Destroy();
+
+                                        }
+
 
                                     }
-
-
                                 }
                             }
                         }
                     }
                 }
             }
-        }
+        });
     }
     #region onbuildingkilled
 
@@ -3821,7 +3845,7 @@ public class Mission : AMission, IMainMission
     }
 
 
-
+    //This is called via Task.Run so no need to re-do that here/
     public void groupAllAircraft()
     {
         try
@@ -4374,6 +4398,7 @@ public class Mission : AMission, IMainMission
 
     }
 
+    //Called via Task.Run so don't need to do it in the method here.
     public void aiAirGroupRadarReturns()
     {
         Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = airGroupInfoCircArr.Get(0); //Most recent iteration of airgroup groupings
@@ -4466,23 +4491,23 @@ public class Mission : AMission, IMainMission
 
         }
 
-        if (isAI) altAGL_ft = altAGL_ft - 350; //AI aircraft just can't fly below a certain altitude.  So we're giving them a break as far as disappearing from radar if they're low.
+        if (isAI) altAGL_ft = altAGL_ft - 800; //AI aircraft just can't fly below a certain altitude.  So we're giving them a break as far as disappearing from radar if they're low.
 
-        double leakageRate = .21;  //was .12, seemed too low
-        double below250LeakageRate = 0.105;
+        double leakageRate = .14;  //was .12, seemed too low
+        double below250LeakageRate = 0.35;
 
         if (onEnemyGround)
         {
-            leakageRate = .31;  //was .24, seemed too low
-            below250LeakageRate = 0.19;
+            leakageRate = .24;  //was .24, seemed too low
+            below250LeakageRate = 0.09;
         }
 
         if (nearMissionObjective)
         {
-            leakageRate = .7;//was .64, seemed too low
-            below250LeakageRate = 0.51;
+            leakageRate = .55;//was .64, seemed too low
+            below250LeakageRate = 0.45;
         }
-
+        
         bool below = ((altAGL_ft < 500 && altAGL_ft - 325 < random.Next(175)) || //Less then 400 ft AGL they start to phase out from radar     
                                                                                  //(dis_mi < 10 && altAGL_ft < 400 && altAGL_ft < random.Next(500)) || //Within 10 miles though you really have to be right on the deck before the radar starts to get flakey, less than 250 ft. Somewhat approximating 50 foot alt lower limit.
         (altAGL_ft < 350)); //And, if they are less than 350 feet AGL, they are gone from radar.  Except for a bit of leakage.
@@ -6348,48 +6373,51 @@ public class Mission : AMission, IMainMission
                     var saveradar_realism = radar_realism;
                     Timeout(wait_s, () =>
                     {
-                        try
-                        {
-                            //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
-                            //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
-                            //Maybe should be even shorter?
-                            SortedDictionary<string, string> radar_messages_trim = new SortedDictionary<string, string>(new ReverseComparer<string>());
-                            int trim = 0;
-                            int c = 0;
-                            if (!admin && playerArmy >= 0 && radar_messages.Count > 12) trim = radar_messages.Count - 12;
-                            //Console.WriteLine("RadTrim: {0} {1} {2}", trim, c, radar_messages.Count);
+                        Task.Run(() =>
+                      {
+                          try
+                          {
+                                //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
+                                //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
+                                //Maybe should be even shorter?
+                                SortedDictionary<string, string> radar_messages_trim = new SortedDictionary<string, string>(new ReverseComparer<string>());
+                              int trim = 0;
+                              int c = 0;
+                              if (!admin && playerArmy >= 0 && radar_messages.Count > 12) trim = radar_messages.Count - 12;
+                                //Console.WriteLine("RadTrim: {0} {1} {2}", trim, c, radar_messages.Count);
 
 
-                            //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
-                            double delay = 0;
-                            foreach (var mess in radar_messages)
-                            {
-                                if (c > 0 && c <= trim)
-                                {
+                                //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list               
+                                double delay = 0;
+                              foreach (var mess in radar_messages)
+                              {
+                                  if (c > 0 && c <= trim)
+                                  {
+                                      c++;
+                                        // Console.WriteLine("RadTrim: Trimming {0} {1} {2}", trim, c, radar_messages.Count);
+                                        continue;
+                                  }
+                                    //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
                                     c++;
-                                    // Console.WriteLine("RadTrim: Trimming {0} {1} {2}", trim, c, radar_messages.Count);
-                                    continue;
-                                }
-                                //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
-                                c++;
-                                radar_messages_trim.Add(mess.Key, mess.Value);
-                                delay += 0.2;
-                                Timeout(delay, () =>
-                                   {
-                                       if (saveradar_realism == 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
-                                       else if (saveradar_realism >= 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
-                                       //if (!display && aiairgroup != null) Console.WriteLine("AiAirgroup radar return: " + mess.Value); //for testing
-                                   });
+                                  radar_messages_trim.Add(mess.Key, mess.Value);
+                                  delay += 0.2;
+                                  Timeout(delay, () =>
+                                     {
+                                         if (saveradar_realism == 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value + " : " + mess.Key, null);
+                                         else if (saveradar_realism >= 0 && display) gpLogServerAndLog(new Player[] { player }, mess.Value, null);
+                                           //if (!display && aiairgroup != null) Console.WriteLine("AiAirgroup radar return: " + mess.Value); //for testing
+                                       });
 
 
-                            }
-                            radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages_trim);
-                            if (aiairgroup != null) ai_radar_info_store[aiairgroup] = ai_radar_info;
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Radar ERROR1: " + ex.ToString());
-                        }
+                              }
+                              radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages_trim);
+                              if (aiairgroup != null) ai_radar_info_store[aiairgroup] = ai_radar_info;
+                          }
+                          catch (Exception ex)
+                          {
+                              Console.WriteLine("Radar ERROR1: " + ex.ToString());
+                          }
+                      });//Task.Run
 
                     });//timeout      
 
@@ -6851,7 +6879,7 @@ public class Mission : AMission, IMainMission
     }
     private void setSubMenu4(Player player)
     {
-        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Pause/Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { true, true, false, true, false, false, false, false, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Chat/Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover - Auto-select cover aircraft", "Cover - List available aircraft", "Cover - Aircraft position", "Cover - Release Aircraft to land" }, new bool[] { true, true, false, true, false, false, false, false, false });
     }
 
 
@@ -7390,7 +7418,7 @@ public class Mission : AMission, IMainMission
             {
                 setMainMenu(player);
                 Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); //enemy a/c  
+                Task.Run(() => listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM)); //enemy a/c  
                 if (DEBUG)
                 {
                     DebugAndLog("Total number of AI aircraft groups currently active:");
@@ -7407,7 +7435,7 @@ public class Mission : AMission, IMainMission
             {
                 setMainMenu(player);
                 Player[] all = { player };
-                listPositionAllAircraft(player, player.Army(), true, radar_realism: RADAR_REALISM); //friendly a/c           
+                Task.Run(() => listPositionAllAircraft(player, player.Army(), true, radar_realism: RADAR_REALISM)); //friendly a/c           
                 if (DEBUG)
                 {
                     DebugAndLog("Total number of AI aircraft groups currently active:");
@@ -7423,7 +7451,7 @@ public class Mission : AMission, IMainMission
             }
             else if (menuItemIndex == 3)
             {
-                showGiantSectorOverview(player, player.Army());
+                Task.Run(() => showGiantSectorOverview(player, player.Army()));
                 setMainMenu(player);
 
             }
@@ -7447,7 +7475,7 @@ public class Mission : AMission, IMainMission
                  * Display objectives remaining
                  */
                 setMainMenu(player);
-                MO_ListRemainingPrimaryObjectives(player, player.Army(), 12);
+                Task.Run(() => MO_ListRemainingPrimaryObjectives(player, player.Army(), 12));
             }
             else if (menuItemIndex == 7)
             {
@@ -7457,7 +7485,7 @@ public class Mission : AMission, IMainMission
 
                 //ListSuggestedObjectives(player, Player.army, 5);
                 setMainMenu(player);
-                MO_ListSuggestedObjectives(player, player.Army(), 5);
+                Task.Run(() => MO_ListSuggestedObjectives(player, player.Army(), 5));
             }
             else if (menuItemIndex == 8)
             {
@@ -7465,7 +7493,7 @@ public class Mission : AMission, IMainMission
                  * List Scouted Objectives
                  */
                 setMainMenu(player);
-                MO_ListScoutedObjectives(player, player.Army());
+                Task.Run(() => MO_ListScoutedObjectives(player, player.Army()));
 
             }
             else if (menuItemIndex == 9)
@@ -8916,6 +8944,7 @@ public class Mission : AMission, IMainMission
 
     //Removes AIAircraft if they are off the map. Convenient way to get rid of
     //old a/c - just send them off the map
+    //This is called via Task.Run so don't need to implement that here.
     public void RemoveOffMapAIAircraft()
     {
         int numremoved = 0;
@@ -10483,22 +10512,22 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Campaign21-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
 
 
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Mobile Army Camp", "", 2, 4, "RSamerMobileArmyCamp", 270276, 169671, 200, 150, 10000, 30, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 4, "BHastingsMobileArmyCamp", 179965, 204219, 100, 150, 10000, 30, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 4, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 15, 189965, 204219, 199201, 214392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Secret Air Base", "", 2, 4, "RSamerSecretAirbase", 280276, 169671, 700, 600, 10000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 15, 280276, 169671, 290111, 179520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Intelligence Air Research", "", 1, 4, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 189965, 214219, 199201, 224392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Intelligence Air Research", "", 2, 4, "", 280276, 179671, 550, 450, 10000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 280276, 179671, 290111, 189520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 1", "", 2, 4, "RSamerMobileRadar1", 270276, 169671, 200, 150, 8000, 25, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 1", "", 1, 4, "BHastingsMobileRadar1", 179965, 204219, 200, 150, 8000, 25, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 2", "", 2, 6, "RSamerMobileRadar2", 270276, 179671, 200, 150, 8000, 25, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 179671, 280111, 189520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 2", "", 1, 6, "BHastingsMobileRadar2", 179965, 214219, 200, 150, 8000, 25, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 214219, 189201, 224392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Mobile Armour", "", 2, 4, "RVeumeMobileArmour", 331978, 220669, 250, 200, 9000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 331978, 220669, 336978, 225669, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Nonington Mobile Armour", "", 1, 4, "BNoningtonMobileArmour", 240196, 243824, 250, 200, 9000, 25, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 240196, 243824, 245196, 248824, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Large Mobile Armour", "", 2, 5, "RVeumeLargeMobileArmour", 345508, 231881, 250, 200, 12000, 35, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 345508, 231881, 350508, 236881, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Lee-Over-Sands Large Mobile Armour", "", 1, 5, "BLeeOverSandsLargeMobileArmour", 224606, 305877, 250, 200, 12000, 35, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 224606, 305877, 231297, 310088, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Quend Plage Invasion Training Center", "", 2, 5, "RQuendPlageCamo", 262939, 143597, 250, 200, 4000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 262939, 143597, 265939, 146597, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Courtsend Secret Resistance Training Center", "", 1, 5, "BCourtsendCamoGroup", 212979, 282491, 250, 200, 4000, 20, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 212979, 282491, 218902, 288639, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Mobile Army Camp", "", 2, 4, "RSamerMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 4, "BHastingsMobileArmyCamp", 179965, 204219, 100, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 4, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 15, 189965, 204219, 199201, 214392, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Secret Air Base", "", 2, 4, "RSamerSecretAirbase", 280276, 169671, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 15, 280276, 169671, 290111, 179520, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Intelligence Air Research", "", 1, 4, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 189965, 214219, 199201, 224392, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Intelligence Air Research", "", 2, 4, "", 280276, 179671, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 280276, 179671, 290111, 189520, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 1", "", 2, 5, "RSamerMobileRadar1", 270276, 169671, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
+            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 1", "", 1, 5, "BHastingsMobileRadar1", 179965, 204219, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 2", "", 2, 5, "RSamerMobileRadar2", 270276, 179671, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 179671, 280111, 189520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
+            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 2", "", 1, 5, "BHastingsMobileRadar2", 179965, 214219, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 214219, 189201, 224392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Mobile Armour", "", 2, 4, "RVeumeMobileArmour", 331978, 220669, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 331978, 220669, 336978, 225669, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Nonington Mobile Armour", "", 1, 4, "BNoningtonMobileArmour", 240196, 243824, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 240196, 243824, 245196, 248824, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Large Mobile Armour", "", 2, 5, "RVeumeLargeMobileArmour", 345508, 231881, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 345508, 231881, 350508, 236881, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Lee-Over-Sands Large Mobile Armour", "", 1, 5, "BLeeOverSandsLargeMobileArmour", 224606, 305877, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 224606, 305877, 231297, 310088, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Quend Plage Invasion Training Center", "", 2, 5, "RQuendPlageCamo", 262939, 143597, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 262939, 143597, 265939, 146597, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Courtsend Secret Resistance Training Center", "", 1, 5, "BCourtsendCamoGroup", 212979, 282491, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 212979, 282491, 218902, 288639, MO_ProducerOrStorageType.None, "", add);
 
 
 
@@ -10742,18 +10771,21 @@ added Rouen Flak
     public void MO_MissionObjectiveRollingWinnerHandler(ArmiesE army)
     {
 
-        Console.WriteLine(ArmiesL[(int)army] + " has turned the battle - giving reward, selecting new objectives");
-        MO_turnedMapAnnouncements(army);
-        //We'll have to work on making CalcMapMove work here
-        //And also save the full stats at this point, similar to what we do at end of mission.    
-        SaveMapState(ArmiesL[(int)army], intermediateSave: true, intermediateWin: true); //This calcs the new mapstate & saves to disk.  
-        MO_MissionObjectiveRollingWinnersReward(army); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
-        MO_SelectPrimaryObjectives((int)army, 0, fresh: true);
-        MO_WritePrimaryObjectives(); //POSSIBLE BUG - this might erase other army's objectives?  Shouldn't but might.
-        mission_objectives.SelectSuggestedObjectives(army);
-        Timeout(10, () => //delay this so it synchronizes with the HUD & LOG messages.  This must happen after SaveMapState (intermediateWin: true) which updates the current MapState.
+        Task.Run(() =>
         {
-            DrawFrontLinesPerMapState(-MAP_WIN_POINTS / 100, MAP_WIN_POINTS / 100);
+            Console.WriteLine(ArmiesL[(int)army] + " has turned the battle - giving reward, selecting new objectives");
+            MO_turnedMapAnnouncements(army);
+            //We'll have to work on making CalcMapMove work here
+            //And also save the full stats at this point, similar to what we do at end of mission.    
+            SaveMapState(ArmiesL[(int)army], intermediateSave: true, intermediateWin: true); //This calcs the new mapstate & saves to disk.  
+            MO_MissionObjectiveRollingWinnersReward(army); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
+            MO_SelectPrimaryObjectives((int)army, 0, fresh: true);
+            MO_WritePrimaryObjectives(); //POSSIBLE BUG - this might erase other army's objectives?  Shouldn't but might.
+            mission_objectives.SelectSuggestedObjectives(army);
+            Timeout(10, () => //delay this so it synchronizes with the HUD & LOG messages.  This must happen after SaveMapState (intermediateWin: true) which updates the current MapState.
+            {
+                DrawFrontLinesPerMapState(-MAP_WIN_POINTS / 100, MAP_WIN_POINTS / 100);
+            });
         });
 
         //TODO: Add a list of all players who helped turn the map.  And/or players who helped destroy each objective.
@@ -11067,6 +11099,7 @@ added Rouen Flak
         Console.WriteLine("Mission Objectives: Added " + num_added.ToString() + " airports to Mission Objectives, updated " + num_updated.ToString() + " weight " + weight.ToString("N5"));
 
     }
+
     public void MO_MissionObjectiveAirfieldsArmyReset(Mission msn, maddox.game.IGamePlay gp, int army, string apID = null) //reset/restore all airfields for a given army, apID chooses only ONE to restore if that is the situation.
     {
         //public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
@@ -11884,17 +11917,20 @@ added Rouen Flak
 
     public void MO_RemoveObjective(MissionObjective mo)
     {
-        //var things = mo_mobileobjectivethings[mo.MOMobileObjectiveType]; //only valid for  mobileobjective types , and we're not using it yet.
+        Task.Run(() =>
+        {
+            //var things = mo_mobileobjectivethings[mo.MOMobileObjectiveType]; //only valid for  mobileobjective types , and we're not using it yet.
 
-        Console.WriteLine("Removing objective statics at " + mo.ID + " " + mo.Name);
+            Console.WriteLine("Removing objective statics at " + mo.ID + " " + mo.Name);
 
-        double searchRadius_m = MO_CalcMobileObjRadius_m(mo);
+            double searchRadius_m = MO_CalcMobileObjRadius_m(mo);
 
-        List<GroundStationary> gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList();
-        foreach (GroundStationary g in gs) Timeout(random.Next(20, 1200), () => { g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
-        //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping it
+            List<GroundStationary> gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList();
+            foreach (GroundStationary g in gs) Timeout(random.Next(20, 1200), () => { g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
+                                                                                                       //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping it
 
-        MO_PlaceDetritusInObjectArea(mo, searchRadius_m: searchRadius_m);
+            MO_PlaceDetritusInObjectArea(mo, searchRadius_m: searchRadius_m);
+        });
 
     }
 
@@ -12101,7 +12137,9 @@ added Rouen Flak
 
                 var flak = new List<string> { "Artillery.37mm_PaK_35_36", /*"Artillery.Flak37",*/ "Artillery.Bofors_StandAlone", "Artillery.3_7_inch_QF_Mk_I", "Artillery.Flak30_Shield", };
 
-                f = Calcs.makeAIChief(f, GamePlay, this, newPos.x, newPos.y, newPos.z, 10 + nfb * 2 + 50, chiefNum: j);
+                //OK, the artillery chief is one of my prime suspects for the warping/rubberbanding.  Trying to disable them all to see if that helps.  2020/03/07
+                //Next thing to try would be disabling all this autoflak.
+                //f = Calcs.makeAIChief(f, GamePlay, this, newPos.x, newPos.y, newPos.z, 10 + nfb * 2 + 50, chiefNum: j);
                 bool resetCount = true;
 
                 //Now actually PLACE the flak.
@@ -12806,138 +12844,147 @@ added Rouen Flak
 
     public void MO_TakeScoutPhoto(Player player, int army, double delay = 0.2, Point3d? test = null)
     {
-        bool firstPhotoThisSession = true;
-        if (LastPhotoTime_sec.ContainsKey(player)) firstPhotoThisSession = false;
-        int currTime_sec = Time.tickCounter() / 33;
-        if (LastPhotoTime_sec.ContainsKey(player) && (currTime_sec - LastPhotoTime_sec[player]) < 15)
+        Task.Run(() =>
         {
-            gpLogServerAndLog(new Player[] { player }, "Recon photo NOT recorded - photo once every 15 seconds at most! ", null);
-            // + currTime_sec.ToString() + " " + LastPhotoTime_sec[player].ToString()
-            return;
-        }
-
-        int numScouted = 0;
-        string minAlt = "20000 feet";
-        if (army == 2) minAlt = "6000m";
-
-        bool fail = false;
-        if (player.Place() as AiAircraft == null && !test.HasValue) fail = true;
-
-        AiAircraft aircraft = player.Place() as AiAircraft;
-
-        Point3d pos = aircraft.Pos();
-        if (test.HasValue) pos = test.Value; //for testing
-
-        double altitude = pos.z;
-
-        if (altitude < 6000)
-        {
-            fail = true;
-            LastPhotoTime_sec[player] = currTime_sec;
-            if (MO_CheckForGeneralStaffReconPhoto(player, aircraft, army, pos)) return; //If they're taking a legit general staff recon photo we don't give an error message
-        }
-
-        double radiusCovered_m = altitude / 0.342;  //(Sin (20 degrees) = 0.342)  Meaning that we can scout things 20 degrees below the horizon & lower.  This might be alittle ambitious, but also maybe not?
-
-        string alt = (radiusCovered_m / 1000.0).ToString("F1") + " km";
-        if (army == 1) alt = (Calcs.meters2feet(radiusCovered_m) / 5280.0).ToString("F1") + " miles";
-
-        if (aircraft.AirGroup().hasBombs()) fail = true;
-
-        if (fail)
-        {
-            twcLogServer(new Player[] { player }, "You must be in an aircraft, with no bombs on board, above " + minAlt + ", to successfully take a reconnaissance photo.", new object[] { });
-            return;
-        }
-
-        LastPhotoTime_sec[player] = currTime_sec;
-        ScoutPhotoID++;
-
-        List<string> keys = new List<string>();
-
-        twcLogServer(new Player[] { player }, ">>> Reconnaissance photo successfully taken, covering a radius of approx. " + alt + ".", new object[] { });
-
-        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
-        //foreach (var key in MissionObjectives[(ArmiesE)army])
-        {
-            //mo.AttackingArmy == army
-
-            MissionObjective mo = entry.Value;
-
-            //if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsEnabled && !mo.Scouted && Calcs.CalculatePointDistance (mo.Pos, pos) < radiusCovered_m) // no reason they can't scout destroyed objects - some might be undestroyed sometime soon. Also we're allowing multiple people to scout the same objective now, they just get less points if they are not the first.
-            if (mo.AttackingArmy == army && mo.IsEnabled && Calcs.CalculatePointDistance(mo.Pos, pos) < radiusCovered_m)
+            bool firstPhotoThisSession = true;
+            if (LastPhotoTime_sec.ContainsKey(player)) firstPhotoThisSession = false;
+            int currTime_sec = Time.tickCounter() / 33;
+            if (LastPhotoTime_sec.ContainsKey(player) && (currTime_sec - LastPhotoTime_sec[player]) < 15)
             {
-                keys.Add(entry.Key);
-                numScouted++;
-            }
-        }
-
-        var recordKey = new Tuple<int, int, aPlayer>(ScoutPhotoID, army, new aPlayer(player));
-        ScoutPhotoRecord.Add(recordKey, keys);
-
-        Timeout(60 * 60, () => {
-            if (ScoutPhotoRecord.ContainsKey(recordKey)) {
-                int total = ScoutPhotoRecord[recordKey].Count();
-                ScoutPhotoRecord.Remove(recordKey);
-                if (total > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photo taken over 1 hour ago identifying " + total.ToString() + " objectives were spoiled due to equipment malfunction during an overly extended flight.", new object[] { });
-            }
-
-        }); //spoil it after 1 hour if not returned
-
-        if (numScouted == 0)
-        {
-            Timeout(3, () =>
-            {
-                twcLogServer(new Player[] { player }, ">>> That area did not look very promising for locating valuable objectives.", new object[] { });
+                gpLogServerAndLog(new Player[] { player }, "Recon photo NOT recorded - photo once every 15 seconds at most! ", null);
+                // + currTime_sec.ToString() + " " + LastPhotoTime_sec[player].ToString()
                 return;
+            }
+
+            int numScouted = 0;
+            string minAlt = "20000 feet";
+            if (army == 2) minAlt = "6000m";
+
+            bool fail = false;
+            if (player.Place() as AiAircraft == null && !test.HasValue) fail = true;
+
+            AiAircraft aircraft = player.Place() as AiAircraft;
+
+            Point3d pos = aircraft.Pos();
+            if (test.HasValue) pos = test.Value; //for testing
+
+            double altitude = pos.z;
+
+            if (altitude < 6000)
+            {
+                fail = true;
+                LastPhotoTime_sec[player] = currTime_sec;
+                if (MO_CheckForGeneralStaffReconPhoto(player, aircraft, army, pos)) return; //If they're taking a legit general staff recon photo we don't give an error message
+            }
+
+            double radiusCovered_m = altitude / 0.342;  //(Sin (20 degrees) = 0.342)  Meaning that we can scout things 20 degrees below the horizon & lower.  This might be alittle ambitious, but also maybe not?
+
+            string alt = (radiusCovered_m / 1000.0).ToString("F1") + " km";
+            if (army == 1) alt = (Calcs.meters2feet(radiusCovered_m) / 5280.0).ToString("F1") + " miles";
+
+            if (aircraft.AirGroup().hasBombs()) fail = true;
+
+            if (fail)
+            {
+                twcLogServer(new Player[] { player }, "You must be in an aircraft, with no bombs on board, above " + minAlt + ", to successfully take a reconnaissance photo.", new object[] { });
+                return;
+            }
+
+            LastPhotoTime_sec[player] = currTime_sec;
+            ScoutPhotoID++;
+
+            List<string> keys = new List<string>();
+
+            twcLogServer(new Player[] { player }, ">>> Reconnaissance photo successfully taken, covering a radius of approx. " + alt + ".", new object[] { });
+
+            foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+            //foreach (var key in MissionObjectives[(ArmiesE)army])
+            {
+                //mo.AttackingArmy == army
+
+                MissionObjective mo = entry.Value;
+
+                //if (!mo.Destroyed && mo.AttackingArmy == army && mo.IsEnabled && !mo.Scouted && Calcs.CalculatePointDistance (mo.Pos, pos) < radiusCovered_m) // no reason they can't scout destroyed objects - some might be undestroyed sometime soon. Also we're allowing multiple people to scout the same objective now, they just get less points if they are not the first.
+                if (mo.AttackingArmy == army && mo.IsEnabled && Calcs.CalculatePointDistance(mo.Pos, pos) < radiusCovered_m)
+                {
+                    keys.Add(entry.Key);
+                    numScouted++;
+                }
+            }
+
+            var recordKey = new Tuple<int, int, aPlayer>(ScoutPhotoID, army, new aPlayer(player));
+            ScoutPhotoRecord.Add(recordKey, keys);
+
+            Timeout(60 * 60, () =>
+            {
+                if (ScoutPhotoRecord.ContainsKey(recordKey))
+                {
+                    int total = ScoutPhotoRecord[recordKey].Count();
+                    ScoutPhotoRecord.Remove(recordKey);
+                    if (total > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photo taken over 1 hour ago identifying " + total.ToString() + " objectives were spoiled due to equipment malfunction during an overly extended flight.", new object[] { });
+                }
+
+            }); //spoil it after 1 hour if not returned
+
+            if (numScouted == 0)
+            {
+                Timeout(3, () =>
+                {
+                    twcLogServer(new Player[] { player }, ">>> That area did not look very promising for locating valuable objectives.", new object[] { });
+                    return;
+                });
+            }
+
+            numScouted += Convert.ToInt32(Math.Round(random.Next(numScouted * 3) / 4.0 - numScouted * 3.0 / 8.0)); //fuzz the result a little
+            if (numScouted < 0) numScouted = 0;
+            string msg1 = ">>> That area did not look very promising for locating valuable objectives.";
+            if (numScouted > 0) msg1 = ">>> It looks like that area may contain a few valuable military objectives.";
+            if (numScouted > 8) msg1 = ">>> It looks like that area may contain several valuable military objectives.";
+
+            Timeout(1.5, () =>
+            {
+                twcLogServer(new Player[] { player }, msg1, new object[] { });
             });
-        }
 
-        numScouted += Convert.ToInt32(Math.Round(random.Next(numScouted * 3) / 4.0 - numScouted * 3.0 / 8.0)); //fuzz the result a little
-        if (numScouted < 0) numScouted = 0;
-        string msg1 = ">>> That area did not look very promising for locating valuable objectives.";
-        if (numScouted > 0) msg1 = ">>> It looks like that area may contain a few valuable military objectives.";
-        if (numScouted > 8) msg1 = ">>> It looks like that area may contain several valuable military objectives.";
-
-        Timeout(1.5, () =>
-        {
-            twcLogServer(new Player[] { player }, msg1, new object[] { });
+            if (firstPhotoThisSession) //onlyi give this announcement for the FIRST photo of this session
+            {
+                Timeout(3, () =>
+                {
+                    twcLogServer(new Player[] { player }, "Reconnaissance results will be available after you land safely and headquarters has a chance to analyze the photos fully.", new object[] { });
+                });
+                Timeout(4.5, () =>
+                {
+                    twcLogServer(new Player[] { player }, "You have one hour to return and land safely or the photo will be spoiled.", new object[] { });
+                });
+            }
+            else
+            {
+                Timeout(4.5, () =>
+                {
+                    twcLogServer(new Player[] { player }, ">>> One hour to land/record photo.", new object[] { });
+                });
+            }
         });
-
-        if (firstPhotoThisSession) //onlyi give this announcement for the FIRST photo of this session
-        {
-            Timeout(3, () =>
-            {
-                twcLogServer(new Player[] { player }, "Reconnaissance results will be available after you land safely and headquarters has a chance to analyze the photos fully.", new object[] { });
-            });
-            Timeout(4.5, () =>
-            {
-                twcLogServer(new Player[] { player }, "You have one hour to return and land safely or the photo will be spoiled.", new object[] { });
-            });
-        } else
-        {
-            Timeout(4.5, () =>
-            {
-                twcLogServer(new Player[] { player }, ">>> One hour to land/record photo.", new object[] { });
-            });
-        }
     }
 
     public void MO_SpoilPlayerScoutPhotos(Player player)
     {
-        int total = 0;
-        var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
-        foreach (KeyValuePair<Tuple<int, int, aPlayer>, List<string>> entry in ScoutPhotoRecord_copy)
+        Task.Run(() =>
         {
-            if (entry.Key.Item3 != new aPlayer(player)) continue;
-            total += ScoutPhotoRecord[entry.Key].Count;
-            ScoutPhotoRecord.Remove(entry.Key);
-        }
-        if (total > 0)
-            Timeout(20, () => //wait a while for message because it often comes when player died, crashed, etc, many other messages coming through at once.
+            int total = 0;
+            var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
+            foreach (KeyValuePair<Tuple<int, int, aPlayer>, List<string>> entry in ScoutPhotoRecord_copy)
             {
-                twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photos identifying " + total.ToString() + " objectives were lost.", new object[] { });
-            });
+                if (entry.Key.Item3 != new aPlayer(player)) continue;
+                total += ScoutPhotoRecord[entry.Key].Count;
+                ScoutPhotoRecord.Remove(entry.Key);
+            }
+            if (total > 0)
+                Timeout(20, () => //wait a while for message because it often comes when player died, crashed, etc, many other messages coming through at once.
+                {
+                    twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photos identifying " + total.ToString() + " objectives were lost.", new object[] { });
+                });
+        });
     }
 
     public void MO_SpoilPlayerScoutPhotos(HashSet<Player> players)
@@ -12957,207 +13004,213 @@ added Rouen Flak
     //Otherwise it is some automated thing & no message is required unless there is success.
     public void MO_RecordPlayerScoutPhotos(Player player, bool check = false, bool test = false)
     {
-        if (player == null) return;
-        if (test ||
-            (player.Place() != null && (player.Place() as AiAircraft) != null &&
-            GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) == player.Army() &&
-            //Stb_distanceToNearestAirport(actor) < 3100 &&
-            Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) < 2 &&
-            player.Place().IsAlive())
-            )
-        {//it's good 
-         //(do nothing)
-        }
-        else
-        {//it's no good
-            if (check) twcLogServer(new Player[] { player }, "You can't check in your reconnaissance photos now - you must be safely landed, in your aircraft with the photos, on friendly ground and ideally at an air base.", new object[] { });
-            return;
-        }
-
-        //Console.WriteLine("RCRec: #1");
-
-
-        int totalPhotos = 0;
-        int total = 0;
-        int totalPrimary = 0;
-        int totalSecondary = 0;
-        int totalRadar = 0;
-        int totalAirfield = 0;
-        int totalShip = 0;
-        int totalFuel = 0;
-        int totalNeverScouted = 0;
-        int army = player.Army();
-        //List<String> mos = MissionObjectivesSuggested[(ArmiesE)army];
-        List<String> mos = MO_ListSuggestedObjectives(null, player.Army(), display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
-
-        var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
-
-        //Console.WriteLine("RCRec: #2");
-
-        HashSet<string> objectivesIDed = new HashSet<string>();
-
-        //Console.WriteLine("RCRec: #2a");
-
-        foreach (KeyValuePair<Tuple<int, int, aPlayer>, List<string>> entry in ScoutPhotoRecord_copy)
+        Task.Run(() =>
         {
-            try
-            { //if the on-disk copy of ScoutPhotoRecord gets messed upsometimes the values are really wonky and give an error here no matter what.  So this catches them & continues, if possible.
-              //Console.WriteLine("RCRec: #2b");
-                if (entry.Key == null || photosRecorded.Contains(entry.Key)) continue;  //This photo already recorded this session.  prevents double-counting photos/objectives found while HQ is 'processing' the info for up to 360 seconds.
-                                                                                        //if (entry.Key.Item3 != new aPlayer(player)) continue;
-                                                                                        //Console.WriteLine("RCRec: #2c");
-                aPlayer aplayer = new aPlayer(player);
-                //Console.WriteLine("RCRec: #2d");
-                if (entry.Key == null) continue;
-                //Console.WriteLine("RCRec: #2da");
-                //Console.WriteLine("RCRec: #2da" + entry.Key.ToString());
-                if (DBNull.Value.Equals(entry.Key.Item1) || DBNull.Value.Equals(entry.Key.Item2) || DBNull.Value.Equals(entry.Key.Item3)
-                    || DBNull.Value.Equals(entry.Key.Item3.name) || DBNull.Value.Equals(entry.Key.Item3.army)) continue; //This can happen if data is empty or just corrupted.
-                                                                                                                         //Console.WriteLine("RCRec: #2da" + entry.Key.Item3.ToString());
-                                                                                                                         //Console.WriteLine("RCRec: #2da" + (entry.Key.Item3).GetType().ToString());
-                                                                                                                         //if (entry.Key.Item3.name == "") Console.WriteLine("yes"); 
-
-                if (entry.Key.Item3 == null) continue;
-                //Console.WriteLine("RCRec: #3da");
-                //if (entry.Key.Item3.name == null) continue;
-                //Console.WriteLine("RCRec: #3da");
-                //if (entry.Key.Item3.army == null) continue;
-                /* Console.WriteLine("RCRec: #3da");
-                Console.WriteLine("RCRec: #3db" + aplayer.name);
-                Console.WriteLine("RCRec: #3dc" + entry.Key.Item3.name);
-                Console.WriteLine("RCRec: #3dd" + entry.Key.Item3.army.ToString());
-                Console.WriteLine("RCRec: #3de" + aplayer.army.ToString());
-                */
-
-                if (entry.Key.Item3.name != aplayer.name || entry.Key.Item3.army != aplayer.army) continue;
-                //if (entry.Key.Item3 == null || entry.Key.Item3 != aplayer) continue;
-                //Console.WriteLine("RCRec: #2e");
-
-            } catch (Exception ex)
-            {
-                try { ScoutPhotoRecord.Remove(entry.Key); } catch (Exception ex1) { Console.WriteLine("Record Scout Photo error2!!! " + ex1.ToString()); }
-                Console.WriteLine("Record Scout Photo error!!! " + ex.ToString());
-                continue;
+            if (player == null) return;
+            if (test ||
+                (player.Place() != null && (player.Place() as AiAircraft) != null &&
+                GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) == player.Army() &&
+                //Stb_distanceToNearestAirport(actor) < 3100 &&
+                Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) < 2 &&
+                player.Place().IsAlive())
+                )
+            {//it's good 
+             //(do nothing)
             }
-            totalPhotos++;
+            else
+            {//it's no good
+                if (check) twcLogServer(new Player[] { player }, "You can't check in your reconnaissance photos now - you must be safely landed, in your aircraft with the photos, on friendly ground and ideally at an air base.", new object[] { });
+                return;
+            }
 
-            //Console.WriteLine("RCRec: #3");
+            //Console.WriteLine("RCRec: #1");
 
-            if (player.Army() == 1) RedScoutPhotosI++;
-            if (player.Army() == 2) BlueScoutPhotosI++;
-            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 848);  //848 recon photos taken, 849 # of objectives photographed
-            if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 848, 1);
 
-            string amalg = player.Name() + player.Army().ToString();
+            int totalPhotos = 0;
+            int total = 0;
+            int totalPrimary = 0;
+            int totalSecondary = 0;
+            int totalRadar = 0;
+            int totalAirfield = 0;
+            int totalShip = 0;
+            int totalFuel = 0;
+            int totalNeverScouted = 0;
+            int army = player.Army();
+            //List<String> mos = MissionObjectivesSuggested[(ArmiesE)army];
+            List<String> mos = MO_ListSuggestedObjectives(null, player.Army(), display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
 
-            var copyList = new List<string>(entry.Value);
-            copyList.Add(amalg);
+            var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
 
-            int seed = Calcs.seedObj(copyList.ToArray());
+            //Console.WriteLine("RCRec: #2");
 
-            Random repeatRandom = new Random(seed);
+            HashSet<string> objectivesIDed = new HashSet<string>();
 
-            Console.WriteLine("RCRec: #4 " + seed.ToString());
+            //Console.WriteLine("RCRec: #2a");
 
-            foreach (string key in entry.Value)
+            foreach (KeyValuePair<Tuple<int, int, aPlayer>, List<string>> entry in ScoutPhotoRecord_copy)
             {
-                //So, from a given recon mission we only identify 1/4 of possible objectives in that area.  Because recon photos aren't perfect, photo intelligence ID
-                //of targets isn't perfect, etc. So that we reconning the same area again might result in more targets IDed.
-                //But, we always identify primary targets, not because recon is specially good for them, but because  HQ has chosen the primary targets based on 
-                //Recon photos returned.  
-                //FUTURE: Maybe 1/4 of targets IDed is too much or too little.  Or maybe it varies day to day depending on weather, time of day photo taken, etc.
+                try
+                { //if the on-disk copy of ScoutPhotoRecord gets messed upsometimes the values are really wonky and give an error here no matter what.  So this catches them & continues, if possible.
+                  //Console.WriteLine("RCRec: #2b");
+                    if (entry.Key == null || photosRecorded.Contains(entry.Key)) continue;  //This photo already recorded this session.  prevents double-counting photos/objectives found while HQ is 'processing' the info for up to 360 seconds.
+                                                                                            //if (entry.Key.Item3 != new aPlayer(player)) continue;
+                                                                                            //Console.WriteLine("RCRec: #2c");
+                    aPlayer aplayer = new aPlayer(player);
+                    //Console.WriteLine("RCRec: #2d");
+                    if (entry.Key == null) continue;
+                    //Console.WriteLine("RCRec: #2da");
+                    //Console.WriteLine("RCRec: #2da" + entry.Key.ToString());
+                    if (DBNull.Value.Equals(entry.Key.Item1) || DBNull.Value.Equals(entry.Key.Item2) || DBNull.Value.Equals(entry.Key.Item3)
+                        || DBNull.Value.Equals(entry.Key.Item3.name) || DBNull.Value.Equals(entry.Key.Item3.army)) continue; //This can happen if data is empty or just corrupted.
+                                                                                                                             //Console.WriteLine("RCRec: #2da" + entry.Key.Item3.ToString());
+                                                                                                                             //Console.WriteLine("RCRec: #2da" + (entry.Key.Item3).GetType().ToString());
+                                                                                                                             //if (entry.Key.Item3.name == "") Console.WriteLine("yes"); 
 
-                //However, if we have already IDed this objective from previous recon flights, then we always add knowledge/credit more for that one.
-                //Because Photo Intel already knows where it is etc.
+                    if (entry.Key.Item3 == null) continue;
+                    //Console.WriteLine("RCRec: #3da");
+                    //if (entry.Key.Item3.name == null) continue;
+                    //Console.WriteLine("RCRec: #3da");
+                    //if (entry.Key.Item3.army == null) continue;
+                    /* Console.WriteLine("RCRec: #3da");
+                    Console.WriteLine("RCRec: #3db" + aplayer.name);
+                    Console.WriteLine("RCRec: #3dc" + entry.Key.Item3.name);
+                    Console.WriteLine("RCRec: #3dd" + entry.Key.Item3.army.ToString());
+                    Console.WriteLine("RCRec: #3de" + aplayer.army.ToString());
+                    */
 
-                if (!MissionObjectivesList.ContainsKey(key)) continue; //maybe this objective has been deleted/removed/whatever since it was originally scouted
+                    if (entry.Key.Item3.name != aplayer.name || entry.Key.Item3.army != aplayer.army) continue;
+                    //if (entry.Key.Item3 == null || entry.Key.Item3 != aplayer) continue;
+                    //Console.WriteLine("RCRec: #2e");
 
-                MissionObjective mo = MissionObjectivesList[key];
-                int ct = objectivesIDed.Count;
-                objectivesIDed.Add(key);
-
-                //Console.WriteLine("RCRec: #5");                
-                if (!mo.IsEnabled && mo.Scouted) {
-                    //mo.Scouted = false;
-                    mo.makeScouted(player); // for disabled objectives this will just mark them as scouted, but then removed per further scouting and this will show up on the recon list as "No Longer There !!!1!!"
-                    continue;
-                } //There are a lot of possible things to do here, but for now just remove from the scouted list so that it doesn't show up there as a nice target to visit any more.
-                if (!mo.IsEnabled) continue;
-
-                if (!mo.IsPrimaryTarget && !mo.Scouted && repeatRandom.Next(4) != 0) continue;  //only "find" 1/4 of the objectives in the scouted area.  But **always** find the primary targets; always skip disabled.  Add the mo to the processed list first, THEN determine if it is one of the 1/4 identified.  Otherwise each mo could get multiple chances to be picked, if the player has taken multiple photos of the same area.  Also, always re-find previously found objectives.
-
-
-                if (ct != objectivesIDed.Count) //only bother doing all this stuff if it's new/unique object not before identified during this photo processing run from this player
-                {
-
-                    if (player.Army() == 1) RedScoutedObjectivesI++;
-                    if (player.Army() == 2) BlueScoutedObjectivesI++;
-                    if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 849);  //848 recon photos taken, 849 # of objectives photographed
-                    if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 849, 1);
-
-                    //Console.WriteLine("RCRec: #6");
-                    int time = 360;
-                    if (test) time = 10;
-
-                    //make sure they're all recorded before the mission ends.
-                    int timeleft_sec = calcTimeLeft_min() * 60;
-                    if (time > timeleft_sec) time = timeleft_sec;
-                    if (time < 1) time = 1;//Sometimes timeleft is <0, maybe?
-
-                    Timeout(random.Next(time), () =>
-                    {
-                        mo.makeScouted(player);
-                        if (mo.hasGeneralStaff)
-                        {
-                            string af = "RAF";
-                            if (army == 2) af = "Luftwaffe";
-                            string name = "";
-                            if (player != null && player.Name() != null) name = "by " + player.Name();
-                            string msg7 = ">>>Recon" + name + " has identified a possible group of high-ranking " + af + " officers near " + mo.Name;
-                            twcLogServer(null, msg7, null);
-                        }
-                    }); //Some delay for careful analysis, before they show up in the in-game lists. 
-
-                    //Console.WriteLine("RCRec: #7");
-                    total++;
-                    if (mo.IsPrimaryTarget) totalPrimary++;
-                    if (mos.Contains(key) && mos.IndexOf(key) < 5) totalSecondary++;
-                    if (mo.MOObjectiveType == MO_ObjectiveType.Radar) totalRadar++;
-                    if (mo.MOObjectiveType == MO_ObjectiveType.Airfield) totalAirfield++;
-                    if (mo.MOObjectiveType == MO_ObjectiveType.Ship) totalShip++;
-                    if (mo.MOObjectiveType == MO_ObjectiveType.Fuel) totalFuel++;
-                    if (!mo.Scouted) totalNeverScouted++;
-
-                    //Console.WriteLine("RCRec: #8");
-                    //Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase
                 }
+                catch (Exception ex)
+                {
+                    try { ScoutPhotoRecord.Remove(entry.Key); } catch (Exception ex1) { Console.WriteLine("Record Scout Photo error2!!! " + ex1.ToString()); }
+                    Console.WriteLine("Record Scout Photo error!!! " + ex.ToString());
+                    continue;
+                }
+                totalPhotos++;
+
+                //Console.WriteLine("RCRec: #3");
+
+                if (player.Army() == 1) RedScoutPhotosI++;
+                if (player.Army() == 2) BlueScoutPhotosI++;
+                if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 848);  //848 recon photos taken, 849 # of objectives photographed
+                if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 848, 1);
+
+                string amalg = player.Name() + player.Army().ToString();
+
+                var copyList = new List<string>(entry.Value);
+                copyList.Add(amalg);
+
+                int seed = Calcs.seedObj(copyList.ToArray());
+
+                Random repeatRandom = new Random(seed);
+
+                Console.WriteLine("RCRec: #4 " + seed.ToString());
+
+                foreach (string key in entry.Value)
+                {
+                    //So, from a given recon mission we only identify 1/4 of possible objectives in that area.  Because recon photos aren't perfect, photo intelligence ID
+                    //of targets isn't perfect, etc. So that we reconning the same area again might result in more targets IDed.
+                    //But, we always identify primary targets, not because recon is specially good for them, but because  HQ has chosen the primary targets based on 
+                    //Recon photos returned.  
+                    //FUTURE: Maybe 1/4 of targets IDed is too much or too little.  Or maybe it varies day to day depending on weather, time of day photo taken, etc.
+
+                    //However, if we have already IDed this objective from previous recon flights, then we always add knowledge/credit more for that one.
+                    //Because Photo Intel already knows where it is etc.
+
+                    if (!MissionObjectivesList.ContainsKey(key)) continue; //maybe this objective has been deleted/removed/whatever since it was originally scouted
+
+                    MissionObjective mo = MissionObjectivesList[key];
+                    int ct = objectivesIDed.Count;
+                    objectivesIDed.Add(key);
+
+                    //Console.WriteLine("RCRec: #5");                
+                    if (!mo.IsEnabled && mo.Scouted)
+                    {
+                        //mo.Scouted = false;
+                        mo.makeScouted(player); // for disabled objectives this will just mark them as scouted, but then removed per further scouting and this will show up on the recon list as "No Longer There !!!1!!"
+                        continue;
+                    } //There are a lot of possible things to do here, but for now just remove from the scouted list so that it doesn't show up there as a nice target to visit any more.
+                    if (!mo.IsEnabled) continue;
+
+                    if (!mo.IsPrimaryTarget && !mo.Scouted && repeatRandom.Next(4) != 0) continue;  //only "find" 1/4 of the objectives in the scouted area.  But **always** find the primary targets; always skip disabled.  Add the mo to the processed list first, THEN determine if it is one of the 1/4 identified.  Otherwise each mo could get multiple chances to be picked, if the player has taken multiple photos of the same area.  Also, always re-find previously found objectives.
+
+
+                    if (ct != objectivesIDed.Count) //only bother doing all this stuff if it's new/unique object not before identified during this photo processing run from this player
+                    {
+
+                        if (player.Army() == 1) RedScoutedObjectivesI++;
+                        if (player.Army() == 2) BlueScoutedObjectivesI++;
+                        if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_IncrementSessStat(player, 849);  //848 recon photos taken, 849 # of objectives photographed
+                        if (TWCSaveIPlayerStat != null) TWCSaveIPlayerStat.StbSis_AddToMissionStat(player, 849, 1);
+
+                        //Console.WriteLine("RCRec: #6");
+                        int time = 360;
+                        if (test) time = 10;
+
+                        //make sure they're all recorded before the mission ends.
+                        int timeleft_sec = calcTimeLeft_min() * 60;
+                        if (time > timeleft_sec) time = timeleft_sec;
+                        if (time < 1) time = 1;//Sometimes timeleft is <0, maybe?
+
+                        Timeout(random.Next(time), () =>
+                        {
+                            mo.makeScouted(player);
+                            if (mo.hasGeneralStaff)
+                            {
+                                string af = "RAF";
+                                if (army == 2) af = "Luftwaffe";
+                                string name = "";
+                                if (player != null && player.Name() != null) name = "by " + player.Name();
+                                string msg7 = ">>>Recon" + name + " has identified a possible group of high-ranking " + af + " officers near " + mo.Name;
+                                twcLogServer(null, msg7, null);
+                            }
+                        }); //Some delay for careful analysis, before they show up in the in-game lists. 
+
+                        //Console.WriteLine("RCRec: #7");
+                        total++;
+                        if (mo.IsPrimaryTarget) totalPrimary++;
+                        if (mos.Contains(key) && mos.IndexOf(key) < 5) totalSecondary++;
+                        if (mo.MOObjectiveType == MO_ObjectiveType.Radar) totalRadar++;
+                        if (mo.MOObjectiveType == MO_ObjectiveType.Airfield) totalAirfield++;
+                        if (mo.MOObjectiveType == MO_ObjectiveType.Ship) totalShip++;
+                        if (mo.MOObjectiveType == MO_ObjectiveType.Fuel) totalFuel++;
+                        if (!mo.Scouted) totalNeverScouted++;
+
+                        //Console.WriteLine("RCRec: #8");
+                        //Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase
+                    }
+
+                }
+                //Console.WriteLine("RCRec: #9");
+                photosRecorded.Add(entry.Key); //avoid processing this photo again this session, but leave it in the ScoutPhotoRecord until all items have been processed, just to avoid losing data when the server dies or whatever
+                Timeout(360, () => ScoutPhotoRecord.Remove(entry.Key)); //to avoid losing data in case of server crash/exit/etc we delay deleting this photo until 360 seconds after initial processing, when all the mos should be marked scouted.  So if the server crashes in the meanwhile, the photo(s) can just be re-read & re-processed on next restart.
+                                                                        //Console.WriteLine("RCRec: #10");
+            }
+
+            if (total == 0 && totalPhotos > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your " + totalPhotos.ToString() + " reconnaissance photos identified no new objectives.", new object[] { });
+            else if (totalPhotos == 0 && check) twcLogServer(new Player[] { player }, "You have no reconnaissance photos to process.  Perhaps they were processed automatically when you landed?", new object[] { });
+
+            //Console.WriteLine("RCRec: #11");
+            if (total > 0)
+            {
+                int totalOthers = total - totalPrimary - totalSecondary;
+                if (totalOthers < 0) totalOthers = 0;
+                twcLogServer(new Player[] { player }, ">>>> Your " + totalPhotos.ToString() + " reconnaissance photos identified " + total.ToString() + " objectives, including " + totalPrimary.ToString() + " HQ has named as primary objectives, " + totalSecondary.ToString() + " HQ named as secondary objectives, and " + totalOthers.ToString() + " other important objectives.", new object[] { });
+                Timeout(1.5, () =>
+                {
+                    twcLogServer(new Player[] { player }, ">>>> Among the objectives: " + totalRadar.ToString() + " radar installations, " + totalAirfield.ToString() + " airfields, " + totalFuel.ToString() + " fuel dumps, " + totalShip.ToString() + " ships, " + totalNeverScouted.ToString() + " objectives not previously identified, and confirmation of " + (total - totalNeverScouted).ToString() + " objectives previously identified.", new object[] { });
+                });
+                Timeout(3, () =>
+                {
+                    twcLogServer(new Player[] { player }, ">>>> Precise mapping coordinates for your objectives will be available via Tab-4-8 in a few minutes, after headquarters has a chance to carefully analyze the photos.", new object[] { });
+                });
 
             }
-            //Console.WriteLine("RCRec: #9");
-            photosRecorded.Add(entry.Key); //avoid processing this photo again this session, but leave it in the ScoutPhotoRecord until all items have been processed, just to avoid losing data when the server dies or whatever
-            Timeout(360, () => ScoutPhotoRecord.Remove(entry.Key)); //to avoid losing data in case of server crash/exit/etc we delay deleting this photo until 360 seconds after initial processing, when all the mos should be marked scouted.  So if the server crashes in the meanwhile, the photo(s) can just be re-read & re-processed on next restart.
-            //Console.WriteLine("RCRec: #10");
-        }
-
-        if (total == 0 && totalPhotos > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your " + totalPhotos.ToString() + " reconnaissance photos identified no new objectives.", new object[] { });
-        else if (totalPhotos == 0 && check) twcLogServer(new Player[] { player }, "You have no reconnaissance photos to process.  Perhaps they were processed automatically when you landed?", new object[] { });
-
-        //Console.WriteLine("RCRec: #11");
-        if (total > 0) {
-            int totalOthers = total - totalPrimary - totalSecondary;
-            if (totalOthers < 0) totalOthers = 0;
-            twcLogServer(new Player[] { player }, ">>>> Your " + totalPhotos.ToString() + " reconnaissance photos identified " + total.ToString() + " objectives, including " + totalPrimary.ToString() + " HQ has named as primary objectives, " + totalSecondary.ToString() + " HQ named as secondary objectives, and " + totalOthers.ToString() + " other important objectives.", new object[] { });
-            Timeout(1.5, () =>
-            {
-                twcLogServer(new Player[] { player }, ">>>> Among the objectives: " + totalRadar.ToString() + " radar installations, " + totalAirfield.ToString() + " airfields, " + totalFuel.ToString() + " fuel dumps, " + totalShip.ToString() + " ships, " + totalNeverScouted.ToString() + " objectives not previously identified, and confirmation of " + (total - totalNeverScouted).ToString() + " objectives previously identified.", new object[] { });
-            });
-            Timeout(3, () =>
-            {
-                twcLogServer(new Player[] { player }, ">>>> Precise mapping coordinates for your objectives will be available via Tab-4-8 in a few minutes, after headquarters has a chance to carefully analyze the photos.", new object[] { });
-            });
-
-        }
-        //Console.WriteLine("RCRec: #12");
+            //Console.WriteLine("RCRec: #12");
+        });
     }
 
     public void MO_RecordPlayerScoutPhotos(HashSet<Player> players)
@@ -13777,35 +13830,40 @@ added Rouen Flak
 
     public void MO_AddAllPlayersStatAndContributedScoredForObjectiveDamageDestruction(MissionObjective OldObj, double score)
     {
-        try
+        Task.Run(() =>
         {
-            if (GamePlay.gpRemotePlayers() != null) foreach (Player player in GamePlay.gpRemotePlayers())
-                {
-                    if (player == null || player.Place() == null) continue;
+            try
+            {
 
-                    if (OldObj.AttackingArmy == player.Army() &&
-                    player.Place() != null &&
-                    Calcs.CalculatePointDistance(player.Place().Pos(), OldObj.Pos) < 10000)
+                if (GamePlay.gpRemotePlayers() != null) foreach (Player player in GamePlay.gpRemotePlayers())
                     {
-                        MO_AddPlayerStatsScoresForObjectiveDestruction(player, player.Name(), OldObj, score);
-                        OldObj.PlayersWhoContributedNames.Add(player.Name());
+                        if (player == null || player.Place() == null) continue;
+
+                        if (OldObj.AttackingArmy == player.Army() &&
+                        player.Place() != null &&
+                        Calcs.CalculatePointDistance(player.Place().Pos(), OldObj.Pos) < 10000)
+                        {
+                            MO_AddPlayerStatsScoresForObjectiveDestruction(player, player.Name(), OldObj, score);
+                            OldObj.PlayersWhoContributedNames.Add(player.Name());
+                        }
                     }
-                }
-        }
-        catch (Exception ex) { Console.WriteLine("MO_AddAllPlayersCredit ERROR: " + ex.Message); };
 
-        try
-        {
-            //**add player stat points for any players who scouted/recon photo for this objective
-            //It is max for first player to recon, then reduced by 50% for each succeeding player who also reconned it
-            if (OldObj.PlayersWhoScoutedNames != null) foreach (string playerName in OldObj.PlayersWhoScoutedNames.Keys)
-                {
-                    MO_AddPlayerStatsScoresForObjectiveDestruction(null, playerName, OldObj, score / (2 ^ OldObj.PlayersWhoScoutedNames[playerName]));
-                    OldObj.PlayersWhoContributedNames.Add(playerName);  //they get a piece of the credit for object destruction
-                }
+            }
+            catch (Exception ex) { Console.WriteLine("MO_AddAllPlayersCredit ERROR: " + ex.Message); };
 
-        }
-        catch (Exception ex) { Console.WriteLine("MO_AddAllPlayersCredit ERROR2: " + ex.Message); };
+            try
+            {
+                //**add player stat points for any players who scouted/recon photo for this objective
+                //It is max for first player to recon, then reduced by 50% for each succeeding player who also reconned it
+                if (OldObj.PlayersWhoScoutedNames != null) foreach (string playerName in OldObj.PlayersWhoScoutedNames.Keys)
+                    {
+                        MO_AddPlayerStatsScoresForObjectiveDestruction(null, playerName, OldObj, score / (2 ^ OldObj.PlayersWhoScoutedNames[playerName]));
+                        OldObj.PlayersWhoContributedNames.Add(playerName);  //they get a piece of the credit for object destruction
+                    }
+
+            }
+            catch (Exception ex) { Console.WriteLine("MO_AddAllPlayersCredit ERROR2: " + ex.Message); };
+        });
     }
 
     //Destroys the objective with the given ID and takes other related actions, such as 
@@ -14087,25 +14145,28 @@ added Rouen Flak
 
     public void restoreAirfield(string ID, string Name, int OwnerArmy, Point3d Pos, double radius = 3000, MissionObjective mo = null, int percentToRestore = 100)
     {
-        if (percentToRestore >= 100)
+        Task.Run(() =>
         {
-            //If it doesn't have a spawnpoint, we give it one.  Even if it didn't have one before.  This . . . could cause some problems.  We'll see.
-            double dist_m = Calcs.distanceToNearestBirthplace(GamePlay, mo.Pos, mo.OwnerArmy);
-            Console.WriteLine("RestoreAirfield: Checking distance from {0}: {1} ({2:F0},{3:F0})", mo.Name, dist_m, mo.Pos.x, mo.Pos.y);
-            if (dist_m > 5000)
+            if (percentToRestore >= 100)
             {
-                ISectionFile f2 = GamePlay.gpCreateSectionFile();
-                int maxLen = 14;
-                if (ID.Length < 14) maxLen = ID.Length;
-                string bname = ID.Substring(0, maxLen) + " (temp) " + random.Next(10, 99).ToString("F0");
-                f2 = Calcs.CreateBirthPlace(f2, bname, Pos.x, Pos.y, 0, OwnerArmy);
-                GamePlay.gpPostMissionLoad(f2);
-                f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname);
+                //If it doesn't have a spawnpoint, we give it one.  Even if it didn't have one before.  This . . . could cause some problems.  We'll see.
+                double dist_m = Calcs.distanceToNearestBirthplace(GamePlay, mo.Pos, mo.OwnerArmy);
+                Console.WriteLine("RestoreAirfield: Checking distance from {0}: {1} ({2:F0},{3:F0})", mo.Name, dist_m, mo.Pos.x, mo.Pos.y);
+                if (dist_m > 5000)
+                {
+                    ISectionFile f2 = GamePlay.gpCreateSectionFile();
+                    int maxLen = 14;
+                    if (ID.Length < 14) maxLen = ID.Length;
+                    string bname = ID.Substring(0, maxLen) + " (temp) " + random.Next(10, 99).ToString("F0");
+                    f2 = Calcs.CreateBirthPlace(f2, bname, Pos.x, Pos.y, 0, OwnerArmy);
+                    GamePlay.gpPostMissionLoad(f2);
+                    f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname);
+                }
+                MO_MissionObjectiveAirfieldsArmyReset(this, GamePlay, OwnerArmy, apID: ID);
             }
-            MO_MissionObjectiveAirfieldsArmyReset(this, GamePlay, OwnerArmy, apID: ID);
-        }
-        removeSmokeFireCraters(Pos, radius, percentToRestore);
-        Console.WriteLine("Removing craters from: " + Name);
+            removeSmokeFireCraters(Pos, radius, percentToRestore);
+            Console.WriteLine("Removing craters from: " + Name);
+        });
 
     }
 
@@ -14131,50 +14192,52 @@ added Rouen Flak
     public void MO_ObjectiveUndestroy_recurs()
     {
         Timeout(316.3, () => { MO_ObjectiveUndestroy_recurs(); });
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MMOXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        DateTime currTime_UTC = DateTime.UtcNow;
-        List<string> molk = new List<string>(MissionObjectivesList.Keys.ToList());
-        foreach (string ID in molk)
-        {
-
-            MissionObjective mo = MissionObjectivesList[ID];
-            MO_HandleMobileObjectivePlacement(mo, startup: false);
-            if ((mo.Destroyed && mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(currTime_UTC) < 0)  //it's time to undestroy
-                || (mo.Destroyed && !mo.TimeToUndestroy_UTC.HasValue && MO_ObjectiveUndestroy_recurs_firstrun))  //it's destroyed but no time to undestroy.  Undestroy it on first run of the session; not sure what else to do.  This shouldn't happen but probably does once in a while.
-
-
+        Task.Run( ()=> {
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MMOXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+            DateTime currTime_UTC = DateTime.UtcNow;
+            List<string> molk = new List<string>(MissionObjectivesList.Keys.ToList());
+            foreach (string ID in molk)
             {
-                string time = "No value";
-                if (mo.TimeToUndestroy_UTC.HasValue) time = mo.TimeToUndestroy_UTC.ToString();
-                Console.WriteLine("Undestroying: {0} {1} {2:F0} {3} ", mo.Name, mo.Destroyed, mo.DestroyedPercent * 100.0, time);
 
-                //must do these items BEFORE calling restoreAirfield because it copies a bunch of info from the MO to airfieldslist
-                mo.Destroyed = false;
-                mo.DestroyedPercent = 0;
-                mo.TimeToUndestroy_UTC = null;
-                mo.LastHitTime_UTC = null;
-                mo.ObjectsDestroyed_num = 0;
-                mo.OrdnanceOnTarget_kg = 0;
-                mo.AirfieldDamagePoints = 0;                
+                MissionObjective mo = MissionObjectivesList[ID];
+                MO_HandleMobileObjectivePlacement(mo, startup: false);
+                if ((mo.Destroyed && mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(currTime_UTC) < 0)  //it's time to undestroy
+                    || (mo.Destroyed && !mo.TimeToUndestroy_UTC.HasValue && MO_ObjectiveUndestroy_recurs_firstrun))  //it's destroyed but no time to undestroy.  Undestroy it on first run of the session; not sure what else to do.  This shouldn't happen but probably does once in a while.
 
-                if (mo.MOObjectiveType == MO_ObjectiveType.Airfield) restoreAirfield(mo);
-                if (mo.MOObjectiveType == MO_ObjectiveType.Radar) restoreRadar(mo);
 
-                twcLogServer(null, mo.Name + " has been repaired and returned to service.");
+                {
+                    string time = "No value";
+                    if (mo.TimeToUndestroy_UTC.HasValue) time = mo.TimeToUndestroy_UTC.ToString();
+                    Console.WriteLine("Undestroying: {0} {1} {2:F0} {3} ", mo.Name, mo.Destroyed, mo.DestroyedPercent * 100.0, time);
 
-                time = "No value";
-                if (mo.TimeToUndestroy_UTC.HasValue) time = mo.TimeToUndestroy_UTC.ToString();
-                Console.WriteLine("Undestroying after: {0} {1} {2:F0} {3} ", mo.Name, mo.Destroyed, mo.DestroyedPercent * 100.0, time);
+                    //must do these items BEFORE calling restoreAirfield because it copies a bunch of info from the MO to airfieldslist
+                    mo.Destroyed = false;
+                    mo.DestroyedPercent = 0;
+                    mo.TimeToUndestroy_UTC = null;
+                    mo.LastHitTime_UTC = null;
+                    mo.ObjectsDestroyed_num = 0;
+                    mo.OrdnanceOnTarget_kg = 0;
+                    mo.AirfieldDamagePoints = 0;
 
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Airfield) restoreAirfield(mo);
+                    if (mo.MOObjectiveType == MO_ObjectiveType.Radar) restoreRadar(mo);
+
+                    twcLogServer(null, mo.Name + " has been repaired and returned to service.");
+
+                    time = "No value";
+                    if (mo.TimeToUndestroy_UTC.HasValue) time = mo.TimeToUndestroy_UTC.ToString();
+                    Console.WriteLine("Undestroying after: {0} {1} {2:F0} {3} ", mo.Name, mo.Destroyed, mo.DestroyedPercent * 100.0, time);
+
+                }
+
+                //for airfields, start removing the craters bit by bit starting 2 hours before the undestroy time.
+                if (mo.Destroyed && mo.MOObjectiveType == MO_ObjectiveType.Airfield &&
+                    mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(currTime_UTC.AddHours(2)) < 0) {
+                    restoreAirfield(mo, 5); //remove just 5% each time.
+                }
             }
-
-            //for airfields, start removing the craters bit by bit starting 2 hours before the undestroy time.
-            if (mo.Destroyed && mo.MOObjectiveType == MO_ObjectiveType.Airfield &&
-                mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(currTime_UTC.AddHours(2)) < 0) {
-                restoreAirfield(mo, 5); //remove just 5% each time.
-            }
-        }
-        MO_ObjectiveUndestroy_recurs_firstrun = false;
+            MO_ObjectiveUndestroy_recurs_firstrun = false;
+        });
     }
 
     public void MO_CheckObjectivesComplete(int TestingOverrideArmy = 0)
@@ -14224,14 +14287,14 @@ added Rouen Flak
         //Console.WriteLine("Figuring leaks:  {0} {1} {2} {3}", MissionObjectiveScore[ArmiesE.Red], MO_PointsRequired[ArmiesE.Red], bp, MO_PrimaryObjectivesRemaining( (int)ArmiesE.Red));
 
 
-        if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) == 2)
+        if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) <= 3)
         {
             MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] = "Intelligence sources indicate the enemy may be attacking sector " + MO_SectorOfRandomRemainingPrimaryObjective((int)ArmiesE.Red) + " soon";
             //Console.WriteLine("Figuring Leaks: " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] + " " + MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red]);
         }
-        else if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) == 1)
+        else if (MO_PrimaryObjectivesRemaining((int)ArmiesE.Red) <= 3)
         {
-            MO_IntelligenceLeakNearMissionEnd[ArmiesE.Blue] = "";
+            MO_IntelligenceLeakNearMissionEnd[ArmiesE.Red] = "Intelligence sources indicate the enemy may be attacking sector " + MO_SectorOfRandomRemainingPrimaryObjective((int)ArmiesE.Blue) + " soon"; ;
         }
     }
 
@@ -14251,13 +14314,15 @@ added Rouen Flak
 
         if (pos.z > 4000) chanceOfMissing += 66 * (pos.z - 4000) / 8000;  //so chance of seeing becomes less starting at 4000m & down to zero at 8000m = 27000-ish ft.
 
+        if (pos.z < 500) chanceOfMissing += 66* (500-pos.z)/400;  //so chance of seeing becomes less if under 500m.  chance of being within sight of a spotting station smaller.
+        if (pos.z < 100) chanceOfMissing = 97;  //chance of being spotted less than 90m alt is slim.
+
 
         if (random.Next(100) < chanceOfMissing) return false; //So the observer network is a bit more sparse/less reliable than radar
 
         return true;
-
-
     }
+
     public bool MO_IsPointInDestroyedRadarArea(Point3d p, int army)
     {
         var DR = new List<MissionObjective>();
@@ -14477,14 +14542,18 @@ added Rouen Flak
 
     public void MO_addDamagersToListOfPlayersWhoContributed(List<DamagerScore> damages, MissionObjective mo)
     {
-        try {
+        Task.Run(() =>
+        {
+            try
+            {
 
-            foreach (DamagerScore ds in damages)
-                //if (ds != null && ds.initiator !=null && ds.initiator.Player != null || ds.initiator.Player.Name() != null)
-                //    mo.PlayersWhoContributedNames.Add(ds.initiator.Player.Name());
-                if (ds != null && ds.initiator != null) MO_addInitiatorToListOfPlayersWhoContributed(ds.initiator, mo);
-        }
-        catch (Exception ex) { Console.WriteLine("MO_addDamagersToListOfPlayersWhoContributed ERROR : {0} ", ex.ToString()); }
+                foreach (DamagerScore ds in damages)
+                    //if (ds != null && ds.initiator !=null && ds.initiator.Player != null || ds.initiator.Player.Name() != null)
+                    //    mo.PlayersWhoContributedNames.Add(ds.initiator.Player.Name());
+                    if (ds != null && ds.initiator != null) MO_addInitiatorToListOfPlayersWhoContributed(ds.initiator, mo);
+            }
+            catch (Exception ex) { Console.WriteLine("MO_addDamagersToListOfPlayersWhoContributed ERROR : {0} ", ex.ToString()); }
+        });
     }
 
     public void MO_addInitiatorToListOfPlayersWhoContributed(AiDamageInitiator initiator, string ID)
@@ -14513,7 +14582,9 @@ added Rouen Flak
 
         DateTime currTime_dt = DateTime.UtcNow;
         double repairSpeedupFactor = 1;
-        
+
+        Console.WriteLine("main_PointArea_actor");
+
         foreach (string ID in MissionObjectivesList.Keys)
         {
             if (actor == null || actor.Army() < 1 || actor.Army() > 2) return;
@@ -14613,6 +14684,7 @@ added Rouen Flak
     //if st==null then it is a BUILDING instead of a groundstationary object
     public void MO_HandlePointAreaObjectives(GroundStationary st, AiDamageInitiator initiator, string title = null, Point3d? BuildingPos = null)
     {
+        Console.WriteLine("main_PointArea_stationary");
         Point3d pos = new Point3d(-1, -1, -1);       
 
         if (st != null) pos = st.pos;
@@ -14716,6 +14788,9 @@ added Rouen Flak
 
         //So, if the damager is AI and damaging their own land area, we're not going to count it.
         //Reason is, some artillery continually hits the ground in the area where they're firing.
+
+        Console.WriteLine("main_PointArea_bomb");
+
         int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
         if (initiator != null)
             if ( initiator.Player == null || initiator.Player.Name() == null) //It's AI        
@@ -16506,6 +16581,34 @@ public static class Calcs
         else return true;
         
     }
+    //Could make an extension method for this, or something?  Instead?  But this works:
+    public static bool Point3dEqual(
+                              Vector3d p1,
+                              Point3d p2)
+    {
+        if (p1.x != p2.x || p1.y != p2.y || p1.z != p2.z) return false;
+        else return true;
+
+    }
+    //Could make an extension method for this, or something?  Instead?  But this works:
+    public static bool Point3dEqual(
+                              Point3d p1,
+                              Vector3d p2)
+    {
+        if (p1.x != p2.x || p1.y != p2.y || p1.z != p2.z) return false;
+        else return true;
+
+    }
+    //Could make an extension method for this, or something?  Instead?  But this works:
+    public static bool Point3dEqual(
+                              Vector3d p1,
+                              Vector3d p2)
+    {
+        if (p1.x != p2.x || p1.y != p2.y || p1.z != p2.z) return false;
+        else return true;
+
+    }
+
     public static double CalculatePointDistance(
                               Point2d startPoint,
                               Point3d endPoint)
@@ -17636,38 +17739,45 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         Console.WriteLine("listedStatics: Listed {0} items of {1} ... ", count, count2);
     }
     //gpGroundStationarys()
-    public static void removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove, int percentToRemove = 100 ) //types is a SUBSTRING MATCH and CASE INSENSITIVE
+    public static void removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove, int percentToRemove = 100) //types is a SUBSTRING MATCH and CASE INSENSITIVE
     {
-        int count = 0;
-        List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
-        foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
+        Task.Run(() =>
         {
-            //var match = types_to_remove.FirstOrDefault(stringToCheck => stringToCheck.Contains(gg.Category));
-            try
+            int count = 0;
+            List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
+            foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
             {
-                //Console.WriteLine("removeStatics: Checking airfield item name: {0} category: {1} title: {2} type: {3} ", gg.Name, gg.Category, gg.Title, gg.Type.ToString());
-            }
-            catch (Exception ex)
-            {
-                if (gg != null) Console.WriteLine("removeStatics: Couldn't do something with name {0}", gg.Name);
-                else { Console.WriteLine("removeStatics: couldn't do something ERROR"); }
-            }
-               if (gg == null) continue;
-            bool match = false;
-            foreach (string s in types_to_remove) {
-                if (gg.Title.ToLower().Contains(s.ToLower())) {
-                    match = true;
-                    break;
+                //var match = types_to_remove.FirstOrDefault(stringToCheck => stringToCheck.Contains(gg.Category));
+                try
+                {
+                    //Console.WriteLine("removeStatics: Checking airfield item name: {0} category: {1} title: {2} type: {3} ", gg.Name, gg.Category, gg.Title, gg.Type.ToString());
+                }
+                catch (Exception ex)
+                {
+                    if (gg != null) Console.WriteLine("removeStatics: Couldn't do something with name {0}", gg.Name);
+                    else { Console.WriteLine("removeStatics: couldn't do something ERROR"); }
+                }
+                if (gg == null) continue;
+                bool match = false;
+                foreach (string s in types_to_remove)
+                {
+                    if (gg.Title.ToLower().Contains(s.ToLower()))
+                    {
+                        match = true;
+                        break;
                     }
+                }
+                //if (!types_to_remove.Contains(gg.Category)) continue;                
+                if (!match) continue;
+                if (clc_random.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
+                msn.Timeout(clc_random.Next(5, 300), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+                count++;
             }
-            //if (!types_to_remove.Contains(gg.Category)) continue;                
-            if (!match) continue;
-            if (clc_random.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
-            msn.Timeout(clc_random.Next(5,300), ()=> { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
-            count++;
-        }
-        Console.WriteLine("removeStatics: Removed {0} items matching {1} ... ", count, types_to_remove[0]);
+            Console.WriteLine("removeStatics: Removed {0} items matching {1} ... ", count, types_to_remove[0]);
+
+        });
     }
+
 
     /*
      * 

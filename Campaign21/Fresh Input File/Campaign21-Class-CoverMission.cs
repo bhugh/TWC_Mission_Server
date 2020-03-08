@@ -120,52 +120,58 @@ public class CoverMission : AMission, ICoverMission
         catch (Exception ex) { Console.WriteLine("Cover Mission(): " + ex.ToString()); }
     }
 
-        public override void Init(ABattle b, int missionNumber)
+    public override void Init(ABattle b, int missionNumber)
+    {
+        try
         {
-            try
-            {
-                base.Init(b, missionNumber);                
+            base.Init(b, missionNumber);
 
-                MissionNumberListener = -1;
-                Console.WriteLine("-cover.cs successfully inited");
-
-            }
-            catch (Exception ex) { Console.WriteLine("Cover Mission(): " + ex.ToString()); }
-        }
-
-
-        public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
-        {
-
-            base.OnPlaceEnter(player, actor, placeIndex);
-            //startKnickebein(player);
+            MissionNumberListener = -1;
+            Console.WriteLine("-cover.cs successfully inited");
 
         }
+        catch (Exception ex) { Console.WriteLine("Cover Mission(): " + ex.ToString()); }
+    }
 
-        public override void OnBattleStarted()
+
+    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
+    {
+
+        base.OnPlaceEnter(player, actor, placeIndex);
+        //startKnickebein(player);
+
+    }
+
+    public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+    }
+
+    AiActor[] allStaticActors = null;
+    Dictionary<string, IMissionObjective> SMissionObjectivesList = new Dictionary<string, IMissionObjective>();
+
+    private void renewAllStaticActors_recurs()
+    {
+        Timeout(3 * 60, () => renewAllStaticActors_recurs());
+        //OK, this is DEFINITELY one of the BIG causes of WARP.
+        //Hopefully doing it via Task.Run will help it a lot.
+        Task.Run(() =>
         {
-            base.OnBattleStarted();
-
-
-        }
-
-        AiActor[] allStaticActors = null;
-        Dictionary<string, IMissionObjective> SMissionObjectivesList = new Dictionary<string, IMissionObjective>();
-
-        private void renewAllStaticActors_recurs()
-        {
-            Timeout(3 * 60, () => renewAllStaticActors_recurs());
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVSAXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        allStaticActors = coverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVSAXX1-1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+            allStaticActors = coverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
             SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
-        }
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        });
+    }
 
     private void checkPlayersCoverACDisappeared_recurs()
     {
-        Timeout(2.125432 * 60, () => checkPlayersCoverACDisappeared_recurs());
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        foreach (Player player in GamePlay.gpRemotePlayers()) checkPlayerAirgroups(player);
-
+        Task.Run(() =>
+        {
+            Timeout(2.125432 * 60, () => checkPlayersCoverACDisappeared_recurs());
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+            foreach (Player player in GamePlay.gpRemotePlayers()) checkPlayerAirgroups(player);
+        });
     }
 
     //Returns an objective point & radius that point p lies within.
@@ -635,6 +641,8 @@ public class CoverMission : AMission, ICoverMission
         }
 
         GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+
+        double delay = 0.02;
         foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
         {
             if (coverAircraftAirGroupsActive[airGroup] != player) continue;
@@ -691,7 +699,12 @@ public class CoverMission : AMission, ICoverMission
             //msg += " " + bomb + " " + tsk + " " + action;
             msg += bomb + action;
 
-            GamePlay.gpLogServer(new Player[] { player }, msg, null);
+            delay += 0.06;
+            Timeout(delay, () =>
+            {
+                GamePlay.gpLogServer(new Player[] { player }, msg, null);
+            });
+
             retmsg += msg + nl;
         }
         if (count == 0)
@@ -1465,7 +1478,9 @@ public class CoverMission : AMission, ICoverMission
                 }
                 catch { numAC = 2; }
 
-                //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC1 " + numAC.ToString(), new object[] { });
+            //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC1 " + numAC.ToString(), new object[] { });
+
+            if (numAC > 2) numAC = 2; //setting max planes called in at once to 2 (for now) to see if that helps with warping/rubberbanding problems.
 
                 int numCheckedOut = numberAircraftCurrentlyCheckedOutPlayer(player);
             //if (numAC + numCheckedOut > maximumCheckoutsAllowedAtOnce_BomberPilots) numAC = maximumCheckoutsAllowedAtOnce_BomberPilots - numCheckedOut;
@@ -1825,6 +1840,11 @@ public class CoverMission : AMission, ICoverMission
         //Console.WriteLine("Cover KeepAconTask: Cover thinking {0} {1} {2} {3:N0} ", player == null, player.Place() == null, (player.Place() as AiAircraft).AirGroup() == null, distToLeadAircraft);
 
         if (!coverAircraftAirGroupsReleased.ContainsKey(airGroup)) coverAircraftAirGroupsReleased[airGroup] = false;
+        else if (coverAircraftAirGroupsReleased[airGroup])
+        {
+            coverAircraftAirGroupsActive.Remove(airGroup);
+            return;
+        }
 
         bool bombersContinuingFinalRun = false;
         if (heavyBomber && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1)) bombersContinuingFinalRun = true;

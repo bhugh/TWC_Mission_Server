@@ -260,6 +260,7 @@ public class KnickebeinTarget
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("KBXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         double t = 5.3;
         double dist = displayPips();
+        if (dist == 0) { turnOff();} //Player is out of aircraft; null
         if (dist < 10000 && dist >= 5000) t = dist/10000*5;
         else if (dist < 5000 ) t = 0.33;
 
@@ -343,11 +344,11 @@ public class Knickebeinholder
         if (!knickebeins.ContainsKey(player)) return;    
         if (knickebeins[player].chatOrHud == KnickebeinTarget.ChatOrHud.Hud)
         {
-            knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Chat;
-            if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display switched to chat (repeat command to turn off).", new object[] { });
+            knickebeins[player].toChat();
+            if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display switched to chat; cover bomber's won't follow KB (repeat command to turn off).", new object[] { });
             return;
         }
-        knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Hud;
+        //knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Hud; //don't need this as turnOn() auto-sets it to HUD
         knickebeins[player].turnOff();
         if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display turned off.", new object[] { });
 

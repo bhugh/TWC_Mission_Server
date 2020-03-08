@@ -3706,7 +3706,7 @@ struct
 
     public void Stb_RemoveOffMapPlayers_recurs()
     {
-        Timeout(14.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
+        Timeout(18.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
         //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
         Task.Run(() => Stb_RemoveOffMapPlayers());
         //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
@@ -3735,139 +3735,138 @@ struct
             double maxY = 312000;
             //////////////Comment this out as we don`t have Your Debug mode  
             //Console.WriteLine("Checking for Players off map, to despawn");
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            if (GamePlay.gpArmies() == null) return;
+            if (GamePlay.gpArmies().Length == 0) return;
+
             {
                 foreach (int army in GamePlay.gpArmies())
                 {
-                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    if (GamePlay.gpAirGroups(army) == null) continue;
+                    if (GamePlay.gpAirGroups(army).Length == 0) continue;
+
+                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup.GetItems() == null) continue;
+                        if (airGroup.GetItems().Length == 0) continue;
+
+                        //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                        foreach (AiActor actor in airGroup.GetItems())
                         {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            if (actor != null && actor is AiAircraft)
                             {
-                                //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                                foreach (AiActor actor in airGroup.GetItems())
+                                AiAircraft a = actor as AiAircraft;
+                                /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
+                                   //+ a.Type() + " " 
+                                   //+ a.TypedName() + " " 
+                                   +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                  );
+                              //  
+                              */
+                                if (a == null) continue;
+                                bool isAI = true;
+                                HashSet<Player> players = new HashSet<Player>();
+                                for (int i = 0; i < a.Places(); i++)
                                 {
-
-
-                                    if (actor != null && actor is AiAircraft)
+                                    if (a.Player(i) == null) continue;
+                                    players.Add(a.Player(i));
+                                    isAI = false;                                    
+                                }
+                                if (isAI) continue; // player/non-ai aircraft only
+                                if (a.Pos().x <= minX ||
+                                    a.Pos().x >= maxX ||
+                                    a.Pos().y <= minY ||
+                                    a.Pos().y >= maxY
+                                    )
+                                {
+                                    bool ejectThem = false;
+                                    foreach (Player player in players)
                                     {
-                                        AiAircraft a = actor as AiAircraft;
-                                        /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
-                                           //+ a.Type() + " " 
-                                           //+ a.TypedName() + " " 
-                                           +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                          );
-                                      //  
-                                      */
-                                        if (a == null) continue;
-                                        bool isAI = true;
-                                        HashSet<Player> players = new HashSet<Player>();
-                                        for (int i = 0; i < a.Places(); i++)
+                                        if (numConsecutiveTimesPlayerOffMap.ContainsKey(player)) numConsecutiveTimesPlayerOffMap[player]++;
+                                        else numConsecutiveTimesPlayerOffMap[player] = 1;
+                                        if (numConsecutiveTimesPlayerOffMap[player] > 28) ejectThem = true;  //checked ~4X per minute, so gives you 7 minutes of fooling around to get out of there.  Which is more than ample. But esp. in a slow bomber or the like, it could easily take 5 mins to fly one grid square off the grid, then get turned around, and fly back out.  So 7 minutes isn't too extremely long as a grace period.
+                                        if (numConsecutiveTimesPlayerOffMap[player] == 1)
                                         {
-                                            if (a.Player(i) != null)
-                                            {
-                                                players.Add(a.Player(i));
-                                                isAI = false;
-                                            }
+                                            Point3d p = a.Pos();
+                                            //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                            //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                            if (p.x < 10000) p.x = 10001;
+                                            if (p.y < 10000) p.y = 10001;
+
+                                            string sec = Calcs.correctedSectorName(this, p);
+                                            string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " in contravention of the Geneva Convention.";
+                                            gpLogServerAndLog(null, log_message, null);
                                         }
-                                        if (isAI) continue; // player/non-ai aircraft only
-                                        if (a.Pos().x <= minX ||
-                                            a.Pos().x >= maxX ||
-                                            a.Pos().y <= minY ||
-                                            a.Pos().y >= maxY
-                                            )
+                                        if (numConsecutiveTimesPlayerOffMap[player] > 20 && numConsecutiveTimesPlayerOffMap[player] % 2 == 0)
                                         {
-                                            bool ejectThem = false;
-                                            foreach (Player player in players)
-                                            {
-                                                if (numConsecutiveTimesPlayerOffMap.ContainsKey(player)) numConsecutiveTimesPlayerOffMap[player]++;
-                                                else numConsecutiveTimesPlayerOffMap[player] = 1;
-                                                if (numConsecutiveTimesPlayerOffMap[player] > 28) ejectThem = true;  //checked ~4X per minute, so gives you 7 minutes of fooling around to get out of there.  Which is more than ample. But esp. in a slow bomber or the like, it could easily take 5 mins to fly one grid square off the grid, then get turned around, and fly back out.  So 7 minutes isn't too extremely long as a grace period.
-                                                if (numConsecutiveTimesPlayerOffMap[player] == 1)
-                                                {
-                                                    Point3d p = a.Pos();
-                                                    //We want to be sure the sector isn't like >><LKZF mumbled up.
-                                                    //Sectors larger than 32 & BI work fine, but less than AA is like >
-                                                    if (p.x < 10000) p.x = 10001;
-                                                    if (p.y < 10000) p.y = 10001;
-
-                                                    string sec = Calcs.correctedSectorName(this, p);
-                                                    string log_message = "{0} in a {1} has flown off the map at {2}, in contravention of the Geneva Convention.";
-                                                    gpLogServerAndLog(null, log_message, new object[] { player.Name(), StatCalcs.GetAircraftType(a), sec });
-                                                }
-                                                if (numConsecutiveTimesPlayerOffMap[player] > 20 && numConsecutiveTimesPlayerOffMap[player] % 2 == 0)
-                                                {
-                                                    Point3d p = a.Pos();
-                                                    //We want to be sure the sector isn't like >><LKZF mumbled up.
-                                                    //Sectors larger than 32 & BI work fine, but less than AA is like >
-                                                    if (p.x < 10000) p.x = 10001;
-                                                    string sec = Calcs.correctedSectorName(this, p);
-                                                    string log_message = "{0} in a {1} has flown off the map at {2} for over 5 minutes, in contravention of the Geneva Convention.";
-                                                    gpLogServerAndLog(null, log_message, new object[] { player.Name(), StatCalcs.GetAircraftType(a), sec });
-                                                }
-
-                                            }
-                                            string direction = "";
-
-
-                                            if (a.Pos().y <= minY) direction += "north";
-                                            if (a.Pos().y >= maxY) direction += "south";
-                                            if (a.Pos().x <= minX) direction += "east";
-                                            if (a.Pos().x >= maxX) direction += "west";
-
-
-
-
-                                            string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
-                                            GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
-                                            string pe2log_message = "You are leaving the map. PLAYERS AND COVER AIRCRAFT WHO LEAVE THE MAP ARE DESTROYED!!! Fly " + direction + " immediately to return!";
-                                            gpLogServerAndLog(players.ToArray(), pe2log_message, null);
-
-
-
-                                            if (a.Pos().x <= minX - 12500 || //Same as AI aircraft, 12500 'grace area', this is set in mainmission RemoveOffMapAIAircraft()
-                                                a.Pos().x >= maxX + 12500 ||
-                                                a.Pos().y <= minY - 12500 ||
-                                                a.Pos().y >= maxY + 12500 ||
-                                                ejectThem
-                                            )
-                                            {
-                                                foreach (Player player in players)
-                                                {
-                                                    if (player == null) continue;
-                                                    Timeout(1, () =>
-                                                    {
-
-                                                        //Stb_RemovePlayerFromAircraftandDestroy(a, player);
-                                                        //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
-                                                        //2 = self-kill
-                                                        stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
-                                                                                                                                //stbSr_PlayerDeath_penaltylist[playername]
-                                                        stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
-                                                        Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
-
-                                                        string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
-                                                        GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
-
-                                                        string type = StatCalcs.GetAircraftType(a);
-                                                        gpLogServerAndLog(null, "{0} flying a {1} just left the map area in contravention of the Standing Orders and the Geneva Convention.", new object[] { player.Name(), type });
-                                                        gpLogServerAndLog(null, "{0} was stripped of rank and sentenced to 5 years KP duty.", new object[] { player.Name() });
-                                                        gpLogServerAndLog(null, "{0}'s {1} was lost.", new object[] { player.Name(), type });
-                                                    });
-
-                                                }
-
-                                            }
-                                        } else
-                                        {
-                                            foreach (Player player in players) numConsecutiveTimesPlayerOffMap[player] = 0; //the player is 'in bounds' so we reset their consecutive out-of-bounds count                                     
+                                            Point3d p = a.Pos();
+                                            //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                            //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                            if (p.x < 10000) p.x = 10001;
+                                            string sec = Calcs.correctedSectorName(this, p);
+                                            string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " for over 5 minutes, in contravention of the Geneva Convention.";
+                                            gpLogServerAndLog(null, log_message, null);
                                         }
+
                                     }
+                                    string direction = "";
 
 
+                                    if (a.Pos().y <= minY) direction += "north";
+                                    if (a.Pos().y >= maxY) direction += "south";
+                                    if (a.Pos().x <= minX) direction += "east";
+                                    if (a.Pos().x >= maxX) direction += "west";
+
+
+
+
+                                    string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
+                                    GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
+                                    string pe2log_message = "You are leaving the map. PLAYERS AND COVER AIRCRAFT WHO LEAVE THE MAP ARE DESTROYED!!! Fly " + direction + " immediately to return!";
+                                    gpLogServerAndLog(players.ToArray(), pe2log_message, null);
+
+
+
+                                    if (a.Pos().x <= minX - 12500 || //Same as AI aircraft, 12500 'grace area', this is set in mainmission RemoveOffMapAIAircraft()
+                                        a.Pos().x >= maxX + 12500 ||
+                                        a.Pos().y <= minY - 12500 ||
+                                        a.Pos().y >= maxY + 12500 ||
+                                        ejectThem
+                                    )
+                                    {
+                                        foreach (Player player in players)
+                                        {
+                                            if (player == null) continue;
+                                            Timeout(1, () =>
+                                            {
+
+                                                //Stb_RemovePlayerFromAircraftandDestroy(a, player);
+                                                //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                                                //2 = self-kill
+                                                stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
+                                                                                                                        //stbSr_PlayerDeath_penaltylist[playername]
+                                                stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
+                                                Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+
+                                                string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
+                                                GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
+
+                                                string type = StatCalcs.GetAircraftType(a);
+                                                gpLogServerAndLog(null, player.Name() + " flying a" + type + " just left the map area in contravention of the Standing Orders and the Geneva Convention.", null);
+                                                gpLogServerAndLog(null, player.Name() + " was stripped of rank and sentenced to 5 years KP duty.", null);
+                                                gpLogServerAndLog(null, player.Name() + "'s " + type + " was lost.", null);
+                                            });
+
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (Player player in players) numConsecutiveTimesPlayerOffMap[player] = 0; //the player is 'in bounds' so we reset their consecutive out-of-bounds count                 
                                 }
                             }
                         }
+                    }
                 }
             }
         }
@@ -5956,7 +5955,7 @@ struct
 
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
-        double wait = stb_random.NextDouble() * 20;
+        double wait = stb_random.NextDouble() * 45;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
         );
@@ -5966,6 +5965,7 @@ struct
     {
         try
         {
+            Console.WriteLine("stats_bombexp_DoWork");
             //GamePlay.gpLogServer(null, "bombe 1", null);
             bool ai = true;
             if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) ai = false;
@@ -7016,10 +7016,11 @@ struct
                     }
                         //This is an idea about how to load aircraft loadout, however it isnt working 2018/09 flug
                         //AiBirthplace birthplace = somebirthplacereference;
-                        Console.WriteLine("Checking Loadout/weaponsmask . . . ");
-                    AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
-                    Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
-                         + " " + aircraft.HullNumber()
+                        //Console.WriteLine("Checking Loadout/weaponsmask . . . ");
+                    //AiBirthPlace birthplace = Stb_nearestBirthPlace(aircraft as AiActor, 0);
+                    /*
+                    //Console.WriteLine("Checking Loadout/weaponsmask: " + birthplace.Name() + " " + aircraft.TypedName() + " " + aircraft.InternalTypeName()
+                         //+ " " + aircraft.HullNumber()
                          + " " + aircraft.CallSignNumber());
                     System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.InternalTypeName());
                         //System.Collections.BitArray weaponsmask = birthplace.GetWeaponsMask(aircraft.Name());
@@ -7036,6 +7037,7 @@ struct
                     Console.WriteLine("   Length:   {0}", weaponsmask.Length);
                     Console.WriteLine("   Values:");
                     StatCalcs.PrintValues(weaponsmask, 8);
+                    */
 
 
 
@@ -8169,118 +8171,133 @@ struct
     //add your code here
 
 
-        //OnBuildingKilled(string title, maddox.GP.Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    //OnBuildingKilled(string title, maddox.GP.Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
 
-        public override void OnBuildingKilled(string title, Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    public override void OnBuildingKilled(string title, Point3d pos, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        #region stb
+        base.OnBuildingKilled(title, pos, initiator, eventArgInt);
+        //try
         {
-            #region stb
-            base.OnBuildingKilled(title, pos, initiator, eventArgInt);
-            //try
+            //stb_KilledActors.Add(actor, damages); // save 
+            //System.Console.WriteLine("Actor dead: Army " + actor.Army() );            
+            int statarmy = GamePlay.gpFrontArmy(pos.x, pos.y);
+
+            string msg = "Building " + title + " " + statarmy.ToString() + " " + "killed by ";
+
+            Player player = null;
+            if (initiator != null && initiator.Player != null) player = initiator.Player;
+
+
+            /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+            this.Actor = Actor;
+            this.Person = Person;
+            this.Player = Player;
+            this.Tool = Tool;
+            */
+
+
+            bool willReportDead = false;
+            if (initiator != null)
             {
-                //stb_KilledActors.Add(actor, damages); // save 
-                //System.Console.WriteLine("Actor dead: Army " + actor.Army() );            
-                int statarmy = GamePlay.gpFrontArmy(pos.x, pos.y);
-
-                string msg = "Building " + title + " " + statarmy.ToString() + " " + "killed by ";
-
-                Player player = null;
-                if (initiator != null && initiator.Player != null) player = initiator.Player;
-
-
-                /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
-                this.Actor = Actor;
-                this.Person = Person;
-                this.Player = Player;
-                this.Tool = Tool;
-                */
-
-
-                bool willReportDead = false;
-                if (initiator != null)
+                if (initiator.Player != null)
                 {
-                    if (initiator.Player != null)
+                    int statArmy = GamePlay.gpFrontArmy(pos.x, pos.y);
+                    msg += initiator.Player.Name() + " player army: " + initiator.Player.Army().ToString() + " location/side: " + statArmy.ToString();
+
+                    //We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.  See note at onStationaryKilled
+
+                    if
+                      (
+                        (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
+
+                      )
                     {
-                        int statArmy = GamePlay.gpFrontArmy(pos.x, pos.y);
-                        msg += initiator.Player.Name() + " player army: " + initiator.Player.Army().ToString() + " location/side: " + statArmy.ToString();
 
-                        //We assume that we can tell whether they are enemy or friendly depending on WHICH SIDE OF THE FRONT THEY ARE ON.  See note at onStationaryKilled
+                        willReportDead = true;
+                        msg += "(enemy ground target)";
 
-                        if
-                          (
-                            (initiator.Player.Army() == 1 && statArmy == 2) || (initiator.Player.Army() == 2 && statArmy == 1)
-
-                          )
-                        {
-
-                            willReportDead = true;
-                            msg += "(enemy ground target)";
-
-                        }
-                        else
-                        {
-                            msg += "(friendly ground target)";
-                        }
                     }
                     else
                     {
-                        msg += "AI  ";
+                        msg += "(friendly ground target)";
                     }
                 }
-
-                int score = 2;
-                try
+                else
                 {
-
-                    if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //Type 1 aircraft, etc etc .. type 4 is any other ground type
-                                                                                                                 //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
-                                                                                                                 //score.  But for these buildings it just reported "it is dead", along with the
-                                                                                                                 //initiators.  So we are just saying damage.score =  1 for killing one building.  We could check titles/types & adjust up or down (TODO). The complete 1 points goes to the actor reported in 
-                                                                                                                 //initiator, resulting in 1 kill pt (100%) per ground target killed.  
+                    msg += "AI  ";
                 }
-                catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-
-                try
-                {
-                    //Report ground kills but spread them out a bit in case many die @ once            
-                    Timeout(1 + stb_random.NextDouble() * 25, () => { if (player != null && score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Building Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
-                }
-                catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-                //Stb_LogError(msg);
-                //if (willReportDead) 
-                Console.WriteLine(msg);
-
             }
-            //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
+
+            int score = 2;
+            try
+            {
+
+                if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //Type 1 aircraft, etc etc .. type 4 is any other ground type
+                                                                                                             //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
+                                                                                                             //score.  But for these buildings it just reported "it is dead", along with the
+                                                                                                             //initiators.  So we are just saying damage.score =  1 for killing one building.  We could check titles/types & adjust up or down (TODO). The complete 1 points goes to the actor reported in 
+                                                                                                             //initiator, resulting in 1 kill pt (100%) per ground target killed.  
+            }
+            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+
+            try
+            {
+                //Report ground kills but spread them out a bit in case many die @ once            
+                Timeout(1 + stb_random.NextDouble() * 25, () => { if (player != null && score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Building Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            }
+            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+            //Stb_LogError(msg);
+            //if (willReportDead) 
+            Console.WriteLine(msg);
+
         }
+        //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
+
+    //public virtual void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary _stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    //GroundStationary: string .Name .pos string .Title AiGroundActorType .Type .IsAlive string .country string .Category
+
+    public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        #region stb
+        base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
 
         //public virtual void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary _stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
         //GroundStationary: string .Name .pos string .Title AiGroundActorType .Type .IsAlive string .country string .Category
 
-        public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+        double wait = stb_random.NextDouble() * 45;
+        Timeout(wait, () =>
+            OnStationaryKilled_DoWork(missionNumber, stationary, initiator, eventArgInt)
+        );
+        #endregion
+    }
+
+    public void OnStationaryKilled_DoWork(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+        #region stb
+        //base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
+        try
         {
-            #region stb
-            base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
-            try
-            {
-                //stb_KilledActors.Add(actor, damages); // save 
-                //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
-                string msg = "Stationary " + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
+            //stb_KilledActors.Add(actor, damages); // save 
+            //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
+            string msg = "Stationary_DoWork" + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
 
-                Player player = null;
-                if (initiator != null && initiator.Player != null) player = initiator.Player;
+            Player player = null;
+            if (initiator != null && initiator.Player != null) player = initiator.Player;
 
 
-                /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
-                this.Actor = Actor;
-                this.Person = Person;
-                this.Player = Player;
-                this.Tool = Tool;
-                */
+            /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+            this.Actor = Actor;
+            this.Person = Person;
+            this.Player = Player;
+            this.Tool = Tool;
+            */
 
 
-                bool willReportDead = false;
+            bool willReportDead = false;
             if (initiator != null)
             {
                 if (initiator.Player != null)
@@ -8335,30 +8352,30 @@ struct
                 }
             }
 
-                int score = 1;
+            int score = 1;
 
-                if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
-                if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //type 4 is any other ground type
-                                                                                                             //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
-                                                                                                             //score.  But for these stationaries it just appears to be reported when they are killed, along with the
-                                                                                                             //initiators.  So we are just fabricating a damage.score of 1 here & the complete 1 points goes to the actor reported in 
-                                                                                                             //initiator, resulting in 1 kill pt (100%) per ground target killed.  Special target jerryan, telegaballon (hydrogen tank0 used to designate high-value
-                                                                                                             //targets, get more points
-                                                                                                             //if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, 10, 5, initiator.Tool.Type); //moving it to 2 pts/200% per tround stationary killed
+            if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
+            if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //type 4 is any other ground type
+                                                                                                         //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
+                                                                                                         //score.  But for these stationaries it just appears to be reported when they are killed, along with the
+                                                                                                         //initiators.  So we are just fabricating a damage.score of 1 here & the complete 1 points goes to the actor reported in 
+                                                                                                         //initiator, resulting in 1 kill pt (100%) per ground target killed.  Special target jerryan, telegaballon (hydrogen tank0 used to designate high-value
+                                                                                                         //targets, get more points
+                                                                                                         //if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, 10, 5, initiator.Tool.Type); //moving it to 2 pts/200% per tround stationary killed
 
-                //Report ground kills but spread them out a bit in case many die @ once
-                //TESTING: turning off ground target  hit messages to see if that helps our warping problem  9/28/2018
-                Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            //Report ground kills but spread them out a bit in case many die @ once
+            //TESTING: turning off ground target  hit messages to see if that helps our warping problem  9/28/2018
+            Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
 
-                //Stb_LogError(msg);
-                //if (willReportDead) 
-                Console.WriteLine(msg);
+            //Stb_LogError(msg);
+            //if (willReportDead) 
+            Console.WriteLine(msg);
 
-            }
-            catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-            #endregion
-            //add your code here
         }
+        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        #endregion
+        //add your code here
+    }
 
         //For various overrides below, we use these codes to collect info
         // 770 Takeoff 

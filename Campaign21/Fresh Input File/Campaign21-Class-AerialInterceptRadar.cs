@@ -22,6 +22,11 @@ using part;
 using TWCComms;
 
 /*
+ * TODO: Radar doesn't turn off when player logs out
+ * 
+ * *?
+
+/*
  * 
  * //Ok, this is promising I think.  Just convert down all the nearby contacts to x/y coordinates & plot like this, then display via the chat window:
         string chatPip = @"
@@ -61,7 +66,7 @@ public class AIRadarTarget
     public AiActor actor { get; set;}
     public Point3d aircraftPos { get; set;}
     public Player player { get; set;}
-    public AiActor place { get; set;}
+    public AiActor playerPlace { get; set;}
     public Point3d playerPos { get; set;}
     public Vector3d playerVwld { get; set; }
     public double targetRelativeAngle_deg { get; set;} //angle from player to target, relative to the player's current direction   
@@ -79,6 +84,8 @@ public class AIRadarTarget
     public bool inRange { get; set;}
     public bool turnedOn { get; set;}
 
+    private static Vector3d nullP3d;
+
     AMission mission { set; get; }
 
     public AIRadarTarget(Player player, AiAircraft aircraft, AMission mission)
@@ -88,9 +95,11 @@ public class AIRadarTarget
         this.aircraft = aircraft;
         this.actor = aircraft as AiActor;
         this.player = player;
-        this.place = player.Place();        
+        this.playerPlace = player.Place();        
         this.mission = mission;
         this.recalculateAndDisplay();
+
+        nullP3d = new Vector3d(0, 0, 0);
     }
 
 
@@ -112,10 +121,10 @@ public class AIRadarTarget
     public bool recalculateAndDisplay()
     {
         this.aircraftPos = actor.Pos();
-        this.playerPos = place.Pos();
+        this.playerPos = playerPlace.Pos();
 
-        if ((place.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
-        else { this.playerVwld = (place.Group() as AiAirGroup).Vwld(); } //player.Place().Group() as AiAirGroup;
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld =  nullP3d;
+        else { this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld(); } //player.Place().Group() as AiAirGroup;
 
         this.targetDistance_m = AIRadarCalcs.CalculatePointDistance(this.playerPos, this.aircraftPos);
 
@@ -285,6 +294,7 @@ public class AIRadarTarget
     private void display_recurs()
     {
         if (!this.turnedOn) return;
+        if (this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullP3d)) turnOff();
         double t = 2.1;
         //double dist = displayPips();        
         if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
@@ -319,7 +329,7 @@ public class AIRadarTargetArray
     public char[,] Grid = new char[GridWidth, GridHeight + 1];
         
     public Player player { get; set; }
-    public AiActor place { get; set; }
+    public AiActor playerPlace { get; set; }
     public Point3d playerPos { get; set; }
     public Vector3d playerVwld { get; set; }
 
@@ -340,15 +350,19 @@ public class AIRadarTargetArray
     public bool inRange { get; set; }
     public bool turnedOn { get; set; }
 
+    public static Vector3d nullP3d;
+
     public AMission mission { set; get; }
 
     public AIRadarTargetArray(Player player, AMission mission, double delay_s = 7)
     {
         //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
         this.player = player;                       
-        this.place = player.Place();
+        this.playerPlace = player.Place();
         this.mission = mission;
         this.delay_s = delay_s;
+
+        nullP3d = new Vector3d(0, 0, 0);
     }
 
 
@@ -402,7 +416,7 @@ public class AIRadarTargetArray
                 else line += Grid[i, j];
             }
             mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
-            delay += 0.01;
+            delay += 0.04;
         }        
     }
 
@@ -448,10 +462,10 @@ public class AIRadarTargetArray
 
     public void getPlayerACData() {
             
-        this.playerPos = place.Pos();
+        this.playerPos = playerPlace.Pos();
 
-        if ((place.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
-        else  this.playerVwld = (place.Group() as AiAirGroup).Vwld();
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
+        else  this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld();
    }
 
     //regets player & target aircraft position & then recalculates the angles & pips
@@ -507,8 +521,12 @@ public class AIRadarTargetArray
         if (!this.turnedOn) return;
         mission.Timeout(delay_s, () => display_recurs());
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        calculateGrid();
-        displayGrid();        
+        Task.Run(() =>
+        {
+            if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos,nullP3d)) turnOff();
+            calculateGrid();
+            displayGrid();
+        });     
     }
 }
 
@@ -565,7 +583,7 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
             }
 
             mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
-            delay += 0.01;
+            delay += 0.04;
         }
     }
 
@@ -642,14 +660,17 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
         }
     }
 
-
     public override void display_recurs()
     {
         if (!this.turnedOn) return;
         mission.Timeout(delay_s, () => display_recurs());
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        calculateGrid();
-        displayGrid();
+        Task.Run(() =>
+        {
+            if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos, nullP3d)) turnOff();
+            calculateGrid();
+            displayGrid();
+        });
     }
 
 }
@@ -783,71 +804,64 @@ public class AIRadarMission : AMission
             if (cdel > 0.5 && cdel < 120) delay_s = cdel;
             handleAIRadarAuthenticArrayRequest(player, delay_s);
         }
-
-        else if (msg.StartsWith("<ahelp6") || msg.StartsWith("<kh6"))
+        else if (msg.StartsWith("<ahelp6") || msg.StartsWith("<ah6"))
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 6/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Display looks like \"---- ||||||\" OR \"++++++ ||||||||\"", null);
-            GamePlay.gpLogServer(new Player[] { player }, "OR \"= ....\" OR \"= *\"", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Each + or - is 100 meters left/right of the beam center (=)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Each | or . represents 1km or 100m from target, max 10 km shown (*narrow* beam)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "At \"= *\" you are on target within a 100 meter square, the approx. accuracy of the historic Knickebein system.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Can you \"ride the beam\" and drop your bombs accurately on target at dusk or at night, as historic WWII-era pilots did?", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<<<End Knickebein system help>>>", null);
-
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 5/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "This <ac radar screen shows same three targets as <aa in <ahelp5: ", null);
+            GamePlay.gpLogServer(new Player[] { player }, "#1 to the left & co-alt, #2 to the right and higher, #3 behind right and unknown altitude.", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"_=_____", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"______7", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"___#___", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"====+==", null);
         }
-        else if (msg.StartsWith("<ahelp5") || msg.StartsWith("<kh5"))
+        else if (msg.StartsWith("<ahelp5") || msg.StartsWith("<ah5"))
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 5/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Knickebein used one narrow beam to keep pilots on course to target and another beam crossing the first to indicate when target was reached.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "On your display, the directional beam is shown via symbols + (turn right), - (turn left), or = (you're right on).", null);
-            GamePlay.gpLogServer(new Player[] { player }, "The second beam (distance to target) is shown via symbols | (1 km) or . (100 meters)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp6 for more", null);
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 5/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "This <aa radar screen shows three targets: #1 to the left & co-alt,", null);
+            GamePlay.gpLogServer(new Player[] { player }, "#2 to the right and higher, #3 behind, right, and lower.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Left screen shows left/right; right screen relative altitude:", null);                        
+            GamePlay.gpLogServer(new Player[] { player }, @"_+_____ | ___+___", null);;
+            GamePlay.gpLogServer(new Player[] { player }, @"______+ | ______+", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"___#___ | ___#___", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"====+== | ==+====", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp6 for <ac example.", null);
         }
-        else if (msg.StartsWith("<ahelp4") || msg.StartsWith("<kh4"))
+        else if (msg.StartsWith("<ahelp4") || msg.StartsWith("<ah4"))
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 4/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<kstart <knext <kprev will all vector you from wherever you currently are", null);
-            GamePlay.gpLogServer(new Player[] { player }, "to the given waypoint. So you can <kadd a large number of potential", null);
-            GamePlay.gpLogServer(new Player[] { player }, "targets before takeoff, then during flight <klist <knext <kprev to select ", null);
-            GamePlay.gpLogServer(new Player[] { player }, "the one you want, and vector direct from where you are to it.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp5 for more", null);
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 4/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Airborne Intercept Radar display do not have a definite distance scale.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Displays allow you to estimate rough distances forward, left/right, above/below.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Look behind capabilities are very limited.  Look behind radar came later in the war.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp5 for <aa example and <ahelp6 for <ac example.", null);
         }
-        else if (msg.StartsWith("<ahelp3") || msg.StartsWith("<kh3"))
+        else if (msg.StartsWith("<ahelp3") || msg.StartsWith("<ah3"))
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 3/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Command detail:  <kstart 4 or <k 4 - starts Knickebein @ waypoint #4 (#1 if none given),", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<knext - skip to next waypoint, <kprev - back to previous waypoint,  <koff - display off,", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<kon - display back on, <klist - list waypoints,  <kdel 4 - delete waypoint #4 ", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<kclear - clear all waypoints, <kinfo - info abt current waypoint", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Most commands can be abbreviated to 2 letters, so <ks, <kn, <kp <kl, <kd, <kc, <ki, <kh etc", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Main commands accessed via Tab-4-4-4-4 menu to avoid cluttering Chat", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp4 for more", null);
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 3/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<an shows an alternate display on the HUD. <as stops the HUD display.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<an displays just one target at a time. <an again will move to the next available target.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "HUD display has 3 parts:  Direction - Distance - Altitude", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Example: ++++ |||||| ----- means target is to your right 4 units, distance 6 units, and below you 5 units", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Example: = |... ++ means target is directly ahead, distance 1.3 units, above you 2 units.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "? ? ? means target(s) detected but unable to determine relative position.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp4 for more", null);
         }
-        else if (msg.StartsWith("<ahelp2") || msg.StartsWith("<kh2"))
+        else if (msg.StartsWith("<ahelp2") || msg.StartsWith("<ah2"))
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION (part 2/6)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<kadd: Formats like BA14 AC9.2 AZ.2.6 all work. Add 1-10 waypoints at a time.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<kadd 200311 192300 adds an exact map coordinate (x,y) point; get coordinates from TWC radar web site or Full Mission Builder", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Main Knickebein commands on Tab-4-4-4-4 menu OR Chat Commands <kstart <knext <kprev <koff <kon <kclear", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp3 for more", null);
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION DETAILS (part 2/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Historic airborne intercept radar from the Battle of Britain era was rudimentary.  It was used primarily for  night intercept.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "A typical early radar display showed target distance, right/left distance, and altitude difference--looking forward only.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<aa & <ac: # indicates your position; ==== is very limited 'look behind' radar; coverage area increases as you gain altitude.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<aa: Left screen shows distance & left/right position; right screen distance & altitude difference.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ac: One screen showing aircraft relative position and altitude difference via numbers: 1-4 are lower; = co-alt; 5-9 higher.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp3 for more", null);
         }
-        else if (msg.StartsWith("<ahelp") || msg.StartsWith("<kh"))
+        else if (msg.StartsWith("<ahelp") || msg.StartsWith("<ah"))
         {
-            string units = "km";
-            if (player.Army() == 1) units = "miles";
 
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN SIMPLE OPERATION", null);
-            GamePlay.gpLogServer(new Player[] { player }, "To set up Knickebein, use chat command: <kni 90 25", null);
-            GamePlay.gpLogServer(new Player[] { player }, "This means set Knickebein target 90 degrees 25 " + units + " from your current position", null);
-
-            GamePlay.gpLogServer(new Player[] { player }, ">>>>KNICKEBEIN ADVANCED OPERATION", null);
-            GamePlay.gpLogServer(new Player[] { player }, "To set up Knickebein waypoints: <kadd AW23.2.8 AY26.1.2 BB21.1.8 (etc)", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Then Tab-4-4-4-4 menu to start, stop, move to next on list, etc", null);
-            GamePlay.gpLogServer(new Player[] { player }, "OR use Chat Commands like: <kstart - (reach 1st waypoint) - <knext - (reach 2nd wp) ", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<knext - (reach 3rd wp) - <koff", null);
-            GamePlay.gpLogServer(new Player[] { player }, "<khelp2 for more . . . ", null);
-
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIRBORNE INTERCEPT RADAR OPERATION", null);
+            GamePlay.gpLogServer(new Player[] { player }, "3 types available (experimental): <aa (authentic/chat table) <ac (alternate/chat table) <an (alternate/HUD) <as (stop HUD)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Tab-4-4-5 is same as <aa.  Repeat the command to turn the radar off (or for <an, to move to next target)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<ahelp2 for more . . . ", null);
         }
 
 
@@ -856,7 +870,7 @@ public class AIRadarMission : AMission
             double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5.2;
 
-            string msg41 = "<as Start Aerial Intercept Radar on closest target; <ahelp AIRadar help";
+            string msg41 = "<aa <as <ag Start/stop Aerial Intercept Radar (3 diff types); <ahelp AIRadar help";
 
             Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
             //GamePlay.gp(, from);

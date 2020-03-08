@@ -9364,8 +9364,62 @@ struct
 
         }
 
-        //Various inits
-        private void StbRaa_init_AllowedAircraftByRank_Red()
+    /*
+     * full list 2020/03 4.57
+     * 
+       BlenheimMkIV_Late
+  SpitfireMkIIa
+  Bf-110C-4B
+  BlenheimMkIVNF_Late
+  BeaufighterMkIF
+  Bf-110C-4-NJG
+  Bf-110C-6
+  Bf-110C-4N
+  BeaufighterMkINF
+  Bf-109E-4_Late
+  Bf-110C-7
+  SpitfireMkI
+  Bf-110C-4
+  BlenheimMkIV
+  Bf-110C-4Late
+  Bf-109E-4B_Late
+  SpitfireMkIa
+  DH82A-1
+  Su-26M
+  Bf-109E-3B
+  DH82A-2
+  DH82A
+  SpitfireMkIa_100oct
+  Ju-88A-1
+  BlenheimMkIVF
+  G50
+  HurricaneMkI_100oct
+  BlenheimMkIVNF
+  BlenheimMkIVF_Late
+  DH82A_1940
+  SpitfireMkI_100oct
+  Bf-109E-1
+  HurricaneMkI_100oct-NF
+  Bf-109E-1B
+  Bf-109E-4N_Late
+  He-111P-2
+  Bf-110C-2
+  HurricaneMkI_dH5-20_100oct
+  He-111H-2
+  Bf-109E-3
+  BR-20M
+  Ju-87B-2
+  HurricaneMkI_dH5-20
+  Bf-109E-4
+  Bf-109E-4N
+  HurricaneMkI
+  Bf-109E-4B
+  HurricaneMkI_FB
+         
+         */
+
+    //Various inits
+    private void StbRaa_init_AllowedAircraftByRank_Red()
         {
             stbRaa_AllowedAircraftByRank_Red = new Dictionary<string, int>(); //string is a/c name & int is rank #. That a/c is allowed at or above that particular rank level
 
@@ -9404,7 +9458,9 @@ struct
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-3", 0);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-2", 0);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4", 0);
-            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4", 1);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4B", 2);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4", 2);
+        //Bf-110C-4B
 
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4N", 1);
             stbRaa_AllowedAircraftByRank_Blue.Add("BR-20M", 0);
@@ -9413,8 +9469,8 @@ struct
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-7", 1);
             //stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-7Late", 1); //Eliminated in 4.5		
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-110C-4-NJG", 0);
-            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4_Late", 1);
-            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4N", 2);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4_Late", 2);
+            stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4N", 3);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4B_Late", 2);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4B", 2);
             stbRaa_AllowedAircraftByRank_Blue.Add("Bf-109E-4N_Late", 2);
@@ -9438,10 +9494,10 @@ struct
         private void StbRaa_init_AllowedAircraftByAce_Blue()
         {
             stbRaa_AllowedAircraftByAce_Blue = new Dictionary<string, int>(); //string is a/c name & int is # of kills required to unlock it. That a/c is allowed at or above that particular # of kills.
-            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4", 5);
-            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4_Late", 5);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4", 25);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4_Late", 25);
             stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4B", 8);
-            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4N", 8);
+            stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4N", 50);
             stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4B_Late", 8);
             stbRaa_AllowedAircraftByAce_Blue.Add("Bf-109E-4N_Late", 8);
 

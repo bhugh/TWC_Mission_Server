@@ -1842,49 +1842,6 @@
   Static850 Stationary.Krupp_L2H43_Protze_Kfz69_pak35 de 260782.05 131879.16 180.00 
   Static849 Stationary.Krupp_L2H43_Protze_open de 260790.81 131889.56 180.00 
   Static848 Stationary.Radar.Wotan_I de 260797.38 131889.52 0.00 
-  Static2009 ShipUnit.HMS_LCA nn 271768.94 132541.02 639.10 /sleep 0/skill 2/slowfire 1
-  Static1999 ShipUnit.HMS_LCA nn 271814.50 132499.45 589.10 /sleep 0/skill 2/slowfire 1
-  Static2000 ShipUnit.HMS_LCA nn 271682.41 132602.19 669.10 /sleep 0/skill 2/slowfire 1
-  Static2003 ShipUnit.HMS_LCA nn 271701.25 132586.98 429.10 /sleep 0/skill 2/slowfire 1
-  Static1995 ShipUnit.HMS_LCA nn 271717.69 132577.30 699.10 /sleep 0/skill 2/slowfire 1
-  Static1987 ShipUnit.HMS_LCA nn 271748.44 132547.45 639.10 /sleep 0/skill 2/slowfire 1
-  Static2002 ShipUnit.HMS_LCA nn 271565.69 132654.06 609.10 /sleep 0/skill 2/slowfire 1
-  Static1976 ShipUnit.HMS_LCA nn 271579.94 132648.45 624.10 /sleep 0/skill 2/slowfire 1
-  Static1990 ShipUnit.HMS_LCA nn 271600.84 132649.34 714.10 /sleep 0/skill 2/slowfire 1
-  Static2010 ShipUnit.HMS_LCA nn 271628.63 132623.64 549.10 /sleep 0/skill 2/slowfire 1
-  Static1971 ShipUnit.HMS_LCA nn 271655.31 132613.33 639.10 /sleep 0/skill 2/slowfire 1
-  Static2006 ShipUnit.HMS_LCA nn 271458.47 132710.73 714.10 /sleep 0/skill 2/slowfire 1
-  Static2001 ShipUnit.HMS_LCA nn 271493.34 132704.66 609.10 /sleep 0/skill 2/slowfire 1
-  Static1997 ShipUnit.HMS_LCA nn 271538.63 132678.19 639.10 /sleep 0/skill 2/slowfire 1
-  Static1991 ShipUnit.HMS_LCA nn 271529.19 132696.20 669.10 /sleep 0/skill 2/slowfire 1
-  Static2011 Stationary.Industrial.Medium_Factory.Central nn 271687.34 132686.84 669.10 
-  Static2014 Stationary.Industrial.Medium_Factory.Central nn 271761.59 132699.34 659.10 
-  Static1966 ShipUnit.HMS_LCA nn 271340.38 132777.23 669.10 /sleep 0/skill 2/slowfire 1
-  Static1982 ShipUnit.HMS_LCA nn 271387.75 132746.03 639.10 /sleep 0/skill 2/slowfire 1  
-  Static2005 ShipUnit.HMS_LCA nn 271426.44 132749.30 729.10 /sleep 0/skill 2/slowfire 1
-  Static1980 ShipUnit.HMS_LCA nn 271461.72 132753.70 639.10 /sleep 0/skill 2/slowfire 1
-  Static2019 Stationary.Industrial.Medium_Factory.Central nn 271604.69 132736.25 389.10 
-  Static1975 ShipUnit.HMS_LCA nn 271169.34 132849.23 549.10 /sleep 0/skill 2/slowfire 1
-  Static1962 ShipUnit.HMS_LCA nn 271197.94 132846.58 639.10 /sleep 0/skill 2/slowfire 1
-  Static1973 ShipUnit.HMS_LCA nn 271219.03 132833.41 639.10 /sleep 0/skill 2/slowfire 1
-  Static1964 ShipUnit.HMS_LCA nn 271247.38 132817.86 699.10 /sleep 0/skill 2/slowfire 1
-  Static1986 ShipUnit.HMS_LCA nn 271244.53 132842.14 669.10 /sleep 0/skill 2/slowfire 1
-  Static1985 ShipUnit.HMS_LCA nn 271281.13 132825.34 639.10 /sleep 0/skill 2/slowfire 1
-  Static1978 ShipUnit.HMS_LCA nn 271300.56 132803.56 619.10 /sleep 0/skill 2/slowfire 1
-  Static2008 ShipUnit.HMS_LCA nn 271329.88 132802.55 639.10 /sleep 0/skill 2/slowfire 1
-  Static2016 Stationary.Industrial.Medium_Factory.Central nn 271399.28 132837.34 509.10 
-  Static2013 Stationary.Industrial.Medium_Factory.Central nn 271824.06 132850.58 579.10 
-  Static1994 ShipUnit.HMS_LCA nn 271080.41 132918.33 629.10 /sleep 0/skill 2/slowfire 1
-  Static1969 ShipUnit.HMS_LCA nn 271099.03 132908.48 714.10 /sleep 0/skill 2/slowfire 1
-  Static1993 ShipUnit.HMS_LCA nn 271134.13 132878.08 629.10 /sleep 0/skill 2/slowfire 1
-  Static2007 ShipUnit.HMS_LCA nn 271014.16 132960.38 579.10 /sleep 0/skill 2/slowfire 1
-  Static1967 ShipUnit.HMS_LCA nn 271031.88 132946.08 699.10 /sleep 0/skill 2/slowfire 1
-  Static2004 ShipUnit.HMS_LCA nn 271042.22 132929.23 579.10 /sleep 0/skill 2/slowfire 1
-  Static2015 Stationary.Industrial.Medium_Factory.Central nn 271404.56 132969.88 569.10 
-  Static2018 Stationary.Industrial.Medium_Factory.Central nn 271636.59 132938.34 449.10 
-  Static2017 Stationary.Industrial.Medium_Factory.Central nn 271011.38 133031.11 509.10 
-  Static2012 Stationary.Industrial.Medium_Factory.Central nn 271126.78 133085.48 659.10 
-  Static2040 Stationary.Environment.JerryCan_GER1_5 de 271304.19 133845.58 389.10 /hstart 2
   Static623 Artillery.20_mm_Flak_38 de 284791.94 139148.05 65.00 /timeout 0/radius_hide 0
   Static1009 Artillery.Bofors_StandAlone de 285745.53 139737.70 0.00 /timeout 0/radius_hide 0
   Static2669 Stationary.AEC_Regent_II de 348036.63 139175.23 659.10 
@@ -1907,26 +1864,7 @@
   Static2662 Stationary.AEC_Regent_II de 349231.94 142850.02 659.10 
   Static2663 Stationary.AEC_Regent_II de 351019.78 143103.69 659.10 
   Static2671 Stationary.AEC_Regent_II de 347322.06 144452.11 659.10 
-  Static687 Artillery.20_mm_Flak_38 de 350937.19 145731.55 65.00 /timeout 0/radius_hide 0
-  Static1229 ShipUnit.HMS_LCA de 269209.03 147709.59 659.10 /sleep 0/skill 2/slowfire 1
-  Static1349 ShipUnit.HMS_LCA de 269212.97 147724.09 659.10 /sleep 0/skill 2/slowfire 1
-  Static1230 ShipUnit.HMS_LCA de 269221.25 147734.08 659.10 /sleep 0/skill 2/slowfire 1
-  Static1221 ShipUnit.HMS_LCA de 269231.50 147748.64 649.10 /sleep 0/skill 2/slowfire 1
-  Static1361 ShipUnit.HMS_LCA de 269225.50 147769.17 554.10 /sleep 0/skill 2/slowfire 1  
-  Static1358 ShipUnit.HMS_LCA de 269242.34 147774.23 584.10 /sleep 0/skill 2/slowfire 1
-  Static1185 ShipUnit.HMS_LCA de 269261.25 147761.38 649.10 /sleep 0/skill 2/slowfire 1
-  Static1213 ShipUnit.HMS_LCA de 269271.44 147768.28 664.10 /sleep 0/skill 2/slowfire 1
-  Static1214 ShipUnit.HMS_LCA de 269278.75 147771.47 669.10 /sleep 0/skill 2/slowfire 1
-  Static1351 ShipUnit.HMS_LCA de 269218.72 147782.08 584.10 /sleep 0/skill 2/slowfire 1
-  Static1362 ShipUnit.HMS_LCA de 269249.91 147788.38 554.10 /sleep 0/skill 2/slowfire 1
-  Static1352 ShipUnit.HMS_LCA de 269274.63 147785.16 574.10 /sleep 0/skill 2/slowfire 1
-  Static1223 ShipUnit.HMS_LCA de 269287.50 147777.17 644.10 /sleep 0/skill 2/slowfire 1
-  Static1357 ShipUnit.HMS_LCA de 269272.22 147795.30 599.10 /sleep 0/skill 2/slowfire 1
-  Static1215 ShipUnit.HMS_LCA de 269298.22 147797.06 664.10 /sleep 0/skill 2/slowfire 1
-  Static1216 ShipUnit.HMS_LCA de 269312.88 147781.20 649.10 /sleep 0/skill 2/slowfire 1
-  Static1396 Stationary.Environment.JerryCan_GER1_5 nn 269517.50 148290.55 720.00 /hstart 2
-  Static1220 ShipUnit.HMS_LCA de 269323.78 147785.61 639.10 /sleep 0/skill 2/slowfire 1
-  Static1360 ShipUnit.HMS_LCA de 269320.50 147800.73 554.10 /sleep 0/skill 2/slowfire 1
+  Static687 Artillery.20_mm_Flak_38 de 350937.19 145731.55 65.00 /timeout 0/radius_hide 0  
   Static621 Artillery.20_mm_Flak_38 de 274176.34 150483.23 65.00 /timeout 0/radius_hide 0
   Static55 Stationary.Radar.Wotan_I de 274246.31 151127.25 65.00 
   Static622 Artillery.20_mm_Flak_38 de 273748.81 151237.72 65.00 /timeout 0/radius_hide 0
@@ -2080,23 +2018,6 @@
   Static2641 Stationary.AEC_Regent_II de 268029.59 165171.84 659.10 
   Static2642 Stationary.AEC_Regent_II de 279897.34 165054.53 659.10 
   Static615 Artillery.20_mm_Flak_38 de 268613.19 165959.69 65.00 /timeout 0/radius_hide 0
-  Static1981 ShipUnit.HMS_LCA de 269382.28 166045.39 659.10 /sleep 0/skill 2/slowfire 1
-  Static5005 Stationary.Environment.JerryCan_GER1_5 nn 269482.25 166457.89 720.00 /hstart 2
-  Static1979 ShipUnit.HMS_LCA de 269396.34 166051.67 659.10 /sleep 0/skill 2/slowfire 1
-  Static1972 ShipUnit.HMS_LCA de 269397.09 166068.39 649.10 /sleep 0/skill 2/slowfire 1
-  Static1977 ShipUnit.HMS_LCA de 269410.84 166066.39 659.10 /sleep 0/skill 2/slowfire 1
-  Static1996 ShipUnit.HMS_LCA de 269389.16 166088.06 554.10 /sleep 0/skill 2/slowfire 1
-  Static1989 ShipUnit.HMS_LCA de 269406.00 166093.11 584.10 /sleep 0/skill 2/slowfire 1
-  Static1983 ShipUnit.HMS_LCA de 269414.94 166087.98 584.10 /sleep 0/skill 2/slowfire 1
-  Static1960 ShipUnit.HMS_LCA de 269424.91 166080.25 649.10 /sleep 0/skill 2/slowfire 1
-  Static1988 ShipUnit.HMS_LCA de 269422.25 166102.59 599.10 /sleep 0/skill 2/slowfire 1
-  Static1974 ShipUnit.HMS_LCA de 269451.16 166096.05 644.10 /sleep 0/skill 2/slowfire 1
-  Static1984 ShipUnit.HMS_LCA de 269446.22 166104.09 574.10 /sleep 0/skill 2/slowfire 1
-  Static1965 ShipUnit.HMS_LCA de 269461.88 166095.94 664.10 /sleep 0/skill 2/slowfire 1
-  Static1998 ShipUnit.HMS_LCA de 269443.56 166117.27 554.10 /sleep 0/skill 2/slowfire 1
-  Static1992 ShipUnit.HMS_LCA de 269464.84 166108.77 554.10 /sleep 0/skill 2/slowfire 1
-  Static1968 ShipUnit.HMS_LCA de 269479.69 166101.30 649.10 /sleep 0/skill 2/slowfire 1
-  Static1970 ShipUnit.HMS_LCA de 269491.75 166105.58 639.10 /sleep 0/skill 2/slowfire 1
   Static1417 Stationary.Environment.JerryCan_GER1_1 de 267437.91 166249.97 720.00 /hstart 2 
   Static1418 Stationary.Environment.JerryCan_GER1_1 de 267449.81 166243.16 720.00 /hstart 2 
   Static1412 Stationary.Environment.JerryCan_GER1_1 de 267463.44 166267.56 720.00 /hstart 2 
@@ -6104,6 +6025,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6126,6 +6048,7 @@
   Aircraft.SpitfireMkI_100oct
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
@@ -6133,6 +6056,7 @@
   Aircraft.BlenheimMkIV
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6148,6 +6072,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6164,6 +6089,7 @@
   Aircraft.SpitfireMkIa
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
 [BirthPlace11]
   Aircraft.BlenheimMkIV
   Aircraft.BlenheimMkIV_Late
@@ -6171,6 +6097,7 @@
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
@@ -6193,6 +6120,7 @@
   Aircraft.SpitfireMkI_100oct
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.HurricaneMkI
@@ -6209,6 +6137,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6256,6 +6185,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6270,6 +6200,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6283,6 +6214,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6296,6 +6228,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6309,6 +6242,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6322,6 +6256,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6335,6 +6270,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
   Aircraft.BeaufighterMkINF
@@ -6346,6 +6282,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6360,6 +6297,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6373,6 +6311,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6386,6 +6325,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6399,6 +6339,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6412,6 +6353,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6424,6 +6366,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6436,6 +6379,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6448,6 +6392,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6463,6 +6408,7 @@
   Aircraft.SpitfireMkIa
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_FB
@@ -6472,6 +6418,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6484,6 +6431,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6496,6 +6444,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6508,6 +6457,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6520,6 +6470,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6532,6 +6483,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6544,6 +6496,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6556,6 +6509,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6568,6 +6522,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6581,6 +6536,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6593,6 +6549,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6605,6 +6562,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6617,6 +6575,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6630,6 +6589,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6643,6 +6603,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6656,6 +6617,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6669,6 +6631,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6681,6 +6644,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6693,6 +6657,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIV_Late
   Aircraft.BlenheimMkIVNF_Late
   Aircraft.BeaufighterMkIF
@@ -6957,10 +6922,10 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVNF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.SpitfireMkI_100oct
-  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.HurricaneMkI_dH5-20_100oct
   Aircraft.HurricaneMkI_dH5-20
   Aircraft.HurricaneMkI
@@ -6976,6 +6941,7 @@
   Aircraft.SpitfireMkIa_100oct
   Aircraft.BlenheimMkIVF
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
   Aircraft.BlenheimMkIVNF
   Aircraft.BlenheimMkIVF_Late
   Aircraft.SpitfireMkI_100oct
@@ -6987,6 +6953,7 @@
 [BirthPlace82]
   Aircraft.SpitfireMkIa_100oct
   Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
 [BirthPlace83]
   Aircraft.Ju-88A-1
   Aircraft.Bf-110C-4B

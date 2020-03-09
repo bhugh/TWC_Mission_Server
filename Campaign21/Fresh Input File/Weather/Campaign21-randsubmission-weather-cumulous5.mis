@@ -1,0 +1,82 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[WeatherFront]
+  LocalWeather_0 CUMULUS_GEN 25000 20000 101842.81 64011.64 0 0
+  LocalWeather_1 CUMULUS_GEN 30000 20000 224444.37 173434.18 0 0
+  LocalWeather_2 CUMULUS_GEN 32000 20000 309172.13 264713.90 0 0
+  LocalWeather_3 CUMULUS_GEN 24000 18000 72411.72 136413.05 0 0
+[LocalWeather_0]
+  EllipticA 25000
+  EllipticB 20000
+  RotAngle 2
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 2000
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 10
+  RainPower 10
+  ThermalIntensity 10
+  CloudsDensity 10
+  MidSize 10
+[LocalWeather_1]
+  EllipticA 30000
+  EllipticB 20000
+  RotAngle -7
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 3000
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 9
+  RainPower 10
+  ThermalIntensity 9
+  CloudsDensity 6
+  MidSize 9
+[LocalWeather_2]
+  EllipticA 32000
+  EllipticB 20000
+  RotAngle 7
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1600
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 9
+  RainPower 10
+  ThermalIntensity 9
+  CloudsDensity 6
+  MidSize 8
+[LocalWeather_3]
+  EllipticA 24000
+  EllipticB 18000
+  RotAngle -4
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 2600
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 8
+  RainPower 10
+  ThermalIntensity 9
+  CloudsDensity 5
+  MidSize 10

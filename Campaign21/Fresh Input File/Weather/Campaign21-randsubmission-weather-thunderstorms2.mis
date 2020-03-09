@@ -1,0 +1,86 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 750
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_B_218Sqn.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[WeatherFront]
+  LocalWeather_0 THUNDER_GEN 4000 3000 243301.83 212704.91 0 0
+  LocalWeather_1 THUNDER_GEN 3000 4000 249212.00 206989.18 0 0
+  LocalWeather_2 THUNDER_GEN 4000 3000 236216.88 217309.47 0 0
+[LocalWeather_0]
+  EllipticA 4000
+  EllipticB 3000
+  RotAngle 17
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1500
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 5000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 1
+  TotalLayers 4
+  IsThunder False
+[LocalWeather_1]
+  EllipticA 3000
+  EllipticB 4000
+  RotAngle -11
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 500
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 5000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 1
+  TotalLayers 6
+  IsThunder False
+[LocalWeather_2]
+  EllipticA 4000
+  EllipticB 3000
+  RotAngle -49
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 750
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 5000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 1
+  TotalLayers 6
+  IsThunder False

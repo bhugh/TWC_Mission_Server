@@ -1,44 +1,141 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 9.09250022016931
+  WeatherIndex 0
+  CloudsHeight 682
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
 [Stationary]
-  Static2009 Stationary.Breen_Carrier_Mk_I nn 271768.94 132541.02 639.10 /hstart -0.75
-  Static1999 Stationary.Breen_Carrier_Mk_I nn 271814.50 132499.45 589.10 /hstart -0.75
+  Static2009 Stationary.Breen_Carrier_Mk_I nn 271536.63 132846.38 639.10 /hstart -0.75
+  Static1999 Stationary.Breen_Carrier_Mk_I nn 271795.78 132824.44 589.10 /hstart -0.75
   Static2000 Stationary.Breen_Carrier_Mk_I nn 271682.41 132602.19 669.10 /hstart -0.75
-  Static2003 Stationary.Breen_Carrier_Mk_I nn 271701.25 132586.98 429.10 /hstart -0.75
-  Static1995 Stationary.Breen_Carrier_Mk_I nn 271717.69 132577.30 699.10 /hstart -0.75
+  Static2003 Stationary.Breen_Carrier_Mk_I nn 271745.28 132679.72 429.10 /hstart -0.75
+  Static1995 Stationary.Breen_Carrier_Mk_I nn 271737.34 132731.84 699.10 /hstart -0.75
   Static1987 Stationary.Breen_Carrier_Mk_I nn 271748.44 132547.45 639.10 /hstart -0.75
-  Static2002 Stationary.Breen_Carrier_Mk_I nn 271565.69 132654.06 609.10 /hstart -0.75
-  Static1976 Stationary.Breen_Carrier_Mk_I nn 271579.94 132648.45 624.10 /hstart -0.75
+  Static2002 Stationary.Breen_Carrier_Mk_I nn 271428.91 132817.06 609.10 /hstart -0.75
+  Static1976 Stationary.Breen_Carrier_Mk_I nn 271638.94 132756.17 624.10 /hstart -0.75
   Static1990 Stationary.Breen_Carrier_Mk_I nn 271600.84 132649.34 714.10 /hstart -0.75
-  Static2010 Stationary.Breen_Carrier_Mk_I nn 271628.63 132623.64 549.10 /hstart -0.75
-  Static1971 Stationary.Breen_Carrier_Mk_I nn 271655.31 132613.33 639.10 /hstart -0.75
-  Static2006 Stationary.Breen_Carrier_Mk_I nn 271458.47 132710.73 714.10 /hstart -0.75
-  Static2001 Stationary.Breen_Carrier_Mk_I nn 271493.34 132704.66 609.10 /hstart -0.75
+  Static2010 Stationary.Breen_Carrier_Mk_I nn 271579.91 132722.03 549.10 /hstart -0.75
+  Static1971 Stationary.Breen_Carrier_Mk_I nn 271664.69 132717.31 639.10 /hstart -0.75
+  Static2006 Stationary.Breen_Carrier_Mk_I nn 271602.72 132927.14 714.10 /hstart -0.75
+  Static2001 Stationary.Breen_Carrier_Mk_I nn 271682.53 132761.80 609.10 /hstart -0.75
   Static1997 Stationary.Breen_Carrier_Mk_I nn 271538.63 132678.19 639.10 /hstart -0.75
-  Static1991 Stationary.Breen_Carrier_Mk_I nn 271529.19 132696.20 669.10 /hstart -0.75
+  Static1991 Stationary.Breen_Carrier_Mk_I nn 271613.50 132902.25 669.10 /hstart -0.75
   Static2011 Stationary.Industrial.Medium_Factory.Central nn 271687.34 132686.84 669.10 
   Static2014 Stationary.Industrial.Medium_Factory.Central nn 271761.59 132699.34 659.10 
-  Static1966 Stationary.Breen_Carrier_Mk_I nn 271340.38 132777.23 669.10 /hstart -0.75
-  Static1982 Stationary.Breen_Carrier_Mk_I nn 271387.75 132746.03 639.10 /hstart -0.75  
-  Static2005 Stationary.Breen_Carrier_Mk_I nn 271426.44 132749.30 729.10 /hstart -0.75
-  Static1980 Stationary.Breen_Carrier_Mk_I nn 271461.72 132753.70 639.10 /hstart -0.75
+  Static1966 Stationary.Breen_Carrier_Mk_I nn 271367.53 132951.48 669.10 /hstart -0.75
+  Static1982 Stationary.Breen_Carrier_Mk_I nn 271387.75 132746.03 639.10 /hstart -0.75
+  Static2005 Stationary.Breen_Carrier_Mk_I nn 271618.47 132797.08 729.10 /hstart -0.75
+  Static1980 Stationary.Breen_Carrier_Mk_I nn 271369.94 132859.55 639.10 /hstart -0.75
   Static2019 Stationary.Industrial.Medium_Factory.Central nn 271604.69 132736.25 389.10 
   Static1975 Stationary.Breen_Carrier_Mk_I nn 271169.34 132849.23 549.10 /hstart -0.75
-  Static1962 Stationary.Breen_Carrier_Mk_I nn 271197.94 132846.58 639.10 /hstart -0.75
-  Static1973 Stationary.Breen_Carrier_Mk_I nn 271219.03 132833.41 639.10 /hstart -0.75
-  Static1964 Stationary.Breen_Carrier_Mk_I nn 271247.38 132817.86 699.10 /hstart -0.75
-  Static1986 Stationary.Breen_Carrier_Mk_I nn 271244.53 132842.14 669.10 /hstart -0.75
-  Static1985 Stationary.Breen_Carrier_Mk_I nn 271281.13 132825.34 639.10 /hstart -0.75
-  Static1978 Stationary.Breen_Carrier_Mk_I nn 271300.56 132803.56 619.10 /hstart -0.75
+  Static1962 Stationary.Breen_Carrier_Mk_I nn 271087.41 133055.45 639.10 /hstart -0.75
+  Static1973 Stationary.Breen_Carrier_Mk_I nn 271542.25 132859.67 639.10 /hstart -0.75
+  Static1964 Stationary.Breen_Carrier_Mk_I nn 271422.56 132938.73 699.10 /hstart -0.75
+  Static1986 Stationary.Breen_Carrier_Mk_I nn 271296.97 132961.09 669.10 /hstart -0.75
+  Static1985 Stationary.Breen_Carrier_Mk_I nn 271397.28 132918.09 639.10 /hstart -0.75
+  Static1978 Stationary.Breen_Carrier_Mk_I nn 271038.25 133008.73 619.10 /hstart -0.75
   Static2008 Stationary.Breen_Carrier_Mk_I nn 271329.88 132802.55 639.10 /hstart -0.75
   Static2016 Stationary.Industrial.Medium_Factory.Central nn 271399.28 132837.34 509.10 
   Static2013 Stationary.Industrial.Medium_Factory.Central nn 271824.06 132850.58 579.10 
   Static1994 Stationary.Breen_Carrier_Mk_I nn 271080.41 132918.33 629.10 /hstart -0.75
-  Static1969 Stationary.Breen_Carrier_Mk_I nn 271099.03 132908.48 714.10 /hstart -0.75
+  Static1969 Stationary.Breen_Carrier_Mk_I nn 271065.31 133024.63 714.10 /hstart -0.75
   Static1993 Stationary.Breen_Carrier_Mk_I nn 271134.13 132878.08 629.10 /hstart -0.75
   Static2007 Stationary.Breen_Carrier_Mk_I nn 271014.16 132960.38 579.10 /hstart -0.75
-  Static1967 Stationary.Breen_Carrier_Mk_I nn 271031.88 132946.08 699.10 /hstart -0.75
-  Static2004 Stationary.Breen_Carrier_Mk_I nn 271042.22 132929.23 579.10 /hstart -0.75
+  Static1967 Stationary.Breen_Carrier_Mk_I nn 271103.06 133117.48 699.10 /hstart -0.75
+  Static2004 Stationary.Breen_Carrier_Mk_I nn 271149.94 133054.75 579.10 /hstart -0.75
   Static2015 Stationary.Industrial.Medium_Factory.Central nn 271404.56 132969.88 569.10 
   Static2018 Stationary.Industrial.Medium_Factory.Central nn 271636.59 132938.34 449.10 
   Static2017 Stationary.Industrial.Medium_Factory.Central nn 271011.38 133031.11 509.10 
   Static2012 Stationary.Industrial.Medium_Factory.Central nn 271126.78 133085.48 659.10 
-  Static2040 Stationary.Environment.JerryCan_GER1_5 de 271304.19 133845.58 389.10 /hstart 2
+  Static2040 Stationary.Environment.JerryCan_GER1_5 de 271193.66 133396.48 389.10 /hstart 2
+  Static0 Stationary.Breen_Carrier_Mk_I nn 271418.22 132859.77 699.10 /hstart -0.75
+  Static1 Stationary.Breen_Carrier_Mk_I nn 271359.22 132836.36 699.10 /hstart -0.75
+  Static2 Stationary.Breen_Carrier_Mk_I nn 271124.13 133051.77 699.10 /hstart -0.75
+  Static3 Stationary.Breen_Carrier_Mk_I nn 271040.78 133051.77 699.10 /hstart -0.75
+  Static4 Stationary.Breen_Carrier_Mk_I nn 271011.75 133058.33 699.10 /hstart -0.75
+  Static5 Stationary.Breen_Carrier_Mk_I nn 271850.91 132875.69 699.10 /hstart -0.75
+  Static6 Stationary.Breen_Carrier_Mk_I nn 271812.53 132884.13 699.10 /hstart -0.75
+  Static7 Stationary.Breen_Carrier_Mk_I nn 271672.97 132934.70 699.10 /hstart -0.75
+  Static8 Stationary.Breen_Carrier_Mk_I nn 271638.31 132973.09 699.10 /hstart -0.75
+  Static9 Stationary.Breen_Carrier_Mk_I nn 271802.22 132715.53 699.10 /hstart -0.75
+  Static10 Stationary.Breen_Carrier_Mk_I nn 271711.38 132664.03 699.10 /hstart -0.75
+  Static11 Stationary.Breen_Carrier_Mk_I nn 271662.66 132672.45 699.10 /hstart -0.75
+  Static12 Stationary.Breen_Carrier_Mk_I nn 271624.28 132708.05 699.10 /hstart -0.75
+  Static13 Stationary.Breen_Carrier_Mk_I nn 271584.94 132764.23 699.10 /hstart -0.75
+  Static14 Stationary.Breen_Carrier_Mk_I nn 271431.34 132987.14 699.10 /hstart -0.75
+  Static15 Stationary.Breen_Carrier_Mk_I nn 271391.06 133006.81 699.10 /hstart -0.75
+  Static16 Stationary.Breen_Carrier_Mk_I nn 271149.44 133102.34 699.10 /hstart -0.75
+  Static17 Stationary.Breen_Carrier_Mk_I nn 271116.66 133138.88 699.10 /hstart -0.75
+  Static18 Stationary.Breen_Carrier_Mk_I nn 270982.72 133053.64 699.10 /hstart -0.75
+  Static19 Stationary.Breen_Carrier_Mk_I nn 271731.97 132571.11 699.10 /hstart -0.75
+  Static20 Stationary.Breen_Carrier_Mk_I nn 271661.69 132619.81 699.10 /hstart -0.75
+  Static21 Stationary.Breen_Carrier_Mk_I nn 271577.41 132668.63 699.10 /hstart -0.75
+  Static22 Stationary.Breen_Carrier_Mk_I nn 271464.78 132721.88 699.10 /hstart -0.75
+  Static23 Stationary.Breen_Carrier_Mk_I nn 271371.03 132781.88 699.10 /hstart -0.75
+  Static24 Stationary.Breen_Carrier_Mk_I nn 271275.41 132826.88 699.10 /hstart -0.75
+  Static25 Stationary.Breen_Carrier_Mk_I nn 271222.00 132844.69 699.10 /hstart -0.75
+  Static26 Stationary.Breen_Carrier_Mk_I nn 271117.28 132899.08 699.10 /hstart -0.75
+  Static27 Stationary.Breen_Carrier_Mk_I nn 271062.31 132943.13 699.10 /hstart -0.75
+  Static28 Stationary.Breen_Carrier_Mk_I nn 271053.91 132978.72 699.10 /hstart -0.75
+  Static29 Stationary.Breen_Carrier_Mk_I nn 271253.38 132876.63 699.10 /hstart -0.75
+  Static30 Stationary.Breen_Carrier_Mk_I nn 271338.63 132850.41 699.10 /hstart -0.75
+  Static31 Stationary.Breen_Carrier_Mk_I nn 271459.44 132770.80 699.10 /hstart -0.75
+  Static32 Stationary.Breen_Carrier_Mk_I nn 271532.47 132722.09 699.10 /hstart -0.75
+  Static33 Stationary.Breen_Carrier_Mk_I nn 271521.25 132730.53 699.10 /hstart -0.75
+  Static34 Stationary.Breen_Carrier_Mk_I nn 271500.63 132736.14 699.10 /hstart -0.75
+  Static35 Stationary.Breen_Carrier_Mk_I nn 271489.41 132746.45 699.10 /hstart -0.75
+  Static36 Stationary.Breen_Carrier_Mk_I nn 271478.16 132755.81 699.10 /hstart -0.75
+  Static37 Stationary.Breen_Carrier_Mk_I nn 271432.22 132784.81 699.10 /hstart -0.75
+  Static38 Stationary.Breen_Carrier_Mk_I nn 271417.25 132795.13 699.10 /hstart -0.75
+  Static39 Stationary.Breen_Carrier_Mk_I nn 271724.47 132630.31 699.10 /hstart -0.75
+  Static40 Stationary.Breen_Carrier_Mk_I nn 271682.34 132646.23 699.10 /hstart -0.75
+  Static41 Stationary.Breen_Carrier_Mk_I nn 271649.56 132663.09 699.10 /hstart -0.75
+  Static42 Stationary.Breen_Carrier_Mk_I nn 271624.28 132677.14 699.10 /hstart -0.75
+  Static43 Stationary.Breen_Carrier_Mk_I nn 271546.53 132812.94 699.10 /hstart -0.75
+  Static44 Stationary.Breen_Carrier_Mk_I nn 271530.63 132903.80 699.10 /hstart -0.75
+  Static45 Stationary.Breen_Carrier_Mk_I nn 271467.84 132962.80 699.10 /hstart -0.75
+  Static46 Stationary.Breen_Carrier_Mk_I nn 271541.84 132957.17 699.10 /hstart -0.75
+  Static47 Stationary.Breen_Carrier_Mk_I nn 271538.09 132934.70 699.10 /hstart -0.75
+  Static48 Stationary.Breen_Carrier_Mk_I nn 271362.03 133003.06 699.10 /hstart -0.75
+  Static49 Stationary.Breen_Carrier_Mk_I nn 271271.19 133044.28 699.10 /hstart -0.75
+  Static50 Stationary.Breen_Carrier_Mk_I nn 271152.22 133130.44 699.10 /hstart -0.75
+  Static51 Stationary.Breen_Carrier_Mk_I nn 271090.41 133100.47 699.10 /hstart -0.75
+  Static52 Stationary.Breen_Carrier_Mk_I nn 271103.47 132944.86 774.10 /hstart -0.75
+  Static53 Stationary.Breen_Carrier_Mk_I nn 271106.88 132941.95 774.10 /hstart -0.75
+  Static54 Stationary.Breen_Carrier_Mk_I nn 271110.41 132938.91 774.10 /hstart -0.75
+  Static55 Stationary.Breen_Carrier_Mk_I nn 271113.56 132936.59 789.10 /hstart -0.75
+  Static56 Stationary.Breen_Carrier_Mk_I nn 271117.50 132933.66 789.10 /hstart -0.75
+  Static57 Stationary.Breen_Carrier_Mk_I nn 271121.31 132930.95 789.10 /hstart -0.75
+  Static58 Stationary.Breen_Carrier_Mk_I nn 271220.59 133044.28 789.10 /hstart -0.75
+  Static59 Stationary.Breen_Carrier_Mk_I nn 271857.06 132832.17 699.10 /hstart -0.75
+  Static60 Stationary.Breen_Carrier_Mk_I nn 271845.84 132824.69 699.10 /hstart -0.75
+  Static61 Stationary.Breen_Carrier_Mk_I nn 271774.66 132849.97 699.10 /hstart -0.75
+  Static62 Stationary.Breen_Carrier_Mk_I nn 271253.91 133109.41 699.10 /hstart -0.75
+  Static63 Stationary.Breen_Carrier_Mk_I nn 271235.19 133073.81 669.10 /hstart -0.75
+  Static64 Stationary.Breen_Carrier_Mk_I nn 271186.22 132989.78 774.10 /hstart -0.75
+  Static65 Stationary.Breen_Carrier_Mk_I nn 271165.09 132958.20 774.10 /hstart -0.75
+  Static66 Stationary.Breen_Carrier_Mk_I nn 271143.59 132928.27 764.10 /hstart -0.75
+  Static67 Stationary.Breen_Carrier_Mk_I nn 271136.94 132920.48 779.10 /hstart -0.75
+  Static68 Stationary.Breen_Carrier_Mk_I nn 271206.75 133019.17 789.10 /hstart -0.75
+  Static69 Stationary.Breen_Carrier_Mk_I nn 271200.34 133008.59 789.10 /hstart -0.75
+  Static70 Stationary.Breen_Carrier_Mk_I nn 271180.56 132980.83 789.10 /hstart -0.75
+  Static71 Stationary.Breen_Carrier_Mk_I nn 271173.16 132965.91 789.10 /hstart -0.75
+  Static72 Stationary.Breen_Carrier_Mk_I nn 271160.63 132951.09 764.10 /hstart -0.75
+  Static73 Stationary.Breen_Carrier_Mk_I nn 271150.03 132938.73 774.10 /hstart -0.75
+  Static74 Stationary.Environment.JerryCan_GER1_5 de 272048.72 132982.69 389.10 /hstart 2
+  Static75 Stationary.Environment.JerryCan_GER1_5 de 271459.69 132857.89 389.10 /hstart 2
+[Buildings]
+[BuildingsLinks]

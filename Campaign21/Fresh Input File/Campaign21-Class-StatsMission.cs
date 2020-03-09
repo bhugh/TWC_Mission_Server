@@ -361,13 +361,15 @@ public class StatsMission : AMission, IStatsMission
     public IStbStatRecorder stb_IStatRecorder { get; set; }
     public StbSaveIPlayerStat stb_SaveIPlayerStat { get; set; }
     public IStbSaveIPlayerStat stb_ISaveIPlayerStat { get; set; }
+    public Mission mainmission;
 
 
 
 
     //initializer method
-    public StatsMission()
+    public StatsMission(Mission msn)
     {
+        mainmission = msn;
         stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
         TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
@@ -5500,6 +5502,12 @@ struct
 
             stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type);  //So they have dropped a bomb on an active industrial area or area bombing target they get a point.
                                                                                       //TODO: More/less points depending on bomb tonnage.
+            if (initiator.Actor != null)
+            {
+                Player player1 = null;
+                if (mainmission != null && mainmission.covermission != null) player1 = mainmission.covermission.getOwnerOfCoverAircraft(initiator.Actor);
+                if (player1 != null) stb_RecordNearbyPlayerStatsOnActorDead(player1, raw_score: score, killtype: 4);
+            }
 
             //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
             // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
@@ -5997,8 +6005,9 @@ struct
             double aircraftCorrection = 1;
             AiAircraft aircraft = initiator.Actor as AiAircraft;
             string acType = StatCalcs.GetAircraftType(aircraft);
-            if (acType.Contains("Blenheim")) aircraftCorrection = 4;
-            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
+            if (acType.Contains("Blenheim") || acType.Contains("Hurricane")) aircraftCorrection = 4.4; //IV & IV late carry 4*250lb bombs plus 18x40lb bombs.  1200 poundds altogether
+            if (acType.Equals("BlenheimMkI")) aircraftCorrection = 5.28;  //MkI carries just 4x250lb bombs, vs regular MkIV & IV_late care 1200lb bombs.  So 6/5* the regular Blenheim correction factor
+            if (acType.Contains("Wellington")) aircraftCorrection = 2.6455; //Wellington carries 8X250lb bombs, so 2000lb altogether.            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
             if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
             //for testing
@@ -6059,7 +6068,7 @@ struct
              * 
              * Handle airport bombing
              * 
-             * NB:: Airport bombing is not handled entirely in -main.cs, which just calls stats to record the points
+             * NB:: Airport bombing is now handled entirely in -main.cs, which just calls stats to record the points
              * 2020-02-25.  If this works we can just remove this commented-out section altogether
              * 
              *******************/
@@ -7714,6 +7723,141 @@ struct
         }
     }
 
+    public void stb_RecordNearbyPlayerStatsOnActorDead(Player player, double dist_m =0, double raw_score = 0, int killtype = 1)
+    {
+        //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+
+        //return; //TESTING
+
+        string playerName = "";
+        AiActor playerPlaceActor = null;
+        if (player != null && player.Name() != null)
+        {
+            playerName = player.Name();
+        }
+        else return; //not much to do if we don't have player & name
+
+        if (player.Place() != null && player.Place() as AiActor != null) playerPlaceActor = player.Place() as AiActor;
+
+        //int killtype = 1; //1 = aerial kill
+
+
+        //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
+
+        //This is credit for being nearby when enemy is killed.  So higher score the closer you were.
+
+        int percent_score = 0;
+
+        if (dist_m > 0)
+        {
+            percent_score = 5;
+            if (dist_m < 1000) percent_score = 10;
+            if (dist_m < 500) percent_score = 15;
+        }
+        if (raw_score > 0)
+        {
+            percent_score = Convert.ToInt32(raw_score * 100.0/10.0); //So we're going to say, the cover owners get 10% of the credit for any cover a/c victory
+        }
+                
+        //int percent_score_norm = (int)Math.Round((double)percent_score / (double)100);  //normed to 1=1 victory (rather than 100% = one victory)
+
+        int percent_score_fordead = 1;        
+
+        StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst);
+
+        StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798, percent_score }, playerPlaceActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst1);
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798, percent_score);//Also save this for current session stats
+
+        //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        StbStatTask sst2 = new StbStatTask();
+        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
+        sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 }, playerPlaceActor);        
+        stb_StatRecorder.StbSr_EnqueueTask(sst2);
+
+        //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+        StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798 + killtype * 4, percent_score }, playerPlaceActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst4);
+
+        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798 + killtype * 4, percent_score);//Also save this for current session stats
+
+        StbStatTask sst3 = new StbStatTask();
+        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+        sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 + killtype * 4 }, playerPlaceActor);
+        stb_StatRecorder.StbSr_EnqueueTask(sst3);
+    }
+
+    //TODO: We could also grab the owner of any cover aircraft participating.
+    public Dictionary<Player, double> GetNearbyPlayers(AiActor actor)
+    {
+        try
+        {
+            var ret = new Dictionary<Player, double>();
+
+            if (actor == null) return ret;
+
+            Point3d aPos = actor.Pos();
+            int aArmy = actor.Army();
+
+            if (GamePlay.gpRemotePlayers() != null) foreach (Player player in GamePlay.gpRemotePlayers())
+                {
+                    if (player == null || player.Place() == null) continue;
+                    if (aArmy == player.Army()) continue;
+
+                    double dist_m = 10000000;
+                    if (player.Place() != null) dist_m = Calcs.CalculatePointDistance(player.Place().Pos(), aPos);
+
+                    if (dist_m < 2000)
+                    {
+                        ret[player] = dist_m;
+                    }
+                }
+
+            return ret;
+
+        }
+        catch (Exception ex) { Console.WriteLine("stbsr_GetNearbyPlayers ERROR: " + ex.Message); return new Dictionary<Player, double>(); };
+    }
+
+    public Dictionary<Player,double> RemoveFromAllPlayers(AiDamageInitiator initiator, Dictionary<Player,double> allPlayers)
+    {
+        Player player = null;        
+        AiActor playerPlaceActor = null;
+        if (initiator != null && initiator.Player != null)
+        {
+            player = initiator.Player;            
+        }
+        else return allPlayers; //not much to do if we don't have player
+        if (allPlayers.ContainsKey(player)) allPlayers.Remove(player);
+        return allPlayers;
+    }
+
+    //any nearby players get some credit, even if not actually getting rounds into the target etc.
+    public void CreditNearbyPlayers(Dictionary<Player, double> allPlayers, int killtype = 1)
+    {
+        foreach (Player player in allPlayers.Keys) stb_RecordNearbyPlayerStatsOnActorDead(player, allPlayers[player], killtype: killtype);
+    }
+
+    public Dictionary<Player, double> addCoverPlayerCredit (AiActor actor, double score, Dictionary<Player, double> coverPlayers)
+    {
+        Player player = null;
+        if (mainmission != null && mainmission.covermission != null) player = mainmission.covermission.getOwnerOfCoverAircraft(actor); 
+        if (player == null) return coverPlayers;
+        double tot = score;  //This is just the total of all their cover aircraft score for this kill.  So later we can take some fraction of this to add to their score.
+        if (coverPlayers.ContainsKey(player)) coverPlayers[player] += tot;
+        else coverPlayers[player] = tot;
+        return coverPlayers;
+    }
+
+    //any nearby players get some credit, even if not actually getting rounds into the target etc.
+    public void CreditCoverPlayers(Dictionary<Player, double> coverPlayers, int killtype= 1)
+    {
+        foreach (Player player in coverPlayers.Keys) stb_RecordNearbyPlayerStatsOnActorDead(player, raw_score: coverPlayers[player], killtype: killtype);
+    }
+
+
     HashSet<string> stb_deadActors = new HashSet<string>(); //actor.Name() of actors we have already run through the onActorDead routine.  Helps prevent us from giving double credit to damagers of actors who are killed.
 
     public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
@@ -7721,449 +7865,480 @@ struct
         #region stb
         base.OnActorDead(missionNumber, shortName, actor, damages);
         //try
-        if (actor == null) return; //nothing we can do here if the actor = null
-        {
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
-            // Console.WriteLine("OnActorDead: 1");
-            //avoid recording death of any actor more than once, except for players of course
-            if (actor as Player == null && actor != null)
-            {
-                if (actor.Name() != null && stb_deadActors.Contains(actor.Name()))
-                {
-                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
-                    return; //This is an actor we've already 'killed' therefore we won't double count it.
-                            //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
-                }
-                else
-                {
-                    //if (stb_Debug) 
-                    // Console.WriteLine("OnActorDead: 2");
-                    //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
-                    //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
-                    if (actor.Name() != null) stb_deadActors.Add(actor.Name());
-                    //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
-                }
-            }
-
-            //if (stb_Debug) 
-            //Console.WriteLine("OnActorDead: 3");
-            //stb_KilledActors.Add(actor, damages); // sav
-            AiAircraft aircraft1 = null;
-            if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
-            else if (actor as AiPerson != null && (actor as AiPerson).Player() != null)
-            {
-
-                AiActor place1 = (actor as AiPerson).Player().Place();
-                if (place1 != null && place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
-            }
-
-            //if (stb_Debug) 
-            //Console.WriteLine("OnActorDead: 4");
-            if (aircraft1 != null)
-            {
-                //AiAircraft aircraft = actor as AiAircraft;
-                double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
-                double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
-                double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
-                double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-                double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-                double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-
-                //System.Console.WriteLine("!!!!!ACTOR DEAD!!!!!: " + shortName + " Army " + actor.Army() + " velocityias " + Z_VelocityIAS.ToString("0.00") + " velocityTAS " + Z_VelocityTAS.ToString("0.00") + " ZvelocityMACH in MPH " + (Z_VelocityMach*600).ToString("0.00000")+  " IvelocityIAS " + I_VelocityIAS.ToString("0.00") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " S_GunReserve " + S_GunReserve.ToString("0.0") + " S_GunClipReserve " + S_GunClipReserve.ToString("0.0"));
-
-            }
-
-
-            //if (stb_Debug) 
-            //Console.WriteLine("OnActorDead: 5");
-            string msg = "killed by ";
-            bool selfKill = true;
-            List<string> deadPlayerNames = new List<string>();
-            List<Player> deadPlayers = new List<Player>();
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
-
-            /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
-             * so ds.initiator.Player . . . etc  Check if each is/is not null before proceeding
-            this.Actor = Actor;
-            this.Person = Person;
-            this.Player = Player;
-            this.Tool = Tool;
-            Tool.Name() string
-            Tool.Type() maddox.game.world.AiDamageToolType 
-            maddox.game.world.AiDamageToolType  enum Cannon Collision Ordance Unknown  [NOTE spelling for "Ordance" NOT "Ordnance"]
-            */
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
-            double totalscore = 0;
-            foreach (DamagerScore ds in damages)
-            {
-
-                string iName = "ai";
-                if (ds.initiator != null && ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName = ds.initiator.Player.Name();
-                string typename = "";
-                if (ds.initiator.Actor != null && ds.initiator.Actor.Name() != null) typename = ds.initiator.Actor.Name();
-                int armyV = actor.Army();
-                int armyI = 3 - armyV;
-                if (ds.initiator.Actor != null) armyI = ds.initiator.Actor.Army();
-                if (armyV != armyI) totalscore += ds.score; //only count damage caused by the other army in the total!  Mostly damage from own army will be self-damage, but even if it isn't, we won't count it . . .
-                                                            //stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
-            }
-            if (totalscore == 0) totalscore = 0.0001; //avoid division by zero errors.  If totalscore==0 then the individual scores must all be 0 also, so it doesn't really matter what its value is, but we don't want it to be zero since we divide by totalscore later . . . 
-                                                      //Console.WriteLine("Actor {0} killed; total damage {1} ", shortName, totalscore);
-
-            //if (stb_Debug) Console.WriteLine("OnActorDead: 7");
-            AiAircraft aiAircraft = actor as AiAircraft;
-            if (aiAircraft != null)
-            {
-                //Get total amt of damage recorded for the kill
-
-
-                //get list of player names in the a/c
-                for (int i = 0; i < aiAircraft.Places(); i++)
-                {
-                    if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
-                    {
-                        deadPlayerNames.Add(aiAircraft.Player(i).Name());
-                        deadPlayers.Add(aiAircraft.Player(i));
-                        msg = aiAircraft.Player(i).Name() + " " + msg;
-                    }
-                }
-
-                //So, this reports 1 kill for everyone who had any damage at all on the kill. "Any Kill Participation" stat.
-                // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
-
-                //if (stb_Debug) 
-                //Console.WriteLine("OnActorDead: 8");
-                foreach (DamagerScore ds in damages)
-                {
-                    bool willReportDead = false;
-                    if (ds.initiator != null)
-                    {
-                        int initiatorArmy = 0;
-                        if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
-                        if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
-
-
-                        if (ds.initiator.Player != null)
-                        {
-                            if (aiAircraft.Army() == 1 && initiatorArmy == 2) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats
-                            if (aiAircraft.Army() == 2 && initiatorArmy == 1) { willReportDead = true; }
-
-                            msg += ds.initiator.Player.Name() + " ";
-                            if (!deadPlayerNames.Contains(ds.initiator.Player.Name())) selfKill = false; // if even one other player contributed to the kill, it's not a self kill! 
-                        }
-                        else
-                        {
-                            selfKill = false; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
-                            msg += "nobody/AI  ";
-                        }
-                    }
-                    if (willReportDead)
-                    {
-                        int dc = damages.Count();
-                        if (dc == 0) dc = 1;
-                        if (ds.initiator != null && ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
-                        stb_RecordStatsOnActorDead(ds.initiator, 1, ds.score, totalscore, ds.initiator.Tool.Type); //type 1 is aerial kill
-                    }
-                }
-                //Stb_LogError (msg); //OK, we can't really just do Stb_LogError.  Instead you must "prepare message" etc which queues it up.
-
-
-                // if (player.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
-                //p = player.Place() as AiAircraft;
-                //if (stb_Debug) Console.WriteLine("OnActorDead: 9");
-                List<Player> playersInAircraft = new List<Player>();
-                for (int i = 0; i < aiAircraft.Places(); i++)
-                {
-                    //if (aiAircraft.Player(i) != null) return false;
-                    if (aiAircraft.Player(i) != null && aiAircraft.Player(i) is Player && aiAircraft.Player(i).Name() != null)
-                    {
-                        string playerName = aiAircraft.Player(i).Name();
-                        Player player = aiAircraft.Player(i);
-                        //StbSr_UpdateStatsForKilledPlayer(playerName);
-                        if (playersInAircraft.Contains(player)) continue; //only do this once for any given player in the a/c
-                        playersInAircraft.Add(player);
-
-                        if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) > 0) continue; //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves in the few seconds they are allowed in before disappearing
-
-                        /*
-                        StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, aiAircraft.Player(i) as AiActor);
-                        stb_StatRecorder.StbSr_EnqueueTask(sst1);
-                        */
-
-
-                        int killType = 1;
-                        if (selfKill) killType = 2;
-
-                        double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
-
-                        bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
-
-                        //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
-                        //-1 means one Player Position killed but the other still alive. BUT that is a logical impossibility here because this is the situation where the 
-                        //AIRCRAFT has crashed/died so ALL positiosn with the a/c are now dead.  So we treat -1 same as 1
-                        //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
-                        if (injuriesExtent == -1) injuriesExtent = 1;
-                        if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
-                        else if (injuriesExtent < 1 && injuriesExtent > 0)
-                        {
-                            string severity = "slightly ";
-                            if (injuriesExtent > .2) severity = "seriously ";
-                            if (injuriesExtent >= .5) severity = "very seriously ";
-                            string msg4 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible terrible incident, but you somehow survived--for now . . . ";
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
-                            stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-                            OnAircraftLanded(actor, aiAircraft.Player(i));
-                            continue;
-                        }
-                        /*
-                         * //So it was a mistake to treat injuriesExtent==-1 here, it is a logical impossibility because here is where the AIRCRAFT has been declared dead
-                         * //The possibility of injuriesExtent==-1 is really only for when the PLAYER is the actor who is dead.
-                        else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
-                        {
-                            string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
-                            stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-                        */
-
-                        else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
-
-
-                        msg = "";
-                        if (selfKill)
-                        {
-                            //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
-                            //msg = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
-                            msg = "Self-kill: " + playerName + ". ";
-                        }
-                        else
-                        {
-                            //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
-                            //msg = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " killed or captured. ";
-                            msg = playerName + " killed or captured. ";
-                        }
-                        stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
-
-                        if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
-
-                        if (stb_ResetPlayerStatsWhenKilled && !(injuriesExtent == -1))
-                        {
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
-                        }
-                        else
-                        {
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
-                        }
-
-
-                        if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
-                        {
-                            msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60));
-                            if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
-                        }
-
-                        if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
-
-                        Console.WriteLine("Forcing exit 7");
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
-
-
-
-                        //And now that they have died, they can't continue their mission
-                        //for stats purposes
-                        stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
-
-
-                    }
-                }
-
-            }
-            else
-            {
-                //if (stb_Debug) 
-                //Console.WriteLine("OnActorDead: 10");
-                AiGroundActor aiGroundActor = actor as AiGroundActor;
-                if (aiGroundActor != null)
-                {
-                    //For now we're not recording deaths of players when they are playing in AiGround. We're just reporting kills for players who KILL an AiGround
-                    if (shortName.Length == 12) { Timeout(99.9, () => { Stb_DestroyFrontShip(aiGroundActor); }); }
-                    else if (shortName.Length == 14) { Timeout(99.9, () => { Stb_DestroyFrontArmor(aiGroundActor); }); }
-
-                    //if (stb_Debug) Console.WriteLine("OnActorDead: 11");
-                    foreach (DamagerScore ds in damages)
-                    {
-                        bool willReportDead = false;
-                        if (ds.initiator != null)
-                        {
-                            if (ds.initiator.Player != null)
-                            {
-                                if (aiGroundActor.Army() == 1 && ds.initiator.Player.Army() == 2) { willReportDead = true; }
-                                if (aiGroundActor.Army() == 2 && ds.initiator.Player.Army() == 1) { willReportDead = true; }
-                            }
-                        }
-                        if (willReportDead)
-                        {
-                            if (aiGroundActor.Type() == AiGroundActorType.AAGun ||
-                                aiGroundActor.Type() == AiGroundActorType.Artillery ||
-                                aiGroundActor.Type() == AiGroundActorType.Tank)
-                            {
-                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 2 }, ds.initiator.Player.Place() as AiActor);
-                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 2, ds.score, totalscore, ds.initiator.Tool.Type); //type 2 is aa, artillery, tank
-                            }
-                            else if (aiGroundActor.Type() == AiGroundActorType.ShipBattleship ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipCarrier ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipCruiser ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipDestroyer ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipMisc ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipSmallWarship ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipSubmarine ||
-                                     aiGroundActor.Type() == AiGroundActorType.ShipTransport)
-                            {
-                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 3 }, ds.initiator.Player.Place() as AiActor);
-                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 3, ds.score, totalscore, ds.initiator.Tool.Type); //type 3 is ships/naval
-                            }
-                            else //All other ground types except those specified above are type 4 //bhugh, 2016/09
-                            {
-                                //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 4 }, ds.initiator.Player.Place() as AiActor);
-                                //stb_StatRecorder.StbSr_EnqueueTask(sst);
-                                if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore, ds.initiator.Tool.Type); //type 4 is any other ground actor kill except those listed above
-                            }
-
-                        }
-                    }
-                }
-                else
-                {
-                    try
-                    {
-
-                        //if (stb_Debug) 
-                        //Console.WriteLine("OnActorDead: 12");
-                        //TODO: we need to do all the self-kill checking here as well; sometimes you can PK yourself . . . 
-                        AiPerson person = actor as AiPerson;
-                        Player player2 = actor as Player;
-                        if (person != null || player2 != null) //two similar cases here: the actor is a "person" or the actor is a "player" - probably sent via killActor()
-                        {
-                            Player player = null;
-                            if (person != null) player = person.Player();
-                            else player = player2;
-                            //Stb_Message(null, "Person died: " + person.Player().Name(), new object[] { });    
-                            Console.WriteLine("Person died: " + person.Player().Name());
-
-                            if (player != null && player.Name() != null)
-                            {
-                                //System.Console.WriteLine("Person died: " + player.Name());
-                                string playerName = person.Player().Name();
-
-                                bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName);
-
-                                int selfKillPers = 2;
-                                string msg2 = "";
-
-
-                                //StbSr_UpdateStatsForKilledPlayer(playerName);
-                                if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) == 0) //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves somehow in the few seconds they are allowing in the aircraft.
-                                {
-                                    foreach (DamagerScore ds in damages)
-                                    {
-
-                                        if (ds.initiator != null)
-                                        {
-                                            if (ds.initiator.Player != null)
-                                            {
-                                                //msg += ds.initiator.Player.Name() + " ";
-                                                if (!playerName.Contains(ds.initiator.Player.Name())) selfKillPers = 1; // if even one other player contributed to the kill, it's not a self kill! 
-
-                                            }
-                                            else
-                                            {
-                                                selfKillPers = 1; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
-                                                                  //msg += "nobody/AI  ";
-                                            }
-                                        }
-                                        //We could report pilot kills etc here but for now we're not
-                                    }
-
-
-                                    /* StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { 1 }); //1 = NORMAL DEATH, 2=SELF-KILL
-                                        stb_StatRecorder.StbSr_EnqueueTask(sst1); */
-
-                                    //injuriesExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
-                                    //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
-
-                                    double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, selfKillPers, person as AiActor, person.Player(), true); //1 = NORMAL DEATH, 2=SELF-KILL
-
-                                    if (injuriesExtent == 1)  //If this death has already been recorded for this playerName then we skip doing all the same stuff again; if it hasn't been recorded yet then do all this:
-                                    {
-                                        stb_SaveIPlayerStat.StbSis_Save(person.Player()); //Save the stats CloD has been accumulating
-
-                                        if (selfKillPers == 2)
-                                            msg2 = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
-                                        else msg2 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was killed or captured.";
-
-                                        if (!RPCL) Stb_Message(new Player[] { player }, msg2, new object[] { });
-
-                                        if (stb_PlayerTimeoutWhenKilled)
-                                        {
-                                            string msg1 = "To encourage a more realistic approach to piloting and battle, players who are killed or captured are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". You could try artillery or a ground vehicle.";
-                                            if (!RPCL) Stb_Message(new Player[] { player }, msg1, new object[] { });
-
-                                            if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { player }, "If you are philosophically opposed to this idea, enter the chat command <override to continue immediately.", null); });
-
-                                        }
-
-                                        //And now that they have died, they can't continue their mission
-                                        //for stats purposes
-                                        stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
-                                        recentlyParachutedOrCrashedOrLanded(playerName);
-
-                                    }
-                                    else if (injuriesExtent > 0)
-                                    {
-                                        string severity = "";
-                                        if (injuriesExtent > .2) severity = "seriously ";
-                                        if (injuriesExtent >= .5) severity = "very seriously ";
-                                        string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.  Your career will continue.";
-                                        if (!RPCL) Stb_Message(new Player[] { player }, msg3, new object[] { });
-                                        stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
-                                        recentlyParachutedOrCrashedOrLanded(playerName);
-                                    }
-                                    else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
-                                    {
-                                        string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed.";
-                                        if (!RPCL) Stb_Message(new Player[] { player }, msg4, new object[] { });
-                                        stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
-
-                                        //NO!!!! recentlyParachutedOrCrashedOrLanded(playerName); here because we want to continue to register any other 'lives' for this player
-
-                                    }
-
-                                }
-                                //We could record how many persons (ai or human players) that players kill here, similarly to the way we track aircraft & ground
-                                //kills above.  But it seems a bit creepy to do so?
-                                //Anyway, that is why most airplane kills/crashes come through this routine 2X or more--once for the aircraft & once more 
-                                //for each human/AI pilot, bombadier, etc on board.
-                            }
-                        }
-                        else
-                        {  //probably a static object or something?  We'll see . . . 
-                           //if (stb_Debug) Console.WriteLine("OnActorDead: 13");
-                           //if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore); //type 4 is any other ground kill except
-
-                            //Console.WriteLine("OnActorDead: {0}'s death is not being recorded!", shortName);
-
-                        }
-
-                    }
-                    catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
-                }
-
-            }
-        } 
+        Task.Run(() =>
+      {
+          if (actor == null) return; //nothing we can do here if the actor = null
+          {
+              //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
+              // Console.WriteLine("OnActorDead: 1");
+              //avoid recording death of any actor more than once, except for players of course
+              if (actor as Player == null && actor != null)
+              {
+                  if (actor.Name() != null && stb_deadActors.Contains(actor.Name()))
+                  {
+                      //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death was registered already; skipping double-count.");
+                      return; //This is an actor we've already 'killed' therefore we won't double count it.
+                              //double-counting can happen e.g. when we get an OnAircraftKilled report then later actorDead for same a/c, or onCrashLanded then later actorDead, or whatever
+                  }
+                  else
+                  {
+                      //if (stb_Debug) 
+                      // Console.WriteLine("OnActorDead: 2");
+                      //if (stb_Debug) Console.WriteLine("OnActorDead: " + actor.Name() + "'s death has not yet been registered; registering now.");
+                      //if (stb_Debug) Console.WriteLine("Old list: " + string.Join(" | ", stb_deadActors));
+                      if (actor.Name() != null) stb_deadActors.Add(actor.Name());
+                      //if (stb_Debug) Console.WriteLine("New list: " + string.Join(" | ", stb_deadActors));
+                  }
+              }
+
+              //if (stb_Debug) 
+              //Console.WriteLine("OnActorDead: 3");
+              //stb_KilledActors.Add(actor, damages); // sav
+              AiAircraft aircraft1 = null;
+              if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
+              else if (actor as AiPerson != null && (actor as AiPerson).Player() != null)
+              {
+
+                  AiActor place1 = (actor as AiPerson).Player().Place();
+                  if (place1 != null && place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
+              }
+
+              //if (stb_Debug) 
+              //Console.WriteLine("OnActorDead: 4");
+              if (aircraft1 != null)
+              {
+                  //AiAircraft aircraft = actor as AiAircraft;
+                  double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
+                  double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+                  double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
+                  double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                  double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                  //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                  //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+                  double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                  double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+
+                  //System.Console.WriteLine("!!!!!ACTOR DEAD!!!!!: " + shortName + " Army " + actor.Army() + " velocityias " + Z_VelocityIAS.ToString("0.00") + " velocityTAS " + Z_VelocityTAS.ToString("0.00") + " ZvelocityMACH in MPH " + (Z_VelocityMach*600).ToString("0.00000")+  " IvelocityIAS " + I_VelocityIAS.ToString("0.00") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " S_GunReserve " + S_GunReserve.ToString("0.0") + " S_GunClipReserve " + S_GunClipReserve.ToString("0.0"));
+
+              }
+
+
+              //if (stb_Debug) 
+              //Console.WriteLine("OnActorDead: 5");
+              string msg = "killed by ";
+              bool selfKill = true;
+              List<string> deadPlayerNames = new List<string>();
+              List<Player> deadPlayers = new List<Player>();
+              //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
+
+              /* AiDamageinitiator  has these attributes (possibly not all of them in every case, though? Like, sometimes there isn't a Player because it is AI instead)
+               * so ds.initiator.Player . . . etc  Check if each is/is not null before proceeding
+              this.Actor = Actor;
+              this.Person = Person;
+              this.Player = Player;
+              this.Tool = Tool;
+              Tool.Name() string
+              Tool.Type() maddox.game.world.AiDamageToolType 
+              maddox.game.world.AiDamageToolType  enum Cannon Collision Ordance Unknown  [NOTE spelling for "Ordance" NOT "Ordnance"]
+              */
+              //if (stb_Debug) Console.WriteLine("OnActorDead: 6");
+
+              Dictionary<Player, double> nearbyPlayers = new Dictionary<Player, double>();
+              if (aircraft1 != null) nearbyPlayers = GetNearbyPlayers(aircraft1);
+
+              Dictionary<Player, double> coverPlayers = new Dictionary<Player, double>();
+
+              double totalscore = 0;
+              foreach (DamagerScore ds in damages)
+              {
+
+                  string iName = "ai";
+                  if (ds.initiator != null && ds.initiator.Player is Player && ds.initiator.Player != null && ds.initiator.Player.Name() != null) iName = ds.initiator.Player.Name();
+                  string typename = "";
+                  if (ds.initiator.Actor != null && ds.initiator.Actor.Name() != null) typename = ds.initiator.Actor.Name();
+                  int armyV = actor.Army();
+                  int armyI = 3 - armyV;
+                  if (ds.initiator.Actor != null) armyI = ds.initiator.Actor.Army();
+                  if (armyV != armyI) totalscore += ds.score; //only count damage caused by the other army in the total!  Mostly damage from own army will be self-damage, but even if it isn't, we won't count it . . .
+                                                              //stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
+              }
+              if (totalscore == 0) totalscore = 0.0001; //avoid division by zero errors.  If totalscore==0 then the individual scores must all be 0 also, so it doesn't really matter what its value is, but we don't want it to be zero since we divide by totalscore later . . . 
+                                                        //Console.WriteLine("Actor {0} killed; total damage {1} ", shortName, totalscore);
+
+              //if (stb_Debug) Console.WriteLine("OnActorDead: 7");
+              AiAircraft aiAircraft = actor as AiAircraft;
+              if (aiAircraft != null)
+              {
+                  //Get total amt of damage recorded for the kill
+
+
+                  //get list of player names in the a/c
+                  for (int i = 0; i < aiAircraft.Places(); i++)
+                  {
+                      if (aiAircraft.Player(i) is Player && aiAircraft.Player(i) != null && aiAircraft.Player(i).Name() != null)
+                      {
+                          deadPlayerNames.Add(aiAircraft.Player(i).Name());
+                          deadPlayers.Add(aiAircraft.Player(i));
+                          msg = aiAircraft.Player(i).Name() + " " + msg;
+                      }
+                  }
+
+                  //So, this reports 1 kill for everyone who had any damage at all on the kill. "Any Kill Participation" stat.
+                  // Damager score has 4 elements AiActor actor, AiDamageInitiator initiator, double score, time (the time the damage occured) (guessing this is type DateTime, but not sure)
+
+                  //if (stb_Debug) 
+                  //Console.WriteLine("OnActorDead: 8");
+                  foreach (DamagerScore ds in damages)
+                  {
+                      bool willReportDead = false;
+                      if (ds.initiator != null)
+                      {
+                          int initiatorArmy = 0;
+                          if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
+                          if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
+
+                          if (ds.initiator.Actor != null) coverPlayers = addCoverPlayerCredit(ds.initiator.Actor, ds.score / totalscore, coverPlayers);
+
+
+                          if (ds.initiator.Player != null)
+                          {
+                              if (aiAircraft.Army() == 1 && initiatorArmy == 2) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats
+                              if (aiAircraft.Army() == 2 && initiatorArmy == 1) { willReportDead = true; }
+
+                              msg += ds.initiator.Player.Name() + " ";
+                              if (!deadPlayerNames.Contains(ds.initiator.Player.Name())) selfKill = false; // if even one other player contributed to the kill, it's not a self kill! 
+                          }
+                          else
+                          {
+                              selfKill = false; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
+                              msg += "nobody/AI  ";
+                          }
+                      }
+                      if (willReportDead)
+                      {
+                          int dc = damages.Count();
+                          if (dc == 0) dc = 1;
+                          if (ds.initiator != null && ds.initiator.Player != null) Stb_changeTargetOneAirgroupToPlayer(ds.initiator.Player, aiAircraft, "dead");
+                          stb_RecordStatsOnActorDead(ds.initiator, 1, ds.score, totalscore, ds.initiator.Tool.Type); //type 1 is aerial kill
+                          nearbyPlayers = RemoveFromAllPlayers(ds.initiator, nearbyPlayers);
+                      }
+                  }
+
+                  CreditNearbyPlayers(nearbyPlayers); //give some credit to nearby players of opposing army, whenever an a/c is downed near them
+                  CreditCoverPlayers(coverPlayers, killtype: 1);
+
+                  //Stb_LogError (msg); //OK, we can't really just do Stb_LogError.  Instead you must "prepare message" etc which queues it up.
+
+
+                  // if (player.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
+                  //p = player.Place() as AiAircraft;
+                  //if (stb_Debug) Console.WriteLine("OnActorDead: 9");
+                  List<Player> playersInAircraft = new List<Player>();
+                  for (int i = 0; i < aiAircraft.Places(); i++)
+                  {
+                      //if (aiAircraft.Player(i) != null) return false;
+                      if (aiAircraft.Player(i) != null && aiAircraft.Player(i) is Player && aiAircraft.Player(i).Name() != null)
+                      {
+                          string playerName = aiAircraft.Player(i).Name();
+                          Player player = aiAircraft.Player(i);
+                          //StbSr_UpdateStatsForKilledPlayer(playerName);
+                          if (playersInAircraft.Contains(player)) continue; //only do this once for any given player in the a/c
+                          playersInAircraft.Add(player);
+
+                          if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) > 0) continue; //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves in the few seconds they are allowed in before disappearing
+
+                          /*
+                          StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { killType }, aiAircraft.Player(i) as AiActor);
+                          stb_StatRecorder.StbSr_EnqueueTask(sst1);
+                          */
+
+
+                          int killType = 1;
+                          if (selfKill) killType = 2;
+
+                          double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, killType, aiAircraft as AiActor, aiAircraft.Player(i), true, aircraftDead: true);
+
+                          bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName); //Trying to stop too many messages for bombers etc, but we don't record death YET as they may not be dead! We only know actually dead or not based on injuriesextent, but need the existing value as we process injuriesextent.
+
+                          //injurieExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
+                          //-1 means one Player Position killed but the other still alive. BUT that is a logical impossibility here because this is the situation where the 
+                          //AIRCRAFT has crashed/died so ALL positiosn with the a/c are now dead.  So we treat -1 same as 1
+                          //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
+                          if (injuriesExtent == -1) injuriesExtent = 1;
+                          if (injuriesExtent == 0) continue;  //If this death has already been recorded for this playerName then we skip doing all the same stuff again                    
+                          else if (injuriesExtent < 1 && injuriesExtent > 0)
+                          {
+                              string severity = "slightly ";
+                              if (injuriesExtent > .2) severity = "seriously ";
+                              if (injuriesExtent >= .5) severity = "very seriously ";
+                              string msg4 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible terrible incident, but you somehow survived--for now . . . ";
+                              if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                              stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+                              OnAircraftLanded(actor, aiAircraft.Player(i));
+                              continue;
+                          }
+                          /*
+                           * //So it was a mistake to treat injuriesExtent==-1 here, it is a logical impossibility because here is where the AIRCRAFT has been declared dead
+                           * //The possibility of injuriesExtent==-1 is really only for when the PLAYER is the actor who is dead.
+                          else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
+                          {
+                              string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed, but the other lives on--for now . . . ";
+                              if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg4, new object[] { });
+                              stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+                          */
+
+                          else recentlyParachutedOrCrashedOrLanded(playerName); //OK< they are actually dead so now record the fact in the Dict to prevent too many multiple messages
+
+
+                          msg = "";
+                          if (selfKill)
+                          {
+                              //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
+                              //msg = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
+                              msg = "Self-kill: " + playerName + ". ";
+                          }
+                          else
+                          {
+                              //After player death they are demoted so showing "Tyro XXXX" was killed or whatever doesnt' really make sense, bec it was their PREVIOUS life/rank who was killed
+                              //msg = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " killed or captured. ";
+                              msg = playerName + " killed or captured. ";
+                          }
+                          stb_SaveIPlayerStat.StbSis_Save(aiAircraft.Player(i)); //Save the stats CloD has been accumulating
+
+                          if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+
+                          if (stb_ResetPlayerStatsWhenKilled && !(injuriesExtent == -1))
+                          {
+                              if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Notice: Your death was recorded. When you die, your stats and rank are reset and you begin a new career. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                          }
+                          else
+                          {
+                              if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, "Your death was recorded. Check stats at " + stb_LogStatsPublicAddressLow + " or in-game using commands <career.", new object[] { });
+                          }
+
+
+                          if (stb_PlayerTimeoutWhenKilled && !(injuriesExtent == -1))
+                          {
+                              msg += "To encourage a more realistic approach to piloting and battle, players who are killed are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60));
+                              if (!RPCL) Stb_Message(new Player[] { aiAircraft.Player(i) }, msg, new object[] { });
+                          }
+
+                          if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
+
+                          Console.WriteLine("Forcing exit 7");
+                          if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
+
+
+
+                          //And now that they have died, they can't continue their mission
+                          //for stats purposes
+                          stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
+
+
+                      }
+                  }
+
+              }
+              else
+              {
+                  //if (stb_Debug) 
+                  //Console.WriteLine("OnActorDead: 10");
+                  AiGroundActor aiGroundActor = actor as AiGroundActor;
+                  if (aiGroundActor != null)
+                  {
+
+                      Dictionary<Player, double> nearbyPlayers1 = new Dictionary<Player, double>();
+                      nearbyPlayers1 = GetNearbyPlayers(aiGroundActor);
+
+                      Dictionary<Player, double> coverPlayers1 = new Dictionary<Player, double>();
+
+                      //For now we're not recording deaths of players when they are playing in AiGround. We're just reporting kills for players who KILL an AiGround
+                      if (shortName.Length == 12) { Timeout(99.9, () => { Stb_DestroyFrontShip(aiGroundActor); }); }
+                      else if (shortName.Length == 14) { Timeout(99.9, () => { Stb_DestroyFrontArmor(aiGroundActor); }); }
+
+                      //if (stb_Debug) Console.WriteLine("OnActorDead: 11");
+                      foreach (DamagerScore ds in damages)
+                      {
+                          bool willReportDead = false;
+                          if (ds.initiator != null)
+                          {
+                              if (ds.initiator.Player != null)
+                              {
+                                  if (aiGroundActor.Army() == 1 && ds.initiator.Player.Army() == 2) { willReportDead = true; }
+                                  if (aiGroundActor.Army() == 2 && ds.initiator.Player.Army() == 1) { willReportDead = true; }
+                              }
+
+                              if (ds.initiator.Actor != null) coverPlayers1 = addCoverPlayerCredit(ds.initiator.Actor, ds.score / totalscore, coverPlayers1);
+                          }
+                          if (willReportDead)
+                          {
+                              nearbyPlayers1 = RemoveFromAllPlayers(ds.initiator, nearbyPlayers1);
+
+                              if (aiGroundActor.Type() == AiGroundActorType.AAGun ||
+                                  aiGroundActor.Type() == AiGroundActorType.Artillery ||
+                                  aiGroundActor.Type() == AiGroundActorType.Tank)
+                              {
+                                  //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 2 }, ds.initiator.Player.Place() as AiActor);
+                                  //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                  if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 2, ds.score, totalscore, ds.initiator.Tool.Type); //type 2 is aa, artillery, tank
+                              }
+                              else if (aiGroundActor.Type() == AiGroundActorType.ShipBattleship ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipCarrier ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipCruiser ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipDestroyer ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipMisc ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipSmallWarship ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipSubmarine ||
+                                       aiGroundActor.Type() == AiGroundActorType.ShipTransport)
+                              {
+                                  //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 3 }, ds.initiator.Player.Place() as AiActor);
+                                  //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                  if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 3, ds.score, totalscore, ds.initiator.Tool.Type); //type 3 is ships/naval
+
+                              }
+                              else //All other ground types except those specified above are type 4 //bhugh, 2016/09
+                              {
+                                  //StbStatTask sst = new StbStatTask(StbStatCommands.Dead, ds.initiator.Player.Name(), new int[] { 4 }, ds.initiator.Player.Place() as AiActor);
+                                  //stb_StatRecorder.StbSr_EnqueueTask(sst);
+                                  if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore, ds.initiator.Tool.Type); //type 4 is any other ground actor kill except those listed above
+
+                              }
+
+                          }
+                      }
+                      //So bit of a kludge, it credits the nearby & cover players, but always under ground killtype 4 which is the generic one.
+                      CreditNearbyPlayers(nearbyPlayers1, killtype: 4); //give some credit to nearby players of opposing army, whenever an a/c is downed near them
+                      CreditCoverPlayers(coverPlayers1, killtype: 4);
+                  }
+                  else
+                  {
+                      try
+                      {
+
+                          //if (stb_Debug) 
+                          //Console.WriteLine("OnActorDead: 12");
+                          //TODO: we need to do all the self-kill checking here as well; sometimes you can PK yourself . . . 
+                          AiPerson person = actor as AiPerson;
+                          Player player2 = actor as Player;
+                          if (person != null || player2 != null) //two similar cases here: the actor is a "person" or the actor is a "player" - probably sent via killActor()
+                          {
+                              Player player = null;
+                              if (person != null) player = person.Player();
+                              else player = player2;
+                              //Stb_Message(null, "Person died: " + person.Player().Name(), new object[] { });    
+                              Console.WriteLine("Person died: " + person.Player().Name());
+
+                              if (player != null && player.Name() != null)
+                              {
+                                  //System.Console.WriteLine("Person died: " + player.Name());
+                                  string playerName = person.Player().Name();
+
+                                  bool RPCL = recentlyParachutedOrCrashedOrLanded_RO(playerName);
+
+                                  int selfKillPers = 2;
+                                  string msg2 = "";
+
+
+                                  //StbSr_UpdateStatsForKilledPlayer(playerName);
+                                  if (stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(playerName) == 0) //for pilots, skip recording the death if they are currently under a piloting ban. They only managed to kill themselves somehow in the few seconds they are allowing in the aircraft.
+                                  {
+                                      foreach (DamagerScore ds in damages)
+                                      {
+
+                                          if (ds.initiator != null)
+                                          {
+                                              if (ds.initiator.Player != null)
+                                              {
+                                                  //msg += ds.initiator.Player.Name() + " ";
+                                                  if (!playerName.Contains(ds.initiator.Player.Name())) selfKillPers = 1; // if even one other player contributed to the kill, it's not a self kill! 
+
+                                              }
+                                              else
+                                              {
+                                                  selfKillPers = 1; // if an AI (ie, non player) contributed to the kill, it's not a self=kill
+                                                                    //msg += "nobody/AI  ";
+                                              }
+                                          }
+                                          //We could report pilot kills etc here but for now we're not
+                                      }
+
+
+                                      /* StbStatTask sst1 = new StbStatTask(StbStatCommands.PlayerKilled, playerName, new int[] { 1 }); //1 = NORMAL DEATH, 2=SELF-KILL
+                                          stb_StatRecorder.StbSr_EnqueueTask(sst1); */
+
+                                      //injuriesExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
+                                      //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
+
+                                      double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, selfKillPers, person as AiActor, person.Player(), true); //1 = NORMAL DEATH, 2=SELF-KILL
+
+                                      if (injuriesExtent == 1)  //If this death has already been recorded for this playerName then we skip doing all the same stuff again; if it hasn't been recorded yet then do all this:
+                                      {
+                                          stb_SaveIPlayerStat.StbSis_Save(person.Player()); //Save the stats CloD has been accumulating
+
+                                          if (selfKillPers == 2)
+                                              msg2 = "Self-kill: " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + ". ";
+                                          else msg2 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was killed or captured.";
+
+                                          if (!RPCL) Stb_Message(new Player[] { player }, msg2, new object[] { });
+
+                                          if (stb_PlayerTimeoutWhenKilled)
+                                          {
+                                              string msg1 = "To encourage a more realistic approach to piloting and battle, players who are killed or captured are restricted from flying for " + StatCalcs.SecondsToFormattedString((int)(stb_PlayerTimeoutWhenKilledDuration_hours * 60 * 60)) + ". You could try artillery or a ground vehicle.";
+                                              if (!RPCL) Stb_Message(new Player[] { player }, msg1, new object[] { });
+
+                                              if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { player }, "If you are philosophically opposed to this idea, enter the chat command <override to continue immediately.", null); });
+
+                                          }
+
+                                          //And now that they have died, they can't continue their mission
+                                          //for stats purposes
+                                          stb_ContinueMissionRecorder.StbCmr_SavePositionDied(playerName);
+                                          recentlyParachutedOrCrashedOrLanded(playerName);
+
+                                      }
+                                      else if (injuriesExtent > 0)
+                                      {
+                                          string severity = "";
+                                          if (injuriesExtent > .2) severity = "seriously ";
+                                          if (injuriesExtent >= .5) severity = "very seriously ";
+                                          string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.  Your career will continue.";
+                                          if (!RPCL) Stb_Message(new Player[] { player }, msg3, new object[] { });
+                                          stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
+                                          recentlyParachutedOrCrashedOrLanded(playerName);
+                                      }
+                                      else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
+                                      {
+                                          string msg4 = "One of " + stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + "'s positions was killed.";
+                                          if (!RPCL) Stb_Message(new Player[] { player }, msg4, new object[] { });
+                                          stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
+
+                                          //NO!!!! recentlyParachutedOrCrashedOrLanded(playerName); here because we want to continue to register any other 'lives' for this player
+
+                                      }
+
+                                  }
+                                  //We could record how many persons (ai or human players) that players kill here, similarly to the way we track aircraft & ground
+                                  //kills above.  But it seems a bit creepy to do so?
+                                  //Anyway, that is why most airplane kills/crashes come through this routine 2X or more--once for the aircraft & once more 
+                                  //for each human/AI pilot, bombadier, etc on board.
+                              }
+                          }
+                          else
+                          {  //probably a static object or something?  We'll see . . . 
+                             //if (stb_Debug) Console.WriteLine("OnActorDead: 13");
+                             //if (willReportDead) stb_RecordStatsOnActorDead(ds.initiator, 4, ds.score, totalscore); //type 4 is any other ground kill except
+
+                              //Console.WriteLine("OnActorDead: {0}'s death is not being recorded!", shortName);
+
+                          }
+
+                      }
+                      catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+                  }
+
+              }
+          }
+      });
 
     }
     //catch (Exception ex) { Stb_PrepareErrorMessage(ex); }

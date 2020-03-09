@@ -1,0 +1,19 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 800
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_B_218Sqn.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[WeatherFront]

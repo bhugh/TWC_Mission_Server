@@ -268,6 +268,7 @@ public class CoverMission : AMission, ICoverMission
             coverAircraftActorsCheckedOut.Remove(actor);
         }
     }
+
     public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
     {
         base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
@@ -433,6 +434,12 @@ public class CoverMission : AMission, ICoverMission
 		
         {"bob:Aircraft.BeaufighterMkIF", true},
         {"bob:Aircraft.BeaufighterMkINF",true},
+        {"bob:Aircraft.DefiantMkI",true},
+        {"bob:Aircraft.SunderlandMkI",true},
+        {"bob:Aircraft.AnsonMkI",true},
+        {"bob:Aircraft.BlenheimMkI", true},
+        {"bob:Aircraft.BlenheimMkIF", true},
+        {"bob:Aircraft.BlenheimMkINF", true},
         {"bob:Aircraft.BlenheimMkIV", true},
         {"bob:Aircraft.BlenheimMkIVF",true},
         {"bob:Aircraft.BlenheimMkIVF_Late",true},
@@ -896,7 +903,21 @@ public class CoverMission : AMission, ICoverMission
         }
         return count;
     }
-    public string selectCoverPlane(string acName, ArmiesE army, Player player)
+
+    public Player getOwnerOfCoverAircraft(AiActor actor)
+    {
+        //AiActor actor = aircraft as AiActor;
+        if (actor == null) return null;
+
+        if (coverAircraftActorsCheckedOut.ContainsKey(actor))
+        {
+            Console.WriteLine("Found aircraft belonging to: " + coverAircraftActorsCheckedOut[actor].Name());
+            return coverAircraftActorsCheckedOut[actor];
+        }
+        return null;
+    }
+
+public string selectCoverPlane(string acName, ArmiesE army, Player player)
     {
         string retplane = "";
         if (!(army == ArmiesE.Blue || army == ArmiesE.Red) || CoverAircraftCurrentlyAvailable[army] == null) return "Cover: Aircraft availability not initialized or wrong army selected";
@@ -1328,7 +1349,8 @@ public class CoverMission : AMission, ICoverMission
         {
             if (acType == "") return false;
             bool ret = false;
-            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington") || acType.Contains("HurricaneMkI_FB")) ret = true;
+            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
+             || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true;
             if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
             return ret;
         }
@@ -2430,7 +2452,7 @@ public class CoverMission : AMission, ICoverMission
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
             if (weapons.Length == 0)
             {
-                weapons = "1 1 2";
+                weapons = "1 1 2"; //18X250lb bombs.  So, that is a lot.  It drops them slowly one by one, though.
                 if (fighterbomber == "f") weapons = "1 1 0";
             }
             if (fuel == 0) fuel = 50;
@@ -2444,10 +2466,41 @@ public class CoverMission : AMission, ICoverMission
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
             if (weapons.Length == 0)
             {
-                weapons = "1 1 5 1 2"; //default (updated for 4.57
+                weapons = "1 1 5 0 2"; //default (updated for 4.57
                 if (fighterbomber == "f") weapons = "1 1 0 0 0";
             }
-            if (fuel == 0) fuel = 40;
+            if (fuel == 0) fuel = 45;
+        }
+        else if (type == ("BlenheimMkI"))
+        {
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 10 12 9 10 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 3 0 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 2 0 0"; //default So despite FMB, only 11200 and 11300 work (4x250 & 2X500 respectively).  The 40lb bombs just won't load, either 11400 11500 11202 etc etc  
+                                        // So 11200 is set up with 4X250 lb bombs, which is a little less than BlIV & BlIV late but still not too bad .
+                if (fighterbomber == "f") weapons = "1 1 0 0 0";
+            }
+            if (fuel == 0) fuel = 45;
+        }
+        else if (type == ("BlenheimMkIF") || type == "BlenheimMkINF")
+        {
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 0 0 0"; //default
+                if (fighterbomber == "b") weapons = "1 1 1 1 1 2";
+            }
+
+            if (fuel == 0) fuel = 45;
         }
         else if (type == ("BlenheimMkIV_Late"))
         {
@@ -2460,7 +2513,7 @@ public class CoverMission : AMission, ICoverMission
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
             if (weapons.Length == 0)
             {
-                weapons = "1 1 5 1 2"; //default
+                weapons = "1 1 5 0 2"; //default
                 if (fighterbomber == "f") weapons = "1 1 0 0 0";
             }
             if (fuel == 0) fuel = 40;
@@ -2478,11 +2531,11 @@ public class CoverMission : AMission, ICoverMission
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
             if (weapons.Length == 0)
             {
-                weapons = "1 1 1 0 0 2"; //default
-                if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+                weapons = "1 1 1 0 0 0"; //default
+                if (fighterbomber == "b") weapons = "1 1 1 0 0 2";
             }
 
-            if (fuel == 0) fuel = 40;
+            if (fuel == 0) fuel = 45;
         }
         else if (type == ("BlenheimMkIVF_Late") || type == "BlenheimMkIVNF_Late")  //still needs update 4.5 
         {
@@ -2492,14 +2545,56 @@ public class CoverMission : AMission, ICoverMission
             f.add(s, "Belt", "_Gun03 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun02 Gun.Browning303MkII_Fuselage MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
             if (weapons.Length == 0)
             {
-                weapons = "1 1 1 1 1 1"; //default
-                if (fighterbomber == "f") weapons = "1 1 1 0 0 0";
+                weapons = "1 1 1 0 0 0"; //default
+                if (fighterbomber == "b") weapons = "1 1 1 0 0 2";
             }
             if (fuel == 0) fuel = 40;
+        }
+        else if (type == ("AnsonMkI"))  
+        {
+            f.add(s, "Belt", "_Gun01 Gun.VickersK MainBelt 9 11 11 11 10 11 11");
+            f.add(s, "Belt", "_Gun00 Gun.VickersK_Fuselage MainBelt 9 11 11 11 10 11 11");           
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1"; //default                
+            }
+            if (fuel == 0) fuel = 100;
+        }
+        else if (type == ("DefiantMkI"))  
+        {
+            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
+            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");            
+            if (weapons.Length == 0)
+            {
+                weapons = "1"; //default                
+            }
+            if (fuel == 0) fuel = 100;
+        }
+        else if (type == "SunderlandMkI")
+        {            
+            f.add(s, "Belt", "_Gun03 Gun.VickersK_Pintle MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun02 Gun.VickersK_Pintle MainBelt 12 9 9 11 11 10 2 2");
+            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11 Residual 50 ResidueBelt 10 9 10 11");
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_DC_250lb_MkXI 3 0 16 "); //depth charge, 16 feet.  Other choice is 22 feet.
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
+            if (weapons.Length == 0)
+            {
+                weapons = "1 1 1 1 2 2"; //default  So this is 4 separate guns plus 8X250lb bombs (4x250lb in each bay)
+                if (fighterbomber == "f") weapons = "1 1 1 1 0 0";
+            }
+            if (fuel == 0) fuel = 45;
         }
         else if (type == ("BeaufighterMkIF") || type == "BeaufighterMkINF")  //could add residuals
         {

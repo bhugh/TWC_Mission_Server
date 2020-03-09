@@ -397,7 +397,7 @@ public class Mission : AMission, IMainMission
             TWCComms.Communicator.Instance.WARP_CHECK = true;
 
             covermission = new CoverMission(); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
-            statsmission = new StatsMission();
+            statsmission = new StatsMission(this);
             airadarmission = new AIRadarMission();
 
             //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
@@ -428,7 +428,7 @@ public class Mission : AMission, IMainMission
             CAMPAIGN_ID = "113 Days"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
             if (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower().Contains("brent")) SERVER_ID_SHORT = "TacticalTEST"; //FOR TESTING, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
             DEBUG = false;
-            DISABLE_TESTING_MODS = false; // if set to true, some things that run or are skipped on the testing server will run exactly as on the real server
+            DISABLE_TESTING_MODS = true; // if set to true, some things that run or are skipped on the testing server will run exactly as on the real server
             LOG = false;
             //WARP_CHECK = false;
             radarpasswords = new Dictionary<int, string>
@@ -1391,10 +1391,16 @@ public class Mission : AMission, IMainMission
 
             if (acType.Contains("Blenheim")) blenheim = true;
 
+            //so these are all compared with a JU88 which carries 4X250kg + 28X50KG which is 2400kg or 5291 lb.
+            //So these correction figures bring all these bombers up to par with the JU88 as far as kg-tonnage is concerned.
+            //The JU88 will still be quite a lot more effective because it is actually dropping the 32 bombs & so hitting for more things over a wider area, more statationaries killed etc.
+            //but this at least brings them to parity on the tonnage issue.  In real WWII British & German bombers were roughly on par.
+
             double aircraftCorrection = 1;
 
-            if (acType.Contains("Blenheim") || acType.Contains("Hurricane")) aircraftCorrection = 4;
-            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
+            if (acType.Contains("Blenheim") || acType.Contains("Hurricane")) aircraftCorrection = 4.4; //IV & IV late carry 4*250lb bombs plus 18x40lb bombs.  1200 poundds altogether
+            if (acType.Equals("BlenheimMkI")) aircraftCorrection = 5.28;  //MkI carries just 4x250lb bombs, vs regular MkIV & IV_late care 1200lb bombs.  So 6/5* the regular Blenheim correction factor
+            if (acType.Contains("Wellington")) aircraftCorrection = 2.6455; //Wellington carries 8X250lb bombs, so 2000lb altogether.            if (acType.Contains("He-111")) aircraftCorrection = 1.5;
             if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
             DateTime currTime_dt = DateTime.UtcNow;
@@ -1454,7 +1460,7 @@ public class Mission : AMission, IMainMission
                     //Give more points for hitting more near the center of the airfield.  This will be the (colored) airfield marker that shows up IE on the map screen
                     //TODO: Could also give more if exactly on the the runway, or near it, or whatever
                     double multiplier = 0.5;
-                    if (distFromCenter <= 2 * radius / 3) multiplier = 1;
+                    if (distFromCenter <= 4 * radius / 5) multiplier = 1;
                     if (distFromCenter <= radius / 3) multiplier = 1.5;
 
                     //If 'road' then this seems to mean it is a PAVED runway or taxiway, so we give extra credit                
@@ -1668,6 +1674,7 @@ public class Mission : AMission, IMainMission
                     /*AirfieldTargets.Remove(ap);
                     AirfieldTargets.Add(ap, new Tuple<bool, string, double, double, DateTime, double, Point3d>(disabled, Mission, PointsToKnockOut, PointsTaken, DateTime.UtcNow, radius, APPos));
                     */
+                    mo.DestroyedPercent = percent;
                     break;
                     //sometimes airports are listed twice (for various reasons).  We award points only ONCE for each bomb & it goes to the airport FIRST ON THE LIST (dictionary) in which the bomb has landed.
                     //TODO!  The order of this list might very well change as we remove & add things.  ARggh!
@@ -2560,7 +2567,7 @@ public class Mission : AMission, IMainMission
 
         if (MissionObjectiveScore[ArmiesE.Red] > 0)
         {
-            string msg3 = "Red: " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points Mission Objectives!";
+            string msg3 = "Red: " + MissionObjectiveScore[ArmiesE.Red].ToString("n0") + " points destroying Mission Objectives!";
             outputmsg += msg3 + Environment.NewLine;
             if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg3, null); });
             delay_s += 0.04;
@@ -2569,7 +2576,7 @@ public class Mission : AMission, IMainMission
 
         if (MissionObjectiveScore[ArmiesE.Blue] > 0)
         {
-            string msg4 = "Blue: " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points Mission Objectives!";
+            string msg4 = "Blue: " + MissionObjectiveScore[ArmiesE.Blue].ToString("n0") + " points destroying Mission Objectives!";
             outputmsg += msg4 + Environment.NewLine;
             if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg4, null); });
             delay_s += 0.04;
@@ -6472,7 +6479,7 @@ public class Mission : AMission, IMainMission
             //When battle is started we re-start the Mission tick clock - setting it up to start events
             //happening when the first player connects
 
-            CheckAndChangeStartTime(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
+            CheckAndChangeStartTimeAndWeather(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
 
 
             MISSION_STARTED = true;
@@ -6510,12 +6517,14 @@ public class Mission : AMission, IMainMission
 
             LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
 
+            LoadRandomSubmission(MISSION_ID + "-" + "weather","Weather"); // weather to load initially
+
 
             //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
             EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
 
 
-            ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
+            //ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
             ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
 
             SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
@@ -8480,7 +8489,9 @@ public class Mission : AMission, IMainMission
             );
     }
 
-    public void CheckAndChangeStartTime()
+    //changes start time of mission
+    //Also changes cloud deck height (500-1500m) and WeatherIndex (cloud type) - mostly light but occasionally medium or clear on 1/3 restarts
+    public void CheckAndChangeStartTimeAndWeather()
     {
         if (USER_DOC_PATH.ToLower().Contains("brent") && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
         bool ret = true;
@@ -8506,11 +8517,15 @@ public class Mission : AMission, IMainMission
             desiredStartTime_hrs = lastMissionCurrentTime_hr;
         twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
 
-        if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5) return; //0.5 == 30 minutes, 1/2 hour
+        //So once in a while we restart the mission simply to change the weather.  This will change cloudsheight & weatherindex.
+        bool restartToChangeWeather = false;   
+        if (random.NextDouble() < 0.333) restartToChangeWeather = true;
+
+        if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 && !restartToChangeWeather) return; //0.5 == 30 minutes, 1/2 hour
 
         string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
 
-        twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2}", currTime, desiredStartTime_hrs, desiredString));
+        twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2}. Restart to change weather? {3}", currTime, desiredStartTime_hrs, desiredString, restartToChangeWeather));
 
         string filepath_mis = stb_FullPath + @"/" + MISSION_ID + ".mis";
         string filepath_mis_save = stb_FullPath + @"/" + MISSION_ID + ".mis_save";
@@ -8531,6 +8546,15 @@ public class Mission : AMission, IMainMission
 
         RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Multiline;
         missionFile = Regex.Replace(missionFile, @"^\s*TIME\s*\d*\.?\d*\s*$", desiredString, ro);//looks for a line with something like <spaces> TIME <spaces> 34.234 .. Case irrelevant = replaces it
+
+        string desiredCloudsHeightString = "  CloudsHeight " + random.Next(500,1500).ToString("F0"); //seems limited to 500-1500 meters.  See https://www.aircombatgroup.co.uk/forum/viewtopic.php?f=5&t=8360
+        missionFile = Regex.Replace(missionFile, @"^\s*CloudsHeight\s*\d*\.?\d*\s*$", desiredCloudsHeightString, ro);//looks for a line with something like <spaces> XXXXXX <spaces> 34.234 .. Case irrelevant = replaces it
+
+        int WeatherIndex = 1; //Can be 0=clear, 1 = light clouds, 2 = medium clouds
+        if (random.NextDouble() > .95) WeatherIndex = 2;//rarely, make it medium clouds
+        if (random.NextDouble() > .80) WeatherIndex = 0;//more commonly, make it clear
+        string desiredWeatherIndexString = "  WeatherIndex " + WeatherIndex.ToString("F0");
+        missionFile = Regex.Replace(missionFile, @"^\s*WeatherIndex\s*\d*\.?\d*\s*$", desiredWeatherIndexString, ro);//looks for a line with something like <spaces> XXXXX <spaces> 34.234 .. Case irrelevant = replaces it
 
 
         //  TIME 4.50000011501834
@@ -10502,20 +10526,20 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.IndustrialArea, "Brighton Naval Docks Area", "Dove", "Campaign21-LOADONCALL-brighton-naval-docks-objective.mis", 1, 6, "BTargBrightonNavyDocks", 138520, 197736, 1300, 750, 16000, 70, 160, 24, true, true, 2, 8, "", add);
             //This one has a lot of land area, thus no worries about not enough KG
 
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 150, 200, 3000, 8, 120, 24, true, true, 2, 6, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "Campaign21-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 150, 200, 2000, 1, 120, 24, true, true, 2, 6, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Berck Amphibious Craft Assembly Site", "", "Campaign21-LOADONCALL-berck-landingcraft-objective.mis", 2, 4, "RTargBerckLandingCraft", 269247, 147771, 150, 200, 3000, 8, 120, 24, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 4, "RTargCalaisDocksArea", 284656, 217404, 250, 350, 8000, 10, 120, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Veume Military Manufacturing Area", "", "", 2, 4, "RTargVeumeMilitaryManufacturingArea", 342180, 228344, 200, 250, 8000, 15, 120, 24, true, true, 2, 10, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "Campaign21-LOADONCALL-lecrotoyberck-landingcraft-objective.mis", 2, 6, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271378, 132785, 600, 1000, 12000, 15, 120, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 120, 24, true, true, 2, 6, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "Campaign21-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 250, 200, 2000, 3, 120, 24, true, true, 2, 6, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Berck Amphibious Craft Assembly Site", "", "Campaign21-LOADONCALL-berck-landingcraft-objective.mis", 2, 4, "RTargBerckLandingCraft", 269247, 147771, 250, 200, 3000, 8, 120, 24, true, true, 3, 6, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 4, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 10, 120, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Veume Military Manufacturing Area", "", "", 2, 4, "RTargVeumeMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 120, 24, true, true, 2, 10, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "Campaign21-LOADONCALL-lecrotoyberck-landingcraft-objective.mis", 2, 6, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271541, 132904, 1200, 1000, 11000, 9, 120, 24, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "Campaign21-LOADONCALL-lecrotyoy-forest-bunker-objective.mis", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Campaign21-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
 
 
             addMobile(MO_ObjectiveType.MilitaryArea, "Samer Mobile Army Camp", "", 2, 4, "RSamerMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 4, "BHastingsMobileArmyCamp", 179965, 204219, 100, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 4, "BHastingsMobileArmyCamp", 179965, 204219, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 4, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 15, 189965, 204219, 199201, 214392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Secret Air Base", "", 2, 4, "RSamerSecretAirbase", 280276, 169671, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 15, 280276, 169671, 290111, 179520, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Secret Air Base", "", 2, 4, "RSamerSecretAirbase", 280276, 169671, 800, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 15, 280276, 169671, 290111, 179520, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Intelligence Air Research", "", 1, 4, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 189965, 214219, 199201, 224392, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Samer Intelligence Air Research", "", 2, 4, "", 280276, 179671, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 280276, 179671, 290111, 189520, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 1", "", 2, 5, "RSamerMobileRadar1", 270276, 169671, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
@@ -13478,7 +13502,7 @@ added Rouen Flak
                     f = Calcs.makeStatic(f, GamePlay, this, x - 2, y - 2, mo.Pos.z, "Stationary. Environment.JerryCan_GER1_1", side: "de");
                     f = Calcs.makeStatic(f, GamePlay, this, x + 2, y - 2, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
                     GamePlay.gpPostMissionLoad(f);
-                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE.txt"); //testing
+                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE_" + mo.ID + ".txt"); //testing
 
                     //TESTING BIRTHPLACES                  
                     /*  
@@ -13493,7 +13517,7 @@ added Rouen Flak
                         double numTargets = 0;
                         GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
                         if (gs != null) numTargets = gs.Length;
-                        int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.8))); // require 80% of the groundstationaries in the target area.  This should be quite hard.
+                        int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.7))); // require 70% of the groundstationaries in the target area.  This should be fairly hard.
 
                         //NOTE!!!! Ignoring the given ortgg for now & just using 80% of the existing targets in the area.
 
@@ -14810,7 +14834,14 @@ added Rouen Flak
 
         double aircraftCorrection = 1;
 
-        if (acType.Contains("Blenheim")) aircraftCorrection = 4;
+        //so these are all compared with a JU88 which carries 4X250kg + 28X50KG which is 2400kg or 5291 lb.
+        //So these correction figures bring all these bombers up to par with the JU88 as far as kg-tonnage is concerned.
+        //The JU88 will still be quite a lot more effective because it is actually dropping the 32 bombs & so hitting for more things over a wider area, more statationaries killed etc.
+        //but this at least brings them to parity on the tonnage issue.  In real WWII British & German bombers were roughly on par.
+
+        if (acType.Contains("Blenheim") || acType.Contains("Hurricane")) aircraftCorrection = 4.4;  //IV & IV late carry 4*250lb bombs plus 18x40lb bombs.  1200 poundds altogether
+        if (acType.Equals("BlenheimMkI")) aircraftCorrection = 5.28;  //MkI carries just 4x250lb bombs, vs regular MkIV & IV_late care 1200lb bombs.  So 6/5* the regular Blenheim correction factor
+        if (acType.Contains("Wellington")) aircraftCorrection = 2.6455; //Wellington carries 8X250lb bombs, so 2000lb altogether.
         if (acType.Contains("He-111")) aircraftCorrection = 1.5;
         if (acType.Contains("BR-20")) aircraftCorrection = 2;
 
@@ -16936,15 +16967,15 @@ public static class Calcs
         Point3d p1 = new Point3d(p.x - clc_random.Next((maxSectorWidth - 1) * 10000), p.y - clc_random.Next((maxSectorWidth - 1) * 10000), p.z);
         if (p1.x < 10000) p1.x = 10000;
         if (p1.y < 10000) p1.y = 10000;
-        if (p1.x > 360000) p1.x = 360000;
-        if (p1.y > 310000) p1.y = 310000;
+        if (p1.x > 359000) p1.x = 359000; //so, sometimes we get sector BJ? ???  if the max is 360000.  So cutting it down to 359K just for safety
+        if (p1.y > 309000) p1.y = 309000; //same, 310K the limit, cut to 309 for safety.
         Point3d p2 = new Point3d(p1.x + clc_random.Next((maxSectorWidth - 1) * 10000), p1.y + clc_random.Next((maxSectorWidth - 1) * 10000), p.z);
 
         //BattleArea 10000 10000 360000 310000 10000 is TWC standard
         if (p2.x < 10000) p2.x = 10000;
         if (p2.y < 10000) p2.y = 10000;
-        if (p2.x > 360000) p2.x = 360000;
-        if (p2.y > 310000) p2.y = 310000;
+        if (p2.x > 359000) p2.x = 359000; //see about, not 360K or 310K
+        if (p2.y > 309000) p2.y = 309000;
 
         return correctedSectorName(msn, p1) + "-" + correctedSectorName(msn, p2);
 

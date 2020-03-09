@@ -1,0 +1,130 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 800
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_B_218Sqn.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[WeatherFront]
+  LocalWeather_0 THUNDER_GEN 4000 3000 246339.07 148175.25 0 0
+  LocalWeather_1 THUNDER_GEN 3000 4000 290583.57 231930.64 0 0
+  LocalWeather_2 THUNDER_GEN 4000 3000 237220.75 216379.47 0 0
+  LocalWeather_3 THUNDER_GEN 6000 7500 117888.00 56064.00 1000 0
+  LocalWeather_4 THUNDER_GEN 7500 6000 89280.00 178944.00 1000 0
+[LocalWeather_0]
+  EllipticA 4000
+  EllipticB 3000
+  RotAngle 7
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1200
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 3000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 3
+  TotalLayers 23
+  IsThunder False
+[LocalWeather_1]
+  EllipticA 3000
+  EllipticB 4000
+  RotAngle -7
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 500
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 5000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 3
+  TotalLayers 13
+  IsThunder False
+[LocalWeather_2]
+  EllipticA 4000
+  EllipticB 3000
+  RotAngle -19
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 750
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 8000
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 3
+  TotalLayers 31
+  IsThunder False
+[LocalWeather_3]
+  EllipticA 6000
+  EllipticB 7500
+  RotAngle 15
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 700
+  IsRain 1
+  IsDynamicEnabled 1
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 3500
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 3
+  TotalLayers 18
+  IsThunder False
+[LocalWeather_4]
+  EllipticA 7500
+  EllipticB 6000
+  RotAngle 34
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 950
+  IsRain 1
+  IsDynamicEnabled 1
+  ParticipType 1
+  DropSize 0
+  RainPower 0
+  FrontThickness 3500
+  FrontWindMaxHorSpeedNear 15
+  FrontWindMaxVertSpeedUp 30
+  FrontWindMaxVertSpeedDown 20
+  FrontWindMaxTurbInClouds 15
+  FrontWindMaxTurbInSquallZone 20
+  EvenLayers 3
+  TotalLayers 12
+  IsThunder False

@@ -1,12 +1,12 @@
-[PARTS]
+﻿[PARTS]
   core.100
   bob.100
 [MAIN]
   MAP Land$English_Channel_1940
   BattleArea 10000 10000 360000 310000 10000
-  TIME 7.50000
-  WeatherIndex 1
-  CloudsHeight 1500
+  TIME 9.48517
+  WeatherIndex 0
+  CloudsHeight 757
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]
@@ -5231,16 +5231,16 @@
   BTarget12S TGroundDestroyed 42 157904 275242 50
   BTarget13S TGroundDestroyed 43 157088 275313 50
   BTarget14A TGroundDestroyed 29 159762 274952 100
-  BTarget14R TGroundDestroyed 80 244791 262681 150
-  BTarget15R TGroundDestroyed 80 248579 253159 100
-  BTarget16R TGroundDestroyed 80 249454 247913 200
-  BTarget17R TGroundDestroyed 80 246777 235751 250
-  BTarget18R TGroundDestroyed 80 212973 220079 200
-  BTarget19R TGroundDestroyed 80 221278 214167 200
-  BTarget20R TGroundDestroyed 80 178778 197288 200
-  BTarget21R TGroundDestroyed 80 123384 196295 200
-  BTarget22R TGroundDestroyed 80 70423 171706 200
-  BTarget23R TGroundDestroyed 80 15645 170552 200
+  BTarget14R TGroundDestroyed 70 244791 262681 150
+  BTarget15R TGroundDestroyed 70 248579 253159 100
+  BTarget16R TGroundDestroyed 70 249454 247913 200
+  BTarget17R TGroundDestroyed 70 246777 235751 250
+  BTarget18R TGroundDestroyed 70 212973 220079 200
+  BTarget19R TGroundDestroyed 70 221278 214167 200
+  BTarget20R TGroundDestroyed 70 178778 197288 200
+  BTarget21R TGroundDestroyed 70 123384 196295 200
+  BTarget22R TGroundDestroyed 70 70423 171706 200
+  BTarget23R TGroundDestroyed 70 15645 170552 200
   BTarget24 TGroundDestroyed 37 185027 252619 100
   BTarget25 TGroundDestroyed 38 186057 251745 100
   BTarget26 TGroundDestroyed 10 189272 249311 50

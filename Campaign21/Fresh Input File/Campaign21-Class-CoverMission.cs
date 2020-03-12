@@ -1277,6 +1277,15 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             //GamePlay.gp(, from);
         }
     }
+
+    private bool isPlayerInPlane(Player player)
+    {
+        if (player == null) return false;
+        if (player.Place() == null) return false;
+        if (player.Place() as AiAircraft == null) return false;
+        if (player.PersonPrimary() == null && player.PersonSecondary() == null) return false;
+        return true;
+    }
     private bool isFighterAllowedCover(Player player)
     {
         if (player == null) return false;
@@ -1350,8 +1359,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             if (acType == "") return false;
             bool ret = false;
             if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
-             || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true;
-            if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
+             || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+            if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
             return ret;
         }
         private bool isDiveBomber(AiAircraft aircraft)
@@ -1876,8 +1885,11 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         {
             // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = TWCSupplyMission.aircraftCheckedOutInfo[actor];
             //This could be made tighter . . . right now they can still jump in a bomber, grab cover, then switch to fighter-bomber to fly them.
-            string m = "****Your aircraft isn't allowed cover!****";
-            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            if (isPlayerInPlane(player))
+            {
+                string m = "****Your aircraft isn't allowed cover!****";
+                GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            }
             aircraftChangeDisband = true;
         }
 
@@ -5221,6 +5233,7 @@ public static class coverCalcs
     private static int maxSubmissions = 300;
     //gets all ground actors.  Nothing in the CloD code can do this, it misses things like static ships
     //It gets them all without worrying about army or which side they're on.  We only care if they are close to a certain point, so army is irrelevant (& many are neutral etc, so it's complicated).
+    //THIS HAS HUGE POTENTIAL TO CAUSE WARPING AND RUBBER BANDING. It must be run on a background thread, ie via Task.Run.
     public static AiActor[] gpGetAllGroundActors(CoverMission msn, int lastMissionLoaded)
     {
         List<AiActor> result = new List<AiActor>();

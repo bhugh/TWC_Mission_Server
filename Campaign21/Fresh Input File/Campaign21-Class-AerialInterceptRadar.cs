@@ -84,11 +84,11 @@ public class AIRadarTarget
     public bool inRange { get; set;}
     public bool turnedOn { get; set;}
 
-    private static Vector3d nullP3d;
+    private static Vector3d nullV3d;
 
-    AMission mission { set; get; }
+    AIRadarMission mission { set; get; }
 
-    public AIRadarTarget(Player player, AiAircraft aircraft, AMission mission)
+    public AIRadarTarget(Player player, AiAircraft aircraft, AIRadarMission mission)
     {
         //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
         this.player = player;
@@ -99,7 +99,7 @@ public class AIRadarTarget
         this.mission = mission;
         this.recalculateAndDisplay();
 
-        nullP3d = new Vector3d(0, 0, 0);
+        nullV3d = new Vector3d(0, 0, 0);
     }
 
 
@@ -115,15 +115,41 @@ public class AIRadarTarget
     {
         this.turnedOn = false;
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
-    }    
+    }
+    public virtual void delete()
+    {
+        if (mission.PlayerCurrentAIRadarTargetandACnum.ContainsKey(player)) mission.PlayerCurrentAIRadarTargetandACnum.Remove(player);
+    }
+    public bool getPlayerACData()
+    {
 
-    //regets player & target aircraft position & then recalculates the angles & pips
+        if (player == null || (
+            player.PersonPrimary() == null && player.PersonSecondary() == null))
+        {
+            playerPlace = null;
+            playerVwld = nullV3d;
+            playerPos = new Point3d(-1, -1, -1);
+            turnOff();
+            delete();
+            return false;
+        }
+        else
+        {
+            this.playerPlace = player.Place();
+            this.playerPos = playerPlace.Pos();
+        }
+
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = nullV3d;
+        else this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld();
+        return true;
+    }
+
+    //regets arget aircraft position & then recalculates the angles & pips
     public bool recalculateAndDisplay()
     {
         this.aircraftPos = actor.Pos();
-        this.playerPos = playerPlace.Pos();
 
-        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld =  nullP3d;
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld =  nullV3d;
         else { this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld(); } //player.Place().Group() as AiAirGroup;
 
         this.targetDistance_m = AIRadarCalcs.CalculatePointDistance(this.playerPos, this.aircraftPos);
@@ -267,6 +293,7 @@ public class AIRadarTarget
     public double displayPips()
     {
         if (actor == null) return 0;
+        getPlayerACData();
         recalculateAndDisplay();
         //Tuple<double, string> distT = new Tuple<double, string>(targetDistance_m, sbyte);
         string disp = DirectionPip + " " + DistancePip + " " + AltitudePip;
@@ -294,7 +321,7 @@ public class AIRadarTarget
     private void display_recurs()
     {
         if (!this.turnedOn) return;
-        if (this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullP3d)) turnOff();
+        if (this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullV3d)) turnOff();
         double t = 2.1;
         //double dist = displayPips();        
         if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
@@ -350,11 +377,11 @@ public class AIRadarTargetArray
     public bool inRange { get; set; }
     public bool turnedOn { get; set; }
 
-    public static Vector3d nullP3d;
+    public static Vector3d nullV3d;
 
-    public AMission mission { set; get; }
+    public AIRadarMission mission { set; get; }
 
-    public AIRadarTargetArray(Player player, AMission mission, double delay_s = 7)
+    public AIRadarTargetArray(Player player, AIRadarMission mission, double delay_s = 7)
     {
         //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
         this.player = player;                       
@@ -362,7 +389,7 @@ public class AIRadarTargetArray
         this.mission = mission;
         this.delay_s = delay_s;
 
-        nullP3d = new Vector3d(0, 0, 0);
+        nullV3d = new Vector3d(0, 0, 0);
     }
 
 
@@ -378,6 +405,11 @@ public class AIRadarTargetArray
     {
         this.turnedOn = false;
         //if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+    }
+
+    public virtual void delete()
+    {
+        if (mission.PlayerCurrentAIRadarTargetArray.ContainsKey(player)) mission.PlayerCurrentAIRadarTargetArray.Remove(player);
     }
 
     public void getAircraftList() {
@@ -460,12 +492,27 @@ public class AIRadarTargetArray
         }
     }
 
-    public void getPlayerACData() {
-            
-        this.playerPos = playerPlace.Pos();
+    public bool getPlayerACData() {
 
-        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = new Vector3d(0, 0, 0);
+        if (player == null || (
+            player.PersonPrimary() == null && player.PersonSecondary() == null))
+        {
+            playerPlace = null;
+            playerVwld = nullV3d;
+            playerPos = new Point3d(-1, -1, -1);
+            turnOff();
+            delete();
+            return false;
+        }
+        else
+        {
+            this.playerPlace = player.Place();
+            this.playerPos = playerPlace.Pos();
+        }
+
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = nullV3d;
         else  this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld();
+        return true;
    }
 
     //regets player & target aircraft position & then recalculates the angles & pips
@@ -503,7 +550,7 @@ public class AIRadarTargetArray
     public virtual void calculateGrid()
     {
         initGrid();
-        getPlayerACData();
+        if (!getPlayerACData()) turnOff();
         getAircraftList();
         foreach(AiAircraft aircraft in aircraftList)
         {
@@ -523,8 +570,7 @@ public class AIRadarTargetArray
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos,nullP3d)) turnOff();
-            if (this.playerPlace == null) turnOff();
+            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerVwld,nullV3d)) turnOff();            
             calculateGrid();
             displayGrid();
         });     
@@ -535,10 +581,15 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
 {
     public char[,] AltGrid = new char[GridWidth, GridHeight + 1];
 
-    public AIRadarAuthenticArray (Player player, AMission mission, double delay_s = 7) : base (player, mission, delay_s)
-    {        
+    public AIRadarAuthenticArray(Player player, AIRadarMission mission, double delay_s = 7) : base(player, mission, delay_s)
+    {
     }
-    
+
+    public override void delete()
+    {
+        if (mission.PlayerCurrentAIRadarAuthenticArray.ContainsKey(player)) mission.PlayerCurrentAIRadarAuthenticArray.Remove(player);      
+    }
+
     public override void initGrid()
     {
         for (int i = 0; i < GridWidth; i++)
@@ -559,7 +610,7 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
     {
         double distanceLimit_m = (playerPos.z * 1.5); //approximating that the radar couldn't see out further than the plane was tall
         int XLimitPos = Convert.ToInt32(Math.Round(distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2.0)) + 1;
-        int XLimitNeg = Convert.ToInt32(Math.Round(-distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth -1 ) / 2.0)) - 1;
+        int XLimitNeg = Convert.ToInt32(Math.Round(-distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2.0)) - 1;
         int YLimit = Convert.ToInt32(Math.Round((distanceLimit_m * 1.5) / AIRadarRadius_m * ((double)GridHeight))) + 1;
 
         Console.WriteLine("Grid limits AUTH: {0} {1} {2} ", XLimitNeg, XLimitPos, YLimit);
@@ -580,7 +631,7 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
             for (int i = 0; i < GridWidth; i++)
             {
                 if (i < XLimitNeg || i > XLimitPos) continue; //line += GridGroundClutterCharacter;
-                else line += AltGrid[i, j];                
+                else line += AltGrid[i, j];
             }
 
             mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
@@ -649,7 +700,7 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
     public override void calculateGrid()
     {
         initGrid();
-        getPlayerACData();
+        if (!getPlayerACData()) turnOff();        
         getAircraftList();
         foreach (AiAircraft aircraft in aircraftList)
         {
@@ -668,8 +719,7 @@ public class AIRadarAuthenticArray : AIRadarTargetArray
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerPos, nullP3d)) turnOff();
-            if (this.playerPlace == null) turnOff();
+            //Console.WriteLine("AIR playerplace {0} {1} {2}", (this.playerPlace as AiAircraft).Pos().x, (this.playerPlace as AiAircraft).Pos().y, (this.playerPlace as AiAircraft).Pos().z);
             calculateGrid();
             displayGrid();
         });
@@ -685,7 +735,12 @@ public class AIRadarMission : AMission
     //public IMainMission TWCMainMission;
     //public ISupplyMission TWCSupplyMission;
     public Random ran;
-    
+    public Dictionary<Player, AIRadarAuthenticArray> PlayerCurrentAIRadarAuthenticArray;
+    public Dictionary<Player, AIRadarTargetArray> PlayerCurrentAIRadarTargetArray;
+    public Dictionary<Player, Tuple<AIRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum;
+
+
+
     public AIRadarMission()
     {
         //TWCMainMission = TWCComms.Communicator.Instance.Main;
@@ -694,6 +749,10 @@ public class AIRadarMission : AMission
 
         //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
         ran = new Random();
+        PlayerCurrentAIRadarTargetArray = new Dictionary<Player, AIRadarTargetArray>();
+        PlayerCurrentAIRadarAuthenticArray = new Dictionary<Player, AIRadarAuthenticArray>();
+        PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<AIRadarTarget, int>>();
+
         Console.WriteLine("-AerialInterceptRadar.cs successfully inited");
     }
 
@@ -879,9 +938,7 @@ public class AIRadarMission : AMission
             //GamePlay.gp(, from);
         }
         
-    }
-
-    Dictionary<Player, AIRadarTargetArray> PlayerCurrentAIRadarTargetArray = new Dictionary<Player, AIRadarTargetArray>();
+    }    
 
     public void handleAIRadarArrayRequest(Player player, double delay_s = 7)
     {
@@ -893,11 +950,17 @@ public class AIRadarMission : AMission
         {
             //PlayerCurrentAC[player]++;
             AIRadarTargetArray AIRTA = PlayerCurrentAIRadarTargetArray[player];
-            
-            AIRTA.turnOff();
-            PlayerCurrentAIRadarTargetArray.Remove(player);
-            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
-            return;
+
+            if (AIRTA.turnedOn)
+            {
+                AIRTA.turnOff();
+                PlayerCurrentAIRadarTargetArray.Remove(player);
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+                return;
+            }else {
+                AIRTA.turnOn();
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
+            }
         }
 
         if (player == null || player.Place() == null)
@@ -912,7 +975,7 @@ public class AIRadarMission : AMission
 
     }
 
-    Dictionary<Player, AIRadarAuthenticArray> PlayerCurrentAIRadarAuthenticArray = new Dictionary<Player, AIRadarAuthenticArray>();
+    
 
     public void handleAIRadarAuthenticArrayRequest(Player player, double delay_s = 7)
     {
@@ -925,10 +988,18 @@ public class AIRadarMission : AMission
             //PlayerCurrentAC[player]++;
             AIRadarAuthenticArray AIRTA = PlayerCurrentAIRadarAuthenticArray[player];
 
-            AIRTA.turnOff();
-            PlayerCurrentAIRadarAuthenticArray.Remove(player);
-            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
-            return;
+            if (AIRTA.turnedOn)
+            {
+                AIRTA.turnOff();
+                PlayerCurrentAIRadarAuthenticArray.Remove(player);
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+                return;
+            }
+            else
+            {
+                AIRTA.turnOn();
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
+            }
         }
 
         if (player == null || player.Place() == null)
@@ -944,7 +1015,7 @@ public class AIRadarMission : AMission
     }
 
 
-    Dictionary<Player, Tuple<AIRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<AIRadarTarget, int>>();
+    
 
     public void handleAIRadarRequest(Player player, bool stop = false)
     {
@@ -956,18 +1027,31 @@ public class AIRadarMission : AMission
 
             if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player))
             {
+
                 //PlayerCurrentAC[player]++;
                 var tup = PlayerCurrentAIRadarTargetandACnum[player];
-                acNum = tup.Item2 + 1; //advance to the next ac #
                 AIRT = tup.Item1;
-                AIRT.turnOff();
-                PlayerCurrentAIRadarTargetandACnum.Remove(player);
-                if (stop)
+                if (AIRT.turnedOn)
                 {
-                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Stopped", null);
+                    acNum = tup.Item2 + 1; //advance to the next ac #
+                    AIRT.turnOff();
+                    PlayerCurrentAIRadarTargetandACnum.Remove(player);
+                    if (stop)
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Stopped", null);
+                        return;
+                    }
+                }
+                else
+                {
+                    acNum = 0; //restart with first item                 
+                    AIRT.turnOn();
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
                     return;
                 }
             }
+           
+            
 
             if (player == null || player.Place() == null)
             {
@@ -1011,8 +1095,7 @@ public class AIRadarMission : AMission
             }
         }
         catch (Exception ex) { Console.WriteLine("AIRadar: " + ex.ToString()); }
-    }
-      
+    }      
 }
 
 

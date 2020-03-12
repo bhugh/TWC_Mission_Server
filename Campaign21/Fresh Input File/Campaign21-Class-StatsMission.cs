@@ -3397,6 +3397,15 @@ struct
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
     }
 
+    //This removes the player but it is "safe" ie the player doesn't die or get a penalty - just pulled out with no particular consequences, as though they'd never been there.
+    public void Stb_RemovePlayerFromAircraftSafelyandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    {
+        AiActor actor = aircraft as AiActor;
+        stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
+        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+        Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, timeToRemove_sec, timetoDestroy_sec);
+    }
+
     //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
     public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
     {
@@ -5496,7 +5505,7 @@ struct
 
             Timeout(0.4 + stb_random.NextDouble() * 25, () =>
             {
-                GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
+                if (player != null) GamePlay.gpLogServer(new Player[] { player }, targetType + " hit: " + mass_kg.ToString("n0") + "kg " + score.ToString("n1") + " points ", new object[] { });
             }); //+ pos.x.ToString("n0") + " " + pos.y.ToString("n0")
 
 
@@ -7655,6 +7664,8 @@ struct
         int percent_score_fordead = 1;
         if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
 
+        Console.WriteLine("Recording Damage %: {0} {1}", percent_score, percent_score_fordead);
+
 
         StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst);
@@ -7725,7 +7736,7 @@ struct
 
     public void stb_RecordNearbyPlayerStatsOnActorDead(Player player, double dist_m =0, double raw_score = 0, int killtype = 1)
     {
-        //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+        Console.WriteLine("Recording Damage for nearby/cover players: {0} {1} {2} {3}", dist_m, raw_score, killtype, player.Name());
 
         //return; //TESTING
 
@@ -7753,15 +7764,18 @@ struct
             percent_score = 5;
             if (dist_m < 1000) percent_score = 10;
             if (dist_m < 500) percent_score = 15;
-        }
-        if (raw_score > 0)
+        } else if (raw_score > 0)
         {
-            percent_score = Convert.ToInt32(raw_score * 100.0/10.0); //So we're going to say, the cover owners get 10% of the credit for any cover a/c victory
+            percent_score = (int)(raw_score * 100.0/10.0); //So we're going to say, the cover owners get 10% of the credit for any cover a/c victory
         }
-                
+
+        
+
         //int percent_score_norm = (int)Math.Round((double)percent_score / (double)100);  //normed to 1=1 victory (rather than 100% = one victory)
 
-        int percent_score_fordead = 1;        
+        int percent_score_fordead = 1;
+
+        Console.WriteLine("Recording Damage for nearby/cover players %: {0} {1}", percent_score, percent_score_fordead);
 
         StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
         stb_StatRecorder.StbSr_EnqueueTask(sst);
@@ -7812,6 +7826,7 @@ struct
                     if (dist_m < 2000)
                     {
                         ret[player] = dist_m;
+                        Console.WriteLine("Adding nearby player to credit list (dist) {0}m {1}", dist_m, player.Name());
                     }
                 }
 
@@ -7837,24 +7852,35 @@ struct
     //any nearby players get some credit, even if not actually getting rounds into the target etc.
     public void CreditNearbyPlayers(Dictionary<Player, double> allPlayers, int killtype = 1)
     {
-        foreach (Player player in allPlayers.Keys) stb_RecordNearbyPlayerStatsOnActorDead(player, allPlayers[player], killtype: killtype);
+        foreach (Player player in allPlayers.Keys)
+        {
+            stb_RecordNearbyPlayerStatsOnActorDead(player, dist_m: allPlayers[player], killtype: killtype);
+            Console.WriteLine("Adding nearby player credit now, dist {0}m - {1}", allPlayers[player], player.Name());
+        }
     }
 
-    public Dictionary<Player, double> addCoverPlayerCredit (AiActor actor, double score, Dictionary<Player, double> coverPlayers)
+    public Dictionary<Player, double> addCoverPlayerCredit (AiActor actor, double score, double totalscore, Dictionary<Player, double> coverPlayers2)
     {
+        Console.WriteLine("Adding cover player credit (score, totalscore) {0} {1} ", score, totalscore);
+        if (totalscore < score || totalscore < 0.05 ) return coverPlayers2; //This is the case where score == 0.0001 or whatever.  So score/totalscore is really an invalid value and the score is self-harm or friendly fire (that is why the totalscore == 0.0001)
         Player player = null;
         if (mainmission != null && mainmission.covermission != null) player = mainmission.covermission.getOwnerOfCoverAircraft(actor); 
-        if (player == null) return coverPlayers;
-        double tot = score;  //This is just the total of all their cover aircraft score for this kill.  So later we can take some fraction of this to add to their score.
-        if (coverPlayers.ContainsKey(player)) coverPlayers[player] += tot;
-        else coverPlayers[player] = tot;
-        return coverPlayers;
+        if (player == null) return coverPlayers2;
+        double tot = score/totalscore;  //This is just the total of all their cover aircraft score for this kill.  So later we can take some fraction of this to add to their score.
+        if (coverPlayers2.ContainsKey(player)) coverPlayers2[player] += tot;
+        else coverPlayers2[player] = tot;
+        Console.WriteLine("Adding cover player credit {0} {1} {2}", tot, coverPlayers2[player], player.Name());
+        return coverPlayers2;
     }
 
     //any nearby players get some credit, even if not actually getting rounds into the target etc.
-    public void CreditCoverPlayers(Dictionary<Player, double> coverPlayers, int killtype= 1)
+    public void CreditCoverPlayers(Dictionary<Player, double> coverPlayers1, int killtype= 1)
     {
-        foreach (Player player in coverPlayers.Keys) stb_RecordNearbyPlayerStatsOnActorDead(player, raw_score: coverPlayers[player], killtype: killtype);
+        foreach (Player player in coverPlayers1.Keys)
+        {
+            stb_RecordNearbyPlayerStatsOnActorDead(player, dist_m: 0, raw_score: coverPlayers1[player], killtype: killtype);
+            Console.WriteLine("CreditCoverPlayers: Giving cover pilot credit now: points {0} type {1} {2}", coverPlayers1[player], killtype, player.Name());
+        }
     }
 
 
@@ -7997,13 +8023,15 @@ struct
                           if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
                           if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
 
-                          if (ds.initiator.Actor != null) coverPlayers = addCoverPlayerCredit(ds.initiator.Actor, ds.score / totalscore, coverPlayers);
+                          bool differentArmies = false;
+                          if ((aiAircraft.Army() == 1 && initiatorArmy == 2) || (aiAircraft.Army() == 2 && initiatorArmy == 1)) differentArmies = true;
+
+                          if (ds.initiator.Actor != null && differentArmies) coverPlayers = addCoverPlayerCredit(ds.initiator.Actor, ds.score, totalscore, coverPlayers);
 
 
                           if (ds.initiator.Player != null)
                           {
-                              if (aiAircraft.Army() == 1 && initiatorArmy == 2) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats
-                              if (aiAircraft.Army() == 2 && initiatorArmy == 1) { willReportDead = true; }
+                              if (differentArmies) { willReportDead = true; } //Only report death to stats if an actual player was involved AND the player was from the opposing army.  IF only AI were involved in the death there is no point in saving their stats                              
 
                               msg += ds.initiator.Player.Name() + " ";
                               if (!deadPlayerNames.Contains(ds.initiator.Player.Name())) selfKill = false; // if even one other player contributed to the kill, it's not a self kill! 
@@ -8024,7 +8052,7 @@ struct
                       }
                   }
 
-                  CreditNearbyPlayers(nearbyPlayers); //give some credit to nearby players of opposing army, whenever an a/c is downed near them
+                  CreditNearbyPlayers(nearbyPlayers, killtype: 1); //give some credit to nearby players of opposing army, whenever an a/c is downed near them
                   CreditCoverPlayers(coverPlayers, killtype: 1);
 
                   //Stb_LogError (msg); //OK, we can't really just do Stb_LogError.  Instead you must "prepare message" etc which queues it up.
@@ -8162,13 +8190,16 @@ struct
                           bool willReportDead = false;
                           if (ds.initiator != null)
                           {
-                              if (ds.initiator.Player != null)
-                              {
-                                  if (aiGroundActor.Army() == 1 && ds.initiator.Player.Army() == 2) { willReportDead = true; }
-                                  if (aiGroundActor.Army() == 2 && ds.initiator.Player.Army() == 1) { willReportDead = true; }
-                              }
+                              int initiatorArmy = 0;
+                              if (ds.initiator.Actor != null && ds.initiator.Actor.Army() != null) initiatorArmy = ds.initiator.Actor.Army();
+                              if (ds.initiator.Player != null && ds.initiator.Player.Army() != null) initiatorArmy = ds.initiator.Player.Army();
 
-                              if (ds.initiator.Actor != null) coverPlayers1 = addCoverPlayerCredit(ds.initiator.Actor, ds.score / totalscore, coverPlayers1);
+                              bool differentArmies = false;
+                              if ((aiGroundActor.Army() == 1 && initiatorArmy == 2) || (aiGroundActor.Army() == 2 && initiatorArmy == 1)) differentArmies = true;
+
+                              if (ds.initiator.Player != null && differentArmies) willReportDead = true;                             
+
+                              if (ds.initiator.Actor != null && differentArmies) coverPlayers1 = addCoverPlayerCredit(ds.initiator.Actor, ds.score, totalscore, coverPlayers1);
                           }
                           if (willReportDead)
                           {
@@ -12552,7 +12583,7 @@ struct
                     if (stbSr_LogStatsCreateHtmlLow)
                     {
                         //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX8 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
-                    int save_min = 15;
+                        int save_min = 15;
                         string filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + stbSr_PlayerStatsPathHtmlExtLow;
 
                         //string previous_filename = stbSr_PlayerStatsPathHtmlLow + fileSuffix + "-previous" + stbSr_PlayerStatsPathHtmlExtLow;
@@ -12628,10 +12659,11 @@ struct
 
                         }
 
-                        //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
-                        if (file_exists && !immediate_save && !intermediate_win && (lastwrite.AddMinutes(save_min) > now || !changed)) return;
+                    //and exit, unless time has arrived to make a new file AND the data has actually changed, OR there is no existing file OR this is a forced immediate save
+                    //if (file_exists && !immediate_save && !intermediate_win && (lastwrite.AddMinutes(save_min) > now || !changed)) return;
+                    if (file_exists && !immediate_save && !intermediate_win && lastwrite.AddMinutes(save_min) > now) return; //simplifying this a bit because regular team score writes aren't happening for some reason?  2020/03/11
 
-                        //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+                    //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX5 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
                     using (StreamWriter sw = new StreamWriter(filename, append, System.Text.Encoding.UTF8))
                         {
 
@@ -12935,7 +12967,7 @@ struct
                             StbSr_UpdateStatsForTaskCurrent(task.player, task.parameters, task.actor);
                             break;
                         case StatsMission.StbStatCommands.Save:
-                        StbSr_SavePlayerStats(task.parameters);
+                            StbSr_SavePlayerStats(task.parameters);
                             break;
                         default:
                             break;

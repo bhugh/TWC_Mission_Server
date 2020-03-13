@@ -173,11 +173,14 @@ KillErrors:
   ;; TO DO: Abstract this & list to the error window parameters in an array
   ;; in the initialization section so it can be more easily customized
   WinActivateCheckConsoleActive("ahk_exe " . launcher_ahk_exe)
-  If (WinExist("Error ahk_exe " . launcher_ahk_exe) || WinExist("Steam Connection ahk_exe " . launcher_ahk_exe)  || WinExist("Steam Connection Error ahk_exe " . launcher_ahk_exe) || WinExist("Microsoft .NET Framework ahk_exe " . launcher_ahk_exe ) || WinExist("ahk_exe WerFault.exe")) {
+  
+  If (WinExist("Error ahk_exe " . launcher_ahk_exe) || WinExist("Steam Connection ahk_exe " . launcher_ahk_exe)  ||  WinExist("Steam Connection Error ahk_exe " . launcher_ahk_exe) || WinExist("Microsoft .NET Framework ahk_exe " . launcher_ahk_exe) || WinExist("ahk_exe WerFault.exe" )) {
      WinClose
      sleep, 250
      Gosub, KillErrors ; Check to see if any more error windows are open & kill all if they exist
+	 
   }
+  
 
 Return
 
@@ -219,10 +222,20 @@ CheckMissionStartedSub:
        else
          logMsgBox("Window OK for ahk_exe " . launcher_ahk_exe, 5)
        SetKeyDelay 20,20
-       ControlSend, ahk_parent, ^a^a{enter}, % "ahk_exe " . launcher_ahk_exe
-       ClipWait, 1                  
+	   ;The ^a^a method works for most Windows computers, but not servers.
+       ;ControlSend, ahk_parent, ^a^a{enter}, % "ahk_exe " . launcher_ahk_exe
+	   ;SetKeyDelay, 100, 100
+	   ;ControlSend, ahk_parent, {Alt down}{space}{Alt up}es{enter}, % "ahk_exe " . launcher_ahk_exe
+	   WinActivate, "ahk_exe " . launcher_ahk_exe
+	   ClipBoard =
+	   Send !{Space}es{Enter}                    ; select all, copy to clipboard
+	   ClipWait 2
+	   ;SendInput !{Space}es{Enter}          ; select/copy DOS english
+	   ;Send {Alt Down}{Enter}{Alt Up}
+	   ;Send !{Enter}
+       ;ClipWait, 1                  
   }
-  ;MsgBox,,, % Clipboard,2
+  MsgBox,,, % Clipboard,2
   C := Clipboard
   Clipboard := OldClipboard
   OldClipboard =
@@ -283,7 +296,7 @@ CheckMissionStartedSub:
         if (display_messageboxes) 
            ;MsgBox, , , No '%missStartedCheck_string%' found yet - still checking (%missStartedCheck% times), % messagebox_display_time_seconds/5
            logMsgBox("No '" . missStartedCheck_string . "' found yet - still checking (" . missStartedCheck . " times)", messagebox_display_time_seconds/5)
-           logMsgBox("Clipboard contents: `r`n" . C, messagebox_display_time_seconds/15)
+           ;logMsgBox("Clipboard contents: `r`n" . C, messagebox_display_time_seconds/15)
         Gosub, CheckMissionStartedSub
      }
    }
@@ -305,11 +318,20 @@ CheckNoProgress(){
   OldClipboard := ClipboardAll
   Clipboard:=""
   If (WinExist("ahk_exe " . launcher_ahk_exe)) {
+       /*
        ;WinActivate, % "ahk_exe " . launcher_ahk_exe
        WinActivateCheckConsoleActive("ahk_exe " . launcher_ahk_exe)
        SetKeyDelay 20,20
-       ControlSend, ahk_parent, ^a^a{enter}, % "ahk_exe " . launcher_ahk_exe
+       ;ControlSend, ahk_parent, ^a^a{enter}, % "ahk_exe " . launcher_ahk_exe
+	   ControlSend, ahk_parent, {Alt down}{space}{Alt up}es{enter}, % "ahk_exe " . launcher_ahk_exe
        ClipWait, 1
+	   */
+	   
+	   WinActivate, "ahk_exe " . launcher_ahk_exe
+	   ClipBoard =
+       Send !{Space}es{Enter}                    ; select all, copy to clipboard
+       ClipWait 2
+	   ;MsgBox %ClipBoard%
    }
    
    ; if the Launcher.exe console text is exactly the same as last time AND

@@ -21,7 +21,7 @@
   BoB_RAF_B_218Sqn.03
   BoB_LW_StG2_II.07
   BoB_RAF_F_249Sqn_Late.03
-  BoB_LW_StG1_I.07
+  BoB_LW_StG1_I.07 
   BoB_RAF_F_FatCat_Late.13
   BoB_LW_StG3_I.07
   BoB_RAF_B_35Sqn.03
@@ -5165,7 +5165,40 @@
   613_bld buildings.House$Oil_Bunker-Big 1 137541.89 197841.20 225.00
   614_bld buildings.House$Oil_Bunker-Big 1 137288.83 197807.81 230.00
   615_bld buildings.House$Oil_Bunker-Big 1 137726.65 197853.92 225.00
-  616_bld buildings.House$Oil_Bunker-Big 1 137615.65 197852.58 225.00  
+  616_bld buildings.House$Oil_Bunker-Big 1 137615.65 197852.58 225.00 
+  617_bld buildings.House$Oil_Bunker-Big 1 314581.70 225759.13 190.00
+  618_bld buildings.House$Oil_Bunker-Big 1 314435.59 225725.14 190.00
+  619_bld buildings.House$Oil_Bunker-Big 1 314020.51 225593.30 270.00
+  620_bld buildings.House$Oil_Bunker-Big 1 313887.77 225563.79 270.00
+  621_bld buildings.House$Oil_Bunker-Big 1 314945.69 225784.06 270.00
+  622_bld buildings.House$Oil_Bunker-Big 1 314249.27 225662.48 260.00
+  623_bld buildings.House$Oil_Bunker-Big 1 315162.72 225857.87 235.00
+  624_bld buildings.House$Oil_Bunker-Big 1 313409.42 225439.90 240.00
+  625_bld buildings.House$Oil_Bunker-Big 1 313500.15 225457.94 240.00
+  626_bld buildings.House$Oil_Bunker-Big 1 313269.16 225398.57 225.00
+  627_bld buildings.House$Oil_Bunker-Big 1 313675.32 225518.05 240.00
+  628_bld buildings.House$Oil_Bunker-Big 1 313568.45 225488.02 240.00
+  629_bld buildings.House$Oil_Bunker-Big 1 265817.64 190080.93 110.00
+  630_bld buildings.House$Oil_Bunker-Big 1 265555.41 190137.06 165.00
+  631_bld buildings.House$Oil_Bunker-Big 1 265214.49 190173.33 280.00
+  632_bld buildings.House$Oil_Bunker-Big 1 265085.70 190064.74 280.00
+  633_bld buildings.House$Oil_Bunker-Big 1 265922.48 189969.70 190.00
+  634_bld buildings.House$Oil_Bunker-Big 1 265518.80 190317.04 265.00
+  635_bld buildings.House$Oil_Bunker-Big 1 265866.97 189931.26 150.00
+  636_bld buildings.House$Oil_Bunker-Big 1 265122.06 189855.19 250.00
+  637_bld buildings.House$Oil_Bunker-Big 1 265703.26 190123.28 250.00
+  638_bld buildings.House$Oil_Bunker-Big 1 265047.67 189824.91 235.00
+  639_bld buildings.House$Oil_Bunker-Big 1 265182.72 189893.37 250.00
+  640_bld buildings.House$Oil_Bunker-Big 1 264931.55 189941.60 250.00
+  641_bld buildings.House$Oil_Bunker-Big 1 265914.70 190171.32 110.00
+  642_bld buildings.House$Oil_Bunker-Big 1 265914.70 190171.32 110.00
+  643_bld buildings.House$Oil_Bunker-Big 1 265421.88 190281.22 280.00
+  644_bld buildings.House$Oil_Bunker-Big 1 265516.60 190044.81 250.00
+  645_bld buildings.House$Oil_Bunker-Big 1 265902.77 190271.57 250.00
+  646_bld buildings.House$Oil_Bunker-Big 1 265429.69 190001.14 250.00
+  647_bld buildings.House$Oil_Bunker-Big 1 265319.25 189969.88 250.00
+  648_bld buildings.House$Oil_Bunker-Big 1 265244.86 189939.61 235.00
+  649_bld buildings.House$Oil_Bunker-Big 1 265319.25 189969.88 250.00   
 [BuildingsLinks]
 [Airdromes]
   airdrome0 298383.34 127504.47 2 500 500 0

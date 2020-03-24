@@ -820,7 +820,7 @@ public void ReadSupply(string suffix)
             //GamePlay.gpLogServer(new Player[] { player }, "Cover: numAC1 " + numAC.ToString(), new object[] { });
 
 
-            if (numToAdd <= 0)
+            if (numToAdd == 0)
             {
                 GamePlay.gpLogServer(new Player[] { player }, "Supply Add: 0 aircraft requested.  Error in command format?", new object[] { });
                 GamePlay.gpLogServer(new Player[] { player }, "Result: " + numToAdd.ToString("F0") + " type " + aircraftName + " to army " + ArmiesL[army], new object[] { });
@@ -1240,14 +1240,16 @@ private int NumberPlayerInActor(AiActor actor)
                         Timeout(3.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, "Stock of {0} depleted - This aircraft not available", new object[] { ParseTypeName(cart.InternalTypeName()) }); });
                         GamePlay.gpLogServer(new Player[] { player }, ">>>>>No stock of {0} remaining - please choose another aircraft. Check Mission Briefing, chat command <stock, Tab-4 menu for details.", new object[] { ParseTypeName(cart.InternalTypeName()) });
 
-                        Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        mainmission.statsmission.Display_AceAndRank_ByName(player); //testing
+                        Console.WriteLine("valCAA1=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString() + " " + player.Name() + "{0:F0} {1:F0} {2:F0} {3} ", actor.Pos().z, actor.Pos().z, actor.Pos().z, player.Ping());
                         //if (AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName()))
                         //    AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1; // We somehow end up -2 stock lower than we started, so trying add 1 here to correct.
 
                         //TWCStatsMission.Stb_RemovePlayerFromAircraftandDestroy(actor as AiAircraft, player);
-                        mainmission.statsmission.Stb_RemovePlayerFromAircraftSafelyandDestroy(actor as AiAircraft, player);
+                        mainmission.statsmission.Stb_RemovePlayerFromAircraftSafelyandDestroy(actor as AiAircraft, player,  fromSupply:true);
 
-                        Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
+                        Console.WriteLine("valCAA2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString() + " " + player.Name());
+                        mainmission.statsmission.Display_AceAndRank_ByName(player); //testing
                         /*
                          * We'll use ours here
                         player.PlaceLeave(placeIndex); // does not work on Dedi correctly
@@ -1275,14 +1277,18 @@ private int NumberPlayerInActor(AiActor actor)
     public void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex=0)
     {
         //base.OnPlaceEnter(player, actor, placeIndex);
-        Console.WriteLine("PlaceEnter " + player.Name() + " " + (actor as AiCart).InternalTypeName());
-        DisplayNumberOfAvailablePlanes(actor);
+        
+        string ret = DisplayNumberOfAvailablePlanes(actor);
+        if (ret == "") return;//"" returned if not a real place change or actor/player doesn't exist
 
+        Console.WriteLine("PlaceEnter " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+        GamePlay.gpHUDLogCenter(new Player[] { player }, "", null); //clear the HUD, clears out old "not allowed aircraft" messages etc
         CheckActorAvailibility(player, actor, placeIndex);
         //DisplayNumberOfAvailablePlanes(actor); //don't display it here bec we are sent here any time ie a bomber pilot changes positions.  Instead we'll show it the first time only, at CheckActorOut
         // DebugPrintNumberOfAvailablePlanes(); // for testing
         //DisplayNumberOfAvailablePlanes(0, player, true);
     }
+
     public void SupplyAICheckout(Player player, AiActor actor, int placeIndex = 0)
     {
         //base.OnPlaceEnter(player, actor, placeIndex);
@@ -1315,14 +1321,14 @@ private int NumberPlayerInActor(AiActor actor)
                 {
                     Console.WriteLine("SupOPL: Forcing check-out");
                     CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
-                    aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only
+                    aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only                    
                 }
 
                 double Z_AltitudeAGL = 0;
                 if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                 //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
                 //We could add in some scheme for damage later
-                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 5 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTerritory(actor)
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTerritory(actor)
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
                     if (forceDamage > 0 && forceDamage < 1)
@@ -1332,6 +1338,18 @@ private int NumberPlayerInActor(AiActor actor)
                         AiCart cart = actor as AiCart;
                         if (hoursToRepair > 0) GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned damaged; "
                             + hoursToRepair.ToString("F1") + " hours required for repair and re-stock", null);
+                        double timeToRepair_sec = hoursToRepair * 60 * 60;
+                        double timeLeft_sec = mainmission.calcTimeLeft_min() * 60;
+                        if (timeToRepair_sec > timeLeft_sec - 60) timeToRepair_sec = timeLeft_sec - 60;
+                        //So, the time to repair thing is not totally implemented acroos mission restarts but what we do is,
+                        //the return of the a/c is delayed by the time to repair unless it is longer than the time remaining in session.  That is the upper limit.
+                        //Also, because this is done on a timeout, there is the danger of losing this a/c if the server crashes between now & repair time (end of mission time).  So, that's the breaks.
+                        Timeout(timeToRepair_sec + new Random().NextDouble()*30-15, () =>
+                        {
+                            Console.WriteLine("SupOPL: Check-in (delayed due to a/c damage)");
+                            CheckActorIn(actor, player);
+                        });
+
                     }
                     else
                     {

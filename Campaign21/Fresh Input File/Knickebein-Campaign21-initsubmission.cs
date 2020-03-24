@@ -94,6 +94,7 @@ public class KnickebeinTarget
     public void turnOff()
     {
         this.turnedOn = false;
+        this.chatOrHud = ChatOrHud.Hud; //Always reset to HUD mode, the default
         if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
     }
 

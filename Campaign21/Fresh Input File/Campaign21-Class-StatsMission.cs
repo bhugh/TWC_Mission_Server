@@ -749,9 +749,15 @@ public class StatsMission : AMission, IStatsMission
 
             CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
 
-            if (!aircraftParams.TryGetValue(player.Name(), out apa)) apa = new CircularArray<AircraftParams>(array_size);
+            if (!aircraftParams.TryGetValue(player.Name(), out apa))
+            {
+                //apa = new CircularArray<AircraftParams>(array_size);
+                Console.WriteLine("apMax Calc: Player {0} record/params not found ", player.Name());
+                return new AircraftParams();
+            }
 
             AircraftParams apMax = new AircraftParams();
+            AircraftParams ap2ndToMax = new AircraftParams();
             bool starting = true;
 
             //return apa.ArrayStack;
@@ -759,26 +765,151 @@ public class StatsMission : AMission, IStatsMission
             {
 
                 //if (starting || ap.Vwld.z < apMax.Vwld.z) apMax.Vwld = ap.Vwld;  //Gets Vwld @ moment of max downward velocity 
-                if (starting || apMax.Vwld.z <= 0)
+                if (starting || apMax.Vwld.z >= 0)  //2020-03-22: corrected <=0 to >=0, because downward vertical velocity should be <= 0 ?
                 {
                     apMax.Vwld = ap.Vwld;  //Gets Vwld.z just before hitting ground (ie Vwld.z = 0 or greater)
                     apMax.vel_mph = ap.vel_mph; //also gets the overall velocity at this moment--the moment just before impact w/ the ground
                                                 //if we didn't hit the ground (say, Vwld.z is always 0 or greater) then we must have hit into something as we were flying or rolling across the ground.  In that case we get the first value on the stack which is OK--this is the speed etc just before impact.
+                    
+
                 }
                 //if (starting || ap.vel_mph > apMax.vel_mph) apMax.vel_mph = ap.vel_mph;  //Gets largest vel_mph
                 if (apMax.vel_mph <= 0 && ap.vel_mph > 0) apMax.vel_mph = ap.vel_mph;  //One exception--if the vel we pick up @ moment of impact is zero then we'll replace it with the previous one, if that is larger
                                                                                        //if (starting || ap.pitch < apMax.pitch) apMax.pitch = ap.pitch;  //Gets smallest pitch (ie, most negative)
                 if (starting || apMax.pitch <= 0) apMax.pitch = ap.pitch;  //Similarly, gets pitch just before hitting ground, ie, just before pitch goes 0 or positive
                 if (starting) apMax.actor = ap.actor;
+                if (starting) ap2ndToMax = apMax;
 
                 starting = false;
 
+                try
+                {
+                    Console.WriteLine("apMax Calc: ver: {0:F1} vel: {1:F1} pitch: {2:F1} tick: {3}", ap.Vwld.z, ap.vel_mph, ap.pitch, ap.time_tick);
+                }
+                catch (Exception ex) { Console.WriteLine("apMAX error1: " + ex.ToString()); }
+
 
             }
+            try { 
+            Console.WriteLine("apMax Ret: ver: {0:F1} vel: {1:F1} pitch: {2:F1} currtick: {3}", apMax.Vwld.z, apMax.vel_mph, apMax.pitch, StatCalcs.TimeSince2016_ticks());
+            }
+            catch (Exception ex) { Console.WriteLine("apMAX error2: " + ex.ToString()); }
 
             return apMax;
 
         }
+        //Tries to take a "safe average" of any "death" parameters to (perhaps!?) avoid game glitches while still catching actual deaths/crashes
+        //skips the first one back if it's zero, then takes average of next two readings.
+        public AircraftParams returnSafeMaxAverage(Player player)
+        {
+
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
+
+            if (!aircraftParams.TryGetValue(player.Name(), out apa))
+            {
+                //apa = new CircularArray<AircraftParams>(array_size);
+                return new AircraftParams();
+            }
+
+            AircraftParams apAve = new AircraftParams();
+            //AircraftParams ap2ndToMax = new AircraftParams();
+            bool starting = true;
+
+            //return apa.ArrayStack;
+            foreach (AircraftParams ap in apa.ArrayStack)
+            {
+
+                //if (starting || ap.Vwld.z < apMax.Vwld.z) apMax.Vwld = ap.Vwld;  //Gets Vwld @ moment of max downward velocity 
+                if (starting)
+                {
+                    if (ap.Vwld.z == 0 && ap.vel_mph == 0) //So if the most recent params is vert/hor velocity zero, we skip it. This will skip the one reading where the aircraft crashed & then stopped.
+                    {
+                        starting = false;
+                        continue;
+                    }
+                    apAve = ap;
+                    starting = false;
+                    continue;
+                }
+                //if (starting || ap.vel_mph > apMax.vel_mph) apMax.vel_mph = ap.vel_mph;  //Gets largest vel_mph
+
+                apAve.Vwld.z = (apAve.Vwld.z + ap.Vwld.z) / 2;
+                apAve.vel_mph = (apAve.vel_mph = ap.vel_mph) / 2;
+                apAve.pitch = (apAve.pitch + ap.pitch) / 2;
+
+                try {
+                    Console.WriteLine("apAve Calc: ver: {0:F1} vel: {1:F1} pitch: {2:F1}", ap.Vwld.z, ap.vel_mph, ap.pitch);
+                    Console.WriteLine("apAve Ret: ver: {0:F1} vel: {1:F1} pitch: {2:F1}", apAve.Vwld.z, apAve.vel_mph, apAve.pitch);
+                } catch (Exception ex) { Console.WriteLine("apMAX error3: " + ex.ToString()); }
+
+                return apAve;  //just average the first two (or one, if only one) back, and/or 2nd-3rd if the 1st back is a full stop, and return that.
+
+
+            }
+            try {
+                Console.WriteLine("apAve Ret: ver: {0:F1} vel: {1:F1} pitch: {2:F1}", apAve.Vwld.z, apAve.vel_mph, apAve.pitch);
+            } catch (Exception ex) { Console.WriteLine("apMAX error4: " + ex.ToString()); }
+            return apAve;
+
+        }
+
+        //Decides if this player's data is glitchy.  We're saying glitchy is, all readings 0 except for 1.
+        //If glitchy, we might ignore this data.
+        //ret -1 if no glitch, otherwise position of glitchy entry
+        public int GlitchWarning(Player player)
+        {
+
+            CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
+
+            if (!aircraftParams.TryGetValue(player.Name(), out apa))
+            {
+                return -1;
+            }
+            
+
+            AircraftParams apAve = new AircraftParams();
+            //AircraftParams ap2ndToMax = new AircraftParams();
+            bool starting = true;
+
+            int inc = 0;
+            int glitchCount = 0;
+            int numGlitch = -1;
+
+            long currTime_ticks = StatCalcs.TimeSince2016_ticks();
+            long staleTime_ticks = TimeSpan.TicksPerSecond * 5; //calling the data stale after 5 seconds
+
+            //return apa.ArrayStack;
+            foreach (AircraftParams ap in apa.ArrayStack)
+            {
+                if (ap.time_tick - currTime_ticks > staleTime_ticks)
+                {
+                    numGlitch = inc;
+                    Console.WriteLine("apGlitch: ap stale due to elapsed time: {0:F2} seconds ", (ap.time_tick - currTime_ticks)/TimeSpan.TicksPerSecond);
+                    break;
+                }
+                if (ap.Vwld.z != 0 && ap.vel_mph != 0)
+                {
+                    glitchCount++; //So if the most recent params is vert/hor velocity zero, we skip it. This will skip the one reading where the aircraft crashed & then stopped.
+                    numGlitch = inc;
+                }
+                inc++;
+
+            }
+            try {
+                Console.WriteLine("apGlitchWarning: number: {0:F1} glitchCount: {1:F1} number of Glitch: {2:F1}", inc, glitchCount, numGlitch);
+
+            } catch (Exception ex) { Console.WriteLine("apMAX error5: " + ex.ToString()); }
+
+            if (glitchCount == 1)
+            {
+                return numGlitch;
+            } else
+            {
+                return -1;
+            }                        
+
+        }
+
         //returns a particular param for the player.  0 is most recent, 1 just before that etc.
         public AircraftParams returnParams(Player player, int index)
         {
@@ -798,21 +929,25 @@ public class StatsMission : AMission, IStatsMission
             try
             {
 
-                mission.Timeout(recursInterval, () => { saveAircraftParamsRecursive(); });
+                mission.Timeout(recursInterval, () => { Task.Run(() => saveAircraftParamsRecursive()); });
 
-                if (mission.GamePlay.gpPlayer() != null)
-                {
-
-                    addParams(mission.GamePlay.gpPlayer());
-                } // Multiplayer
-                if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
-                {
-                    foreach (Player p in mission.GamePlay.gpRemotePlayers())
+                //Task.Run( ()=>
                     {
+                        if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
+                        {
+                            foreach (Player p in mission.GamePlay.gpRemotePlayers())
+                            {
+                                addParams(p);
+                            }
+                        }
+                        if (mission.GamePlay.gpPlayer() != null)
+                        {
 
-                        addParams(p);
+                            addParams(mission.GamePlay.gpPlayer());
+                        } // Multiplayer
+
                     }
-                }
+                //);
 
 
 
@@ -1311,7 +1446,7 @@ struct
 
         private void StbCmr_SavePositionLeave_work(Player player, AiActor actor, StbContinueMission cm)
         {
-            bool endSortieDamagedAndOnlyBySelf = false;
+            bool endSortieDamagedAndOnlyBySelf = false;             
             cm.isPlaneLeave = true; //Yes, it IS a plane leave, NOT just a position switch.  OnPlaceLeave() will be able to detect this (using a Timeout, since this is calced 0.1 seconds after the initial onPlaceLeave() is called) and take appropriate action.
 
 
@@ -1326,7 +1461,7 @@ struct
             int flightDuration_sec = endFlightTime_sec - cm.flightStartTime_sec;
             if (cm.flightStartTime_sec == 0 || flightDuration_sec > 24 * 60 * 60) flightDuration_sec = 0; //sanity check; often 'place leave' is the first time cm is initialized for a given pilot. 
 
-            //Console.WriteLine("PosLeave: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec / 60).ToString("F1"));
+            Console.WriteLine("PosLeave: " + cm.flightStartTime_sec.ToString() + " " + endFlightTime_sec.ToString() + " " + flightDuration_sec.ToString() + " " + ((double)flightDuration_sec / 60).ToString("F1"));
 
             bool endSortieDamagedAndOnlyBySelfandShortFlightorLongFlightAndMuchSelfDamage = false;
 
@@ -1426,7 +1561,8 @@ struct
                     Console.WriteLine("PPI,PPS pre: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
 
-                    mission.Timeout(0.1, () =>
+                    //mission.Timeout(0.1, () =>
+                    mission.Timeout(0.35, () => //switching to 0.35 seconds on the theory that we need to wait to go back & forth to the client, we're assuming 350 ms is the longest feasible ping time.
                     { //this needs to be less than 0.2 bec that is what onPlaceLeave uses!!!!
                             StbContinueMission cm = new StbContinueMission();
                         bool ret;
@@ -1435,7 +1571,7 @@ struct
 
                             ret = stbCmr_ContinueMissionInfo.TryGetValue(player.Name(), out cm);
                         if (!ret) cm = new StbContinueMission(); //on unsuccessful trygetvalue cm comes out as "not an object"
-
+                        
                             //Console.WriteLine("Pll2: " + cm.ToString());
                             double dis_meters = StatCalcs.CalculatePointDistance(cm.placeLeaveLoc, cm.placeEnterLoc);
 
@@ -1493,7 +1629,7 @@ struct
                         else
                         {
 
-                                //Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
+                            Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                             }
 
                             //Ok, so it's a real position leave, now save the stats, do the actual work etc.
@@ -3398,12 +3534,13 @@ struct
     }
 
     //This removes the player but it is "safe" ie the player doesn't die or get a penalty - just pulled out with no particular consequences, as though they'd never been there.
-    public void Stb_RemovePlayerFromAircraftSafelyandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    public void Stb_RemovePlayerFromAircraftSafelyandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0, bool fromSupply = false)
     {
         AiActor actor = aircraft as AiActor;
         stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+        if (!fromSupply) if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
         Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, timeToRemove_sec, timetoDestroy_sec);
+        Console.WriteLine("Remove player from aircraft safely & destroy, " + player.Name());
     }
 
     //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
@@ -6400,7 +6537,7 @@ struct
             string ground = "ground actor";
             AiGroundActor aga = actor as AiGroundActor;
             if (aga == null) ground = "not a ground actor";
-            //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
+            Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + actor.Name() + " " + placeIndex.ToString() + " " + aircraft_type + " " + ground + " " + person + " " + airc + " PlacePrimary: " + player.PlacePrimary()); //PlacePrimary supposedly == -1 on parachute bail
 
             //Set the player career type (ie bomber, fighter etc)
             //We have a problem in that when a player bails out of an aircraft that triggers OnPlaceEnter (for some reason!?) and in that one case
@@ -6425,6 +6562,8 @@ struct
             //check if the player is timed out due to a previous death
             int TimedOut_seconds = stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(player.Name());
 
+            Console.WriteLine("Player timed out due to death {0} {1}", stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name(), TimedOut_seconds);
+
             if (TimedOut_seconds > 0 && aircraft != null)
             {
                 int timeOut_minutes = (int)(TimedOut_seconds / 60);
@@ -6443,7 +6582,7 @@ struct
                                                                                                                                                                                                                                                                                                                       // and: Player.PlaceLeave(int indxPlace)
 
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply //Ok, seems at this point the plane hasn't been checked out yet, so no worries about doing this.
                 Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
                 //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
 
@@ -6461,7 +6600,9 @@ struct
             {
 
                 string playerName = stb_StatRecorder.StbSr_MassagePlayername(player.Name());
+                int numKills = stb_StatRecorder.StbSr_NumberOfKills(playerName);
                 string message0 = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + playerName + " is restricted from flying " + aircraft_type + " until sufficient kills OR rank have been achieved. ";
+                Console.WriteLine(message0 + "  "+ numKills.ToString());
 
                 //System.Console.WriteLine(message0);
                 Stb_Message(new Player[] { player }, message0, null);
@@ -6471,18 +6612,20 @@ struct
                 {
                     string message2 = "Unlocked aircraft for your rank, " + stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForRank(player);
                     Stb_Message(new Player[] { player }, message2, null);
+                    Console.WriteLine(message2);
                 });
 
                 Timeout(10.0, () =>
                 {
                     string message3 = stb_RankToAllowedAircraft.StbRaa_ListOfAllowedAircraftForAce(player);
                     if (message3 != "") Stb_Message(new Player[] { player }, "Unlocked aircraft for your number of kills: " + message3, null);
+                    Console.WriteLine(message3);
                 });
 
                 Timeout(15.0, () => { Stb_Message(new Player[] { player }, "Chat commands <ac and <nextac show your current & potential unlocked aircraft.", null); });
 
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply //Ok, seems at this point the plane hasn't been checked out yet, so no worries about doing this.
                 Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
 
 
@@ -6677,6 +6820,11 @@ struct
         #region stb
         base.OnPlaceLeave(player, actor, placeIndex);
 
+        if (player!=null) Console.WriteLine("OnPlaceLeave: player" + player.Name());
+        if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor" + StatCalcs.GetAircraftType(actor as AiAircraft));
+        if (actor == null ) Console.WriteLine("OnPlaceLeave: actor is null!");
+        if (actor as AiAircraft == null) Console.WriteLine("OnPlaceLeave: actor as AiAircraft is null!");
+
         //Console.WriteLine("OnPlaceLeave: place " + player.Place().Name() + " person.place " + player.PersonPrimary().Place() + " type " + player.PersonPrimary().Cart().InternalTypeName());
         /* if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
         else Console.WriteLine("OnPlaceLeave: place is NULL");
@@ -6692,6 +6840,11 @@ struct
         try
         {
 
+            if (player != null && player.Name() != null && stb_ContinueMissionRecorder.StbCmr_IsForcedPlaceMove(player.Name()))
+            {
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Being kicked out/forced out of plane, -supply.cs handles the details of returning the a/c to supply
+                return; //In case of forced plane move such as a/c unavailable or not allowed to fly bec. recent death etc, then just don't process anything here.  And . . . trying it again, might help in some cases.
+            }
             StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 788 }, actor);
             stb_StatRecorder.StbSr_EnqueueTask(sst1);
 
@@ -6729,7 +6882,8 @@ struct
             //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
 
             //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
-            Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+            //Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
+            Timeout(0.36, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!  We moved that one to 0.35 seconds to try to account for long ping times
             {
                     //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
                     //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
@@ -6749,9 +6903,17 @@ struct
 
                 bool realPosLeave = stb_ContinueMissionRecorder.StbCmr_HasPlayerLeftPlane(player.Name());
 
+                if (!realPosLeave)
+                {
+                    Console.WriteLine("Stats, not a real position leave, just switching places, exiting out of here: "+ player.Name());
+                    return;
+                }
+
                 bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
 
-                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, allowTakeBack: true, defaultInjuries: 0);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+                   //defaultInjuries: 0 because we're just leaving the aircraft here, the assumption is, unless we are jumping out of a plane in full flight or whatever, that the injuries are 0.
+                   //Apparently we have problems here because sometimes we get to onPlaceLeave here BUT the actor is null?  
 
                 double aircraftDamage = injuries;
                 if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
@@ -6923,7 +7085,7 @@ struct
 
             });
 
-            Stb_BalanceUpdate(player, actor, placeIndex, false);
+            //stb_BalanceUpdate(player, actor, placeIndex, false);
             if (stb_DestroyOnPlaceLeave)
             {
                 AiAircraft aircraft = actor as AiAircraft;
@@ -7427,9 +7589,9 @@ struct
 
     //OK, CloD seems a bit too willing to hand out gruesome deaths sometimes.  IE when a player runs into a hangar wall at 5MPH.
     //So we are going to convert some of those CLOD deaths into injury situations for our stats/career purposes.
-    public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false)
+    public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false, double defaultInjuries = 1)
     {
-        double injuries = 1; //default assumption is 1 = yup, they're dead
+        double injuries = defaultInjuries; //default assumption is 1 = yup, they're dead
         AiAircraft aircraft1 = null;
         if (actor as AiAircraft != null) aircraft1 = actor as AiAircraft;
         else if (actor as AiPerson != null && aircraft1 == null)
@@ -7437,108 +7599,151 @@ struct
 
             AiActor place1 = (actor as AiPerson).Player().Place();
             if (place1 as AiAircraft != null) aircraft1 = place1 as AiAircraft;
-            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Person killed.");
+            //if (stb_Debug)
+                System.Console.WriteLine("CalcInjuries: Person killed.");
             if (stb_Debug && aircraft1 != null) System.Console.WriteLine("CalcInjuries: Person killed was in aircraft.");
         }
         if (!allowTakeBack)
         {
-            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Death takeback not allowed here, so no calculation.");
+            //if (stb_Debug)
+                System.Console.WriteLine("CalcInjuries: Death takeback not allowed here, so no calculation.");
             return injuries; //yup, they are dead
         }
         if (aircraft1 == null)
         {
 
-            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Not an aircraft, so no injury calc.");
+            //if (stb_Debug)
+                System.Console.WriteLine("CalcInjuries: Not an aircraft, so no injury calc.");
             return injuries; //we're only going to turn some deaths into injuries for aircraft; if not an a/c or person in an a/c then it is just 1 = yup, they are dead
         }
         else
         {
-            if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries . . . ");
-            //AiAircraft aircraft = actor as AiAircraft;
-            //double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
-            //double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
-            double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
-            double VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
-                                                                 //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
-                                                                 //unit invariant--it comes back as a % of mach whether we are using English or metric units
-                                                                 //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
+            //if (stb_Debug)
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries . . . ");
+
+            try
+            {
+                //AiAircraft aircraft = actor as AiAircraft;
+                //double Z_VelocityIAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityIAS, 0);
+                //double Z_VelocityTAS = aircraft1.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+                double Z_VelocityMach = aircraft1.getParameter(part.ParameterTypes.Z_VelocityMach, 0);
+                double VelocityMPH = Math.Abs(Z_VelocityMach) * 600; //this is an approximation but good enough for our purposes.
+                                                                     //We use Z_VelocityMach because it seems more stable/predictable when passed through onDeadActor and also it is
+                                                                     //unit invariant--it comes back as a % of mach whether we are using English or metric units
+                                                                     //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
 
 
-            //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-            double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-            //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-            //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
-            //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
-            //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+                //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
+                //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
+                //double S_GunClipReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
 
-            Vector3d Vwld = aircraft1.AirGroup().Vwld();
-            double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
-            double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
-            double heading = (StatCalcs.CalculateBearingDegree(Vwld));
-            double pitch = StatCalcs.CalculatePitchDegree(Vwld);
+                Vector3d Vwld = aircraft1.AirGroup().Vwld();
+                double vel_mps = StatCalcs.CalculatePointDistance(Vwld);
+                double vel_mph = StatCalcs.meterspsec2milesphour(vel_mps);
+                double heading = (StatCalcs.CalculateBearingDegree(Vwld));
+                double pitch = StatCalcs.CalculatePitchDegree(Vwld);
 
-            //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
-            //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
-            //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
-
-
-            AircraftParams maxAp = stb_AircraftParamStack.returnMaxes(player);
+                //So, pitch seems to work well for some aircraft (ie Hurricane) but almost always shows as "0.0" for others (ie Blennie)
+                //So it seems too unreliable ot use here.  Also vel_mph & other data from Vwld seem unreliable in the case of a
+                //a crash like this, perhaps for the same reason.  It is perhaps being sampled a bit too late to be of use to us here.
 
 
+                AircraftParams maxAP = stb_AircraftParamStack.returnMaxes(player);
+                AircraftParams aveAP = stb_AircraftParamStack.returnSafeMaxAverage(player);
 
-            /* //This is the old way of doing it
-            //vel_mps vel_mph heading pitch
+                AircraftParams usedAP = aveAP; //for now using the "aveAP" which is maybe a bit safer/less glitchy than the Max AP? 
+              
+                int glitches = stb_AircraftParamStack.GlitchWarning(player); //-1 means no glitches, otherwise it returns the index of the glitch
 
-            if (Z_AltitudeAGL < 5 && VelocityMPH < 10) injuries = 0.1;
-            else if (Z_AltitudeAGL < 4 && VelocityMPH < 30) injuries = 0.2;
-            else if (Z_AltitudeAGL < 3 && VelocityMPH < 70) injuries = 0.5;
-            else if (Z_AltitudeAGL < 2 && VelocityMPH < 100) injuries = 0.9;
-            else injuries = 1;
+                try
+                {
+                    Console.WriteLine("APs: avez {0:F1} velave: {1:F1} maxz: {2:F1}  maxvel: {3:F1} glitch: {4:F0}", aveAP.Vwld.z, aveAP.vel_mph, maxAP.Vwld.z, maxAP.vel_mph, glitches);
+                }
+                catch (Exception ex) { Console.WriteLine("ubhINJURE error: " + ex.ToString()); }
 
-            */
-            /* http://boards.straightdope.com/sdmb/showpost.php?p=19162752&postcount=16 
-             * 300 fpm or less = 3.5mph, good landing
-             * 600-800 fpm = 8 mph, slightly hard landing
-             * 1000 fpm = 11 mph, very hard, some damage
-             * 1500 fpm = 17 mph, definite damage, edge of much damage
-             * 2000 fpm = 23 mph, getting into serious damage
-             * 
-             */
+                if (glitches >= 0)
+                {
+                    System.Console.WriteLine("CalcInjuries: Glitchy data, returning no injury: glitch @ #{0} ", glitches);
+                    return 0;
 
-            double vertSpeed_mph = StatCalcs.meterspsec2milesphour(maxAp.Vwld.z);
-            if (vertSpeed_mph >= 0) vertSpeed_mph = 0;
-            vertSpeed_mph = Math.Abs(vertSpeed_mph);
-            double operativeVel_MPH = maxAp.vel_mph + 2 * vertSpeed_mph;
-            if (Z_AltitudeAGL < 5 && operativeVel_MPH < 10) injuries = 0.1;
-            else if (Z_AltitudeAGL < 5 && operativeVel_MPH < 30) injuries = 0.2;
-            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 50) injuries = 0.5;
-            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 70) injuries = 0.6;
-            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 90) injuries = 0.8;
-            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 110) injuries = 0.9;
-            else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 130) injuries = 0.95;
-            else injuries = 1;
+                }
 
-            if (vertSpeed_mph > 26) injuries = 1;
-            else if (vertSpeed_mph > 23) injuries += 0.85;
-            else if (vertSpeed_mph > 20) injuries += 0.75;
-            else if (vertSpeed_mph > 15) injuries += 0.6;
-            else if (vertSpeed_mph > 13) injuries += 0.4;
-            else if (vertSpeed_mph > 12) injuries += 0.3;
-            else if (vertSpeed_mph > 11) injuries += 0.2;
 
-            if (injuries > 1) injuries = 1;
 
-            //We would do some probability-based kills here rather than just injuries.  Like if they are 90% injured maybe they have a 25% probability of death or whatever.
+                /* //This is the old way of doing it
+                //vel_mps vel_mph heading pitch
 
-            if (killType == 2 && injuries <= 0.2) injuries = injuries / 2; //If it is a self-injury on the ground and slow speed we are going to assume it is a fairly non-serious dumb thing the player did, and reduce the extent of injuries. If done by another person/player/actor, though we'll assume it is more serious 
+                if (Z_AltitudeAGL < 5 && VelocityMPH < 10) injuries = 0.1;
+                else if (Z_AltitudeAGL < 4 && VelocityMPH < 30) injuries = 0.2;
+                else if (Z_AltitudeAGL < 3 && VelocityMPH < 70) injuries = 0.5;
+                else if (Z_AltitudeAGL < 2 && VelocityMPH < 100) injuries = 0.9;
+                else injuries = 1;
 
-            /*if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " Army " + actor.Army() + " ZvelocityMACH in MPH " + (Z_VelocityMach * 600).ToString("0.00000") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " vel_mps " + vel_mps.ToString("N1") + " vel_mph " + vel_mph.ToString("N1") + " heading " + heading.ToString("N1") + " pitch " + pitch.ToString("N1") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
-                + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " Mvel_mph " + maxAp.vel_mph.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " Mpitch " + maxAp.pitch.ToString("N1")
-                );
-            */
+                */
+                /* http://boards.straightdope.com/sdmb/showpost.php?p=19162752&postcount=16 
+                 * 300 fpm or less = 3.5mph, good landing
+                 * 600-800 fpm = 8 mph, slightly hard landing
+                 * 1000 fpm = 11 mph, very hard, some damage
+                 * 1500 fpm = 17 mph, definite damage, edge of much damage
+                 * 2000 fpm = 23 mph, getting into serious damage
+                 * 
+                 */
+
+                double vertSpeed_mph = StatCalcs.meterspsec2milesphour(usedAP.Vwld.z);
+                if (vertSpeed_mph >= 0) vertSpeed_mph = 0;
+                vertSpeed_mph = Math.Abs(vertSpeed_mph);
+                double operativeVel_MPH = usedAP.vel_mph + 2 * vertSpeed_mph;
+
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 0: {0} {1:F1} {2:F1} {3:F1} {4:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH, usedAP.vel_mph, vertSpeed_mph);
+
+                //If they are quite low & slow we'll start out by assumming they're OK.
+                if (Z_AltitudeAGL < 7 && operativeVel_MPH < 20) injuries = 0;
+
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 1: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH);
+
+                if (Z_AltitudeAGL < 5 && operativeVel_MPH < 10) injuries = 0.1;
+                else if (Z_AltitudeAGL < 5 && operativeVel_MPH < 30) injuries = 0.2;
+                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 50) injuries = 0.5;
+                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 70) injuries = 0.6;
+                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 90) injuries = 0.8;
+                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 110) injuries = 0.9;
+                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 130) injuries = 0.95;
+                else injuries = 1;
+
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 2: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH);
+
+                if (vertSpeed_mph > 26) injuries = 1;
+                else if (vertSpeed_mph > 23) injuries += 0.85;
+                else if (vertSpeed_mph > 20) injuries += 0.75;
+                else if (vertSpeed_mph > 15) injuries += 0.6;
+                else if (vertSpeed_mph > 13) injuries += 0.4;
+                else if (vertSpeed_mph > 12) injuries += 0.3;
+                else if (vertSpeed_mph > 11) injuries += 0.2;
+
+                if (injuries > 1) injuries = 1;
+
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 3: {0} {1:F1} ", injuries.ToString("N1"), vertSpeed_mph);
+
+                //We would do some probability-based kills here rather than just injuries.  Like if they are 90% injured maybe they have a 25% probability of death or whatever.
+
+                if (killType == 2 && injuries <= 0.2) injuries = injuries / 2; //If it is a self-injury on the ground and slow speed we are going to assume it is a fairly non-serious dumb thing the player did, and reduce the extent of injuries. If done by another person/player/actor, though we'll assume it is more serious 
+
+                /*if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " Army " + actor.Army() + " ZvelocityMACH in MPH " + (Z_VelocityMach * 600).ToString("0.00000") + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " vel_mps " + vel_mps.ToString("N1") + " vel_mph " + vel_mph.ToString("N1") + " heading " + heading.ToString("N1") + " pitch " + pitch.ToString("N1") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
+                    + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " Mvel_mph " + maxAp.vel_mph.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " Mpitch " + maxAp.pitch.ToString("N1")
+                    );
+                */
+
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
+                        + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " vel_mph " + vel_mph.ToString("N1"));
+            }
+            catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
 
         }
-        if (stb_Debug) System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("N1"));
+        //if (stb_Debug)
+            System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("N1"));
         return injuries;
     }
 
@@ -7599,13 +7804,13 @@ struct
                 }
                 else if (recordedInjuries > 0 || !bothPositionsDead)
                 {
-                    //Console.WriteLine("OnPlayerDead: Player " + playerName + " injuries were recorded, but no death");
+                    Console.WriteLine("OnPlayerDead: Player " + playerName + " injuries were recorded, but no death");
                     //we can do other things here, like save the injuries to the stats file and/or give them a timeout depending on how 
                     //serious the injuries were.  But for now, we just proceed since it wasn't an actual death.
                 }
                 if (!aircraftDead && recordedInjuries == 1 && !bothPositionsDead)
                 {
-                    //Console.WriteLine("OnPlayerDead: Player " + playerName + " had one position/place killed, but the other still remains alive.  So we record a death on the player's stats but don't actually kill this personality yet.");
+                    Console.WriteLine("OnPlayerDead: Player " + playerName + " had one position/place killed, but the other still remains alive.  So we record a death on the player's stats but don't actually kill this personality yet.");
                     StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 778, 1 }, player.Place() as AiActor);
                     stb_StatRecorder.StbSr_EnqueueTask(sst0);
                     stb_SaveIPlayerStat.StbSis_AddSessStat(player, 778, 1);//Also save this for current session stats
@@ -7615,6 +7820,7 @@ struct
                 double dist = Stb_distanceToNearestAirport(actor);
                 if (bothPositionsDead && (recordedInjuries >= 0.5 || dist > 2000))
                 {
+                    Console.WriteLine("Stats, both positions dead, injuries greater than 50% or dist from airport > 2000 - " + player.Name());
                     stb_recordAircraftWrittenOff(player, actor, recordedInjuries, dist);
                     if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                 }
@@ -8723,6 +8929,8 @@ struct
                     double dist = Stb_distanceToNearestAirport(actor);
                     if (injuries >= 0.5 || stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
                     {
+
+                        Console.WriteLine("Stats, aircraft written off: Injuries greater than 50% or stb_aircraftKilled contains the a/c - " + player.Name());
                         stb_recordAircraftWrittenOff(player, actor, injuries, dist);
 
                         //SUPPLY: Loss of a/c, even if life saved
@@ -8733,6 +8941,7 @@ struct
                     else if (dist > 2000 && aircraft == null) //this is the case where we are more than 2000 m from airport AND player has left  the a/c (aircraft == null) so we are being sent through this routine with no a/c attached
                                                               //Note that we DO NOT write off the a/c if the player has landed and is just sitting in it uninjured.  They might just take off again, which would be AOK if they can successfully do it.
                     {
+                        Console.WriteLine("Stats, dist from airport>2000, aircraft==null - " + player.Name());
                         stb_recordAircraftWrittenOff(player, actor, injuries, dist);
                     }
 
@@ -9191,7 +9400,7 @@ struct
                 StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { record }, player.Place() as AiActor);
                 stb_StatRecorder.StbSr_EnqueueTask(sst1);
 
-
+                Console.WriteLine("Parachute failed - aircraft write-off, damage 100% - " + player.Name());
                 stb_recordAircraftWrittenOff(player, actor, 1);
 
             }

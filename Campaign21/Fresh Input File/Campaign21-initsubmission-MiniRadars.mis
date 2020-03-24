@@ -18,50 +18,90 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static0 Stationary.Radar.Wotan_II de 266719.31 193028.38 659.10 
-  Static1 Stationary.Environment.JerryCan_GER1_1 nn 266706.00 193035.20 659.10 
-  Static2 Stationary.Environment.JerryCan_GER1_1 nn 266715.66 193019.25 659.10 
-  Static3 Stationary.Environment.JerryCan_GER1_1 nn 266732.56 193025.69 659.10 
-  Static4 Stationary.Environment.JerryCan_GER1_1 nn 266723.72 193042.47 659.10 
-  Static5 Stationary.Radar.Wotan_II de 264833.13 166251.84 659.10 
+  Static9 Stationary.Environment.JerryCan_GER1_1 nn 264829.47 166242.72 659.10 
   Static6 Stationary.Environment.JerryCan_GER1_1 nn 264819.81 166258.67 659.10 
+  Static5 Stationary.Radar.Wotan_II de 264833.13 166251.84 659.10 
   Static7 Stationary.Environment.JerryCan_GER1_1 nn 264846.38 166249.14 659.10 
   Static8 Stationary.Environment.JerryCan_GER1_1 nn 264837.53 166265.92 659.10 
-  Static9 Stationary.Environment.JerryCan_GER1_1 nn 264829.47 166242.72 659.10 
-  Static10 Stationary.Radar.Wotan_II de 288993.06 218087.14 659.10 
+  Static2 Stationary.Environment.JerryCan_GER1_1 nn 266715.66 193019.25 659.10 
+  Static1 Stationary.Environment.JerryCan_GER1_1 nn 266706.00 193035.20 659.10 
+  Static0 Stationary.Radar.Wotan_II de 266719.31 193028.38 659.10 
+  Static3 Stationary.Environment.JerryCan_GER1_1 nn 266732.56 193025.69 659.10 
+  Static4 Stationary.Environment.JerryCan_GER1_1 nn 266723.72 193042.47 659.10 
+  Static39 Stationary.Environment.JerryCan_GER1_1 gb 134308.89 197571.41 659.10 
+  Static36 Stationary.Environment.JerryCan_GER1_1 nn 134299.25 197587.36 659.10 
+  Static35 Stationary.Radar.Wotan_II gb 134312.56 197580.55 659.10 
+  Static37 Stationary.Environment.JerryCan_GER1_1 nn 134325.81 197577.84 659.10 
+  Static38 Stationary.Environment.JerryCan_GER1_1 nn 134316.95 197594.63 659.10 
+  Static44 Stationary.Environment.JerryCan_GER1_1 nn 190719.31 201579.83 659.10 
+  Static41 Stationary.Environment.JerryCan_GER1_1 nn 190709.66 201595.78 659.10 
+  Static40 Stationary.Radar.Wotan_II gb 190722.97 201588.97 659.10 
+  Static42 Stationary.Environment.JerryCan_GER1_1 gb 190736.23 201586.27 659.10 
+  Static43 Stationary.Environment.JerryCan_GER1_1 nn 190727.38 201603.05 659.10 
+  Static14 Stationary.Environment.JerryCan_GER1_1 nn 288989.41 218078.02 659.10 
   Static11 Stationary.Environment.JerryCan_GER1_1 nn 288979.75 218093.97 659.10 
+  Static10 Stationary.Radar.Wotan_II de 288993.06 218087.14 659.10 
   Static12 Stationary.Environment.JerryCan_GER1_1 nn 289006.31 218084.45 659.10 
   Static13 Stationary.Environment.JerryCan_GER1_1 nn 288997.44 218101.23 659.10 
-  Static14 Stationary.Environment.JerryCan_GER1_1 nn 288989.41 218078.02 659.10 
-  Static15 Stationary.Radar.Wotan_II de 327244.34 227587.44 659.10 
+  Static19 Stationary.Environment.JerryCan_GER1_1 nn 327240.69 227578.30 659.10 
   Static16 Stationary.Environment.JerryCan_GER1_1 nn 327231.03 227594.25 659.10 
+  Static15 Stationary.Radar.Wotan_II de 327244.34 227587.44 659.10 
   Static17 Stationary.Environment.JerryCan_GER1_1 nn 327257.59 227584.73 659.10 
   Static18 Stationary.Environment.JerryCan_GER1_1 nn 327248.75 227601.52 659.10 
-  Static19 Stationary.Environment.JerryCan_GER1_1 nn 327240.69 227578.30 659.10 
-  Static20 Stationary.Radar.Wotan_II gb 244253.73 233078.14 659.10 
+  Static24 Stationary.Environment.JerryCan_GER1_1 nn 244250.08 233069.02 659.10 
   Static21 Stationary.Environment.JerryCan_GER1_1 nn 244240.42 233084.97 659.10 
+  Static20 Stationary.Radar.Wotan_II gb 244253.73 233078.14 659.10 
   Static22 Stationary.Environment.JerryCan_GER1_1 nn 244267.00 233075.45 659.10 
   Static23 Stationary.Environment.JerryCan_GER1_1 nn 244258.14 233092.23 659.10 
-  Static24 Stationary.Environment.JerryCan_GER1_1 nn 244250.08 233069.02 659.10 
-  Static25 Stationary.Radar.Wotan_II gb 253029.03 259510.66 659.10 
+  Static29 Stationary.Environment.JerryCan_GER1_1 nn 253025.38 259501.52 659.10 
   Static26 Stationary.Environment.JerryCan_GER1_1 nn 253015.72 259517.47 659.10 
+  Static25 Stationary.Radar.Wotan_II gb 253029.03 259510.66 659.10 
   Static27 Stationary.Environment.JerryCan_GER1_1 nn 253042.30 259507.95 659.10 
   Static28 Stationary.Environment.JerryCan_GER1_1 nn 253033.44 259524.73 659.10 
-  Static29 Stationary.Environment.JerryCan_GER1_1 nn 253025.38 259501.52 659.10 
-  Static20 Stationary.Radar.Wotan_II gb 218306.16 261855.97 659.10 
-  Static30 Stationary.Environment.JerryCan_GER1_1 nn 218292.84 261862.80 659.10 
-  Static31 Stationary.Environment.JerryCan_GER1_1 nn 218319.42 261853.27 659.10 
-  Static32 Stationary.Environment.JerryCan_GER1_1 nn 218310.56 261870.05 659.10 
-  Static33 Stationary.Environment.JerryCan_GER1_1 nn 218302.50 261846.84 659.10 
-  Static25 Stationary.Radar.Wotan_II gb 134312.56 197580.55 659.10 
-  Static34 Stationary.Environment.JerryCan_GER1_1 nn 134299.25 197587.36 659.10 
-  Static35 Stationary.Environment.JerryCan_GER1_1 nn 134325.81 197577.84 659.10 
-  Static36 Stationary.Environment.JerryCan_GER1_1 nn 134316.95 197594.63 659.10 
-  Static37 Stationary.Environment.JerryCan_GER1_1 gb 134308.89 197571.41 659.10 
-  Static20 Stationary.Radar.Wotan_II gb 190722.97 201588.97 659.10 
-  Static25 Stationary.Environment.JerryCan_GER1_1 nn 190709.66 201595.78 659.10 
-  Static37 Stationary.Environment.JerryCan_GER1_1 gb 190736.23 201586.27 659.10 
-  Static38 Stationary.Environment.JerryCan_GER1_1 nn 190727.38 201603.05 659.10 
-  Static39 Stationary.Environment.JerryCan_GER1_1 nn 190719.31 201579.83 659.10 
+  Static34 Stationary.Environment.JerryCan_GER1_1 nn 218302.50 261846.84 659.10 
+  Static31 Stationary.Environment.JerryCan_GER1_1 nn 218292.84 261862.80 659.10 
+  Static30 Stationary.Radar.Wotan_II gb 218306.16 261855.97 659.10 
+  Static32 Stationary.Environment.JerryCan_GER1_1 nn 218319.42 261853.27 659.10 
+  Static33 Stationary.Environment.JerryCan_GER1_1 nn 218310.56 261870.05 659.10 
+  Static45 Stationary.Radar.Wotan_II de 274708.13 201374.89 659.10 
+  Static46 Stationary.Environment.JerryCan_GER1_1 nn 274694.81 201381.72 659.10 
+  Static47 Stationary.Environment.JerryCan_GER1_1 nn 274721.38 201372.19 659.10 
+  Static48 Stationary.Environment.JerryCan_GER1_1 nn 274712.53 201388.97 659.10 
+  Static49 Stationary.Environment.JerryCan_GER1_1 nn 274704.47 201365.77 659.10 
+  Static50 Stationary.Radar.Wotan_II de 277578.19 208242.72 659.10 
+  Static51 Stationary.Environment.JerryCan_GER1_1 nn 277564.88 208249.53 659.10 
+  Static52 Stationary.Environment.JerryCan_GER1_1 nn 277591.44 208240.02 659.10 
+  Static53 Stationary.Environment.JerryCan_GER1_1 nn 277582.59 208256.80 659.10 
+  Static54 Stationary.Environment.JerryCan_GER1_1 nn 277574.53 208233.58 659.10 
+  Static55 Stationary.Radar.Wotan_II de 277424.22 156268.25 659.10 
+  Static56 Stationary.Environment.JerryCan_GER1_1 nn 277410.91 156275.08 659.10 
+  Static57 Stationary.Environment.JerryCan_GER1_1 nn 277437.50 156265.56 659.10 
+  Static58 Stationary.Environment.JerryCan_GER1_1 nn 277428.63 156282.34 659.10 
+  Static59 Stationary.Environment.JerryCan_GER1_1 nn 277420.56 156259.13 659.10 
+  Static60 Stationary.Radar.Wotan_II gb 72110.73 180093.45 659.10 
+  Static61 Stationary.Environment.JerryCan_GER1_1 nn 72097.42 180100.27 659.10 
+  Static62 Stationary.Environment.JerryCan_GER1_1 nn 72124.00 180090.75 659.10 
+  Static63 Stationary.Environment.JerryCan_GER1_1 nn 72115.13 180107.53 659.10 
+  Static64 Stationary.Environment.JerryCan_GER1_1 nn 72107.08 180084.31 659.10 
+  Static65 Stationary.Radar.Wotan_II gb 77878.90 191391.88 659.10 
+  Static66 Stationary.Environment.JerryCan_GER1_1 nn 77865.59 191398.70 659.10 
+  Static67 Stationary.Environment.JerryCan_GER1_1 nn 77892.16 191389.17 659.10 
+  Static68 Stationary.Environment.JerryCan_GER1_1 nn 77883.30 191405.97 659.10 
+  Static69 Stationary.Environment.JerryCan_GER1_1 nn 77875.24 191382.75 659.10 
+  Static70 Stationary.Radar.Wotan_II gb 250531.73 244562.00 659.10 
+  Static71 Stationary.Environment.JerryCan_GER1_1 nn 250518.42 244568.81 659.10 
+  Static72 Stationary.Environment.JerryCan_GER1_1 nn 250544.98 244559.30 659.10 
+  Static73 Stationary.Environment.JerryCan_GER1_1 nn 250536.13 244576.08 659.10 
+  Static74 Stationary.Environment.JerryCan_GER1_1 nn 250528.08 244552.86 659.10 
+  Static75 Stationary.Radar.Wotan_II gb 236454.05 248239.05 659.10 
+  Static76 Stationary.Environment.JerryCan_GER1_1 nn 236440.73 248245.88 659.10 
+  Static77 Stationary.Environment.JerryCan_GER1_1 nn 236467.31 248236.34 659.10 
+  Static78 Stationary.Environment.JerryCan_GER1_1 nn 236458.45 248253.13 659.10 
+  Static79 Stationary.Environment.JerryCan_GER1_1 nn 236450.39 248229.91 659.10 
+  Static80 Stationary.Radar.Wotan_II gb 182028.06 266766.66 659.10 
+  Static81 Stationary.Environment.JerryCan_GER1_1 nn 182014.75 266773.47 659.10 
+  Static82 Stationary.Environment.JerryCan_GER1_1 nn 182041.31 266763.94 659.10 
+  Static83 Stationary.Environment.JerryCan_GER1_1 nn 182032.45 266780.72 659.10 
+  Static84 Stationary.Environment.JerryCan_GER1_1 nn 182024.39 266757.50 659.10 
 [Buildings]
 [BuildingsLinks]

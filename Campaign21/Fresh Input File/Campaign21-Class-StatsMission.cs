@@ -534,6 +534,7 @@ public class StatsMission : AMission, IStatsMission
     //public StbSaveIPlayerStat stb_SaveIPlayerStat;
     //public IStbSaveIPlayerStat stb_ISaveIPlayerStat;    
     public StbAircraftParamStack stb_AircraftParamStack;
+    public StbCheckAircraftParamStack stb_checkAircraftParamStack;
     //public KilledActorsWrapper stb_KilledActors;
 
 
@@ -600,7 +601,7 @@ public class StatsMission : AMission, IStatsMission
 
         public Point3d Loc;
         public Vector3d Vwld;
-        public double time_tick = 0;
+        public long time_tick = 0;
 
         public double Z_AltitudeAGL = 0;
         public double Z_VelocityMach = 0;
@@ -666,11 +667,7 @@ public class StatsMission : AMission, IStatsMission
 
                 //vel_mps vel_mph heading pitch
 
-
             }
-
-
-
         }
 
 
@@ -696,6 +693,43 @@ public class StatsMission : AMission, IStatsMission
         }
     }
 
+   //So this is not ideal, but . . . 
+   //ParamStack_recurs is supposed to run every 0.2 seconds throughout the msision.  But for some reason it stops.
+   //So this monitors it preiodically & restarts if it stops.
+    
+    public class StbCheckAircraftParamStack
+    {
+        int check_intv_sec = 45;
+        int wait_to_restart_sec = 5; //should be less than check_intv_sec
+        long lastParamsRun = -1;
+    
+        StatsMission msn = null;
+
+        public StbCheckAircraftParamStack (StbAircraftParamStack APS, StatsMission ms)
+        {
+            msn = ms;
+            checkAircraftParamStack_recurs(APS);
+        }
+
+        private void checkAircraftParamStack_recurs(StbAircraftParamStack APS)
+        {
+            msn.Timeout(check_intv_sec, () => checkAircraftParamStack_recurs(APS));
+            if (APS.paramsRun == lastParamsRun)
+            {
+                APS.stop_recurs = true;
+                msn.Timeout(wait_to_restart_sec, () =>
+                {
+                    APS.stop_recurs = false;
+                    APS.saveAircraftParams_recurs();
+                }
+                );
+                Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
+            }
+            lastParamsRun = APS.paramsRun;
+        }
+
+    }
+
 
 
     //Save aircraft state for players periodically & save the last few seconds data, so that when something happens (ie crash, landing,
@@ -711,11 +745,13 @@ public class StatsMission : AMission, IStatsMission
         public StbAircraftParamStack(StatsMission m)
         {
             mission = m;
-            saveAircraftParamsRecursive();
+            saveAircraftParams_recurs();
         }
 
         private void addParams(Player player)
         {
+
+            if (player.Place() == null || player.Name() == null) return;
 
             CircularArray<AircraftParams> apa = new CircularArray<AircraftParams>(array_size);
 
@@ -876,15 +912,25 @@ public class StatsMission : AMission, IStatsMission
             int numGlitch = -1;
 
             long currTime_ticks = StatCalcs.TimeSince2016_ticks();
-            long staleTime_ticks = TimeSpan.TicksPerSecond * 5; //calling the data stale after 5 seconds
+            long staleTime_tick = TimeSpan.TicksPerSecond * 5; //calling the data stale after 5 seconds
 
             //return apa.ArrayStack;
             foreach (AircraftParams ap in apa.ArrayStack)
             {
-                if (ap.time_tick - currTime_ticks > staleTime_ticks)
+                long timeDiff_tick = Math.Abs(currTime_ticks - ap.time_tick);
+                try
+                {
+                    Console.WriteLine("apGlitchNumber: {0:F1} glitchCount: {1:F1} number of Glitch: {2:F1} timeDiff: {3:F2}", inc, glitchCount, numGlitch, timeDiff_tick / TimeSpan.TicksPerSecond);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("apMAX error5A: " + ex.ToString());
+                }
+
+                if (timeDiff_tick > staleTime_tick)
                 {
                     numGlitch = inc;
-                    Console.WriteLine("apGlitch: ap stale due to elapsed time: {0:F2} seconds ", (ap.time_tick - currTime_ticks)/TimeSpan.TicksPerSecond);
+                    Console.WriteLine("apGlitchTimeDiff: {0:F2} seconds ", timeDiff_tick / TimeSpan.TicksPerSecond);
                     break;
                 }
                 if (ap.Vwld.z != 0 && ap.vel_mph != 0)
@@ -897,8 +943,7 @@ public class StatsMission : AMission, IStatsMission
             }
             try {
                 Console.WriteLine("apGlitchWarning: number: {0:F1} glitchCount: {1:F1} number of Glitch: {2:F1}", inc, glitchCount, numGlitch);
-
-            } catch (Exception ex) { Console.WriteLine("apMAX error5: " + ex.ToString()); }
+             } catch (Exception ex) { Console.WriteLine("apMAX error5: " + ex.ToString());  }
 
             if (glitchCount == 1)
             {
@@ -924,22 +969,30 @@ public class StatsMission : AMission, IStatsMission
 
         }
 
-        private void saveAircraftParamsRecursive()
+        public long paramsRun = 0;
+        public bool stop_recurs = false;
+
+        public void saveAircraftParams_recurs()
         {
             try
             {
-
-                mission.Timeout(recursInterval, () => { Task.Run(() => saveAircraftParamsRecursive()); });
-
+                if (stop_recurs) return;
+                mission.Timeout(recursInterval, () =>  saveAircraftParams_recurs() );
+                paramsRun++;
+                if (paramsRun % 50 == 0) Console.WriteLine("saveAircraftParamsRecursive {0} {1}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), paramsRun);
                 //Task.Run( ()=>
+                {
+                    if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
                     {
-                        if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
+                        foreach (Player p in mission.GamePlay.gpRemotePlayers())
                         {
-                            foreach (Player p in mission.GamePlay.gpRemotePlayers())
+                            try
                             {
                                 addParams(p);
                             }
+                            catch (Exception ex) { Console.WriteLine("saveAircraftParamsError: " + ex.ToString()); }
                         }
+                    }
                         if (mission.GamePlay.gpPlayer() != null)
                         {
 
@@ -4766,6 +4819,8 @@ struct
             //stb_ISaveIPlayerStat = stb_SaveIPlayerStat;
 
             stb_AircraftParamStack = new StbAircraftParamStack(this);
+
+            stb_checkAircraftParamStack = new StbCheckAircraftParamStack(stb_AircraftParamStack, this);
 
             //stb_KilledActors = new KilledActorsWrapper(); // keeps track of all damage to actor & which actor did it, so it can be compiled for stats purposes later
 

@@ -158,7 +158,7 @@ public class CoverMission : AMission, ICoverMission
         Task.Run(() =>
         {
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVSAXX1-1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-            allStaticActors = coverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
+            allStaticActors = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
             SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         });
@@ -177,20 +177,20 @@ public class CoverMission : AMission, ICoverMission
     //Returns an objective point & radius that point p lies within.
     //If it lies within mroe than one objective, it chooses the objective with the smallest radius to return
     private Tuple<Point3d?, double> ObjectivesRadius_m(Point3d p) //center point, radius
+    {
+        double r = 10000000;
+        Tuple<Point3d?, double> ret = new Tuple<Point3d?, double>(null, 0);
+        foreach (string key in SMissionObjectivesList.Keys)
         {
-            double r = 10000000;
-            Tuple<Point3d?, double> ret = new Tuple<Point3d?, double>(null, 0);
-            foreach (string key in SMissionObjectivesList.Keys)
+            IMissionObjective mo = SMissionObjectivesList[key];
+            if (CoverCalcs.CalculatePointDistance(mo.Pos, p) < mo.TriggerDestroyRadius && mo.TriggerDestroyRadius <= r)
             {
-                IMissionObjective mo = SMissionObjectivesList[key];
-                if (coverCalcs.CalculatePointDistance(mo.Pos, p) < mo.TriggerDestroyRadius && mo.TriggerDestroyRadius <= r)
-                {
-                    ret = new Tuple<Point3d?, double>(mo.Pos, mo.TriggerDestroyRadius);
-                    r = mo.TriggerDestroyRadius;
-                }
+                ret = new Tuple<Point3d?, double>(mo.Pos, mo.TriggerDestroyRadius);
+                r = mo.TriggerDestroyRadius;
             }
-            return ret;
         }
+        return ret;
+    }
 
         int stb_lastMissionLoaded = -1;
 
@@ -613,7 +613,7 @@ public class CoverMission : AMission, ICoverMission
             return p;
         }
 
-        Point3d res = coverCalcs.rollingAverage(storedRollingAverages[key], newpoint, rolls);
+        Point3d res = CoverCalcs.rollingAverage(storedRollingAverages[key], newpoint, rolls);
         storedRollingAverages[key] = res;
         return res;
     }
@@ -631,10 +631,10 @@ public class CoverMission : AMission, ICoverMission
 
         Vector3d player_vwld = (player.Place() as AiAircraft).AirGroup().Vwld();
 
-        double player_vel_mph = coverCalcs.meterspsec2milesphour(coverCalcs.distance(player_vwld.x, player_vwld.y));
-        double player_vel_kph = coverCalcs.miles2meters(player_vel_mph) / 1000;
-        string player_vel = ((double)(coverCalcs.RoundInterval(player_vel_mph * 1, 5)) / 1).ToString("F0") + "mph ";
-        if (player.Army() == 2) player_vel = ((double)(coverCalcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
+        double player_vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(player_vwld.x, player_vwld.y));
+        double player_vel_kph = CoverCalcs.miles2meters(player_vel_mph) / 1000;
+        string player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_mph * 1, 5)) / 1).ToString("F0") + "mph ";
+        if (player.Army() == 2) player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
 
         string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
         retmsg += smsg + nl;
@@ -659,38 +659,38 @@ public class CoverMission : AMission, ICoverMission
             count++;
             double alt_m = aircraft.Pos().z;
             double alt_km = alt_m / 1000;
-            double alt_angels = coverCalcs.Feet2Angels(coverCalcs.meters2feet(alt_m));
+            double alt_angels = CoverCalcs.Feet2Angels(CoverCalcs.meters2feet(alt_m));
             string alt_msg = string.Format("{0:N0} m, ", alt_m);
             if (player.Army() == 1) alt_msg = string.Format("Angels {0:N0}, ", alt_angels);
             string msg = "";
 
-            if (playerPlace == null) msg = "#" + count.ToString() + " " + coverCalcs.GetAircraftType(aircraft) + " at " + alt_msg + coverCalcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
+            if (playerPlace == null) msg = "#" + count.ToString() + " " + CoverCalcs.GetAircraftType(aircraft) + " at " + alt_msg + CoverCalcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
             else
             {
-                double dis_m = coverCalcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
-                double dis_mi = (coverCalcs.meters2miles(dis_m));
+                double dis_m = CoverCalcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
+                double dis_mi = (CoverCalcs.meters2miles(dis_m));
                 int dis_10 = (int)dis_mi;
-                double bearing = coverCalcs.CalculateGradientAngle(playerPlace.Pos(), aircraft.Pos());
-                double bearing_10 = coverCalcs.GetDegreesIn10Step(bearing);
+                double bearing = CoverCalcs.CalculateGradientAngle(playerPlace.Pos(), aircraft.Pos());
+                double bearing_10 = CoverCalcs.GetDegreesIn10Step(bearing);
                 string ang = "A" + alt_angels.ToString("F0") + " ";
                 string mi = dis_mi.ToString("F0") + "mi";
                 string mi_10 = dis_10.ToString("F0") + "mi";
-                double vel_mph = coverCalcs.meterspsec2milesphour(coverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
-                double vel_kph = coverCalcs.miles2meters(vel_mph) / 1000;
-                string vel = ((double)(coverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph ";
+                double vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
+                double vel_kph = CoverCalcs.miles2meters(vel_mph) / 1000;
+                string vel = ((double)(CoverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph ";
                 string numAC = airGroup.NOfAirc.ToString();
 
                 if (player.Army() == 2) //metric for the Germanos . . . 
                 {
                     mi = (dis_m / 1000).ToString("F0") + "k";
                     mi_10 = mi;
-                    if (dis_m > 30000) mi_10 = ((double)(coverCalcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
+                    if (dis_m > 30000) mi_10 = ((double)(CoverCalcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
 
                     //ft = alt_km.ToString("F2") + "k ";                                        
-                    ang = ((double)(coverCalcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
-                    vel = ((double)(coverCalcs.RoundInterval(vel_kph * 10, 5)) / 10).ToString("F0") + "kph ";
+                    ang = ((double)(CoverCalcs.RoundInterval(alt_km * 10, 5)) / 10).ToString("F1") + "k ";
+                    vel = ((double)(CoverCalcs.RoundInterval(vel_kph * 10, 5)) / 10).ToString("F0") + "kph ";
                 }
-                msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + " - " + numAC + "x" + coverCalcs.GetAircraftType(aircraft);
+                msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
             }
 
             //AiAirGroupTask task = airGroup.getTask();
@@ -751,11 +751,19 @@ public class CoverMission : AMission, ICoverMission
         foreach (ArmiesE a in armylist)
         {
             string smsg = string.Format(">>>>>Available cover aircraft/bombers for {0}", a);
-            if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+            Timeout(0.03, () =>
+            {
+                if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+            });
+
             retmsg += smsg + nl;
 
             smsg = string.Format("ID# - Aircraft - Number remaining in supply", a);
-            if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+            Timeout(0.04, () =>
+            {
+                if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+            });
+
             retmsg += smsg + nl;
 
             //foreach (string acName in CoverAircraftCurrentlyAvailable[army])
@@ -764,7 +772,7 @@ public class CoverMission : AMission, ICoverMission
             {
                 if (aircraft != null && isFighterAllowedCover(aircraft) && !isHeavyBomber(key)) continue; //for fighter-bombers, they are only allowed ot choose heavy bombers to cover, no fighters.
                 i++;
-                string msg = string.Format("#{0} {1} {2}", i, coverCalcs.ParseTypeName(key), CoverAircraftCurrentlyAvailable[a][key]);
+                string msg = string.Format("#{0} {1} {2}", i, CoverCalcs.ParseTypeName(key), CoverAircraftCurrentlyAvailable[a][key]);
 
                 if (display)
                 {
@@ -785,7 +793,11 @@ public class CoverMission : AMission, ICoverMission
         }
 
         string msg3 = acAvailableToPlayer_msg(player);
-        GamePlay.gpLogServer(new Player[] { player }, msg3, new object[] { });
+        Timeout(0.02, () =>
+        {
+            GamePlay.gpLogServer(new Player[] { player }, msg3, new object[] { });
+        });
+
         retmsg += msg3 + nl;
 
         int numCheckedOut = numberAircraftCurrentlyCheckedOutPlayer(player);
@@ -795,7 +807,10 @@ public class CoverMission : AMission, ICoverMission
 
         int maximumCheckoutsAllowedAtOnce = checkoutsAvailableToPlayer_num(player);
 
-        GamePlay.gpLogServer(new Player[] { player }, "You have {0} aircraft escorting you, of {1} maximum allowed at one time.", new object[] { numCheckedOut, maximumCheckoutsAllowedAtOnce });
+        Timeout(0.02, () =>
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "You have {0} aircraft escorting you, of {1} maximum allowed at one time.", new object[] { numCheckedOut, maximumCheckoutsAllowedAtOnce });
+        });
 
         return retmsg;
     }
@@ -812,7 +827,7 @@ public class CoverMission : AMission, ICoverMission
         string rankExpl = "";
         if (TWCStbStatRecorder != null)
         {
-            int numPlayer = coverCalcs.numPlayersInArmy(player.Army(), this);
+            int numPlayer = CoverCalcs.numPlayersInArmy(player.Army(), this);
             rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name()) + typeOfACexpl + " and with " + numPlayer.ToString() + " friendly players online";
         }
         int acAllowedThisPlayer = acAvailable + howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
@@ -829,7 +844,7 @@ public class CoverMission : AMission, ICoverMission
 
         int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
 
-        int numPlayer = coverCalcs.numPlayersInArmy(player.Army(), this);
+        int numPlayer = CoverCalcs.numPlayersInArmy(player.Army(), this);
 
         if (numPlayer > maxPlayersToAllowCover) { return 0; }
 
@@ -884,7 +899,7 @@ public class CoverMission : AMission, ICoverMission
         int maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
         if (isFighterAllowedCover(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
 
-        int numPlayer = coverCalcs.numPlayersInArmy(player.Army(), this);
+        int numPlayer = CoverCalcs.numPlayersInArmy(player.Army(), this);
 
         if (numPlayer > numPlayersToReduceCheckoutsEvenMore) { maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce/4; }
         else if (numPlayer > numPlayersToReduceCheckoutsMore) { maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce / 2; }
@@ -954,9 +969,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
         if (aircraftChoices.Count == 0) aircraftChoices = new List<string>(CoverAircraftCurrentlyAvailable[army].Keys);
 
-        retplane = coverCalcs.randSTR(aircraftChoices.ToArray());
+        retplane = CoverCalcs.randSTR(aircraftChoices.ToArray());
 
-        return coverCalcs.ParseTypeNameToPlainType(retplane);
+        return CoverCalcs.ParseTypeNameToPlainType(retplane);
 
     }
 
@@ -1191,7 +1206,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             string[] words = msg_orig.Split(' ');
 
             //Calcs.listStatics(GamePlay, new List<string>() { "smoke", "fire", "crater", "jerry" });
-            List<AiActor> closeStaticActors = new List<AiActor>(coverCalcs.gpGetAllGroundActorsNear(allStaticActors, p,r).ToList()); //1000?
+            List<AiActor> closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(allStaticActors, p,r).ToList()); //1000?
                                                                                                                                      //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
             foreach (AiActor act in closeStaticActors) Console.WriteLine("Actor: {0} {1}", act.Name(), (act as AiCart).InternalTypeName());
 
@@ -1229,9 +1244,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         }
         else if (msg.StartsWith("<glist"))
         {
-            AiActor[] aia = coverCalcs.gpGetGroundActors(this, 1);
+            AiActor[] aia = CoverCalcs.gpGetGroundActors(this, 1);
             //exit;
-            coverCalcs.listAllGroundActors(GamePlay);
+            CoverCalcs.listAllGroundActors(GamePlay);
             foreach (AiActor a in allStaticActors) Console.WriteLine(a.Name());
 
         }
@@ -1296,7 +1311,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
     private bool isFighterAllowedCover (AiAircraft aircraft)
     {
         if (aircraft == null) return false;
-        string acType = coverCalcs.GetAircraftType(aircraft);
+        string acType = CoverCalcs.GetAircraftType(aircraft);
         return isFighterAllowedCover(acType);
     }
     private bool isFighterAllowedCover(AiAirGroup airGroup)
@@ -1323,7 +1338,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
     private bool isBomberAllowedCover(AiAircraft aircraft)
     {
         if (aircraft == null) return false;
-        string acType = coverCalcs.GetAircraftType(aircraft);
+        string acType = CoverCalcs.GetAircraftType(aircraft);
         return isBomberAllowedCover(acType);
     }
     private bool isBomberAllowedCover(AiAirGroup airGroup)
@@ -1344,7 +1359,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
     private bool isHeavyBomber(AiAircraft aircraft)
         {
             if (aircraft == null) return false;
-            string acType = coverCalcs.GetAircraftType(aircraft);
+            string acType = CoverCalcs.GetAircraftType(aircraft);
             return isHeavyBomber(acType);
         }
         private bool isHeavyBomber(AiAirGroup airGroup)
@@ -1366,7 +1381,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         private bool isDiveBomber(AiAircraft aircraft)
         {
             if (aircraft == null) return false;
-            string acType = coverCalcs.GetAircraftType(aircraft);
+            string acType = CoverCalcs.GetAircraftType(aircraft);
             return isDiveBomber(acType);
         }
         private bool isDiveBomber(AiAirGroup airGroup)
@@ -1411,7 +1426,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         //Note that <cland # - the # ranges from 1-4, it's 1-based not 0-based.  Below -1 means land all groups.
         public void landCoverAircraft(Player player, string msg = "")
         {
-            int currTime_sec = coverCalcs.TimeSince2016_sec();
+            int currTime_sec = CoverCalcs.TimeSince2016_sec();
 
             //parse message to see if anything requested besides <cland [all]
             string[] sections = msg.Split(' ');
@@ -1558,7 +1573,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
                 AiActor actor = aircraft as AiActor;
 
-                int numInArmy = coverCalcs.numPlayersInArmy(player.Army(), this);
+                int numInArmy = CoverCalcs.numPlayersInArmy(player.Army(), this);
 
                 if (numInArmy > maxPlayersToAllowCover) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover available only when {0} or fewer players on your side. Please ask you fellow pilots to cover you.", new object[] { maxPlayersToAllowCover }); return; }
 
@@ -1687,12 +1702,12 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                             if (supplyLimitReached)
                             {
 
-                                GamePlay.gpLogServer(new Player[] { player }, "Supply limit reached for " + coverCalcs.ParseTypeName((a as AiCart).InternalTypeName()) + "; no aircraft available. Please try again to find an available aircraft.", new object[] { });
+                                GamePlay.gpLogServer(new Player[] { player }, "Supply limit reached for " + CoverCalcs.ParseTypeName((a as AiCart).InternalTypeName()) + "; no aircraft available. Please try again to find an available aircraft.", new object[] { });
                                 (a as AiCart).Destroy();
                                 continue;
                             }
                             itemsmade++;
-                            aircrafttype = coverCalcs.ParseTypeName((a as AiCart).InternalTypeName());
+                            aircrafttype = CoverCalcs.ParseTypeName((a as AiCart).InternalTypeName());
                             GamePlay.gpLogServer(new Player[] { player }, "Cover assigned: " + aircrafttype + " (" + (a as AiActor).Name() + ")", new object[] { });
                             //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, (a as AiActor));
                             if (TWCSupplyMission != null) TWCSupplyMission.SupplyAICheckout(player, a as AiActor);
@@ -1861,7 +1876,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
         if (player != null && player.Place() != null && (player.Place() as AiActor) != null)
         {
-            distToLeadAircraft = coverCalcs.CalculatePointDistance((player.Place() as AiActor).Pos(), airGroup.Pos());
+            distToLeadAircraft = CoverCalcs.CalculatePointDistance((player.Place() as AiActor).Pos(), airGroup.Pos());
         }
 
         Point3d oldTargetPoint = new Point3d(-1, -1, -1);
@@ -1957,7 +1972,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
             if (TWCKnickebeinMission != null) newTargetPoint = TWCKnickebeinMission.KniPoint(player);
 
-            double oldToNewTargetPointDistance_m = coverCalcs.CalculatePointDistance(oldTargetPoint, newTargetPoint);
+            double oldToNewTargetPointDistance_m = CoverCalcs.CalculatePointDistance(oldTargetPoint, newTargetPoint);
 
             //Console.WriteLine("Cover: KBPoint, dist: {0:F0} {1:F0} {2:F0} : {3:F0} {4:F0} {5:F0} : {6:F0}  ", new object[] { newTargetPoint.x, newTargetPoint.y, newTargetPoint.z, oldTargetPoint.x, oldTargetPoint.y, oldTargetPoint.z, oldToNewTargetPointDistance_m });
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
@@ -1968,7 +1983,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
             //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 8km to it, and haven't bombed yet, then DON'T CHANGE IT
             //This hopefully will increase the accuracy of bombers by not messing with their final run-in
-            if (bombing && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && oldToNewTargetPointDistance_m < 10 && airGroup.hasBombs() && coverCalcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 8000)
+            if (bombing && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && oldToNewTargetPointDistance_m < 10 && airGroup.hasBombs() && CoverCalcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 8000)
             {
                 return;
 
@@ -2293,9 +2308,12 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 string istr = i.ToString();
                 if (flight > 0) istr = flight.ToString() + istr;
 
+                string[] defSkins = { "default.jpg", "default.jpg", "default.jpg", "white1.jpg", "white2.jpg", "white3.jpg", "white1.jpg", "white2.jpg", "white3.jpg" };
+                string defaultSkin = CoverCalcs.randSTR(defSkins);
+
                 f.add(s, "Serial" + istr, serialNumber + istr);
                 if (skin_filename.Length > 0) f.add(s, "Skin" + istr, skin_filename);
-                else f.add(s, "Skin" + istr, "default.jpg");  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
+                else f.add(s, "Skin" + istr, defaultSkin);  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
 
 
                 //List<string> rlist = new List<string>();
@@ -2941,9 +2959,10 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         catch (Exception ex) { }
 
         List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.FOLLOW));
+        NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING));
         NewWaypoints.Add(EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe));
         airGroup.SetWay(NewWaypoints.ToArray());
+        fixWayPoints(airGroup);
         airGroup.setTask(AiAirGroupTask.LANDING, null); //try to force it . . . .
         Timeout(60, () =>
        {
@@ -2968,12 +2987,13 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
         coverAircraftAirGroupsActive.Remove(airGroup);
 
-        Timeout(240, () =>
+        /*Timeout(240, () =>
         //Timeout(6, () =>  //for testing
         {
                 //Console.WriteLine("-cover Aborting LANDING: Sending off map now " + airGroup.Name(), airGroup.getTask());
-                fixWayPoints(airGroup);
+                
         });
+        */
 
     }
 
@@ -3009,9 +3029,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 Point3d Vwld5 = storedRollingAverage(player, airGroup, "vwld", Vwld, 3); //rolling average of last 5 positions, used for climb rate/vertical speed. Trying just last 3 average instead of 5.
                                                                                          //if (Vwld)
 
-                double target_vel_mps = coverCalcs.CalculatePointDistance(Vwld2); //Not 100% sure mps is the right unit here?
+                double target_vel_mps = CoverCalcs.CalculatePointDistance(Vwld2); //Not 100% sure mps is the right unit here?
                 bool heavyBomber = isHeavyBomber(airGroup) || isDiveBomber(airGroup);
-                double targetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), playerAirGroup.Pos());
+                double targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), playerAirGroup.Pos());
 
             Tuple<double,double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
             double vel_mps = ret.Item1;
@@ -3046,13 +3066,13 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
                 //so, if the given point isn't exactly in the center of the objective circle, we will reduce our search radius
                 //to ensure that the final point is always within the objective circle
-                double distPosToCenter = coverCalcs.CalculatePointDistance(Obj_pos, pos);
+                double distPosToCenter = CoverCalcs.CalculatePointDistance(Obj_pos, pos);
                 double searchRadius = Obj_radius;
                 if (distPosToCenter <  Obj_radius) searchRadius = Obj_radius - distPosToCenter;
 
 
                     //Some linear algebra magic . . . 
-                    double dist = coverCalcs.CalculatePointDistance(pos, airGroup.Pos());
+                    double dist = CoverCalcs.CalculatePointDistance(pos, airGroup.Pos());
                     Point3d unit_vec_AGtoTarg = new Point3d((pos.x - airGroup.Pos().x) / dist, (pos.y - airGroup.Pos().y) / dist, 0);
                     Point3d unit_vec_perpAGtoTarg = new Point3d(-unit_vec_AGtoTarg.y, unit_vec_AGtoTarg.x, 0);
                     double randadd = ran.NextDouble() * searchRadius - searchRadius / 2;
@@ -3092,7 +3112,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 if (airgroupTargetPoints.ContainsKey(airGroup))
                 {
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (coverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m)
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m)
                     {
                         diveTarget = true;
                         Console.WriteLine("reusing old ground target");
@@ -3117,9 +3137,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                         Console.WriteLine("MBT: Trying to find a ground actor");
                         if (allStaticActors != null)
                             {
-                                List<AiActor> closeStaticActors = new List<AiActor>(coverCalcs.gpGetAllGroundActorsNear(allStaticActors, pos, maxMove_m).ToList()); //1000?
+                                List<AiActor> closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(allStaticActors, pos, maxMove_m).ToList()); //1000?
                                                                                                                                                                     //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
-                                coverCalcs.Shuffle(closeStaticActors);
+                                CoverCalcs.Shuffle(closeStaticActors);
                                 foreach (AiActor act in closeStaticActors)
                                 {
                                     if (act.IsAlive())
@@ -3222,9 +3242,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 //So we're calculting the climb/dive rate of the mainAC and then setting the end point
                 //So that the cover AC will have the same climb/dive rate as the main AC (have to extend it out to the target point, because that
                 //is the only point in our way.
-                double distance_to_target_m = coverCalcs.CalculatePointDistance(newPos, airGroup.Pos());
+                double distance_to_target_m = CoverCalcs.CalculatePointDistance(newPos, airGroup.Pos());
                 Vector3d coverVwld = airGroup.Vwld();
-                double cover_vel_mps = coverCalcs.CalculatePointDistance(coverVwld);
+                double cover_vel_mps = CoverCalcs.CalculatePointDistance(coverVwld);
                 double time_to_target_s = distance_to_target_m / cover_vel_mps;
                 if (time_to_target_s > 45)
                 {
@@ -3250,7 +3270,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 //They need to do low alt point bomb.  So 5km out they are at 1000m & aimed straight at target.
                 //Put attack_point at 0m to get them as low as possible.  They are usually pretty on target with this strategy
                 //Tested via AI mission
-                if (distance_to_target_m < 20000 && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null && coverCalcs.GetAircraftType(airGroup.GetItems()[0] as AiAircraft).Contains("HurricaneMkI_FB"))
+                if (distance_to_target_m < 20000 && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null && CoverCalcs.GetAircraftType(airGroup.GetItems()[0] as AiAircraft).Contains("HurricaneMkI_FB"))
                 {
                     newPos.z = 1000; //Hurri FBs need to be at 1000m 5K out
                     if (distance_to_target_m < 5000) newPos.z = 0;
@@ -3293,7 +3313,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 if (vel_mps > 160) vel_mps = 160;
 
                 double minDistance_m = 200;
-                double newTargetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), newPos);
+                double newTargetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), newPos);
                 //So we need to be sure that this waypoint is distinct from the last waypoint,
                 //and usually this will be used with newPosWayPoint as the 1st waypoint & this as the 2nd.  So we make sure this 
                 //second position is distinct from the first by 150 meters
@@ -3313,7 +3333,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             //plan, too. 
             //If bombers run out of flightplan, they auto-switch to task "return" and that means
             //dropping all of their bombs to prepare to return.
-            double dst = coverCalcs.CalculatePointDistance(newPos, airGroup.Pos());
+            double dst = CoverCalcs.CalculatePointDistance(newPos, airGroup.Pos());
                 if (dst == 0) dst = 1;
                 double fact = 30000 / dst;
                 double LongPosZ = newPos.z;
@@ -3385,7 +3405,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             
 
             Vector3d Vwld = airGroup.Vwld();            
-            double vel_mps = coverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+            double vel_mps = CoverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
             double save_vel = vel_mps;
             if (requested_vel_mps >= 0) vel_mps = requested_vel_mps; //if we pass a requested velocity along (as we do for escorts etc) then use that. -1 means, nothing special requested
             //when asking AI aircraft ot change speed, it seems to help a lot to put the requested speed in the current waypoint, not the NEXT waypoing.  If you don't
@@ -3500,9 +3520,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 Point3d targetVwld5 = storedRollingAverage(player, airGroup, "vwld", targetVwld, 3); //rolling average of last 5 positions, used for climb rate/vertical speed
                 if (targetVwld.z > targetVwld5.z) targetVwld.z = targetVwld5.z;  //use rolling average, but if ascending more rapidly, just use that instead
 
-                double target_vel_mps = coverCalcs.CalculatePointDistance(targetVwld2);
+                double target_vel_mps = CoverCalcs.CalculatePointDistance(targetVwld2);
 
-                targetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
+                targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
                 Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
                 vel_mps = ret.Item1;
                 double angleTargetToGroup = ret.Item2;
@@ -3514,7 +3534,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                                                                                                                                  //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
                                                                                                                                  //   + CurrentPos.x.ToString("F0") + " " + CurrentPos.y.ToString("F0") + " " + CurrentPos.z.ToString("F0"), new object[] { });
 
-                double current_vel_mps = coverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                double current_vel_mps = CoverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
                 if (heavyBomber)
                 {
                     if (current_vel_mps < 60) //We set the target waypoint closer if the cover a/c speed is lower, and quite a bit further out of it's going faster
@@ -3600,7 +3620,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             //plan, too. 
             //If bombers run out of flightplan, they auto-switch to task "return" and that means
             //dropping all of their bombs to prepare to return.
-            double dst = coverCalcs.CalculatePointDistance(CurrentPos, airGroup.Pos());
+            double dst = CoverCalcs.CalculatePointDistance(CurrentPos, airGroup.Pos());
             if (dst == 0) dst = 1;
             double fact = 30000 / dst;
             Point3d LongPos = new Point3d((CurrentPos.x - airGroup.Pos().x) * fact + airGroup.Pos().x,
@@ -3630,6 +3650,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         catch (Exception ex) { Console.WriteLine("Cover/MoveBomb EscortPosWaypoint: " + ex.ToString()); return null; }
     }
 
+    //Instead of landing at nearest friendly airport, we send the a/c off map & find a nearby friendly airport along the way off map
     public AiAirWayPoint EscortLandingWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup = null, AiAirWayPointType aawpt = AiAirWayPointType.LANDING, double altDiff_m = 1000,
             double AltDiff_range_m = 700, bool nodupe = true)
     {
@@ -3640,18 +3661,22 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
 
 
-            double vel_mps = 45;
+            double vel_mps = 65;
             Point3d CurrentPos = new Point3d(0, 0, 0);
-            AiAirport ap = Stb_nearestAirport(airGroup.Pos(), airGroup.getArmy());
+
+            Point3d landingPos = getMidPoint(airGroup.Pos(), getGoodOffMapPoint(airGroup.Pos(), airGroup.getArmy()));            
+
+            AiAirport ap = Stb_nearestAirport(landingPos, airGroup.getArmy());
             if (ap != null) CurrentPos = ap.Pos();
             //if (targetAirGroup != null ) CurrentPos = targetAirGroup.Pos();
 
             //CurrentPos.z = targetAirGroup.Pos().z + altDiff_m + ran.NextDouble() * 2 * AltDiff_range_m - AltDiff_range_m;
 
-            CurrentPos.z = 0;//landing
+            CurrentPos.z = 175;//landing
 
             double targetDist_m = 1000;
-            if (targetAirGroup != null) targetDist_m = coverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
+            if (targetAirGroup != null) targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
+
 
 
             //So we need to be sure that this waypoint is distinct from the last waypoint,
@@ -3686,7 +3711,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         Point3d directionVectorTarget = new Point3d(Vwld.x, Vwld.y, 0); //this sets it depending on whether or not the cover a/c is headed towards OR away from the main a/c
 
         double alt_m = targetAirGroup.Pos().z;
-        double alt_1000s = coverCalcs.Feet2Angels(coverCalcs.meters2feet(alt_m));
+        double alt_1000s = CoverCalcs.Feet2Angels(CoverCalcs.meters2feet(alt_m));
         //rough IAS to TAS is IAS + 2% per 1000 feet altitude = TAS.
         //double iasMult = 1 + alt_1000s * 2.0 / 100.0;
         //double target_vel_mps_IAS = target_vel_mps_TAS / iasMult;
@@ -3709,12 +3734,12 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         */
 
         Vector3d agVwld = airGroup.Vwld();
-        double ag_vel_mps = coverCalcs.CalculatePointDistance(agVwld);
+        double ag_vel_mps = CoverCalcs.CalculatePointDistance(agVwld);
         
 
-        double angleTargetToGroup = coverCalcs.CalculateDifferenceAngle(directionVectorTarget, deltaPosTarget); //So this gives the heading angle from the cover a/c to the  main a/c.  180 degrees means the cover a/c is heading directly away from the mai na/c               
+        double angleTargetToGroup = CoverCalcs.CalculateDifferenceAngle(directionVectorTarget, deltaPosTarget); //So this gives the heading angle from the cover a/c to the  main a/c.  180 degrees means the cover a/c is heading directly away from the mai na/c               
 
-        double frontBackDist_m = Math.Abs(targetDist_m * Math.Cos(coverCalcs.DegreesToRadians(angleTargetToGroup))); //so, really, we only care about the front/back distance when they are catching up/matching speed/position.  Sometimes they are 100 meters or more off the the side & that part of the distance is irrelevant.  frontBackDist_m
+        double frontBackDist_m = Math.Abs(targetDist_m * Math.Cos(CoverCalcs.DegreesToRadians(angleTargetToGroup))); //so, really, we only care about the front/back distance when they are catching up/matching speed/position.  Sometimes they are 100 meters or more off the the side & that part of the distance is irrelevant.  frontBackDist_m
 
         bool inFront = false;
         if (angleTargetToGroup > 90 && angleTargetToGroup < 270) inFront = true;
@@ -4086,6 +4111,59 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             return true;
         }
 
+      public Point3d getGoodOffMapPoint (Point3d currPos, int army)
+    {
+        Point3d endPos = new Point3d(0, 0, 0);
+        Point3d retPos = new Point3d(0, 0, 0);
+
+        double tempDistance_m = 10000000;
+        double offMapBuffer = 25000;
+        for (int i = 1; i < 16; i++)
+        {
+            if (ran.NextDouble() > 0.5)
+            {
+
+                if (army == 1) endPos.y = twcmap_maxY + offMapBuffer;
+                else if (army == 2) endPos.y = twcmap_minY - offMapBuffer;
+                else endPos.y = twcmap_maxY + offMapBuffer;
+                endPos.x = currPos.x + ran.NextDouble() * 300000 - 150000;
+                if (endPos.x > twcmap_maxX + offMapBuffer) endPos.x = twcmap_maxX + offMapBuffer;
+                if (endPos.x < twcmap_minX - offMapBuffer) endPos.x = twcmap_minX - offMapBuffer;
+            }
+            else
+            {
+                if (army == 1) endPos.x = twcmap_minX - offMapBuffer;
+                else if (army == 2) endPos.x = twcmap_maxX + offMapBuffer;
+                else endPos.x = twcmap_maxX + offMapBuffer;
+                endPos.y = currPos.y + ran.NextDouble() * 300000 - 150000;
+                if (army == 1) endPos.y += 80000;
+                else if (army == 2) endPos.y -= 10000;
+                if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
+                if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
+            }
+            //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
+            //We take the shortest distance based on several random tries
+            double distance_m = CoverCalcs.CalculatePointDistance(endPos, currPos);
+                        
+            if (distance_m < tempDistance_m || i == 1)
+            {
+                tempDistance_m = distance_m;
+                retPos = endPos;
+            }
+
+        }
+        return retPos;
+    }
+
+    //Gets midpoint of exit path, with a slight dogleg
+    public Point3d getMidPoint(Point3d p1, Point3d p2)
+    {
+        Point3d midPos = p1;
+        midPos.x = (p1.x * 1.0 + p2.x * 1.0) / 2.0 + (ran.NextDouble() * 25000.0) - 12500.0;
+        midPos.y = (p1.y * 1.0 + p2.y * 1.0) / 2.0 + (ran.NextDouble() * 25000.0) - 12500.0;
+        return midPos;
+    }
+
 
         //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
         //the aircraft down low and off the map north (Red) or south (Blue)
@@ -4105,14 +4183,14 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
                 //for testing
 
-                /*
+                
                 foreach (AiWayPoint wp in CurrentWaypoints)
                 {
 
-                    Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    Console.WriteLine("FixWayPointsCover - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
-                */
+                
 
 
                 int currWay = airGroup.GetCurrentWayPoint();
@@ -4131,62 +4209,81 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
                 AiWayPoint nextWP = prevWP;
 
-                /*
-                foreach (AiWayPoint wp in CurrentWaypoints)
+                bool landing = false; //keep track of whether or not the last waypoint is "landing".
+
+
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {                
+
+                if ((wp as AiAirWayPoint).Action == AiAirWayPointType.LANDING)
+                {
+                    wp.P.z = 175; //if landing set the altitude very low. //lowest ap is about 155 m.
+                    wp.Speed = 75; //around 100mph speed for landing
+                    landing = true;
+                }
+                else landing = false;
+                if (count > currWay)
                 {
                     nextWP = wp;
-
-                    //eliminate any exact duplicate points
-                    if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1
-                        && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
-                    {
-                        //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
-                        update = true;
-                        //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                        continue;
-                    }
-                    //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
-                    if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
-                        (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
-                    {
-                        //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
-                        update = true;
-                        //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                        continue;
-                    }
-
-
-                    try
-                    {
-                        //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
-                        if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX - 9999 || nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
-                        {
-                            Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                            update = true;
-                            if (nextWP.P.z < 0) nextWP.P.z = 0;
-                            if (nextWP.P.z > 50000) nextWP.P.z = 50000;
-                            if (nextWP.P.x > twcmap_maxX + 9999) nextWP.P.x = twcmap_maxX + 9999;
-                            if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
-                            if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
-                            if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
-                            Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                        }
-                    }
-                    catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWay ERROR2A: " + ex.ToString()); }
-
-
-                    NewWaypoints.Add(nextWP); //do add
-                    count++;
-
+                    NewWaypoints.Add(nextWP); //do add                 
                 }
-                */
-                //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
-                if (nextWP.P.x > twcmap_minX - 10000 && nextWP.P.x < twcmap_maxX + 10000 && nextWP.P.y > twcmap_minY - 10000 && nextWP.P.y < twcmap_maxY + 10000)
+                count++;
+            }
+            /*
+                //eliminate any exact duplicate points
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1
+                    && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+                //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
+                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
+                    (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
+                {
+                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                    update = true;
+                    //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    continue;
+                }
+
+
+                try
+                {
+                    //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
+                    if (nextWP.P.x > twcmap_maxX + 9999 || nextWP.P.y > twcmap_maxY + 9999 || nextWP.P.x < twcmap_minX - 9999 || nextWP.P.y < twcmap_minY - 9999 || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                    {
+                        Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        update = true;
+                        if (nextWP.P.z < 0) nextWP.P.z = 0;
+                        if (nextWP.P.z > 50000) nextWP.P.z = 50000;
+                        if (nextWP.P.x > twcmap_maxX + 9999) nextWP.P.x = twcmap_maxX + 9999;
+                        if (nextWP.P.y > twcmap_maxY + 9999) nextWP.P.y = twcmap_maxY + 9999;
+                        if (nextWP.P.x < twcmap_minX - 9999) nextWP.P.x = twcmap_minX - 9999;
+                        if (nextWP.P.y < twcmap_minY - 9999) nextWP.P.y = twcmap_minY - 9999;
+                        Console.WriteLine("CoverFixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+
+
+                NewWaypoints.Add(nextWP); //do add
+                count++;
+
+            }
+            */
+
+            //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
+            if (nextWP.P.x > twcmap_minX - 10000 && nextWP.P.x < twcmap_maxX + 10000 && nextWP.P.y > twcmap_minY - 10000 && nextWP.P.y < twcmap_maxY + 10000)
                 {
                     update = true;
                     int army = airGroup.getArmy();
+                    AiAirWayPoint landaaWP = null;
                     AiAirWayPoint midaaWP = null;
                     AiAirWayPoint endaaWP = null;
+                    Point3d landPos = new Point3d(0, 0, 0);
                     Point3d midPos = new Point3d(0, 0, 0);
                     Point3d endPos = new Point3d(0, 0, 0);
                     Point3d tempEndPos = new Point3d(0, 0, 0);
@@ -4199,48 +4296,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     //So, make it a solid 25000 just to be safe
                     //However, I'm a bit worried about what will happen with negative numbers in the map coordinates.  Not sure if it is possible.
                     double offMapBuffer = 25000;
-                    for (int i = 1; i < 13; i++)
-                    {
-                        if (ran.NextDouble() > 0.5)
-                        {
-                               
-                            if (army == 1) endPos.y = twcmap_maxY + offMapBuffer;
-                            else if (army == 2) endPos.y = twcmap_minY - offMapBuffer;
-                            else endPos.y = twcmap_maxY + offMapBuffer;
-                            endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
-                            if (endPos.x > twcmap_maxX + offMapBuffer) endPos.x = twcmap_maxX + offMapBuffer;
-                            if (endPos.x < twcmap_minX - offMapBuffer) endPos.x = twcmap_minX - offMapBuffer;
-                        }
-                        else
-                        {
-                            if (army == 1) endPos.x = twcmap_minX - offMapBuffer;
-                            else if (army == 2) endPos.x = twcmap_maxX + offMapBuffer;
-                            else endPos.x = twcmap_maxX + offMapBuffer;
-                            endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
-                            if (army == 1) endPos.y += 80000;
-                            else if (army == 2) endPos.y -= 10000;
-                            if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
-                            if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
-                        }
-                        //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
-                        //so if we hit a distance < 120km we call it good enough
-                        //otherwise we take the shortest distance based on 10 random tries
-                        distance_m = coverCalcs.CalculatePointDistance(endPos, nextWP.P);
-                        /*
-                        if (distance_m < 85000)
-                        {
-                            tempEndPos = endPos;
-                            break;
-                        }
-                        */
-                        if (distance_m < tempDistance_m)
-                        {
-                            tempDistance_m = distance_m;
-                            tempEndPos = endPos;
-                        }
-
-                    }
-                    endPos = tempEndPos;
+                    
+                    endPos = getGoodOffMapPoint(nextWP.P, army);
 
                     //endPos.z = 25;  //Make them drop down so they drop off the radar 
                     //Ok, that was as bad idea for various reasons
@@ -4258,43 +4315,75 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     double speed = prevWP.Speed;
 
 
-                    //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
-                    //last point where the goal will be to have the airgroup low & off the radar at this point.
-                    //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
-                    //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
-                    //and random normal altitudes
-                    midPos.x = (nextWP.P.x * 1.0 + endPos.x * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
-                    midPos.y = (nextWP.P.y * 1.0 + endPos.y * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
+                //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
+                //last point where the goal will be to have the airgroup low & off the radar at this point.
+                //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make.  UPDATE 2020/03 - now AI is under radar if it's below about 600ft.
+                //  AI alt-800ft  is the same as breather altitude for below-radar purposes. public bool belowRadar in main.cs
+                //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
+                //and random normal altitudes
+                /*midPos.x = (nextWP.P.x * 1.0 + endPos.x * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
+                midPos.y = (nextWP.P.y * 1.0 + endPos.y * 1.0) / 2.0 + (ran.NextDouble() * 50000.0) - 25000.0;
+                */
 
+                double saveZ = endPos.z;
+                midPos = getMidPoint(nextWP.P, endPos);
+                midPos.z = saveZ;
 
-                    /* (Vector3d Vwld = airGroup.Vwld();
-                    double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
-                    if (vel_mps < 70) vel_mps = 70;
-                    if (vel_mps > 160) vel_mps = 160;                
-                    */
-
-
-                    /*
-                     * //Trying to give reasonable airwaypointtypes to the flight, but this just confusing -MoveBombTarget
-                     * //Instead, we'll give all aircraft .ESCORT which prevents them from being shanghaied by -MoveBombTarget and reprogrammed
-                    AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
-                    if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
-                        aawpt = (nextWP as AiAirWayPoint).Action;
-                    else
+                if (landing)
+                {
+                    try
                     {
-                        string type = "";
-                        string t = aircraft.Type().ToString();
-                        if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
-                        else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+                        AiAirport ap = CoverCalcs.GetRandomAirfieldNear(GamePlay, midPos, 32000);
+                        if (ap != null)
+                        {
+                            landPos = ap.Pos();
+                            if (Math.Abs(landPos.x - prevWP.P.x) < 200 && Math.Abs(landPos.y - prevWP.P.y) < 200)
+                            {
+                                landPos.x += ran.Next(200, 600); //Just in case the previous landing point is at this same airport, prevent the double/exact repeat point.
+                                landPos.y += ran.Next(200, 600);
+                            }
 
-                        if (type == "B") aawpt = AiAirWayPointType.FOLLOW;
-
+                            landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
+                            AiAirWayPointType landaawpt = AiAirWayPointType.LANDING;
+                            landaaWP = new AiAirWayPoint(ref landPos, 50); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
+                            landaaWP.Action = landaawpt;
+                            NewWaypoints.Add(landaaWP); //do add
+                            count++;
+                            update = true;
+                        }
                     }
-                    */
+                    catch (Exception ex) { Console.WriteLine("Cover FixWayPoints #3: " + ex.ToString()); }
+                }
 
-                    //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
-                    //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
-                    AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
+
+                /* (Vector3d Vwld = airGroup.Vwld();
+                double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                if (vel_mps < 70) vel_mps = 70;
+                if (vel_mps > 160) vel_mps = 160;                
+                */
+
+
+                /*
+                 * //Trying to give reasonable airwaypointtypes to the flight, but this just confusing -MoveBombTarget
+                 * //Instead, we'll give all aircraft .ESCORT which prevents them from being shanghaied by -MoveBombTarget and reprogrammed
+                AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
+                if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
+                    aawpt = (nextWP as AiAirWayPoint).Action;
+                else
+                {
+                    string type = "";
+                    string t = aircraft.Type().ToString();
+                    if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
+                    else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+
+                    if (type == "B") aawpt = AiAirWayPointType.FOLLOW;
+
+                }
+                */
+
+                //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
+                //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
+                AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
 
                     //add the mid Point
                     midaaWP = new AiAirWayPoint(ref midPos, speed);
@@ -4323,17 +4412,20 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     //Console.WriteLine("MBTITG: Updating this course");
                     airGroup.SetWay(NewWaypoints.ToArray());
 
-                    //for testing
+                //for testing
 
-                    /*
+                try
+                {
                     foreach (AiWayPoint wp in NewWaypoints)
                     {
-                        Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        Console.WriteLine("FixWayPointsCover - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                     }
-                    */
-
                 }
+                catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWayPoints print: " + ex.ToString()); }
+
+
+            }
             }
             catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWayPoints: " + ex.ToString()); }
         }
@@ -4345,7 +4437,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
 
 //Various helpful calculations, formulas, etc.
-public static class coverCalcs
+public static class CoverCalcs
 {
     //Various public/static methods
     //http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
@@ -4355,7 +4447,7 @@ public static class coverCalcs
     public static bool changeKey<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey oldKey, TKey newKey)
     {
         TValue value;
-        if (!dict.TryGetValue(oldKey, out value))
+        if (!dict.TryGetValue(oldKey, out value)) 
             return false;
 
         dict.Remove(oldKey);  // do not change order
@@ -4613,8 +4705,8 @@ public static class coverCalcs
                         Point3d startPoint, double angle_deg, double dist)
     {
         Point3d ret = startPoint;
-        ret.x = startPoint.x + Math.Sin(coverCalcs.DegreesToRadians(angle_deg)) * dist;
-        ret.y = startPoint.y + Math.Cos(coverCalcs.DegreesToRadians(angle_deg)) * dist;
+        ret.x = startPoint.x + Math.Sin(CoverCalcs.DegreesToRadians(angle_deg)) * dist;
+        ret.y = startPoint.y + Math.Cos(CoverCalcs.DegreesToRadians(angle_deg)) * dist;
         return ret;
     }
 
@@ -4996,6 +5088,31 @@ public static class coverCalcs
         return ret;
     }
 
+    public static AiAirport GetRandomAirfieldNear(IGamePlay GamePlay, Point3d location, double distance)
+    {
+        List<AiAirport> CloseAirfields = new List<AiAirport>();
+        AiAirport[] airports = GamePlay.gpAirports();
+        Point3d StartPos = location;
+
+        if (airports != null)
+        {
+            foreach (AiAirport airport in airports)
+            {
+
+                if (Calcs.CalculatePointDistance(airport.Pos(), StartPos) < distance) //use 2d distance, MUCH different than 3d distance for ie high-level bombers
+                    CloseAirfields.Add(airport);
+            }
+        }
+        int ind = 0;
+        if (CloseAirfields.Count > 0)
+        {
+            ind = clc_random.Next(CloseAirfields.Count - 1);            
+            return CloseAirfields[ind];
+
+        }
+        else return null;
+    }
+
     public static string randSTR(string[] strings)
     {
         //Random clc_random = new Random();
@@ -5266,7 +5383,7 @@ public static class coverCalcs
         List<AiActor> result = new List<AiActor>();
         foreach (AiActor a in aia)
         {
-            if (coverCalcs.CalculatePointDistance(a.Pos(), pos) < radius) result.Add(a);
+            if (CoverCalcs.CalculatePointDistance(a.Pos(), pos) < radius) result.Add(a);
         }
         return result.ToArray();
     }

@@ -17,14 +17,16 @@ using TWCComms;
 
 public struct changeLimit
 {
-    public double XY_m;
+    public double XY_m; //large variation in where the target or general waypoint can be selected
+    public double aimXY_m; //small variation in exact aim, when the general target/waypoin has already been selected
     public double alt_m;
     public double alt_percent;
     public double speed_percent;
     public double airport_m;  //Not used yet?
-    public changeLimit(double xy =0 , double alt = 0, double altp = 25, double spdp = 10, double ap = 0)
+    public changeLimit(double xy =0 , double aimXY = 0, double alt = 0, double altp = 25, double spdp = 10, double ap = 0)
     {
         XY_m = xy;
+        aimXY_m = aimXY;
         alt_m = alt;
         alt_percent = altp;
         speed_percent = spdp;
@@ -34,11 +36,15 @@ public struct changeLimit
 }
 
 public class Mission : AMission
-{
+{        
     Dictionary<AiAirWayPointType, double> changeXY_m;
     Dictionary<AiAirWayPointType, double> changeAlt_m;
 
     Dictionary<AiAirWayPointType, changeLimit> changeLimits;
+
+    bool attackObjectives; //whether or not to move targets to a different/nearby airport
+    bool attackPrimaryObjectives; //whether or not to move targets to a different/nearby airport
+    double moveObjectivesDistance_m;
 
     bool moveAirports; //whether or not to move targets to a different/nearby airport
     double moveAirportsDistance_m; //max distance to move airports if you choose that option
@@ -55,13 +61,20 @@ public class Mission : AMission
 
     public IMainMission TWCMainMission;
     public Random ran;
+    Dictionary<string, IMissionObjective> SMissionObjectivesList = new Dictionary<string, IMissionObjective>();
 
     public Mission()
     {
         TWCMainMission = TWCComms.Communicator.Instance.Main;
 
+        attackObjectives = true; //whether or not to move targets to actual mission objectives
+        attackPrimaryObjectives = false; //not implemented yet; but would make it preferentially attack primary targets rather than any old target.  This could be done when there are quite a few enemy fighters in play etc.
+        moveObjectivesDistance_m = 450000; //max distance to move airports if you choose that option
+
+        SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
+
         moveAirports = true; //whether or not to move targets to a different/nearby airport
-        moveAirportsDistance_m = 160000; //max distance to move airports if you choose that option
+        moveAirportsDistance_m = 450000; //max distance to move airports if you choose that option
 
         //When adjusting various types of airgroup tasks, how far (at maximum) to move the position of that waypoint in xy and in alt (meters)
         //So for altitude, there is a number in meters and a percent.  It will use whichever is LARGER.  So if your formation is at 
@@ -72,13 +85,13 @@ public class Mission : AMission
         //all while 5000m +/- 30% is quite a large change.  By contrast 5000m +/- 1000m isn't much of a change while 500m +/- 1000m is a very large change.
         changeLimits = new Dictionary<AiAirWayPointType, changeLimit>()
         {
-            { AiAirWayPointType.NORMFLY, new changeLimit (97000, 700, 30, 10) },
-            { AiAirWayPointType.HUNTING, new changeLimit (47000, 700, 30, 10) },
-            { AiAirWayPointType.RECON, new changeLimit (64000, 1000, 50, 10) },
-            { AiAirWayPointType.GATTACK_POINT, new changeLimit (450, 0, 0, 10, 65000) },
-            { AiAirWayPointType.GATTACK_TARG, new changeLimit (450, 0, 0, 10, 65000) },
-            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (35500, 800, 25, 10) },
-            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (35500, 800, 25, 10) },
+            { AiAirWayPointType.NORMFLY, new changeLimit (200000, 0, 700, 50, 10) },
+            { AiAirWayPointType.HUNTING, new changeLimit (47000, 0, 700, 50, 10) },
+            { AiAirWayPointType.RECON, new changeLimit (164000, 0, 1000, 50, 10) },
+            { AiAirWayPointType.GATTACK_POINT, new changeLimit (275450, 450, 0, 0, 30, 65000) },
+            { AiAirWayPointType.GATTACK_TARG, new changeLimit (275450, 500, 0, 30, 65000) }, //this will try to find a new stationary object to attack within the given radius.
+            { AiAirWayPointType.AATTACK_FIGHTERS, new changeLimit (95500, 0, 800, 45, 10) },
+            { AiAirWayPointType.AATTACK_BOMBERS, new changeLimit (95500, 0, 800, 45, 10) },
         };
         /*
         changeAlt_m = new Dictionary<AiAirWayPointType, double>()
@@ -299,7 +312,7 @@ public class Mission : AMission
         return NearestAirfield;
     }
 
-    public AiAirport GetRandomAirfieldNear(Point3d location, double distance)
+    public AiAirport GetRandomAirfieldNear(Point3d location, double distance, int airportArmy)
     {
         List<AiAirport> CloseAirfields = new List<AiAirport>();
         AiAirport[] airports = GamePlay.gpAirports();
@@ -310,7 +323,7 @@ public class Mission : AMission
             foreach (AiAirport airport in airports)
             {
 
-                if (Calcs.CalculatePointDistance(airport.Pos(), StartPos) < distance) //use 2d distance, MUCH different than 3d distance for ie high-level bombers
+                if (Calcs.CalculatePointDistance(airport.Pos(), StartPos) < distance && GamePlay.gpFrontArmy(airport.Pos().x, airport.Pos().y) == airportArmy) //use 2d distance, MUCH different than 3d distance for ie high-level bombers
                     CloseAirfields.Add(airport);
             }
         }
@@ -575,10 +588,103 @@ public class Mission : AMission
         else
             return null;
     }
+    //Returns a point in/near the changed objective within the given radius OR
+    //Null if the attack point is not within/near an airport OR no suitable airport found
+    public Point3d? ChangeObjectives(Point3d p, int enemyArmy)
+    {
+        Point3d retPos;        
+
+        var tup = RandomObjectiveWithin(p, enemyArmy, moveObjectivesDistance_m);
+        if (!tup.Item1.HasValue) return null;
+        
+        int numEnemyPlayers = Calcs.gpNumberOfPlayers(GamePlay,  enemyArmy);
+
+        retPos = tup.Item1.Value;
+        double radius = tup.Item2;
+        double dist_m = tup.Item3;
+        if (numEnemyPlayers > 10) numEnemyPlayers = 10;
+
+        //Mult & add will push target points further from the center of the objective with no or few enemy players online
+        //and then bring it in close when there are a lot of enemy players
+        double mult = (12 - numEnemyPlayers) / 7;
+        if (numEnemyPlayers == 0) mult = 20;
+        if (mult < 0.5) mult = 0.5;
+
+        double add = (6 - numEnemyPlayers) / 6;
+        if (add <= 0) add = 0;
+
+        double dist = ran.NextDouble() * radius * mult + radius*add;
+        double angl = ran.NextDouble() * 2 * Math.PI;
+
+        Console.WriteLine("MoveBomb: Position before # player adjustment {0:n0} {1:n0}", retPos.x, retPos.y);
+
+        retPos.x = Math.Cos(angl) * dist + retPos.x;
+        retPos.y = Math.Sin(angl) * dist + retPos.y;
+        retPos.z = 0;
+
+
+        Console.WriteLine("MoveBomb: New OBJECTIVE attack point: {0:n0} {1:n0} {2:n0}", retPos.x, retPos.y, dist_m);
+        return retPos;
+    }
+
+    //Returns an objective point & radius & distance that point p lies nearest.    
+    private Tuple<Point3d?, double, double> NearestObjectivePoint (Point3d p, int army) //center point, radius, distance
+    {
+        double r = 10000000;
+        Tuple<Point3d?, double, double> ret = new Tuple<Point3d?, double, double>(null, 0, r);
+        foreach (string key in SMissionObjectivesList.Keys)
+        {
+            IMissionObjective mo = SMissionObjectivesList[key];
+            if (mo.OwnerArmy != army) continue;
+            double dist = Calcs.CalculatePointDistance(mo.Pos, p);
+            if (dist <= r)
+            {
+                ret = new Tuple<Point3d?, double, double>(mo.Pos, mo.TriggerDestroyRadius, dist );
+                r = dist;
+                Console.WriteLine("MBF: Best objective - " + mo.Name);
+            }
+        }
+        return ret;
+    }
+    //Returns an objective point & radius & distance that point p lies nearest.    
+    private Tuple<Point3d?, double, double> RandomObjectiveWithin(Point3d p, int army, double radius_m) //center point, radius, distance
+    {
+
+        Tuple<Point3d?, double, double> ret = new Tuple<Point3d?, double, double>(null, 0, 1000000);
+
+        List<IMissionObjective> CloseObjectives = new List<IMissionObjective>();
+
+        foreach (string key in SMissionObjectivesList.Keys)
+        {
+            IMissionObjective mo = SMissionObjectivesList[key];
+            if (mo.OwnerArmy != army) continue;
+            double dist = Calcs.CalculatePointDistance(mo.Pos, p);
+            if (dist <= radius_m)
+            {
+                //ret = new Tuple<Point3d?, double, double>(mo.Pos, mo.TriggerDestroyRadius, dist);
+                //r = dist;
+                //Console.WriteLine("MBF: Best objective - " + mo.Name);
+                CloseObjectives.Add(mo);
+            }
+        }
+
+        int ind = 0;
+        IMissionObjective retMO = null;
+        if (CloseObjectives.Count > 0)
+        {
+            ind = ran.Next(CloseObjectives.Count - 1);
+            retMO = CloseObjectives[ind];
+            ret = new Tuple<Point3d?, double, double>(retMO.Pos, retMO.TriggerDestroyRadius, Calcs.CalculatePointDistance(retMO.Pos, p));
+            Console.WriteLine("MoveBomb: Chosen objective - " + retMO.Name);
+        }
+        return ret;
+    }
+
+
 
     //Returns a point within the changed airport within the given radius OR
     //Null if the attack point is not within/near an airport OR no suitable airport found
-    public Point3d? ChangeAirports(Point3d p)
+    public Point3d? ChangeAirports(Point3d p, int airportArmy)
     {
         Point3d retPos;
 
@@ -588,7 +694,7 @@ public class Mission : AMission
         //if (nearestAirfield.Pos().distance(ref p) > nearestAirfield.FieldR() * 1.25)
         if (Calcs.CalculatePointDistance(nearestAirfield.Pos(), p) > 2000) //The GATTACK_POINT distance is often quite far from the target itself
         {
-            //Console.WriteLine("MBT: Attack point NOT within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p));
+            //Console.WriteLine("MoveBomb: Attack point NOT within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p));
             return null;
         }
 
@@ -596,9 +702,9 @@ public class Mission : AMission
 
 
         //Get the random airport within the given radius
-        AiAirport ap = GetRandomAirfieldNear(p, moveAirportsDistance_m);
+        AiAirport ap = GetRandomAirfieldNear(p, moveAirportsDistance_m, airportArmy);
 
-        //Console.WriteLine("MBT: Attack point IS within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p), nearestAirfield.Name(), ap.Name());
+        //Console.WriteLine("MoveBomb: Attack point IS within an airfield {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", nearestAirfield.Pos().x, nearestAirfield.Pos().y, p.x, p.y, Calcs.CalculatePointDistance(nearestAirfield.Pos(), p), nearestAirfield.Name(), ap.Name());
 
         if (ap != null)
         {
@@ -606,7 +712,7 @@ public class Mission : AMission
                //Choose a random point within the airfield radius
                double radius = ap.FieldR();
                Point3d center = ap.Pos();
-               double dist = ran.NextDouble() * radius;
+               double dist = ran.NextDouble() * radius/2;
                double angl = ran.NextDouble() * 2 * Math.PI;
 
                retPos.x = Math.Cos(angl) * dist + center.x;
@@ -625,10 +731,30 @@ public class Mission : AMission
             retPos.y = ap.Pos().y;
             retPos.z = 0;
             */
-            //Console.WriteLine("MBT: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
+            Console.WriteLine("MoveBomb: New attack point: {0:n0} {1:n0} {2:n0} {3:n0} {4:n0} {5} to {6}", ap.Pos().x, ap.Pos().y, retPos.x, retPos.y, Calcs.CalculatePointDistance(ap.Pos(), retPos), nearestAirfield.Name(), ap.Name());
             return retPos;
         }
         else return null;
+
+    }
+
+    //return a point that is within the map coordinates.  Selecting any points & then correcting it to within the coordinates gives undue weight to points
+    //near the edge of the map so lets just pick a random point within the radius & on the  map, without any undue weight to edges
+    //XY_m is the large/major correction whereas aimXY_m is a small additional correction of the precise aim.
+    public Point3d safePointSelect(Point3d pos, double XY_m, double aimXY_m)
+    {
+        double offMapBufferForAvoidingLeaveMap = -1000; //Max off map amount to allow as part of a normal flight plan
+        Point3d NewPos = pos;
+        for (int i = 0; i < 100; i++)
+        {
+            NewPos = pos;
+            double XY = XY_m + aimXY_m;
+            NewPos.x += ran.NextDouble() * 2 * XY - XY;
+            NewPos.y += ran.NextDouble() * 2 * XY - XY;
+            if (NewPos.x > twcmap_maxX + offMapBufferForAvoidingLeaveMap || NewPos.y > twcmap_maxY + offMapBufferForAvoidingLeaveMap || NewPos.x < twcmap_minX - offMapBufferForAvoidingLeaveMap || NewPos.y < twcmap_minY - offMapBufferForAvoidingLeaveMap) continue;
+            return NewPos;            
+        }
+        return NewPos;
 
     }
 
@@ -643,14 +769,14 @@ public class Mission : AMission
 
         AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
 
-        /* //for testing
+        //for testing
         foreach (AiWayPoint wp in CurrentWaypoints)
         {
             AiWayPoint nextWP = wp;
             //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
-        */
+        
         int currWay = airGroup.GetCurrentWayPoint();
         double speedDiff = 0;
         double altDiff_m = 0;
@@ -664,12 +790,22 @@ public class Mission : AMission
         int count = 0;
         //Console.WriteLine("MBTITG: 3");
 
+        int army = airGroup.getArmy();
+        int enemyArmy = 3 - army;
+
+        bool isBomber = Calcs.isHeavyBomber(airGroup) || Calcs.isDiveBomber(airGroup);
+
+        bool underRadar = false;
+        if (isBomber && ran.Next(0, 10) == 0) underRadar = true;
+
         bool update = false;
         AiWayPoint wpAdd = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
 
         if (wpAdd != null)        NewWaypoints.Add(wpAdd); //Always have to add current pos/speed as first point or things go w-r-o-n-g
 
-        foreach (AiWayPoint wp in CurrentWaypoints)
+        
+
+        foreach (AiWayPoint wp in CurrentWaypoints) 
         {
             AiWayPoint nextWP = wp;
             //Console.WriteLine( "Target: {0}", new object[] { wp });
@@ -677,8 +813,11 @@ public class Mission : AMission
             if ((wp as AiAirWayPoint).Action == null) return false;
 
             Point3d? newAirportPosition = wp.P as Point3d?;
+            Point3d? newObjectivePosition = wp.P as Point3d?;
 
-            if (moveAirports && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)) { newAirportPosition = ChangeAirports(wp.P); }
+            if (moveAirports && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)) { newAirportPosition = ChangeAirports(wp.P, enemyArmy); }
+
+            if (attackObjectives && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)) { newObjectivePosition = ChangeObjectives(wp.P, enemyArmy); }
 
             changeLimit changeL = new changeLimit();
             if (changeLimits.ContainsKey((wp as AiAirWayPoint).Action))
@@ -687,6 +826,10 @@ public class Mission : AMission
                 double speed;
 
                 changeL = changeLimits[(wp as AiAirWayPoint).Action];
+                if (count==1 && ( isBomber ) ) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
+                {
+                    changeL.XY_m = changeL.XY_m / 2;
+                }
 
                 //TODO: We could have higher/lower altitude & speed apply to the entire mission for this airgroup rather than varying waypoint by waypoing. 
                 //that might be a more sensible approach
@@ -716,11 +859,17 @@ public class Mission : AMission
                         //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
                         //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
                         pos = wp.P;
-                        if (newAirportPosition != null)
+                        if (newAirportPosition.HasValue)
                         {
-                            //Console.WriteLine("MBT: Moving airport of attack!");
-                            pos = (Point3d)newAirportPosition;
+                            Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                            pos = newAirportPosition.Value;
                             pos.z = wp.P.z;
+                        } else if (newObjectivePosition.HasValue)
+                        {
+                            Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                            pos = newObjectivePosition.Value;
+                            pos.z = wp.P.z;
+
                         }
 
                         if (speedDiff == 0) speedDiff = wp.Speed * (ran.NextDouble() * 2.0 * changeL.speed_percent / 100.0 - changeL.speed_percent / 100);
@@ -733,13 +882,13 @@ public class Mission : AMission
                         /*
                         if (currTarget == null)
                         {
-                            Console.WriteLine("MBT: Target is NULL!! Breaking");
-                            Console.WriteLine("MBT: {0} {1} {2} {3}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Target.Name(), (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType);
+                            Console.WriteLine("MoveBomb: Target is NULL!! Breaking");
+                            Console.WriteLine("MoveBomb: {0} {1} {2} {3}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Target.Name(), (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType);
 
                             AiActor[] acts = airGroup.GetItems();
                             foreach (AiActor act in acts)
                             {
-                                Console.WriteLine("MBT: {0}", act.Name());
+                                Console.WriteLine("MoveBomb: {0}", act.Name());
                             }
                             break;
                         }
@@ -748,7 +897,7 @@ public class Mission : AMission
                         GroundStationary newTarget = null;
                         //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
                         GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, changeL.XY_m);
-                        //Console.WriteLine("MBT: Looking for nearby stationary");
+                        //Console.WriteLine("MoveBomb: Looking for nearby stationary");
                         for (int i = 1; i < 20; i++)
                         {
 
@@ -756,17 +905,18 @@ public class Mission : AMission
                             int newStaIndex = ran.Next(stationaries.Length - 1);
                             if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive &&
                                 (stationaries[newStaIndex].pos.x != pos.x ||
-                                stationaries[newStaIndex].pos.y != pos.y))
+                                stationaries[newStaIndex].pos.y != pos.y)
+                                && GamePlay.gpFrontArmy(stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y) == enemyArmy )
                             {
                                 newTarget = stationaries[newStaIndex];
-                                //Console.WriteLine("MBT: FOUND a stationary");
+                                //Console.WriteLine("MoveBomb: FOUND a stationary");
                                 break;
                             }
                         }
                         //In case we didn't find a ground target there, expand the search radius a bit & try again
                         if (newTarget == null)
                         {
-                            //Console.WriteLine("MBT: Looking for further afield stationaries");
+                            //Console.WriteLine("MoveBomb: Looking for further afield stationaries");
                             GroundStationary[] stationaries2 = GamePlay.gpGroundStationarys(pos.x, pos.y, 3 * changeL.XY_m);
                             for (int i = 1; i < 20; i++)
                             {
@@ -786,16 +936,15 @@ public class Mission : AMission
                         //Use the position of the newly found ground actor as the new attack position, IF the actor exists/was found
                         if (newTarget != null)
                         {
-                            //Console.WriteLine("MBT: Found a stationary, updating attack position");
+                            //Console.WriteLine("MoveBomb: Found a stationary, updating attack position");
                             newPos.x = newTarget.pos.x;
                             newPos.y = newTarget.pos.y;
                         }
                         //3rd approach, just move the attack point by our usual amount
                         else
                         {
-                            //Console.WriteLine("MBT: No stationary found, updating attack position");
-                            newPos.x = pos.x + ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
-                            newPos.y = pos.y + ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+                            //Console.WriteLine("MoveBomb: No stationary found, updating attack position");
+                            newPos = safePointSelect(pos, changeL.XY_m, changeL.aimXY_m);                            
 
                         }
 
@@ -828,17 +977,43 @@ public class Mission : AMission
                         //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
                         pos = wp.P;
 
-                        if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newAirportPosition != null)
-                        {
-                            //Console.WriteLine("MBT: Moving airport of attack!");
-                            pos = (Point3d)newAirportPosition;
-                            pos.z = wp.P.z;
+                        Console.WriteLine("Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+
+                        //Add first extra waypoint that's just a little jog, for bomber groups
+                        if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY)
+                        {                            
+                            double firstChange = changeL.XY_m / 10;                            
+                            Point3d firstPos = safePointSelect(pos, firstChange, 0);
+                            AiAirWayPoint firstWP = new AiAirWayPoint(ref firstPos, wp.Speed);
+                            (firstWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                            NewWaypoints.Add(firstWP);
                         }
 
-                        speed = wp.Speed;
-                        pos.x += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
-                        pos.y += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+
+                        if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newAirportPosition.HasValue)
+                        {
+                            //Console.WriteLine("MoveBomb: Moving airport of attack!");
+                            Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                            pos = safePointSelect(newAirportPosition.Value, 0, changeL.aimXY_m);
+                            pos.z = wp.P.z;
+                        }
+                        else if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newObjectivePosition.HasValue)
+                        {
+                            Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                            pos = safePointSelect(newObjectivePosition.Value, 0, changeL.aimXY_m);
+                            pos.z = wp.P.z;
+
+                        } else
+                        {
+                            pos = safePointSelect(pos, changeL.XY_m, 0);
+                        }
+
+                        speed = wp.Speed;                        
+                        
                         if (speedDiff == 0) speedDiff = speed * (ran.NextDouble() * 2 * changeL.speed_percent / 100 - changeL.speed_percent / 100);
+                        //Note that bombers can outrun their cover aircraft here if we're not careful.  For now we're dealing by making cover a/c go a fair bit faster than their bombers in the .mis file
+                        //We're adjusting bomber speed here but NOT cover a/c speed (ESCORT)
+                        if (isBomber && speedDiff > .08 * speed) speedDiff = .08 * speed; //limit bomber speed increase, so they don't ditch their escorts
                         speed += speedDiff;
                         double zSave = pos.z;
 
@@ -859,7 +1034,8 @@ public class Mission : AMission
 
                         //if (zSave<changeL.alt_m && pos.z < zSave) pos.z = zSave;  //
                         if (pos.z < 100 && pos.z < zSave) pos.z = 100; //Never altitude less than 100m, unless the pre-set alt was less than 100m & this is equal to or greater than the previous set altitude                        
-
+                        Console.WriteLine("Target after: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+                        
                         nextWP = new AiAirWayPoint(ref pos, speed);
                         (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
                         //Console.WriteLine( "Target after: {0}", new object[] { nextWP });
@@ -871,14 +1047,25 @@ public class Mission : AMission
 
                 }
             }
+
+            if (underRadar)
+            {
+                //AI get a break of 600ft altitude for staying-below-radar purposes.  soo 800-900 ft or below is off radar.
+                //There isn't much point in sending AI missions that are COMPLETELY off radar as no one will even know about them.  But if we keep them at the alt where they will 
+                //kind of phase in/out of radar that would be ideal.
+                nextWP.P.z = 375 + altDiff_m / 10;
+                if (nextWP.P.z < 300) nextWP.P.z = 300; //275m is about 900 ft alt = 300ft for breathers = still mostly off radar when over water (and probably right off it over land. where AGL will be lower).
+                update = true;
+            }
+
             if (count >= currWay)
             {
                 NewWaypoints.Add(nextWP);
 
                 if (update)
                 {
-                    //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                    //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                    Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                    Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
                 }
 
             }
@@ -886,14 +1073,12 @@ public class Mission : AMission
             //Console.WriteLine("MBTITG: 4");
             count++;
 
-
-
         }
 
         foreach (AiWayPoint wp in NewWaypoints)
         {
             AiWayPoint nextWP = wp;
-            //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+            Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
 
@@ -1676,7 +1861,7 @@ public class Mission : AMission
             }
             if (update)
             {
-                //Console.WriteLine("MBTITG: Updating this course");
+                //Console.WriteLine("MBTITG: Updatfing this course");
                 airGroup.SetWay(NewWaypoints.ToArray());
 
                 //for testing
@@ -1693,6 +1878,8 @@ public class Mission : AMission
         catch (Exception ex) { Console.WriteLine("MoveBomb RemoveIntercept: " + ex.ToString()); }
     }
 
+
+    
     //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
     //the aircraft down low and off the map north (Red) or south (Blue)
     //TODO: This exactly duplicates a function in Class-CoverMission, so now that we can call methods of other mission classes we should consolidate the two,
@@ -1706,7 +1893,9 @@ public class Mission : AMission
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
             //Maybe just exit?
 
-            double offMapBuffer = 25000;
+            double offMapBufferForLeavingMap = 25000; //How far off the map to drive a/c to make them disappear/get rid of them.
+            double offMapBufferForAvoidingLeaveMap = -1000; //Max off map amount to allow as part of a normal flight plan
+
 
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
             if (!isAiControlledAirGroup(airGroup)) return;
@@ -1715,14 +1904,14 @@ public class Mission : AMission
 
             //for testing
             
-            /*
+            
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
 
                 Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
-            */
+            
             
             
 
@@ -1743,181 +1932,230 @@ public class Mission : AMission
 
             AiWayPoint nextWP = prevWP;
 
+            bool landing = false; //keep track of whether or not the last waypoint is "landing".
+
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
-                nextWP = wp;
-
-                //eliminate any exact duplicate points
-                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1 
-                    && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
-                {
-                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
-                    update = true;
-                    //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                    continue;
-                }
-                //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
-                if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
-                    (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
-                {
-                    //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
-                    update = true;
-                    //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-                    continue;
-                }
-
-
                 try
                 {
-                    //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
-                    if (nextWP.P.x > twcmap_maxX + offMapBuffer || nextWP.P.y > twcmap_maxY + offMapBuffer || nextWP.P.x < twcmap_minX -offMapBuffer|| nextWP.P.y < twcmap_minY - offMapBuffer || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                    nextWP = wp;
+
+                    //eliminate any exact duplicate points
+                    if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1
+                        && (nextWP as AiAirWayPoint).Action == (prevWP as AiAirWayPoint).Action)
                     {
-                        //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
                         update = true;
-                        if (nextWP.P.z < 0) nextWP.P.z = 0;
-                        if (nextWP.P.z > 50000) nextWP.P.z = 50000;
-                        if (nextWP.P.x > twcmap_maxX + offMapBuffer) nextWP.P.x = twcmap_maxX + offMapBuffer;
-                        if (nextWP.P.y > twcmap_maxY + offMapBuffer) nextWP.P.y = twcmap_maxY + offMapBuffer;
-                        if (nextWP.P.x < twcmap_minX - offMapBuffer) nextWP.P.x = twcmap_minX - offMapBuffer;
-                        if (nextWP.P.y < twcmap_minY - offMapBuffer) nextWP.P.y = twcmap_minY - offMapBuffer;
-                        //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        continue;
                     }
+                    //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
+                    if (Math.Abs(nextWP.P.x - prevWP.P.x) < 50 && Math.Abs(nextWP.P.y - prevWP.P.y) < 50 && Math.Abs(nextWP.P.z - prevWP.P.z) < 50 &&
+                        (nextWP as AiAirWayPoint).Action != AiAirWayPointType.GATTACK_TARG && (nextWP as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)
+                    {
+                        //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
+                        update = true;
+                        //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        continue;
+                    }
+
+
+                    try
+                    {
+                        //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
+                        if (nextWP.P.x > twcmap_maxX + offMapBufferForAvoidingLeaveMap || nextWP.P.y > twcmap_maxY + offMapBufferForAvoidingLeaveMap || nextWP.P.x < twcmap_minX - offMapBufferForAvoidingLeaveMap || nextWP.P.y < twcmap_minY - offMapBufferForAvoidingLeaveMap || nextWP.P.z < 0 || nextWP.P.z > 50000)
+                        {
+                            Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                            update = true;
+                            if (nextWP.P.z < 0) nextWP.P.z = 0;
+                            if (nextWP.P.z > 50000) nextWP.P.z = 50000;
+                            //So we'll keep the aircraft from getting very near the border, if the point assigned was way off the map
+                            if (nextWP.P.x > twcmap_maxX + offMapBufferForAvoidingLeaveMap) nextWP.P.x = twcmap_maxX - ran.Next(2000, 15000);
+                            if (nextWP.P.y > twcmap_maxY + offMapBufferForAvoidingLeaveMap) nextWP.P.y = twcmap_maxY - ran.Next(2000, 15000);
+                            if (nextWP.P.x < twcmap_minX - offMapBufferForAvoidingLeaveMap) nextWP.P.x = twcmap_minX + ran.Next(2000, 15000);
+                            if (nextWP.P.y < twcmap_minY - offMapBufferForAvoidingLeaveMap) nextWP.P.y = twcmap_minY + ran.Next(2000, 15000);
+                            Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                        }
+                    }
+                    catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+
+                    if ((nextWP as AiAirWayPoint).Action == AiAirWayPointType.LANDING)
+                    {
+                        nextWP.P.z = 175; //if landing set the altitude very low.  Lowest ap is about 155m thought.
+                        nextWP.Speed = 50; //around 100mph speed for landing
+                        landing = true;
+                    }
+                    else landing = false;
+
+
+                    NewWaypoints.Add(nextWP); //do add
+                    count++;
                 }
-                catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
-
-
-                NewWaypoints.Add(nextWP); //do add
-                count++;
+                catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #1: " + ex.ToString()); }
 
             }
             //So, if the last point is somewhere on the map, we'll just make them discreetly fly off the map at some nice alt
             if (nextWP.P.x > twcmap_minX && nextWP.P.x < twcmap_maxX && nextWP.P.y > twcmap_minY && nextWP.P.y < twcmap_maxY)
             {
-                update = true;
-                int army = airGroup.getArmy();
-                AiAirWayPoint midaaWP = null;
-                AiAirWayPoint endaaWP = null;
-                Point3d midPos = new Point3d(0, 0, 0);
-                Point3d endPos = new Point3d(0, 0, 0);
-                Point3d tempEndPos = new Point3d(0, 0, 0);
-                double distance_m = 100000000000;
-                double tempDistance_m = 100000000000;
-
-                //so we expanded the grace area for players to fly off the map, to 10,000m plus the actual sides of the map
-                //And we made AI match
-                //as shown.  So . . . now sending them 9000m off the map isn't getting them off far enough.
-                //So, make it a solid 25000 just to be safe
-                //However, I'm a bit worried about what will happen with negative numbers in the map coordinates.  Not sure if it is possible.
-                
-
-                for (int i = 1; i < 13; i++)
+                try
                 {
+                    update = true;
+                    int army = airGroup.getArmy();
+                    AiAirWayPoint landaaWP = null;
+                    AiAirWayPoint midaaWP = null;
+                    AiAirWayPoint endaaWP = null;
+                    Point3d landPos = new Point3d(0, 0, 0);
+                    Point3d midPos = new Point3d(0, 0, 0);
+                    Point3d endPos = new Point3d(0, 0, 0);
+                    Point3d tempEndPos = new Point3d(0, 0, 0);
+                    double distance_m = 100000000000;
+                    double tempDistance_m = 100000000000;
 
-                    if (ran.NextDouble() > 0.5)
+                    //so we expanded the grace area for players to fly off the map, to 10,000m plus the actual sides of the map
+                    //And we made AI match
+                    //as shown.  So . . . now sending them 9000m off the map isn't getting them off far enough.
+                    //So, make it a solid 25000 just to be safe
+                    //However, I'm a bit worried about what will happen with negative numbers in the map coordinates.  Not sure if it is possible.
+
+
+                    for (int i = 1; i < 13; i++)
                     {
-                        if (army == 1) endPos.y = twcmap_maxY + offMapBuffer;
-                        else if (army == 2) endPos.y = twcmap_minY - offMapBuffer;
-                        else endPos.y = twcmap_maxY + offMapBuffer;
-                        endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
-                        if (endPos.x > twcmap_maxX + offMapBuffer) endPos.x = twcmap_maxX + offMapBuffer;
-                        if (endPos.x < twcmap_minX - offMapBuffer) endPos.x = twcmap_minX - offMapBuffer;
+                        try
+                        {
+                            if (ran.NextDouble() > 0.5)
+                            {
+                                if (army == 1) endPos.y = twcmap_maxY + offMapBufferForLeavingMap;
+                                else if (army == 2) endPos.y = twcmap_minY - offMapBufferForLeavingMap;
+                                else endPos.y = twcmap_maxY + offMapBufferForLeavingMap;
+                                endPos.x = nextWP.P.x + ran.NextDouble() * 300000 - 150000;
+                                if (endPos.x > twcmap_maxX + offMapBufferForLeavingMap) endPos.x = twcmap_maxX + offMapBufferForLeavingMap;
+                                if (endPos.x < twcmap_minX - offMapBufferForLeavingMap) endPos.x = twcmap_minX - offMapBufferForLeavingMap;
+                            }
+                            else
+                            {
+                                if (army == 1) endPos.x = twcmap_minX - offMapBufferForLeavingMap;
+                                else if (army == 2) endPos.x = twcmap_maxX + offMapBufferForLeavingMap;
+                                else endPos.x = twcmap_maxX + offMapBufferForLeavingMap;
+                                endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
+                                if (army == 1) endPos.y += 80000;
+                                else if (army == 2) endPos.y -= 10000;
+                                if (endPos.y > twcmap_maxY + offMapBufferForLeavingMap) endPos.y = twcmap_maxY + offMapBufferForLeavingMap;
+                                if (endPos.y < twcmap_minY - offMapBufferForLeavingMap) endPos.y = twcmap_minY - offMapBufferForLeavingMap;
+                            }
+                            //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
+                            //so if we hit a distance < 120km we call it good enough
+                            //otherwise we take the shortest distance based on 10 random tries
+                            distance_m = Calcs.CalculatePointDistance(endPos, nextWP.P);
+
+                            if (distance_m < 85000)
+                            {
+                                tempEndPos = endPos;
+                                break;
+                            }
+
+                            if (distance_m < tempDistance_m)
+                            {
+                                tempDistance_m = distance_m;
+                                tempEndPos = endPos;
+                            }
+                        }
+                        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #2: " + ex.ToString()); }
                     }
+                    endPos = tempEndPos;
+
+                    //endPos.z = 25;  //Make them drop down so they drop off the radar 
+                    //Ok, that was as bad idea for various reasons
+                    //nextWP is the most recent WP, ie the last WP in the 'old' waypoint list
+                    //prevWP is where the a/c is right now, ie the first on the old waypoint list
+                    //We choose one or the other 50% of the time as they are both 'typical' altitudes for this a/c ?
+                    endPos.z = nextWP.P.z;
+                    if (ran.NextDouble() < 0.5) endPos.z = prevWP.P.z;
+                    midPos.z = endPos.z;
+                    endPos.z = ran.NextDouble() * 200 + 30;
+                    midPos.z = midPos.z + ran.NextDouble() * 4000 - 1700;
+                    if (endPos.z < 30) endPos.z = 30;
+                    if (midPos.z < 30) midPos.z = 30;
+
+                    double speed = prevWP.Speed;
+
+
+                    //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
+                    //last point where the goal will be to have the airgroup low & off the radar at this point.
+                    //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
+                    //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
+                    //and random normal altitudes
+                    midPos.x = (nextWP.P.x * 1 + endPos.x * 1) / 2 + ran.NextDouble() * 70000 - 35000;
+                    midPos.y = (nextWP.P.y * 1 + endPos.y * 1) / 2 + ran.NextDouble() * 70000 - 35000;
+
+                    if (landing)
+                    {
+                        try
+                        {
+                            AiAirport ap = GetRandomAirfieldNear(midPos, 32000, army);
+                            if (ap != null)
+                            {
+                                landPos = ap.Pos();
+                                if (Math.Abs(landPos.x - prevWP.P.x) < 200 && Math.Abs(landPos.y - prevWP.P.y) < 200)
+                                {
+                                    landPos.x += ran.Next(200, 600); //Just in case the previous landing point is at this same airport, prevent the double/exact repeat point.
+                                    landPos.y += ran.Next(200, 600);
+                                }
+                                landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
+                                AiAirWayPointType landaawpt = AiAirWayPointType.LANDING;
+                                landaaWP = new AiAirWayPoint(ref landPos, 50); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
+                                landaaWP.Action = landaawpt;
+                                NewWaypoints.Add(landaaWP); //do add
+                                count++;
+                                update = true;
+                            }
+                        }
+                        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #3: " + ex.ToString()); }
+                    }
+
+
+
+
+                    /* (Vector3d Vwld = airGroup.Vwld();
+                    double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                    if (vel_mps < 70) vel_mps = 70;
+                    if (vel_mps > 160) vel_mps = 160;                
+                    */
+
+                    AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
+                    if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
+                        aawpt = (nextWP as AiAirWayPoint).Action;
                     else
                     {
-                        if (army == 1) endPos.x = twcmap_minX - offMapBuffer;
-                        else if (army == 2) endPos.x = twcmap_maxX + offMapBuffer;
-                        else endPos.x = twcmap_maxX + offMapBuffer;
-                        endPos.y = nextWP.P.y + ran.NextDouble() * 300000 - 150000;
-                        if (army == 1) endPos.y += 80000;
-                        else if (army == 2) endPos.y -= 10000;
-                        if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
-                        if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
-                    }
-                    //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
-                    //so if we hit a distance < 120km we call it good enough
-                    //otherwise we take the shortest distance based on 10 random tries
-                    distance_m = Calcs.CalculatePointDistance(endPos, nextWP.P);
-                    
-                    if (distance_m < 85000)
-                    {
-                        tempEndPos = endPos;
-                        break;
-                    }
-                    
-                    if (distance_m < tempDistance_m)
-                    {
-                        tempDistance_m = distance_m;
-                        tempEndPos = endPos;
+                        string type = "";
+                        string t = aircraft.Type().ToString();
+                        if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
+                        else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+
+                        if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
+
                     }
 
+                    //add the mid Point
+                    midaaWP = new AiAirWayPoint(ref midPos, speed);
+                    //aaWP.Action = AiAirWayPointType.NORMFLY;
+                    midaaWP.Action = aawpt; //same action for mid & end
+
+                    NewWaypoints.Add(midaaWP); //do add
+                    count++;
+
+
+                    Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+
+                    //add the final Point, which is off the map
+                    endaaWP = new AiAirWayPoint(ref endPos, speed);
+                    //aaWP.Action = AiAirWayPointType.NORMFLY;
+                    endaaWP.Action = AiAirWayPointType.NORMFLY;
+
+                    NewWaypoints.Add(endaaWP); //do add
+                    count++;
+                    Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
                 }
-                endPos = tempEndPos;
-
-                //endPos.z = 25;  //Make them drop down so they drop off the radar 
-                //Ok, that was as bad idea for various reasons
-                //nextWP is the most recent WP, ie the last WP in the 'old' waypoint list
-                //prevWP is where the a/c is right now, ie the first on the old waypoint list
-                //We choose one or the other 50% of the time as they are both 'typical' altitudes for this a/c ?
-                endPos.z = nextWP.P.z;                
-                if (ran.NextDouble() < 0.5) endPos.z = prevWP.P.z;
-                midPos.z = endPos.z;
-                endPos.z = ran.NextDouble() * 200 + 30; 
-                midPos.z = midPos.z + ran.NextDouble() * 4000 - 1700;
-                if (endPos.z < 30) endPos.z = 30;
-                if (midPos.z < 30) midPos.z = 30;
-
-                double speed = prevWP.Speed;
-
-
-                //A point in the direction of our final point but quite close to the previous endpoint.  We'll add this in as a 2nd to
-                //last point where the goal will be to have the airgroup low & off the radar at this point.
-                //Ok, low & off radar didn't really work as they just don't go low enough.  So now objective is to make
-                //them look more like normal flights, routine patrols or whatever.  So slight deviation in flight path, not just STRAIGHT off the map, 
-                //and random normal altitudes
-                midPos.x = (nextWP.P.x * 1 + endPos.x * 1) / 2 + ran.NextDouble() * 70000 - 35000;
-                midPos.y = (nextWP.P.y * 1 + endPos.y * 1) / 2 + ran.NextDouble() * 70000 - 35000;
-
-
-                /* (Vector3d Vwld = airGroup.Vwld();
-                double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
-                if (vel_mps < 70) vel_mps = 70;
-                if (vel_mps > 160) vel_mps = 160;                
-                */
-
-
-
-                AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
-                if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
-                    aawpt = (nextWP as AiAirWayPoint).Action;
-                else
-                {
-                    string type = "";
-                    string t = aircraft.Type().ToString();
-                    if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
-                    else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
-
-                    if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
-
-                }
-
-                //add the mid Point
-                midaaWP = new AiAirWayPoint(ref midPos, speed);
-                //aaWP.Action = AiAirWayPointType.NORMFLY;
-                midaaWP.Action = aawpt; //same action for mid & end
-
-                NewWaypoints.Add(midaaWP); //do add
-                count++;
-
-                //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
-
-                //add the final Point, which is off the map
-                endaaWP = new AiAirWayPoint(ref endPos, speed);
-                //aaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = AiAirWayPointType.NORMFLY;
-
-                NewWaypoints.Add(endaaWP); //do add
-                count++;
-                //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #4: " + ex.ToString()); }
             }
       
 
@@ -1927,22 +2165,26 @@ public class Mission : AMission
                 airGroup.SetWay(NewWaypoints.ToArray());
 
                 //for testing
-                
-                
-                /*
-                foreach (AiWayPoint wp in NewWaypoints)
+
+                try
                 {
-                    Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+                    foreach (AiWayPoint wp in NewWaypoints)
+                    {
+                        Console.WriteLine("FixWayPoints - Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    }
+
 
                 }
-                */
-                
-                
+                catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #5: " + ex.ToString()); }
+
+
 
             }
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints: " + ex.ToString()); }
     }
+    
 
 
 
@@ -2140,329 +2382,414 @@ public class Mission : AMission
 //Various helpful calculations, formulas, etc.
 public static class Calcs
 {
-//Various public/static methods
-//http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
+    //Various public/static methods
+    //http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
 
-private static Random clc_random = new Random();
+    private static Random clc_random = new Random();
 
-public static bool changeKey<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey oldKey, TKey newKey)
-{
-TValue value;
-if (!dict.TryGetValue(oldKey, out value))
-    return false;
-
-dict.Remove(oldKey);  // do not change order
-dict[newKey] = value;  // or dict.Add(newKey, value) depending on ur comfort
-return true;
-}
-
-//gets LAST occurence of any element of a specified string[] ; CASE INSENSITIVE
-public static int LastIndexOfAny(string test, string[] values)
-{
-int last = -1;
-test = test.ToLower();
-foreach (string item in values)
-{
-    int i = test.IndexOf(item.ToLower());
-    if (i >= 0)
+    public static bool changeKey<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey oldKey, TKey newKey)
     {
-        if (last > 0)
+        TValue value;
+        if (!dict.TryGetValue(oldKey, out value))
+            return false;
+
+        dict.Remove(oldKey);  // do not change order
+        dict[newKey] = value;  // or dict.Add(newKey, value) depending on ur comfort
+        return true;
+    }
+
+    //gets LAST occurence of any element of a specified string[] ; CASE INSENSITIVE
+    public static int LastIndexOfAny(string test, string[] values)
+    {
+        int last = -1;
+        test = test.ToLower();
+        foreach (string item in values)
         {
-            if (i > last)
+            int i = test.IndexOf(item.ToLower());
+            if (i >= 0)
             {
-                last = i;
+                if (last > 0)
+                {
+                    if (i > last)
+                    {
+                        last = i;
+                    }
+                }
+                else
+                {
+                    last = i;
+                }
             }
         }
-        else
-        {
-            last = i;
-        }
+        return last;
     }
-}
-return last;
-}
 
-public static string escapeColon(string s)
-{
-return s.Replace("##", "##*").Replace(":", "##@");
-}
-
-public static string unescapeColon(string s)
-{
-return s.Replace("##@", ":").Replace("##*", "##");
-}
-
-public static string escapeSemicolon(string s)
-{
-return s.Replace("%%", "%%*").Replace(";", "%%@");
-}
-
-public static string unescapeSemicolon(string s)
-{
-return s.Replace("%%@", ";").Replace("%%*", "%%");
-}
-
-public static double distance(double a, double b)
-{
-
-return (double)Math.Sqrt(a * a + b * b);
-
-}
-
-public static double meters2miles(double a)
-{
-
-return (a / 1609.344);
-
-}
-
-public static double meterspsec2milesphour(double a)
-{
-return (a * 2.23694);
-}
-
-public static double meters2feet(double a)
-{
-
-return (a / 1609.344 * 5280);
-
-}
-
-
-public static double DegreesToRadians(double degrees)
-{
-return degrees * (Math.PI / 180.0);
-}
-
-public static double RadiansToDegrees(double radians)
-{
-return radians * (180.0 / Math.PI);
-}
-
-public static double CalculateGradientAngle(
-                      Point3d startPoint,
-                      Point3d endPoint)
-{
-//Calculate the length of the adjacent and opposite
-double diffX = endPoint.x - startPoint.x;
-double diffY = endPoint.y - startPoint.y;
-
-//Calculates the Tan to get the radians (TAN(alpha) = opposite / adjacent)
-//Math.PI/2 - atan becase we need to change to bearing where North =0, East = 90 vs regular math coordinates where East=0 and North=90.
-double radAngle = Math.PI / 2 - Math.Atan2(diffY, diffX);
-
-//Converts the radians in degrees
-double degAngle = RadiansToDegrees(radAngle);
-
-if (degAngle < 0)
-{
-    degAngle = degAngle + 360;
-}
-
-return degAngle;
-}
-
-public static int GetDegreesIn10Step(double degrees)
-{
-degrees = Math.Round((degrees / 10), MidpointRounding.AwayFromZero) * 10;
-
-if ((int)degrees == 360)
-    degrees = 0.0;
-
-return (int)degrees;
-}
-
-public static double CalculatePointDistance(
-                    Point3d startPoint,
-                    Point3d endPoint)
-{
-//Calculate the length of the adjacent and opposite
-double diffX = Math.Abs(endPoint.x - startPoint.x);
-double diffY = Math.Abs(endPoint.y - startPoint.y);
-
-return distance(diffX, diffY);
-}
-public static double CalculatePointDistance(
-                    Vector3d startPoint,
-                    Vector3d endPoint)
-{
-//Calculate the length of the adjacent and opposite
-double diffX = Math.Abs(endPoint.x - startPoint.x);
-double diffY = Math.Abs(endPoint.y - startPoint.y);
-
-return distance(diffX, diffY);
-}
-public static double CalculatePointDistance(
-                    Point3d startPoint)
-{
-//Calculate the length of the adjacent and opposite
-double diffX = Math.Abs(startPoint.x);
-double diffY = Math.Abs(startPoint.y);
-
-return distance(diffX, diffY);
-}
-public static double CalculatePointDistance(
-                    Vector3d startPoint)
-{
-//Calculate the length of the adjacent and opposite
-double diffX = Math.Abs(startPoint.x);
-double diffY = Math.Abs(startPoint.y);
-
-return distance(diffX, diffY);
-}
-
-public static double CalculateBearingDegree(Vector3d vector)
-{
-Vector2d matVector = new Vector2d(vector.y, vector.x);
-// the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
-
-double bearing = (matVector.direction()) * 180.0 / Math.PI;
-return (bearing > 0.0 ? bearing : (360.0 + bearing));
-}
-
-
-public static double CalculateBearingDegree(Vector2d vector)
-{
-Vector2d newVector = new Vector2d(vector.y, vector.x);
-// the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
-double bearing = (newVector.direction()) * 180.0 / Math.PI;
-return (bearing > 0.0 ? bearing : (360.0 + bearing));  //we want bearing to be 0-360, generally
-}
-
-public static double CalculatePitchDegree(Vector3d vector)
-{
-double d = distance(vector.x, vector.y);  //size of vector in x/y plane
-Vector2d matVector = new Vector2d(d, vector.z);
-// the value of direction is in rad so we need *180/Pi to get the value in degrees.  
-
-double pitch = (matVector.direction()) * 180.0 / Math.PI;
-return (pitch < 180 ? pitch : (pitch - 360.0)); //we want pitch to be between -180 and 180, generally
-}
-
-
-
-public static int TimeSince2016_sec()
-{
-DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
-DateTime currentDate = DateTime.Now;
-
-long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
-int elapsedSeconds = (int)(elapsedTicks / 10000000);
-return elapsedSeconds;
-}
-
-public static long TimeSince2016_ticks()
-{
-DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
-DateTime currentDate = DateTime.Now;
-
-long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
-return elapsedTicks;
-}
-
-public static long TimeNow_ticks()
-{
-DateTime currentDate = DateTime.Now;
-return currentDate.Ticks;
-}
-
-public static string SecondsToFormattedString(int sec)
-{
-try
-{
-    var timespan = TimeSpan.FromSeconds(sec);
-    if (sec < 10 * 60) return timespan.ToString(@"m\mss\s");
-    if (sec < 60 * 60) return timespan.ToString(@"m\m");
-    if (sec < 24 * 60 * 60) return timespan.ToString(@"hh\hmm\m");
-    else return timespan.ToString(@"d\dhh\hmm\m");
-}
-catch (Exception ex)
-{
-    System.Console.WriteLine("Calcs.SecondsToFormatted - Exception: " + ex.ToString());
-    return sec.ToString();
-}
-}
-
-//returns index of largest array element which is equal to OR less than the value
-//assumes a sorted list of in values. 
-//If less than the 1st element or array empty, returns -1
-public static Int32 array_find_equalorless(int[] arr, Int32 value)
-{
-if (arr == null || arr.GetLength(0) == 0 || value < arr[0]) return -1;
-int index = Array.BinarySearch(arr, value);
-if (index < 0)
-{
-    index = ~index - 1;
-}
-if (index < 0) return -1;
-return index;
-}
-
-//Splits a long string into a maxLineLength respecting word boundaries (IF possible)
-//http://stackoverflow.com/questions/22368434/best-way-to-split-string-into-lines-with-maximum-length-without-breaking-words
-public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
-{
-string[] words = stringToSplit.Split(' ');
-StringBuilder line = new StringBuilder();
-foreach (string word in words)
-{
-    if (word.Length + line.Length <= maxLineLength)
+    public static string escapeColon(string s)
     {
-        line.Append(word + " ");
+        return s.Replace("##", "##*").Replace(":", "##@");
     }
-    else
+
+    public static string unescapeColon(string s)
     {
-        if (line.Length > 0)
-        {
-            yield return line.ToString().Trim();
-            line.Clear();
-        }
-        string overflow = word;
-        while (overflow.Length > maxLineLength)
-        {
-            yield return overflow.Substring(0, maxLineLength);
-            overflow = overflow.Substring(maxLineLength);
-        }
-        line.Append(overflow + " ");
+        return s.Replace("##@", ":").Replace("##*", "##");
     }
-}
-yield return line.ToString().Trim();
-}
 
-//Salmo @ http://theairtacticalassaultgroup.com/forum/archive/index.php/t-4785.html
-public static string GetAircraftType(AiAircraft aircraft)
-{ // returns the type of the specified aircraft
-string result = null;
-if (aircraft != null)
-{
-    string type = aircraft.InternalTypeName(); // eg type = "bob:Aircraft.Bf-109E-3".  FYI this is a property of AiCart inherited by AiAircraft as a descendant class.  So we could do this with any type of AiActor or AiCart
-    string[] part = type.Trim().Split('.');
-    result = part[1]; // get the part after the "." in the type string
-}
-return result;
-}
+    public static string escapeSemicolon(string s)
+    {
+        return s.Replace("%%", "%%*").Replace(";", "%%@");
+    }
 
-public static string randSTR(string[] strings)
-{
-//Random clc_random = new Random();
-return strings[clc_random.Next(strings.Length)];
-}
+    public static string unescapeSemicolon(string s)
+    {
+        return s.Replace("%%@", ";").Replace("%%*", "%%");
+    }
 
-public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type, double duration_s = 300, string path = "")
-{
-/* Samples: 
- * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
-Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
-Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
-Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
-Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
-Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
-Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+    public static double distance(double a, double b)
+    {
 
-Not sure if height is above sea level or above ground level.
-*/
+        return (double)Math.Sqrt(a * a + b * b);
 
-    mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
+    }
+
+    public static double meters2miles(double a)
+    {
+
+        return (a / 1609.344);
+
+    }
+
+    public static double meterspsec2milesphour(double a)
+    {
+        return (a * 2.23694);
+    }
+
+    public static double meters2feet(double a)
+    {
+
+        return (a / 1609.344 * 5280);
+
+    }
+
+
+    public static double DegreesToRadians(double degrees)
+    {
+        return degrees * (Math.PI / 180.0);
+    }
+
+    public static double RadiansToDegrees(double radians)
+    {
+        return radians * (180.0 / Math.PI);
+    }
+
+    public static double CalculateGradientAngle(
+                          Point3d startPoint,
+                          Point3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = endPoint.x - startPoint.x;
+        double diffY = endPoint.y - startPoint.y;
+
+        //Calculates the Tan to get the radians (TAN(alpha) = opposite / adjacent)
+        //Math.PI/2 - atan becase we need to change to bearing where North =0, East = 90 vs regular math coordinates where East=0 and North=90.
+        double radAngle = Math.PI / 2 - Math.Atan2(diffY, diffX);
+
+        //Converts the radians in degrees
+        double degAngle = RadiansToDegrees(radAngle);
+
+        if (degAngle < 0)
+        {
+            degAngle = degAngle + 360;
+        }
+
+        return degAngle;
+    }
+
+    public static int GetDegreesIn10Step(double degrees)
+    {
+        degrees = Math.Round((degrees / 10), MidpointRounding.AwayFromZero) * 10;
+
+        if ((int)degrees == 360)
+            degrees = 0.0;
+
+        return (int)degrees;
+    }
+
+    public static double CalculatePointDistance(
+                        Point3d startPoint,
+                        Point3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Vector3d startPoint,
+                        Vector3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Point3d startPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(startPoint.x);
+        double diffY = Math.Abs(startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Vector3d startPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(startPoint.x);
+        double diffY = Math.Abs(startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+
+    public static double CalculateBearingDegree(Vector3d vector)
+    {
+        Vector2d matVector = new Vector2d(vector.y, vector.x);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
+
+        double bearing = (matVector.direction()) * 180.0 / Math.PI;
+        return (bearing > 0.0 ? bearing : (360.0 + bearing));
+    }
+
+
+    public static double CalculateBearingDegree(Vector2d vector)
+    {
+        Vector2d newVector = new Vector2d(vector.y, vector.x);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
+        double bearing = (newVector.direction()) * 180.0 / Math.PI;
+        return (bearing > 0.0 ? bearing : (360.0 + bearing));  //we want bearing to be 0-360, generally
+    }
+
+    public static double CalculatePitchDegree(Vector3d vector)
+    {
+        double d = distance(vector.x, vector.y);  //size of vector in x/y plane
+        Vector2d matVector = new Vector2d(d, vector.z);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  
+
+        double pitch = (matVector.direction()) * 180.0 / Math.PI;
+        return (pitch < 180 ? pitch : (pitch - 360.0)); //we want pitch to be between -180 and 180, generally
+    }
+
+
+
+    public static int TimeSince2016_sec()
+    {
+        DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
+        DateTime currentDate = DateTime.Now;
+
+        long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
+        int elapsedSeconds = (int)(elapsedTicks / 10000000);
+        return elapsedSeconds;
+    }
+
+    public static long TimeSince2016_ticks()
+    {
+        DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
+        DateTime currentDate = DateTime.Now;
+
+        long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
+        return elapsedTicks;
+    }
+
+    public static long TimeNow_ticks()
+    {
+        DateTime currentDate = DateTime.Now;
+        return currentDate.Ticks;
+    }
+
+    public static string SecondsToFormattedString(int sec)
+    {
+        try
+        {
+            var timespan = TimeSpan.FromSeconds(sec);
+            if (sec < 10 * 60) return timespan.ToString(@"m\mss\s");
+            if (sec < 60 * 60) return timespan.ToString(@"m\m");
+            if (sec < 24 * 60 * 60) return timespan.ToString(@"hh\hmm\m");
+            else return timespan.ToString(@"d\dhh\hmm\m");
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("Calcs.SecondsToFormatted - Exception: " + ex.ToString());
+            return sec.ToString();
+        }
+    }
+
+    //returns index of largest array element which is equal to OR less than the value
+    //assumes a sorted list of in values. 
+    //If less than the 1st element or array empty, returns -1
+    public static Int32 array_find_equalorless(int[] arr, Int32 value)
+    {
+        if (arr == null || arr.GetLength(0) == 0 || value < arr[0]) return -1;
+        int index = Array.BinarySearch(arr, value);
+        if (index < 0)
+        {
+            index = ~index - 1;
+        }
+        if (index < 0) return -1;
+        return index;
+    }
+
+    //Splits a long string into a maxLineLength respecting word boundaries (IF possible)
+    //http://stackoverflow.com/questions/22368434/best-way-to-split-string-into-lines-with-maximum-length-without-breaking-words
+    public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
+    {
+        string[] words = stringToSplit.Split(' ');
+        StringBuilder line = new StringBuilder();
+        foreach (string word in words)
+        {
+            if (word.Length + line.Length <= maxLineLength)
+            {
+                line.Append(word + " ");
+            }
+            else
+            {
+                if (line.Length > 0)
+                {
+                    yield return line.ToString().Trim();
+                    line.Clear();
+                }
+                string overflow = word;
+                while (overflow.Length > maxLineLength)
+                {
+                    yield return overflow.Substring(0, maxLineLength);
+                    overflow = overflow.Substring(maxLineLength);
+                }
+                line.Append(overflow + " ");
+            }
+        }
+        yield return line.ToString().Trim();
+    }
+
+    //Salmo @ http://theairtacticalassaultgroup.com/forum/archive/index.php/t-4785.html
+    public static string GetAircraftType(AiAircraft aircraft)
+    { // returns the type of the specified aircraft
+        string result = null;
+        if (aircraft != null)
+        {
+            string type = aircraft.InternalTypeName(); // eg type = "bob:Aircraft.Bf-109E-3".  FYI this is a property of AiCart inherited by AiAircraft as a descendant class.  So we could do this with any type of AiActor or AiCart
+            string[] part = type.Trim().Split('.');
+            result = part[1]; // get the part after the "." in the type string
+        }
+        return result;
+    }
+
+    public static string randSTR(string[] strings)
+    {
+        //Random clc_random = new Random();
+        return strings[clc_random.Next(strings.Length)];
+    }
+
+    public static int gpNumberOfPlayers(this IGamePlay GamePlay)
+    {   // Purpose: Returns the number of human players in the game.
+        // Use: GamePlay.NumberOfPlayers(); 
+        int result = 0;
+
+        //multiplayer
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            return GamePlay.gpRemotePlayers().ToList().Count;
+        }
+        //singleplayer
+        else if (GamePlay.gpPlayer() != null)
+        {
+            result = 1;
+        }
+        return result;
+    }
+
+    public static int gpNumberOfPlayers(this IGamePlay GamePlay, int army)
+    {   // Purpose: Returns the number of human players in the game in the 
+        //          specified army.
+        // Use: GamePlay.NumberOfPlayers(army); 
+        int result = 0;
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            List<Player> players = new List<Player>(GamePlay.gpRemotePlayers());
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].Army() == army) result += 1;
+            }
+        }
+        // on Dedi the server:
+        else if (GamePlay.gpPlayer() != null)
+        {
+            if (GamePlay.gpPlayer().Army() == army) return 1;
+            result = 0;
+        }
+        return result;
+    }
+
+    public static bool isHeavyBomber(AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = GetAircraftType(aircraft);
+        return isHeavyBomber(acType);
+    }
+
+    public static bool isHeavyBomber(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isHeavyBomber(aircraft);
+
+    }
+    public static bool isHeavyBomber(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
+         || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+        if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
+        return ret;
+    }
+    public static bool isDiveBomber(AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = GetAircraftType(aircraft);
+        return isDiveBomber(acType);
+    }
+    public static bool isDiveBomber(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isDiveBomber(aircraft);
+
+    }
+    public static bool isDiveBomber(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        if (acType.Contains("Ju-87")) ret = true; //only JU-87 now, but maybe more later?   HurriFB definitely won't dive-bomb
+        return ret;
+    }
+
+
+    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, Mission mission, double x, double y, double z, string type, double duration_s = 300, string path = "")
+    {
+        /* Samples: 
+         * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+        Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+        Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+        Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+        Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+        Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+        Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+
+        Not sure if height is above sea level or above ground level.
+        */
+
+        mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
         //GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
         mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
         mission.Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });

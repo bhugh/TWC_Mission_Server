@@ -1,0 +1,38 @@
+  RBomb1 ASpawnGroup 1 gb01.34
+  RBombCover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08_Way  
+  Jabored ASpawnGroup 1 LONDON.02
+  MQWest ASpawnGroup 1 BoB_RAF_F_FatCat_Late.27
+  MQWestCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.28
+  action4 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action4cover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04    
+  action6 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action6cover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action14 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action14cover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action16 ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action16cover ASpawnGroup 1 BoB_RAF_B_35Sqn.04  
+  
+  
+  Bomb1 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1 ASpawnGroup 1 BoB_LW_LG2_I.28
+  45mincover2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraid ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraidcover ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  4hrraidcover ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  action5 ASpawnGroup 1 BoB_LW_JG54_Stab.03
+  action5e ASpawnGroup 1 BoB_LW_JG26_I.31
+  action7 ASpawnGroup 1 BoB_LW_StG3_I.07
+  action7e ASpawnGroup 1 BoB_LW_LG2_I.04
+  action13 ASpawnGroup 1 BoB_LW_StG1_I.07
+  action13e ASpawnGroup 1 BoB_LW_JG51_I.07
+  action13c ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  action13cc ASpawnGroup 1 BoB_LW_LG2_I.11
+
+

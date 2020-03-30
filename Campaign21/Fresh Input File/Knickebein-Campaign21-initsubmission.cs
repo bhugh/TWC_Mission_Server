@@ -346,7 +346,7 @@ public class Knickebeinholder
         if (knickebeins[player].chatOrHud == KnickebeinTarget.ChatOrHud.Hud)
         {
             knickebeins[player].toChat();
-            if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display switched to chat; cover bomber's won't follow KB (repeat command to turn off).", new object[] { });
+            if (display && mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Display switched to chat; cover bombers won't follow KB (repeat command to turn off).", new object[] { });
             return;
         }
         //knickebeins[player].chatOrHud = KnickebeinTarget.ChatOrHud.Hud; //don't need this as turnOn() auto-sets it to HUD

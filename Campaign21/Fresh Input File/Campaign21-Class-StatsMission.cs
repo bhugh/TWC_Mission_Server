@@ -765,7 +765,7 @@ public class StatsMission : AMission, IStatsMission
             timer = new System.Threading.Timer(
                 new TimerCallback(saveAircraftParams_recurs),
                 null,
-                1000, //wait time @ startup
+                1000, //wait time @ startup, in ms
                 recursInterval); //periodically call the callback at this interval
             //saveAircraftParams_recurs(paramsInstance);            
         }
@@ -9130,30 +9130,36 @@ struct
                 }
 
 
-                //we're taking care of several cases here: Where the aircraft has been killed & we want to kill all players, when called after a player has left the position/aircraft suddenly, etc
-                //If coming from placeLeave then aircraft==null because the player has already left it. Actor in that situation is the "person".
+            //we're taking care of several cases here: Where the aircraft has been killed & we want to kill all players, when called after a player has left the position/aircraft suddenly, etc
+            //If coming from placeLeave then aircraft==null because the player has already left it. Actor in that situation is the "person".
 
-                //TODO: We need to take care of one more situation here: Where the a/c is landed purposefully away from an airport & the
-                //pilot wishes to take off again.  So check if plane is undamaged or if engine is still running or something?  And
-                //only actually remove the player and destroy the a/c if the plane is damage or the engine is turned off or whatever.
-                if (aircraft == null || !Stb_isAiControlledPlane(aircraft)) //aircraft==null means we came here from onplaceleave, with just a player & human actor, but the a/c is already ai controlled as the player has exited
-                { //if it is player-controlled then we kick them out rather quickly, then the aircraft is counted as killed
-                  //This means that the damagers get credit for the victory, but the player has saved his/her life
-                    if (playerDied == true)
-                    {
-                        if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false); //They are dead, so kill immediately (ie, before players are removed from a/c)
-                        else Stb_killActor((aircraft as AiActor), 0);
-                        if (aircraft != null) Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
-                    }
-                    else if (aircraft != null && (injuries > 0.35 || stb_aircraftKilled.Contains((aircraft as AiActor).Name())))
-                    {
-                        Stb_killActor((aircraft as AiActor), 10); //Wait 10 seconds (ie, 5 seconds after players are removed), so that a/c is destroyed but not players killed
-                        Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
-
-                        if (injuries > 0.35) Stb_Message(new Player[] { player }, PlayerNameM + " was injured in that crash - cannot continue.", new object[] { });
-                        if (stb_aircraftKilled.Contains((aircraft as AiActor).Name())) Stb_Message(new Player[] { player }, PlayerNameM + "'s plane was damaged too heavily - cannot continue.", new object[] { });
-                    }
+            //TODO: We need to take care of one more situation here: Where the a/c is landed purposefully away from an airport & the
+            //pilot wishes to take off again.  So check if plane is undamaged or if engine is still running or something?  And
+            //only actually remove the player and destroy the a/c if the plane is damage or the engine is turned off or whatever.
+            if (aircraft == null || !Stb_isAiControlledPlane(aircraft)) //aircraft==null means we came here from onplaceleave, with just a player & human actor, but the a/c is already ai controlled as the player has exited
+            { //if it is player-controlled then we kick them out rather quickly, then the aircraft is counted as killed
+              //This means that the damagers get credit for the victory, but the player has saved his/her life
+                if (playerDied == true)
+                {
+                    if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false); //They are dead, so kill immediately (ie, before players are removed from a/c)
+                    else Stb_killActor((aircraft as AiActor), 0);
+                    if (aircraft != null) Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
                 }
+                else if (aircraft != null && (injuries > 0.35 || stb_aircraftKilled.Contains((aircraft as AiActor).Name())))
+                {
+                    Stb_killActor((aircraft as AiActor), 10); //Wait 10 seconds (ie, 5 seconds after players are removed), so that a/c is destroyed but not players killed
+                    Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
+
+                    if (injuries > 0.35) Stb_Message(new Player[] { player }, PlayerNameM + " was injured in that crash - cannot continue.", new object[] { });
+                    if (stb_aircraftKilled.Contains((aircraft as AiActor).Name())) Stb_Message(new Player[] { player }, PlayerNameM + "'s plane was damaged too heavily - cannot continue.", new object[] { });
+                }
+
+            } else if (playerDied == true) { //So if a "good" crash landing then it seems that the person isn't really killed.  So . . . this does it.
+
+                if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false);
+                else Stb_killActor(actor, 0);
+
+            }
 
 
             }

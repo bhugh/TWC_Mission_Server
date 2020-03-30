@@ -128,6 +128,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -699,7 +700,7 @@ public class StatsMission : AMission, IStatsMission
     
     public class StbCheckAircraftParamStack
     {
-        int check_intv_sec = 45;
+        double check_intv_sec = 45.09348241;
         int wait_to_restart_sec = 5; //should be less than check_intv_sec
         long lastParamsRun = -1;
     
@@ -716,13 +717,17 @@ public class StatsMission : AMission, IStatsMission
             msn.Timeout(check_intv_sec, () => checkAircraftParamStack_recurs(APS));
             if (APS.paramsRun == lastParamsRun)
             {
-                APS.stop_recurs = true;
-                msn.Timeout(wait_to_restart_sec, () =>
-                {
-                    APS.stop_recurs = false;
-                    APS.saveAircraftParams_recurs();
-                }
-                );
+                //APS.paramsInstance++;
+                //APS.saveAircraftParams_recurs();                
+                //Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ParamsInstance: {2}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun, APS.paramsInstance);
+
+                /*APS.timer.Dispose();
+                APS.timer = new Timer(200);
+                APS.timer.Elapsed += saveAircraftParams_recurs();
+                APS.timer.Start();
+                Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
+                */
+                APS.startTimer();
                 Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
             }
             lastParamsRun = APS.paramsRun;
@@ -738,14 +743,35 @@ public class StatsMission : AMission, IStatsMission
     {
 
         Dictionary<string, CircularArray<AircraftParams>> aircraftParams = new Dictionary<string, CircularArray<AircraftParams>>();
-        double recursInterval = 0.2; //time between saving params
+        int recursInterval = 203; //time between saving params
         int array_size = 6; //Number of param sets to save on the stack, for each player/aircraft
+        public int paramsInstance = 0;
         StatsMission mission;
+        public System.Threading.Timer timer;
 
         public StbAircraftParamStack(StatsMission m)
         {
             mission = m;
-            saveAircraftParams_recurs();
+            /*timer = new Timer(200);
+            timer.Elapsed += saveAircraftParams_recurs();
+            timer.Start();            */
+            startTimer();
+
+            
+        }
+        public void startTimer()
+        {
+            if (timer != null) timer.Dispose();
+            timer = new System.Threading.Timer(
+                new TimerCallback(saveAircraftParams_recurs),
+                null,
+                1000, //wait time @ startup
+                recursInterval); //periodically call the callback at this interval
+            //saveAircraftParams_recurs(paramsInstance);            
+        }
+        public void disposeTimer()
+        {
+            if (timer != null) timer.Dispose();            
         }
 
         private void addParams(Player player)
@@ -970,14 +996,19 @@ public class StatsMission : AMission, IStatsMission
         }
 
         public long paramsRun = 0;
-        public bool stop_recurs = false;
+        
 
-        public void saveAircraftParams_recurs()
+        public void saveAircraftParams_recurs(object o)
         {
             try
             {
-                if (stop_recurs) return;
-                mission.Timeout(recursInterval, () =>  saveAircraftParams_recurs() );
+                /*if (localPI != paramsInstance)
+                {
+                    Console.WriteLine("saveAircraftParams_recurs: Stopping recurs, localPI = {0} paramsInstance = {1}", localPI, paramsInstance);
+                    return;
+                }
+                */
+                //mission.Timeout(recursInterval, () =>  saveAircraftParams_recurs(localPI) );
                 paramsRun++;
                 if (paramsRun % 50 == 0) Console.WriteLine("saveAircraftParamsRecursive {0} {1}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), paramsRun);
                 //Task.Run( ()=>
@@ -1001,10 +1032,6 @@ public class StatsMission : AMission, IStatsMission
 
                     }
                 //);
-
-
-
-
             }
             catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
 
@@ -1453,12 +1480,15 @@ struct
                             cm.isInPlanePlaceChange = true; //hoping that dis_meters > 5 will catch e.g. bombers where the player switches position to position but it's still the same flight
                                                             //Console.WriteLine("That was an in-plane place change!" + dis_meters.ToString() + " meters");
                         }
+                        else
+                        { //2020/03/25, inserted "else" here so that if it is an in-plane place change all this stuff won't get reset as though it's the start of a new flight/sortie
 
-                        //we re-set these (below) here rather than on takeoff complete, bec. we want to count any take-off damage.
-                        cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
-                        cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
-                        cm.selfDamageThisFlight = 0;
-                        cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec(); //we'll reset this ontookoff, but this keeps it from being zero regardless; we don't want that 
+                            //we re-set these (below) here rather than on takeoff complete, bec. we want to count any take-off damage.
+                            cm.damagedSinceTakeoff = false; //Between these two we can figure out if the only
+                            cm.damagedOnlyBySelf = true;  //damage upon landing or de-spawning is self-inflicted
+                            cm.selfDamageThisFlight = 0;
+                            cm.flightStartTime_sec = StatCalcs.TimeSince2016_sec(); //we'll reset this ontookoff, but this keeps it from being zero regardless; we don't want that 
+                        }
 
 
 
@@ -3905,18 +3935,25 @@ struct
         return false;
     }
 
+    public System.Threading.Timer removeOffMapPlayersTimer;
+
     public void Stb_RemoveOffMapPlayers_recurs()
     {
-        Timeout(18.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
+        removeOffMapPlayersTimer = new System.Threading.Timer(
+            new TimerCallback(Stb_RemoveOffMapPlayers),
+            null,
+            30000, //wait time @ startup
+            18500); //periodically call the callback at this interval
+        //Timeout(18.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
         //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-        Task.Run(() => Stb_RemoveOffMapPlayers());
+        //Task.Run(() => Stb_RemoveOffMapPlayers());
         //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
     }
 
     public Dictionary<Player, int> numConsecutiveTimesPlayerOffMap = new Dictionary<Player, int>();
 
     //Removes player aircraft if they are off the map    
-    public void Stb_RemoveOffMapPlayers()
+    public void Stb_RemoveOffMapPlayers(object o)
     {
         try
         {
@@ -3935,7 +3972,7 @@ struct
             double maxX = 362000;
             double maxY = 312000;
             //////////////Comment this out as we don`t have Your Debug mode  
-            //Console.WriteLine("Checking for Players off map, to despawn");
+            Console.WriteLine("Checking for Players off map, to despawn");
             if (GamePlay.gpArmies() == null) return;
             if (GamePlay.gpArmies().Length == 0) return;
 
@@ -4141,17 +4178,27 @@ struct
         }
     }
 
+    public System.Threading.Timer Stb_changeTargetToDifferentNearbyAircraftTimer;
+
+
     //Experiment with changingn the airgroup target to player, seeing if they will attack better
     //Not actually used for now
     public void Stb_changeTargetToDifferentNearbyAircraft_recurs()
     {
-        Timeout(52.34, () => { Stb_changeTargetToDifferentNearbyAircraft_recurs(); });
+        Stb_changeTargetToDifferentNearbyAircraftTimer = new System.Threading.Timer(
+            new TimerCallback(Stb_changeTargetToDifferentNearbyAircraft),
+            null,
+            30000, //wait time @ startup
+            52340); //periodically call the callback at this interval
+
+
+        //Timeout(52.34, () => { Stb_changeTargetToDifferentNearbyAircraft_recurs(); });
         //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
-        Task.Run(() => Stb_changeTargetToDifferentNearbyAircraft());
+        //Task.Run(() => Stb_changeTargetToDifferentNearbyAircraft());
         //Timeout(28, () => { Stb_changeTargetToPlayerRecurs(player); });
     }
 
-    public void Stb_changeTargetToDifferentNearbyAircraft()
+    public void Stb_changeTargetToDifferentNearbyAircraft(object o)
     {
         if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
@@ -4634,6 +4681,14 @@ struct
 
         try
         {
+            removeOffMapPlayersTimer.Dispose();
+            stb_AircraftParamStack.disposeTimer();
+        }
+        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR0: " + ex.ToString()); }
+
+
+        try
+        {
             //Get list of all players, then send them to StbCmr_SavePositionLeave
             //We don't want ot actually send them to OnPlaceLeave because that may kill them etc depending on where
             //they are. This will just close out their stats without any chance of killing etc.
@@ -4661,15 +4716,18 @@ struct
 
                 foreach (Player player in Players)
                 {
+                    //Stb_RemovePlayerFromAircraftSafelyandDestroy(player, 0, 0.1);
+                    stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                     stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, player.Place(), true); //immediately end their sortie & save stats (immed=true)
 
                     //So, if we people are still flying when the mission ends we want to return their aircraft to supply & not destroy them.
                     //we can do this multiple times per aircraft bec. only the first one counts, but we're still going to save by only doing it for the first position encountered
                     AiActor actor = player.Place();
                     if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                       if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 }
             }
+
         }
         catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR1: " + ex.ToString()); }
 
@@ -4744,6 +4802,51 @@ struct
 
         #endregion
     }
+
+    /*
+    public override void OnTickGame()
+    {
+        base.OnTickGame();
+        if (Time.tickCounter()%10 ==0) Task.Run (() => executeTimeouts());  //so run it only every 10 ticks which gives us time resolution 0.05 seconds or so.  Not sure if this is a smart thing ot do or not.
+    }
+
+    public void executeTimeouts()
+    {
+        long currTick = Time.tickCounter();
+        foreach (KeyValuePair<long, List<maddox.game.DoTimeout>> entry in TimeoutDict)
+        {
+            if (entry.Key > currTick) return;
+            foreach (maddox.game.DoTimeout DTo in entry.Value)
+            {
+                try
+                {
+                    DTo.Invoke();
+                    Console.WriteLine("Timeout executed: {0} {1}", entry.Key, DTo.ToString());
+                }
+                catch (Exception ex) { Console.WriteLine("Stats execute ERROR, tick {0}: " + ex.ToString(), entry.Key); }
+            }
+            TimeoutDict.Remove(entry.Key);
+        }
+    }
+
+    SortedDictionary<long, List<maddox.game.DoTimeout>> TimeoutDict = new SortedDictionary<long, List<maddox.game.DoTimeout>>() { };
+    public override void Timeout (double time_sec, maddox.game.DoTimeout timeout_del)
+    {
+        try
+        {
+            Console.WriteLine("Timeout request: {0} {1}", time_sec, timeout_del.ToString());
+            int currTick = Time.tickCounter();
+            long waitTick = Time.SecsToTicks(time_sec);
+            long execTick = (long)currTick + waitTick;
+            var DTo_list = new List<maddox.game.DoTimeout>();
+            if (TimeoutDict.ContainsKey(execTick)) DTo_list = TimeoutDict[execTick];
+            DTo_list.Add(timeout_del);
+            TimeoutDict[execTick] = DTo_list;
+        }
+        catch (Exception ex) { Console.WriteLine("StatsTimeout Override ERROR: " + ex.ToString()); }
+    }
+
+    */
 
     public ISupplyMission TWCSupplyMission;
     int stb_lastMissionLoaded = -1;
@@ -7218,7 +7321,7 @@ struct
 
             AiAircraft aircraft = actor as AiAircraft;
 
-            Timeout(0.15, () =>
+            Timeout(0.15 + stb_random.NextDouble()/100, () =>
             {
                     //AiAircraft aircraft = actor as AiAircraft;
                     double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
@@ -8750,8 +8853,9 @@ struct
         {
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
-            string msg = "Stationary_DoWork" + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
-
+            string msg = "";
+            if (stationary != null) msg = "Stationary_DoWork" + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ";
+            //Console.WriteLine("OSK_dw 1");
             Player player = null;
             if (initiator != null && initiator.Player != null) player = initiator.Player;
 
@@ -8769,6 +8873,7 @@ struct
             {
                 if (initiator.Player != null)
                 {
+                    //Console.WriteLine("OSK_dw 2");
                     int statArmy = GamePlay.gpFrontArmy(stationary.pos.x, stationary.pos.y);
                     msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
 
@@ -8810,18 +8915,21 @@ struct
                     {
                         msg += "(friendly ground target)";
                     }
+                    //Console.WriteLine("OSK_dw 3");
                 }
                 else
                 {
                     msg += "AI ";
                     if (initiator != null && initiator.Actor != null && initiator.Actor.Name() != null) msg += initiator.Actor.Name() + "  " + (initiator.Actor as AiCart).InternalTypeName() + " ";
                     if (initiator != null && initiator.Tool != null && initiator.Tool.Name != null) msg += initiator.Tool.Name + "  ";
+                    //Console.WriteLine("OSK_dw 4");
                 }
             }
 
             int score = 1;
 
             if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
+            //Console.WriteLine("OSK_dw 5");
             if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type); //type 4 is any other ground type
                                                                                                          //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
                                                                                                          //score.  But for these stationaries it just appears to be reported when they are killed, along with the
@@ -8832,14 +8940,16 @@ struct
 
             //Report ground kills but spread them out a bit in case many die @ once
             //TESTING: turning off ground target  hit messages to see if that helps our warping problem  9/28/2018
-            Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            //Console.WriteLine("OSK_dw 6");
+            if (player != null) Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
 
             //Stb_LogError(msg);
             //if (willReportDead) 
             Console.WriteLine(msg);
+            //Console.WriteLine("OSK_dw 7");
 
         }
-        catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
+        catch (Exception ex) { Console.WriteLine("OnStationaryKilled_dowork ERROR: " + ex.ToString()); }
         #endregion
         //add your code here
     }

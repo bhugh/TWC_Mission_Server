@@ -675,9 +675,9 @@ public class Mission : AMission, IMainMission
     }
 
     bool OnTick_End_Mission_Triggered = false;
-    public override void OnTickGame()
-    {
-        base.OnTickGame();
+        public override void OnTickGame()
+        {
+            base.OnTickGame();
         /* Tick_Mission_Time = 720000 - Time.tickCounter();
         var Mission_Time = Tick_Mission_Time / 2000;
         TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
@@ -9460,6 +9460,8 @@ public class Mission : AMission, IMainMission
         [DataMember] public MO_MobileObjectiveType MOMobileObjectiveType { get; set; } //MO_MobileOBjectiveType.None if it's not mobile/movable
         [DataMember] public double MobileMoveTime_hrs { get; set; } //Time between moves of this objective (hours)
         [DataMember] public DateTime? MobileNextMoveTime_dt { get; set; } //Next date/time this mobile objective should be moved;
+        [DataMember] public double MobileMaxMoveDist_km { get; set; } //Minimum distance to move (km)
+        [DataMember] public double MobileMinMoveDist_km { get; set; } //Maximum distance to move (km)
         [DataMember] public Point3d MobileSWPoint { get; set; } //area the MobileObjectiveType can roam is defined by a rectangle; these two points give the SW & NE corners of the rect
         [DataMember] public Point3d MobileNEPoint { get; set; }
 
@@ -9498,6 +9500,8 @@ public class Mission : AMission, IMainMission
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
             MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.
+            MobileMaxMoveDist_km = 0;
+            MobileMinMoveDist_km = 0;
             MobileSWPoint = Pos;
             MobileNEPoint = Pos;
 
@@ -9598,6 +9602,8 @@ public class Mission : AMission, IMainMission
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
             MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.
+            MobileMaxMoveDist_km = 0;
+            MobileMinMoveDist_km = 0;
             MobileSWPoint = Pos;
             MobileNEPoint = Pos;
 
@@ -9670,6 +9676,8 @@ public class Mission : AMission, IMainMission
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
             MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.
+            MobileMaxMoveDist_km = 0;
+            MobileMinMoveDist_km = 0;
             MobileSWPoint = Pos;
             MobileNEPoint = Pos;
 
@@ -9754,6 +9762,8 @@ public class Mission : AMission, IMainMission
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
             MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.
+            MobileMaxMoveDist_km = 0;
+            MobileMinMoveDist_km = 0;
             MobileSWPoint = Pos;
             MobileNEPoint = Pos;
 
@@ -9817,7 +9827,7 @@ public class Mission : AMission, IMainMission
         }
 
         //POINTAREA ***AND*** MOBILE OBJECTIVE initiator.  An area which is designated by a map coordinate and radius ***AND*** which moves around within a designated rectangle every time a new session starts or whenever
-        //You can designate EITHER kg tonnage of ordnance dropped in that area to destroy it, OR a certain number of objects (static objects, actors, buildings, etc) that must be killed within that radius (the buildings part working depends on TF getting the onbuildingdestroyed routine working again).
+        //You can designate EITHER kg tonnage of ordnance dropped in that area to destroy it, OR a certain number of objects (static objects, actors, buildings, etc) that must be killed within that radius (the buildings part working depends on TF getting the onbuildingdestroyed routine working again).  There is a failsafe so if oneside or the other is achieved over 200% it starts to count towards the other side (typically, KG-age, which will start to count towards objects killed, but it could be the other way, too)
         //OR you can choose BOTH and in that case the players will have to drop the certain tonnage on the area AND kill the certain number of objects
         public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, int ownerarmy,
             double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary,
@@ -9826,6 +9836,8 @@ public class Mission : AMission, IMainMission
             double mobile_hours_between_moves,
             Point3d mobile_SW_point,
             Point3d mobile_NE_point,
+            double min_move_dist_km,
+            double max_move_dist_km,
             MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None,
             string comment = "", double radar_effective_radius_m = 20000)
 
@@ -9856,6 +9868,8 @@ public class Mission : AMission, IMainMission
             MOMobileObjectiveType = mobile_objective_type;
             MobileMoveTime_hrs = mobile_hours_between_moves; //Time after which the mobile objective should move to a different location.
             MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.  If null the objective will be placed @ start of mission, and then the MoveTime_dt will be set
+            MobileMinMoveDist_km = min_move_dist_km;
+            MobileMaxMoveDist_km = max_move_dist_km;            
             MobileSWPoint = mobile_SW_point;//Best be sure they really are teh SW & NE points & not mixed up somehow.  Though it just MIGHT work regardless.
             MobileNEPoint = mobile_NE_point;
 
@@ -10220,7 +10234,11 @@ public class Mission : AMission, IMainMission
             }
         }
         public void addMobile(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_MobileObjectiveType MobObjType = MO_MobileObjectiveType.ArmyEncampment,
-            double mob_hrsbetweenMoves = 12, double x_sw = 0, double y_sw = 0, double x_ne = 360000, double y_ne = 320000, MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None, string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000)
+            double mob_hrsbetweenMoves = 12, double x_sw = 0, double y_sw = 0, double x_ne = 360000, double y_ne = 320000,
+            double min_move_dist_km = 2,
+            double max_move_dist_km = 5,
+            MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None, 
+            string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000)
         {
             Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
 
@@ -10232,7 +10250,7 @@ public class Mission : AMission, IMainMission
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
                 //msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, comment));
-                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, MobObjType, mob_hrsbetweenMoves, new Point3d(x_sw, y_sw, 0), new Point3d(x_ne, y_ne, 0), ProdStorType, comment, radar_effective_radius_m: radar_effective_radius_m));
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, MobObjType, mob_hrsbetweenMoves, new Point3d(x_sw, y_sw, 0), new Point3d(x_ne, y_ne, 0), min_move_dist_km, max_move_dist_km, ProdStorType, comment, radar_effective_radius_m: radar_effective_radius_m));
             }
         }
 
@@ -10590,34 +10608,37 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Dunkirk Naval Docks Area", "Dunk", "Campaign21-LOADONCALL-dunkirk-naval-docks-objective.mis", 2, 10, "BTargDunkirkNavyDocks", 314227, 225610, 1150, 850, 10000, 40, 160, 24, true, true, 2, 8, "", add);
 
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne Naval Docks Area", "Dunk", "Campaign21-LOADONCALL-boulogne-naval-docks-objective.mis", 2, 10, "BTargBoulogneNavyDocks", 265531, 190133, 750, 650, 10000, 40, 160, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne-sur-Mer Submarine Base", "Boul", "Campaign21-LOADONCALL-boulognesurmer-submarine-base-objective.mis", 2, 10, "BTargBoulSubmarine", 265859, 192867, 250, 150, 10000, 15, 160, 24, true, true, 2, 8, "", add);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne Naval Docks Area", "Boul", "Campaign21-LOADONCALL-boulogne-naval-docks-objective.mis", 2, 10, "BTargBoulogneNavyDocks", 265531, 190133, 750, 650, 10000, 40, 160, 24, true, true, 2, 8, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 120, 24, true, true, 2, 6, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "Campaign21-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 250, 200, 3000, 3, 120, 24, true, true, 2, 6, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Berck Amphibious Craft Assembly Site", "", "Campaign21-LOADONCALL-berck-landingcraft-objective.mis", 2, 4, "RTargBerckLandingCraft", 269247, 147771, 250, 200, 3000, 5, 120, 24, true, true, 3, 6, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 10, 120, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Veume Military Manufacturing Area", "", "", 2, 8, "RTargVeumeMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 120, 24, true, true, 2, 10, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Veurne Military Manufacturing Area", "", "", 2, 8, "RTargVeurneMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 120, 24, true, true, 2, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "Campaign21-LOADONCALL-lecrotoyberck-landingcraft-objective.mis", 2, 11, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271541, 132815, 1200, 1000, 11000, 9, 120, 24, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "Campaign21-LOADONCALL-lecrotyoy-forest-bunker-objective.mis", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Campaign21-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
 
 
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Mobile Army Camp", "", 2, 9, "RSamerMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 9, "BHastingsMobileArmyCamp", 179965, 204219, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 10, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 15, 189965, 204219, 199201, 214392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Secret Air Base", "", 2, 10, "RSamerSecretAirbase", 280276, 169671, 800, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 15, 280276, 169671, 290111, 179520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Intelligence Air Research", "", 1, 10, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 189965, 214219, 199201, 224392, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Samer Intelligence Air Research", "", 2, 10, "", 280276, 179671, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 15, 280276, 179671, 290111, 189520, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 1", "", 2, 8, "RSamerMobileRadar1", 270276, 169671, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 169671, 280111, 179520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 1", "", 1, 8, "BHastingsMobileRadar1", 179965, 204219, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 204219, 189201, 214392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.Radar, "Samer Mobile Radar 2", "", 2, 8, "RSamerMobileRadar2", 270276, 179671, 300, 250, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270276, 179671, 280111, 189520, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 2", "", 1, 8, "BHastingsMobileRadar2", 179965, 214219, 300, 250, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 179965, 214219, 189201, 224392, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Mobile Armour", "", 2, 8, "RVeumeMobileArmour", 331978, 220669, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 331978, 220669, 336978, 225669, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Nonington Mobile Armour", "", 1, 8, "BNoningtonMobileArmour", 240196, 243824, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 240196, 243824, 245196, 248824, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Vueme Large Mobile Armour", "", 2, 10, "RVeumeLargeMobileArmour", 345508, 231881, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 345508, 231881, 350508, 236881, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Lee-Over-Sands Large Mobile Armour", "", 1, 10, "BLeeOverSandsLargeMobileArmour", 224606, 305877, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 224606, 305877, 231297, 310088, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Quend Plage Invasion Training Center", "", 2, 5, "RQuendPlageCamo", 262939, 143597, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 262939, 143597, 265939, 146597, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Courtsend Secret Resistance Training Center", "", 1, 5, "BCourtsendCamoGroup", 212979, 282491, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 15, 212979, 282491, 218902, 288639, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Mobile Army Camp", "", 2, 9, "RLiane-SommeMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270215, 136714, 294585, 197640, 2, 7, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 9, "BHastingsMobileArmyCamp", 179965, 204219, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 179965, 204219, 189201, 214392, 2, 7, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Secret Airbase", "", 1, 10, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 60, 189965, 204219, 199201, 214392, 10, 35, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Secret Air Base", "", 2, 10, "RLiane-SommeSecretAirbase", 280276, 169671, 800, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 60, 270215, 136714, 294585, 197640, 10, 35, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Intelligence Air Research", "", 1, 10, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 189965, 214219, 199201, 224392, 10, 45, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Intelligence Air Research", "", 2, 10, "", 280276, 179671, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 270215, 136714, 294585, 197640, 10, 45, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.Radar, "Liane-Somme Mobile Radar 1", "", 2, 8, "RLiane-SommeMobileRadar1", 270276, 169671, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 15, 270215, 136714, 294585, 197640, 5, 35, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
+            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 1", "", 1, 8, "BHastingsMobileRadar1", 179965, 204219, 200, 150, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 30, 154251, 205709, 210342, 242209, 5, 35, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            addMobile(MO_ObjectiveType.Radar, "Liane-Somme Mobile Radar 2", "", 2, 8, "RLiane-SommeMobileRadar2", 270276, 179671, 300, 250, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 45, 270215, 136714, 294585, 197640, 10, 45, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
+            addMobile(MO_ObjectiveType.Radar, "Hastings Mobile Radar 2", "", 1, 8, "BHastingsMobileRadar2", 179965, 214219, 300, 250, 7000, 12, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.MobileRadar1, 45, 154251, 205709, 210342, 242209, 10, 45, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            addMobile(MO_ObjectiveType.MilitaryArea, "West Flanders Mobile Armour", "", 2, 8, "RWFlandersMobileArmour", 331978, 220669, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 326050, 196380, 359018, 244017, 2, 5, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Kent Mobile Armour", "", 1, 8, "BKentMobileArmour", 240196, 243824, 250, 200, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 216410, 232331, 247147, 261063, 2, 5,MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "West Flanders Large Mobile Armour", "", 2, 10, "RWFlandersLargeMobileArmour", 345508, 231881, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 326050, 196380, 359018, 244017, 2, 5,  MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Kent Large Mobile Armour", "", 1, 10, "BKentLargeMobileArmour", 221410, 236331, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 216410, 232331, 247147, 261063, 2, 5, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Kent Large Mobile Armour", "", 1, 10, "BKentLargeMobileArmour", 221410, 236331, 250, 200, 9000, 17, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.LargeArmourGroup, 15, 216410, 232331, 247147, 261063, 2, 5, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Quend Plage Invasion Training Center", "", 2, 5, "RQuendPlageCamo", 262939, 143597, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 45, 255955, 121627, 285447, 149792, 5, 20, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Courtsend Secret Resistance Training Center", "", 1, 5, "BCourtsendCamoGroup", 212979, 282491, 250, 200, 4000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 45, 204890, 277937, 219083, 303020, 5, 20, MO_ProducerOrStorageType.None, "", add);
 
 
 
@@ -12083,11 +12104,13 @@ added Rouen Flak
 
             double searchRadius_m = MO_CalcMobileObjRadius_m(mo);
 
-            //try to find a place that is not water, not near an airport, outwards at least mo.radius + adder_m from the center of the objective
+            //try to find a place that is not water, not near an airport, outwards at least mo.radius + adder_m from the center of the objective, within min/max move distance specified
             //try it a bunch of times if no success
-            for (int i = 0; i < 250; i++)
+            int maxSearchNum = 2250;
+            for (int i = 0; i < maxSearchNum; i++)
             {
-                //if having trouble finding a place, expand the search area . . . 
+                
+                /*//if having trouble finding a place, expand the search area . . . 
                 if (i > 50) {
                     double adder = i * 27;
                     swPos.x -= adder;
@@ -12095,11 +12118,17 @@ added Rouen Flak
                     nePos.x += adder;
                     nePos.y += adder;
                 }
+                */
 
                 newPos.x = swPos.x + random.NextDouble() * (nePos.x - swPos.x);
                 newPos.y = swPos.y + random.NextDouble() * (nePos.y - swPos.y);
 
+                bool withinMinMax = false;
+                double distFromOldPos_m = Calcs.CalculatePointDistance(newPos, mo.Pos);
                 Console.WriteLine("Trying location {0:F0} {1:F0} for " + mo.Name, newPos.x, newPos.y);
+                
+                //move by a certain min & max amount
+                if (distFromOldPos_m <= mo.MobileMaxMoveDist_km * 1000 && distFromOldPos_m >= mo.MobileMinMoveDist_km * 1000) withinMinMax = true;                
 
                 double dist = 5000;
                 try
@@ -12109,15 +12138,27 @@ added Rouen Flak
                 }
                 catch (Exception ex) { Console.WriteLine("ERROR MOBILE OBJECTIVE PLACEMENT! " + ex.ToString()); }
 
-
-                if (dist - searchRadius_m < 3500) continue;
+                bool farEnoughFromAirport = true;
+                if (dist - searchRadius_m < 3500) farEnoughFromAirport = false;
 
                 ////!!!!!! TODO !!!!!!! Also check that this isn't close to any other existing mobile objective
 
-                if (!MO_WaterInRadius(newPos, searchRadius_m)) break;
-                if (i == 249)
+                bool waterinObjectiveArea = MO_WaterInRadius(newPos, searchRadius_m);
+
+                if (!waterinObjectiveArea && farEnoughFromAirport && withinMinMax) break;
+                if (!waterinObjectiveArea && farEnoughFromAirport && i >= maxSearchNum - 400)
                 {
-                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water. Placing at center of area as last resort.");
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters.  Just picking another location.");
+                    break; //if not working we'll relax the requirement for moving by a certain amount
+                }
+                if (!waterinObjectiveArea && i >= maxSearchNum - 150) // if still not working we'll relax the requirement to avoid airport
+                {
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && outside of airport radius.  Just picking another location.");
+                    break; //if not working we'll relax the requirement for moving by a certain amount
+                }
+                if (i >= maxSearchNum - 1)
+                {
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water, and right movement distance. Placing at center of area as last resort.");
                     newPos.x = (swPos.x + nePos.x) / 2.0;
                     newPos.y = (swPos.y + nePos.y) / 2.0;
                 }

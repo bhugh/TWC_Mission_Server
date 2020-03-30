@@ -1,0 +1,129 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 700
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static1 Stationary.Environment.JerryCan_GER1_1 nn 265792.41 192809.91 0.00 
+  Static0 Stationary.Industrial.Oxygen_Facility nn 265909.75 192917.25 25.00 
+  Static2 Stationary.Horch_108_Typ_1A de 265965.94 192938.78 -45.00 
+  Static4 Stationary.Environment.CamoNetPlaneBig nn 265932.06 192929.77 30.00 
+  Static5 Stationary.Environment.CamoNetPlane nn 265941.16 192897.94 -60.00 
+  Static6 Stationary.SdKfz_9_Crane de 265961.34 192948.72 -45.00 
+  Static7 Stationary.Environment.SandBagWall_Line_12m nn 265787.75 192798.48 -75.00 
+  Static8 Stationary.Environment.SandBagWall_Line_12m nn 265798.75 192802.58 -65.00 
+  Static9 Stationary.Environment.SandBagWall_Line_12m nn 265808.25 192808.75 -50.00 
+  Static10 Stationary.Environment.SandBagWall_Line_12m nn 265816.56 192816.23 -45.00 
+  Static11 Stationary.Environment.SandBagWall_Line_12m nn 265823.53 192825.55 -30.00 
+  Static12 Stationary.Environment.SandBagWall_Line_12m nn 265829.16 192835.67 -30.00 
+  Static13 Stationary.Environment.SandBagWall_Line_12m nn 265834.78 192845.78 -30.00 
+  Static14 Stationary.Environment.SandBagWall_Line_12m nn 265839.31 192856.52 -15.00 
+  Static15 Stationary.Environment.SandBagWall_Line_12m nn 265843.81 192867.38 -30.00 
+  Static16 Stationary.Environment.SandBagWall_Line_12m nn 265851.66 192875.75 -60.00 
+  Static17 Stationary.Environment.SandBagWall_Line_12m nn 265862.19 192880.56 -75.00 
+  Static18 Stationary.Environment.SandBagWall_Line_12m nn 265873.44 192883.05 -85.00 
+  Static19 Stationary.Environment.SandBagWall_Line_12m nn 265884.84 192884.52 -85.00 
+  Static20 Stationary.Environment.SandBagWall_Line_12m nn 265907.09 192890.41 -75.00 
+  Static21 Stationary.Environment.SandBagWall_Line_12m nn 265918.22 192892.34 -90.00 
+  Static22 Stationary.Environment.SandBagWall_Line_12m nn 265896.31 192887.17 -75.00 
+  Static23 Stationary.Environment.SandBagWall_Line_12m nn 265938.38 192883.25 75.00 
+  Static24 Stationary.Environment.SandBagWall_Line_12m nn 265942.41 192882.23 -105.00 
+  Static25 Stationary.Environment.SandBagWall_Line_12m nn 265928.41 192888.38 -135.00 
+  Static26 Stationary.Environment.SandBagWall_Line_12m nn 265948.00 192880.70 -105.00 
+  Static27 Stationary.Environment.SandBagWall_Line_12m nn 265953.25 192879.30 -105.00 
+  Static28 Stationary.Environment.SandBagWall_Line_12m nn 265953.16 192879.69 -105.00 
+  Static3 Stationary.Industrial.Railroad.SmallFactory nn 265928.09 192925.34 -65.00 
+  Static29 Stationary.Industrial.Oxygen_Facility nn 265884.19 192904.97 25.00 
+  Static30 Stationary.Industrial.Oxygen_Facility de 265857.53 192893.70 25.00 
+  Static31 Stationary.Industrial.Oxygen_Facility nn 265833.47 192882.02 25.00 
+  Static32 Stationary.Industrial.Oxygen_Facility nn 265807.84 192869.92 25.00 
+  Static33 Stationary.Industrial.Oxygen_Facility nn 265783.69 192858.61 25.00 
+  Static34 Stationary.Environment.CamoNetPlaneBig de 265916.00 192919.84 30.00 
+  Static35 Stationary.Environment.CamoNetPlaneBig nn 265897.03 192909.48 30.00 
+  Static36 Stationary.Environment.CamoNetPlaneBig nn 265877.19 192899.22 30.00 
+  Static37 Stationary.Environment.CamoNetPlaneBig nn 265856.69 192892.20 30.00 
+  Static38 Stationary.Environment.CamoNetPlaneBig nn 265838.09 192881.48 30.00 
+  Static39 Stationary.Environment.CamoNetPlaneBig nn 265816.25 192877.39 30.00 
+  Static40 Stationary.Environment.CamoNetPlaneBig nn 265800.69 192867.41 30.00 
+  Static41 Stationary.Environment.CamoNetPlaneBig nn 265781.41 192859.92 30.00 
+  Static42 Stationary.Environment.CamoNetPlaneBig nn 265768.53 192851.16 30.00 
+  Static43 Stationary.Environment.CamoNetPlane nn 265821.19 192846.00 -60.00 
+  Static44 Stationary.Environment.CamoNetPlane nn 265803.22 192835.81 -60.00 
+  Static45 Stationary.Environment.CamoNetPlane nn 265785.22 192825.38 -60.00 
+  Static46 Stationary.Environment.CamoNetPlane nn 265792.88 192811.58 -60.00 
+  Static47 Stationary.Environment.CamoNetPlane nn 265851.44 192851.47 -60.00 
+  Static48 Stationary.Environment.CamoNetPlane nn 265873.84 192859.80 -60.00 
+  Static49 Stationary.Environment.CamoNetPlane nn 265900.31 192875.81 -60.00 
+  Static50 Stationary.Environment.CamoNetPlane nn 265849.19 192827.66 -60.00 
+  Static51 Stationary.Environment.CamoNetPlane nn 265811.28 192791.36 -60.00 
+  Static52 Stationary.Environment.CamoNetPlane nn 265834.31 192807.00 -60.00 
+  Static53 Stationary.Environment.CamoNetPlaneBig de 265792.00 192789.55 -170.00 
+  Static54 Stationary.Environment.CamoNetPlaneBig nn 265771.81 192785.86 -350.00 
+  Static55 Stationary.Environment.CamoNetPlaneBig nn 265942.66 192936.86 -150.00 
+  Static56 Stationary.Environment.CamoNetPlane nn 265939.56 192897.22 -155.00 
+  Static57 Stationary.Environment.CamoNetPlane nn 265944.56 192899.70 -155.00 
+  Static58 Stationary.Environment.CamoNetPlane nn 265899.84 192873.73 -150.00 
+  Static59 Stationary.Environment.CamoNetPlane nn 265902.44 192875.34 -150.00 
+  Static60 Stationary.Environment.CamoNetPlane nn 265873.31 192857.78 -150.00 
+  Static61 Stationary.Environment.CamoNetPlane nn 265875.97 192858.63 -150.00 
+  Static62 Stationary.Environment.CamoNetPlane nn 265853.03 192850.25 -150.00 
+  Static63 Stationary.Environment.CamoNetPlane de 265850.38 192849.17 -150.00 
+  Static64 Stationary.Environment.CamoNetPlane nn 265851.00 192827.05 -150.00 
+  Static65 Stationary.Environment.CamoNetPlane nn 265849.00 192825.97 -150.00 
+  Static66 Stationary.Environment.CamoNetPlane nn 265823.69 192845.33 -150.00 
+  Static67 Stationary.Environment.CamoNetPlane nn 265819.56 192843.42 -150.00 
+  Static68 Stationary.Environment.CamoNetPlane nn 265805.66 192834.83 -150.00 
+  Static69 Stationary.Environment.CamoNetPlane nn 265802.09 192832.89 -150.00 
+  Static70 Stationary.Environment.CamoNetPlane nn 265787.81 192825.14 -150.00 
+  Static71 Stationary.Environment.CamoNetPlane nn 265793.50 192813.81 -150.00 
+  Static72 Stationary.Environment.CamoNetPlane nn 265784.78 192822.75 -150.00 
+  Static73 Stationary.Environment.CamoNetPlane nn 265789.78 192813.81 -150.00 
+  Static74 Stationary.Environment.CamoNetPlane nn 265835.66 192807.89 -150.00 
+  Static75 Stationary.Environment.CamoNetPlane nn 265836.31 192808.11 -150.00 
+  Static76 Stationary.Environment.CamoNetPlane nn 265833.25 192806.39 -150.00 
+  Static77 Stationary.Environment.CamoNetPlane nn 265813.25 192792.05 -150.00 
+  Static78 Stationary.Environment.CamoNetPlane nn 265811.09 192791.16 -150.00 
+  Static79 Stationary.Environment.CamoNetPlaneBig nn 265793.41 192865.48 15.00 
+  Static80 Stationary.Environment.CamoNetPlaneBig nn 265825.91 192880.22 15.00 
+  Static81 Stationary.Environment.CamoNetPlaneBig nn 265830.44 192883.00 15.00 
+  Static82 Stationary.Environment.CamoNetPlaneBig nn 265870.38 192898.81 20.00 
+  Static83 Stationary.Environment.CamoNetPlaneBig nn 265927.75 192929.63 40.00 
+  Static84 Stationary.Environment.CamoNetPlane nn 265772.84 192786.50 -170.00 /hstart 9
+  Static85 Stationary.Environment.CamoNetPlane nn 265759.78 192785.41 -170.00 /hstart 9
+  Static86 Stationary.Environment.CamoNetPlane nn 265761.50 192786.28 -260.00 /hstart 9
+  Static87 Stationary.Environment.CamoNetPlane nn 265761.31 192783.00 -260.00 /hstart 9
+  Static88 Stationary.Environment.CamoNetPlane nn 265770.66 192788.45 -260.00 /hstart 9
+  Static89 Stationary.Environment.CamoNetPlane nn 265768.50 192787.14 -260.00 /hstart 9
+  Static90 Stationary.Industrial.Railroad.Engine_Shed nn 265948.31 192941.03 -600.00 /hstart 2
+  Static91 Stationary.Industrial.Railroad.Engine_Shed nn 265915.81 192919.09 -600.00 /hstart 4
+  Static92 Stationary.Industrial.Railroad.Engine_Shed nn 265884.56 192901.55 -600.00 /hstart 4
+  Static93 Stationary.Industrial.Railroad.Engine_Shed nn 265844.25 192883.59 -600.00 /hstart 6
+  Static94 Stationary.Industrial.Railroad.Engine_Shed nn 265814.88 192872.28 -600.00 /hstart 5
+  Static95 Stationary.Industrial.Railroad.Engine_Shed de 265784.22 192858.67 -600.00 /hstart 4
+  Static96 Stationary.Industrial.Railroad.Engine_Shed nn 265765.53 192848.56 -600.00 /hstart 4
+  Static97 Artillery.Bofors_StandAlone de 265736.97 192779.47 -85.00 /timeout 0/radius_hide 0/hstart 11
+  Static98 Artillery.Bofors_StandAlone de 266023.81 192926.22 -85.00 /timeout 0/radius_hide 0
+  Static99 Stationary.SdKfz_9_Crane de 265841.63 192789.58 -90.00 
+  Static100 Stationary.SdKfz_9_Crane de 265852.28 192806.83 -140.00 
+  Static101 Stationary.SdKfz_9_Crane de 265860.38 192818.53 -60.00 
+  Static102 Stationary.Horch_108_Typ_1A de 265872.31 192831.86 65.00 
+  Static103 Stationary.Horch_108_Typ_1A de 265895.00 192864.34 65.00 
+  Static104 Stationary.Horch_108_Typ_1A de 265859.63 192859.47 305.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  boulognesuremer-submarine TGroundDestroyed 53 265859 192867 150

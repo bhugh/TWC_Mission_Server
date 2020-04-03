@@ -12,7 +12,7 @@
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
 #define TRACE  
-//$reference parts/core/GCVBackEnd.dll
+////$reference parts/core/GCVBackEnd.dll
 //$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
 //$reference parts/core/CloDMissionCommunicator.dll
@@ -40,7 +40,7 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-using GCVBackEnd;
+//using GCVBackEnd; //So, tried GCVBAckEnd 2020/03/30 and it just makes the server use 100% CPU etc.  Some kind of problem.
 
 using System.Collections;
 using System.Globalization;
@@ -79,7 +79,7 @@ using System.Timers;                 /// <= Needed for Rearm/Refuel
 /*****************************************************************************
  * TODO  / Ideas
  * 
- * WEATHER: Loading as submissions doesn't seem to work.  Maybe best just to leave it due to effect on performance.
+ * WEATHER: Loading as submissions doesn't seem to work.  Maybe best just to leave it due to effect on performance.  Update:  Maybe they do work? It is surprisingly hard to tell.
  * 
  * RESUPPLY: Keep track of last time resupplied & do resupply @ start of mission if it wasn't completed at the end.  OR just do it at the start every time.
  * 
@@ -166,7 +166,7 @@ using System.Timers;                 /// <= Needed for Rearm/Refuel
 //////////////////sendScreenMessageTo(1, "Do 17's traveling towards Lympne", null);/////////////////////
 ///////////////////////so only the red pilots get the message./////////////////////////////////
 
-
+/*
 namespace GCV {
     public class GCVMission : BaseMission
     {
@@ -178,6 +178,7 @@ namespace GCV {
         }
     }
 }
+*/
 
 
 namespace coord
@@ -338,7 +339,7 @@ public class Mission : AMission, IMainMission
     public StatsMission statsmission;
     public SupplyMission supplymission;
     public AIRadarMission airadarmission;
-    public BaseMission gcvmission;
+    //public BaseMission gcvmission;
 
     public string MISSION_FOLDER_PATH;
     public string USER_DOC_PATH;
@@ -442,7 +443,7 @@ public class Mission : AMission, IMainMission
             covermission = new CoverMission(); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
             statsmission = new StatsMission(this);
             airadarmission = new AIRadarMission();
-            gvcmission = new GCV.GCVMission();
+            //gvcmission = new GCV.GCVMission();
 
             //Method defined in IMainMission interface in TWCCommunicator.dll are now access to other submissions
             //Also in other submission .cs like -stats.cs you can access the AMission methods of TWCMainMission by eg (TWCMainMission as AMission).OnBattleStopped();
@@ -518,6 +519,8 @@ public class Mission : AMission, IMainMission
             GiantSectorOverview[2] = new int[10, 2];
 
             supplymission = new SupplyMission(this); //do this towards the end because  it needs all the STATS_FULL_PATH and other similar variables.
+
+            
 
         }
         catch (Exception ex) { Console.WriteLine("ERROR #!: " + ex.ToString()); }
@@ -1892,7 +1895,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         bool ret = false;
 
-        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
+        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with name fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mis
                                                                                                                //if (DEBUG) 
 
 
@@ -3941,20 +3944,29 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                         //aigroup_count++;
                         if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
+                            bool first = true;
                             //Console.WriteLine("groupAllAircraft: 1");
                             //poscount = airGroup.NOfAirc;
                             foreach (AiActor actor in airGroup.GetItems())
                             {
+                                
                                 //Console.WriteLine("groupAllAircraft: 1.1");
                                 if (actor is AiAircraft)
                                 {
                                     //Keep a tally of the total number  of a/c altogether and for each side.
-                                    int num = airGroup.GetItems().Length;
-                                    if (army == 1) numRedAircraft += num;
-                                    else if (army == 2) numRedAircraft += num;
-                                    numTotalAircraft += num;
+                                    //We do it by AIRGROUP so we really only need to do this for the first one in the group
+                                    if (first)
+                                    {
+                                        int num = airGroup.GetItems().Length;
+                                        if (army == 1) numRedAircraft += airGroup.NOfAirc;  //I THINK*** that NOfAirc will be more accurate as AC get killed etc over the course of the mission.  We'll see
+                                        else if (army == 2) numBlueAircraft += airGroup.NOfAirc;
+                                        numTotalAircraft += num;
 
-                                    //Console.WriteLine("groupAllAircraft: 1.2");
+                                        //Console.WriteLine("groupAllAircraft: 1.2 getitems count:{0} red:{1} blue:{2} total:{3} NOfAirc:{4}", num, numRedAircraft, numBlueAircraft, numTotalAircraft, airGroup.NOfAirc);
+                                        first = false;
+                                    }
+                                    
+
                                     CurrentAG[army].Add(airGroup);
                                     //Console.WriteLine("groupAllAircraft: 1.3");
 
@@ -4009,6 +4021,8 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                             }
                         }
                     }
+
+                    Console.WriteLine("groupAllAircraft: 2.2 getitems red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
 
                     //Console.WriteLine("groupAllAircraft: 3");
 
@@ -6689,6 +6703,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                 }
                 */
             }
+            balanceAILoadTimer_recurs();  //do this once only, not in ONMISSIONLOADED for gods sake.  And it is turned off/disposed at onbattlestoped.
         }
         catch (Exception ex) { Console.WriteLine("MO_Destroy error3: " + ex.Message); };
 
@@ -6713,7 +6728,8 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         Console.WriteLine("Battle Stopping -- saving map state & current supply status");
 
         /// REARM/REFUEL: CLEANUP ANY PENDING REQUESTS
-     //   ManageRnr.cancelAll(GamePlay);
+        //   ManageRnr.cancelAll(GamePlay);
+        balanceAILoadTimer.Dispose();
 
         if (!final_SaveMapState_completed && Time.tickCounter() > 15000) SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
         if (!final_MO_WriteMissionObjects_completed) MO_WriteMissionObjects(wait: true);
@@ -6725,6 +6741,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             //If we don't remove the new EventChat when the battle is stopped
             //we tend to get several copies of it operating, if we're not careful
         }
+        
         Thread.Sleep(3); //just wait for all files to save etc
     }
 
@@ -6796,7 +6813,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             gpBattle.creatingMissionScript(statsmission, missionNumber + 2);
             gpBattle.creatingMissionScript(supplymission, missionNumber + 3);
             gpBattle.creatingMissionScript(airadarmission, missionNumber + 4);
-            gpBattle.creatingMissionScript(gvcmission, missionNumber + 5);
+            //gpBattle.creatingMissionScript(gvcmission, missionNumber + 5);
             //gvcmission = new GCV.GCVMission();
 
             MissionNumberListener = -1; //Listen to events of every mission
@@ -6856,19 +6873,39 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
       };
 
     public void balanceAILoad(object o)
-    {        
-        if (numBlueAircraft < 50 && Calcs.gpNumberOfPlayers(GamePlay, 2) > 0)
+    {
+        int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
+        int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
+        Console.WriteLine("balanceAILoad: Blue ac/players {0} {1} Red ac/players  {2} {3} " + DateTime.UtcNow.ToString("T"), numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers);
+
+        //return; //stop buggy behavior for now
+
+        if (numBlueAircraft < 60 &&  numRedPlayers> 0)
         {
-            int randIndex = random.Next(blueBomberActions.Count);
-            foreach (string act in blueBomberActions[randIndex])
-                execAction(act, "BalanceAILoad Blue");
+           double wait = random.Next(0, 60);
+           Timeout(wait, () =>
+           {
+               int randIndex = random.Next(blueBomberActions.Count);
+               foreach (string act in blueBomberActions[randIndex])
+               {
+                   execAction(act, "BalanceAILoad Blue");
+                   Console.WriteLine("balanceAILoad: Loading " + act);
+               }
+           });
 
         }        
-        if (numRedAircraft < 50 & Calcs.gpNumberOfPlayers(GamePlay, 1) > 0)
+        if (numRedAircraft < 60 & numBluePlayers > 0)
         {
-            int randIndex = random.Next(redBomberActions.Count);
-            foreach (string act in redBomberActions[randIndex])
-                execAction(act, "BalanceAILoad Red");
+            double wait = random.Next(0, 60);
+            Timeout(wait, () =>
+            {
+                int randIndex = random.Next(redBomberActions.Count);
+                foreach (string act in redBomberActions[randIndex])
+                {
+                    execAction(act, "BalanceAILoad Red");
+                    Console.WriteLine("balanceAILoad: Loading " + act);
+                }
+            });
         }
     }
 
@@ -6876,11 +6913,12 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
     public void balanceAILoadTimer_recurs()
     {
+        Console.WriteLine("balanceAILoad: Starting timer! " + DateTime.UtcNow.ToString("T"));
         balanceAILoadTimer = new System.Threading.Timer(
             new TimerCallback(balanceAILoad),
             null,
-            30000, //wait time @ startup
-            632453); //periodically call the callback at this interval, every 5-6 minutes
+            dueTime: 30000, //wait time @ startup
+            period: 282453); //periodically call the callback at this interval, every 4-6 minutes say
 
     }
 
@@ -6889,7 +6927,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
     IKnickebeinMission TWCKnickebeinMission;
     ICoverMission TWCCoverMission;
     IStbSaveIPlayerStat TWCSaveIPlayerStat;
-    GCV.GCVMission gvcmission;
+    //GCV.GCVMission gvcmission;
 
     public override void OnMissionLoaded(int missionNumber)
     {
@@ -6907,7 +6945,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             TWCKnickebeinMission = TWCComms.Communicator.Instance.Knickebein;
             TWCCoverMission = TWCComms.Communicator.Instance.Cover;
 
-            balanceAILoadTimer_recurs();
+            
 
 
 
@@ -8621,11 +8659,184 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             );
     }
 
+    public string updateTimeAndWeather (string missionFile, string desiredString)
+    {
+        RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Multiline;
+        missionFile = Regex.Replace(missionFile, @"^\s*TIME\s*\d*\.?\d*\s*$", desiredString, ro);//looks for a line with something like <spaces> TIME <spaces> 34.234 .. Case irrelevant = replaces it
+        
+        string desiredCloudsHeightString = "  CloudsHeight " + random.Next(500, 1500).ToString("F0"); //seems limited to 500-1500 meters.  See https://www.aircombatgroup.co.uk/forum/viewtopic.php?f=5&t=8360
+        missionFile = Regex.Replace(missionFile, @"^\s*CloudsHeight\s*\d*\.?\d*\s*$", desiredCloudsHeightString, ro);//looks for a line with something like <spaces> XXXXXX <spaces> 34.234 .. Case irrelevant = replaces it
+
+        int WeatherIndex = 1; //Can be 0=clear, 1 = light clouds, 2 = medium clouds
+        if (random.NextDouble() > .95) WeatherIndex = 2;//rarely, make it medium clouds
+        if (random.NextDouble() > .80) WeatherIndex = 0;//more commonly, make it clear
+        string desiredWeatherIndexString = "  WeatherIndex " + WeatherIndex.ToString("F0");
+        missionFile = Regex.Replace(missionFile, @"^\s*WeatherIndex\s*\d*\.?\d*\s*$", desiredWeatherIndexString, ro);//looks for a line with something like <spaces> XXXXX <spaces> 34.234 .. Case irrelevant = replaces it
+        return missionFile;
+    }
+
+    //Bombers to be exchanged out in the .mis file.  The # is weight - how often to use that bomber relative to the others
+    //Dictionary<string, int> RedBombers = new Dictionary<string, int>() { { "WellingtonMkIc", 20 }, { "BlenheimMkIV", 10 }, { "BlenheimMkIV_Late", 10 }, { "BlenheimMkI", 10 }, { "SunderlandMkI", 1 }, { "HurricaneMkI_FB", 2 } };
+    //Dictionary<string, int> BlueBombers = new Dictionary<string, int>() { { "BR-20M", 10 }, { "He-111H-2", 10 }, { "He-111P-2", 10 }, { "Ju-87B-2", 10 }, { "Ju-88A-1", 1 }, { "Do-17Z-2", 10 } };
+
+        
+    //And it turns out we can only replace/changes bombers IF their weapons setup string exactly matches.  So the switchouts are NOT very exciting. Oh well.
+    static Dictionary<string, int> RedBombers = new Dictionary<string, int>() { { "BlenheimMkIV", 10 }, { "BlenheimMkIV_Late", 10 } };
+    static Dictionary<string, int> BlueBombers = new Dictionary<string, int>() { { "He-111H-2", 10 }, { "He-111P-2", 10 }};
+    static Dictionary<string, int> BlueDO215_BR20 = new Dictionary<string, int>() { { "Do-215B-1", 10 }, { "BR-20M", 10 } }; //Both need to be WEAPONS 1 1 1 2 
+    static Dictionary<string, int> BlueE4s = new Dictionary<string, int>() { { "Bf-109E-4N_Late", 1 }, { "Bf-109E-4N", 1 },
+    { "Bf-109E-4_Late", 1 },
+        { "Bf-109E-4", 4 },
+        { "Bf-109E-3", 15 },
+        { "Bf-109E-1", 30 } };
+
+    
+
+    static Dictionary<string, int> Blue110s = new Dictionary<string, int>() { { "Bf-110C-2", 10 }, { "Bf-110C-4", 10 },
+    { "Bf-110C-4-NJG", 10 },
+        { "Bf-110C-6", 5 },
+        { "Bf-110C-4N", 8 },
+    };
+
+    static Dictionary<string, int> RedBlenheimFs = new Dictionary<string, int>() { { "BlenheimMkIF", 10 }, { "BlenheimMkINF", 10 },
+    { "BlenheimMkIVF", 10 },
+        { "BlenheimMkIVNF", 10 },
+        { "BlenheimMkIVF_Late", 10 },
+        { "BlenheimMkIVNF_Late", 10 } };
+    
+    static Dictionary<string, int> RedFighters = new Dictionary<string, int>() { { "HurricaneMkI_100oct-NF", 20 }, { "HurricaneMkI_100oct", 20 },
+        { "HurricaneMkI", 15 },
+        { "HurricaneMkI_dH5-20_100oct", 15 },
+        { "HurricaneMkI_dH5-20", 10 },
+        { "SpitfireMkIa_100oct", 10 },
+        { "SpitfireMkIa", 15 },        
+        { "SpitfireMkI", 10 },
+        { "SpitfireMkI_100oct", 15 },
+        { "SpitfireMkIIa", 5 },
+    };
+    
+
+    List<Dictionary<string, int>> PlaneReplacementDictionarys = new List<Dictionary<string, int>>() { RedBombers, BlueBombers, BlueDO215_BR20, BlueE4s, Blue110s, RedBlenheimFs, RedFighters };   
+
+    public string updatePlanesFromDictionaryMatch(string missionFile, Dictionary<string,string> replacements)
+    {
+        RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Multiline;
+
+        //var pattern = @"^\s*Class Aircraft\..?$";
+        //var pattern = @"^\s*Class Aircraft\..*$";
+        /*
+        var pattern = @"  Class Aircraft.*";
+        var stringVariableMatches = Regex.Replace(missionFile, pattern,
+        m => replacements.ContainsKey(m.Value) ? replacements[m.Value] : m.Value, ro);
+        */
+        string newline = "\n";
+        missionFile = missionFile.Replace("\r\n", "\n").Replace('\r', '\n'); //change all newlines to \n
+        //missionFile = missionFile.Replace("HUNTING", "PUNTING");
+        foreach (string key in replacements.Keys)
+        {
+            missionFile = missionFile.Replace(key + newline, replacements[key] + newline);
+            Console.WriteLine("Replacing: {0} : {1}", key, replacements[key]);
+        }
+
+        return missionFile;
+    }
+
+    public Dictionary<string, string> makePlaneExchangeDictionary (Dictionary<string, int> dict, string prefix = "Class Aircraft." )
+    {
+        var ret = new Dictionary<string, string>();
+        var chooseList = new List<string>();
+        var chosenList = new HashSet<string>();
+
+        //Build up the list to choose from. We weight it by the value given by simply adding that item to the list repeatedly
+        foreach (string ap in dict.Keys)
+        {
+            chooseList.AddRange(Enumerable.Repeat(ap, dict[ap]));
+        }
+        foreach (string ap in dict.Keys) {
+
+            //We want to avoid assigning the two different aircraft in the current .mis file to the same aircraft in the result .mis.  If we do that repeatedly pretty soon all bombers will all be the same.
+            //So we make sure the assignmnent dictionary is unique in that same way.
+            int count = 0;
+
+            string choice = Calcs.randSTR(chooseList);
+            while (chosenList.Contains(choice) && count < 2000) { choice = Calcs.randSTR(chooseList); count++; }
+            chosenList.Add(choice);
+
+            ret[prefix + ap] = prefix + choice;
+            Console.WriteLine("D: " + prefix + ap + " : " + prefix + choice);
+        }
+        return ret;
+    }
+
+    public string updatePlanes(string missionFile)
+    {
+        //missionFile = updatePlanesFromDictionaryMatch(missionFile, makePlaneExchangeDictionary(RedBombers));
+        //missionFile = updatePlanesFromDictionaryMatch(missionFile, makePlaneExchangeDictionary(BlueBombers));
+        //missionFile = updatePlanesFromDictionaryMatch(missionFile, makePlaneExchangeDictionary(RedFighters));
+        //missionFile = updatePlanesFromDictionaryMatch(missionFile, makePlaneExchangeDictionary(BlueFighters));
+
+        foreach (var prd in PlaneReplacementDictionarys)
+        {
+            missionFile = updatePlanesFromDictionaryMatch(missionFile, makePlaneExchangeDictionary(prd));
+        }
+        return missionFile;
+    }
+
+    public string getSection(string missionFile, string pattern = @"\[AirGroups\].*\[Stationary\]")
+    {
+        RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Singleline; //Singleline makes .* match EOL characters; ie the entire string is one single line, not broken up into many small lines
+
+        var stringVariableMatches = Regex.Match(missionFile, pattern, ro);
+
+        return stringVariableMatches.Value; //Note - returns first match found only.
+    }
+    public string replaceSection(string missionFile, string replacement, string pattern = @"\[AirGroups\].*\[Stationary\]")
+    {
+        RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Singleline; //Singleline makes .* match EOL characters; ie the entire string is one single line, not broken up into many small lines
+
+        var stringVariableMatches = Regex.Replace(missionFile, pattern, replacement, ro);
+
+        return stringVariableMatches; //Note - returns first match found only.
+    }
+
+
+    public string getReplacementAirgroupAndTriggerFile(string fileID = "randsubmission", string subdir = "")
+    {
+        List<string> RandomMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, fileID); // Gets all files with with text MISSION_ID-fileID (like "M001-randsubmissionREDBOMBER") in the filename and ending with .mi
+        string RandomMission = RandomMissions[random.Next(RandomMissions.Count)]; //chooses one of them randomly
+        Console.WriteLine("Replacement Airgroup and Triggers: Using file " + RandomMission);
+        string ret = null;
+        if (File.Exists(RandomMission))
+        {
+            ret = File.ReadAllText(RandomMission);
+        }
+        return ret;
+    }
+
+
+    //Takes the airgroup & trigger/action sections from replacementfile (randomly chosen from .mis files like Campaign21-airgroup-B.mis & plops them into missionfile
+    public string updateAirgroupAndTriggerSections(string missionFile)
+    {
+        string replacementFile = getReplacementAirgroupAndTriggerFile(MISSION_ID + "-airgroup-");
+
+        string airgroupssec = @"\[AirGroups\].*\[Stationary\]";
+        string triggerssec = @"\[Trigger\].*\[Birthplace\]";
+        string replacementFile_airgroups = getSection(replacementFile, airgroupssec);
+        string replacementFile_triggers = getSection(replacementFile, triggerssec);
+
+        missionFile = replaceSection(missionFile, replacementFile_airgroups, airgroupssec);
+        missionFile = replaceSection(missionFile, replacementFile_triggers, triggerssec);
+        return missionFile;
+    }
+
+
     //changes start time of mission
     //Also changes cloud deck height (500-1500m) and WeatherIndex (cloud type) - mostly light but occasionally medium or clear on 1/3 restarts
+    //TODO . . . we could probably used built-in maddox.game.ISectionFile functions to edit & update the sectionfile.  get, set, delete, save, etc
     public void CheckAndChangeStartTimeAndWeather()
     {
-        if (USER_DOC_PATH.ToLower().Contains("brent") && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
+        //rem out the following line to make it: testing, don't skip
+        if (ON_TESTSERVER  && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
         bool ret = true;
         double lastMissionCurrentTime_hr = 0;
         //MO_WriteMissionObject(GamePlay.gpTimeofDay(), "MissionCurrentTime", wait);
@@ -8649,10 +8860,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             desiredStartTime_hrs = lastMissionCurrentTime_hr;
         twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
 
-        //So once in a while we restart the mission simply to change the weather.  This will change cloudsheight & weatherindex.
+        //So once in a while we restart the mission simply to change the weather, aircraft, etc.  This will change cloudsheight & weatherindex, AI aircraft types.
         bool restartToChangeWeather = false;   
         if (random.NextDouble() < 0.333) restartToChangeWeather = true;
 
+        //rem out the following line to make it: testing, do it always
         if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 && !restartToChangeWeather) return; //0.5 == 30 minutes, 1/2 hour
 
         string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
@@ -8675,19 +8887,12 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         string missionFile = File.ReadAllText(filepath_mis);
 
+        missionFile = updateTimeAndWeather(missionFile, desiredString);
 
-        RegexOptions ro = RegexOptions.IgnoreCase | RegexOptions.Multiline;
-        missionFile = Regex.Replace(missionFile, @"^\s*TIME\s*\d*\.?\d*\s*$", desiredString, ro);//looks for a line with something like <spaces> TIME <spaces> 34.234 .. Case irrelevant = replaces it
+        missionFile = updateAirgroupAndTriggerSections(missionFile);
 
-        string desiredCloudsHeightString = "  CloudsHeight " + random.Next(500,1500).ToString("F0"); //seems limited to 500-1500 meters.  See https://www.aircombatgroup.co.uk/forum/viewtopic.php?f=5&t=8360
-        missionFile = Regex.Replace(missionFile, @"^\s*CloudsHeight\s*\d*\.?\d*\s*$", desiredCloudsHeightString, ro);//looks for a line with something like <spaces> XXXXXX <spaces> 34.234 .. Case irrelevant = replaces it
-
-        int WeatherIndex = 1; //Can be 0=clear, 1 = light clouds, 2 = medium clouds
-        if (random.NextDouble() > .95) WeatherIndex = 2;//rarely, make it medium clouds
-        if (random.NextDouble() > .80) WeatherIndex = 0;//more commonly, make it clear
-        string desiredWeatherIndexString = "  WeatherIndex " + WeatherIndex.ToString("F0");
-        missionFile = Regex.Replace(missionFile, @"^\s*WeatherIndex\s*\d*\.?\d*\s*$", desiredWeatherIndexString, ro);//looks for a line with something like <spaces> XXXXX <spaces> 34.234 .. Case irrelevant = replaces it
-
+        missionFile = updatePlanes(missionFile);
+        //Console.WriteLine(missionFile);   
 
         //  TIME 4.50000011501834
 
@@ -8744,7 +8949,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             (GamePlay as GameDef).gameInterface.CmdExec("exit");
         }*/
         //Process.GetCurrentProcess().Kill();
-        Thread.Sleep(75); //allow messages to show up/be logged?
+        Thread.Sleep(1075); //allow messages to show up/be logged?
         //Environment.Exit(0);
         Process.GetCurrentProcess().Kill();
     }
@@ -14946,7 +15151,7 @@ added Rouen Flak
     {
         try
         {
-            if (actor == null || actor.Army() < 1 || actor.Army() > 2) return;
+            if (actor == null || actor.Army() < 1 || actor.Army() > 2 || (actor as AiPerson ) != null) return;  //we don't count people/person's killed & it causes "object reference" errors below
 
             Console.WriteLine("AreaPoint Actor: {0}, {1}, {2}", actor.Name(), actor.Army(), (actor as AiCart).InternalTypeName());
             //TODO: Could easily combine this with the GroundStationaries route, 95% the same
@@ -18471,6 +18676,11 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     {
         //Random clc_random = new Random();
         return strings[clc_random.Next(strings.Length)];
+    }
+    public static string randSTR(List<string> strings)
+    {
+        //Random clc_random = new Random();
+        return strings[clc_random.Next(strings.Count)];
     }
     //So, sometimes we want a simple repeatable seed value for 
     //random that will give the same set of random numbers each time

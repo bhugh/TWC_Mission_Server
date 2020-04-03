@@ -2828,7 +2828,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             if (fuel == 0) fuel = 80;
 
         }
-        else if (type.Contains("110C-7")) //also covers 110C-7-late
+        else if (type.Contains("110C-7"))
         {
             f.add(s, "Belt", "_Gun02 Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
             f.add(s, "Belt", "_Gun06 Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");

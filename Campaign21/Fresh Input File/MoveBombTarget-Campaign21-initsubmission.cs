@@ -431,6 +431,7 @@ public class Mission : AMission
 
         return Wps.ToArray();
     }
+
     //Distance (meters, 2D XY distance), altitude difference (meters)
     //returns -1, -1 if no pilot found.
     public Tuple<double, double> getDistanceToNearestLivePilot(AiAirGroup from)
@@ -797,6 +798,7 @@ public class Mission : AMission
 
         bool underRadar = false;
         if (isBomber && ran.Next(0, 10) == 0) underRadar = true;
+        Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
 
         bool update = false;
         AiWayPoint wpAdd = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
@@ -828,7 +830,7 @@ public class Mission : AMission
                 changeL = changeLimits[(wp as AiAirWayPoint).Action];
                 if (count==1 && ( isBomber ) ) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
                 {
-                    changeL.XY_m = changeL.XY_m / 2;
+                    changeL.XY_m = changeL.XY_m / 4;
                 }
 
                 //TODO: We could have higher/lower altitude & speed apply to the entire mission for this airgroup rather than varying waypoint by waypoing. 
@@ -979,6 +981,21 @@ public class Mission : AMission
 
                         Console.WriteLine("Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
 
+                        //GetRandomAirfieldNear(p, moveAirportsDistance_m, airportArmy);
+
+                        //Add first "airfield switch" for bomber groups, most of the time.  They fly low/under radar to some relatively nearby airport, making it appear as though they are starting
+                        //at different airports, not just at the one spot where they spawn in.
+                        if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY && ran.Next(4)>0)
+                        {
+                            double airportChange_m = 25000;
+                            AiAirport ap = GetRandomAirfieldNear(pos, airportChange_m, army);
+                            Point3d airportPos = ap.Pos();
+                            airportPos.z = airportPos.z + 200;
+                            AiAirWayPoint airportWP = new AiAirWayPoint(ref airportPos, wp.Speed);
+                            (airportWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                            NewWaypoints.Add(airportWP);
+                        }
+
                         //Add first extra waypoint that's just a little jog, for bomber groups
                         if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY)
                         {                            
@@ -1006,6 +1023,7 @@ public class Mission : AMission
                         } else
                         {
                             pos = safePointSelect(pos, changeL.XY_m, 0);
+                            pos.z = wp.P.z;
                         }
 
                         speed = wp.Speed;                        
@@ -1046,17 +1064,18 @@ public class Mission : AMission
 
 
                 }
+                if (underRadar)
+                {
+                    //AI get a break of 600ft altitude for staying-below-radar purposes.  soo 800-900 ft or below is off radar.
+                    //There isn't much point in sending AI missions that are COMPLETELY off radar as no one will even know about them.  But if we keep them at the alt where they will 
+                    //kind of phase in/out of radar that would be ideal.
+                    nextWP.P.z = 375 + altDiff_m / 10;
+                    if (nextWP.P.z < 300) nextWP.P.z = 300; //275m is about 900 ft alt = 300ft for breathers = still mostly off radar when over water (and probably right off it over land. where AGL will be lower).
+                    update = true;
+                }
             }
 
-            if (underRadar)
-            {
-                //AI get a break of 600ft altitude for staying-below-radar purposes.  soo 800-900 ft or below is off radar.
-                //There isn't much point in sending AI missions that are COMPLETELY off radar as no one will even know about them.  But if we keep them at the alt where they will 
-                //kind of phase in/out of radar that would be ideal.
-                nextWP.P.z = 375 + altDiff_m / 10;
-                if (nextWP.P.z < 300) nextWP.P.z = 300; //275m is about 900 ft alt = 300ft for breathers = still mostly off radar when over water (and probably right off it over land. where AGL will be lower).
-                update = true;
-            }
+
 
             if (count >= currWay)
             {
@@ -1098,11 +1117,11 @@ public class Mission : AMission
         { return false; }
     }
 
-    public bool playersNearby(AiAirGroup airGroup)
+    public bool playersNearby(AiAirGroup airGroup, double dist_m = 14000)
     {
         Tuple<double, double> dist = getDistanceToNearestLivePilot(airGroup);
         //Console.WriteLine("MoveBomb: Players nearby {0} {1} ", dist.Item1 == null, (double)(dist.Item1));
-        if (dist.Item1 == -1 || (double)(dist.Item1) > 14000) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
+        if (dist.Item1 == -1 || (double)(dist.Item1) > dist_m) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
         return true; //Players nearby
     }
 
@@ -1122,21 +1141,27 @@ public class Mission : AMission
 
             if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
-            if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
-            if (playersNearby(airGroup)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+            //if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
+            if (!landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, loosening this up to try to get rid of useless/finished airgroups more quickly.
+            if (playersNearby(airGroup, 14000)) return; //Don't dis-apparate them if there are any players nearby to see it happen
 
             double airportDistance_m = DistanceToNearestAirport(airGroup as AiActor);
 
-            if (airportDistance_m > 3000) return;
+            if (airportDistance_m > 8000) return;
+
+            if (GamePlay.gpFrontArmy(airGroup.Pos().x, airGroup.Pos().y) != airGroup.getArmy()) return;
 
             List<AiActor> items = new List<AiActor>(airGroup.GetItems());
+
+            Point3d pos = airGroup.Pos();
 
             foreach (AiActor actor in items)
             {
                 AiAircraft aircraft = actor as AiAircraft;
                 double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
                 if (altAGL_m > 800) continue; //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
-                //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                if (Calcs.CalculatePointDistance(aircraft.Pos(), pos) > 6000) continue; //don't disapparate if it's too far from the main group.  It MIGHT be near a person or whatever
                 if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
             }
             //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
@@ -2102,7 +2127,7 @@ public class Mission : AMission
                                 }
                                 landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
                                 AiAirWayPointType landaawpt = AiAirWayPointType.LANDING;
-                                landaaWP = new AiAirWayPoint(ref landPos, 50); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
+                                landaaWP = new AiAirWayPoint(ref landPos, 55); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
                                 landaaWP.Action = landaawpt;
                                 NewWaypoints.Add(landaaWP); //do add
                                 count++;
@@ -2121,6 +2146,7 @@ public class Mission : AMission
                     if (vel_mps > 160) vel_mps = 160;                
                     */
 
+                    /*
                     AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
                     if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
                         aawpt = (nextWP as AiAirWayPoint).Action;
@@ -2134,9 +2160,14 @@ public class Mission : AMission
                         if (type == "B") aawpt = AiAirWayPointType.NORMFLY;
 
                     }
+                    */
+
+                    //OK, skipping all that now & just making all ending/exitin waypoints LANDING so that hopefully many a/c can just disapparate.  2020/04/01
+                    AiAirWayPointType aawpt = AiAirWayPointType.LANDING;
 
                     //add the mid Point
-                    midaaWP = new AiAirWayPoint(ref midPos, speed);
+                    //midaaWP = new AiAirWayPoint(ref midPos, speed);
+                    midaaWP = new AiAirWayPoint(ref midPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.
                     //aaWP.Action = AiAirWayPointType.NORMFLY;
                     midaaWP.Action = aawpt; //same action for mid & end
 
@@ -2147,9 +2178,11 @@ public class Mission : AMission
                     Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
                     //add the final Point, which is off the map
-                    endaaWP = new AiAirWayPoint(ref endPos, speed);
+                    //endaaWP = new AiAirWayPoint(ref endPos, speed);
+                    endaaWP = new AiAirWayPoint(ref endPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.  Presumably if they find an airport & land they will slow down as needed.
                     //aaWP.Action = AiAirWayPointType.NORMFLY;
-                    endaaWP.Action = AiAirWayPointType.NORMFLY;
+                    //endaaWP.Action = AiAirWayPointType.NORMFLY;
+                    endaaWP.Action = AiAirWayPointType.LANDING; 
 
                     NewWaypoints.Add(endaaWP); //do add
                     count++;
@@ -2192,7 +2225,8 @@ public class Mission : AMission
     {
         base.OnTickGame();
 
-        if (Time.tickCounter() % 305 == 41)
+        //if (Time.tickCounter() % 305 == 41) //about 1.5 seconds?
+        if (Time.tickCounter() % 2105 == 41) //about 5 seconds?  2020/03/31
         {
             Task.Run(() => checkNewAirgroups());
             //checkNewAirgroups();

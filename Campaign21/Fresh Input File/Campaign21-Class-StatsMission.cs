@@ -110,7 +110,7 @@
 //The two $references below + the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 
 //$reference parts/core/CloDMissionCommunicator.dll
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -144,7 +144,7 @@ using maddox.game.play;
 using maddox.game.page;
 using part;
 using Ini;
-using TF_Extensions;  //not working for now?
+//using TF_Extensions;  //not working for now?
 using TWCComms;
 
 //test

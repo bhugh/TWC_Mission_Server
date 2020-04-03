@@ -13,7 +13,7 @@
 #define DEBUG  
 #define TRACE  
 ////$reference parts/core/GCVBackEnd.dll
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 ///$reference parts/core/TWCStats.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll
@@ -73,7 +73,7 @@ using System.Xml.Serialization;
 //using System.Web.Script.Serialization;
 //using System.Text.Json;
 //using System.Text.Json.Serialization;
-using TF_Extensions;
+//using TF_Extensions;
 //using GCVBackEnd;
 using System.Timers;                 /// <= Needed for Rearm/Refuel
 /*****************************************************************************

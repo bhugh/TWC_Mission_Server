@@ -2,7 +2,7 @@
 #define TRACE  
 
 //$reference parts/core/CloDMissionCommunicator.dll
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -35,7 +35,7 @@ using maddox.game.play;
 using maddox.game.page;
 using part;
 using Ini;
-using TF_Extensions;  //not working for now?
+//using TF_Extensions;  //not working for now?
 using TWCComms;
 
 public class SupplyMission : AMission, ISupplyMission

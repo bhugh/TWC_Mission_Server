@@ -740,7 +740,7 @@ public class CoverMission : AMission, ICoverMission
         if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)))
         {
             string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, & fighter-bombers only!****";
-            GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+            if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
             return m;
         }
 
@@ -753,7 +753,7 @@ public class CoverMission : AMission, ICoverMission
             string smsg = string.Format(">>>>>Available cover aircraft/bombers for {0}", a);
             Timeout(0.03, () =>
             {
-                if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+                if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
             });
 
             retmsg += smsg + nl;
@@ -761,7 +761,7 @@ public class CoverMission : AMission, ICoverMission
             smsg = string.Format("ID# - Aircraft - Number remaining in supply", a);
             Timeout(0.04, () =>
             {
-                if (player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
+                if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, smsg, null);
             });
 
             retmsg += smsg + nl;
@@ -1374,7 +1374,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             if (acType == "") return false;
             bool ret = false;
             if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
-             || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+              || acType.Contains("Do-215B")
+              || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
             if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
             return ret;
         }

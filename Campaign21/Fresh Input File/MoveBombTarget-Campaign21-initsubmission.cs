@@ -598,7 +598,7 @@ public class Mission : AMission
         var tup = RandomObjectiveWithin(p, enemyArmy, moveObjectivesDistance_m);
         if (!tup.Item1.HasValue) return null;
         
-        int numEnemyPlayers = Calcs.gpNumberOfPlayers(GamePlay,  enemyArmy);
+        int numEnemyPlayers = Calcs.gpNumberOfPlayersActive(GamePlay,  enemyArmy);
 
         retPos = tup.Item1.Value;
         double radius = tup.Item2;
@@ -1346,8 +1346,6 @@ public class Mission : AMission
             Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
             double interceptTime_sec = 0;
 
-            try
-            {
                 //TODO: In case of any of these as current task/airway point then we should skip chasing things altogether
                 /*
 
@@ -1374,11 +1372,12 @@ public class Mission : AMission
                     return false;
                 }
 
-                if (!aris.ContainsKey(airGroup))
+                if (airGroup == null || !aris.ContainsKey(airGroup))
                 {
                     //Console.WriteLine("MoveBomb: No radar returns exist for this group, returning: " + agActor.Name());
                     return false;
                 }
+                SortedDictionary<string, IAiAirGroupRadarInfo> ai_radar_info = new SortedDictionary<string, IAiAirGroupRadarInfo>(aris[airGroup]);
 
                 double fuel = 100; // = getAircraftFuel(agAircraft);
                 int ammo = 100; // getAircraftAmmo(airGroup);
@@ -1433,12 +1432,8 @@ public class Mission : AMission
                 }
 
 
-            }
-            catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR7: " + ex.ToString()); return false; }
 
-
-
-            SortedDictionary<string, IAiAirGroupRadarInfo> ai_radar_info = aris[airGroup];
+            
             IAiAirGroupRadarInfo aagri = null;
             IAiAirGroupRadarInfo bestAagri = null;
             IAiAirGroupRadarInfo bestNoninterceptAagri = null;
@@ -1676,11 +1671,6 @@ public class Mission : AMission
                 //however, if this is a "bestNoninterceptAagri" type intercept, we don't consider it an actual intercept (because they WON'T intercept) but rather a move to see if
                 //the attacker can get in position to actually have an intercept.  So we don't register a targetAirgroupTimeToIntercept at all, which allows another attacker to take an intercept if there is one.
 
-            }
-            catch (Exception ex) { Console.WriteLine("MoveBomb Intercept ERROR2: " + ex.ToString()); return false; }
-
-            try
-            {
                 //if (attackingAirgroupTimeToIntercept.ContainsKey(bestAagri.pagi.airGroup)) Console.WriteLine("MoveBombINER: Adding new/improved intercept for attacker " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);  //This is only an FYI to let us know that this airGroup had a previous target we were attacking & now we are updating it.
 
                 //attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = Time.current() + bestAagri.interceptPoint.z + 125.0 + ran.NextDouble() * 240.0 - 120.0;  //attacker can't get another intercept unti lthis time is up, the actual time to the intercept plus 2 mins +/- 2 mins
@@ -1690,8 +1680,7 @@ public class Mission : AMission
                 //attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, bestAagri.pagi.airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this);
                 attackingAirgroupTimeToIntercept[bestAagri.pagi.airGroup] = new incpt(Time.current() + interceptTime_sec, 125.0 + ran.NextDouble() * 240.0 - 120.0, airGroup, bestAagri.agi.airGroup, iPoint, positionintercept, this);
 
-
-                AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+                //AiWayPoint[] CurrentWaypoints = airGroup.GetWay();                
 
                 //for testing
                 /*
@@ -1702,8 +1691,8 @@ public class Mission : AMission
 
                 }
                 */
-                
-                
+
+
                 int currWay = airGroup.GetCurrentWayPoint();
                 double speedDiff = 0;
                 double altDiff_m = 0;

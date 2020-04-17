@@ -292,21 +292,21 @@ public class StatsMission : AMission, IStatsMission
 
     //TODO: All these should be added to .ini file.
     //public readonly string [] PARACHUTE_LAND_FRIENDLY_MSG = {  };
-    public readonly string[] stb_LANDED_OK_MSG = { "{0} landed in friendly territory. " };
-    public readonly string[] stb_LANDED_ENEMY_MSG = { "{0} landed in enemy territory. " };
-    public readonly string[] stb_ASR_FAIL_DROWNED = { "{0} drowned! ", "{0} tried to swim for shore, but drowned! ", "{0} drowned when the life raft deflated! " };
-    public readonly string[] stb_ASR_RESCUE_MSG = { "{0} was rescued by local fishermen! ", "{0} was rescued by friendly fishermen!", "{0} was rescued by ASR ", "{0} was rescued by a passing ship! ", "{0} was rescued after hanging onto a life raft for 28 hours! ", "{0} was rescued. Now {0} can join the Goldfish Club! " };
-    public readonly string[] stb_ASR_CAPTURE_MSG = { "{0} was captured by enemy forces! ", "{0} was captured. ", "{0} was captured and sent to spent the rest of the war in a POW camp. " };
-    public readonly string[] stb_CAPTURED_MSG = { "{0} was captured. ", "{0} was captured by enemy forces! ", "{0} was captured and sent to spent the rest of the war in a POW camp. ", };
-    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", "{0} tried to escape, but was captured again and shot.", "{0} was shot while attempting escape.", "{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", "{0} led a POW escape attempt but was caught in the act and shot on sight.", "{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
-    public readonly string[] stb_ESCAPED_MSG = { "{0} escaped capture and is hiding in a resistance fighter's hayloft! ", "{0} escaped and is hiding the forest. ", "{0} escaped and is hiding in a resistance fighter's barn! ", "{0} escaped--now has to find the way home!", "{0} was helped by a network of friendly resistance fighters and escape!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
-    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { "{0} crash landed in enemy territory. " };
-    public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { "{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
+    public readonly string[] stb_LANDED_OK_MSG = { ">>>{0} landed in friendly territory. " };
+    public readonly string[] stb_LANDED_ENEMY_MSG = { ">>>{0} landed in enemy territory. " };
+    public readonly string[] stb_ASR_FAIL_DROWNED = { ">>>{0} drowned! ", ">>>{0} tried to swim for shore, but drowned! ", ">>>{0} drowned when the life raft deflated! " };
+    public readonly string[] stb_ASR_RESCUE_MSG = { ">>>{0} was rescued by local fishermen! ", ">>>{0} was rescued by friendly fishermen!", ">>>{0} was rescued by ASR ", ">>>{0} was rescued by a passing ship! ", ">>>{0} was rescued after hanging onto a life raft for 28 hours! ", ">>>{0} was rescued. Now {0} can join the Goldfish Club! " };
+    public readonly string[] stb_ASR_CAPTURE_MSG = { ">>>{0} was captured by enemy forces! ", ">>>{0} was captured. ", ">>>{0} was captured and sent to spent the rest of the war in a POW camp. " };
+    public readonly string[] stb_CAPTURED_MSG = { ">>>{0} was captured. ", ">>>{0} was captured by enemy forces! ", ">>>{0} was captured and sent to spent the rest of the war in a POW camp. ", };
+    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", ">>>{0} tried to escape, but was captured again and shot.", ">>>{0} was shot while attempting escape.", ">>>{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", ">>>{0} led a POW escape attempt but was caught in the act and shot on sight.", ">>>{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
+    public readonly string[] stb_ESCAPED_MSG = { ">>>{0} escaped capture and is hiding in a resistance fighter's hayloft! ", ">>>{0} escaped and is hiding the forest. ", ">>>{0} escaped and is hiding in a resistance fighter's barn! ", ">>>{0} escaped--now has to find the way home!", ">>>{0} was helped by a network of friendly resistance fighters and escape!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
+    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { ">>>{0} crash landed in enemy territory. " };
+    public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { ">>>{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
 
-    public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG = { "{0} landed in friendly territory away from an airport. To avoid having your aircraft written off, you must return it to an airport. " };
+    public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG = { ">>>{0} landed in friendly territory away from an airport. To avoid having your aircraft written off, you must return it to an airport. " };
 
-    public readonly string[] stb_PARACHUTED_FRIENDLY_MSG = { "{0} parachuted into friendly territory. ", "{0} parachuted, landing in friendly territory." };
-    public readonly string[] stb_PARACHUTED_ENEMY_MSG = { "{0} parachuted into enemy territory. " };
+    public readonly string[] stb_PARACHUTED_FRIENDLY_MSG = { ">>>{0} parachuted into friendly territory. ", ">>>{0} parachuted, landing in friendly territory." };
+    public readonly string[] stb_PARACHUTED_ENEMY_MSG = { ">>>{0} parachuted into enemy territory. " };
 
     //Setting the probability of surviving quite high, mostly bec. we haven't previously had any consequence or death for landing in water etc.
     double stb_POW_EscapeChanceRed = 0.90;      // probability (0-1) of allied pilot escaping after landing in enemy territory
@@ -727,8 +727,8 @@ public class StatsMission : AMission, IStatsMission
                 APS.timer.Start();
                 Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
                 */
-                APS.startTimer();
-                Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
+                //APS.startTimer();
+                Console.WriteLine("!!!!!StbAircraftParamStack_recurs STOPPED!!!!! Notifying but NOT restarting it: {0} Last run: {1} ", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), lastParamsRun);
             }
             lastParamsRun = APS.paramsRun;
         }
@@ -736,7 +736,7 @@ public class StatsMission : AMission, IStatsMission
     }
 
 
-
+    static object StbAircraftParamStack_locker = new object();
     //Save aircraft state for players periodically & save the last few seconds data, so that when something happens (ie crash, landing,
     //whatever) we have some idea of what was going on just before that
     public class StbAircraftParamStack
@@ -761,11 +761,11 @@ public class StatsMission : AMission, IStatsMission
         }
         public void startTimer()
         {
-            if (timer != null) timer.Dispose();
+            disposeTimer();
             timer = new System.Threading.Timer(
                 new TimerCallback(saveAircraftParams_recurs),
                 null,
-                1000, //wait time @ startup, in ms
+                3000, //wait time @ startup, in ms
                 recursInterval); //periodically call the callback at this interval
             //saveAircraftParams_recurs(paramsInstance);            
         }
@@ -996,34 +996,36 @@ public class StatsMission : AMission, IStatsMission
         }
 
         public long paramsRun = 0;
-        
+
 
         public void saveAircraftParams_recurs(object o)
         {
-            try
+            if (Monitor.TryEnter(StbAircraftParamStack_locker)) //lock the recursive/timer so that only one instance can run at a time
             {
-                /*if (localPI != paramsInstance)
+                try
                 {
-                    Console.WriteLine("saveAircraftParams_recurs: Stopping recurs, localPI = {0} paramsInstance = {1}", localPI, paramsInstance);
-                    return;
-                }
-                */
-                //mission.Timeout(recursInterval, () =>  saveAircraftParams_recurs(localPI) );
-                paramsRun++;
-                if (paramsRun % 50 == 0) Console.WriteLine("saveAircraftParamsRecursive {0} {1}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), paramsRun);
-                //Task.Run( ()=>
-                {
-                    if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
+                    /*if (localPI != paramsInstance)
                     {
-                        foreach (Player p in mission.GamePlay.gpRemotePlayers())
-                        {
-                            try
-                            {
-                                addParams(p);
-                            }
-                            catch (Exception ex) { Console.WriteLine("saveAircraftParamsError: " + ex.ToString()); }
-                        }
+                        Console.WriteLine("saveAircraftParams_recurs: Stopping recurs, localPI = {0} paramsInstance = {1}", localPI, paramsInstance);
+                        return;
                     }
+                    */
+                    //mission.Timeout(recursInterval, () =>  saveAircraftParams_recurs(localPI) );
+                    paramsRun++;
+                    if (paramsRun % 50 == 0) Console.WriteLine("saveAircraftParamsRecursive {0} {1}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), paramsRun);
+                    //Task.Run( ()=>
+                    {
+                        if (mission.GamePlay.gpRemotePlayers() != null || mission.GamePlay.gpRemotePlayers().Length > 0)
+                        {
+                            foreach (Player p in mission.GamePlay.gpRemotePlayers())
+                            {
+                                try
+                                {
+                                    addParams(p);
+                                }
+                                catch (Exception ex) { Console.WriteLine("saveAircraftParamsError: " + ex.ToString()); }
+                            }
+                        }
                         if (mission.GamePlay.gpPlayer() != null)
                         {
 
@@ -1031,9 +1033,14 @@ public class StatsMission : AMission, IStatsMission
                         } // Multiplayer
 
                     }
-                //);
+                    //);
+                }
+                catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
+                finally
+                {
+                    Monitor.Exit(StbAircraftParamStack_locker);
+                }
             }
-            catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
 
         }
 
@@ -3935,6 +3942,7 @@ struct
         return false;
     }
 
+    static object removeOffMapPlayersTimer_locker = new object();
     public System.Threading.Timer removeOffMapPlayersTimer;
 
     public void Stb_RemoveOffMapPlayers_recurs()
@@ -3955,127 +3963,129 @@ struct
     //Removes player aircraft if they are off the map    
     public void Stb_RemoveOffMapPlayers(object o)
     {
-        try
+        if (Monitor.TryEnter(removeOffMapPlayersTimer_locker)) //lock the recursive/timer so that only one instance can run at a time
         {
-            //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
-            //This should match the values in your .mis file, like
-            //BattleArea 10000 10000 360000 310000 10000
-            //TODO: There is probably some way to access the size of the battle area programmatically
-            // Players are warned when they go one square off the map & destroyed if they go 1 square off
-            // changed to allow near bottom flying with no notice about off map Hopefully........
-            //The nominal size of our battle area is 10000,10000 to 360000, 320000
-            //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
-            //Also below a "grace area" of approx 1 square off the map is added
-            if (GamePlay == null) return;
-            double minX = 6666;
-            double minY = 6666;
-            double maxX = 362000;
-            double maxY = 312000;
-            //////////////Comment this out as we don`t have Your Debug mode  
-            Console.WriteLine("Checking for Players off map, to despawn");
-            if (GamePlay.gpArmies() == null) return;
-            if (GamePlay.gpArmies().Length == 0) return;
-
+            try
             {
-                foreach (int army in GamePlay.gpArmies())
+                //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
+                //This should match the values in your .mis file, like
+                //BattleArea 10000 10000 360000 310000 10000
+                //TODO: There is probably some way to access the size of the battle area programmatically
+                // Players are warned when they go one square off the map & destroyed if they go 1 square off
+                // changed to allow near bottom flying with no notice about off map Hopefully........
+                //The nominal size of our battle area is 10000,10000 to 360000, 320000
+                //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
+                //Also below a "grace area" of approx 1 square off the map is added
+                if (GamePlay == null) return;
+                double minX = 6666;
+                double minY = 6666;
+                double maxX = 362000;
+                double maxY = 312000;
+                //////////////Comment this out as we don`t have Your Debug mode  
+                Console.WriteLine("Checking for Players off map, to despawn");
+                if (GamePlay.gpArmies() == null) return;
+                if (GamePlay.gpArmies().Length == 0) return;
+
                 {
-                    if (GamePlay.gpAirGroups(army) == null) continue;
-                    if (GamePlay.gpAirGroups(army).Length == 0) continue;
-
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    foreach (int army in GamePlay.gpArmies())
                     {
-                        if (airGroup.GetItems() == null) continue;
-                        if (airGroup.GetItems().Length == 0) continue;
+                        if (GamePlay.gpAirGroups(army) == null) continue;
+                        if (GamePlay.gpAirGroups(army).Length == 0) continue;
 
-                        //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                        foreach (AiActor actor in airGroup.GetItems())
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            if (actor != null && actor is AiAircraft)
+                            if (airGroup.GetItems() == null) continue;
+                            if (airGroup.GetItems().Length == 0) continue;
+
+                            //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                            foreach (AiActor actor in airGroup.GetItems())
                             {
-                                AiAircraft a = actor as AiAircraft;
-                                /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
-                                   //+ a.Type() + " " 
-                                   //+ a.TypedName() + " " 
-                                   +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                  );
-                              //  
-                              */
-                                if (a == null) continue;
-                                bool isAI = true;
-                                HashSet<Player> players = new HashSet<Player>();
-                                for (int i = 0; i < a.Places(); i++)
+                                if (actor != null && actor is AiAircraft)
                                 {
-                                    if (a.Player(i) == null) continue;
-                                    players.Add(a.Player(i));
-                                    isAI = false;                                    
-                                }
-                                if (isAI) continue; // player/non-ai aircraft only
-                                if (a.Pos().x <= minX ||
-                                    a.Pos().x >= maxX ||
-                                    a.Pos().y <= minY ||
-                                    a.Pos().y >= maxY
-                                    )
-                                {
-                                    bool ejectThem = false;
-                                    foreach (Player player in players)
+                                    AiAircraft a = actor as AiAircraft;
+                                    /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
+                                       //+ a.Type() + " " 
+                                       //+ a.TypedName() + " " 
+                                       +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+                                      );
+                                  //  
+                                  */
+                                    if (a == null) continue;
+                                    bool isAI = true;
+                                    HashSet<Player> players = new HashSet<Player>();
+                                    for (int i = 0; i < a.Places(); i++)
                                     {
-                                        if (numConsecutiveTimesPlayerOffMap.ContainsKey(player)) numConsecutiveTimesPlayerOffMap[player]++;
-                                        else numConsecutiveTimesPlayerOffMap[player] = 1;
-                                        if (numConsecutiveTimesPlayerOffMap[player] > 28) ejectThem = true;  //checked ~4X per minute, so gives you 7 minutes of fooling around to get out of there.  Which is more than ample. But esp. in a slow bomber or the like, it could easily take 5 mins to fly one grid square off the grid, then get turned around, and fly back out.  So 7 minutes isn't too extremely long as a grace period.
-                                        if (numConsecutiveTimesPlayerOffMap[player] == 1)
-                                        {
-                                            Point3d p = a.Pos();
-                                            //We want to be sure the sector isn't like >><LKZF mumbled up.
-                                            //Sectors larger than 32 & BI work fine, but less than AA is like >
-                                            if (p.x < 10000) p.x = 10001;
-                                            if (p.y < 10000) p.y = 10001;
-
-                                            string sec = Calcs.correctedSectorName(this, p);
-                                            string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " in contravention of the Geneva Convention.";
-                                            gpLogServerAndLog(null, log_message, null);
-                                        }
-                                        if (numConsecutiveTimesPlayerOffMap[player] > 20 && numConsecutiveTimesPlayerOffMap[player] % 2 == 0)
-                                        {
-                                            Point3d p = a.Pos();
-                                            //We want to be sure the sector isn't like >><LKZF mumbled up.
-                                            //Sectors larger than 32 & BI work fine, but less than AA is like >
-                                            if (p.x < 10000) p.x = 10001;
-                                            string sec = Calcs.correctedSectorName(this, p);
-                                            string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " for over 5 minutes, in contravention of the Geneva Convention.";
-                                            gpLogServerAndLog(null, log_message, null);
-                                        }
-
+                                        if (a.Player(i) == null) continue;
+                                        players.Add(a.Player(i));
+                                        isAI = false;
                                     }
-                                    string direction = "";
-
-
-                                    if (a.Pos().y <= minY) direction += "north";
-                                    if (a.Pos().y >= maxY) direction += "south";
-                                    if (a.Pos().x <= minX) direction += "east";
-                                    if (a.Pos().x >= maxX) direction += "west";
-
-
-
-
-                                    string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
-                                    GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
-                                    string pe2log_message = "You are leaving the map. PLAYERS AND COVER AIRCRAFT WHO LEAVE THE MAP ARE DESTROYED!!! Fly " + direction + " immediately to return!";
-                                    gpLogServerAndLog(players.ToArray(), pe2log_message, null);
-
-
-
-                                    if (a.Pos().x <= minX - 12500 || //Same as AI aircraft, 12500 'grace area', this is set in mainmission RemoveOffMapAIAircraft()
-                                        a.Pos().x >= maxX + 12500 ||
-                                        a.Pos().y <= minY - 12500 ||
-                                        a.Pos().y >= maxY + 12500 ||
-                                        ejectThem
-                                    )
+                                    if (isAI) continue; // player/non-ai aircraft only
+                                    if (a.Pos().x <= minX ||
+                                        a.Pos().x >= maxX ||
+                                        a.Pos().y <= minY ||
+                                        a.Pos().y >= maxY
+                                        )
                                     {
+                                        bool ejectThem = false;
                                         foreach (Player player in players)
                                         {
-                                            if (player == null) continue;
-                                            Timeout(1, () =>
+                                            if (numConsecutiveTimesPlayerOffMap.ContainsKey(player)) numConsecutiveTimesPlayerOffMap[player]++;
+                                            else numConsecutiveTimesPlayerOffMap[player] = 1;
+                                            if (numConsecutiveTimesPlayerOffMap[player] > 28) ejectThem = true;  //checked ~4X per minute, so gives you 7 minutes of fooling around to get out of there.  Which is more than ample. But esp. in a slow bomber or the like, it could easily take 5 mins to fly one grid square off the grid, then get turned around, and fly back out.  So 7 minutes isn't too extremely long as a grace period.
+                                            if (numConsecutiveTimesPlayerOffMap[player] == 1)
                                             {
+                                                Point3d p = a.Pos();
+                                                //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                                //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                                if (p.x < 10000) p.x = 10001;
+                                                if (p.y < 10000) p.y = 10001;
+
+                                                string sec = Calcs.correctedSectorName(this, p);
+                                                string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " in contravention of the Geneva Convention.";
+                                                gpLogServerAndLog(null, log_message, null);
+                                            }
+                                            if (numConsecutiveTimesPlayerOffMap[player] > 20 && numConsecutiveTimesPlayerOffMap[player] % 2 == 0)
+                                            {
+                                                Point3d p = a.Pos();
+                                                //We want to be sure the sector isn't like >><LKZF mumbled up.
+                                                //Sectors larger than 32 & BI work fine, but less than AA is like >
+                                                if (p.x < 10000) p.x = 10001;
+                                                string sec = Calcs.correctedSectorName(this, p);
+                                                string log_message = player.Name() + " in a " + StatCalcs.GetAircraftType(a) + " has flown off the map at " + sec + " for over 5 minutes, in contravention of the Geneva Convention.";
+                                                gpLogServerAndLog(null, log_message, null);
+                                            }
+
+                                        }
+                                        string direction = "";
+
+
+                                        if (a.Pos().y <= minY) direction += "north";
+                                        if (a.Pos().y >= maxY) direction += "south";
+                                        if (a.Pos().x <= minX) direction += "east";
+                                        if (a.Pos().x >= maxX) direction += "west";
+
+
+
+
+                                        string pe2Hud_message = "You are leaving the map. Players who leave the map are destroyed. Fly " + direction + " immediately to return!";
+                                        GamePlay.gpHUDLogCenter(players.ToArray(), pe2Hud_message, null);
+                                        string pe2log_message = "You are leaving the map. PLAYERS AND COVER AIRCRAFT WHO LEAVE THE MAP ARE DESTROYED!!! Fly " + direction + " immediately to return!";
+                                        gpLogServerAndLog(players.ToArray(), pe2log_message, null);
+
+
+
+                                        if (a.Pos().x <= minX - 12500 || //Same as AI aircraft, 12500 'grace area', this is set in mainmission RemoveOffMapAIAircraft()
+                                            a.Pos().x >= maxX + 12500 ||
+                                            a.Pos().y <= minY - 12500 ||
+                                            a.Pos().y >= maxY + 12500 ||
+                                            ejectThem
+                                        )
+                                        {
+                                            foreach (Player player in players)
+                                            {
+                                                if (player == null) continue;
+                                                Timeout(1, () =>
+                                                {
 
                                                 //Stb_RemovePlayerFromAircraftandDestroy(a, player);
                                                 //Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
@@ -4083,32 +4093,37 @@ struct
                                                 stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
                                                                                                                         //stbSr_PlayerDeath_penaltylist[playername]
                                                 stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true);
-                                                Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+                                                    Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
 
-                                                string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
-                                                GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
+                                                    string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
+                                                    GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
 
-                                                string type = StatCalcs.GetAircraftType(a);
-                                                gpLogServerAndLog(null, player.Name() + " flying a" + type + " just left the map area in contravention of the Standing Orders and the Geneva Convention.", null);
-                                                gpLogServerAndLog(null, player.Name() + " was stripped of rank and sentenced to 5 years KP duty.", null);
-                                                gpLogServerAndLog(null, player.Name() + "'s " + type + " was lost.", null);
-                                            });
+                                                    string type = StatCalcs.GetAircraftType(a);
+                                                    gpLogServerAndLog(null, player.Name() + " flying a" + type + " just left the map area in contravention of the Standing Orders and the Geneva Convention.", null);
+                                                    gpLogServerAndLog(null, player.Name() + " was stripped of rank and sentenced to 5 years KP duty.", null);
+                                                    gpLogServerAndLog(null, player.Name() + "'s " + type + " was lost.", null);
+                                                });
+
+                                            }
 
                                         }
-
                                     }
-                                }
-                                else
-                                {
-                                    foreach (Player player in players) numConsecutiveTimesPlayerOffMap[player] = 0; //the player is 'in bounds' so we reset their consecutive out-of-bounds count                 
+                                    else
+                                    {
+                                        foreach (Player player in players) numConsecutiveTimesPlayerOffMap[player] = 0; //the player is 'in bounds' so we reset their consecutive out-of-bounds count                 
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString()); }
+            finally
+            {
+                Monitor.Exit(removeOffMapPlayersTimer_locker);
+            }
         }
-        catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString()); }
         // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
     } //method removeoffmapplayersaircraft
       // temp fix for off map aircraft Fatal 1/18/19
@@ -6731,21 +6746,15 @@ struct
                 Timeout(2.0, () => { Stb_Message(new Player[] { player }, "To encourage a more realistic approach to piloting and battle, pilots who die are grounded for a period of time. You could try operating artillery or a ground vehicle.", null); });
                 Timeout(4.0, () => { Stb_Message(new Player[] { player }, "A pause after player death also allows us to properly wrap up player stats for your previous life.", null); });
                 if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(6.0, () => { Stb_Message(new Player[] { player }, "If Fatal had his way you would not be able to rejoin the Campaign at all! So since this is only a simulation take a 5 min break and return <S>", null); });//enter the chat command <override to continue immediately.
-                                                                                                                                                                                                                                                                                                                      //Timeout(10.0, () => { Stb_Message(new Player[] { player }, message, null); });
-                                                                                                                                                                                                                                                                                                                      //Timeout(20.0, () => { Stb_Message(new Player[] { player }, message, null); });                
-                                                                                                                                                                                                                                                                                                                      //Force a player into a certain place:
-                                                                                                                                                                                                                                                                                                                      //Player.Place() = (Actor as AiAircraft).Place(placeIndex);
-                                                                                                                                                                                                                                                                                                                      //player.Place() = null;//And OK--that doesn't work at all.
-                                                                                                                                                                                                                                                                                                                      //This should work: player.PlaceEnter(aircraft, place);  int place is indxplace
+                                                                                                                                                                                                                                                                                                                      //Timeout(10.0, () => { Stb_Message(new Player[] { player }, message, null); });                                                                                                                                                                                                                                                                                      //This should work: player.PlaceEnter(aircraft, place);  int place is indxplace
                                                                                                                                                                                                                                                                                                                       // and: Player.PlaceLeave(int indxPlace)
-
                 stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
                 //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply //Ok, seems at this point the plane hasn't been checked out yet, so no worries about doing this.
                 Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
                 //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
 
                 string peHud_message = "Sorry, you cannot fly--grounded for " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " due to recent death";
-                GamePlay.gpHUDLogCenter(new Player[] { player }, message, null);
+                Timeout(2.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
                 Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
                 Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
                 Timeout(30.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, message, null); });
@@ -7613,7 +7622,7 @@ struct
             stb_SaveIPlayerStat.StbSis_AddSessStat(player, 845, 1);//Also save this for current session stats
 
             string reason = ". Distance to nearest friendly airport: " + distance.ToString("N0") + " meters.";
-            if (injuries >= 0.5) reason = " due to damage. Damage severity: " + injuries.ToString();
+            if (injuries >= 0.5) reason = " due to damage. Damage severity: " + (injuries * 100.0).ToString("F0") + "%";
             Stb_Message(new Player[] { player }, "Your aircraft was written off" + reason, new object[] { });
             Console.WriteLine("Forcing exit 4");
             if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
@@ -9370,7 +9379,7 @@ struct
         public override void OnPersonParachuteFailed(maddox.game.world.AiPerson person)
         {
             #region stats
-            base.OnPersonParachuteFailed(person);
+            //base.OnPersonParachuteFailed(person);
 
             //We are basically ignoring the many parachute failures & pretending a reserve chute always opens @ the last moment
             if (person.Player() != null && person.Player().Name() != null) Stb_Message(new Player[] { person.Player() }, "Luckily, at the last moment, " + person.Player().Name() + " deployed the reserve parachute.", new object[] { });

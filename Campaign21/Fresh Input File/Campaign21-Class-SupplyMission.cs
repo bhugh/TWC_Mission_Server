@@ -1321,7 +1321,8 @@ private int NumberPlayerInActor(AiActor actor)
                 {
                     Console.WriteLine("SupOPL: Forcing check-out");
                     CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
-                    aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only                    
+                    aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only 
+                    Task.Run(() => mainmission.MO_SpoilPlayerScoutPhotos(actor as Player));                   
                 }
 
                 double Z_AltitudeAGL = 0;
@@ -1349,6 +1350,9 @@ private int NumberPlayerInActor(AiActor actor)
                             Console.WriteLine("SupOPL: Check-in (delayed due to a/c damage)");
                             CheckActorIn(actor, player);
                         });
+
+                        //The higher the damage rate the higher the chance of spoiling the photos.
+                        if (new Random().NextDouble() < forceDamage) Task.Run(() => mainmission.MO_SpoilPlayerScoutPhotos(actor as Player));
 
                     }
                     else

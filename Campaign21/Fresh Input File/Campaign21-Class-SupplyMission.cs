@@ -942,7 +942,7 @@ public void ReadSupply(string suffix)
        
     }
 
-    private void CheckActorOut(AiActor actor, Player player = null, bool Force = false)
+    private void CheckActorOut(AiActor actor, Player player = null, bool Force = false, bool AICheckout = false)
     {
         try
         {
@@ -968,11 +968,42 @@ public void ReadSupply(string suffix)
                     AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()] -= 1;
                     double print = new Random().NextDouble();
                     string numString = AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0");
+                    string acName = ParseTypeName(cart.InternalTypeName());
                     Timeout(4.33, () =>
                     {
                         GamePlay.gpLogServer(new Player[] { player }, numString + " "
-                            + ParseTypeName(cart.InternalTypeName()) + " remain in reserve", null);
+                            + acName + " remain in reserve", null);
                     });
+
+                    //special quick-start instructions for Blennie, Beauf, BR.20:
+                    if (
+                            player != null && !AICheckout &&
+                            (acName.Contains("Blenheim") || acName.Contains("Beaufighter") || acName.Contains("BR-20"))
+                       )
+                    {
+                        Timeout(4.81, () =>
+                        {
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "QUICK START INSTRUCTIONS FOR " + acName.ToUpper() + ": 1. Fuel, throttle, radiators to normal start position.", null);
+                        });
+                        Timeout(4.83, () =>
+                        {
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "2. Switch position to (any) rear gunner or observer.", null);
+                        });
+                        Timeout(4.85, () =>
+                        {
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "3. Switch position back to pilot.", null);
+                        });
+                        Timeout(4.87, () =>
+                        {
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "4. CTRL-F2 (EXTERNAL VIEW) command.  You will leave pilot position & move to rear gunner/observer.", null);
+                        });
+                        Timeout(4.89, () =>
+                        {
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "5. AI will take over pilot's position & start engines. Wait until engines are started, then move back to pilot position. Engines will be warmed up & ready to go.", null);
+                        });
+
+
+                    }
 
                     Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
                     if (Force) Console.WriteLine("valout2= FORCED!");
@@ -1028,7 +1059,7 @@ public void ReadSupply(string suffix)
             }
         }
         */
-    public string DisplayNumberOfAvailablePlanes(AiActor actor, Player player = null)
+    public string DisplayNumberOfAvailablePlanes(AiActor actor, Player player = null, bool AICheckout = false)
     {
         try
         {
@@ -1040,7 +1071,8 @@ public void ReadSupply(string suffix)
             {
 
                 if (!AircraftSupply.ContainsKey((ArmiesE)actor.Army()) || !AircraftSupply[(ArmiesE)actor.Army()].ContainsKey(cart.InternalTypeName())) return "";
-                string m = ParseTypeName(cart.InternalTypeName()) + "s remaining: " + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n1");
+                string acName = ParseTypeName(cart.InternalTypeName());
+                string m = acName + "s remaining: " + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n1");
 
                 if (player != null)
                 {
@@ -1049,8 +1081,7 @@ public void ReadSupply(string suffix)
                         if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, m, null);
                     });
                 }
-                else Console.WriteLine(m);
-
+                else Console.WriteLine(m);                
 
                 return m;
 
@@ -1224,7 +1255,7 @@ private int NumberPlayerInActor(AiActor actor)
 
             {
                 if (!IsLimitReached(actor))
-                    CheckActorOut(actor, player);
+                    CheckActorOut(actor, player, AICheckout, AICheckout);
                 else
                 {
                     //So, first we were checking them out & then adding to the checkout_add list so they could be checked back in.  But, onactordestroyed doesn't

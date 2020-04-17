@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -617,14 +618,14 @@ public class Mission : AMission
         double dist = ran.NextDouble() * radius * mult + radius*add;
         double angl = ran.NextDouble() * 2 * Math.PI;
 
-        Console.WriteLine("MoveBomb: Position before # player adjustment {0:n0} {1:n0}", retPos.x, retPos.y);
+        //Console.WriteLine("MoveBomb: Position before # player adjustment {0:n0} {1:n0}", retPos.x, retPos.y);
 
         retPos.x = Math.Cos(angl) * dist + retPos.x;
         retPos.y = Math.Sin(angl) * dist + retPos.y;
         retPos.z = 0;
 
 
-        Console.WriteLine("MoveBomb: New OBJECTIVE attack point: {0:n0} {1:n0} {2:n0}", retPos.x, retPos.y, dist_m);
+        //Console.WriteLine("MoveBomb: New OBJECTIVE attack point: {0:n0} {1:n0} {2:n0}", retPos.x, retPos.y, dist_m);
         return retPos;
     }
 
@@ -642,7 +643,7 @@ public class Mission : AMission
             {
                 ret = new Tuple<Point3d?, double, double>(mo.Pos, mo.TriggerDestroyRadius, dist );
                 r = dist;
-                Console.WriteLine("MBF: Best objective - " + mo.Name);
+                //Console.WriteLine("MBF: Best objective - " + mo.Name);
             }
         }
         return ret;
@@ -676,7 +677,7 @@ public class Mission : AMission
             ind = ran.Next(CloseObjectives.Count - 1);
             retMO = CloseObjectives[ind];
             ret = new Tuple<Point3d?, double, double>(retMO.Pos, retMO.TriggerDestroyRadius, Calcs.CalculatePointDistance(retMO.Pos, p));
-            Console.WriteLine("MoveBomb: Chosen objective - " + retMO.Name);
+            //Console.WriteLine("MoveBomb: Chosen objective - " + retMO.Name);
         }
         return ret;
     }
@@ -798,7 +799,7 @@ public class Mission : AMission
 
         bool underRadar = false;
         if (isBomber && ran.Next(0, 10) == 0) underRadar = true;
-        Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
+        //Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
 
         bool update = false;
         AiWayPoint wpAdd = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
@@ -979,7 +980,7 @@ public class Mission : AMission
                         //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
                         pos = wp.P;
 
-                        Console.WriteLine("Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+                        //Console.WriteLine("Movebomb - Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
 
                         //GetRandomAirfieldNear(p, moveAirportsDistance_m, airportArmy);
 
@@ -1052,7 +1053,7 @@ public class Mission : AMission
 
                         //if (zSave<changeL.alt_m && pos.z < zSave) pos.z = zSave;  //
                         if (pos.z < 100 && pos.z < zSave) pos.z = 100; //Never altitude less than 100m, unless the pre-set alt was less than 100m & this is equal to or greater than the previous set altitude                        
-                        Console.WriteLine("Target after: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+                        //Console.WriteLine("Target after: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
                         
                         nextWP = new AiAirWayPoint(ref pos, speed);
                         (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
@@ -1081,11 +1082,13 @@ public class Mission : AMission
             {
                 NewWaypoints.Add(nextWP);
 
+                /*
                 if (update)
                 {
                     Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
                     Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
                 }
+                */
 
             }
 
@@ -1097,7 +1100,7 @@ public class Mission : AMission
         foreach (AiWayPoint wp in NewWaypoints)
         {
             AiWayPoint nextWP = wp;
-            Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+            //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
         }
 
@@ -1343,7 +1346,7 @@ public class Mission : AMission
             AiActor agActor = airGroup.GetItems()[0];
             AiAircraft agAircraft = agActor as AiAircraft;
             //Console.WriteLine("MoveBomb: Checking radar returns for airGroup: " + agActor.Name() + " " + agAircraft.InternalTypeName());
-            Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
+            ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
             double interceptTime_sec = 0;
 
                 //TODO: In case of any of these as current task/airway point then we should skip chasing things altogether
@@ -1919,12 +1922,14 @@ public class Mission : AMission
             //for testing
             
             
+            /*
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
 
                 Console.WriteLine("FixWayPoints - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
+            */
             
             
             
@@ -1979,7 +1984,7 @@ public class Mission : AMission
                         //So, a waypoint could be way off the map which results in terrible aircraft malfunction (stopped dead in mid-air, etc?)
                         if (nextWP.P.x > twcmap_maxX + offMapBufferForAvoidingLeaveMap || nextWP.P.y > twcmap_maxY + offMapBufferForAvoidingLeaveMap || nextWP.P.x < twcmap_minX - offMapBufferForAvoidingLeaveMap || nextWP.P.y < twcmap_minY - offMapBufferForAvoidingLeaveMap || nextWP.P.z < 0 || nextWP.P.z > 50000)
                         {
-                            Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                            //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! Before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                             update = true;
                             if (nextWP.P.z < 0) nextWP.P.z = 0;
                             if (nextWP.P.z > 50000) nextWP.P.z = 50000;
@@ -1988,7 +1993,7 @@ public class Mission : AMission
                             if (nextWP.P.y > twcmap_maxY + offMapBufferForAvoidingLeaveMap) nextWP.P.y = twcmap_maxY - ran.Next(2000, 15000);
                             if (nextWP.P.x < twcmap_minX - offMapBufferForAvoidingLeaveMap) nextWP.P.x = twcmap_minX + ran.Next(2000, 15000);
                             if (nextWP.P.y < twcmap_minY - offMapBufferForAvoidingLeaveMap) nextWP.P.y = twcmap_minY + ran.Next(2000, 15000);
-                            Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                            //Console.WriteLine("FixWayPoints - WP WAY OFF MAP! After: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
                         }
                     }
                     catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
@@ -2164,7 +2169,7 @@ public class Mission : AMission
                     count++;
 
 
-                    Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+                    //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
                     //add the final Point, which is off the map
                     //endaaWP = new AiAirWayPoint(ref endPos, speed);
@@ -2175,7 +2180,7 @@ public class Mission : AMission
 
                     NewWaypoints.Add(endaaWP); //do add
                     count++;
-                    Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                    //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
                 }
                 catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #4: " + ex.ToString()); }
             }
@@ -2188,6 +2193,7 @@ public class Mission : AMission
 
                 //for testing
 
+                /*
                 try
                 {
 
@@ -2199,6 +2205,7 @@ public class Mission : AMission
 
                 }
                 catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #5: " + ex.ToString()); }
+                */
 
 
 
@@ -2742,6 +2749,34 @@ public static class Calcs
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].Army() == army) result += 1;
+            }
+        }
+        // on Dedi the server:
+        else if (GamePlay.gpPlayer() != null)
+        {
+            if (GamePlay.gpPlayer().Army() == army) return 1;
+            result = 0;
+        }
+        return result;
+    }
+    public static int gpNumberOfPlayersActive(this IGamePlay GamePlay, int army)
+    {   // Purpose: Returns the number of human players in the game in the 
+        //          specified army, who are in planes and in the air.
+        // Use: GamePlay.NumberOfPlayersActive(GamePlay, army); 
+        int result = 0;
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            List<Player> players = new List<Player>(GamePlay.gpRemotePlayers());
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].Army() == army)
+                {
+                    if (players[i].Place() == null) continue;
+                    if (players[i].Place() as AiAircraft == null) continue;
+                    AiAircraft aircraft = players[i].Place() as AiAircraft;
+                    double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    if (altAGL_m > 5) result += 1;  //only count players in plane & off the ground/in flight
+                }
             }
         }
         // on Dedi the server:

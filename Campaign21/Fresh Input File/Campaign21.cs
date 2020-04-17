@@ -8,6 +8,10 @@
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
+////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
+////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
+////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
+////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
@@ -50,6 +54,7 @@ using maddox.GP;
 using maddox.game.page;
 using part;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Net;
@@ -399,9 +404,9 @@ public class Mission : AMission, IMainMission
     public int CampaignMapMaxRedSuffixMax = 1; //This implies you have initairports files named with suffix ie -R001, -R002, -R003, -R004 through the max
     public int CampaignMapMaxBlueSuffixMax = 1; //This implies you have initairports files named ie -B001, -B002, -B003, -B004 through the max
 
-    Stopwatch stopwatch;
-    Dictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
-    public Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> ai_radar_info_store { get; set; }
+    Stopwatch stopwatch;    
+    ConcurrentDictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
+    public ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> ai_radar_info_store { get; set; }
 
     //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
     //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
@@ -476,6 +481,12 @@ public class Mission : AMission, IMainMission
                 SERVER_ID_SHORT = "TacticalTEST"; //FOR TESTING, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
                 ON_TESTSERVER = true;
             }
+            if (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower().Contains("twc_server3"))
+            {
+                SERVER_ID_SHORT = "TacticalPractice"; //FOR TESTING, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+                ON_TESTSERVER = true;
+            }
+
             DEBUG = false;
             DISABLE_TESTING_MODS = false; // if set to true, some things that run or are skipped on the testing server will run exactly as on the real server
             LOG = false;
@@ -508,8 +519,8 @@ public class Mission : AMission, IMainMission
             stopwatch = Stopwatch.StartNew();
             RADAR_REALISM = (int)5;
             RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";
-            radar_messages_store = new Dictionary<string, Tuple<long, SortedDictionary<string, string>>>();
-            ai_radar_info_store = new Dictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>>();
+            radar_messages_store = new ConcurrentDictionary<string, Tuple<long, SortedDictionary<string, string>>>();
+            ai_radar_info_store = new ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>>();
             MissionObjectivesList = new Dictionary<string, MissionObjective>();
             //SMissionObjectivesList = MissionObjectivesList as IMissionObjecit;
 
@@ -1369,7 +1380,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
-        Console.WriteLine("Bomb");
+        //Console.WriteLine("Bomb");
         double wait = stb_random.NextDouble() * 45;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
@@ -3907,8 +3918,10 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         Timeout(31, () => { groupAllAircraft_recurs(); });
         if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         //Console.WriteLine("groupAllAircraft: -1");
-        //Task.Run(() => groupAllAircraft());
-        groupAllAircraft();  //trying as not task.run as it's already done via a timeout?  2020/04/04
+        //OK< if we keep having the HighCPU bug caused by listpositionallaircraft, it is VERY possible that this Task.Run is the cause of it.  It will 
+        //access/write some of the data structures in parallel & this could cause weird things to happen? (?)  2020/04/07
+        Task.Run(() => groupAllAircraft());
+        //groupAllAircraft();  //trying as not task.run as it's already done via a timeout?  2020/04/04
     }
 
 
@@ -4023,7 +4036,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                         }
                     }
 
-                    Console.WriteLine("groupAllAircraft: 2.2 getitems red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
+                    //Console.WriteLine("groupAllAircraft: 2.2 getitems red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
 
                     //Console.WriteLine("groupAllAircraft: 3");
 
@@ -4635,7 +4648,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
     public void listPositionAllAircraft(Player player, int playerArmy, bool inOwnArmy, int radar_realism = -10000000, AiAirGroup aiairgroup = null, bool disp = true)
     {
-        //try
+        try
         {
 
             if (radar_realism == -10000000) radar_realism = RADAR_REALISM;
@@ -4751,7 +4764,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                     p = player.Place() as AiAircraft;
                     pa = player.Place();
 
-                    if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(p.AirGroup()))
+                    if (airGroupInfoDict != null && p.AirGroup() != null && airGroupInfoDict.ContainsKey(p.AirGroup()))
                     {
                         padig = airGroupInfoDict[p.AirGroup()];
                         player_Vwld = new Vector3d(padig.vel.x, padig.vel.y, padig.vel.z);
@@ -4851,8 +4864,9 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                 // #1. ok to give new radar return
                 // #2. Too soon since last radar return to give a new one
                 // #3. New radar return is underway but not finished, so don't give them a new one. 
-                if (radar_realism > 0 && radar_messages_store.TryGetValue(playername_index, out message_data) && display && player != null)
+                if (radar_realism > 0 && radar_messages_store.ContainsKey(playername_index) && display && player != null)
                 {
+                    message_data = radar_messages_store[playername_index];
                     long time_elapsed_ms = currtime_ms - message_data.Item1;
                     long time_until_new_s = (long)((refreshtime_ms - time_elapsed_ms) / 1000);
                     long time_elapsed_s = (long)time_elapsed_ms / 1000;
@@ -5070,7 +5084,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                                         HashSet<string> namesHS = new HashSet<string>();
                                                         for (int i = 0; i < a.Places(); i++)
                                                         {
-                                                            if (a.Player(i) != null && a.Player(i).Name() != null && !namesHS.Contains(a.Player(i).Name()))
+                                                            if (a.Player(i) != null && a.Player(i).Name() != null && a.Player(i).Name() != null && !namesHS.Contains(a.Player(i).Name()))
                                                             {
                                                                 if (!first) aplayername += " - ";
                                                                 aplayername += a.Player(i).Name();
@@ -5300,6 +5314,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                         if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
                                             {
                                                 posmessage = "";
+                                                if (airGroup == null) continue;
 
                                                 //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
                                                 AirGroupInfo agid = airGroupInfoDict[airGroup];
@@ -6109,7 +6124,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                             if (playerArmy == -4) typeSuff = "_ADMINGROUP";
                             if (playerArmy == -1) typeSuff = "_RED";
                             if (playerArmy == -2) typeSuff = "_BLUE";
-                            Console.WriteLine("RADAR WRITE 1");
+                            //Console.WriteLine("RADAR WRITE 1");
                             //TODO!!!!  Rewrite all this to just create a string with the file & then write using File.WriteAllText(file,data);
                             //The avoids the problem of files not being closed/disposed & then they are LOCKED!!!!!
                             //For now the try/catch should take care of any problems, but we'll see.
@@ -6364,14 +6379,33 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                 bigMess += (string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
               RedAirF, RedAAF, RedNavalF, RedGroundF)) + Environment.NewLine;
                                 bigMess += Environment.NewLine;
+                                
+
+                                var leakTo = new bool[] { false, false, false };  //0, 1, 2 indexes - note that index 0 will be ignored.
+                                try
+                                {
+                                    for (int attackingArmy = 1; attackingArmy < 3; attackingArmy++)
+                                    {
+
+                                        if (GeneralStaffLocations.ContainsKey((ArmiesE)attackingArmy) && GeneralStaffLocations[(ArmiesE)attackingArmy] != null)
+                                        {
+                                            var gsl = GeneralStaffLocations[(ArmiesE)attackingArmy]; //ArmiesE.Blue is the ATTACKING army here, not the owner army
+                                            leakTo[attackingArmy] = gsl.discovered;
+                                        }
+                                    }
+                                } catch (Exception ex) { Console.WriteLine("Radar leakTo ERROR: " + ex.ToString()); }
 
                                 bigMess += ("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue])) + Environment.NewLine;
                                 bigMess += Environment.NewLine;
-                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]) + Environment.NewLine;
+                                if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4 || leakTo[1]) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Blue, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Blue Primary Objectives: " + MissionObjectivesString[ArmiesE.Blue]) + Environment.NewLine;
+
+                                if (leakTo[1] && playerArmy == -1) bigMess += "(enemy objectives leaked via low-level photo recon of General & staff)" + Environment.NewLine;
 
                                 bigMess += ("Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red])) + Environment.NewLine;
                                 bigMess += Environment.NewLine;
-                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]) + Environment.NewLine;
+                                if (playerArmy == -1 || playerArmy == -3 || playerArmy == -4 || leakTo[2]) bigMess += (MO_ListRemainingPrimaryObjectives(player: player, army: (int)ArmiesE.Red, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;//bigMess += ("Red Primary Objectives: " + MissionObjectivesString[ArmiesE.Red]) + Environment.NewLine;
+
+                                if (leakTo[2] && playerArmy == -2) bigMess += "(enemy objectives leaked via low-level photo recon of General & staff)" + Environment.NewLine;
 
                                 /***TODO: Need to include some kind of current mission & campaign summary here
                                  * 
@@ -6423,7 +6457,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                 bigMess += (netBlue) + Environment.NewLine;
                                 bigMess += (netRed) + Environment.NewLine;
 
-                                Console.WriteLine("RADAR WRITE 4");
+                                //Console.WriteLine("RADAR WRITE 4");
 
                                 if (TWCSupplyMission != null)
                                 {
@@ -6447,7 +6481,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                     bigMess += (msg) + Environment.NewLine;
                                 }
 
-                                Console.WriteLine("RADAR WRITE 5");
+                                //Console.WriteLine("RADAR WRITE 5");
 
                                 msg = "";
                                 if (playerArmy == -2 || playerArmy == -3 || playerArmy == -4)
@@ -6468,7 +6502,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
                             }
 
-                            Console.WriteLine("RADAR WRITE 6");
+                            //Console.WriteLine("RADAR WRITE 6");
 
                             Calcs.WriteAllTextAsync(filepath, bigMess);
 
@@ -6489,7 +6523,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                       {
                           try
                           {
-                              Console.WriteLine("RADAR WRITE 7Start");
+                              //Console.WriteLine("RADAR WRITE 7Start");
 
                               //So, overly long radar messages are incomprehensible & jam up the comms.  So, just trimming it down to 12 msgs max.
                               //It has to be the last 12, because the most important msgs are at the end. Can't eliminate the header, either, so always include 1st msg
@@ -6513,6 +6547,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                       }
                                       //Console.WriteLine("RadTrim: NoTrim {0} {1} {2}", trim, c, radar_messages.Count);
                                       c++;
+                                      if (mess.Key == null) continue;
                                       radar_messages_trim.Add(mess.Key, mess.Value);
                                       delay += 0.2;
                                       Timeout(delay, () =>
@@ -6544,10 +6579,10 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                 }*/
 
                             }
-                        } /* catch (Exception ex)
+        }  catch (Exception ex)
         {
-            Console.WriteLine("Radar ERROR: " + ex.ToString());
-        }*/
+            Console.WriteLine("Radar *MAIN* ERROR: " + ex.ToString());
+        }
     }//method radar     
 
     /******************************************************************************************************************** 
@@ -6626,7 +6661,8 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
             //LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
 
-            LoadRandomSubmission("weather",@"Weather"); // weather to load initially
+            //LoadRandomSubmission("weather",@"Weather"); // weather to load initially
+            //Loading weather as a submission doesn't seem to work, so we're doing this by directly editing the .mis file, as with triggers, airgroups, time, etc.
 
 
             //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
@@ -8158,7 +8194,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         }
         else if (msg.StartsWith("<rad") && admin_privilege_level(player) >= 2)
         {
-            listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); //enemy a/c  
+            Task.Run(() => { listPositionAllAircraft(player, player.Army(), false, radar_realism: RADAR_REALISM); }); //enemy a/c   
         }
         else if (msg.StartsWith("<exit") && admin_privilege_level(player) >= 2)
         {
@@ -8866,18 +8902,39 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
 
     //Takes the airgroup & trigger/action sections from replacementfile (randomly chosen from .mis files like Campaign21-airgroup-B.mis & plops them into missionfile
-    public string updateAirgroupAndTriggerSections(string missionFile)
+    //So . . . airgroup/trigger/action portions must be in files named something like "Campaign21-airgroup-XXXX.mis".  Then the airgroups, actions, & triggers from those files will be put in
+    //place of the same sectdions in the current .mis file.
+    //
+    //The weather files must be in a subdirectory /Weather/Campaign21-randsubmission-weather-XXXXXX.mis"
+    //Then anything between [WeatherFront] and [splines] in the main .mis file will be replaced by the same sections in the Campaign21-randsubmission-weather-XXXXXX.mis file.
+    //Note that main.mis MUST include [splines] but weather-XXXXX.mis should NOT include [splines]
+    public string updateAirgroup_Trigger_WeatherFront_Sections(string missionFile)
     {
-        string replacementFile = getReplacementAirgroupAndTriggerFile(MISSION_ID + "-airgroup-");
+        string saveMissionFile = missionFile;
+        try
+        {            
+            string replacementFile = getReplacementAirgroupAndTriggerFile(MISSION_ID + "-airgroup-");
+            string weatherReplacementFile = getReplacementAirgroupAndTriggerFile(MISSION_ID + "-randsubmission-weather-", "Weather");
 
-        string airgroupssec = @"\[AirGroups\].*\[Stationary\]";
-        string triggerssec = @"\[Trigger\].*\[Birthplace\]";
-        string replacementFile_airgroups = getSection(replacementFile, airgroupssec);
-        string replacementFile_triggers = getSection(replacementFile, triggerssec);
+            string airgroupssec = @"\[AirGroups\].*\[Stationary\]";
+            string triggerssec = @"\[Trigger\].*\[Birthplace\]";
+            string replacementFile_airgroups = getSection(replacementFile, airgroupssec);
+            string replacementFile_triggers = getSection(replacementFile, triggerssec);
 
-        missionFile = replaceSection(missionFile, replacementFile_airgroups, airgroupssec);
-        missionFile = replaceSection(missionFile, replacementFile_triggers, triggerssec);
-        return missionFile;
+            string weatherSUBMISSIONsec = @"\[WeatherFront\].*";
+            string weatherMAINMISSIONsec = @"\[WeatherFront\].*\[splines\]";
+            string replacementFile_weather = getSection(weatherReplacementFile, weatherSUBMISSIONsec) + Environment.NewLine + "[splines]";
+
+            missionFile = replaceSection(missionFile, replacementFile_airgroups, airgroupssec);
+            missionFile = replaceSection(missionFile, replacementFile_triggers, triggerssec);
+            missionFile = replaceSection(missionFile, replacementFile_weather, weatherMAINMISSIONsec);
+            return missionFile;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("updateAirgroup_Trigger_WeatherFront_Sections ERROR: " + ex.Message);
+            return saveMissionFile;
+        };
     }
 
 
@@ -8940,7 +8997,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         missionFile = updateTimeAndWeather(missionFile, desiredString);
 
-        missionFile = updateAirgroupAndTriggerSections(missionFile);
+        missionFile = updateAirgroup_Trigger_WeatherFront_Sections(missionFile);
 
         missionFile = updatePlanes(missionFile);
         //Console.WriteLine(missionFile);   
@@ -9095,6 +9152,52 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         if (showMessage && player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
         return new Tuple<string, DateTime>(msg, inGameTime_dt);
     }
+
+    public void gpToArmyLogServer(int army, string msg, object[] parms)
+    {   // Purpose: Send specified chat message to all players in specified army.
+        // Use: GamePlay.sendChatMessageTo(); 
+        //Source: Salmo, https://theairtacticalassaultgroup.com/forum/showthread.php?t=23542&highlight=salmo+extension
+        List<Player> Players = new List<Player>();
+        // on Dedi the server:
+        if (GamePlay.gpPlayer() != null)
+        {
+            if (GamePlay.gpPlayer().Army() == army || army == -1)
+                Players.Add(GamePlay.gpPlayer());
+        } //rest of the crowd
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in GamePlay.gpRemotePlayers())
+            {
+                if (p.Army() == army || army == -1)
+                    Players.Add(p);
+            }
+        }
+        if (Players != null && Players.Count > 0)
+            GamePlay.gpLogServer(Players.ToArray(), msg, parms);
+    }
+
+    public Player[] AllPlayersInArmyArray(int army)
+    {   // Purpose: Get full list of players in army, to (for example) send specified chat message to all players in specified army.
+
+        List<Player> Players = new List<Player>();
+        // on Dedi the server:
+        if (GamePlay.gpPlayer() != null)
+        {
+            if (GamePlay.gpPlayer().Army() == army || army == -1)
+                Players.Add(GamePlay.gpPlayer());
+        } //rest of the crowd
+        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        {
+            foreach (Player p in GamePlay.gpRemotePlayers())
+            {
+                if (p.Army() == army || army == -1)
+                    Players.Add(p);
+            }
+        }
+        return Players.ToArray();
+    }
+
+
 
 
     public void logToFile(object data, string messageLogPath)
@@ -10645,7 +10748,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             addRadar("Sandwich Radar", "SanR", 1, 5, 2, "BTarget15R", "TGroundDestroyed", 50, 248579, 253159, 200, 25000, false, 30, "", add);
             addRadar("Deal Radar", "DeaR", 1, 5, 2, "BTarget16R", "TGroundDestroyed", 75, 249454, 247913, 200, 25000, false, 30, "", add);
             addRadar("Dover Radar", "DovR", 1, 5, 2, "BTarget17R", "TGroundDestroyed", 75, 246777, 235751, 200, 25000, false, 30, "", add);
-            addRadar("Brookland Radar", "BroR", 5, 4, 2, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 30, "", add);
+            addRadar("Brookland Radar", "BroR", 1, 5, 2, "BTarget18R", "TGroundDestroyed", 75, 212973, 220079, 200, 25000, false, 30, "", add);
             addRadar("Dungeness Radar", "DunR", 1, 5, 2, "BTarget19R", "TGroundDestroyed", 50, 221278, 214167, 200, 25000, false, 30, "", add);
             addRadar("Eastbourne Radar", "EasR", 1, 5, 2, "BTarget20R", "TGroundDestroyed", 75, 178778, 197288, 200, 25000, false, 10, "", add);
             addRadar("Littlehampton Radar", "LitR", 1, 5, 2, "BTarget21R", "TGroundDestroyed", 76, 123384, 196295, 200, 35000, false, 10, "", add);
@@ -10972,6 +11075,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne-sur-Mer Submarine Base", "Boul", "Campaign21-LOADONCALL-boulognesurmer-submarine-base-objective.mis", 2, 6, "BTargBoulSubmarine", 265859, 192867, 250, 150, 10000, 15, 160, 24, true, true, 2, 8, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne Naval Docks Area", "Boul", "Campaign21-LOADONCALL-boulogne-naval-docks-objective.mis", 2, 10, "BTargBoulogneNavyDocks", 265531, 190133, 750, 650, 10000, 40, 160, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk West Industrial Area", "Dunk", "", 2, 8, "BTargDunkirkWestIndustrialArea", 312748, 223835, 850, 750, 10000, 6, 140, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk Central-West Industrial Area", "Dunk", "", 2, 8, "BTargDunkirkCentralWestIndustrialArea", 314753, 224055, 1200, 1300, 10000, 13, 140, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk East Docks Area", "Dunk", "", 2, 8, "BTargDunkirkEastDocksArea", 320103, 225534, 1200, 1250, 10000, 1, 140, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Industrial Area", "Cala", "", 2, 10, "BTargCalaisIndustrialArea", 284945, 217045, 800, 850, 12000, 12, 130, 24, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.IndustrialArea, "Boulogne West Industrial Area", "Boul", "", 2, 10, "BTargBoulogneWestIndustrialArea", 264576, 189495, 650, 700, 11000, 4, 130, 24, true, true, 2, 8, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 120, 24, true, true, 2, 6, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "Campaign21-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 250, 200, 3000, 3, 120, 24, true, true, 2, 6, "", add);
@@ -11794,13 +11902,13 @@ added Rouen Flak
     {
 
         double Z_AltitudeAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-        var gsl = GeneralStaffLocations[(ArmiesE)army];
+        var gsl = GeneralStaffLocations[(ArmiesE)army];  //Army here is the ATTACKING army, not the OWNER army
 
         double dist_m = Calcs.CalculatePointDistance(pos, gsl.pos);
         MissionObjective mo = MissionObjectivesList[gsl.objectiveKey];
 
         string af = "RAF";
-        if (army == 2) af = "Luftwaffe";
+        if (army == 1) af = "Luftwaffe"; //again army is ATTACKING army, so if attacking army =1 then the General being attacked is LW not RAF
 
         if (Z_AltitudeAGL_m < 100 && dist_m < 100)
         {
@@ -11815,6 +11923,9 @@ added Rouen Flak
 
             twcLogServer(null, af + gsl.staffGroupName + " found in sector " + gsl.sector + " by " + player.Name(), new object[] { });
             GamePlay.gpHUDLogCenter(null, af + " Commander Found! Good Job, " + ArmiesL[army] + "!");
+            Timeout(10, () => {
+                twcLogServer(null, "The General's papers and effects are bound to reveal important intelligence.  Results will be broadcast as soon as Photo Intelligence analyzes the photos.", new object[] { });
+                });
             return true;
         }
         else if (Calcs.CalculatePointDistance(pos, mo.Pos) < 15000 && Z_AltitudeAGL_m < 300)
@@ -11830,6 +11941,21 @@ added Rouen Flak
         twcLogServer(new Player[] { player }, msg2, new object[] { });
         return false;
 
+    }
+
+    public void MO_DisplayGeneralStaffIntelligenceLeaks()
+    {
+
+        for (int attackingArmy = 1; attackingArmy < 3; attackingArmy++)
+        {
+            var gsl = GeneralStaffLocations[(ArmiesE)attackingArmy]; //army here is the ATTACKING army NOT the army the GEneral is part of/leading.
+            if (!gsl.discovered) continue;
+
+            int ownerArmy = 3 - attackingArmy;
+
+            MO_ListRemainingPrimaryObjectives(null, ownerArmy, leak: true);
+
+        }
     }
 
 
@@ -11927,6 +12053,10 @@ added Rouen Flak
             //Now actually PLACE the general and various items around there.
             ISectionFile f = GamePlay.gpCreateSectionFile();
             bool resetCount = true;
+
+            //Jerrycan here makes bomb strikes here count as +1 even if in civilian area etc.
+            f = Calcs.makeStatic(f, GamePlay, this, newPos.x + random.Next(4), newPos.y + random.Next(3), newPos.z, type: "Stationary.Environment.JerryCan_GER1_1", heading: random.Next(360), side: "nn");
+            resetCount = false;
 
             Calcs.Shuffle(items);
             for (int i = 0; i < 9; i++) {
@@ -12648,7 +12778,8 @@ added Rouen Flak
 
                 string owner = "nn";
                 if (mo.OwnerArmy == 1) owner = "gb";
-                if (mo.OwnerArmy == 2) owner = "de";
+                else if (mo.OwnerArmy == 2) owner = "de";
+                else Console.WriteLine("Autoflak Placement ARMY ERROR for {0} objective - Owner Army was not 1 or 2", new object[] { mo.Name });
 
                 //Bofors_StandAlone is very good.
                 //37mm_PaK_35_36 doesn't seem to work at all?
@@ -13865,7 +13996,7 @@ added Rouen Flak
     }
 
     //note - only lists first 12 targets BY DEFAULT
-    public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 12, double delay = 0.2, bool display = true, bool html = false)
+    public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 12, double delay = 0.2, bool display = true, bool html = false, bool leak = false)
     {
 
         string newline = Environment.NewLine;
@@ -13873,19 +14004,29 @@ added Rouen Flak
         string retmsg = "";
         string msg = "";
 
+        Player[] recipients = new Player [] { };
+        if (player != null) recipients = new Player[] { player };
+
+        if (leak) recipients = AllPlayersInArmyArray(3 - army); //Leak displays the enemy's current target list to the opposite army players
+
         int numDisplayed = 0;
         double totDelay = 0;
         msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
-        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
+        if (leak) msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES (INTELLIGENCE LEAK from low-level General Staff recon photos):";
+        if (display) twcLogServer(recipients, msg, new object[] { });
         retmsg = msg + newline;
 
-        msg = ">>> NOTE: Last scouted position/time shown. If recon areas are listed, those sectors need to be scouted.";
-        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
-        retmsg += msg + newline;
+        if (!leak)
+        {
 
-        msg = ">>> Scout the areas and take recon photos - Tab-4-9. HQ will then identify specific targets & details.";
-        if (display) twcLogServer(new Player[] { player }, msg, new object[] { });
-        retmsg += msg + newline;
+            msg = ">>> NOTE: Last scouted position/time shown. If recon areas are listed, those sectors need to be scouted.";
+            if (display) twcLogServer(recipients, msg, new object[] { });
+            retmsg += msg + newline;
+
+            msg = ">>> Scout the areas and take recon photos - Tab-4-9. HQ will then identify specific targets & details.";
+            if (display) twcLogServer(recipients, msg, new object[] { });
+            retmsg += msg + newline;
+        }
 
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
@@ -13920,7 +14061,7 @@ added Rouen Flak
                     {
 
                         //+ " (" + mo.Pos.x + "," + mo.Pos.y + ")" //to display x,y coordinates
-                        twcLogServer(new Player[] { player }, msg1, new object[] { });
+                        twcLogServer(recipients, msg1, new object[] { });
 
                     });//timeout      
                 }
@@ -14870,6 +15011,7 @@ added Rouen Flak
     {
         Timeout(316.3, () => { MO_ObjectiveUndestroy_recurs(); });
         Task.Run( ()=> {
+            Timeout(94.2341, () => { MO_DisplayGeneralStaffIntelligenceLeaks();  });
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MMOXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             DateTime currTime_UTC = DateTime.UtcNow;
             List<string> molk = new List<string>(MissionObjectivesList.Keys.ToList());

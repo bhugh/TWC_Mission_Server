@@ -2955,7 +2955,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         if (airGroup == null || !coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
         try
         {
-            Console.WriteLine("EscortMakeLand: " + airGroup.Name(), coverAircraftActorsCheckedOut[airGroup as AiActor].Name());
+            //Console.WriteLine("EscortMakeLand: " + airGroup.Name(), coverAircraftActorsCheckedOut[airGroup as AiActor].Name());
         }
         catch (Exception ex) { }
 
@@ -3109,20 +3109,20 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
                 }
 
-                Console.WriteLine("Choosing target for dive bomber, maxMove {0:F0}, preferredMove {1:F0}", maxMove_m, preferredMove_m);
+                //Console.WriteLine("Choosing target for dive bomber, maxMove {0:F0}, preferredMove {1:F0}", maxMove_m, preferredMove_m);
                 if (airgroupTargetPoints.ContainsKey(airGroup))
                 {
                     var oldApos = airgroupTargetPoints[airGroup];
                     if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m)
                     {
                         diveTarget = true;
-                        Console.WriteLine("reusing old ground target");
+                        //Console.WriteLine("reusing old ground target");
                         if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) newTarget = airgroupTargets[airGroup];
                         else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive) newGroundTarget = airgroupGroundTargets[airGroup];
                         else
                         {
                             diveTarget = false;
-                            Console.WriteLine("old ground target bad, not using it after all");
+                            //Console.WriteLine("old ground target bad, not using it after all");
                         }
 
 
@@ -3135,7 +3135,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     {
                         try
                         {
-                        Console.WriteLine("MBT: Trying to find a ground actor");
+                        //Console.WriteLine("MBT: Trying to find a ground actor");
                         if (allStaticActors != null)
                             {
                                 List<AiActor> closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(allStaticActors, pos, maxMove_m).ToList()); //1000?
@@ -3148,7 +3148,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                                         string groundType = "";
                                         if (act as AiGroundActor != null) groundType = (act as AiGroundActor).Type().ToString();
                                         newTarget = act;
-                                        Console.WriteLine("MBT: FOUND a ground actor" + newTarget.Name() + " " + groundType);
+                                        //Console.WriteLine("MBT: FOUND a ground actor" + newTarget.Name() + " " + groundType);
                                         diveTarget = true;
                                         break;
                                     }
@@ -3171,7 +3171,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                         {
 
 
-                        Console.WriteLine("MBT: Trying to find a ground stationary");
+                        //Console.WriteLine("MBT: Trying to find a ground stationary");
                         GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step);
                             //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
                             //Console.WriteLine("MBT: Looking for nearby stationary at {0}m", changeL_XY_m * d);
@@ -4188,7 +4188,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 foreach (AiWayPoint wp in CurrentWaypoints)
                 {
 
-                    Console.WriteLine("FixWayPointsCover - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+                    //Console.WriteLine("FixWayPointsCover - Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
                 }
                 
@@ -4414,7 +4414,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     airGroup.SetWay(NewWaypoints.ToArray());
 
                 //for testing
-
+                /*
                 try
                 {
                     foreach (AiWayPoint wp in NewWaypoints)
@@ -4424,6 +4424,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     }
                 }
                 catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWayPoints print: " + ex.ToString()); }
+                */
 
 
             }
@@ -5370,10 +5371,12 @@ public static class CoverCalcs
                     result.Add(subActor);
                 }
                 GroundStationary subStat = msn.GamePlay.gpActorByName(subName) as GroundStationary;
+                /*
                 if (subStat != null)
                 {
                     Console.WriteLine("GroundStationary {0} ", subStat.Name);
                 }
+                */
             }
         }
 

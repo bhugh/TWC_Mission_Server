@@ -7683,7 +7683,8 @@ struct
 
         //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType == ("BlenheimMkIV") || acType == ("BlenheimMkIV_Late") )
         //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs.
-        if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
+        //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
+        if (Calcs.isHeavyBomber(acType) || Calcs.isDiveBomber(acType))
         {
             playerBomberFighter = " (bomber)";
 

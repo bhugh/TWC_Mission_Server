@@ -2377,7 +2377,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
         if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
 
-        //Console.Write(f.ToString());
+        Console.Write(f.ToString());
         //load it in
         GamePlay.gpPostMissionLoad(f);
 
@@ -2389,8 +2389,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         string rnd = (ran.Next(100, 999)).ToString();
 
 
-        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt", new object[] { }); //testing
-        //f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
+        GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt", new object[] { }); //testing
+        f.save(stb_FullPath + "aircraftCover-ISectionFile" + rnd + ".txt"); //testing
 
         //
 
@@ -2776,7 +2776,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
             if (weapons.Length == 0)
             {
-                weapons = "1 1 1 1 1 1 2"; //default
+                weapons = "1 1 1 1 1 2"; //default
                                            //weapons = "1 1 1 1 1 1 4"; //default  1... 4 is the 32x50KG bombs which would be a great configuration except they drop so so so so s-l-o-w-ly from the 111P and 111H.  Like one every 200 meters.  So it never drops all 50 bombs etc.   So the 1.. x configuration is 8X250kg bombs, which it still drops slowly just the same but at least it brackets the target with those bombs and drops all of them.
                 if (fighterbomber == "f") weapons = "1 1 1 1 1 0";
             }

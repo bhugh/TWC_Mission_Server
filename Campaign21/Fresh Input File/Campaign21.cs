@@ -17,14 +17,15 @@
 #define DEBUG  
 #define TRACE  
 ////$reference parts/core/GCVBackEnd.dll
-////$reference parts/core/CLOD_Extensions.dll
-///$reference parts/core/TWCStats.dll
+//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/TWCStats.dll
 //$reference parts/core/CloDMissionCommunicator.dll
+//$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
 //$reference System.Core.dll 
-///$reference Microsoft.csharp.dll
+////$reference Microsoft.csharp.dll
 //$reference WPF/PresentationFramework.dll
 //$reference WPF/PresentationCore.dll
 //$reference WPF/WindowsBase.dll
@@ -78,7 +79,7 @@ using System.Xml.Serialization;
 //using System.Web.Script.Serialization;
 //using System.Text.Json;
 //using System.Text.Json.Serialization;
-//using TF_Extensions;
+using TF_Extensions;
 //using GCVBackEnd;
 using System.Timers;                 /// <= Needed for Rearm/Refuel
 /*****************************************************************************
@@ -467,7 +468,14 @@ public class Mission : AMission, IMainMission
             //GameWorld.DifficultySetting.No_Outside_Views = false;
             //outPath = "C:\\GoogleDrive\\GCVData";
 
-
+            radarpasswords = new Dictionary<int, string>
+            {
+                { -1, "$$$"}, //Red army #1
+                { -2, "$$$"}, //Blue, army #2
+                { -3, "$$$"}, //admin
+                { -4, "$$$"}, //admingrouped
+                              //note that passwords are CASEINSENSITIVE
+             };
 
             random = new Random();
             stb_random = random;
@@ -483,8 +491,16 @@ public class Mission : AMission, IMainMission
             }
             if (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower().Contains("twc_server3"))
             {
-                SERVER_ID_SHORT = "TacticalPractice"; //FOR TESTING, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
-                ON_TESTSERVER = true;
+                SERVER_ID_SHORT = "Mission"; //FOR PRACTICE/TESTING SERVER, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
+                ON_TESTSERVER = false;
+                radarpasswords = new Dictionary<int, string>
+                {
+                    { -1, "twc"}, //Red army #1
+                    { -2, "twc"}, //Blue, army #2
+                    { -3, "twc2twc"}, //admin
+                    { -4, "twc2twc"}, //admingrouped
+                                  //note that passwords are CASEINSENSITIVE
+                 };
             }
 
             DEBUG = false;
@@ -493,10 +509,10 @@ public class Mission : AMission, IMainMission
             //WARP_CHECK = false;
             radarpasswords = new Dictionary<int, string>
         {
-            { -1, "$$$"}, //Red army #1
-            { -2, "$$$"}, //Blue, army #2
-            { -3, "$$$"}, //admin
-            { -4, "$$$"}, //admingrouped
+            { -1, "north"}, //Red army #1
+            { -2, "gate"}, //Blue, army #2
+            { -3, "twc2twc"}, //admin
+            { -4, "twc2twc"}, //admingrouped
             //note that passwords are CASEINSENSITIVE
         };
 
@@ -899,11 +915,13 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             Console.WriteLine("EndMissTick/Time: {0} {1} {2} {3} {4} ", tickSinceStarted, END_MISSION_TICK, GamePlay.gpTimeofDay(), END_MISSION_TIME_HRS, START_MISSION_TICK);
             //WriteResults_Out_File("3");
             Task.Run(() => WriteResults_Out_File("3"));
+            /*
             Timeout(10, () =>
             {
                 twcLogServer(null, "The match ends in a tie!  Objectives still left for both sides!!!", new object[] { });
                 GamePlay.gpHUDLogCenter("The match ends in a tie! Objectives still left for both sides!!!");
             });
+            */
             EndMission(70, "");
             OnTick_End_Mission_Triggered = true; //This can only be triggered once, for various reasons.  So stop it from triggering repeatedly.
         }
@@ -8512,6 +8530,15 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
 
         }
+        else if (msg.StartsWith("<nalt") && admin_privilege_level(player) >= 2)
+        {
+            double zAlt_m = (player.Place() as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
+            double alt = Calcs.AltitudeAGL_m(player.Place().Pos());
+            double elev = twcLandscape.HQ(player.Place().Pos().x, player.Place().Pos().y);
+            twcLogServer(new Player[] { player }, "Altitude: " + zAlt_m.ToString() + " " + alt.ToString() + " " + elev.ToString(), new object[] { });
+
+        }
+
         else if (msg.StartsWith("<nump") && admin_privilege_level(player) >= 2)
         {
             int nump = Calcs.gpNumberOfPlayers(GamePlay);
@@ -9874,7 +9901,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         [DataMember] public bool Scouted { get; set; } //whether or not it has been scouted or reconnoitered by the enemy; if so they can get access to exact coordinates etc
         //public Dictionary<Player,int> PlayersWhoScouted { get; set; } //list of any players who have scouted this objective //Player is not serializable, alas.
         [DataMember] public Dictionary<string, int> PlayersWhoScoutedNames { get; set; } //list of any players who have scouted this objective
-        [DataMember] public Point3d lastScoutedPos { get; set; } //where this objective was, at the time it was last scouted
+        [DataMember] public Point3d lastScoutedPos { get; set; } //where this objective was, at the time it was last scouted.  Note that x,y (meters) and ELEVATION ASL z (meters OR feet above SEA LEVEL) are inherited from Pos.
         [DataMember] public String lastScoutedSector { get; set; } //where this objective was, at the time it was last scouted
         [DataMember] public int numTimesScouted { get; set; } //how many times this objective has been scouted (since map turned/scouted objectives cleared)
         [DataMember] public DateTime? lastTimeScouted_dt { get; set; } //last Date/time this objective was scouted, in historical date/time terms (ie a 1940s ydt:hms)
@@ -9882,7 +9909,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         [DataMember] public bool hasGeneralStaff { get; set; } //one of the objectives for each side will have one of the top generals/staff/staff car nearby ONE of their primary objectives
 
-        [DataMember] public Point3d Pos { get; set; }
+        [DataMember] public Point3d Pos { get; set; } //x,y is the map position of the objectives in meters,meters - corresponds to coordinates used by CloD for location.  Pos.z is the elevation/altitude ASL (above sea level) of the objective above sea level.  If attacking army is Blue/2 this is in meters, if attacking army is Red/1 it is in FEET.
         [DataMember] public double radius { get; set; } //extent of the object, ie, for airfields, how far center to the perimeter.  This is more FYI as info about the object, although it can be used to determine whether hits to a certain object are effective, or how effective (as we do with airfields)
 
         [DataMember] public string Sector { get; set; }
@@ -9942,7 +9969,8 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         {
 
             msn = m;
-            Pos = new Point3d(x, y, 0);
+            Pos = new Point3d(x, y, 0); //See below for z value added - elevation ASL in feet OR meters
+                    
             MOObjectiveType = MObjType;
             MOProducerOrStorageType = MOProdStorType;
             MOTriggerType = MOTrigType;
@@ -9973,6 +10001,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             OwnerArmy = ownerarmy;
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+
+            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
@@ -10074,6 +10107,10 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             AttackingArmy = 3 - OwnerArmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
+            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
             HUDMessage = null;//hud/log messages are handled by the handle airport bombing routine
             LOGMessage = null;
 
@@ -10145,6 +10182,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             OwnerArmy = ownerarmy;
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+
+            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
@@ -10232,6 +10274,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             OwnerArmy = ownerarmy;
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+
+            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
@@ -10337,6 +10384,11 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             OwnerArmy = ownerarmy;
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+
+            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
@@ -11004,7 +11056,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Weapons Training", "Havr", 2, 4, "LehavNaval3", "TGroundDestroyed", 75, 163313, 50063, 50, false, 100, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Underwater Repair Training", "Havr", 2, 4, "LehavNaval4", "TGroundDestroyed", 81, 163039, 49798, 50, false, 100, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Intelligence", "Havr", 2, 4, "LehavNaval5", "TGroundDestroyed", 71, 163172, 49816, 50, false, 100, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Meteorlogy", "Havr", 2, 4, "LehavNaval6", "TGroundDestroyed", 89, 163470, 49752, 50, false, 100, 24, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Meteorology", "Havr", 2, 4, "LehavNaval6", "TGroundDestroyed", 89, 163470, 49752, 50, false, 100, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Le Havre Naval Cryptologic HQ", "Havr", 2, 4, "LehavNaval7", "TGroundDestroyed", 75, 162993, 49927, 50, false, 100, 24, "", add);
             addTrigger(MO_ObjectiveType.Fuel, "Le Havre Naval Diesel Storage", "Havr", 2, 4, "LehavNavalDiesel", "TGroundDestroyed", 46, 162559, 50082, 100, false, 100, 24, "", add);
             addTrigger(MO_ObjectiveType.Fuel, "Le Havre Naval Gear Oil Storage", "Havr", 2, 4, "LehavNavalGearOil", "TGroundDestroyed", 41, 162668, 50240, 100, false, 100, 24, "", add);
@@ -11093,7 +11145,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
             addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Mobile Army Camp", "", 2, 9, "RLiane-SommeMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 270215, 136714, 294585, 197640, 2, 7, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 9, "BHastingsMobileArmyCamp", 179965, 204219, 200, 150, 7000, 15, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.ArmyEncampment, 15, 154251, 205709, 210342, 242209, 2, 7, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Secret Airbase", "", 1, 10, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 60, 154251, 205709, 210342, 242209, 10, 35, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Secret Air Base", "", 1, 10, "BHastingsSecretAirbase", 189965, 204219, 700, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseGB, 60, 154251, 205709, 210342, 242209, 10, 35, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Mobile Secret Air Base", "", 2, 10, "RLiane-SommeSecretAirbase", 280276, 169671, 800, 600, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAirbaseDE, 60, 270215, 136714, 294585, 197640, 10, 35, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Intelligence Air Research", "", 1, 10, "BHastingsAirResearch", 189965, 214219, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 154251, 205709, 210342, 242209, 10, 45, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Liane-Somme Mobile Intelligence Air Research", "", 2, 10, "", 280276, 179671, 550, 450, 10000, 10, 150, 36, true, true, 1, 10, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 270215, 136714, 294585, 197640, 10, 45, MO_ProducerOrStorageType.None, "", add);
@@ -11932,7 +11984,7 @@ added Rouen Flak
         {
             string msg = "You tried to take a recon photo of the " + af + " commanders who were reported in this area.  But there was no trace of them in your photo!";
             twcLogServer(new Player[] { player }, msg, new object[] { });
-            msg = "You must be below 100m AGL and within 200m of the target to take the required photo." + (Calcs.CalculatePointDistance(pos, mo.Pos)).ToString() + " " + Z_AltitudeAGL_m.ToString();
+            msg = "You must be below 100m AGL and within 100m of the target to take the required photo." + (Calcs.CalculatePointDistance(pos, mo.Pos)).ToString() + " " + Z_AltitudeAGL_m.ToString();
             twcLogServer(new Player[] { player }, msg, new object[] { });
             return true;
         }
@@ -12660,7 +12712,11 @@ added Rouen Flak
 
         double masterHeading = random.Next(360);
 
+        newPos.z = twcLandscape.HQ(newPos.x, newPos.y); //saving altitude/elevation of the objective.
+        if (mo.AttackingArmy == 1) newPos.z = Calcs.meters2feet(newPos.z); //(in feet for Red army)
         mo.Pos = newPos;
+        
+
         mo.Sector = Calcs.correctedSectorNameDoubleKeypad(this, newPos);
         mo.bigSector = Calcs.makeBigSector(this, newPos);
 
@@ -13411,7 +13467,7 @@ added Rouen Flak
                 // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
                 string msg6 = mo.lastScoutedSector + " " + mo.Name;
                 if (!Calcs.Point3dEqual(mo.lastScoutedPos, new Point3d(-1, -1, -1))) //set to (-1,-1,-1) means the objective was previously scouted by not is disabled/removed
-                    msg6 += " (" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ")";
+                    msg6 += " (" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ", " + mo.lastScoutedPos.z.ToString("F0") + ")";
                 if (!mo.IsEnabled) msg6 += "!!No longer there!!";
                 //if (mo.Destroyed) msg6 += " (destroyed)";
                 //else if (mo.IsPrimaryTarget) msg6 += " (primary objective)";
@@ -13441,8 +13497,9 @@ added Rouen Flak
                 {
 
                     var gsl = GeneralStaffLocations[(ArmiesE)army];
-                    string af = "Luftwaffe";
-                    if (army == 2) af = "RAF";
+                    string af = "general";
+                    if (mo.OwnerArmy == 1) af = "RAF";
+                    else if (mo.OwnerArmy == 2) af = "Luftwaffe";
                     int timeLeft_min = calcTimeLeft_min();
                     string msg7 = ">>>Recon has identified a possible group of high-ranking " + af + " officers in sector " + gsl.sector + " near " + mo.Name;
                     if (timeLeft_min < END_MISSION_TICK / 2000 / 2 || mo.numTimesScouted > 1) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorKeypad + " near " + mo.Name;
@@ -14051,7 +14108,7 @@ added Rouen Flak
                         ls = " " + excl + (Math.Round(diff.TotalHours * 2.0) / 2.0).ToString("F0") + "hr" + excl;
                     }
 
-                    msg1 = mo.lastScoutedSector + " " + mo.Name + " (" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") +")" + ls + dl + pc;                    
+                    msg1 = mo.lastScoutedSector + " " + mo.Name + " (" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ", " + mo.lastScoutedPos.z.ToString("F0") + ")" + ls + dl + pc;                    
                 }
                 retmsg += msg1 + newline;
                 totDelay += delay;
@@ -14388,7 +14445,9 @@ added Rouen Flak
 
             if (mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)
             {
-                mo.Pos = mo_old.Pos; //Only transfer pos across IF the item is a mobile objective.  For all other objectives, that allows us to change the location by just updating the objectives list in this .cs files
+                double z = twcLandscape.HQ(mo.Pos.x, mo.Pos.y); //saving altitude/elevation of the objective.
+                if (mo.AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+                mo.Pos = new Point3d(mo_old.Pos.x, mo_old.Pos.y, z) ; //Only transfer pos across IF the item is a mobile objective.  For all other objectives, that allows us to change the location by just updating the objectives list in this .cs files
                 mo.Sector = mo_old.Sector;
                 mo.bigSector = mo_old.bigSector;
             }
@@ -17690,6 +17749,42 @@ public static class Calcs
 
         return (int)distanceMiles;
     }
+    
+    public static double AltitudeAGL_m (AiActor actor) 
+    {
+        return AltitudeAGL_m(actor.Pos());
+
+    }
+
+    public static double AltitudeAGL_m(Point3d p)
+    {
+        //double height_m = maddox.core.WMesh.HeightMapMeshGetHeight(p.x, p.y);
+
+
+        //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
+        //TF_Extensions.TF_GamePlay.gpCreateEffect(gameplay, smoke, p.x, p.y, p.z, 1200);
+        //double height_m = TF_Extensions.TF_GamePlay.gpLandHeightASL(gameplay, p.x, p.y);
+        //double height_m = maddox.core.WMesh.HeightMapMeshGetHeight(p.x, p.y);
+        //double height_m = maddox.core.WLandscape.cHQ_forestHeightHere((float)p.x, (float)p.y);
+        double T = maddox.core.WLandscape.getWorldMapT(p.x, p.y);
+        Console.WriteLine("T = " + T.ToString());
+        double H = twcLandscape.H(p.x, p.y);
+        Console.WriteLine("H = " + H.ToString());
+        //        double height_m = XLAND.W_TLandscape.HQ(p.x, p.y);
+        double height_m = LandElevation_m(p);
+        
+        //double height_m = 0;
+        return (p.z - height_m);       
+    }
+    public static double LandElevation_m(Point3d p)
+    {
+
+        double height_m = twcLandscape.HQ(p.x, p.y);
+        if (height_m < 0) height_m = 0;  //Landscape returns negative height values when over water.
+
+        return height_m;
+    }
+
 
     public static Point3d Il2Point3dToLongLat(Point3d pos)
     {
@@ -17873,7 +17968,7 @@ public static class Calcs
         return sector;
 
     }
-
+    
     public static string doubleKeypad(Point3d p)
     {
         int keyp = keypad(p, 10000);
@@ -19423,4 +19518,49 @@ namespace cevent
     }
 }
 */
- 
+
+class twcLandscape : maddox.core.WLandscape
+{
+    public static double HQ(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cHQ((float)x, (float)y);
+        Console.WriteLine("Height HQ" + height.ToString());
+        return height;
+    }
+    public static double H(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cH((float)x, (float)y);
+        Console.WriteLine("Height H" + height.ToString());
+        return height;
+    }
+    public static double Hmax(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cHmax((float)x, (float)y);
+        Console.WriteLine("cHmax" + height.ToString());
+        return height;
+    }
+    public static double Hmin(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cHmin((float)x, (float)y);
+        Console.WriteLine("cHmin" + height.ToString());
+        return height;
+    }
+    public static double HQ_air(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cHQ_Air((float)x, (float)y);
+        Console.WriteLine("Height HQ_air" + height.ToString());
+        return height;
+    }
+    public static double HQ_forestHeightHere(double x, double y)
+    {
+        //wcLandscape twcL = new twcLandscape();
+        double height = twcLandscape.cHQ_forestHeightHere((float)x, (float)y);
+        Console.WriteLine("Height HQ_forestHeightHere" + height.ToString());
+        return height;
+    }
+}

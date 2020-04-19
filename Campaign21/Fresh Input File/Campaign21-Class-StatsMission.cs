@@ -110,7 +110,7 @@
 //The two $references below + the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 
 //$reference parts/core/CloDMissionCommunicator.dll
-////$reference parts/core/CLOD_Extensions.dll
+//$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -6987,8 +6987,8 @@ struct
         #region stb
         base.OnPlaceLeave(player, actor, placeIndex);
 
-        if (player!=null) Console.WriteLine("OnPlaceLeave: player" + player.Name());
-        if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor" + StatCalcs.GetAircraftType(actor as AiAircraft));
+        if (player!=null) Console.WriteLine("OnPlaceLeave: player " + player.Name());
+        if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor " + StatCalcs.GetAircraftType(actor as AiAircraft));
         if (actor == null ) Console.WriteLine("OnPlaceLeave: actor is null!");
         if (actor as AiAircraft == null) Console.WriteLine("OnPlaceLeave: actor as AiAircraft is null!");
 
@@ -7009,13 +7009,14 @@ struct
 
             if (player != null && player.Name() != null && stb_ContinueMissionRecorder.StbCmr_IsForcedPlaceMove(player.Name()))
             {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Being kicked out/forced out of plane, -supply.cs handles the details of returning the a/c to supply
+                Console.WriteLine("OnPlaceLeave: Forced place move; returning aircraft to supply " + player.Name());
+                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Being kicked out/forced out of plane, -supply.cs handles the details of returning the a/c to supply                
                 return; //In case of forced plane move such as a/c unavailable or not allowed to fly bec. recent death etc, then just don't process anything here.  And . . . trying it again, might help in some cases.
             }
             StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 788 }, actor);
             stb_StatRecorder.StbSr_EnqueueTask(sst1);
 
-            //Console.WriteLine("PLACE LEAVE: " + player.Name());
+            Console.WriteLine("PLACE LEAVE 2: " + player.Name());
             //Stb_Chat("Place Leave", player);
             //set up the possibility to continue a mission over numerous flights
             stb_ContinueMissionRecorder.StbCmr_SavePositionLeave(player, actor);
@@ -7047,24 +7048,26 @@ struct
             if (isLastPlayer) Console.WriteLine("IS last player");
             else Console.WriteLine("Is NOT last player");
             //Console.WriteLine("PPI,PPS: " + player.PlacePrimary().ToString() + " " + player.PlaceSecondary().ToString()); //When both 'persons' are out this looks like -1,-1.  The 2nd to last one out looks like 0,-1 or -1, 0 maybe. If switching out of a spot mid-flight to allow AI to take over one position it looks like -1, 1 or -1,2 0,1 0,2 or other things.  But both gone is always -1,-1
+            Console.WriteLine("PLACE LEAVE 3: " + player.Name());
 
             //We need to wait more than 0.1 seconds to do this, because the "determination about whether it is a real place leave by StbCmr takes 0.1 seconds to compute"
             //Timeout(0.2, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!
             Timeout(0.36, () => //This Timeout must be LONGER!!! than the one in StbCmr_SavePositionLeave or we won't get reliable results!!!!!  We moved that one to 0.35 seconds to try to account for long ping times
             {
-                    //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
-                    //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
-                    //has judged to be nonfatal.  The game kicks them out of their place at that point, to watch the fiery explosion.
-                    //If they HAVE already died then we just skip this bit.
+                //If the player is NOT already dead @ this point, we're assuming they have exiting the game, exited the a/c, or whatever, and treat it exactly as though they had hit the parachute at this moment.
+                //The other possibility however is a ground collision at somewhat slow speed, which our onDead routine
+                //has judged to be nonfatal.  The game kicks them out of their place at that point, to watch the fiery explosion.
+                //If they HAVE already died then we just skip this bit.
 
-                    //Stb_Chat("Checking place leave . . . ", player);
+                //Stb_Chat("Checking place leave . . . ", player);
 
-                    //there are a number of reasons the pilot may have left the place.  We try to sort them all out here. 
+                //there are a number of reasons the pilot may have left the place.  We try to sort them all out here. 
 
-                    //1. if a/c crashes (ie fireball) CloD pops the pilot out for external view
-                    //2. In this case, the pilot MIGHT be dead but (thanks for our merciful calculations above), also maybe not
-                    //3. realPosLeave is false when it is just a move within (say) a bomber to a different position
-                    int oldDeathTime = 0;
+                //1. if a/c crashes (ie fireball) CloD pops the pilot out for external view
+                //2. In this case, the pilot MIGHT be dead but (thanks for our merciful calculations above), also maybe not
+                //3. realPosLeave is false when it is just a move within (say) a bomber to a different position
+                Console.WriteLine("PLACE LEAVE 4: " + player.Name());
+                int oldDeathTime = 0;
                 int currTime = StatCalcs.TimeSince2016_sec();
                 if (!stb_PlayerDeathAndTime.TryGetValue(player.Name(), out oldDeathTime)) oldDeathTime = 0;
 
@@ -7131,8 +7134,8 @@ struct
                 if (realPosLeave && !isPlayerAlreadyDead && (actor as AiAircraft) != null && currTime - oldDeathTime > 5) // && player.PlacePrimary() != -1)  // PlacePrimary==-1 means parachuting.  If they are doing that we just let them go
                 {
 
-                        //Stb_Chat("Checking place leave 1 . . . ", player);
-                        if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
+                    //Stb_Chat("Checking place leave 1 . . . ", player);
+                    if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
                     else Console.WriteLine("OnPlaceLeave: place is NULL");
                     if (player.PlacePrimary() != null) Console.WriteLine("OnPlaceLeave: placeprimary " + player.PlacePrimary().ToString());
                     else Console.WriteLine("OnPlaceLeave: placeprimary is NULL");
@@ -7141,101 +7144,124 @@ struct
 
                     Console.WriteLine("POSLeave: " + realPosLeave.ToString() + " " + isPlayerAlreadyDead.ToString() + " " + currTime.ToString() + " " + oldDeathTime.ToString());                    //if (actor as AiPerson != null) Console.WriteLine("PLACELEAVE: Actor is AiPerson");
 
-                        //OK, this is the place we need to deal with: player left a/c mid-flight, player lost internet connection, player landed @ some random spot then left the plane, player used the 'flag screen" to leave the plane mid-flight, etc etc etc
-                        //This a bit awkward because we are doing this in StbCmr instead of in mission itself . . . 
+                    //OK, this is the place we need to deal with: player left a/c mid-flight, player lost internet connection, player landed @ some random spot then left the plane, player used the 'flag screen" to leave the plane mid-flight, etc etc etc
+                    //This a bit awkward because we are doing this in StbCmr instead of in mission itself . . . 
 
-                        //double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
-                        //if (Z_VelocityTAS == 0) OnAircraftStopped(a);
+                    //double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+                    //if (Z_VelocityTAS == 0) OnAircraftStopped(a);
 
-                        double Z_AltitudeAGL = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    //double Z_AltitudeAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    //double Z_AltitudeAGL_m2 = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, -1);
+                    //double Z_AltitudeAGL_m3 = Calcs.AltitudeAGL_m(actor);
 
-                    if (Z_AltitudeAGL <= 5)
+                    double Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
+                    double Z_AltitudeAGL_m2 = Z_AltitudeAGL_m;
+                    //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                    try
+                    {
+                        Z_AltitudeAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                        Z_AltitudeAGL_m2 = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, -1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("stb_CalcExtentOfInjuriesOnActorDead ERROR getParameter failed, using map AGL");
+                        Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
+                        Z_AltitudeAGL_m2 = Z_AltitudeAGL_m;
+                    }
+
+                    double Z_AltitudeAGL_m3 = Calcs.AltitudeAGL_m(actor);
+
+                    if (Z_AltitudeAGL_m3 > Z_AltitudeAGL_m) Z_AltitudeAGL_m = Z_AltitudeAGL_m3; //In some situations the get parameter thing might not work, maybe aircraft damageed or whatever.  IN that case we use the alternate method.
+
+                    Console.WriteLine("Player left plane at altitude " + Z_AltitudeAGL_m.ToString("F0") + " " + Z_AltitudeAGL_m2.ToString("F0") + " " + Z_AltitudeAGL_m3.ToString("F0") + " meters");
+
+                    if (Z_AltitudeAGL_m <= 5)
                     {
 
 
-                            //Stb_Chat("Checking place leave 2 . . . ", player);
+                        //Stb_Chat("Checking place leave 2 . . . ", player);
 
-                            //this WAS here:  double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed). 
+                        //this WAS here:  double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, true);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed). 
 
-                            //we force the player back into place momentarily
-                            //this is necessary in order fo the killActor() routine to work properly
-                            //stb_playersForcedOut.Add(player.Name());
-                            //player.PlaceEnter(actor as AiAircraft, placeIndex);
+                        //we force the player back into place momentarily
+                        //this is necessary in order fo the killActor() routine to work properly
+                        //stb_playersForcedOut.Add(player.Name());
+                        //player.PlaceEnter(actor as AiAircraft, placeIndex);
 
-                            /*
-                            if (injuries >= 0.5 || Stb_distanceToNearestAirport(AiActor actor) > 2000 )
-                            {
-                                Stb_Message(new Player[] { player }, "Your aircraft was written off due to damage.", new object[] { });
-                                stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, player as AiActor));
+                        /*
+                        if (injuries >= 0.5 || Stb_distanceToNearestAirport(AiActor actor) > 2000 )
+                        {
+                            Stb_Message(new Player[] { player }, "Your aircraft was written off due to damage.", new object[] { });
+                            stb_StatRecorder.StbSr_EnqueueTask(new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 845 }, player as AiActor));
 
-                            }
-                            */
+                        }
+                        */
 
                         if (injuries < 1)
                         {
-                                //if (injuriesmission.Stb_killActor(actor, 0);  //as long as injuries<1 they shouldn't actually die, but it will be treated as though they had a ground collision OR landing at this moment.
-                                //Stb_Chat("Player left plane: Injuries <1", player);
+                            //if (injuriesmission.Stb_killActor(actor, 0);  //as long as injuries<1 they shouldn't actually die, but it will be treated as though they had a ground collision OR landing at this moment.
+                            //Stb_Chat("Player left plane: Injuries <1", player);
 
-                                //Stb_Chat("Checking place leave 3 . . . ", player);
+                            //Stb_Chat("Checking place leave 3 . . . ", player);
 
-                                if (injuries > 0.1)
+                            if (injuries > 0.1)
                             {
                                 string line = player.Name() + " crashed with injuries.";
-                                    //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
-                                    Stb_Chat(line, player);
+                                //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
+                                Stb_Chat(line, player);
 
-                                    //OnAircraftCrashLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, 
-                                    OnAircraftCrashLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, 
+                                //OnAircraftCrashLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, 
+                                OnAircraftCrashLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, 
                                                                                                      //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
 
-                                    //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
-                                    //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                                }
+                                //Here we could do *injuries* or **partial damage** to aircraft being returned, but for now we are just considering them landing whole in one piece OK.
+                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                            }
                             else
                             {
 
-                                    //Stb_Chat("Player left plane: Injuries <=0.1; treating as a normal landing", player);
-                                    //OnAircraftLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, etc.
-                                    string line3 = player.Name() + " landed and left the aircraft.";
-                                    //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
-                                    Stb_Chat(line3, player);
+                                //Stb_Chat("Player left plane: Injuries <=0.1; treating as a normal landing", player);
+                                //OnAircraftLanded((actor as AiCart).Person(placeIndex), player); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy, etc.
+                                string line3 = player.Name() + " landed and left the aircraft.";
+                                //Stb_Message(new Player[] { player }, player.Name() + " left an aircraft in motion. This is treated the same as a ground crash at the same speed.", new object[] { });
+                                Stb_Chat(line3, player);
                                 OnAircraftLanded(actor, player, actor as AiAircraft, injuries); //treat as landing.  they will live/die/captured etc depending on whether water, land, friendly, enemy,
 
-                                    //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
-                                    //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-                                }
+                                //The player has really left the aircraft and the aircraft has no further  players in it.  Therefore, do the work of returning to supply
+                                //if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                            }
                         }
                         else
                         { //injuries = 1 
 
-                                //Stb_Chat("Checking place leave 4 . . . ", player);
-                                Stb_Chat("Player left plane: Injuries = 1; player death", player);
+                            //Stb_Chat("Checking place leave 4 . . . ", player);
+                            Stb_Chat("Player left plane at altitude " + Z_AltitudeAGL_m.ToString("F0") + " " + Z_AltitudeAGL_m2.ToString("F0") + " meters: Injuries 100%; player death", player);
                             stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 1, actor, player, false);
 
-                                //Here we are forcing aircraft loss in case of severe injuries.
-                                //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                            //Here we are forcing aircraft loss in case of severe injuries.
+                            //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
+                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                         }
                     }
 
                     else //If they actually did leave the plane just while it was in mid-air.  And they haven't recently died etc etc etc.  So this is just a person voluntarily leaving (or perhaps they lost internet connection, whatever). We treat it as though they have jumped from the plane at this moment in their parachute.  If they land in enemy territory, on water, etc then consequences will be appropriate for that action.  CloD seems to do parachute fail about 20-50% of the time, so our routines are set up to handle that, so we'll duplicate that functionality here.
                     {
-                            /* AiPerson ourPerson = (actor as AiCart).Person(placeIndex);
+                        /* AiPerson ourPerson = (actor as AiCart).Person(placeIndex);
 
-                            //Player.Place() = (actor as AiAircraft).Place(placeIndex);
+                        //Player.Place() = (actor as AiAircraft).Place(placeIndex);
 
 
-                            Stb_Message(new Player[] { player }, "You left your aircraft in the air. This is treated as though you suddenly parachuted from your aircraft.", new object[] { });
-                            Console.WriteLine("Player left plane: Injuries =1 and parachuting");
-                            //if (stb_random.NextDouble() < .8) OnPersonParachuteLanded((actor as AiCart).Person(placeIndex));
-                            //else OnPersonParachuteFailed((actor as AiCart).Person(placeIndex));
-                            if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(player as AiPerson);
-                            else OnPersonParachuteFailed(player as AiPerson);
+                        Stb_Message(new Player[] { player }, "You left your aircraft in the air. This is treated as though you suddenly parachuted from your aircraft.", new object[] { });
+                        Console.WriteLine("Player left plane: Injuries =1 and parachuting");
+                        //if (stb_random.NextDouble() < .8) OnPersonParachuteLanded((actor as AiCart).Person(placeIndex));
+                        //else OnPersonParachuteFailed((actor as AiCart).Person(placeIndex));
+                        if (stb_random.NextDouble() < .8) OnPersonParachuteLanded(player as AiPerson);
+                        else OnPersonParachuteFailed(player as AiPerson);
 
-                            */
+                        */
 
-                            //Stb_Chat("Checking place leave 5 . . . ", player);
-                            string line2 = player.Name() + " has parachuted from the aircraft.";
+                        //Stb_Chat("Checking place leave 5 . . . ", player);
+                        string line2 = player.Name() + " has parachuted from the aircraft.";
                         Stb_Chat(line2, player);
                         OnPersonParachuteLanded(actor, player);
                         Console.WriteLine("Forcing exit 3");
@@ -7243,12 +7269,12 @@ struct
 
                     }
 
-                        //Stb_Chat("Checking place leave 6 . . . ", player);
-                        //now we remove the player from the place again
-                        //player.PlaceLeave(placeIndex);
-                        //stb_playersForcedOut.Remove(player.Name());
+                    //Stb_Chat("Checking place leave 6 . . . ", player);
+                    //now we remove the player from the place again
+                    //player.PlaceLeave(placeIndex);
+                    //stb_playersForcedOut.Remove(player.Name());
 
-                    }
+                }
 
             });
 
@@ -7801,8 +7827,21 @@ struct
                                                                      //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
 
 
+                double Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
                 //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                double Z_AltitudeAGL = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                try
+                {
+                    Z_AltitudeAGL_m = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                } catch (Exception ex)
+                {
+                    Console.WriteLine("stb_CalcExtentOfInjuriesOnActorDead ERROR getParameter failed, using map AGL");
+                    Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
+                }
+
+                double Z_AltitudeAGL_m3 = Calcs.AltitudeAGL_m(actor);
+
+                if (Z_AltitudeAGL_m3 > Z_AltitudeAGL_m) Z_AltitudeAGL_m = Z_AltitudeAGL_m3; //In some situations the get parameter thing might not work, maybe aircraft damageed or whatever.  IN that case we use the alternate method.
+
                 //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
                 //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
                 //double S_GunReserve = 0; aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
@@ -7865,23 +7904,23 @@ struct
                 vertSpeed_mph = Math.Abs(vertSpeed_mph);
                 double operativeVel_MPH = usedAP.vel_mph + 2 * vertSpeed_mph;
 
-                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 0: {0} {1:F1} {2:F1} {3:F1} {4:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH, usedAP.vel_mph, vertSpeed_mph);
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 0: {0} {1:F1} {2:F1} {3:F1} {4:F1} ", injuries.ToString("N1"), Z_AltitudeAGL_m, operativeVel_MPH, usedAP.vel_mph, vertSpeed_mph);
 
                 //If they are quite low & slow we'll start out by assumming they're OK.
-                if (Z_AltitudeAGL < 7 && operativeVel_MPH < 20) injuries = 0;
+                if (Z_AltitudeAGL_m < 7 && operativeVel_MPH < 20) injuries = 0;
 
-                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 1: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH);
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 1: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL_m, operativeVel_MPH);
 
-                if (Z_AltitudeAGL < 5 && operativeVel_MPH < 10) injuries = 0.1;
-                else if (Z_AltitudeAGL < 5 && operativeVel_MPH < 30) injuries = 0.2;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 50) injuries = 0.5;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 70) injuries = 0.6;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 90) injuries = 0.8;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 110) injuries = 0.9;
-                else if (Z_AltitudeAGL < 4 && operativeVel_MPH < 130) injuries = 0.95;
+                if (Z_AltitudeAGL_m < 5 && operativeVel_MPH < 10) injuries = 0.1;
+                else if (Z_AltitudeAGL_m < 5 && operativeVel_MPH < 30) injuries = 0.2;
+                else if (Z_AltitudeAGL_m < 4 && operativeVel_MPH < 50) injuries = 0.5;
+                else if (Z_AltitudeAGL_m < 4 && operativeVel_MPH < 70) injuries = 0.6;
+                else if (Z_AltitudeAGL_m < 4 && operativeVel_MPH < 90) injuries = 0.8;
+                else if (Z_AltitudeAGL_m < 4 && operativeVel_MPH < 110) injuries = 0.9;
+                else if (Z_AltitudeAGL_m < 4 && operativeVel_MPH < 130) injuries = 0.95;
                 else injuries = 1;
 
-                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 2: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL, operativeVel_MPH);
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries, Step 2: {0} {1:F1} {2:F1} ", injuries.ToString("N1"), Z_AltitudeAGL_m, operativeVel_MPH);
 
                 if (vertSpeed_mph > 26) injuries = 1;
                 else if (vertSpeed_mph > 23) injuries += 0.85;
@@ -7904,7 +7943,7 @@ struct
                     );
                 */
 
-                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " altitude AGL " + Z_AltitudeAGL.ToString("0.00") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " altitude AGL " + Z_AltitudeAGL_m.ToString("0.00") + " " + Z_AltitudeAGL_m3.ToString("0.00") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
                         + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " vel_mph " + vel_mph.ToString("N1"));
             }
             catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }

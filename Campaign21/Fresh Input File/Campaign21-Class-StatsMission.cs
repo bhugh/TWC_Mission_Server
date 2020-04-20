@@ -8713,7 +8713,13 @@ struct
                                       //injuriesExtent==1 means dead, 0 means no/no injury (or death already recorded),  between 0&1 means injured but not dead
                                       //Later we can do fancy things depending on extent of injuries, but for now we're just ignoring it unless it's an actual death
 
-                                      double injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, selfKillPers, person as AiActor, person.Player(), true); //1 = NORMAL DEATH, 2=SELF-KILL
+                                      double injuriesExtent = 0;
+
+                                      //So in the case of recent crash, parachute, crash landing, etc etc etc we just ignore any player/person death that comes through a little later.
+                                      //Reason is, mostly these are parachute fail messages.  So we just want to ignore those.
+                                      //Also in general if the player/person survived the crash, crash landing, parachute ejection, etc there would be no reason to just kill them here.
+                                      //On the other hand, in case of a pilot kill or similar we don't want to just ignore ALL person/player killed situations. 
+                                      if (!RPCL) injuriesExtent = stb_RecordStatsForKilledPlayerOnActorDead(playerName, selfKillPers, person as AiActor, person.Player(), true); //1 = NORMAL DEATH, 2=SELF-KILL
 
                                       if (injuriesExtent == 1)  //If this death has already been recorded for this playerName then we skip doing all the same stuff again; if it hasn't been recorded yet then do all this:
                                       {
@@ -9620,7 +9626,7 @@ struct
                 StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { record }, player.Place() as AiActor);
                 stb_StatRecorder.StbSr_EnqueueTask(sst1);
 
-                Console.WriteLine("Parachute failed - aircraft write-off, damage 100% - " + player.Name());
+                Console.WriteLine("Parachuted - Died: " + playerDied.ToString() + " - aircraft write-off, damage 100% - " + player.Name());
                 stb_recordAircraftWrittenOff(player, actor, 1);
 
             }

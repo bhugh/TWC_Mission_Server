@@ -29,7 +29,7 @@
   RotAngle 32
   ShiftX 0
   ShiftY 0
-  BaseHeight 1200
+  BaseHeight 450
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 1
@@ -71,7 +71,7 @@
   RotAngle 67
   ShiftX 0
   ShiftY 0
-  BaseHeight 750
+  BaseHeight 850
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 1

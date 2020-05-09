@@ -17,17 +17,18 @@
   GustAngle 0
 [splines]
 [WeatherFront]
-  LocalWeather_0 OVERCAST_GEN 12000 10000 304475 287222 0 0
-  LocalWeather_1 OVERCAST_GEN 10000 12000 196318.97 127554.63 0 0
-  LocalWeather_2 OVERCAST_GEN 12000 10000 226026.42 182271.32 0 0
-  LocalWeather_3 OVERCAST_GEN 12000 8000 72411.72 136413.05 0 0
+  LocalWeather_0 OVERCAST_GEN 12000 10000 271235 234878 0 0
+  LocalWeather_1 OVERCAST_GEN 10000 12000 255743 165164 0 0
+  LocalWeather_2 OVERCAST_GEN 12000 10000 228882 271110 0 0
+  LocalWeather_3 OVERCAST_GEN 12000 8000 92577 180407 0 0
+  LocalWeather_4 OVERCAST_GEN 12000 6000 148923 46726 0 0
 [LocalWeather_0]
   EllipticA 12000
   EllipticB 10000
-  RotAngle 42
+  RotAngle 193
   ShiftX 0
   ShiftY 0
-  BaseHeight 900
+  BaseHeight 350
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 0
@@ -41,10 +42,10 @@
 [LocalWeather_1]
   EllipticA 10000
   EllipticB 12000
-  RotAngle 8
+  RotAngle 18
   ShiftX 0
   ShiftY 0
-  BaseHeight 100
+  BaseHeight 900
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 0
@@ -58,10 +59,10 @@
 [LocalWeather_2]
   EllipticA 12000
   EllipticB 10000
-  RotAngle -16
+  RotAngle -66
   ShiftX 0
   ShiftY 0
-  BaseHeight 1000
+  BaseHeight 120
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 0
@@ -75,10 +76,10 @@
 [LocalWeather_3]
   EllipticA 12000
   EllipticB 8000
-  RotAngle 59
+  RotAngle 29
   ShiftX 0
   ShiftY 0
-  BaseHeight 300
+  BaseHeight 200
   IsRain 0
   IsDynamicEnabled 0
   ParticipType 0
@@ -89,3 +90,20 @@
   TotalLayers 13 
   CloudsDensity 6
   MidSize 4
+[LocalWeather_4]
+  EllipticA 12000
+  EllipticB 6000
+  RotAngle 59
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1100
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 0
+  DropSize 0
+  RainPower 0
+  FrontThickness 300
+  EvenLayers 3
+  TotalLayers 13 
+  CloudsDensity 6
+  MidSize 4  

@@ -529,12 +529,47 @@ public class CoverMission : AMission, ICoverMission
     //Returns shift_m (amount to shift this group right or left, in meters +/right or -/left), position slot (1 slot for each aircraft earlier on this list than this one, sorted into even=+/right and odd=-/left positions), the position of this airgroup in the list of its type for this player (bombers OR fighters), the position of this airgroup overall for this player (counting Bomber Groups AND fighter groups).
     //This is a simple/easy routine & we want to recalc it each time the cover/bomber a/c position & course is recalculated because it can change over time as aircraft or airgroups are added or crash/shot down, etc
 
+
+    Dictionary<string, float> playerShiftFactor_pct = new Dictionary<string, float>();// Player name & percentage value to expand formation by, so 100, 150, 200, 300 etc for 100%, 200%, 300%
+    float defaultAmtToShiftForEachBomber_m = 42;
+    float defaultAmtToShiftForEachFighter_m = 30;
+    float defaultAmtVerticleShift_m = 20;
+
+    public float setShiftFactor(Player player, string shiftFactor_s)
+    {
+        float shiftFactor = 100;
+        try { shiftFactor = Convert.ToInt32(shiftFactor_s); }
+        catch (Exception ex) { shiftFactor = 100; }
+ 
+        shiftFactor = setShiftFactor(player, shiftFactor);
+        return shiftFactor;
+    }
+
+    public float setShiftFactor(Player player, float shiftFactor)
+    {
+        if (shiftFactor < 20) shiftFactor = 20;
+        if (shiftFactor > 2000) shiftFactor = 2000;
+        if (player != null && player.Name() != null) playerShiftFactor_pct[player.Name()] = shiftFactor;
+        return shiftFactor;
+    }
+
+    public float getShiftFactor(Player player) {
+        float shiftFactor = 100;
+        if (player != null && player.Name() != null && playerShiftFactor_pct.ContainsKey(player.Name())) shiftFactor = playerShiftFactor_pct[player.Name()];
+        if (shiftFactor < 50) shiftFactor = 50;
+        if (shiftFactor > 1000) shiftFactor = 1000;
+
+        return shiftFactor/100;
+    }
+
     public Tuple<double, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
     {
         //Blenheim wingspan is 17m;     JU88 18m; HE111 22.5m; DO217 19 m; Wellington 26 m
         //Beaufighter 17 m; HE110 16.25
-        int amtToShiftForEachBomber_m = 36;
-        int amtToShiftForEachFighter_m = 27;
+        float shiftFactor = getShiftFactor(player);        
+
+        float amtToShiftForEachBomber_m = defaultAmtToShiftForEachBomber_m * shiftFactor;
+        float amtToShiftForEachFighter_m = defaultAmtToShiftForEachFighter_m * shiftFactor;
 
         int totalRight = 1; //1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
         int totalLeft = 1; //1 for the position taken in the center by the player's bomber
@@ -578,15 +613,20 @@ public class CoverMission : AMission, ICoverMission
 
     }
 
-        //so, we shift the escort fighter or bomber aircraft left or right a bit to allow all groups to have some horizontal space.
-        //When we go to bomber targeting mode (knickebein point ON), the bombers can't shift their target point left/right or they'll miss the target point.  And that target point is the same for all bomber groups.  So in that case we shift them up/down a bit  in altitude, so they can more easily avoid crashing into each other, while all still targeting the same target point.
-        public enum offsetDirection { left_right, up_down };
+    //so, we shift the escort fighter or bomber aircraft left or right a bit to allow all groups to have some horizontal space.
+    //When we go to bomber targeting mode (knickebein point ON), the bombers can't shift their target point left/right or they'll miss the target point.  And that target point is the same for all bomber groups.  So in that case we shift them up/down a bit  in altitude, so they can more easily avoid crashing into each other, while all still targeting the same target point.
+    public enum offsetDirection { left_right, up_down };
     public Point3d calcOffset_m(Point3d CurrentPos, AiAirGroup airGroup, Player player, Vector3d Vwld, double vel_mps, offsetDirection dir = offsetDirection.left_right)
     {
+        float shiftFactor = getShiftFactor(player);
+
         Tuple<double, int, int, int> shifts = aircraftPositionAndNumber(airGroup, player);
         double shift_m = shifts.Item1;
         //double shiftvert_m = shifts.Item2 * 40;
-        double shiftvert_m = (shifts.Item2 % 2 * 40 - 20) * (shifts.Item3 % 2 * 2 - 1); //up-down-up-down pattern on each side, but swapped direction left/right sides
+
+        float amtVerticleShift_m = defaultAmtVerticleShift_m * shiftFactor;
+
+        double shiftvert_m = (shifts.Item2 % 2 * 2 * defaultAmtVerticleShift_m - defaultAmtVerticleShift_m) * (shifts.Item3 % 2 * 2 - 1); //up-down-up-down pattern on each side, but swapped direction left/right sides
 
         Point3d unit_vector_vel_m = new Point3d(1, 0, 0);
         if (dir == offsetDirection.up_down) unit_vector_vel_m = new Point3d(0, 0, 1);
@@ -601,7 +641,7 @@ public class CoverMission : AMission, ICoverMission
 
     }
 
-        public Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d> storedRollingAverages = new Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d>();
+    public Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d> storedRollingAverages = new Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d>();
 
     public Point3d storedRollingAverage(Player player, AiAirGroup airGroup, string type, Vector3d newpoint, double rolls)
     {
@@ -1242,6 +1282,12 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
         {
             checkoutCoverAircraft(player, msg_orig.Substring(6).Trim());
         }
+        else if (msg.StartsWith("<cdist"))
+        {
+            float shiftFactor = setShiftFactor(player, msg_orig.Substring(6).Trim());
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Spread factor for your cover aircraft set to " + shiftFactor.ToString("F0") +"%", null);
+
+        }
         else if (msg.StartsWith("<glist"))
         {
             AiActor[] aia = CoverCalcs.gpGetGroundActors(this, 1);
@@ -1261,6 +1307,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             msg42 = "Formation types: VI=Vic, V3=Vic3, AB=Abreast, AS=Astern, RI=Right echelon, LE=Left echelon";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<cland 2 release group #2.  Get group # from Tab-4 menu or <cpos";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "Cover aircraft include cover fighters and bombers. They are available only to heavy bomber pilots.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });

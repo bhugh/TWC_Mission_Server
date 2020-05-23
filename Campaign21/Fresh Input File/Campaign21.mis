@@ -16,117 +16,6 @@
   GustPower 1
   GustAngle 0
 [WeatherFront]
-  LocalWeather_0 THUNDER_GEN 4000 3000 246339.07 148175.25 0 0
-  LocalWeather_1 THUNDER_GEN 3000 4000 290583.57 231930.64 0 0
-  LocalWeather_2 THUNDER_GEN 4000 3000 237220.75 216379.47 0 0
-  LocalWeather_3 THUNDER_GEN 6000 7500 117888.00 56064.00 1000 0
-  LocalWeather_4 THUNDER_GEN 7500 6000 89280.00 178944.00 1000 0
-[LocalWeather_0]
-  EllipticA 4000
-  EllipticB 3000
-  RotAngle 7
-  ShiftX 0
-  ShiftY 0
-  BaseHeight 1200
-  IsRain 0
-  IsDynamicEnabled 0
-  ParticipType 1
-  DropSize 0
-  RainPower 0
-  FrontThickness 3000
-  FrontWindMaxHorSpeedNear 15
-  FrontWindMaxVertSpeedUp 30
-  FrontWindMaxVertSpeedDown 20
-  FrontWindMaxTurbInClouds 15
-  FrontWindMaxTurbInSquallZone 20
-  EvenLayers 3
-  TotalLayers 23
-  IsThunder False
-[LocalWeather_1]
-  EllipticA 3000
-  EllipticB 4000
-  RotAngle -7
-  ShiftX 0
-  ShiftY 0
-  BaseHeight 500
-  IsRain 0
-  IsDynamicEnabled 0
-  ParticipType 1
-  DropSize 0
-  RainPower 0
-  FrontThickness 5000
-  FrontWindMaxHorSpeedNear 15
-  FrontWindMaxVertSpeedUp 30
-  FrontWindMaxVertSpeedDown 20
-  FrontWindMaxTurbInClouds 15
-  FrontWindMaxTurbInSquallZone 20
-  EvenLayers 3
-  TotalLayers 13
-  IsThunder False
-[LocalWeather_2]
-  EllipticA 4000
-  EllipticB 3000
-  RotAngle -19
-  ShiftX 0
-  ShiftY 0
-  BaseHeight 750
-  IsRain 0
-  IsDynamicEnabled 0
-  ParticipType 1
-  DropSize 0
-  RainPower 0
-  FrontThickness 8000
-  FrontWindMaxHorSpeedNear 15
-  FrontWindMaxVertSpeedUp 30
-  FrontWindMaxVertSpeedDown 20
-  FrontWindMaxTurbInClouds 15
-  FrontWindMaxTurbInSquallZone 20
-  EvenLayers 3
-  TotalLayers 31
-  IsThunder False
-[LocalWeather_3]
-  EllipticA 6000
-  EllipticB 7500
-  RotAngle 15
-  ShiftX 0
-  ShiftY 0
-  BaseHeight 700
-  IsRain 1
-  IsDynamicEnabled 1
-  ParticipType 1
-  DropSize 0
-  RainPower 0
-  FrontThickness 3500
-  FrontWindMaxHorSpeedNear 15
-  FrontWindMaxVertSpeedUp 30
-  FrontWindMaxVertSpeedDown 20
-  FrontWindMaxTurbInClouds 15
-  FrontWindMaxTurbInSquallZone 20
-  EvenLayers 3
-  TotalLayers 18
-  IsThunder False
-[LocalWeather_4]
-  EllipticA 7500
-  EllipticB 6000
-  RotAngle 34
-  ShiftX 0
-  ShiftY 0
-  BaseHeight 950
-  IsRain 1
-  IsDynamicEnabled 1
-  ParticipType 1
-  DropSize 0
-  RainPower 0
-  FrontThickness 3500
-  FrontWindMaxHorSpeedNear 15
-  FrontWindMaxVertSpeedUp 30
-  FrontWindMaxVertSpeedDown 20
-  FrontWindMaxTurbInClouds 15
-  FrontWindMaxTurbInSquallZone 20
-  EvenLayers 3
-  TotalLayers 12
-  IsThunder False
-
 [splines]
 [AirGroups]
   BoB_LW_KuFlGr_706.03
@@ -4643,8 +4532,7 @@
   Static3707 Stationary.Environment.JerryCan_GER1_1 gb 29872.08 279711.88 385.00 
   Static3702 Stationary.Environment.JerryCan_GER1_1 gb 30155.94 279691.47 385.00 
   Static1044 Stationary.Environment.TelegaBallon_UK1 gb 30167.48 279691.50 0.00 
-  Static3696 Stationary.Scammell_Pioneer_TRMU30 gb 30206.06 279699.53 385.00 
-  Static3697 Stationary.Balloon_winch_GER1_Transport gb 30204.09 279704.47 385.00 
+  Static3696 Stationary.Scammell_Pioneer_TRMU30 gb 30206.06 279699.53 385.00    
   Static3698 Stationary.Environment.JerryCan_GER1_2 gb 29775.26 279787.19 385.00 
   Static4618 Stationary.Environment.TelegaBallon_UK1 gb 29812.71 279794.38 0.00 
   Static4581 Stationary.Environment.TelegaBallon_UK1 nn 29833.95 279786.84 0.00 
@@ -5481,7 +5369,7 @@
   BTargDoverFuel TGroundDestroyed 5 245668 233563 100
   BTargBroadstairsTrainStation TGroundDestroyed 5 252836 261369 50
   BTargBrightonMilitaryRecruitment TGroundDestroyed 11 144654 198443 50
-  BTargBrightonFuel TGroundDestroyed 5 144738 198233 50
+  BTargBrightonFuel TGroundDestroyed 5 144738 198233 20
   BTargTenterdenChemicalFactory TGroundDestroyed 5 194591 220821 150
   BTargMinsterCaseOilManufacturing TGroundDestroyed 10 240203 256964 100
   BTargDoverNavalOffice TGroundDestroyed 5 245567 233499 50
@@ -6347,7 +6235,8 @@
   "Deauville" 2 162931 39265 0 1 1 1 . . . 0
   "RAF Horsham St Faith" 1 350069 305298 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
   "RAF Harrowbeer" 1 15244 147934 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
-  "Dinard-Pleurtuit"  2 14500 57096 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1  
+  "Dinard-Pleurtuit"  2 14500 57096 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "RAF Horsham St Faith Recon" 1 340069 305298 10000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1  
 [BirthPlace0]
   Aircraft.Bf-110C-7
   Aircraft.Bf-110C-4
@@ -7410,3 +7299,6 @@
   Aircraft.He-111H-2
   Aircraft.BR-20M
   Aircraft.Bf-110C-4B
+[BirthPlace97]
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF  

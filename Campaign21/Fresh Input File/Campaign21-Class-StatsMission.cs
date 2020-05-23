@@ -110,7 +110,7 @@
 //The two $references below + the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 
 //$reference parts/core/CloDMissionCommunicator.dll
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -3901,24 +3901,27 @@ struct
     {
         HashSet<AiAircraft> ist = new HashSet<AiAircraft>();
         //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        try
         {
-            foreach (int army in GamePlay.gpArmies())
+            if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
-                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+                foreach (int army in GamePlay.gpArmies())
                 {
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                     {
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            foreach (AiActor actor in airGroup.GetItems())
+                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                             {
-                                if (actor is AiAircraft)
+                                foreach (AiActor actor in airGroup.GetItems())
                                 {
-                                    AiAircraft a = actor as AiAircraft;
-                                    if (a != null)
+                                    if (actor is AiAircraft)
                                     {
-                                        ist.Add(a);
+                                        AiAircraft a = actor as AiAircraft;
+                                        if (a != null)
+                                        {
+                                            ist.Add(a);
+                                        }
                                     }
                                 }
                             }
@@ -3926,8 +3929,12 @@ struct
                     }
                 }
             }
+            return ist;
+        }catch (Exception ex)
+        {
+            Console.WriteLine("Stb_returnListAllAIAircraft ERROR: " + ex.ToString());
+            return ist;
         }
-        return ist;
     }
 
     //Put a player into a certain place of a certain plane.
@@ -4951,14 +4958,14 @@ struct
 
             if (stb_LogStats) { Stb_LogStatsRecursive(); }
             if (stb_StatsServerAnnounce) { Stb_StatsServerAnnounceRecursive(); }
-            SetAirfieldTargets();
+            SetAirfieldTargets();            
+
+            Stb_RemoveOffMapPlayers_recurs();
+            Stb_changeTargetToDifferentNearbyAircraft_recurs();
 
             //put all aircraft in the air at start of mission into AIAircraftList - we use 
             //this to detect if people have jumped into AI aircraft, and we pick up the rest vis onactorcreated
             AIAircraftList.UnionWith(Stb_returnListAllAIAircraft());
-
-            Stb_RemoveOffMapPlayers_recurs();
-            Stb_changeTargetToDifferentNearbyAircraft_recurs();
 
             Console.WriteLine("-stats.cs successfully loaded");
 
@@ -6990,7 +6997,9 @@ struct
         if (player!=null) Console.WriteLine("OnPlaceLeave: player " + player.Name());
         if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor " + StatCalcs.GetAircraftType(actor as AiAircraft));
         if (actor == null ) Console.WriteLine("OnPlaceLeave: actor is null!");
+        double instantAGL_m = -1000;
         if (actor as AiAircraft == null) Console.WriteLine("OnPlaceLeave: actor as AiAircraft is null!");
+        else instantAGL_m = calcInstantAGL_m(actor as AiAircraft);
 
         //Console.WriteLine("OnPlaceLeave: place " + player.Place().Name() + " person.place " + player.PersonPrimary().Place() + " type " + player.PersonPrimary().Cart().InternalTypeName());
         /* if (player.Place() != null) Console.WriteLine("OnPlaceLeave: place " + player.Place().Name());
@@ -7081,9 +7090,10 @@ struct
 
                 bool isPlayerAlreadyDead = stb_ContinueMissionRecorder.StbCmr_IsPlayerDead(player.Name()); //if FALSE the player may have recently died OR just not taken off yet - the point where cm.alive is set to true
 
-                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, allowTakeBack: true, defaultInjuries: 0);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
+                double injuries = stb_CalcExtentOfInjuriesOnActorDead(player.Name(), 2, actor, player, allowTakeBack: true, defaultInjuries: 0, givenAlt_AGL_m: instantAGL_m);// killtype 2 bec. they left the position voluntarily = self.kill.  This actually makes injuries LESS serious in certain cases (ie, very low speed).
                    //defaultInjuries: 0 because we're just leaving the aircraft here, the assumption is, unless we are jumping out of a plane in full flight or whatever, that the injuries are 0.
                    //Apparently we have problems here because sometimes we get to onPlaceLeave here BUT the actor is null?  
+                   //We want to use instantAGL_m because we have waited almost  half a second here.  Maybe the a/c has crashed or whatever.
 
                 double aircraftDamage = injuries;
                 if (aircraftDamage < 0.15) aircraftDamage = 0; // the damage calculation is assuming a crash or crash landing of some type, minimum value it usually returns is about 0.1. Whereas for aircraftDamage purposes we're assuming it was a regular decent landing, damage actually 0, unless & until we find out otherwise
@@ -7524,6 +7534,7 @@ struct
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
+                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
                     Stb_killActor(actor); //it's dead, Jim
 
                 }
@@ -7533,6 +7544,7 @@ struct
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
+                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
                     Stb_killActor(actor); //Also dead; counts as a kill
 
                 }
@@ -7540,8 +7552,12 @@ struct
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
+                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
                     Stb_killActor(actor); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
 
+                } else
+                {
+                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 0); //presumably a good landing of some sort.  UPDATE - not really, there could be lots of reasons to exit here.
                 }
             }
 
@@ -7779,11 +7795,38 @@ struct
         else return stb_getPilotTypeString(player.Name());
     }
 
+    public double calcInstantAGL_m(AiAircraft aircraft, double givenAlt_AGL_m = -1000)
+    {
+        double Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(aircraft as AiActor);
+
+        double Z_AltitudeAGL_m3 = Calcs.AltitudeAGL_m(aircraft as AiActor);
+
+        if (givenAlt_AGL_m != -1000) Z_AltitudeAGL_m = givenAlt_AGL_m;
+        else
+        {
+            //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+            try
+            {
+                Z_AltitudeAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("stb_CalcExtentOfInjuriesOnActorDead ERROR getParameter failed, using map AGL");
+                Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(aircraft as AiActor);
+            }
+
+            if (Z_AltitudeAGL_m3 > Z_AltitudeAGL_m) Z_AltitudeAGL_m = Z_AltitudeAGL_m3; //In some situations the get parameter thing might not work, maybe aircraft damageed or whatever.  IN that case we use the alternate method.
+        }
+
+        return Z_AltitudeAGL_m;
+
+    }
+
 
 
     //OK, CloD seems a bit too willing to hand out gruesome deaths sometimes.  IE when a player runs into a hangar wall at 5MPH.
     //So we are going to convert some of those CLOD deaths into injury situations for our stats/career purposes.
-    public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false, double defaultInjuries = 1)
+    public double stb_CalcExtentOfInjuriesOnActorDead(string playerName, int killType, AiActor actor, Player player, bool allowTakeBack = false, double defaultInjuries = 1, double givenAlt_AGL_m = -1000)
     {
         double injuries = defaultInjuries; //default assumption is 1 = yup, they're dead
         AiAircraft aircraft1 = null;
@@ -7827,20 +7870,30 @@ struct
                                                                      //sometimes Z_VelocityMach is negative, which seems to indicate you are going backwards @ that speed.
 
 
+                /*
                 double Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
-                //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                try
-                {
-                    Z_AltitudeAGL_m = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                } catch (Exception ex)
-                {
-                    Console.WriteLine("stb_CalcExtentOfInjuriesOnActorDead ERROR getParameter failed, using map AGL");
-                    Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
-                }
 
                 double Z_AltitudeAGL_m3 = Calcs.AltitudeAGL_m(actor);
 
-                if (Z_AltitudeAGL_m3 > Z_AltitudeAGL_m) Z_AltitudeAGL_m = Z_AltitudeAGL_m3; //In some situations the get parameter thing might not work, maybe aircraft damageed or whatever.  IN that case we use the alternate method.
+                if (givenAlt_AGL_m != -1000) Z_AltitudeAGL_m = givenAlt_AGL_m;
+                else
+                {
+                    //double I_VelocityIAS = 0; // aircraft1.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+                    try
+                    {
+                        Z_AltitudeAGL_m = aircraft1.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("stb_CalcExtentOfInjuriesOnActorDead ERROR getParameter failed, using map AGL");
+                        Z_AltitudeAGL_m = Calcs.AltitudeAGL_m(actor);
+                    }
+
+                    if (Z_AltitudeAGL_m3 > Z_AltitudeAGL_m) Z_AltitudeAGL_m = Z_AltitudeAGL_m3; //In some situations the get parameter thing might not work, maybe aircraft damageed or whatever.  IN that case we use the alternate method.
+                }
+                */
+
+                double Z_AltitudeAGL_m = calcInstantAGL_m(aircraft1, givenAlt_AGL_m);
 
                 //double S_GunReserve = aircraft1.getParameter(part.ParameterTypes.S_GunReserve, 0);
                 //double S_GunClipReserve = aircraft1.getParameter(part.ParameterTypes.S_GunClipReserve, 0);
@@ -7943,7 +7996,7 @@ struct
                     );
                 */
 
-                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " altitude AGL " + Z_AltitudeAGL_m.ToString("0.00") + " " + Z_AltitudeAGL_m3.ToString("0.00") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
+                System.Console.WriteLine("CalcInjuries: Calculating extent of injuries: " + injuries.ToString("0.0") + " for " + playerName + " altitude AGL " + Z_AltitudeAGL_m.ToString("0.00") + " Vwld: " + Vwld.x.ToString("N1") + " " + Vwld.y.ToString("N1") + " " + Vwld.z.ToString("N1")
                         + " operativeVel_MPH " + operativeVel_MPH.ToString("N1") + " MaxvertSpeed_mph: " + vertSpeed_mph.ToString("N1") + " vel_mph " + vel_mph.ToString("N1"));
             }
             catch (Exception e) { System.Console.WriteLine("saveAicraftParamsRecurs: " + e.ToString()); }
@@ -12185,7 +12238,7 @@ struct
                     return;
                 }
             }
-            catch (Exception ex) { StbSr_PrepareErrorMessage(ex); }
+            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "StbSr_SavePlayerStats1"); }
             try
             {
 
@@ -12195,7 +12248,7 @@ struct
                                                       //StbSr_AlwaysWriteLine("Saving 3");
                                                       //Only save HTML files once every 7X (or if this is the final save of the session), to save a bit on uploading/server capacity.  If stats save time is 2 minutes this gives 14 minute stats updates
                 StbSr_SPSCount++;
-                if (StbSr_SPSCount % 7 == 0 || p[1] == 1 || p[3] == 1) //p[1] is immediate save, p[3] is intermediate win, which requires immediate save
+                if (StbSr_SPSCount % 7 == 0 || p[1] == 1 || (p.Length >= 4 && p[3] == 1)) //p[1] is immediate save, p[3] is intermediate win, which requires immediate save
                 {
                     StbSr_SavePlayerStatsStringToFileMedium(p);
                     StbSr_SavePlayerStatsStringToFileLow(p);
@@ -12206,7 +12259,7 @@ struct
                 //StbSr_AlwaysWriteLine("Saving 6");
 
             }
-            catch (Exception ex) { StbSr_PrepareErrorMessage(ex); }
+            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "StbSr_SavePlayerStats2"); }
         }
 
         public void StbSr_BackupPlayerStats(int[] p)
@@ -12444,7 +12497,7 @@ struct
                 bool immediate_save = false;
                 if (p.Length >= 2 && p[1] == 1) immediate_save = true;
                 bool intermediate_win = false;
-                if (p.Length >= 3 && p[3] == 1) intermediate_win = true;
+                if (p.Length >= 4 && p[3] == 1) intermediate_win = true;
                 try
                 {
                     StbSr_SaveTeamStatsStringToFileLowFilter(mission.stb_LogStatsTeamSuffix, immediate_save, intermediate_win);

@@ -1,9 +1,9 @@
 ////$include "C:\Users\tegg\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\prog\Ext.cs"
 ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-stats.cs"
-//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
-//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
-//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
-//$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
+////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
 ////$include "C:\Users\Administrator\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
@@ -13,14 +13,20 @@
 ////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
 ////$include "C:\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
 
+//$include "$user\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-CoverMission.cs"
+//$include "$user\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SkinCheckMission.cs"
+//$include "$user\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-StatsMission.cs"
+//$include "$user\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-SupplyMission.cs"
+//$include "$user\missions\Multi\Fatal\Campaign21\Fresh Input File\Campaign21-Class-AerialInterceptRadar.cs"
+
+
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
 #define DEBUG  
 #define TRACE  
 ////$reference parts/core/GCVBackEnd.dll
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 ////$reference parts/core/TWCStats.dll
 //$reference parts/core/CloDMissionCommunicator.dll
-//$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
@@ -79,7 +85,7 @@ using System.Xml.Serialization;
 //using System.Web.Script.Serialization;
 //using System.Text.Json;
 //using System.Text.Json.Serialization;
-using TF_Extensions;
+//using TF_Extensions;
 //using GCVBackEnd;
 using System.Timers;                 /// <= Needed for Rearm/Refuel
 /*****************************************************************************
@@ -345,6 +351,7 @@ public class Mission : AMission, IMainMission
     public StatsMission statsmission;
     public SupplyMission supplymission;
     public AIRadarMission airadarmission;
+    public SkinCheckMission skincheckmission;
     //public BaseMission gcvmission;
 
     public string MISSION_FOLDER_PATH;
@@ -388,7 +395,7 @@ public class Mission : AMission, IMainMission
     //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
     public double SHORTEST_MISSION_LENGTH_ALLOWED_HRS = 5;  //if the mission restarts and there are less than this many hours remaining until END_MISSION_TIME_HRS , then it will just restart at the DESIRED_MISSION_START_TIME.  This has the effect of guarantteeing that missions will run at least this many hours, and also that missions won't start or run later than END_MISSION_TIME_HRS
 
-    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2020, 2, 7); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
+    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2020, 4, 29); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
     public static readonly DateTime HISTORIC_CAMPAIGN_START_DATE = new DateTime(1940, 7, 10); //#2. Date on the historic/1940s calendar that will register as day 0 of the campaign.
     public static int HISTORIC_CAMPAIGN_LENGTH_DAYS = 113; //#3. After this many days the historical dates will "roll over" and start again with HISTORIC_MISSION_START_DATE.
 
@@ -447,6 +454,7 @@ public class Mission : AMission, IMainMission
             TWCComms.Communicator.Instance.WARP_CHECK = true;
 
             covermission = new CoverMission(); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
+            
             statsmission = new StatsMission(this);
             airadarmission = new AIRadarMission();
             //gvcmission = new GCV.GCVMission();
@@ -507,14 +515,6 @@ public class Mission : AMission, IMainMission
             DISABLE_TESTING_MODS = false; // if set to true, some things that run or are skipped on the testing server will run exactly as on the real server
             LOG = false;
             //WARP_CHECK = false;
-            radarpasswords = new Dictionary<int, string>
-        {
-            { -1, "north"}, //Red army #1
-            { -2, "gate"}, //Blue, army #2
-            { -3, "twc2twc"}, //admin
-            { -4, "twc2twc"}, //admingrouped
-            //note that passwords are CASEINSENSITIVE
-        };
 
             //SET MAIN PATH & FILENAMES (must be done after setting MISSION_ID etc because those are used for various paths & filenames)   
             USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
@@ -546,8 +546,9 @@ public class Mission : AMission, IMainMission
             GiantSectorOverview[2] = new int[10, 2];
 
             supplymission = new SupplyMission(this); //do this towards the end because  it needs all the STATS_FULL_PATH and other similar variables.
+            skincheckmission = new SkinCheckMission(this); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
 
-            
+
 
         }
         catch (Exception ex) { Console.WriteLine("ERROR #!: " + ex.ToString()); }
@@ -735,7 +736,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
     }
 
     bool OnTick_End_Mission_Triggered = false;
-        public override void OnTickGame()
+    public override void OnTickGame()
         {
             base.OnTickGame();
         /* Tick_Mission_Time = 720000 - Time.tickCounter();
@@ -881,7 +882,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
         }
 
-        if (tickSinceStarted % 30000 == 1000)
+        if (tickSinceStarted % 90000 == 1000)
         //if (tickSinceStarted % 1100 == 1000)  //for testing
         {
 
@@ -988,9 +989,6 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             //RADAR_REALISM = saveRealism;
 
         }
-
-
-
 
     }
 
@@ -1976,7 +1974,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
              {
 
                  //if (!aircraft.IsAirborne())
-                 //{
+                 //{get
 
                  aircraft.cutLimb(part.LimbNames.AileronL0);
                  aircraft.cutLimb(part.LimbNames.AileronR0);
@@ -2381,6 +2379,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         Tuple<double, string> res = CalcMapMove(winner, false, false, null);
         //sw.Write(res.Item2); //Item2 is a detail breakout of current campaign score.  Could be included in final stats for the mission, perhaps
         double newMapState = CampaignMapState + res.Item1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 - MissionObjectiveScore[ArmiesE.Blue] / 100.0;
+        if (winner != "") newMapState = CampaignMapState; //if a winner/map turn we have already re-calced the new map state
         string campaign_summary = summarizeCurrentMapstate(newMapState, false, null);
 
         //Write the campaign summary text with current score etc.; this will go on the TEAM STATS page of the stats page
@@ -6399,7 +6398,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                                 bigMess += Environment.NewLine;
                                 
 
-                                var leakTo = new bool[] { false, false, false };  //0, 1, 2 indexes - note that index 0 will be ignored.
+                                var leakTo = new List<bool>() { false, false, false };  //0, 1, 2 indexes - note that index 0 will be ignored.
                                 try
                                 {
                                     for (int attackingArmy = 1; attackingArmy < 3; attackingArmy++)
@@ -6970,7 +6969,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
                 //return; //stop buggy behavior for now
 
-                if (numBlueAircraft < 60 && numRedPlayers > 0)
+                if (numBlueAircraft < 70 && numRedPlayers > 0)
                 {
                     double wait = random.Next(0, 60);
                     Timeout(wait, () =>
@@ -6984,7 +6983,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
                     });
 
                 }
-                if (numRedAircraft < 60 & numBluePlayers > 0)
+                if (numRedAircraft < 70 & numBluePlayers > 0)
                 {
                     double wait = random.Next(0, 60);
                     Timeout(wait, () =>
@@ -7015,7 +7014,7 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             new TimerCallback(balanceAILoad),
             null,
             dueTime: 30000, //wait time @ startup
-            period: 282453); //periodically call the callback at this interval, every 4-6 minutes say
+            period: 232453); //periodically call the callback at this interval, every 4-6 minutes say
 
     }
 
@@ -8779,6 +8778,9 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
         missionFile = Regex.Replace(missionFile, @"^\s*TIME\s*\d*\.?\d*\s*$", desiredString, ro);//looks for a line with something like <spaces> TIME <spaces> 34.234 .. Case irrelevant = replaces it
         
         string desiredCloudsHeightString = "  CloudsHeight " + random.Next(500, 1500).ToString("F0"); //seems limited to 500-1500 meters.  See https://www.aircombatgroup.co.uk/forum/viewtopic.php?f=5&t=8360
+        //Also MAYBE for cumulous clouds (and perhaps others ???) the cloudsheight here must be higher than the bottom of the cloud deck as given in those weather systems.  Yikes!
+        //UPDATE: It's not that the cumulous cloud deck must be lower than the cloudsheight, just that it can't be too high in general.  Maybe less than 1200 meters?
+
         missionFile = Regex.Replace(missionFile, @"^\s*CloudsHeight\s*\d*\.?\d*\s*$", desiredCloudsHeightString, ro);//looks for a line with something like <spaces> XXXXXX <spaces> 34.234 .. Case irrelevant = replaces it
 
         int WeatherIndex = 1; //Can be 0=clear, 1 = light clouds, 2 = medium clouds
@@ -9359,6 +9361,9 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
             bool iACP = isAiControlledPlane2(a);
             if (!iACP)
             {
+                skincheckmission.DeleteLargeSkinFiles();
+                Timeout(600.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
+                Timeout(1800.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
                 if (a as AiAircraft == null) return;
                 string type = Calcs.GetAircraftType(a as AiAircraft);
                 if (type.Contains("110") || type.Contains("Ju-87"))
@@ -10957,8 +10962,8 @@ public Dictionary<string, IMissionObjective> SMissionObjectivesList()
 
             addTrigger(MO_ObjectiveType.Building, "Diehl Military Train Station", "Dove", 1, 3, "BTargDiehlTrainStation", "TGroundDestroyed", 10, 251138, 245883, 50, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Broadstairs Train Station Military Complex", "Mans", 1, 3, "BTargBroadstairsTrainStation", "TGroundDestroyed", 10, 252836, 261369, 50, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Brighton Army Recruitment Station", "Shor", 1, 3, "BTargBrightonMilitaryRecruitment", "TGroundDestroyed", 11, 144654, 198443, 50, false, 120, 24, "", add);
-            addTrigger(MO_ObjectiveType.Building, "Brighton Gasoline Storage", "Shor", 1, 3, "BTargBrightonFuel", "TGroundDestroyed", 21, 144738, 198233, 50, false, 120, 24, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Brighton Army Recruitment Station", "Shor", 1, 4, "BTargBrightonMilitaryRecruitment", "TGroundDestroyed", 11, 144654, 198443, 50, false, 120, 24, "", add);
+            addTrigger(MO_ObjectiveType.Building, "Brighton Gasoline Storage", "Shor", 1, 4, "BTargBrightonFuel", "TGroundDestroyed", 21, 144738, 198233, 50, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Tenterden Chemical Manufacture", "Litt", 1, 3, "BTargTenterdenChemicalFactory", "TGroundDestroyed", 12, 194591, 220821, 150, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Minster Synthetic Case Oil Manufacture", "Mans", 1, 3, "BTargMinsterCaseOilManufacturing", "TGroundDestroyed", 10, 240203, 256964, 100, false, 120, 24, "", add);
             addTrigger(MO_ObjectiveType.Building, "Battle Commando Training Center", "Shor", 1, 3, "BTargBattleCommandoTrainingCenter", "TGroundDestroyed", 11, 185093, 219403, 50, false, 120, 24, "", add);
@@ -13854,6 +13859,8 @@ added Rouen Flak
                 int army = player.Army();
                 //List<String> mos = MissionObjectivesSuggested[(ArmiesE)army];
                 List<String> mos = MO_ListSuggestedObjectives(null, player.Army(), display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
+
+                if (ScoutPhotoRecord == null || ScoutPhotoRecord.Count == 0) return;
 
                 var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
 
@@ -18816,37 +18823,41 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     {
         Task.Run(() =>
         {
-            int count = 0;
-            List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
-            foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
+            try
             {
-                //var match = types_to_remove.FirstOrDefault(stringToCheck => stringToCheck.Contains(gg.Category));
-                try
+                int count = 0;
+                List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
+                foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
                 {
-                    //Console.WriteLine("removeStatics: Checking airfield item name: {0} category: {1} title: {2} type: {3} ", gg.Name, gg.Category, gg.Title, gg.Type.ToString());
-                }
-                catch (Exception ex)
-                {
-                    if (gg != null) Console.WriteLine("removeStatics: Couldn't do something with name {0}", gg.Name);
-                    else { Console.WriteLine("removeStatics: couldn't do something ERROR"); }
-                }
-                if (gg == null) continue;
-                bool match = false;
-                foreach (string s in types_to_remove)
-                {
-                    if (gg.Title.ToLower().Contains(s.ToLower()))
+                    //var match = types_to_remove.FirstOrDefault(stringToCheck => stringToCheck.Contains(gg.Category));
+                    try
                     {
-                        match = true;
-                        break;
+                        //Console.WriteLine("removeStatics: Checking airfield item name: {0} category: {1} title: {2} type: {3} ", gg.Name, gg.Category, gg.Title, gg.Type.ToString());
                     }
+                    catch (Exception ex)
+                    {
+                        if (gg != null) Console.WriteLine("removeStatics: Couldn't do something with name {0}", gg.Name);
+                        else { Console.WriteLine("removeStatics: couldn't do something ERROR"); }
+                    }
+                    if (gg == null) continue;
+                    bool match = false;
+                    foreach (string s in types_to_remove)
+                    {
+                        if (gg.Title.ToLower().Contains(s.ToLower()))
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+                    //if (!types_to_remove.Contains(gg.Category)) continue;                
+                    if (!match) continue;
+                    if (clc_random.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
+                    msn.Timeout(clc_random.Next(5, 300), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+                    count++;
                 }
-                //if (!types_to_remove.Contains(gg.Category)) continue;                
-                if (!match) continue;
-                if (clc_random.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
-                msn.Timeout(clc_random.Next(5, 300), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
-                count++;
+                Console.WriteLine("removeStatics: Removed {0} items matching {1} ... ", count, types_to_remove[0]);
             }
-            Console.WriteLine("removeStatics: Removed {0} items matching {1} ... ", count, types_to_remove[0]);
+            catch (Exception ex) { Console.WriteLine("removeStatics ERROR: " + ex.ToString()); }
 
         });
     }
@@ -19319,14 +19330,24 @@ public class CircularArray<T>
     {
         get
         {
-            int pos = _head;
-            for (int i = 0; i < _baseArray.Length; i++)
+            try
             {
-                Math.DivRem(pos, _baseArray.Length, out pos);
-                _facadeArray[i] = _baseArray[pos];
-                pos++;
+                int pos = _head;
+                for (int i = 0; i < _baseArray.Length; i++)
+                {
+                    Math.DivRem(pos, _baseArray.Length, out pos);
+                    _facadeArray[i] = _baseArray[pos];
+                    pos++;
+                }
+                return _facadeArray;
             }
-            return _facadeArray;
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("CircularArray ERROR: " + ex.ToString());
+                return _facadeArray;
+
+            }
         }
     }
 
@@ -19335,17 +19356,27 @@ public class CircularArray<T>
     {
         get
         {
-            int pos = _head - 1 + 2*_baseArray.Length;  //by adding 2*_baseArray.Length we can count downwards by _baseArray.Length with no worries about going below 0 for our index.  We have to go 2* bec _head might be zero meaning our starting point might be -1
-            for (int i = 0; i < _baseArray.Length; i++)
+            try
             {
-                Math.DivRem(pos, _baseArray.Length, out pos);
-                //Console.WriteLine("ArrayStack: " + i.ToString() + " " + pos.ToString());
-                 
-                _facadeArray[i] = _baseArray[pos];
-                pos--;
-                pos = pos < 0 ? pos + _baseArray.Length : pos;
+                int pos = _head - 1 + 2 * _baseArray.Length;  //by adding 2*_baseArray.Length we can count downwards by _baseArray.Length with no worries about going below 0 for our index.  We have to go 2* bec _head might be zero meaning our starting point might be -1
+                for (int i = 0; i < _baseArray.Length; i++)
+                {
+                    Math.DivRem(pos, _baseArray.Length, out pos);
+                    //Console.WriteLine("ArrayStack: " + i.ToString() + " " + pos.ToString());
+
+                    _facadeArray[i] = _baseArray[pos];
+                    pos--;
+                    pos = pos < 0 ? pos + _baseArray.Length : pos;
+                }
+                return _facadeArray;
             }
-            return _facadeArray;
+            catch (Exception ex)
+            {
+                
+                    Console.WriteLine("ArrayStack ERROR: " + ex.ToString());
+                    return _facadeArray;
+                
+            }
         }
     }
 
@@ -19361,32 +19392,54 @@ public class CircularArray<T>
 
     public void Push(T value)
     {
-        if (!_isFilled && _head == _baseArray.Length - 1)
-            _isFilled = true;
+        try
+        {
+            if (!_isFilled && _head == _baseArray.Length - 1)
+                _isFilled = true;
 
-        Math.DivRem(_head, _baseArray.Length, out _head);
-        _baseArray[_head] = value;
-        _head++;
+            Math.DivRem(_head, _baseArray.Length, out _head);
+            _baseArray[_head] = value;
+            _head++;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Push ERROR: " + ex.ToString());
+        }
+
     }
 
     //Gets end of queue (ie, the first value entered) if 0 or 2nd, 3rd, etc value entered if index 1, 2, 3 etc
     //10/2018 - this seems incorrect. This gets the last value pushed onto the array if 0, 2nd to last if 1, etc.
     public T Get(int indexBackFromHead)
     {
+        try { 
         int pos = _head - indexBackFromHead - 1;
         pos = pos < 0 ? pos + _baseArray.Length : pos;
         Math.DivRem(pos, _baseArray.Length, out pos);
         return _baseArray[pos];
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Get ERROR: " + ex.ToString());
+            return _baseArray[0];
+        }
     }
 
     //Gets top of the stack (ie, the last value entered) if 0 or 2nd to last, 3rd to last, etc if index 1, 2, 3 etc 
     ////10/2018 - this seems incorrect. This gets the tail of the array, ie the first value pushed onto the array (that still remains), ie the oldest value in the array, if 0, 2nd to last if 1, etc.
     public T GetStack(int indexForwardFromHead)
     {
+        try { 
         int pos = _head + indexForwardFromHead;
         pos = pos < 0 ? pos + _baseArray.Length : pos;
         Math.DivRem(pos, _baseArray.Length, out pos);
         return _baseArray[pos];
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("GetStack ERROR: " + ex.ToString());
+            return _baseArray[0];
+        }
     }
 }
 

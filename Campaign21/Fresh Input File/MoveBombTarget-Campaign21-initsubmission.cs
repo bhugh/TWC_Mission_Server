@@ -315,6 +315,7 @@ public class Mission : AMission
 
     public AiAirport GetRandomAirfieldNear(Point3d location, double distance, int airportArmy)
     {
+        if (GamePlay == null) return null;
         List<AiAirport> CloseAirfields = new List<AiAirport>();
         AiAirport[] airports = GamePlay.gpAirports();
         Point3d StartPos = location;
@@ -323,6 +324,7 @@ public class Mission : AMission
         {
             foreach (AiAirport airport in airports)
             {
+                if (airport == null) continue;
 
                 if (Calcs.CalculatePointDistance(airport.Pos(), StartPos) < distance && GamePlay.gpFrontArmy(airport.Pos().x, airport.Pos().y) == airportArmy) //use 2d distance, MUCH different than 3d distance for ie high-level bombers
                     CloseAirfields.Add(airport);
@@ -710,17 +712,32 @@ public class Mission : AMission
 
         if (ap != null)
         {
-            
-               //Choose a random point within the airfield radius
-               double radius = ap.FieldR();
-               Point3d center = ap.Pos();
-               double dist = ran.NextDouble() * radius/2;
-               double angl = ran.NextDouble() * 2 * Math.PI;
 
-               retPos.x = Math.Cos(angl) * dist + center.x;
-               retPos.y = Math.Sin(angl) * dist + center.y;
-               retPos.z = 0;
-               
+            //Choose a random point within the airfield radius
+            double radius = ap.FieldR();
+            Point3d center = ap.Pos();
+            double dist = ran.NextDouble() * radius / 2;
+            double angl = ran.NextDouble() * 2 * Math.PI;
+
+            int numEnemyPlayers = Calcs.gpNumberOfPlayersActive(GamePlay, airportArmy);
+
+            if (numEnemyPlayers > 10) numEnemyPlayers = 10;
+
+            //Mult & add will push target points further from the center of the objective with no or few enemy players online
+            //and then bring it in close when there are a lot of enemy players
+            double mult = (12 - numEnemyPlayers) / 7;
+            if (numEnemyPlayers == 0) mult = 20;
+            if (mult < 0.5) mult = 0.5;
+
+            double add = (6 - numEnemyPlayers) / 4;
+            if (add <= 0) add = 0;
+
+            dist = ran.NextDouble() * radius * mult + radius * add;
+
+            retPos.x = Math.Cos(angl) * dist + center.x;
+            retPos.y = Math.Sin(angl) * dist + center.y;
+            retPos.z = 0;
+
             //return the SAME relative position to this new airfield as we had with the old airfield
             //This is important because the attack point is often quite distant from the airfield itself, in order to actually hit the airfield accurately
             //retPos.x = p.x - nearestAirfield.Pos().x + ap.Pos().x;
@@ -762,362 +779,377 @@ public class Mission : AMission
 
     public bool updateAirWaypoints(AiAirGroup airGroup)
     {
-        if (airGroup == null || airGroup.GetWay() == null || !isAiControlledAirGroup(airGroup)) return false;
-        if (ran.Next(10) == 1)
+        try
         {
-            fixWayPoints(airGroup); //fix any problems, particularly add the two endpoints that will take the a/c off the map @ the end
-            return false; //Just leave it as originally written sometimes
-        }
-
-        AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
-
-        //for testing
-        foreach (AiWayPoint wp in CurrentWaypoints)
-        {
-            AiWayPoint nextWP = wp;
-            //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-
-        }
-        
-        int currWay = airGroup.GetCurrentWayPoint();
-        double speedDiff = 0;
-        double altDiff_m = 0;
-
-        //Console.WriteLine("MBTITG: 2");
-        //if (currWay< CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay] });
-        //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay].Speed });
-        //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { (CurrentWaypoints[currWay] as AiAirWayPoint).Action });
-
-        List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
-        int count = 0;
-        //Console.WriteLine("MBTITG: 3");
-
-        int army = airGroup.getArmy();
-        int enemyArmy = 3 - army;
-
-        bool isBomber = Calcs.isHeavyBomber(airGroup) || Calcs.isDiveBomber(airGroup);
-
-        bool underRadar = false;
-        if (isBomber && ran.Next(0, 10) == 0) underRadar = true;
-        //Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
-
-        bool update = false;
-        AiWayPoint wpAdd = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
-
-        if (wpAdd != null)        NewWaypoints.Add(wpAdd); //Always have to add current pos/speed as first point or things go w-r-o-n-g
-
-        
-
-        foreach (AiWayPoint wp in CurrentWaypoints) 
-        {
-            AiWayPoint nextWP = wp;
-            //Console.WriteLine( "Target: {0}", new object[] { wp });
-
-            if ((wp as AiAirWayPoint).Action == null) return false;
-
-            Point3d? newAirportPosition = wp.P as Point3d?;
-            Point3d? newObjectivePosition = wp.P as Point3d?;
-
-            if (moveAirports && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)) { newAirportPosition = ChangeAirports(wp.P, enemyArmy); }
-
-            if (attackObjectives && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT)) { newObjectivePosition = ChangeObjectives(wp.P, enemyArmy); }
-
-            changeLimit changeL = new changeLimit();
-            if (changeLimits.ContainsKey((wp as AiAirWayPoint).Action))
+            if (airGroup == null || airGroup.GetWay() == null || !isAiControlledAirGroup(airGroup)) return false;
+            if (ran.Next(10) == 1)
             {
-                Point3d pos;
-                double speed;
+                fixWayPoints(airGroup); //fix any problems, particularly add the two endpoints that will take the a/c off the map @ the end
+                return false; //Just leave it as originally written sometimes
+            }
 
-                changeL = changeLimits[(wp as AiAirWayPoint).Action];
-                if (count==1 && ( isBomber ) ) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+
+            //for testing
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+                AiWayPoint nextWP = wp;
+                //Console.WriteLine("Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+
+            }
+
+            int currWay = airGroup.GetCurrentWayPoint();
+            double speedDiff = 0;
+            double altDiff_m = 0;
+
+            //Console.WriteLine("MBTITG: 2");
+            //if (currWay< CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay] });
+            //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay].Speed });
+            //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { (CurrentWaypoints[currWay] as AiAirWayPoint).Action });
+
+            List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
+            int count = 0;
+            //Console.WriteLine("MBTITG: 3");
+
+            int army = airGroup.getArmy();
+            int enemyArmy = 3 - army;
+
+            bool isBomber = Calcs.isHeavyBomber(airGroup) || Calcs.isDiveBomber(airGroup);
+
+            bool underRadar = false;
+            if (isBomber && ran.Next(0, 10) == 0) underRadar = true;
+            //Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
+
+            bool update = false;
+            AiWayPoint wpAdd = CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
+
+            if (wpAdd != null) NewWaypoints.Add(wpAdd); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+
+
+
+            foreach (AiWayPoint wp in CurrentWaypoints)
+            {
+                try
                 {
-                    changeL.XY_m = changeL.XY_m / 4;
-                }
+                    AiWayPoint nextWP = wp;
+                    //Console.WriteLine( "Target: {0}", new object[] { wp });
 
-                //TODO: We could have higher/lower altitude & speed apply to the entire mission for this airgroup rather than varying waypoint by waypoing. 
-                //that might be a more sensible approach
+                    if ((wp as AiAirWayPoint).Action == null) return false;
 
-                switch ((wp as AiAirWayPoint).Action)
-                {
-                    /*case AiAirWayPointType.GATTACK_POINT:
-                        //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
-                        //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
-                        pos = wp.P;                        
-                        speed = wp.Speed;
-                        pos.x += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
-                        pos.y += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
-                        speed += speed * (ran.NextDouble() * 2 * changeL.speed_percent/100 - changeL.speed_percent / 100);
-                        //don't change the altitude/pos.z for GATTACK_POINT type (it should generally be on the ground anyway?  There could be problems if our attack point is too far above or below the ground maybe?  If so we might need to specify ground level for our chosen x,y point?)
-                        //Update: actually the pos.z of the GATTACK_POINT is the altitude of the bombers when attacking, not the altitude of the point to attack
-                        //So, we can treat this exactly like all the other task types                      
-                        nextWP = new AiAirWayPoint(ref pos, speed);
-                        (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
-                        //Console.WriteLine( "Target after: {0}", new object[] { wp });
-                        //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                        //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
-                        update = true;
-                        break;
-                        */
-                    case AiAirWayPointType.GATTACK_TARG:
-                        //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
-                        //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
-                        pos = wp.P;
-                        if (newAirportPosition.HasValue)
+                    Point3d? newAirportPosition = wp.P as Point3d?;
+                    Point3d? newObjectivePosition = wp.P as Point3d?;
+
+                    if (moveAirports && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT))
+                    { newAirportPosition = ChangeAirports(wp.P, enemyArmy); }
+
+                    if (attackObjectives && ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG || (wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT))
+                    { newObjectivePosition = ChangeObjectives(wp.P, enemyArmy); }
+
+                    changeLimit changeL = new changeLimit();
+                    if (changeLimits.ContainsKey((wp as AiAirWayPoint).Action))
+                    {
+                        Point3d pos;
+                        double speed;
+
+                        changeL = changeLimits[(wp as AiAirWayPoint).Action];
+                        if (count == 1 && (isBomber)) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
                         {
-                            Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
-                            pos = newAirportPosition.Value;
-                            pos.z = wp.P.z;
-                        } else if (newObjectivePosition.HasValue)
-                        {
-                            Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
-                            pos = newObjectivePosition.Value;
-                            pos.z = wp.P.z;
-
+                            changeL.XY_m = changeL.XY_m / 4;
                         }
 
-                        if (speedDiff == 0) speedDiff = wp.Speed * (ran.NextDouble() * 2.0 * changeL.speed_percent / 100.0 - changeL.speed_percent / 100);
-                        speed = wp.Speed + speedDiff;
-                        //pos.x += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
-                        //pos.y += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+                        //TODO: We could have higher/lower altitude & speed apply to the entire mission for this airgroup rather than varying waypoint by waypoing. 
+                        //that might be a more sensible approach
 
-                        //so, (wp as AiAirWayPoint).Target; is NULL for SOME REASON, even though the groundactor to attack is set in the .mis file
-                        //AiActor currTarget = (wp as AiAirWayPoint).Target;
-                        /*
-                        if (currTarget == null)
+                        switch ((wp as AiAirWayPoint).Action)
                         {
-                            Console.WriteLine("MoveBomb: Target is NULL!! Breaking");
-                            Console.WriteLine("MoveBomb: {0} {1} {2} {3}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Target.Name(), (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType);
-
-                            AiActor[] acts = airGroup.GetItems();
-                            foreach (AiActor act in acts)
-                            {
-                                Console.WriteLine("MoveBomb: {0}", act.Name());
-                            }
-                            break;
-                        }
-                        */
-
-                        GroundStationary newTarget = null;
-                        //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
-                        GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, changeL.XY_m);
-                        //Console.WriteLine("MoveBomb: Looking for nearby stationary");
-                        for (int i = 1; i < 20; i++)
-                        {
-
-                            if (stationaries.Length == 0) break;
-                            int newStaIndex = ran.Next(stationaries.Length - 1);
-                            if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive &&
-                                (stationaries[newStaIndex].pos.x != pos.x ||
-                                stationaries[newStaIndex].pos.y != pos.y)
-                                && GamePlay.gpFrontArmy(stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y) == enemyArmy )
-                            {
-                                newTarget = stationaries[newStaIndex];
-                                //Console.WriteLine("MoveBomb: FOUND a stationary");
+                            /*case AiAirWayPointType.GATTACK_POINT:
+                                //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
+                                //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
+                                pos = wp.P;                        
+                                speed = wp.Speed;
+                                pos.x += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+                                pos.y += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+                                speed += speed * (ran.NextDouble() * 2 * changeL.speed_percent/100 - changeL.speed_percent / 100);
+                                //don't change the altitude/pos.z for GATTACK_POINT type (it should generally be on the ground anyway?  There could be problems if our attack point is too far above or below the ground maybe?  If so we might need to specify ground level for our chosen x,y point?)
+                                //Update: actually the pos.z of the GATTACK_POINT is the altitude of the bombers when attacking, not the altitude of the point to attack
+                                //So, we can treat this exactly like all the other task types                      
+                                nextWP = new AiAirWayPoint(ref pos, speed);
+                                (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                                //Console.WriteLine( "Target after: {0}", new object[] { wp });
+                                //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                                //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                                update = true;
                                 break;
-                            }
-                        }
-                        //In case we didn't find a ground target there, expand the search radius a bit & try again
-                        if (newTarget == null)
-                        {
-                            //Console.WriteLine("MoveBomb: Looking for further afield stationaries");
-                            GroundStationary[] stationaries2 = GamePlay.gpGroundStationarys(pos.x, pos.y, 3 * changeL.XY_m);
-                            for (int i = 1; i < 20; i++)
-                            {
-                                if (stationaries2.Length == 0) break;
-                                int newStaIndex = ran.Next(stationaries2.Length - 1);
-                                if (stationaries2[newStaIndex] != null && stationaries2[newStaIndex].IsAlive &&
-                                (stationaries2[newStaIndex].pos.x != pos.x ||
-                                stationaries2[newStaIndex].pos.y != pos.y))
+                                */
+                            case AiAirWayPointType.GATTACK_TARG:
+                                //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
+                                //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
+                                pos = wp.P;
+                                if (newAirportPosition.HasValue)
                                 {
-                                    newTarget = stationaries2[newStaIndex];
+                                    Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                                    pos = newAirportPosition.Value;
+                                    pos.z = wp.P.z;
+                                }
+                                else if (newObjectivePosition.HasValue)
+                                {
+                                    Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                                    pos = newObjectivePosition.Value;
+                                    pos.z = wp.P.z;
+
+                                }
+
+                                if (speedDiff == 0) speedDiff = wp.Speed * (ran.NextDouble() * 2.0 * changeL.speed_percent / 100.0 - changeL.speed_percent / 100);
+                                speed = wp.Speed + speedDiff;
+                                //pos.x += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+                                //pos.y += ran.NextDouble() * 2 * changeL.XY_m - changeL.XY_m;
+
+                                //so, (wp as AiAirWayPoint).Target; is NULL for SOME REASON, even though the groundactor to attack is set in the .mis file
+                                //AiActor currTarget = (wp as AiAirWayPoint).Target;
+                                /*
+                                if (currTarget == null)
+                                {
+                                    Console.WriteLine("MoveBomb: Target is NULL!! Breaking");
+                                    Console.WriteLine("MoveBomb: {0} {1} {2} {3}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Target.Name(), (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType);
+
+                                    AiActor[] acts = airGroup.GetItems();
+                                    foreach (AiActor act in acts)
+                                    {
+                                        Console.WriteLine("MoveBomb: {0}", act.Name());
+                                    }
                                     break;
                                 }
-                            }
-                        }
+                                */
 
-                        Point3d newPos = pos;
-                        //Use the position of the newly found ground actor as the new attack position, IF the actor exists/was found
-                        if (newTarget != null)
+                                GroundStationary newTarget = null;
+                                //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
+                                GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, changeL.XY_m);
+                                //Console.WriteLine("MoveBomb: Looking for nearby stationary");
+                                for (int i = 1; i < 20; i++)
+                                {
+
+                                    if (stationaries.Length == 0) break;
+                                    int newStaIndex = ran.Next(stationaries.Length - 1);
+                                    if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive &&
+                                        (stationaries[newStaIndex].pos.x != pos.x ||
+                                        stationaries[newStaIndex].pos.y != pos.y)
+                                        && GamePlay.gpFrontArmy(stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y) == enemyArmy)
+                                    {
+                                        newTarget = stationaries[newStaIndex];
+                                        //Console.WriteLine("MoveBomb: FOUND a stationary");
+                                        break;
+                                    }
+                                }
+                                //In case we didn't find a ground target there, expand the search radius a bit & try again
+                                if (newTarget == null)
+                                {
+                                    //Console.WriteLine("MoveBomb: Looking for further afield stationaries");
+                                    GroundStationary[] stationaries2 = GamePlay.gpGroundStationarys(pos.x, pos.y, 3 * changeL.XY_m);
+                                    for (int i = 1; i < 20; i++)
+                                    {
+                                        if (stationaries2.Length == 0) break;
+                                        int newStaIndex = ran.Next(stationaries2.Length - 1);
+                                        if (stationaries2[newStaIndex] != null && stationaries2[newStaIndex].IsAlive &&
+                                        (stationaries2[newStaIndex].pos.x != pos.x ||
+                                        stationaries2[newStaIndex].pos.y != pos.y))
+                                        {
+                                            newTarget = stationaries2[newStaIndex];
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                Point3d newPos = pos;
+                                //Use the position of the newly found ground actor as the new attack position, IF the actor exists/was found
+                                if (newTarget != null)
+                                {
+                                    //Console.WriteLine("MoveBomb: Found a stationary, updating attack position");
+                                    newPos.x = newTarget.pos.x;
+                                    newPos.y = newTarget.pos.y;
+                                }
+                                //3rd approach, just move the attack point by our usual amount
+                                else
+                                {
+                                    //Console.WriteLine("MoveBomb: No stationary found, updating attack position");
+                                    newPos = safePointSelect(pos, changeL.XY_m, changeL.aimXY_m);
+
+                                }
+
+                                newPos.z += altDiff_m;
+
+
+                                nextWP = new AiAirWayPoint(ref newPos, speed);
+                                (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;  //keep action same
+                                (nextWP as AiAirWayPoint).GAttackPasses = (wp as AiAirWayPoint).GAttackPasses;  //keep # passes the same.  TODO: could change this in some reasonable but random way.
+                                (nextWP as AiAirWayPoint).GAttackType = (wp as AiAirWayPoint).GAttackType;  //keep attack type the same. TODO: could change this randomly
+
+                                if ((newTarget as AiActor) != null) (nextWP as AiAirWayPoint).Target = newTarget as AiActor;  //change to newly selected target
+                                                                                                                              //Console.WriteLine( "Target after: {0}", new object[] { wp });
+                                                                                                                              //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                                string nm = "(null)";
+                                //if (((wp as AiAirWayPoint).Target as AiActor) != null) nm = ((wp as AiAirWayPoint).Target as AiActor).Name(); //doesn't work bec. grounstationaries are never AiActors.  We could try looking for AiGroundActors AiGroundGroups, or even AirGroups instead, maybe.  
+                                //Console.WriteLine("Old Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (wp as AiAirWayPoint).P.x, (wp as AiAirWayPoint).P.y, (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType });
+                                //Console.WriteLine ("New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType });
+                                /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
+
+                                update = true;
+                                break;
+                            case AiAirWayPointType.GATTACK_POINT:
+                            case AiAirWayPointType.HUNTING:
+                            case AiAirWayPointType.NORMFLY:
+                            case AiAirWayPointType.RECON:
+                            case AiAirWayPointType.AATTACK_FIGHTERS:
+                            case AiAirWayPointType.AATTACK_BOMBERS:
+                                //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
+                                //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
+                                pos = wp.P;
+
+                                //Console.WriteLine("Movebomb - Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+
+                                //GetRandomAirfieldNear(p, moveAirportsDistance_m, airportArmy);
+
+                                //Add first "airfield switch" for bomber groups, most of the time.  They fly low/under radar to some relatively nearby airport, making it appear as though they are starting
+                                //at different airports, not just at the one spot where they spawn in.
+                                if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY && ran.Next(4) > 0)
+                                {
+                                    double airportChange_m = 25000;
+                                    AiAirport ap = GetRandomAirfieldNear(pos, airportChange_m, army);
+                                    Point3d airportPos = ap.Pos();
+                                    airportPos.z = airportPos.z + 200;
+                                    AiAirWayPoint airportWP = new AiAirWayPoint(ref airportPos, wp.Speed);
+                                    (airportWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                                    NewWaypoints.Add(airportWP);
+                                }
+
+                                //Add first extra waypoint that's just a little jog, for bomber groups
+                                if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY)
+                                {
+                                    double firstChange = changeL.XY_m / 10;
+                                    Point3d firstPos = safePointSelect(pos, firstChange, 0);
+                                    AiAirWayPoint firstWP = new AiAirWayPoint(ref firstPos, wp.Speed);
+                                    (firstWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                                    NewWaypoints.Add(firstWP);
+                                }
+
+
+                                if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newAirportPosition.HasValue)
+                                {
+                                    //Console.WriteLine("MoveBomb: Moving airport of attack!");
+                                    Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                                    pos = safePointSelect(newAirportPosition.Value, 0, changeL.aimXY_m);
+                                    pos.z = wp.P.z;
+                                }
+                                else if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newObjectivePosition.HasValue)
+                                {
+                                    Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
+                                    pos = safePointSelect(newObjectivePosition.Value, 0, changeL.aimXY_m);
+                                    pos.z = wp.P.z;
+
+                                }
+                                else
+                                {
+                                    pos = safePointSelect(pos, changeL.XY_m, 0);
+                                    pos.z = wp.P.z;
+                                }
+
+                                speed = wp.Speed;
+
+                                if (speedDiff == 0) speedDiff = speed * (ran.NextDouble() * 2 * changeL.speed_percent / 100 - changeL.speed_percent / 100);
+                                //Note that bombers can outrun their cover aircraft here if we're not careful.  For now we're dealing by making cover a/c go a fair bit faster than their bombers in the .mis file
+                                //We're adjusting bomber speed here but NOT cover a/c speed (ESCORT)
+                                if (isBomber && speedDiff > .08 * speed) speedDiff = .08 * speed; //limit bomber speed increase, so they don't ditch their escorts
+                                speed += speedDiff;
+                                double zSave = pos.z;
+
+                                //Keep the same delta altitude, unless it hasn't been set yet OR it is too low
+                                if (altDiff_m == 0 || zSave * (1 - changeL.alt_percent / 100) > zSave + altDiff_m)
+                                {
+
+                                    //Figure alt change by both the absolute (meters) and percent method, then pick which to use
+                                    double zChangeAbs = ran.NextDouble() * 2.0 * changeL.alt_m - changeL.alt_m;
+                                    double zChangePerc = zSave * (ran.NextDouble() * 2.0 * changeL.alt_percent / 100.0 - changeL.alt_percent / 100.0);
+                                    double zChangeFinal = zChangeAbs;
+                                    if (changeL.alt_percent / 100.0 * zSave > changeL.alt_m) zChangeFinal = zChangePerc;  //if (potential max) perc change is larger then abs change then we go with perc change
+                                    if (zSave * (1 - changeL.alt_percent / 100) > zChangeAbs) zChangeFinal = zChangePerc; //if actual abs change is less than min possible perc change than we go with perc change (to prevent setting altitude unreasonably low)
+                                    altDiff_m = zChangeFinal;
+                                }
+
+                                pos.z += altDiff_m;
+
+                                //if (zSave<changeL.alt_m && pos.z < zSave) pos.z = zSave;  //
+                                if (pos.z < 100 && pos.z < zSave) pos.z = 100; //Never altitude less than 100m, unless the pre-set alt was less than 100m & this is equal to or greater than the previous set altitude                        
+                                                                               //Console.WriteLine("Target after: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
+
+                                nextWP = new AiAirWayPoint(ref pos, speed);
+                                (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
+                                //Console.WriteLine( "Target after: {0}", new object[] { nextWP });
+                                //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                                //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
+                                update = true;
+                                break;
+
+
+                        }
+                        if (underRadar)
                         {
-                            //Console.WriteLine("MoveBomb: Found a stationary, updating attack position");
-                            newPos.x = newTarget.pos.x;
-                            newPos.y = newTarget.pos.y;
+                            //AI get a break of 600ft altitude for staying-below-radar purposes.  soo 800-900 ft or below is off radar.
+                            //There isn't much point in sending AI missions that are COMPLETELY off radar as no one will even know about them.  But if we keep them at the alt where they will 
+                            //kind of phase in/out of radar that would be ideal.
+                            nextWP.P.z = 375 + altDiff_m / 10;
+                            if (nextWP.P.z < 300) nextWP.P.z = 300; //275m is about 900 ft alt = 300ft for breathers = still mostly off radar when over water (and probably right off it over land. where AGL will be lower).
+                            update = true;
                         }
-                        //3rd approach, just move the attack point by our usual amount
-                        else
+                    }
+
+
+
+                    if (count >= currWay)
+                    {
+                        NewWaypoints.Add(nextWP);
+
+                        /*
+                        if (update)
                         {
-                            //Console.WriteLine("MoveBomb: No stationary found, updating attack position");
-                            newPos = safePointSelect(pos, changeL.XY_m, changeL.aimXY_m);                            
-
+                            Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
+                            Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
                         }
+                        */
 
-                        newPos.z += altDiff_m;
+                    }
 
-
-                        nextWP = new AiAirWayPoint(ref newPos, speed);
-                        (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;  //keep action same
-                        (nextWP as AiAirWayPoint).GAttackPasses = (wp as AiAirWayPoint).GAttackPasses;  //keep # passes the same.  TODO: could change this in some reasonable but random way.
-                        (nextWP as AiAirWayPoint).GAttackType = (wp as AiAirWayPoint).GAttackType;  //keep attack type the same. TODO: could change this randomly
-
-                        if ((newTarget as AiActor) != null) (nextWP as AiAirWayPoint).Target = newTarget as AiActor;  //change to newly selected target
-                                                                                                                      //Console.WriteLine( "Target after: {0}", new object[] { wp });
-                                                                                                                      //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                        string nm = "(null)";
-                        //if (((wp as AiAirWayPoint).Target as AiActor) != null) nm = ((wp as AiAirWayPoint).Target as AiActor).Name(); //doesn't work bec. grounstationaries are never AiActors.  We could try looking for AiGroundActors AiGroundGroups, or even AirGroups instead, maybe.  
-                        //Console.WriteLine("Old Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (wp as AiAirWayPoint).P.x, (wp as AiAirWayPoint).P.y, (wp as AiAirWayPoint).GAttackPasses, (wp as AiAirWayPoint).GAttackType });
-                        //Console.WriteLine ("New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (wp as AiAirWayPoint).Action, nm, (nextWP as AiAirWayPoint).P.x, (nextWP as AiAirWayPoint).P.y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType });
-                        /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
-
-                        update = true;
-                        break;
-                    case AiAirWayPointType.GATTACK_POINT:
-                    case AiAirWayPointType.HUNTING:
-                    case AiAirWayPointType.NORMFLY:
-                    case AiAirWayPointType.RECON:
-                    case AiAirWayPointType.AATTACK_FIGHTERS:
-                    case AiAirWayPointType.AATTACK_BOMBERS:
-                        //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
-                        //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
-                        pos = wp.P;
-
-                        //Console.WriteLine("Movebomb - Target before: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
-
-                        //GetRandomAirfieldNear(p, moveAirportsDistance_m, airportArmy);
-
-                        //Add first "airfield switch" for bomber groups, most of the time.  They fly low/under radar to some relatively nearby airport, making it appear as though they are starting
-                        //at different airports, not just at the one spot where they spawn in.
-                        if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY && ran.Next(4)>0)
-                        {
-                            double airportChange_m = 25000;
-                            AiAirport ap = GetRandomAirfieldNear(pos, airportChange_m, army);
-                            Point3d airportPos = ap.Pos();
-                            airportPos.z = airportPos.z + 200;
-                            AiAirWayPoint airportWP = new AiAirWayPoint(ref airportPos, wp.Speed);
-                            (airportWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
-                            NewWaypoints.Add(airportWP);
-                        }
-
-                        //Add first extra waypoint that's just a little jog, for bomber groups
-                        if (count == 0 && currWay >= count && isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY)
-                        {                            
-                            double firstChange = changeL.XY_m / 10;                            
-                            Point3d firstPos = safePointSelect(pos, firstChange, 0);
-                            AiAirWayPoint firstWP = new AiAirWayPoint(ref firstPos, wp.Speed);
-                            (firstWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
-                            NewWaypoints.Add(firstWP);
-                        }
-
-
-                        if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newAirportPosition.HasValue)
-                        {
-                            //Console.WriteLine("MoveBomb: Moving airport of attack!");
-                            Console.WriteLine("MoveBomb: Moving to attack an airport! {0:F0} {1:F0}", wp.P.x, wp.P.y);
-                            pos = safePointSelect(newAirportPosition.Value, 0, changeL.aimXY_m);
-                            pos.z = wp.P.z;
-                        }
-                        else if ((wp as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT && newObjectivePosition.HasValue)
-                        {
-                            Console.WriteLine("MoveBomb: Moving to attack an objective! {0:F0} {1:F0}", wp.P.x, wp.P.y);
-                            pos = safePointSelect(newObjectivePosition.Value, 0, changeL.aimXY_m);
-                            pos.z = wp.P.z;
-
-                        } else
-                        {
-                            pos = safePointSelect(pos, changeL.XY_m, 0);
-                            pos.z = wp.P.z;
-                        }
-
-                        speed = wp.Speed;                        
-                        
-                        if (speedDiff == 0) speedDiff = speed * (ran.NextDouble() * 2 * changeL.speed_percent / 100 - changeL.speed_percent / 100);
-                        //Note that bombers can outrun their cover aircraft here if we're not careful.  For now we're dealing by making cover a/c go a fair bit faster than their bombers in the .mis file
-                        //We're adjusting bomber speed here but NOT cover a/c speed (ESCORT)
-                        if (isBomber && speedDiff > .08 * speed) speedDiff = .08 * speed; //limit bomber speed increase, so they don't ditch their escorts
-                        speed += speedDiff;
-                        double zSave = pos.z;
-
-                        //Keep the same delta altitude, unless it hasn't been set yet OR it is too low
-                        if (altDiff_m == 0 || zSave * (1 - changeL.alt_percent / 100) > zSave + altDiff_m)
-                        {
-
-                            //Figure alt change by both the absolute (meters) and percent method, then pick which to use
-                            double zChangeAbs = ran.NextDouble() * 2.0 * changeL.alt_m - changeL.alt_m;
-                            double zChangePerc = zSave * (ran.NextDouble() * 2.0 * changeL.alt_percent / 100.0 - changeL.alt_percent / 100.0);
-                            double zChangeFinal = zChangeAbs;
-                            if (changeL.alt_percent / 100.0 * zSave > changeL.alt_m) zChangeFinal = zChangePerc;  //if (potential max) perc change is larger then abs change then we go with perc change
-                            if (zSave * (1 - changeL.alt_percent / 100) > zChangeAbs) zChangeFinal = zChangePerc; //if actual abs change is less than min possible perc change than we go with perc change (to prevent setting altitude unreasonably low)
-                            altDiff_m = zChangeFinal;
-                        }
-
-                        pos.z += altDiff_m;
-
-                        //if (zSave<changeL.alt_m && pos.z < zSave) pos.z = zSave;  //
-                        if (pos.z < 100 && pos.z < zSave) pos.z = 100; //Never altitude less than 100m, unless the pre-set alt was less than 100m & this is equal to or greater than the previous set altitude                        
-                        //Console.WriteLine("Target after: {0:F0} {1:F0} {2:F0}", pos.x, pos.y, pos.z);
-                        
-                        nextWP = new AiAirWayPoint(ref pos, speed);
-                        (nextWP as AiAirWayPoint).Action = (wp as AiAirWayPoint).Action;
-                        //Console.WriteLine( "Target after: {0}", new object[] { nextWP });
-                        //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                        //Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
-                        update = true;
-                        break;
-
-
+                    //Console.WriteLine("MBTITG: 4");
+                    count++;
                 }
-                if (underRadar)
-                {
-                    //AI get a break of 600ft altitude for staying-below-radar purposes.  soo 800-900 ft or below is off radar.
-                    //There isn't much point in sending AI missions that are COMPLETELY off radar as no one will even know about them.  But if we keep them at the alt where they will 
-                    //kind of phase in/out of radar that would be ideal.
-                    nextWP.P.z = 375 + altDiff_m / 10;
-                    if (nextWP.P.z < 300) nextWP.P.z = 300; //275m is about 900 ft alt = 300ft for breathers = still mostly off radar when over water (and probably right off it over land. where AGL will be lower).
-                    update = true;
-                }
+                catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypointLOOP ERROR: " + ex.ToString()); }
+
             }
 
-
-
-            if (count >= currWay)
+            foreach (AiWayPoint wp in NewWaypoints)
             {
-                NewWaypoints.Add(nextWP);
-
-                /*
-                if (update)
-                {
-                    Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
-                    Console.WriteLine( "Added: {0}", new object[] { (nextWP as AiAirWayPoint).Action });
-                }
-                */
+                AiWayPoint nextWP = wp;
+                //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
 
-            //Console.WriteLine("MBTITG: 4");
-            count++;
+
+            //NewWaypoints.Add(CurrentPosWaypoint(airGroup));
+            //NewWaypoints.AddRange(SetWaypointBetween(airGroup.Pos(), AirGroupAirfield.Pos(), 4000, 90.0));
+            //NewWaypoints.Add(GetLandingWaypoint(AirGroupAirfield, 1000.0));
+
+
+            if (update)
+            {
+                //Console.WriteLine("MBTITG: Updating this course");
+                airGroup.SetWay(NewWaypoints.ToArray());
+                fixWayPoints(airGroup); //fix any problems that might have resulted from the new waypoint fixes.
+                return true;
+            }
+            else
+            { return false; }
 
         }
 
-        foreach (AiWayPoint wp in NewWaypoints)
-        {
-            AiWayPoint nextWP = wp;
-            //Console.WriteLine( "Target after: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
-
-        }
-
-
-        //NewWaypoints.Add(CurrentPosWaypoint(airGroup));
-        //NewWaypoints.AddRange(SetWaypointBetween(airGroup.Pos(), AirGroupAirfield.Pos(), 4000, 90.0));
-        //NewWaypoints.Add(GetLandingWaypoint(AirGroupAirfield, 1000.0));
-
-
-        if (update)
-        {
-            //Console.WriteLine("MBTITG: Updating this course");
-            airGroup.SetWay(NewWaypoints.ToArray());
-            fixWayPoints(airGroup); //fix any problems that might have resulted from the new waypoint fixes.
-            return true;
-        } else
-        { return false; }
+        catch (Exception ex) { Console.WriteLine("MoveBomb UpdateWaypoint: " + ex.ToString()); return false; }
     }
 
     public bool playersNearby(AiAirGroup airGroup, double dist_m = 14000)

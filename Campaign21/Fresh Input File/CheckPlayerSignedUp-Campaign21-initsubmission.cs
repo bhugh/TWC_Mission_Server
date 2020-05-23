@@ -1,6 +1,6 @@
 ﻿#define DEBUG  
 #define TRACE  
-//$reference parts/core/CLOD_Extensions.dll
+////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
@@ -39,7 +39,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Dynamic;
-using TF_Extensions;
+//using TF_Extensions;
 
 public class Mission : AMission
 {

@@ -1211,8 +1211,8 @@ private int NumberPlayerInActor(AiActor actor)
         AiAircraft aircraft = actor as AiAircraft;
 
         if (aircraft != null)
-            if (aircraft.getParameter(ParameterTypes.Z_AltitudeAGL, -1) <= 2.0
-               || aircraft.getParameter(ParameterTypes.Z_VelocityTAS, -1) <= 1.0)
+            if (aircraft.getParameter(ParameterTypes.Z_AltitudeAGL, -1) <= 15.0 //was 2 but that is not large enough for some aircraft.  2.6xxx for Beaufighter for exajple.
+               || aircraft.getParameter(ParameterTypes.Z_VelocityTAS, -1) <= 2.0)
                 onGround = true;
 
         return onGround;
@@ -1338,9 +1338,11 @@ private int NumberPlayerInActor(AiActor actor)
         //base.OnPlaceLeave(player, actor, placeIndex);
         try
         {
+            string playername = "Unknown";
+            if (player != null && player.Name() != null) playername = player.Name();
             if (actor != null)
             {
-                Console.WriteLine("Supply: PlaceLeave " + player.Name() + " " + (actor as AiCart).InternalTypeName());
+                Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName());
                 DisplayNumberOfAvailablePlanes(actor);
                 AiAircraft aircraft = actor as AiAircraft;
 
@@ -1353,14 +1355,20 @@ private int NumberPlayerInActor(AiActor actor)
                     Console.WriteLine("SupOPL: Forcing check-out");
                     CheckActorOut(actor, player, true);  //Force the re-checkout and loss of aircraft
                     aircraftCheckedInButLaterKilled.Add(actor); //make sure we can do this once only 
-                    Task.Run(() => mainmission.MO_SpoilPlayerScoutPhotos(actor as Player));                   
+                    if (player != null) Task.Run(() => mainmission.MO_SpoilPlayerScoutPhotos(actor as Player));                   
                 }
 
                 double Z_AltitudeAGL = 0;
                 if (aircraft != null) Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                 //Only person in plane, low to ground (<5 meters, gives a bit of margin), landed at or near airfield, not in enemy territory. 
                 //We could add in some scheme for damage later
-                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && LandedOnAirfield(actor, GetNearestAirfield(actor), 2000.0) && !OverEnemyTerritory(actor)
+
+                double altAGL_m_alt = Calcs.AltitudeAGL_m(actor);
+
+                Console.WriteLine("NumPlayerInPlane: {0} AltAGL: {1} AltAGL(alt): {5} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0), OverEnemyTerritory(actor),
+                    forceDamage, altAGL_m_alt);
+
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0) && !OverEnemyTerritory(actor)
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
                     if (forceDamage > 0 && forceDamage < 1)

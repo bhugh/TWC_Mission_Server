@@ -1,0 +1,62 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_RAF_B_218Sqn.01
+[BoB_RAF_B_218Sqn.01]
+  Flight0  1
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Aging 0
+[BoB_RAF_B_218Sqn.01_Way]
+  NORMFLY 239776.15 28754.45 500.00 300.00
+  NORMFLY 233013.36 27958.83 500.00 300.00
+[CustomChiefs]
+[Stationary]
+  Static15 Smoke.Environment.RedRound nn 236044.94 27015.45 0.00 /height 180.00
+  Static14 Smoke.Environment.BigSitySmoke_1 nn 235306.97 27151.99 0.00 /height 179.91
+  Static16 Smoke.Environment.Smoke1 nn 236695.23 27461.38 0.00 /height 180.00
+  Static13 Smoke.Environment.BigSitySmoke_0 nn 234522.91 27541.46 0.00 /height 177.00
+  Static5 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 235316.30 27773.11 675.00 
+  Static4 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 235296.64 27797.61 675.00 
+  Static3 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 235277.05 27818.88 675.00 
+  Static9 Stationary.Environment.JerryCan_GER1_2 nn 235320.08 27792.02 675.00 
+  Static7 Stationary.Environment.JerryCan_GER1_2 nn 235293.27 27819.57 675.00 
+  Static2 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 235300.05 27866.54 675.00 
+  Static1 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 235318.02 27877.65 675.00 
+  Static10 Stationary.Environment.JerryCan_GER1_2 nn 235334.45 27841.77 675.00 
+  Static0 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 235335.02 27887.04 675.00 
+  Static8 Stationary.Environment.JerryCan_GER1_2 nn 235389.64 27850.48 675.00 
+  Static6 Stationary.Environment.JerryCan_GER1_2 nn 235353.80 27889.19 675.00 
+  Static17 Smoke.Environment.Smoke2 nn 237064.14 28076.61 0.00 /height 178.48
+  Static12 Smoke.Environment.BuildingFireSmall nn 234539.98 28338.60 0.00 /height 176.04
+  Static18 Smoke.Environment.RedRound nn 236685.45 28540.24 0.00 /height 180.00
+  Static19 Smoke.Environment.RedRound nn 235951.05 28723.85 0.00 /height 180.00
+  Static11 Smoke.Environment.BuildingFireBig nn 234918.02 28799.93 0.00 /height 175.00
+  Static20 Smoke.Environment.RedRound nn 235354.33 28983.96 0.00 /height 180.00
+[Buildings]
+  0_bld tobruk:buildings.House$OilTankBig 1 235350.32 27905.74 675.00
+  1_bld tobruk:buildings.House$OilTankBig 1 235386.87 27875.14 675.00
+  2_bld tobruk:buildings.House$OilTankBig 1 235420.03 27847.94 675.00
+[BuildingsLinks]

@@ -1,0 +1,47 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[AirGroups]
+  BoB_RAF_B_218Sqn.03
+[BoB_RAF_B_218Sqn.03]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 26
+  Fuel 40
+  Weapons 1 1 5 1 2
+  Belt _Gun00 Gun.Browning303MkII MainBelt 9 9 2 10 11
+  Belt _Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 10 11 2 9
+  Belt _Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 10 11 9 2
+  Detonator Bomb.Bomb_GP_40lb_MkIII 3 0 1
+  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
+  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+[BoB_RAF_B_218Sqn.03_Way]
+  NORMFLY 340441.43 19302.79 500.00 300.00
+  NORMFLY 357734.24 131776.17 500.00 300.00
+  NORMFLY 351219.03 145105.15 500.00 300.00
+  NORMFLY 278856.45 127931.86 500.00 300.00
+  LANDING 340104.28 19451.70 500.00 300.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

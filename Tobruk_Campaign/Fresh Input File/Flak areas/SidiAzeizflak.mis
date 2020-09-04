@@ -1,0 +1,70 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 370000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 241572.28 137143.78 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static1 Artillery.Flak37 de 241670.70 137020.73 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static2 Artillery.Flak37 de 241553.38 136944.05 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static3 Artillery.Flak37 de 241482.80 137063.91 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static4 Artillery.Flak37 de 240228.44 139163.45 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak37 de 240289.91 139083.55 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak37 de 240216.14 139101.98 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak37 de 240283.75 139148.09 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak37 de 239659.30 138708.66 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 de 239659.30 138637.91 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 239742.34 138680.97 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 239720.81 138634.83 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 239266.75 136405.27 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 239463.80 136261.94 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 de 239213.00 136208.20 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 239410.06 136405.27 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.37mm_PaK_35_36 de 240184.20 139118.23 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.37mm_PaK_35_36 de 239681.42 138597.36 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.37mm_PaK_35_36 de 241719.11 136974.77 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static19 Artillery.37mm_PaK_35_36 de 239353.22 136211.88 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak30_Shield de 239197.94 137277.42 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Flak30_Shield de 239450.59 136358.08 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.Flak30_Shield de 239204.33 136302.73 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Flak30_Shield de 241515.14 137145.20 0.00 /timeout 0/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static24 Artillery.Flak30_Shield de 241688.08 136961.45 0.00 /timeout 0/radius_hide 0/skin materialsDesert1
+  Static25 Artillery.Flak30_Shield de 240240.05 139041.59 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.Flak30_Shield de 240191.27 139155.41 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Flak30_Shield de 239625.09 138606.59 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Flak30_Shield de 239718.50 138709.03 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Flak30_Shield de 240579.56 137302.27 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Flak30_Shield de 239247.27 137785.91 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Flak30_Shield de 239340.27 136990.70 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Flak30_Shield de 239400.72 136986.05 0.00 /timeout 0/radius_hide 0
+  Static33 Stationary.Opel_Blitz_cargo de 241605.94 137026.02 0.00 /skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static34 Stationary.Opel_Blitz_cargo de 241616.84 137047.38 0.00 /skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static0 Stationary.Horch_108_Typ_1A_w_MG34 de 241582.78 137051.81 0.00 /skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static1 Stationary.Opel_Blitz_radio_transport de 241605.69 137032.69 0.00 /skin materialsDesert1/pax_skin materialsDesert1_LW
+  Static0 Stationary.Environment.CamoNetHowitizer nn 241485.09 137063.17 0.00 
+  Static1 Stationary.Environment.CamoNetHowitizer nn 241574.78 137143.56 0.00 
+  Static2 Stationary.Environment.CamoNetHowitizer nn 241674.88 137020.66 0.00 
+  Static3 Stationary.Environment.CamoNetHowitizer nn 241557.28 136944.44 0.00 
+  Static18 Stationary.Environment.CamoNetPlaneSmall nn 241604.73 137032.50 0.00 
+  Static23 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241607.38 137037.27 0.00 
+  Static24 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241603.95 137037.38 0.00 
+  Static33 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241599.97 137037.47 0.00 
+  Static34 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241553.30 136940.34 0.00 
+  Static35 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241479.22 137061.05 0.00 
+  Static36 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241567.64 137141.52 0.00 
+  Static37 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241517.94 137144.75 0.00 
+  Static38 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241721.34 136972.06 0.00 
+  Static39 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241689.92 136959.13 0.00 
+  Static40 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 241672.19 137017.92 0.00 
+[Buildings]
+[BuildingsLinks]

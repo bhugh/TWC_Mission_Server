@@ -1,0 +1,45 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  0_Chief Ship.tobruk:Zara_CA it /sleep 0/skill 1/slowfire 1
+[0_Chief_Road]
+  161995.38 185210.53 38.40  0 2 5.83
+  163883.94 184609.63 38.40  0 2 5.83
+  164777.72 185069.14 38.40  0 2 5.83
+  165767.45 187230.39 38.40  0 2 5.83
+  165111.00 188654.39 38.40  0 2 5.83
+  161575.22 194352.56 38.40  0 2 5.83
+  150842.56 197911.13 38.40  0 2 5.83
+  141561.80 200188.63 38.40  0 2 8.19
+  133448.25 202579.98 38.40  0 2 8.19
+  118900.81 203946.47 38.40  0 2 8.19
+  108168.15 205341.44 38.40  0 2 8.19
+  92665.01 211087.86 38.40  0 2 8.19
+  80447.99 217774.20 38.40  0 2 8.19
+  80447.99 222149.22 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  RTobrukCruiser TGroupDestroyed 0_Chief 100
+[Action]
+  RTobrukCruiser ASpawnGroup 0

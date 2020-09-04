@@ -1,0 +1,90 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_B_37Sqn.000
+[GlobalWind_0]
+  Power 1.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[AirGroups]
+  BoB_RAF_B_37Sqn.01
+[BoB_RAF_B_37Sqn.01]
+  Flight0  1
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Aging 0
+[BoB_RAF_B_37Sqn.01_Way]
+  NORMFLY 229811.20 108769.28 500.00 300.00
+[CustomChiefs]
+  Vehicle.vehicleRushBritish $core/icons/tank.mma
+  Vehicle.VehicleRush2 $core/icons/tank.mma
+  Vehicle.SidiAzeizRush3 $core/icons/tank.mma
+  Vehicle.VehicleRush4 $core/icons/tank.mma
+  Vehicle.VehicleRush5 $core/icons/tank.mma
+[Vehicle.vehicleRushBritish]
+  Tank.Beaverette_III
+  Tank.Vickers_Mk_VIC
+  Tank.Cruiser_Mk_IV
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Cruiser_Mk_IVA
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+[Vehicle.VehicleRush2]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M11_39
+  tobruk:Tank.Bedford_MW_AA
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M3_Grant
+[Vehicle.SidiAzeizRush3]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  Car.Guy_Lizard
+  Car.Guy_Quad-Ant
+  tobruk:Tank.M3_Grant
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M13_40
+  tobruk:Tank.M13_40
+[Vehicle.VehicleRush4]
+  tobruk:Tank.Semovente_75-18_M41
+  tobruk:Tank.CV-35
+  tobruk:Tank.M13_40
+  tobruk:Tank.Matilda_2A_Late
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Cruiser_Mk_IV
+  Tank.Vickers_Mk_VIC
+  Car.Bedford_MW_tank
+[Vehicle.VehicleRush5]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Car.Bedford_MW_tank
+  Tank.Krupp_L2H43_Protze_Flak38
+  Car.Bedford_OY_open
+  Car.Fordson_Sussex_w_ballon
+  Tank.Beaverette_III
+  Tank.Cruiser_Mk_IV
+  tobruk:Tank.L6_40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BSidiSceggaResupplyConvoy TGroupDestroyed 6_Chief 100

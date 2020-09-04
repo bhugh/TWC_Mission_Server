@@ -1,0 +1,111 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 370000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static1 Stationary.Krupp_L2H43_Protze de 118936.60 67763.32 0.00 
+  Static2 Stationary.Horch_108_Typ_1A_open de 118942.37 67794.82 -140.00 
+  Static3 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 118944.55 67798.91 50.00 
+  Static4 Stationary.Ford_V8_E917_CargoAmmo1 de 118943.59 67758.14 -185.00 
+  Static5 Artillery.Flak37 de 119071.27 67753.02 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak30 de 119080.95 67717.93 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak30 de 119064.50 67786.20 0.00 /timeout 0/radius_hide 0
+  Static8 Stationary.Krupp_L2H43_Protze de 119060.42 67756.80 0.00 
+  Static9 Stationary.Horch_108_Typ_1A_open de 119059.26 67781.24 0.00 
+  Static10 Stationary.Horch_108_Typ_1A_open de 119076.38 67713.12 0.00 
+  Static11 Stationary.Ford_V8_E917_CargoAmmo1 de 119061.43 67750.95 -140.00 
+  Static12 Stationary.Ford_V8_E917_CargoAmmo1 de 119071.28 67718.88 -140.00 
+  Static13 Stationary.Ford_V8_E917_CargoAmmo1 de 119057.63 67787.63 -140.00 
+  Static14 Artillery.Flak37 de 119012.73 67790.31 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 119011.72 67728.35 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak37 de 118953.98 67758.59 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Flak30 de 118951.02 67798.81 0.00 /timeout 0/radius_hide 0
+  Static18 Stationary.Krupp_L2H43_Protze de 119004.33 67719.91 0.00 
+  Static19 Stationary.Krupp_L2H43_Protze de 119003.79 67783.66 0.00 
+  Static20 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 119003.95 67724.00 0.00 
+  Static21 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 119004.06 67726.05 90.00 
+  Static22 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 118949.91 67795.14 50.00 
+  Static23 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 118947.09 67797.21 90.00 
+  Static24 Stationary.Ford_V8_E917_CargoAmmo1 de 118949.13 67762.56 -140.00 
+  Static25 Stationary.Ford_V8_E917_CargoAmmo1 de 118948.60 67754.34 -140.00 
+  Static26 Stationary.Ford_V8_E917_CargoAmmo1 de 119002.56 67789.19 -140.00 
+  Static27 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 119017.54 67760.21 -140.00 
+  Static28 Stationary.Environment.RRH_GER1 de 119017.82 67758.00 -140.00 
+  Static29 Stationary.Ford_V8_E917_CargoAmmo1 de 119083.09 67709.28 -140.00 
+  Static0 Stationary.Krupp_L2H43_Protze de 116756.80 67154.10 0.00 
+  Static30 Stationary.Horch_108_Typ_1A_open de 116762.58 67185.59 -140.00 
+  Static31 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 116764.76 67189.69 50.00 
+  Static32 Stationary.Ford_V8_E917_CargoAmmo1 de 116763.79 67148.91 -185.00 
+  Static33 Artillery.Flak37 de 116891.47 67143.79 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.Flak30 de 116901.15 67108.71 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Flak30 de 116884.70 67176.98 0.00 /timeout 0/radius_hide 0
+  Static36 Stationary.Krupp_L2H43_Protze de 116880.63 67147.59 0.00 
+  Static37 Stationary.Horch_108_Typ_1A_open de 116879.46 67172.02 0.00 
+  Static38 Stationary.Horch_108_Typ_1A_open de 116896.59 67103.89 0.00 
+  Static39 Stationary.Ford_V8_E917_CargoAmmo1 de 116881.64 67141.73 -140.00 
+  Static40 Stationary.Ford_V8_E917_CargoAmmo1 de 116891.49 67109.66 -140.00 
+  Static41 Stationary.Ford_V8_E917_CargoAmmo1 de 116877.83 67178.40 -140.00 
+  Static42 Artillery.Flak37 de 116832.94 67181.09 0.00 /timeout 0/radius_hide 0
+  Static43 Artillery.Flak37 de 116831.92 67119.13 0.00 /timeout 0/radius_hide 0
+  Static44 Artillery.Flak37 de 116774.19 67149.37 0.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Flak30 de 116771.23 67189.59 0.00 /timeout 0/radius_hide 0
+  Static46 Stationary.Krupp_L2H43_Protze de 116824.53 67110.69 0.00 
+  Static47 Stationary.Krupp_L2H43_Protze de 116823.99 67174.43 0.00 
+  Static48 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 116824.16 67114.77 0.00 
+  Static49 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 116824.27 67116.83 90.00 
+  Static50 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 116770.11 67185.91 50.00 
+  Static51 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 116767.30 67187.99 90.00 
+  Static52 Stationary.Ford_V8_E917_CargoAmmo1 de 116769.33 67153.34 -140.00 
+  Static53 Stationary.Ford_V8_E917_CargoAmmo1 de 116768.81 67145.12 -140.00 
+  Static54 Stationary.Ford_V8_E917_CargoAmmo1 de 116822.77 67179.96 -140.00 
+  Static55 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 116837.74 67150.98 -140.00 
+  Static56 Stationary.Environment.RRH_GER1 de 116838.02 67148.78 -140.00 
+  Static57 Stationary.Ford_V8_E917_CargoAmmo1 de 116903.30 67100.05 -140.00 
+  Static58 Stationary.Krupp_L2H43_Protze de 117489.08 69038.63 0.00 
+  Static59 Stationary.Horch_108_Typ_1A_open de 117494.84 69070.13 -140.00 
+  Static60 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 117497.03 69074.22 50.00 
+  Static61 Stationary.Ford_V8_E917_CargoAmmo1 de 117496.06 69033.45 -185.00 
+  Static62 Artillery.Flak37 de 117623.74 69028.32 0.00 /timeout 0/radius_hide 0
+  Static63 Artillery.Flak30 de 117633.41 68993.23 0.00 /timeout 0/radius_hide 0
+  Static64 Artillery.Flak30 de 117616.98 69061.51 0.00 /timeout 0/radius_hide 0
+  Static65 Stationary.Krupp_L2H43_Protze de 117612.90 69032.11 0.00 
+  Static66 Stationary.Horch_108_Typ_1A_open de 117611.73 69056.55 0.00 
+  Static67 Stationary.Horch_108_Typ_1A_open de 117628.85 68988.42 0.00 
+  Static68 Stationary.Ford_V8_E917_CargoAmmo1 de 117613.91 69026.26 -140.00 
+  Static69 Stationary.Ford_V8_E917_CargoAmmo1 de 117623.76 68994.19 -140.00 
+  Static70 Stationary.Ford_V8_E917_CargoAmmo1 de 117610.10 69062.93 -140.00 
+  Static71 Artillery.Flak37 de 117565.21 69065.62 0.00 /timeout 0/radius_hide 0
+  Static72 Artillery.Flak37 de 117564.20 69003.66 0.00 /timeout 0/radius_hide 0
+  Static73 Artillery.Flak37 de 117506.45 69033.90 0.00 /timeout 0/radius_hide 0
+  Static74 Artillery.Flak30 de 117503.50 69074.12 0.00 /timeout 0/radius_hide 0
+  Static75 Stationary.Krupp_L2H43_Protze de 117556.80 68995.22 0.00 
+  Static76 Stationary.Krupp_L2H43_Protze de 117556.27 69058.96 0.00 
+  Static77 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 117556.42 68999.30 0.00 
+  Static78 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 117556.54 69001.36 90.00 
+  Static79 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 117502.38 69070.45 50.00 
+  Static80 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 117499.57 69072.52 90.00 
+  Static81 Stationary.Ford_V8_E917_CargoAmmo1 de 117501.60 69037.87 -140.00 
+  Static82 Stationary.Ford_V8_E917_CargoAmmo1 de 117501.08 69029.65 -140.00 
+  Static83 Stationary.Ford_V8_E917_CargoAmmo1 de 117555.03 69064.49 -140.00 
+  Static84 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 117570.02 69035.52 -140.00 
+  Static85 Stationary.Environment.RRH_GER1 de 117570.30 69033.30 -140.00 
+  Static86 Stationary.Ford_V8_E917_CargoAmmo1 de 117635.57 68984.59 -140.00 
+[Buildings]
+[BuildingsLinks]

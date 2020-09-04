@@ -1,0 +1,88 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+  Armor.ArmorColumn1 $core/icons/tank.mma
+  Vehicle.RepairColumn $core/icons/tank.mma
+  Vehicle.ArmorComand $core/icons/tank.mma
+[Armor.ArmorColumn1]
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Pz_IIC
+  Tank.Pz_IIIF
+  Tank.Pz_IIIF
+  Tank.StuG_IIIA
+  Tank.StuG_IIIB
+  Tank.Krupp_L2H43_Protze_Flak38
+[Vehicle.RepairColumn]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  Car.Horch_108_Typ_1A_w_Zwillingssockel36
+  Car.Opel_Blitz_cargo
+  Car.Opel_Blitz_tent
+  Car.Opel_Blitz_radio_transport
+  Car.Opel_Blitz_fuel
+[Vehicle.ArmorComand]
+  Tank.BMW_R71_w_MG_34
+  Car.Opel_Blitz_cargo_med
+  Car.Opel_Blitz_med-tent
+  Car.Ford_V8_E917_open
+  Car.Opel_Blitz_cargo
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.Pz_IVE
+[Chiefs]
+  0_Chief Armor.ArmorColumn1 de 
+  1_Chief Vehicle.RepairColumn de /skin0 materialsDesert1/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/tow03_00 0_Static/skin4 materialsDesert1/skin5 materialsDesert1/skin6 materialsDesert1/skin7 materialsDesert1
+  2_Chief Vehicle.GER_Fuel_Column de /skin0 materialsDesert1/tow00_00 1_Static/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/skin4 materialsDesert1
+  3_Chief Vehicle.GER_HAAA_Transport_Column de /skin0 materialsDesert1/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/skin4 materialsDesert1/skin5 materialsDesert1/skin6 materialsDesert1/skin7 materialsDesert1
+  4_Chief Vehicle.ArmorComand de /skin0 materialsDesert1/pax_skin0 materialsDesert1_LW/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/pax_skin3 materialsDesert1_RAF/skin4 materialsDesert1/pax_skin4 materialsDesert1_LW/marker4 1940-42_var1/skin5 materialsDesert1/pax_skin5 materialsDesert1_LW/skin6 materialsDesert1/pax_skin6 materialsDesert1_LW/skin7 materialsDesert1/pax_skin7 materialsDesert1_LW
+  5_Chief Vehicle.Opel_Blitz_fuel de /num_units 8/skin0 materialsDesert1/skin1 materialsDesert1/skin3 materialsDesert1/skin4 materialsDesert1/skin5 materialsDesert1/skin6 materialsDesert1/skin7 materialsDesert1
+[0_Chief_Road]
+  227336.94 39446.37 38.40  0 8 5.28  
+  227265.75 43516.87 38.40
+[Stationary]
+  0_Static Artillery.Zwillingssockel36_GER1 de 0.00 0.00 0.00 
+  1_Static Stationary.Ford_G917_CargoFuel1 de 0.00 0.00 0.00 
+[1_Chief_Road]
+  220165.77 42752.70 38.40  0 6 5.28  
+  226160.27 43819.25 38.40
+[2_Chief_Road]
+  220495.38 41950.49 38.40  0 13 6.11  
+  S 726 0 0.46 1.00 P 226381.45 43960.48
+  226402.08 43916.72 38.40
+[3_Chief_Road]
+  220302.75 40059.34 38.40  0 10 1.00  
+  226295.45 44165.70 38.40
+[4_Chief_Road]
+  229954.78 50041.26 38.40  0 7 2.64  
+  225965.86 44000.90 38.40
+[5_Chief_Road]
+  221451.17 38049.49 38.40  0 4 6.11  
+  225471.47 44000.90 38.40
+[Buildings]
+[BuildingsLinks]
+[Action]
+  action_2 ASpawnGroup 0 2_Chief
+  action_1 ASpawnGroup 0 5_Chief
+  action ASpawnGroup 0 0_Chief
+[BirthPlace]
+  "Testing Spawn Point" 1 226125 45055 500 1 0 1 . . . 0

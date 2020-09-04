@@ -1,0 +1,39 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[WeatherFront]
+  LocalWeather_0 CUMULUS_GEN 10000 10000 76992.00 134784.00 1000 0
+[LocalWeather_0]
+  EllipticA 10000
+  EllipticB 10000
+  RotAngle 0
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1000
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 10
+  RainPower 10
+  ThermalIntensity 10
+  CloudsDensity 10
+  MidSize 10

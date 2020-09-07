@@ -1351,11 +1351,9 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbLate
-  tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_t
+
+  tobruk:Aircraft.SpitfireMkVbTrop  
+  tobruk:Aircraft.WellingtonMkIc_Late_trop  
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1393,11 +1391,11 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbLate
+
   tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late
+
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_t
+
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1435,11 +1433,11 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbLate
+
   tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late
+
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_t
+
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1477,11 +1475,10 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbLate
   tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late
+
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_t
+
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop

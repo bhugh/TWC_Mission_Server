@@ -500,7 +500,7 @@ public class Knickebeinholder
 
         knickebeins[player].turnOn();
 
-        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Make your heading {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
+        if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Beam heading is {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
         return true;
        
     }
@@ -531,7 +531,7 @@ public class Knickebeinholder
             Point3d currPoint1 = currpoints[currWay1];
             string sector1 = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint1);
             if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Resuming Knickebein waypoint #{0} to {1} ({2:N0},{3:N0})", new object[] { currWay1 + 1, sector1, Math.Round(currPoint1.x), Math.Round(currPoint1.y) });
-            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Make your heading {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
+            if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Beam heading is {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
 
             return true;
         }

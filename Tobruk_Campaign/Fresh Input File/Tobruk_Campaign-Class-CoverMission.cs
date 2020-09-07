@@ -2349,7 +2349,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                                 Timeout(2.05, () =>
 
                                 {
-                                    GamePlay.gpLogServer(new Player[] { player }, "Bombers will fly to and bomb your current active Knickebein target. If your Knickebein is turned off, bombers will wing up with you and follow you.", new object[] { });
+                                    GamePlay.gpLogServer(new Player[] { player }, "Bombers will fly to, bomb, and attack the target you set via Tab-4-4-4-4-6. If targeting is turned off (\"<None>\"), bombers will wing up with you and follow you.", new object[] { });
                                 });
                                 Timeout(4.05, () =>
 
@@ -2361,7 +2361,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                                 {
                                     //Reminder due to recent change in Cover Bomber Aim
                                     BAM_resetBombAimMode(player);
-                                    GamePlay.gpLogServer(new Player[] { player }, "!!!!!Set your preferred mode via Tab-4-4-4-4-6!!!!!!", new object[] { });    
+                                    GamePlay.gpLogServer(new Player[] { player }, "!!!!!Set your preferred bomber attack mode via Tab-4-4-4-4-6!!!!!!", new object[] { });    
                                 });
 
 
@@ -2578,16 +2578,24 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     )
                     newTargetPoint = TWCKnickebeinMission.KniPoint(player);
 
-                else if (BAM_isBombPoint(player) || BAM_isMyPositionPoint (player)) newTargetPoint = PBP_getPlayerLastBombOrMyPositionPoint_point3d(player);
+                else if (BAM_isBombPoint(player) || BAM_isMyPositionPoint (player)) newTargetPoint = PBP_getPlayerLastBombOrMyPositionPoint_point3d(player);        
 
                 double oldToNewTargetPointDistance_m = CoverCalcs.CalculatePointDistance(oldTargetPoint, newTargetPoint);
 
                 Console.WriteLine("Cover: KBPoint, dist: {0:F0} {1:F0} {2:F0} : {3:F0} {4:F0} {5:F0} : {6:F0}  ", new object[] { newTargetPoint.x, newTargetPoint.y, newTargetPoint.z, oldTargetPoint.x, oldTargetPoint.y, oldTargetPoint.z, oldToNewTargetPointDistance_m });
                 AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
                 int currWay = airGroup.GetCurrentWayPoint();
+                
 
                 bool bombing = false;
                 if ((CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_POINT || (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.GATTACK_TARG) bombing = true;
+
+                //This turns off bombing for the a/c if the player turns it off via the menu
+                BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
+                if (bam == BAM_BombAimMode.None) {
+                    bombing = false;
+                    newTargetPoint = new Point3d(-1, -1, -1);
+                }
 
                 //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 8km to it, and haven't bombed yet, then DON'T CHANGE IT
                 //This hopefully will increase the accuracy of bombers by not messing with their final run-in
@@ -2605,7 +2613,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 //Then the bombers attack that point or enemy.
                 //
                 //newTargetPoint == (-1,-1,-1) is the signal that no bomb target is set yet, either via Knickebein OR dropping bomb OR whatever.  IN that case the a/c act use the regular Escort routine with a few mods.
-                BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
+                
                 if (newTargetPoint.x != -1 || (newTargetPoint.y != -1) && (bam != BAM_BombAimMode.None) )
                                        
                 {
@@ -2614,7 +2622,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     //Do when following the lead
                     // AltDiffPassed_m = -14;
                     //AltDiffPassed_range_m = 25;
-                    Console.WriteLine("2ChangeGoalTarget: {0} ({1},{2})" + airGroup.Name() + " to " + player.Name(), task, Math.Round(newTargetPoint.x), Math.Round(newTargetPoint.y));
+                    Console.WriteLine("2ChangeGoalTarget: {0} ({1},{2}) {3}" + airGroup.Name() + " to " + player.Name(), task, Math.Round(newTargetPoint.x), Math.Round(newTargetPoint.y), bam);
                     BomberUpdateWaypoints(player, airGroup, (player.Place() as AiAircraft).AirGroup(), newTargetPoint, AiAirWayPointType.FOLLOW, AiAirWayPointType.GATTACK_POINT, AiAirWayPointType.FOLLOW, altDiff_m: AltDiffBomber_m, AltDiff_range_m: AltDiffBomber_range_m, nodupe: true);
                     //airGroup.setTask(AiAirGroupTask.ATTACK_GROUND, null);
                     //task = AiAirGroupTask.ATTACK_GROUND;
@@ -2719,7 +2727,8 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
             Console.WriteLine("10EscortChangeTaskTooDistantfromMain (before): is c/a too distant from lead a/c? {0:F0}m " + airGroup.Name() + " to " + player.Name(), distToLeadAircraft);
             if ((!heavyBomber || !airGroup.hasBombs()) && (distToLeadAircraft > 4000))
             {
-                aawpt = AiAirWayPointType.FOLLOW; //SEtting to Escort seems to make them drop their bombs?  Maybe?
+                //aawpt = AiAirWayPointType.FOLLOW; //SEtting to Escort seems to make them drop their bombs?  Maybe?
+                aawpt = AiAirWayPointType.ESCORT; //2020-09, now trying to keep the fighter escorts on .ESCORT instead.  But FOLLOW might be better, we'll see...
                 airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
                 task = AiAirGroupTask.DEFENDING;
                 tasktarget = playerAirGroup;

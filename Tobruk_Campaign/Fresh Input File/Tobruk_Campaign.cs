@@ -3,7 +3,7 @@
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-StatsMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SupplyMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-AerialInterceptRadar.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\objectives-insert.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs"
 
 /**********************************************************************************
  * 
@@ -437,9 +437,9 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1680000; //14 Hours
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     //public int END_MISSION_TICK = 720000; //14 Hours-ish
-    //public int END_MISSION_TICK = 720000; //6.4 Hours-ish
+    public int END_MISSION_TICK = 720000; //6.4 Hours-ish
     //public int END_MISSION_TICK = 350000; //3 Hours-ish
-    public int END_MISSION_TICK = 198600; //just over 90 minutes, mayber 100 minutes.  So just one bumrush period & a little more.
+    //public int END_MISSION_TICK = 198600; //just over 90 minutes, mayber 100 minutes.  So just one bumrush period & a little more.
 
     public double END_MISSION_TIME_HRS = 20.5; //So this means, the server will never run past 20.15 hours (8:15pm) server time, regardless of then it starts.  Reason is, it gets too dark after that.  So the mission will run either to ENDMISSION_TIME **OR** END_MISSION_TICK, whichever happens first.  END_MISSION_TICK is really redundant now but maybe it is a good failsafe to prevent everlasting missions?  Also we could use it to set a runtime shorter than the absolute max possible, thus we could start at different times of day and run a certain amount of time designated by END_MISSION_TICK, but never start earlier than DESIRED_MISSION_START_TIME or run later than ENDMISSION_TIME
     //public double END_MISSION_TIME_HRS = 4.51; //TESTING
@@ -497,6 +497,8 @@ public class Mission : AMission, IMainMission
     public int numBlueAircraft = 0;
     public int numRedAircraft = 0;
     public int numTotalAircraft = 0;
+
+    public TWCTobrukCampaignMissionObjectives twc_tobruk_campaign_mission_objectives;
 
 
     //MissionObjectives mission_objectives;
@@ -608,7 +610,10 @@ public class Mission : AMission, IMainMission
 
             supplymission = new SupplyMission(this); //do this towards the end because  it needs all the STATS_FULL_PATH and other similar variables.
             skincheckmission = new SkinCheckMission(this); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
+
             
+
+
 
 
 
@@ -908,7 +913,6 @@ public class Mission : AMission, IMainMission
 
             Task.Run(() => RemoveOffMapAIAircraft());
 
-
         }
 
 
@@ -989,7 +993,7 @@ public class Mission : AMission, IMainMission
             OnTick_End_Mission_Triggered = true; //This can only be triggered once, for various reasons.  So stop it from triggering repeatedly.
         }
 
-        if (Time.tickCounter() > 4000) //don't do radar returns for first couple of minutes of the mission, because things aren't initialized & so errors ensue
+        if (Time.tickCounter() > 5000) //don't do radar returns for first couple of minutes of the mission, because things aren't initialized & so errors ensue
         {
 
             //Ticks below write out TOPHAT radar files for red, blue, & admin
@@ -1952,6 +1956,7 @@ public class Mission : AMission, IMainMission
             if (currentEndMission == thisEndMission)
             {
                 twcLogServer(null, "Server Restarting in 10 seconds!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Server Restarting in 10 seconds!!!");
             }
 
 
@@ -4029,9 +4034,11 @@ public class Mission : AMission, IMainMission
         //Check if the two a/c are closer than the threshhold and meet other criteria, such as same type of fighter/bomber, within reasonable altitude range and if so add mutually to each other's nearby airgroups list
         public void checkIfNearbyAndAdd(AirGroupInfo agi2)
         {
+            if (agi2 == null || airGroup == null) return;
             Point3d tempos = agi2.pos;
             if (agi2.type == type && pos.distance(ref tempos) <= (mission as Mission).nearAirGroupThreshhold_m && (Math.Abs(agi2.pos.z - pos.z) <= (mission as Mission).nearAirGroupAltThreshhold_m))
             {
+                if (agi2.airGroup == null ) return;
                 addAG(agi2.airGroup);
                 agi2.addAG(airGroup);
                 //Console.WriteLine("AGI: Adding {0} {1:N0} {2:N0}, 1st: {3}, 2nd: {4}, {5}", playerNames, pos.distance(ref tempos), Math.Abs(agi2.pos.z - pos.z), nearbyAirGroups.Count, agi2.nearbyAirGroups.Count, agi2.playerNames);
@@ -4140,6 +4147,7 @@ public class Mission : AMission, IMainMission
                     //if (GamePlay.gpAirGroups(army) != null)
                     foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                     {
+                        if (airGroup == null) continue;
                         //Console.WriteLine("groupAllAircraft: 0.5");
                         doneAG.Add(airGroup);
                         //aigroup_count++;
@@ -4152,7 +4160,7 @@ public class Mission : AMission, IMainMission
                             {
                                 
                                 //Console.WriteLine("groupAllAircraft: 1.1");
-                                if (actor is AiAircraft)
+                                if (actor != null && actor is AiAircraft)
                                 {
                                     //Keep a tally of the total number  of a/c altogether and for each side.
                                     //We do it by AIRGROUP so we really only need to do this for the first one in the group
@@ -4191,13 +4199,13 @@ public class Mission : AMission, IMainMission
                                     {
                                         //Console.WriteLine("groupAllAircraft: 1.5");
                                         if (doneAG.Contains(airGroup2)) continue;
-                                        if (airGroup2.GetItems() != null && airGroup2.GetItems().Length > 0)
+                                        if (airGroup2 != null && airGroup2.GetItems() != null && airGroup2.GetItems().Length > 0)
                                         {
                                             //Console.WriteLine("groupAllAircraft: 1.6");
                                             //poscount2 = airGroup.NOfAirc;
                                             foreach (AiActor actor2 in airGroup2.GetItems())
                                             {
-                                                if (actor2 is AiAircraft)
+                                                if (actor2 != null && actor2 is AiAircraft)
                                                 {
                                                     //Console.WriteLine("groupAllAircraft: 1.7");
                                                     if (!airGroupInfoDict.ContainsKey(airGroup2)) airGroupInfoDict[airGroup2] = new AirGroupInfo(actor2, airGroup2, this, Time.current());
@@ -4947,7 +4955,7 @@ public class Mission : AMission, IMainMission
 
             try
             {
-                if (player != null && (player.Place() is AiAircraft))
+                if (player != null && player.Place() != null && (player.Place() is AiAircraft))
                 {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
                     p = player.Place() as AiAircraft;
                     pa = player.Place();
@@ -6823,7 +6831,7 @@ public class Mission : AMission, IMainMission
 
 
             // First add this line in your main mission in public override void OnBattleStarted()
-            //if (!DataDictionary.Contains("MAIN.MISSION")) DataDictionary.Add("MAIN.MISSION", this);
+            //DataDictionary["MAIN.MISSION"] = this;
             /*
              * // Then add this to your sub-mission.
 
@@ -6877,7 +6885,11 @@ public class Mission : AMission, IMainMission
             }
             */
 
-            ReadInitialSubmissions(MISSION_ID + "-initairports", 0, 0, subdir: "FocusAirports"); //The "focus airports" file(s) for the TOBRUK mission 2020-08
+            //ReadInitialSubmissions(MISSION_ID + "-initairports", 0, 0, subdir: "FocusAirports"); //The "focus airports" file(s) for the TOBRUK mission 2020-08
+
+            twc_tobruk_campaign_mission_objectives = new TWCTobrukCampaignMissionObjectives(GamePlay, this, mission_objectives, GetMapState()); //Can't really initialize this until now as we don't have the MAPSTATE
+
+            twc_tobruk_campaign_mission_objectives.ReadInitialFocusAirportSubmission(); //Reads the .mis file in FocusAirports as chosen by the appropriate mission subclass
 
             //Thread.Sleep(3000); //wait for the airports etc to load.
 
@@ -10272,6 +10284,14 @@ public class Mission : AMission, IMainMission
     };
     */
 
+    /*********************************************************************************************************************
+     * VALUES BELOW WILL BE OVERRIDEN BY Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs
+     * 
+     * 
+     * 
+     * 
+     * */
+
     //What percent of primary targets is actually required ot turn the map
     //If you make it 100% you have to get them all, but if some are difficult or impossible then that army will be stuck
     public Dictionary<ArmiesE, double> MO_PercentPrimaryTargetsRequired = new Dictionary<ArmiesE, double>() {
@@ -10315,6 +10335,17 @@ public class Mission : AMission, IMainMission
              }
         },
     };
+      
+    /*
+     *
+     *
+     *
+     *
+     *
+     * VALUES ABOVE OVERRIDEN BY Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs
+     ************************************************************************************************************************************/
+
+
 
     //Blank MO_BRBumrushInfo where we can restore data from disk/save @ end of mission
     public Dictionary<ArmiesE, MO_BRBumrushInfoType> MO_BRBumrushInfoRestored = new Dictionary<ArmiesE, MO_BRBumrushInfoType>();
@@ -11142,12 +11173,14 @@ public class Mission : AMission, IMainMission
     {
         private Mission msn;
         private maddox.game.IGamePlay gp;
+        public Dictionary<string, string> FlakMissions = new Dictionary<string, string>();
+        public Dictionary<string, string> Airfield_to_FlakMissions = new Dictionary<string, string>();
+        //public TWCTobrukCampaignMissionObjectives twc_tobruk_campaign_mission_objectives;
 
         public MissionObjectives(Mission mission, maddox.game.IGamePlay gameplay)
         {
             msn = mission;
             gp = gameplay;
-
 
             bool[] loadPreviousMission_success = new bool[] { false, false, false, false, false, false };
             bool loadingFromDiskOK = false;
@@ -11161,14 +11194,20 @@ public class Mission : AMission, IMainMission
                 loadPreviousMission_success = new bool[] { false, false, false, false, false, false }; //loadPreviousMission_success = false;
             }
 
+            msn.twc_tobruk_campaign_mission_objectives.FlakDictionariesSetup();
+
+
             if (!loadPreviousMission_success[0] || !loadPreviousMission_success[3] || !loadPreviousMission_success[4] || !loadPreviousMission_success[5])
             {   //If we couldn't load the old file we have little choice but to just  start afresh [0]
                 //we couldn't read the current score [3], the list of objectives completed [4] or the full list of objectives  [5] we could just
                 //reconstruct those.  But for now if we lose them we'll just re-start everythign from scratch.
                 Console.WriteLine("File Read problem #2 on startup!!  Using defaults.");
                 msn.MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
-                RadarPositionTriggersSetup();
-                MissionObjectiveTriggersSetup();
+                msn.twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
+                msn.twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
+                //RadarPositionTriggersSetup();
+                msn.twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
+                //MissionObjectiveTriggersSetup();
                 msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
             }
             else
@@ -11550,7 +11589,7 @@ public class Mission : AMission, IMainMission
 
             //So, in Desert Wings/CLOD 5.003 the ships just don't work.  They turn upside down, they fly, they are generally not well behaved.
             //So since these are already in placed, working, tested, I'm leaving these objectives in as possible secondary objectives etc but in general we'll just ignore them.
-
+            /*
             addTrigger(MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
             addTrigger(MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
 
@@ -11566,7 +11605,7 @@ public class Mission : AMission, IMainMission
 
             addTrigger(MO_ObjectiveType.Convoy, "Sidi-Scegga Resupply Convoy", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Blue-BSidiSceggaResupplyConvoy-objective.mis", "1010_Chief", 1, 5, "BSidiSceggaResupplyConvoy", "TGroupDestroyed", 100, 327607, 126528, 100, false, 200, 24, "", add);  //g
             addTrigger(MO_ObjectiveType.Convoy, "Siwi-Scegga Resupply Convoy", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Blue-BSiwiSceggaResupplyConvoy-objective.mis", "1008_Chief", 1, 5, "RSiwiSceggaResupplyConvoy", "TGroupDestroyed", 100, 286184, 35204, 100, false, 200, 24, "", add);  //g 
-
+            */
             
 
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
@@ -11594,6 +11633,7 @@ public class Mission : AMission, IMainMission
             //That's because too many flak installations seems to bring the server to its knees.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
 
+            /*
             addPointArea(MO_ObjectiveType.MilitaryArea, "Derna Fuel", "Dern", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-DernaFuel-objective.mis", 2, 5, "RTargDernaFuel", 32277, 264622, 200, 150, 1800, 4, 200, 48, false, true, 3, 7, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Tobruk Docks Fuel/Ammo Dump", "Tobr", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-TobrukDockFuel2-objective.mis", 2, 5, "RTargTobrukFuel", 160306, 186548, 200, 150, 1800, 2, 200, 48, false, true, 3, 7, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Coastal Fuel Dump", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-GermanFuelDump-objective.mis", 2, 5, "RCoastalFuel", 127599, 197411, 200, 150, 1800, 2, 200, 48, false, true, 3, 7, "", add);
@@ -11606,7 +11646,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.MilitaryArea, "BuqBuq Armor Camp", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Blue-BuqBuqBritishArmorCamp-objective.mis", 1, 5, "BBuqBuqArmorCamp", 306575, 116772, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Awdyat Fuel Dump", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Blue-AwdyatFuel.mis", 1, 5, "BAwdyatFuelDump", 235348, 27829, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
             
-
+            */
 
 
 
@@ -11659,6 +11699,7 @@ public class Mission : AMission, IMainMission
             */
 
 
+            /*
             addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Army Camp", "", 2, 1, "RMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.ArmyEncampment, 15, 10000, 10000, 278420, 271000, 2, 7, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Army Camp", "", 1, 2, "BMobileArmyCamp", 279965, 104219, 200, 150, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.ArmyEncampment, 15, 197500, 10000, 370000, 190000, 2, 7, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Secret Base", "", 1, 2, "BSecretAirbase", 289965, 104219, 700, 600, 10000, 10, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SecretAirbaseGB, 60, 197500, 10000, 370000, 190000, 10, 35, MO_ProducerOrStorageType.None, "", add);
@@ -11676,7 +11717,7 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 2, 1, "RIntelligenceListening", 262939, 143597, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.CamoGroup, 45, 10000, 10000, 278420, 271000, 5, 20, MO_ProducerOrStorageType.None, "", add);
             addMobile(MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 1, 1, "BIntelligenceListening", 212979, 182491, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.CamoGroup, 45, 197500, 10000, 370000, 190000, 5, 20, MO_ProducerOrStorageType.None, "", add);
 
-
+            */
 
             ////$include "C:\Users\Brent Hugh.BRENT-DESKTOP\Documents\Visual Studio 2015\Projects\ClodBLITZ-2018-01\Tobruk_Campaign-MissionObjectivesInclude.cs"
 
@@ -11709,7 +11750,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         //Names of the flak areas and link to file name
         //Name is used in list of objectives aboe & must match exactly.  You can change the name below but then the name in the addTrigger etc above must also be changed to match
         //file name must match exactly with the filename
-        public Dictionary<string, string> FlakMissions = new Dictionary<string, string>()
+        /*public Dictionary<string, string> FlakMissions = new Dictionary<string, string>()
             {
                     { "az", "/Flak areas/AbiarZaidflak.mis" },
                     { "ar", "/Flak areas/Akramhaflak.mis" },
@@ -11795,7 +11836,7 @@ added Rouen Flak
 					
 					
 					
-					
+				/*	
 
             };
         public Dictionary<string, string> Airfield_to_FlakMissions = new Dictionary<string, string>()
@@ -11855,6 +11896,7 @@ added Rouen Flak
 							
 
             };
+                */
 
         /*
         //This creates a randomized list of Blue & Red objectives.  When asked for potential targets we can check which still have not yet been destroyed & list location, name, etc.
@@ -12431,7 +12473,7 @@ added Rouen Flak
             gpLogServerAndLog(null, "BLUE Primary Target Airport is " + MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
         }
 
-        //Check if the files actually exist.  Does NOT actually load them, just checks if they are there with correct name!!!!
+        //Check if the files actually exist.  Does NOT actually load them, just checks if they are actually there with correct name!!!!
         bool blue_red = LoadRandomSubmission(fileID: MISSION_ID + "-Rush-Blue-" + MO_BRBumrushInfo[ArmiesE.Red].BumrushAirportName, subdir: "Bumrushes", check: true);
         bool red_red = LoadRandomSubmission(fileID: MISSION_ID + "-Rush-Red-" + MO_BRBumrushInfo[ArmiesE.Red].BumrushAirportName, subdir: "Bumrushes", check: true);
         bool blue_blue = LoadRandomSubmission(fileID: MISSION_ID + "-Rush-Blue-" + MO_BRBumrushInfo[ArmiesE.Blue].BumrushAirportName, subdir: "Bumrushes", check: true);
@@ -12682,7 +12724,7 @@ added Rouen Flak
             sectorDoublekeypad = sdk;
             discovered = d;
         }
-    }
+    }    
 
     public Dictionary<ArmiesE, GeneralStaffLocationObject> GeneralStaffLocations = new Dictionary<ArmiesE, GeneralStaffLocationObject>(); //location, objective key, objective name, name of general staff group, sector, sector keypad, sector double keypad, whether discovered yet
     //public Dictionary<ArmiesE, Tuple<Point3d, string, string, string, string, string, string, bool>> GeneralStaffLocations; //location, objective key, objective name, name of general staff group, sector, sector keypad, sector double keypad, whether discovered yet
@@ -15259,7 +15301,7 @@ added Rouen Flak
     }
 
     //This needs to be run after each mission restart, after the missionobjectiveslist has been reloaded from disk
-    //It accounts for the fact that MissionObjectivesList was saved to disk and now reloaded, but in the meanwhile we might have objected (for example) class MissionObjective
+    //It accounts for the fact that MissionObjectivesList was saved to disk and now reloaded, but in the meanwhile we might have changed (for example) class MissionObjective
     //to include some new values.  They will all be set to FALSE or 0 or whatever if we just continue with the saved version.
     //On the other hand, we can't just reload the new version because we will lose current state of targets destroyed, targets for which
     //points have been awards, scouted objectives, etc. 
@@ -15270,10 +15312,15 @@ added Rouen Flak
         Dictionary<string, MissionObjective> MissionObjectivesList_OLD = new Dictionary<string, MissionObjective>(MissionObjectivesList);
         MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
         //Console.WriteLine("#1" + (mission_objectives == null).ToString());
-        m_os.RadarPositionTriggersSetup();
+        //m_os.RadarPositionTriggersSetup();
         //Console.WriteLine("#2");
-        m_os.MissionObjectiveTriggersSetup();
+        //m_os.MissionObjectiveTriggersSetup();
         //Console.WriteLine("#3");
+        //New way with TOBRUK campaign objectives system
+        twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
+        twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
+        //RadarPositionTriggersSetup();
+        twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
         MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
                                                                               //Also, confusing, we must run this TWICE: Once before the routine below to UPDATE the MOs, because otherwise there is nothing to update.
                                                                               //But a 2nd time, after the update, because that is what transfers airport destroyed etc info from the MOList to the airport list.

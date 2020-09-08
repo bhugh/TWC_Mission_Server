@@ -207,8 +207,9 @@ public class CoverMission : AMission, ICoverMission
 
             try
             {
+            Console.WriteLine("-cover.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
 
-                TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+            TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
 
                 TWCStatsMission = TWCComms.Communicator.Instance.Stats;
                 if (TWCStatsMission != null) TWCStbStatRecorder = TWCStatsMission.stb_IStatRecorder;

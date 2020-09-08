@@ -1,5 +1,6 @@
 ////$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesNeg10.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos10.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"
 
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll
@@ -51,6 +52,8 @@ public class SubMissionClassInfo
 
 public abstract class TWCTCMO
 {
+    public abstract Mission.MissionObjectives mmo { get; set; }
+    public abstract TWCTCMO current_subclass { get; set; }
     public abstract double score { get; set; } //-1000000.111 is a "magic number" meaning no subclass
     //private int? current_subclass; //was going to make this double but given that     
     public abstract string focus_airport_misfile_name { get; set; }
@@ -63,6 +66,15 @@ public abstract class TWCTCMO
 
     }
 
+    public void UpdateMissionObjectives(M.MissionObjectives mo)
+    {
+        mmo = mo;
+        try
+        {
+            if (current_subclass != null) current_subclass.UpdateMissionObjectives(mmo);
+        }
+        catch (Exception ex) { Console.WriteLine("UpdateMissionObjectives ERROR: " + ex.ToString()); }
+    }
 
     public abstract void OverrideCampaignTurnMapRequirements();
 
@@ -79,6 +91,8 @@ public abstract class TWCTCMO
     //Nothing needed at this level; we just call the corresponding routine in current_subclass.ReadInitialFocusAirportSubmission which does all the mission-specific work
     public abstract void ReadInitialFocusAirportSubmission();
 
+    public abstract void LaunchABumrush(int objectivesAchievedArmy, int attackingArmy, string AirportName);
+
 }
 
 
@@ -86,23 +100,22 @@ public abstract class TWCTCMO
 
 public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
     public Mission msn;
-    public Mission.MissionObjectives mmo;
+    public override Mission.MissionObjectives mmo { get; set; }
     public maddox.game.IGamePlay gp;
     public override double score { get; set; } 
     //private int? current_subclass; //was going to make this double but given that 
     private List<TWCTCMO> TWCMissionObjectives_subclasses;
-    private TWCTCMO current_subclass; //was going to make this double but given that    
+    public override TWCTCMO current_subclass { get; set; } 
     public override string focus_airport_misfile_name { get; set; }
     public override double leastScore { get; set; } //Every subclass MUST include this value, which is the least campaign score value for which it will be loaded (>=)
     public override double mostScore { get; set; }   //Every subclass MUST include this value, which is the greatest campaign score value for which it will be loaded (<)
-                                        //Typically if the class if for say point value 10, you set it 5,15 so as to bracket the desired mission point value.
-                                        //Or you set them -10,0 - 0,10 - 10,20 - 20-30, so that players much reach 10 points (for example) before that submission kicks in
-                                        //Note that >= is used on the bottom and < on the top so that you can overlap as shown above & only one submission will be operative
-                                        //And ALWAYS only one submisison will be operative.
-                                        //HOWEVER nothing is checking that you have avoided overlapping.  So if you have -10,0 & -5,5 & 0,10 submission then, ONE OF THE TWO of them
-                                        //will be operative but it will be UNPREDICTABLE which one.  So, don't overlap.
-                                        //You can leave values null to ignore.  For example value null,-100   will cover everything less than -100
-                                        //and 100,null will cover everything 100 or greater.
+                                                     //Typically if the class is for say point value 100, you set it 50,150 so as to bracket the desired mission point value.
+                                                     //Or you set them -100,0 ; 0,100 ; 100,200 ; 200-300, so that players much reach 10 points (for example) before that submission kicks in
+                                                     //Note that >= is used on the bottom and < on the top so that you can overlap as shown above & only one submission will be operative
+                                                     //HOWEVER nothing is checking that you have avoided overlapping.  So if you have -100,0 & -50,50 & 0,100 submission then, TWO of them
+                                                     //will be operative AT ONCE for score of -50 to 50.  Only one will actually be chosen and you won't be able to predict which.  Just avoid doing this.
+                                                     //When one side wins the Bumrush and turns the map, they are awarded 10,000 player points.  1 "Score" point = 100 Player Points, so
+                                                     //Advancing 10,000 Player Points means advancing 100 score point.  So think of each phase as being incremented by 100, like -400, -300, -200, -100, 0, 100, 200, 300, 400 etc
 
     //An initializer with no input fields is required in order to make descendants of this class
     public TWCTobrukCampaignMissionObjectives()
@@ -111,26 +124,34 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
 
     //This will set up Tobruk-specific overall/general mission objectives for the overall mission, according to the current Campaign Score (score)
     //It will then pass the routines along at the appropriate points, and to the appropriate
-    public TWCTobrukCampaignMissionObjectives(maddox.game.IGamePlay g, Mission m, Mission.MissionObjectives mo, double sc)
+    public TWCTobrukCampaignMissionObjectives(maddox.game.IGamePlay g, Mission m, double sc)
     {
         TWCMissionObjectives_subclasses = new List<TWCTCMO>() { };
         msn = m;
-        mmo = mo;
+        //mmo = mo;
+        mmo = msn.mission_objectives; //so when first passed (in Mission constructor) this is NULL.  It is updated/initialized after a while.  It MUST be updated via a call to UpdateMissionObjectives() later (UpdateMissionObjectives() is defined in TWCTMO above)
         gp = g;
 
-        mostScore = 100000000;
-        leastScore = -100000000;
+        mostScore = 100000000; //This is the generic base mission stuff, so it should apply to ANY AND EVERY score possible
+        leastScore = -100000000; //Also, the most & least stuff isn't really implemented for this base mission (only for the Pos100 Neg100 etc specific Battle Missions)
 
         Console.WriteLine(" TWCTobrukCampaignMissionObjectives real score is {0} - for testing setting it to {1}", sc, 10);
-        //score = sc;
-        score = 10; //TESTING!!!!!        
-                    //mmo = msn.mission_objectives;  
+        score = sc;
+        score = 100; //TESTING!!!!! Using a fake/test score. To use the REAL SCORE rem out this line.      
+                    
 
         focus_airport_misfile_name = "";
 
-        TWCTCMO mission_pos10 = new MissionPos10(g, m, mo, sc);
-        Console.WriteLine("Pos10 inited (return), {0} {1} {2} {3}", mission_pos10.score, mission_pos10.leastScore, mission_pos10.mostScore, mission_pos10.focus_airport_misfile_name);
-        register_subclass(mission_pos10);
+        /*****************************************************************************************************
+         * 
+         * ADD BATTLE .cs SCRIPT FILES HERE
+         * Add the $include file for the .cs above, then add the class and register it below
+         * 
+         * ***************************************************************************************************/
+
+        TWCTCMO battle_pos100 = new BattlePos100(g, m, sc);
+        Console.WriteLine("Pos100 inited (return), {0} {1} {2} {3}", battle_pos100.score, battle_pos100.leastScore, battle_pos100.mostScore, battle_pos100.focus_airport_misfile_name);
+        register_subclass(battle_pos100);
 
         //TWCTobrukCampaignMissionObjectives mission_neg10 = new MissionNeg10();
         //TWCTobrukCampaignMissionObjectives mission_0 = new Mission0(g, m, mo, sc);
@@ -143,13 +164,23 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         
     }
 
-
+    /*
+    public override void UpdateMissionObjectives(M.MissionObjectives mo)
+    {
+        mmo = mo;
+        try
+        {
+            if (current_subclass != null) current_subclass.UpdateMissionObjectives(mmo);
+        }
+        catch (Exception ex) { Console.WriteLine("UpdateMissionObjectives ERROR: " + ex.ToString()); }
+    }
+    */
 
 
 
     //public List<SubMissionClassInfo> MissionObjectives_subclasses = new List<int, SubMissionClassInfo>()  { };
 
-    
+
 
     //So every subclass must register itself during initilization via
     //  base.register_subclass (this);  The numbers are the LEAST and GREATEST campaign score for which that subclass should be activated.
@@ -468,7 +499,10 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //Names of the flak areas and link to file name
         //Name is used in list of objectives aboe & must match exactly.  You can change the name below but then the name in the mmo.addTrigger etc above must also be changed to match
         //file name must match exactly with the filename
-        mmo.FlakMissions = new Dictionary<string, string>()
+        try
+        {
+            if (mmo.FlakMissions == null) return;
+            mmo.FlakMissions = new Dictionary<string, string>()
             {
                     { "az", "/Flak areas/AbiarZaidflak.mis" },
                     { "ar", "/Flak areas/Akramhaflak.mis" },
@@ -524,6 +558,11 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
 
 
             };
+        }
+        catch (Exception ex) { Console.WriteLine("TTMO Flak: " + ex.ToString()); }
+
+        try { 
+        if (mmo.Airfield_to_FlakMissions == null) return;
         mmo.Airfield_to_FlakMissions = new Dictionary<string, string>()
             {
                     { "az", "/Flak areas/AbiarZaidflak.mis" },
@@ -581,6 +620,8 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
 
 
             };
+        }
+        catch (Exception ex) { Console.WriteLine("TTMO Flak2: " + ex.ToString()); }
 
         /*************************************************************
          * 
@@ -669,6 +710,20 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         {
             Console.WriteLine("TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
         }
+    }
+
+    //Another passthrough to the current_subclass
+    public override void LaunchABumrush(int objectivesAchievedArmy, int attackingArmy, string AirportName)
+    {
+        try
+        {
+            current_subclass.LaunchABumrush(objectivesAchievedArmy, attackingArmy, AirportName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("TWCTobrukCampaign LaunchABumrush() ERROR: " + ex.ToString());
+        }
+
     }
 
 

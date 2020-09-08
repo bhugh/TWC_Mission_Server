@@ -4751,6 +4751,7 @@ struct
             //Console.WriteLine("starting chat2");
             (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
         }
+        Console.WriteLine("-stats inited");
     }
 
     //OK, this never gets called in -stats.cs files because the main .cs file loads initial submissions during OnBattleStarted!  So any initial things you need, need to be loaded elsewhere.
@@ -4952,6 +4953,8 @@ struct
         #region stb
         base.OnMissionLoaded(missionNumber);
 
+        Console.WriteLine("-stats.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+
         //TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
 
         //AMission TWCMainMission;
@@ -4982,7 +4985,7 @@ struct
             //Escort21.coord.Communicate coms = new Escort21.coord.Communicate();
 
             //Console.WriteLine("STATS: " + Communicate.test.ToString());
-            Console.WriteLine("stats mission LOADED");
+            Console.WriteLine("-stats.cs mission LOADED");
             string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
             stb_FullPath = s + stb_LocalMissionStatsDirectory; //@"missions\Multi\Fatal\"            
             TWCComms.Communicator.Instance.stb_FullPath = stb_FullPath;
@@ -9903,8 +9906,7 @@ struct
 
         public override void OnPlayerArmy(maddox.game.Player player, int army)
         {
-            #region stats
-            base.OnPlayerArmy(player, army);
+            #region stats            
             try
             {
 
@@ -9934,8 +9936,7 @@ struct
 
         public override void OnPlayerConnected(maddox.game.Player player)
         {
-            #region stats
-            base.OnPlayerConnected(player);
+            #region stats            
             try
             {
                 //System.Console.WriteLine("OnPlayerConnected");

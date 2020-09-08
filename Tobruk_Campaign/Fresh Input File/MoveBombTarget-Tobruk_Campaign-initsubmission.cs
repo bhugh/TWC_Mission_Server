@@ -381,6 +381,8 @@ public class Mission : AMission
     {
         base.OnMissionLoaded(missionNumber);
 
+        Console.WriteLine("-movebomb.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+
         if (missionNumber != MissionNumber) return; //only do this when this particular mission is loaded.
         
         Timeout(2*60, () => { checkAirgroupsIntercept_recur(); }); 

@@ -120,6 +120,8 @@ public class SupplyMission : AMission, ISupplyMission
     {
         base.OnMissionLoaded(missionNumber);
 
+        Console.WriteLine("-supply.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+
         if (missionNumber != MissionNumber) return; //only do this when this particular mission is loaded.
 
         Console.WriteLine("-supply.cs successfully loaded");

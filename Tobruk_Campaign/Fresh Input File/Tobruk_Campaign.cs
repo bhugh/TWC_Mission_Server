@@ -1,5 +1,5 @@
 ﻿//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-CoverMission.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SkinCheckMission.cs"
+////$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SkinCheckMission.cs" //this might be cause of launcher crashes?  disabling.  2020-09-07
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-StatsMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SupplyMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-AerialInterceptRadar.cs"
@@ -374,8 +374,6 @@ public class aPlayer : Player
     */
 }
 
-
-
 //public class Mission : AMission, IMainMission
 public class Mission : AMission, IMainMission
 //public class Mission : BaseMission, IMainMission
@@ -400,7 +398,7 @@ public class Mission : AMission, IMainMission
     public StatsMission statsmission;
     public SupplyMission supplymission;
     public AIRadarMission airadarmission;
-    public SkinCheckMission skincheckmission;
+    //public SkinCheckMission skincheckmission;
     //public BaseMission gcvmission;
 
     public string MISSION_FOLDER_PATH;
@@ -609,7 +607,7 @@ public class Mission : AMission, IMainMission
             GiantSectorOverview[2] = new int[10, 2];
 
             supplymission = new SupplyMission(this); //do this towards the end because  it needs all the STATS_FULL_PATH and other similar variables.
-            skincheckmission = new SkinCheckMission(this); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
+            //skincheckmission = new SkinCheckMission(this); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
 
             
 
@@ -2667,8 +2665,9 @@ public class Mission : AMission, IMainMission
 
         //Update scoring, 2020/02/15 - now we are ADDING 100 points (/100 = 1) to that side's current Map Mover score, and also adding the (miniscule) amount
         //of points they get from air victories etc.  Before it was just a flat 100 points for turning the map, but now it's whatever objective points you've accumulated PLUS 100 points more.
+        //
         //UPDATE TOBRUK: We now have intermediate scoring which looks like a couple points to make a few hundred; but upon turning the map by winning the
-        //airport they are awarded a flat 10 map points (=10X100 points as shown) and so we calculate map moves on 0, 10, 20, -10, -20 etc
+        //airport they are awarded a flat 100 map points (=100X100 points as shown) and so we calculate map moves on 0, 100, 200, -100, -200 etc
         if (winner == "Red")
         {
             //msg = "Red moved the campaign forward by achieving all Primary Objectives and turning the map!";
@@ -2677,7 +2676,7 @@ public class Mission : AMission, IMainMission
             //return new Tuple<double, string>(1.2 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 1000.0, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at this time, plus we're adding in the individual victory bonus 2X
 
             //TOBRUK we're just advancing the map by increments  of 1000.  (ie 10 (X100 = 1000) for RED)
-            return new Tuple<double, string>(10, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at 
+            return new Tuple<double, string>(100, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at 
         }
         if (winner == "Blue")
         {
@@ -2687,7 +2686,7 @@ public class Mission : AMission, IMainMission
             //return new Tuple<double, string>(-1.2 - MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 1000.0, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather SUBTRACTING since this is the blue side) in the objective points at this time, plus we're adding in the individual victory bonus 2X
 
             //TOBRUK we're just advancing the map by increments  of 1000.  (ie -10 (X100 = 1000) for BLUE)
-            return new Tuple<double, string>(-10, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather 
+            return new Tuple<double, string>(-100, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather 
         }
 
         if (RedTotalF > 3)
@@ -6887,13 +6886,22 @@ public class Mission : AMission, IMainMission
 
             //ReadInitialSubmissions(MISSION_ID + "-initairports", 0, 0, subdir: "FocusAirports"); //The "focus airports" file(s) for the TOBRUK mission 2020-08
 
-            twc_tobruk_campaign_mission_objectives = new TWCTobrukCampaignMissionObjectives(GamePlay, this, mission_objectives, GetMapState()); //Can't really initialize this until now as we don't have the MAPSTATE
+            try
+            {
 
-            twc_tobruk_campaign_mission_objectives.ReadInitialFocusAirportSubmission(); //Reads the .mis file in FocusAirports as chosen by the appropriate mission subclass
+                twc_tobruk_campaign_mission_objectives = new TWCTobrukCampaignMissionObjectives(GamePlay, this, GetMapState()); //Can't really initialize this until now as we don't have the MAPSTATE
+
+                Console.WriteLine("Main load TTCMO SUCCEEDED");
+
+                twc_tobruk_campaign_mission_objectives.ReadInitialFocusAirportSubmission(); //Reads the .mis file in FocusAirports as chosen by the appropriate mission subclass
+                Console.WriteLine("TTCMO ReadInitialFocusAirports SUCCEEDED");
+
+            }
+            catch (Exception ex) { Console.WriteLine("Main load TTCMO ERROR: " + ex.ToString()); }
 
             //Thread.Sleep(3000); //wait for the airports etc to load.
 
-            Timeout(20, () =>
+            Timeout(30, () =>
            {
                Console.WriteLine("INITIALIZING mission_objectives now");
                SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives                                            
@@ -7089,10 +7097,11 @@ public class Mission : AMission, IMainMission
     public void ReadInitialSubmissions(string filenameID, int timespread = 60, double wait = 0, string subdir = "")
     {
         List<string> InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, filenameID); // gets .mis files with with word filenameID in them
-                                                                                                     //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
-                                                                                                     //string[] array = Directory.GetFiles(FILE_PATH + @"Airfields\");
+                                                                                                                    //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
+                                                                                                                    //string[] array = Directory.GetFiles(FILE_PATH + @"Airfields\");
 
-        DebugAndLog("Debug: Loading " + InitSubMissions.Count + " missions to load. " + filenameID + " " + CLOD_PATH + FILE_PATH);
+        //DebugAndLog("Debug: Loading " + InitSubMissions.Count + " missions to load. " + filenameID + " " + CLOD_PATH + FILE_PATH);
+        Console.WriteLine("Debug: Loading " + InitSubMissions.Count + " missions to load. " + filenameID + " " + CLOD_PATH + FILE_PATH);
         foreach (string s in InitSubMissions)
         {
             //Distribute loading of initial sub-missions over the first timespread seconds
@@ -7140,7 +7149,7 @@ public class Mission : AMission, IMainMission
         {
 
             gpBattle = battle;
-
+            Console.WriteLine("Loading -cover -stats -supply -airadar");
             gpBattle.creatingMissionScript(covermission, missionNumber + 1, "");  //TODO NOT SURE IF WE NEED TO INCLUDE A FILENAME HERE!??!?
             gpBattle.creatingMissionScript(statsmission, missionNumber + 2, "");
             gpBattle.creatingMissionScript(supplymission, missionNumber + 3, "");
@@ -7279,6 +7288,7 @@ public class Mission : AMission, IMainMission
     {
         base.OnMissionLoaded(missionNumber);
 
+        Console.WriteLine("-main.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
         try
         {
 
@@ -8736,6 +8746,8 @@ public class Mission : AMission, IMainMission
             MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
             mission_objectives.RadarPositionTriggersSetup();
             mission_objectives.MissionObjectiveTriggersSetup();
+            twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
+            twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
             MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives    
             MO_SelectPrimaryObjectives(1, 0, fresh: true);
             MO_SelectPrimaryObjectives(2, 0, fresh: true);
@@ -9843,9 +9855,10 @@ public class Mission : AMission, IMainMission
             bool iACP = isAiControlledPlane2(a);
             if (!iACP)
             {
-                skincheckmission.DeleteLargeSkinFiles();
-                Timeout(600.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
-                Timeout(1800.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
+                //Timeout(35.232, () => { skincheckmission.DeleteLargeSkinFiles(); });
+
+                //Timeout(600.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
+                //Timeout(1800.732, () => { skincheckmission.DeleteLargeSkinFiles(); });
                 if (a as AiAircraft == null) return;
                 string type = Calcs.GetAircraftType(a as AiAircraft);
                 if (type.Contains("110") || type.Contains("Ju-87"))
@@ -11018,6 +11031,11 @@ public class Mission : AMission, IMainMission
 
 
         }
+        public bool hasChief()
+        {
+            if (ChiefName != null && ChiefName.Length > 0) return true;
+            return false;
+        }
 
         //If the objective has an associated Chief then we can use that to find it's actual position for scouting/recon purposes
         public Point3d returnCurrentPosWithChief()
@@ -11175,137 +11193,172 @@ public class Mission : AMission, IMainMission
         private maddox.game.IGamePlay gp;
         public Dictionary<string, string> FlakMissions = new Dictionary<string, string>();
         public Dictionary<string, string> Airfield_to_FlakMissions = new Dictionary<string, string>();
-        //public TWCTobrukCampaignMissionObjectives twc_tobruk_campaign_mission_objectives;
+        //public TWCTobrukCampaignMissionObjectives twc_tobruk_campaign_mission_objectives; //moved this to main Mission class as it seems more logical there (needed EARLY in startup)
 
         public MissionObjectives(Mission mission, maddox.game.IGamePlay gameplay)
         {
-            msn = mission;
-            gp = gameplay;
-
-            bool[] loadPreviousMission_success = new bool[] { false, false, false, false, false, false };
-            bool loadingFromDiskOK = false;
             try
             {
-                loadPreviousMission_success = msn.MO_ReadMissionObjects();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("File Read problem on startup!!  Using defaults. Error message: " + ex.ToString());
-                loadPreviousMission_success = new bool[] { false, false, false, false, false, false }; //loadPreviousMission_success = false;
-            }
+                Console.WriteLine("MissionObjectives initializing...");
+                msn = mission;
+                gp = gameplay;
 
-            msn.twc_tobruk_campaign_mission_objectives.FlakDictionariesSetup();
+                bool[] loadPreviousMission_success = new bool[] { false, false, false, false, false, false };
+                bool loadingFromDiskOK = false;
+                try
+                {
+                    loadPreviousMission_success = msn.MO_ReadMissionObjects();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("MissionObjectives: File Read problem on startup!!  Using defaults. Error message: " + ex.ToString());
+                    loadPreviousMission_success = new bool[] { false, false, false, false, false, false }; //loadPreviousMission_success = false;
+                }
 
+                try
+                {
+                    msn.twc_tobruk_campaign_mission_objectives.UpdateMissionObjectives(this); //when we first initialize twc_tobruk_campaign_mission_objectives mission_objectives is not yet initialized, so we can't pass it.
+                    Console.WriteLine("TTCMO updated MissionObjectives");
 
-            if (!loadPreviousMission_success[0] || !loadPreviousMission_success[3] || !loadPreviousMission_success[4] || !loadPreviousMission_success[5])
-            {   //If we couldn't load the old file we have little choice but to just  start afresh [0]
-                //we couldn't read the current score [3], the list of objectives completed [4] or the full list of objectives  [5] we could just
-                //reconstruct those.  But for now if we lose them we'll just re-start everythign from scratch.
-                Console.WriteLine("File Read problem #2 on startup!!  Using defaults.");
-                msn.MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
-                msn.twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
-                msn.twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
-                //RadarPositionTriggersSetup();
-                msn.twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
-                //MissionObjectiveTriggersSetup();
-                msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
-            }
-            else
-            {
-                loadingFromDiskOK = true;
-
-                //RESET PRIMARY OBJECTIVES (so they can be re-read from the .ini file, reset, or whatever, down below)
-
-                msn.updateMissionObjectivesListOnReload(this); //We reloaded the MissionObjectivesList from disk, but if we have added or removed objectives OR changed or added fields in MissionObjective then the loaded-from-disk data will by out of sync with the changes we have made.  This updates MissionObjectivesList to reflect what is in the .cs file now, and initialize everything properly, but transfers any important data (mo.Destroyed, Mo.DestroyedPercent etc) from the saved-to-disk version to the current running version. 
-
-                //Now we have to pick up any NEW triggers or objectives that have been added to -main.cs since the last run
-                //RadarPositionTriggersSetup(addNewOnly: true); // now done by updateMissionObjectivesListOnReload();
-                //MissionObjectiveTriggersSetup(addNewOnly: true); // now done by updateMissionObjectivesListOnReload();
-
-                //msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: true); //does a bunch of airfield setup, adds new objectives; must do this after the Radar & Triggers setup, as it uses info from those objectives // now done by updateMissionObjectivesListOnReload();
-
-            }
-
-            if (!loadPreviousMission_success[1])
-            {
-                Console.WriteLine("Failed to load Suggested Objectives - generating them fresh.");
-                SelectSuggestedObjectives(ArmiesE.Red);
-                SelectSuggestedObjectives(ArmiesE.Blue);
-            }
-
-            //Get new objectives for winner if they have turned the map OR read in the old objectives if not
-            /* //no more winner stuff on session start; it all happens rolling.
-            if (msn.MapPrevWinner == "Red")
-            {
-                Console.WriteLine("RED turned the map last time - giving reward, selecting new objectives");
-                msn.MO_MissionObjectiveWinnersReward(ArmiesE.Red); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
-                msn.MO_SelectPrimaryObjectives(1, 0, fresh: true);
-                msn.MO_ReadPrimaryObjectives(2);
-                SelectSuggestedObjectives(ArmiesE.Red);
-            }
-            else if (msn.MapPrevWinner == "Blue")
-            {
-                Console.WriteLine("BLUE turned the map last time - giving reward, selecting new objectives");
-                msn.MO_MissionObjectiveWinnersReward(ArmiesE.Blue); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
-                msn.MO_SelectPrimaryObjectives(2, 0, fresh: true);
-                msn.MO_ReadPrimaryObjectives(1);
-                SelectSuggestedObjectives(ArmiesE.Blue);
-            }
-            else
-            */
-
-            {
-                msn.MO_ReadPrimaryObjectives(2);
-                msn.MO_ReadPrimaryObjectives(1);
-                //SuggestedObjectives for both armies are read in via the .ini file
-            }
-            //this will go through all objectives (except airports) & disable any that need to be disabled, add any new ones in the .cs file, etc
-            //needs to be done AFTER winner stuff is done this puts smoke on damaged objectives and other things that will be changed if the winner's rewards have not yet happened
-            //adds destroyed radars to the DestroyedRadars list, etc.
-            //Only exception is AIRFIELDS because they have their own special way of handling them.
-            msn.MO_MissionObjectiveOnStartCheck(msn, gp);
-
-            try 
-            {
-                msn.MO_HandleGeneralStaffPlacement();
-            }
-            catch (Exception ex) { Console.WriteLine("MO_init error1! " + ex.ToString()); }
-            //Now write the new objective list to file
-            try
-            {
-                msn.MO_WritePrimaryObjectives();
-            }
-            catch (Exception ex) { Console.WriteLine("MO_init error2! " + ex.ToString()); }
-            //Must select suggested/secondary objectives AFTER loading/choosing the primary objectives - otherwise we might end up with some items on both lists                        
-
-            //msn.MO_WriteMissionObjects();
-            //Thread.Sleep(1000); //For testing purposes, not really the best way to do it.
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("twc_tobruk_campaign_mission_objectives.UpdateMissionObjectives ERROR: " + ex.ToString());
+                }
 
             try
-            {
-                //load the flak for the areas that have primary objectives
-                msn.MO_LoadAllPrimaryObjectiveFlak(FlakMissions);
-            }
-            catch (Exception ex) { Console.WriteLine("MO_init error3! " + ex.ToString()); }
-
-            try {
-                msn.MO_InitializeAllObjectives();
-            }
-            catch (Exception ex) { Console.WriteLine("MO_init error3a! " + ex.ToString()); }
+                {
+                    msn.twc_tobruk_campaign_mission_objectives.FlakDictionariesSetup();
+                    Console.WriteLine("TTCMO updated FlakDictionaries");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("twc_tobruk_campaign_mission_objectives.FlakDictionariesSetup ERROR: " + ex.ToString());
+                }
 
 
-            //Write list of triggers to a file in simulated .mis format so that it is easy to verify all triggers have been read in similar
-            //to the .mis file
-            try
-            {
-                msn.MO_WriteOutAllMissionObjectives(msn.MISSION_ID + "-mission_objectives_mis_format.txt", true);
+                if (!loadPreviousMission_success[0] || !loadPreviousMission_success[3] || !loadPreviousMission_success[4] || !loadPreviousMission_success[5])
+                {   //If we couldn't load the old file we have little choice but to just  start afresh [0]
+                    //we couldn't read the current score [3], the list of objectives completed [4] or the full list of objectives  [5] we could just
+                    //reconstruct those.  But for now if we lose them we'll just re-start everythign from scratch.
+                    Console.WriteLine("File Read problem #2 on startup!!  Using defaults.");
+                    msn.MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
+
+                    try
+                    {
+                        msn.twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
+                        msn.twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
+                        //RadarPositionTriggersSetup();
+                        msn.twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
+                        //MissionObjectiveTriggersSetup();
+                        Console.WriteLine("TTCMO loaded bumrush, radar, objective dictionaries (1)");
+                        msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("twc_tobruk_campaign_mission_objectives SETUP MAJOR ERROR: " + ex.ToString());
+                    }
+
+                }
+                else
+                {
+                    loadingFromDiskOK = true;
+
+                    //RESET PRIMARY OBJECTIVES (so they can be re-read from the .ini file, reset, or whatever, down below)
+
+                    msn.updateMissionObjectivesListOnReload(this); //We reloaded the MissionObjectivesList from disk, but if we have added or removed objectives OR changed or added fields in MissionObjective then the loaded-from-disk data will by out of sync with the changes we have made.  This updates MissionObjectivesList to reflect what is in the .cs file now, and initialize everything properly, but transfers any important data (mo.Destroyed, Mo.DestroyedPercent etc) from the saved-to-disk version to the current running version. 
+
+                    //Now we have to pick up any NEW triggers or objectives that have been added to -main.cs since the last run
+                    //RadarPositionTriggersSetup(addNewOnly: true); // now done by updateMissionObjectivesListOnReload();
+                    //MissionObjectiveTriggersSetup(addNewOnly: true); // now done by updateMissionObjectivesListOnReload();
+
+                    //msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: true); //does a bunch of airfield setup, adds new objectives; must do this after the Radar & Triggers setup, as it uses info from those objectives // now done by updateMissionObjectivesListOnReload();
+
+                }
+
+                if (!loadPreviousMission_success[1])
+                {
+                    Console.WriteLine("Failed to load Suggested Objectives - generating them fresh.");
+                    SelectSuggestedObjectives(ArmiesE.Red);
+                    SelectSuggestedObjectives(ArmiesE.Blue);
+                }
+
+                //Get new objectives for winner if they have turned the map OR read in the old objectives if not
+                /* //no more winner stuff on session start; it all happens rolling.
+                if (msn.MapPrevWinner == "Red")
+                {
+                    Console.WriteLine("RED turned the map last time - giving reward, selecting new objectives");
+                    msn.MO_MissionObjectiveWinnersReward(ArmiesE.Red); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
+                    msn.MO_SelectPrimaryObjectives(1, 0, fresh: true);
+                    msn.MO_ReadPrimaryObjectives(2);
+                    SelectSuggestedObjectives(ArmiesE.Red);
+                }
+                else if (msn.MapPrevWinner == "Blue")
+                {
+                    Console.WriteLine("BLUE turned the map last time - giving reward, selecting new objectives");
+                    msn.MO_MissionObjectiveWinnersReward(ArmiesE.Blue); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
+                    msn.MO_SelectPrimaryObjectives(2, 0, fresh: true);
+                    msn.MO_ReadPrimaryObjectives(1);
+                    SelectSuggestedObjectives(ArmiesE.Blue);
+                }
+                else
+                */
+
+                {
+                    msn.MO_ReadPrimaryObjectives(2);
+                    msn.MO_ReadPrimaryObjectives(1);
+                    //SuggestedObjectives for both armies are read in via the .ini file
+                }
+                //this will go through all objectives (except airports) & disable any that need to be disabled, add any new ones in the .cs file, etc
+                //needs to be done AFTER winner stuff is done this puts smoke on damaged objectives and other things that will be changed if the winner's rewards have not yet happened
+                //adds destroyed radars to the DestroyedRadars list, etc.
+                //Only exception is AIRFIELDS because they have their own special way of handling them.
+                msn.MO_MissionObjectiveOnStartCheck(msn, gp);
+
+                try
+                {
+                    msn.MO_HandleGeneralStaffPlacement();
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error1! " + ex.ToString()); }
+                //Now write the new objective list to file
+                try
+                {
+                    msn.MO_WritePrimaryObjectives();
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error2! " + ex.ToString()); }
+                //Must select suggested/secondary objectives AFTER loading/choosing the primary objectives - otherwise we might end up with some items on both lists                        
+
+                //msn.MO_WriteMissionObjects();
+                //Thread.Sleep(1000); //For testing purposes, not really the best way to do it.
+
+                try
+                {
+                    //load the flak for the areas that have primary objectives
+                    msn.MO_LoadAllPrimaryObjectiveFlak(FlakMissions);
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error3! " + ex.ToString()); }
+
+                try
+                {
+                    msn.MO_InitializeAllObjectives();
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error3a! " + ex.ToString()); }
+
+
+                //Write list of triggers to a file in simulated .mis format so that it is easy to verify all triggers have been read in similar
+                //to the .mis file
+                try
+                {
+                    msn.MO_WriteOutAllMissionObjectives(msn.MISSION_ID + "-mission_objectives_mis_format.txt", true);
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error4! " + ex.ToString()); }
+                try
+                {
+                    msn.MO_WriteOutAllMissionObjectives(msn.MISSION_ID + "-mission_objectives_complete.txt", false);
+                }
+                catch (Exception ex) { Console.WriteLine("MO_init error5! " + ex.ToString()); }
             }
-            catch (Exception ex) { Console.WriteLine("MO_init error4! " + ex.ToString()); }
-            try
-            {
-                msn.MO_WriteOutAllMissionObjectives(msn.MISSION_ID + "-mission_objectives_complete.txt", false);
-            }
-            catch (Exception ex) { Console.WriteLine("MO_init error5! " + ex.ToString()); }
+            catch (Exception ex) { Console.WriteLine("MO_init ERROR (overall initializer)! " + ex.ToString()); }
         }
 
         //few little sanity checks on the objective data
@@ -12292,7 +12345,7 @@ added Rouen Flak
         if (AirfieldTargets != null) foreach (AiAirport ap in allKeys)
             {
                 string af_name = AirfieldTargets[ap].Item2 + "_spawn";
-                //Console.WriteLine("Checking airfield {0} already exists? {1}", af_name, MissionObjectivesList.ContainsKey(af_name));
+                Console.WriteLine("Checking airfield {0} already exists? {1}", af_name, MissionObjectivesList.ContainsKey(af_name));
                 if (!addNewOnly || !MissionObjectivesList.ContainsKey(af_name))
                 {
                     
@@ -12388,14 +12441,25 @@ added Rouen Flak
         //BUMRUSH!!!!! Here is where we set the level of the Bumrush airport.
         //Remember the list BumrushTargetAirfieldsList starts counting with ZERO.  So the first on the list is level "0"
         //Second on the  list is level=1, etc.
-        MO_BRMissionObjectiveAirfieldFocusBumrushSetup(this, GamePlay, level: 1);
+        //THE OLD WAY!:
+        //MO_BRMissionObjectiveAirfieldFocusBumrushSetup(this, GamePlay, level: 1);
+        //THE NEW WAY:
+        try
+        {
+            twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup();
+        }
+        catch (Exception ex) { Console.WriteLine("*****************************************twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup MAJOR ERROR!!!!!!!!!!!: " + ex.ToString()); }
+
+
 
     }
 
+    /*
     String[] MO_BRBumrushTargetAirfieldsList = { "Tariq Al Ghubay Airfield", "Scegga No3 Airfield", "Gasr el Abid South Airfield", "Sidi Azeiz Airfield", "Sidi Rezegh LG153 Airfield" };
 
     //IMPORTANT: If you have different spawn points for the same airfield (say, in different .mis files) this will cause problems here!  Make sure spawnpoints for these airports are in one .mis file only!
 
+    
     public void MO_BRMissionObjectiveAirfieldFocusBumrushSetup(Mission msn, maddox.game.IGamePlay gp, int level)
     {
         //*********************************************************************
@@ -12436,10 +12500,10 @@ added Rouen Flak
         if (!MissionObjectivesList.ContainsKey(MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName))
         {
             gpLogServerAndLog(null, "", null);
-            gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! RED Target Airport does not exist!!!!! Exiting....", null);
+            gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! RED Target Airport {0} does not exist!!!!! Exiting....", new object[] { MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName });
             gpLogServerAndLog(null, "", null);
-            //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");  //doesn't work for some unknown reason//!????
-            System.Environment.Exit(1);
+            (GamePlay as GameDef).gameInterface.CmdExec("battle stop");  //doesn't work for some unknown reason//!????
+            //System.Environment.Exit(1);
         }
         else
         {
@@ -12449,17 +12513,17 @@ added Rouen Flak
             mo.IsFocus = true;
             mo.PrimaryTargetWeight = 200;
             mo.Points = 30; // 6 primary objects * 5 + the main airport makes 60 points required to start bumrush
-            gpLogServerAndLog(null, "RED Primary Target Airport is " + MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective.AirfieldName, null);
+            gpLogServerAndLog(null, "RED Primary Target Airport is " + MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
 
         }
 
         if (!MissionObjectivesList.ContainsKey(MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName))
         {
             gpLogServerAndLog(null, "", null);
-            gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! BLUE Target Airport does not exist!!!!! Exiting....", null);
+            gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! BLUE Target Airport {0} does not exist!!!!! Exiting....", new object[] { MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName });
             gpLogServerAndLog(null, "", null);
-            //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-            System.Environment.Exit(1);
+            (GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+            //System.Environment.Exit(1);
         }
         else
         {
@@ -12490,7 +12554,7 @@ added Rouen Flak
             if (!red_blue) gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + MISSION_ID + "-Rush-Red-" + MO_BRBumrushInfo[ArmiesE.Blue].BumrushAirportName, null);
             gpLogServerAndLog(null, "", null);
             //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-            System.Environment.Exit(1);
+            //System.Environment.Exit(1);
 
         } else
         {
@@ -12515,7 +12579,9 @@ added Rouen Flak
         m_TargetAirfields.Add(ARMY_BLUE, "Sidi_Azeiz", 9000, 20);//denotes initial airport to attack and occupy
         m_TargetAirfields.Add(ARMY_BLUE, "Sidi_Rezegh_LG153", 9000, 1);
         */
+    /*
     }
+    */
 
     public void MO_MissionObjectiveAirfieldsArmyReset(Mission msn, maddox.game.IGamePlay gp, int army, string apID = null) //reset/restore all airfields for a given army, apID chooses only ONE to restore if that is the situation.
     {
@@ -15317,11 +15383,21 @@ added Rouen Flak
         //m_os.MissionObjectiveTriggersSetup();
         //Console.WriteLine("#3");
         //New way with TOBRUK campaign objectives system
-        twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
-        twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
-        //RadarPositionTriggersSetup();
-        twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
-        MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
+
+        try
+        {
+            twc_tobruk_campaign_mission_objectives.BumRushCampaignValuesSetup();
+            twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup(addNewOnly: false);
+            //RadarPositionTriggersSetup();
+            twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup(addNewOnly: false);
+            Console.WriteLine("TTCMO loaded bumrush, radar, objective dictionaries (2)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("twc_tobruk_campaign_mission_objectives SETUP MAJOR ERROR: " + ex.ToString());
+        }
+
+        //MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
                                                                               //Also, confusing, we must run this TWICE: Once before the routine below to UPDATE the MOs, because otherwise there is nothing to update.
                                                                               //But a 2nd time, after the update, because that is what transfers airport destroyed etc info from the MOList to the airport list.
                                                                               //Arrgh.
@@ -19030,6 +19106,7 @@ public bool WriteResults_Out_File(string result = "3")
 } //class mission : amission
 
 
+
 //Various helpful calculations & formulas
 public static class Calcs
 {
@@ -21908,42 +21985,42 @@ class twcLandscape : maddox.core.WLandscape
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cHQ((float)x, (float)y);
-        Console.WriteLine("Height HQ" + height.ToString());
+        //Console.WriteLine("Height HQ" + height.ToString());
         return height;
     }
     public static double H(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cH((float)x, (float)y);
-        Console.WriteLine("Height H" + height.ToString());
+        //Console.WriteLine("Height H" + height.ToString());
         return height;
     }
     public static double Hmax(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cHmax((float)x, (float)y);
-        Console.WriteLine("cHmax" + height.ToString());
+        //Console.WriteLine("cHmax" + height.ToString());
         return height;
     }
     public static double Hmin(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cHmin((float)x, (float)y);
-        Console.WriteLine("cHmin" + height.ToString());
+        //Console.WriteLine("cHmin" + height.ToString());
         return height;
     }
     public static double HQ_air(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cHQ_Air((float)x, (float)y);
-        Console.WriteLine("Height HQ_air" + height.ToString());
+        //Console.WriteLine("Height HQ_air" + height.ToString());
         return height;
     }
     public static double HQ_forestHeightHere(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();
         double height = twcLandscape.cHQ_forestHeightHere((float)x, (float)y);
-        Console.WriteLine("Height HQ_forestHeightHere" + height.ToString());
+        //Console.WriteLine("Height HQ_forestHeightHere" + height.ToString());
         return height;
     }
 }

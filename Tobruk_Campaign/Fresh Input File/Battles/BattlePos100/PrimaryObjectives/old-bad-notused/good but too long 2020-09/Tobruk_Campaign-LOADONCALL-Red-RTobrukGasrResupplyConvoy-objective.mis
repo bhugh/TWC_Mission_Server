@@ -1,0 +1,133 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 1.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[CustomChiefs]
+  Vehicle.vehicleRushBritish $core/icons/tank.mma
+  Vehicle.VehicleRush2 $core/icons/tank.mma
+  Vehicle.SidiAzeizRush3 $core/icons/tank.mma
+  Vehicle.VehicleRush4 $core/icons/tank.mma
+  Vehicle.VehicleRush5 $core/icons/tank.mma
+[Vehicle.vehicleRushBritish]
+  Tank.Beaverette_III
+  Tank.Vickers_Mk_VIC
+  Tank.Cruiser_Mk_IV
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Cruiser_Mk_IVA
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+[Vehicle.VehicleRush2]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M11_39
+  tobruk:Tank.Bedford_MW_AA
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M3_Grant
+[Vehicle.SidiAzeizRush3]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  Car.Guy_Lizard
+  Car.Guy_Quad-Ant
+  tobruk:Tank.M3_Grant
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M13_40
+  tobruk:Tank.M13_40
+[Vehicle.VehicleRush4]
+  tobruk:Tank.Semovente_75-18_M41
+  tobruk:Tank.CV-35
+  tobruk:Tank.M13_40
+  tobruk:Tank.Matilda_2A_Late
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Cruiser_Mk_IV
+  Tank.Vickers_Mk_VIC
+  Car.Bedford_MW_tank
+[Vehicle.VehicleRush5]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Car.Bedford_MW_tank
+  Car.Bedford_MW_tank
+  Car.Bedford_OY_open
+  Car.Fordson_Sussex_w_ballon
+  Tank.Beaverette_III
+  Tank.Cruiser_Mk_IV
+  tobruk:Tank.L6_40
+[Chiefs]
+  6_Chief Vehicle.VehicleRush2 de 
+[6_Chief_Road]
+  134323.66 189780.61 38.40  0 23 1.00
+  S 530 11 0.23 20.00 P 134294.03 189248.48
+  S 530 11 0.14 20.00 P 134229.38 189173.22
+  S 317 3 0.78 20.00 P 134239.73 189056.47
+  S 317 2 0.20 20.00 P 132853.63 184192.83
+  S 317 1 0.31 20.00 P 132411.80 182272.81
+  S 290 11 0.92 20.00 P 132352.03 182249.19
+  S 290 11 0.99 20.00 P 132390.88 182187.05
+  S 317 1 0.22 20.00 P 132374.25 182081.03
+  S 317 1 0.07 20.00 P 132323.33 181824.17
+  S 317 0 0.94 20.00 P 132275.64 181632.31
+  S 317 0 0.07 20.00 P 129758.95 173344.72
+  S 328 26 0.53 20.00 P 129739.53 173249.02
+  S 328 26 0.52 20.00 P 129600.15 173139.95
+  S 328 26 0.23 20.00 P 124910.60 168483.52
+  S 293 2 0.71 20.00 P 124843.65 168447.77
+  S 293 2 0.95 20.00 P 124863.30 165342.50
+  S 348 3 0.99 20.00 P 124909.51 165266.30
+  S 182 12 0.03 20.00 P 124959.46 165237.34
+  S 328 25 0.93 20.00 P 125038.37 165169.36
+  S 293 3 0.09 20.00 P 124992.27 165066.67
+  S 293 3 0.46 20.00 P 127616.87 163269.00
+  127754.91 163314.81 38.40  0 10 1.00
+  S 293 3 0.48 20.00 P 127809.14 163146.72
+  S 293 8 0.54 20.00 P 140653.31 154879.94
+  140640.00 153056.00 38.40
+  S 183 23 0.21 20.00 P 140665.38 152960.98
+  S 183 16 0.85 20.00 P 147013.02 142016.55
+  S 183 15 0.52 20.00 P 148735.98 140100.19
+  S 183 9 0.67 20.00 P 171647.61 109326.51
+  S 183 9 0.39 20.00 P 173908.70 106048.88
+  178350.28 106110.85 38.40  0 23 1.94
+  S 183 8 0.66 20.00 P 178328.53 99840.88
+  S 183 6 0.84 20.00 P 184323.88 89878.73
+  184416.00 89824.00 38.40
+  S 371 41 0.12 20.00 P 184575.86 89792.02
+  S 371 42 0.40 20.00 P 190417.72 92160.08
+  S 371 42 0.42 20.00 P 190566.38 92224.11
+  S 371 42 0.44 20.00 P 190714.72 92288.14
+  S 371 42 0.44 20.00 P 190737.20 92297.86
+  S 282 16 0.77 20.00 P 190847.75 92382.23
+  S 282 16 0.75 20.00 P 190975.97 92442.70
+  S 282 16 0.73 20.00 P 191103.17 92502.77
+  S 282 16 0.71 20.00 P 191231.36 92563.33
+  S 282 16 0.30 20.00 P 195151.88 94448.61
+  S 371 43 0.11 20.00 P 195252.14 94400.08
+  S 371 49 0.52 20.00 P 242770.39 98514.19
+  S 801 15 0.05 20.00 P 242816.22 98543.08
+  S 801 16 1.00 20.00 P 243107.00 98620.00
+  S 472 10 0.74 20.00 P 243195.52 98575.51
+  S 371 49 0.75 20.00 P 243257.13 98560.04
+  S 371 50 0.87 20.00 P 246174.23 98496.02
+  S 335 38 0.56 20.00 P 246234.20 98614.80
+  246443.73 98771.04 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  RTobrukGasrResupplyConvoy TGroupDestroyed 6_Chief 100

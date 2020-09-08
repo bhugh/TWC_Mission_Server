@@ -1,0 +1,80 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 360000 10000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 600
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[AirGroups]
+  tobruk:Tobruk_RAF_F_112Sqn.03
+  tobruk:Tobruk_RAF_F_73Sqn.03
+[tobruk:Tobruk_RAF_F_112Sqn.03]
+  Flight0  1
+  Flight1  11
+  Class tobruk:Aircraft.HurricaneMkIIbTrop
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Aging 48
+[tobruk:Tobruk_RAF_F_112Sqn.03_Way]
+  TAKEOFF 342189.82 129464.43 0 0
+  HUNTING 274329.46 105400.14 5800.00 340.00
+  HUNTING 305612.60 49331.11 5800.00 340.00
+  AATTACK_FIGHTERS 200693.75 65213.33 6100.00 350.00
+  HUNTING 133314.66 109009.73 6100.00 350.00
+  HUNTING 70026.45 163634.92 6100.00 350.00
+  AATTACK_FIGHTERS 35374.35 217778.82 6000.00 350.00
+  HUNTING 228367.30 159062.76 5300.00 370.00
+  HUNTING 255078.29 123929.38 5300.00 370.00
+  LANDING 342911.74 128982.82 0.00 350.00
+[tobruk:Tobruk_RAF_F_73Sqn.03]
+  Flight0  1
+  Flight1  11 12
+  Class tobruk:Aircraft.BeaufighterMkINF_Late_Trop
+  Formation FINGERFOUR
+  CallSign 30
+  Fuel 57
+  Weapons 1 1
+  Skill 0.53 0.32 0.63 0.32 0.37 0.47 0.32 0.53
+  Aging 0
+[tobruk:Tobruk_RAF_F_73Sqn.03_Way]
+  TAKEOFF 340745.98 19491.81 0 0
+  HUNTING 280345.45 31523.79 4000.00 300.00
+  HUNTING 196602.87 32967.62 4000.00 300.00
+  AATTACK_FIGHTERS 95534.25 57031.58 4000.00 300.00
+  HUNTING 67620.06 106362.70 5300.00 340.00
+  AATTACK_FIGHTERS 57753.74 177592.04 6000.00 370.00
+  HUNTING 180720.66 140052.24 4600.00 340.00
+  AATTACK_FIGHTERS 228607.94 136202.00 4600.00 340.00
+  HUNTING 249302.94 67138.44 4600.00 340.00
+  LANDING 338580.23 20935.64 500.00 340.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BlueAltaPatrol2 TTime 14300
+  BlueAltaPatrol1 TTime 7900
+  Blue109E7Patrol2 TTime 13950
+  Blue109E7Patrol1 TTime 8350
+[Action]
+  RedBeaufighterPatrol2 ASpawnGroup 1 tobruk:Tobruk_RAF_F_73Sqn.03
+  RedBeaufighterPatrol1 ASpawnGroup 1 tobruk:Tobruk_RAF_F_73Sqn.03
+  RedHurriPatrol2 ASpawnGroup 1 tobruk:Tobruk_RAF_F_112Sqn.03
+  RedHurriPatrol1 ASpawnGroup 1 tobruk:Tobruk_RAF_F_112Sqn.03

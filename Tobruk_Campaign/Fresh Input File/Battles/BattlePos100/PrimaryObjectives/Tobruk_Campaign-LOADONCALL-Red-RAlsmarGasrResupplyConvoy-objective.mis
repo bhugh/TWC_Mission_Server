@@ -162,4 +162,4 @@
 [Buildings]
 [BuildingsLinks]
 [Trigger]
-  RTobrukGasrResupplyConvoy TGroupDestroyed 6_Chief 100
+  RAlsmarGasrResupplyConvoy TGroupDestroyed 1007_Chief 100

@@ -782,7 +782,7 @@ public class AIRadarMission : AMission
 
         //TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
 
-        Console.WriteLine("-interceptradar.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+        //Console.WriteLine("-interceptradar.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
 
 
         if (missionNumber == MissionNumber)

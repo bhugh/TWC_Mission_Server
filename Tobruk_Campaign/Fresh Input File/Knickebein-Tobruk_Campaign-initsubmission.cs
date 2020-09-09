@@ -755,7 +755,7 @@ public class Mission : AMission, IKnickebeinMission
     {
         base.OnMissionLoaded(missionNumber);
 
-        Console.WriteLine("-knickebein.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+        //Console.WriteLine("-knickebein.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
 
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
 

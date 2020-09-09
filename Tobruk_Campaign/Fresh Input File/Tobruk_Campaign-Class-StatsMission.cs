@@ -4953,7 +4953,7 @@ struct
         #region stb
         base.OnMissionLoaded(missionNumber);
 
-        Console.WriteLine("-stats.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+        //Console.WriteLine("-stats.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
 
         //TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
 

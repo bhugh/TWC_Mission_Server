@@ -1276,6 +1276,25 @@
   BritishPatrol1 TPassThrough 5 2 273420 112376 8750
   BritishPatrol2 TPassThrough 0 290513 140369 10150
   GerRaidBarrani1Hr TTime 3600
+  GerRaidBarrani2Hr TTime 7400
+  GerRaidBarrani3Hr TTime 11000
+  GerRaidBarrani4Hr TTime 14200
+  GerRaidBarrani5Hr TTime 17900
+  GerBomb1Hr TTime 3000
+  GerBomb2Hr TTime 8200
+  GerBomb3Hr TTime 12500
+  GerBomb4Hr TTime 14500
+  GerBomb5Hr TTime 16200  
+  BritRaid1Hr TTime 3200
+  BritRaid2Hr TTime 7600
+  BritRaid3Hr TTime 11500
+  BritRaid4Hr TTime 14800
+  BritRaid5Hr TTime 18100  
+  BritBomb1Hr TTime 3100
+  BritBomb2Hr TTime 8000
+  BritBomb3Hr TTime 10500
+  BritBomb4Hr TTime 13800
+  BritBomb5Hr TTime 16700
   GerArmorCamp TGroundDestroyed 35 210317 130379 2100
   GermanFuelSupply TGroundDestroyed 77 127625 197326 350
   TobrukFuelDocks TGroundDestroyed 86 160447 186532 150
@@ -1296,8 +1315,26 @@
   Convoytrg3gersouth ASpawnGroup 0 21_Chief
   Contrgger4 ASpawnGroup 0 22_Chief
   ArmorMovingGer ASpawnGroup 0 BoB_RAF_B_218Sqn.11
-  action ASpawnGroup 0 Empty
   GerRaidBarrani1Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani2Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani3Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani4Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani5Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
+  GerBomb1Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37  
+  GerBomb2Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb3Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb4Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb5Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  BritRaid1Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid2Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid3Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid4Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid5Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritBomb1Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  BritBomb2Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  BritBomb3Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  BritBomb4Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  BritBomb5Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
 [BirthPlace]
   Sidi_Barrani 1 342085 129234 0 1 1 1 . . . 0
   Sawani_el_qasn 1 313761 107269 0 1 1 1 . . . 0

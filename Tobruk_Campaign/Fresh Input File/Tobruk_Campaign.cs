@@ -3,7 +3,7 @@
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-StatsMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SupplyMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-AerialInterceptRadar.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs"
 
 /**********************************************************************************
  * 
@@ -940,8 +940,8 @@ public class Mission : AMission, IMainMission
             Task.Run(() => WriteResults_Out_File("3"));
             Timeout(188, () => { Task.Run(() => CheckStatsData()); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place            
             //Timeout(188, () => { CheckStatsData(); }); //  Start the routine to transfer over stats, a/c killed, etc; Delay a while so sessStats.txt etc are already in place            
-            Timeout(10, () => { groupAllAircraft_recurs(); });
-            Timeout(15, () => { aiAirGroupRadarReturns_recurs(); });
+            Timeout(105, () => { groupAllAircraft_recurs(); });
+            Timeout(115, () => { aiAirGroupRadarReturns_recurs(); });
             Timeout(201.3, () => { Task.Run(() => MO_ObjectiveUndestroy_recurs()); });
 
         }
@@ -7288,7 +7288,7 @@ public class Mission : AMission, IMainMission
     {
         base.OnMissionLoaded(missionNumber);
 
-        Console.WriteLine("-main.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+        //Console.WriteLine("-main.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
         try
         {
 
@@ -8627,13 +8627,13 @@ public class Mission : AMission, IMainMission
                 twcLogServer(new Player[] { player }, "Trying to create an airspawn above the objective ID {0} - but can't find that objective! You need to enter the objective ID.", new object[] { objective });
             }
         }
-        else if (msg.StartsWith("<triggerobjectivetest") && admin_privilege_level(player) >= 2)
+        else if (msg.StartsWith("<obflaktest") && admin_privilege_level(player) >= 2)
         {
 
             //foreach (string ID in MissionObjectivesList.Keys)
             //MO_TestObjectiveWithFlak(MissionObjectivesList[ID], 1, 1);
-            string objective = msg_orig.Substring(21).Trim();
-            twcLogServer(new Player[] { player }, "Destroying all trigger-type objectives for {0} with enemy artillery.  Note that this will not drop bombs to test the non-trigger type objectives ", new object[] { objective });
+            string objective = msg_orig.Substring(12).Trim();
+            twcLogServer(new Player[] { player }, "Places 4 flak guns near the objective, which will shoot/kill it.  Good for testing trigger-type objectives, or PointArea.  Combine with <bombtest ", new object[] { objective });
             twcLogServer(new Player[] { player }, "Objective ID & Name: {0} {1}", new object[] { objective, MissionObjectivesList[objective].Name });
             MO_TestObjectiveWithFlak(MissionObjectivesList[objective], 4, 4);
 
@@ -8697,20 +8697,20 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "Destroying all trigger-type objectives for {0} with enemy artillery.  Note that this will not drop bombs to test the non-trigger type objectives ", new object[] { words[1], MissionObjectivesList[words[1]].Name });
             MO_TestObjectiveWithFlak(MissionObjectivesList[words[1]], 4, 4);
             */
-            string[] words = msg_orig.Split(' ');
+            //string[] words = msg_orig.Split(' ');
 
-            string sub = msg_orig.Substring(7).Trim();
+            string sub = msg_orig.Substring(9).Trim();
 
             MissionObjective mo = null;
 
             if (sub.Length > 1 && MissionObjectivesList.ContainsKey(sub)) mo = MissionObjectivesList[sub];
             else
             {
-                twcLogServer(new Player[] { player }, "Couldn't find that one. Requested ID: {0}", new object[] { words[1] });
+                twcLogServer(new Player[] { player }, "Couldn't find that one. Requested ID: {0}", new object[] { sub });
                 return;
             }
 
-            twcLogServer(new Player[] { player }, "Dropping bombs on {1}. Requested ID: {0}. Note: Only simulates counting up the results of bomb explosions within -main.cs.  Won't destroy statics or do anything else internal to CloD ", new object[] { words[1], MissionObjectivesList[words[1]].Name });
+            twcLogServer(new Player[] { player }, "Dropping bombs on {1}. Requested ID: {0}. Note: Only simulates counting up the results of bomb explosions within -main.cs.  Won't destroy statics or do anything else internal to CloD ", new object[] { sub, MissionObjectivesList[sub].Name });
 
             AiDamageInitiator initiator = new AiDamageInitiator(player.Place(), player.PersonPrimary(), player, new AiDamageTool(AiDamageToolType.Ordance, "BrentBomb"));
 
@@ -8725,6 +8725,44 @@ public class Mission : AMission, IMainMission
                 pos.y += random.Next(600) - 300;
                 OnBombExplosion_DoWork("Bombe", 500, pos, initiator, 1);
             }
+
+        }
+        else if (msg.StartsWith("<killtest") && admin_privilege_level(player) >= 2)
+        {
+
+            //foreach (string ID in MissionObjectivesList.Keys)
+            //MO_TestObjectiveWithFlak(MissionObjectivesList[ID], 1, 1);
+            /*
+            string[] words = msg_orig.Split(' ');
+            twcLogServer(new Player[] { player }, "Destroying all trigger-type objectives for {0} with enemy artillery.  Note that this will not drop bombs to test the non-trigger type objectives ", new object[] { words[1], MissionObjectivesList[words[1]].Name });
+            MO_TestObjectiveWithFlak(MissionObjectivesList[words[1]], 4, 4);
+            */
+            //string[] words = msg_orig.Split(' ');
+
+            string sub = msg_orig.Substring(9).Trim();
+
+            MissionObjective mo = null;
+
+            if (sub.Length > 1 && MissionObjectivesList.ContainsKey(sub)) mo = MissionObjectivesList[sub];
+            else
+            {
+                twcLogServer(new Player[] { player }, "Couldn't find that one. Requested ID: {0}", new object[] { sub });
+                return;
+            }
+
+            MissionObjective mo1 = MissionObjectivesList[sub];
+
+            twcLogServer(new Player[] { player }, "Killing all actors we can find near {0} {1} and any actors anywhere with the 'Chief' name '{2}'.  This helps with testing trigger & pointarea type objectives. You may need to ALSO <bombtest <triggertest etc ", new object[] { sub, mo1.Name, mo1.ChiefName });
+
+            int kabnm = 0;
+            int kgan = 0;
+
+            if (mo1.ChiefName.Length>0) kabnm = Calcs.KillActorsByNameMatch(gpBattle, GamePlay, this, AllActorsDict, mo1.ChiefName);
+
+            kgan = Calcs.KillGroundActorsNear(gpBattle, GamePlay, this, AllActorsDict, mo1.returnCurrentPosWithChief(), 3000 );            
+
+            twcLogServer(new Player[] { player }, "Killed {0} actors by match with name {1} and {2} actors near the objectives {3} ", new object[] { kabnm, mo1.ChiefName,kgan, mo1.Name });
+
 
         }
 
@@ -9043,8 +9081,8 @@ public class Mission : AMission, IMainMission
 
             twcLogServer(new Player[] { player }, "Admin commands: <stock <lost <bluestock <redstock <coop <trigger <action <debugon <debugoff <logon <logoff <endmission", new object[] { });
             twcLogServer(new Player[] { player }, "<resetmission", new object[] { });
-            twcLogServer(new Player[] { player }, "Server test commands: <rctest, <testturnred, <testturnblue, <rcdest, <rcrecord, <obair objectiveID (make airspawn above OBJ) <triggerobjectivetest objectiveID", new object[] { });
-            twcLogServer(new Player[] { player }, "Server test commands: <bombtest ID bomb an ap, <apdest destr an ap, <testturnred <testturnblue <triggerobjectivetest ID (with artillery)", new object[] { });
+            twcLogServer(new Player[] { player }, "Server test commands: <rctest, <testturnred, <testturnblue, <rcdest, <rcrecord, <obair objectiveID (make airspawn above OBJ) <obflaktest objectiveID place flak guns to kill objective, <killtest ID kill all actors @ objective", new object[] { });
+            twcLogServer(new Player[] { player }, "Server test commands: <bombtest ID bomb an ap <apdest disable and airfield, <testturnred <testturnblue", new object[] { });
             twcLogServer(new Player[] { player }, "Server test commands: <obdest ID - destroy an objective or <obdest red, <obdest blue, <brcount Bumrush current count, <brremove remove current Bumrush", new object[] { });
 
         }
@@ -11053,6 +11091,7 @@ public class Mission : AMission, IMainMission
                         if ((a as AiActor) != null)
                         {
                             pos = a.Pos();
+                                Console.Write("MO: Got Objective pos by CHIEF {0:N0} {1:N0}", pos.x, pos.y);
                             break;
                         }
                     }
@@ -11111,7 +11150,7 @@ public class Mission : AMission, IMainMission
             } else //for disabled objectives (generally those scouted earlier but now re-scouted and disabled) 
             {
                 lastScoutedPos = new Point3d(-1, -1, -1); //Some objectives move now, so this records & savesthe current position/sector at the time scouted.  It will report this until re-scouted
-                lastScoutedSector = "Scouted earlier but not found in latest recon of " + Calcs.correctedSectorName(msn, Pos) + "!";
+                lastScoutedSector = "[Scouted earlier but not found in latest recon of " + Calcs.correctedSectorName(msn, Pos) + "!]";
             }
 
             if (player == null || player.Name() == null) return;
@@ -13776,18 +13815,21 @@ added Rouen Flak
 
                 double rd = mo.radius;
 
-                if (rd < 50) rd = 50;
+                if (rd < 250) rd = 20;
                 if (rd < 5000) rd = 5000;
 
-                newPos.x = mo.Pos.x + random.Next(Convert.ToInt32(mo.radius));
-                newPos.y = mo.Pos.y + random.Next(Convert.ToInt32(mo.radius));
+                Point3d pos = mo.returnCurrentPosWithChief(); //use the "chief position calculator" where necessary
+
+                newPos.x = pos.x + random.Next(Convert.ToInt32(mo.radius));
+                newPos.y = pos.y + random.Next(Convert.ToInt32(mo.radius));
 
 
                 //This is place ENEMY flake in the middle of a FRIENDLY objective, so that the enemyflak will destroy the objective
                 string enemy = "de";
                 if (mo.AttackingArmy == 1) enemy = "gb";
 
-                var flak = new List<string> { "Artillery.37mm_PaK_35_36", /*"Artillery.Flak37",*/ "Artillery.Bofors_StandAlone", "Artillery.3_7_inch_QF_Mk_I", "Artillery.Flak30_Shield", };
+                //var flak = new List<string> { "Artillery.37mm_PaK_35_36", /*"Artillery.Flak37",*/ "Artillery.Bofors_StandAlone", "Artillery.3_7_inch_QF_Mk_I", "Artillery.Flak30_Shield", };
+                var flak = new List<string> { "Artillery.Bofors_StandAlone", "Artillery.Bofors", }; //These are the big guns, literally
 
                 //Now actually PLACE the flak.
                 ISectionFile f = GamePlay.gpCreateSectionFile();
@@ -13818,7 +13860,7 @@ added Rouen Flak
                 GamePlay.gpPostMissionLoad(f);
 
 
-                //Console.WriteLine("The TESTFLAK is at {0} {1})", new object[] { newPos.x, newPos.y });
+                Console.WriteLine("The TESTFLAK is at {0} {1})", new object[] { newPos.x, newPos.y });
 
 
 
@@ -14444,14 +14486,17 @@ added Rouen Flak
 
         foreach (string s in ScoutInterestingTargets[player])
         {
-            Console.WriteLine("Listing all interesting scout targets " + s);
-            if (!MissionObjectivesList.ContainsKey(s)) continue;
-            sectorList += MissionObjectivesList[s].lastScoutedSector + " ";
+                string moving = "";
+                Console.WriteLine("Listing all interesting scout targets " + s);
+                if (!MissionObjectivesList.ContainsKey(s)) continue;
+                if (MissionObjectivesList[s].hasChief()) moving = "(moving)";
+                string sect = Calcs.correctedSectorNameDoubleKeypad(this,(MissionObjectivesList[s].returnCurrentPosWithChief()));            
+                sectorList += sect + moving + " ";
         }
 
         if (sectorList.Length == 0) return;
-        gpLogServerAndLog(new Player[] { player }, ">>> Interesting sectors from your recon flight for high-res screenshot photos: " + sectorList, null);
-    }
+            gpLogServerAndLog(new Player[] { player }, ">>> Interesting sectors from your recon flight for a closer look or high-res screenshot photos: " + sectorList, null);
+        }
 
     public void displayNewInterestingScoutTarget(Player player, string moID) {
         Timeout(10, () =>
@@ -14569,24 +14614,35 @@ added Rouen Flak
                 //So for targets that MOVE (_Chief) we havea problem, because we won't pick them up if we are scouting the area where they now ARE but we will pick them
                 //up if you scout the area where they started at.  So we'll add in a kludge, you also pick them up if you scout the area where they were LAST SCOUTED.  Usually this is good enough
                 //As they don't really move that far.  But just in case, we also do returnCurrentPosWithChief() instead of just plan mo.Pos
-                if (mo.AttackingArmy == army && ( Calcs.CalculatePointDistance(mo.returnCurrentPosWithChief(), pos) < radiusCovered_m || Calcs.CalculatePointDistance(mo.lastScoutedPos, pos) < radiusCovered_m))
+                if (mo.AttackingArmy == army && (Calcs.CalculatePointDistance(mo.returnCurrentPosWithChief(), pos) < radiusCovered_m || Calcs.CalculatePointDistance(mo.lastScoutedPos, pos) < radiusCovered_m))
                 {
                     keys.Add(entry.Key);
                     numScouted++;
 
                     //So, we add some targets into the "interesting targets list" which then displays to the scout some possible coordinates to take screenshots of
-                    if (mo.IsPrimaryTarget && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) addInterestingScoutTarget(player, entry.Key);// ScoutInterestingTargets.Add(entry.Key);
-                    else if (mo.IsEnabled && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None && random.NextDouble() < 0.44)
+                    if (mo.IsPrimaryTarget && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) addInterestingScoutTarget(player, entry.Key);//  ScoutInterestingTargets.Add(entry.Key); 
+                    else if (mo.IsPrimaryTarget && mo.hasChief())
                     {
                         addInterestingScoutTarget(player, entry.Key);// ScoutInterestingTargets.Add(entry.Key);
                         interestingScoutTarget = true;
                     }
-                    else if (mo.IsPrimaryTarget && random.NextDouble() < 0.05)
+                    else if (mo.hasChief() && random.NextDouble() < 0.65) //moving targets, like convoys or ships
+                    {
+                        addInterestingScoutTarget(player, entry.Key);// ScoutInterestingTargets.Add(entry.Key);
+                        interestingScoutTarget = true;
+                    }
+                    else if (mo.IsEnabled && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None && random.NextDouble() < 0.15)
+                    {
+                        addInterestingScoutTarget(player, entry.Key);// ScoutInterestingTargets.Add(entry.Key);
+                        interestingScoutTarget = true;
+                    }
+                    else if (mo.IsPrimaryTarget && random.NextDouble() < 0.02)
                     {
                         addInterestingScoutTarget(player, entry.Key);// ScoutInterestingTargets.Add(entry.Key);
                         interestingScoutTarget = true;
                     }
                 }
+                
             }
 
             var recordKey = new Tuple<int, int, aPlayer>(ScoutPhotoID, army, new aPlayer(player));
@@ -14643,6 +14699,7 @@ added Rouen Flak
                     twcLogServer(new Player[] { player }, "You have one hour to return and land safely or the photo will be spoiled.", new object[] { });
                 });
             }
+            /*
             else
             {
                 Timeout(4.5, () =>
@@ -14650,6 +14707,7 @@ added Rouen Flak
                     twcLogServer(new Player[] { player }, ">>> One hour to land/record photo.", new object[] { });
                 });
             }
+            */
             //});
         }
     }
@@ -16297,8 +16355,11 @@ added Rouen Flak
             //TODO: Not sure if this removal thing is really working right
             if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 4000);
 
-            MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
-        } catch (Exception ex) { Console.WriteLine("AdvanceBumrushPhase: ERROR! " + ex.ToString()); }
+                //MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
+                // (attackingArmy, army, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+
+                twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+            } catch (Exception ex) { Console.WriteLine("AdvanceBumrushPhase: ERROR! " + ex.ToString()); }
 
     }
 
@@ -17575,6 +17636,8 @@ added Rouen Flak
      * 
      * 
      * ****************************************************************************************************************/
+    string lastTrigger = "";
+
     //  First triggers are convoys*************************************************
     public override void OnTrigger(int missionNumber, string shortName, bool active)
     //public void bartOnTrigger(int missionNumber, string shortName, bool active)
@@ -17582,7 +17645,17 @@ added Rouen Flak
         base.OnTrigger(missionNumber, shortName, active);
         Console.WriteLine("OnTrigger: " + shortName + " " + missionNumber.ToString() + " Active: " + active.ToString());
 
-        bool res = MO_DestroyObjective(shortName, active);
+        //So, we're getting the submission triggers twice ?!?
+        //We'll stop it from double-triggering for 5 seconds
+
+        string newTrigger = missionNumber.ToString() + ":" + shortName;
+
+        bool res;
+
+        if (lastTrigger != newTrigger)  res = MO_DestroyObjective(shortName, active);
+
+        lastTrigger = newTrigger;
+        Timeout(5, () => { lastTrigger = ""; });  //Just stop it from re-triggering for 5 seconds
 
         //Console.WriteLine("OnTrigger: " + shortName + " Active: " + active.ToString() + " MO_DestroyObjective result: " + res.ToString());
 
@@ -19954,6 +20027,26 @@ public static class Calcs
     //Type can be "" to find ALL or "vehicle" or "artillery" or perhaps in the future some other types.
     //CASE INSENSITIVE!!!!!
 
+    //Kill the player/aircraft/whatever after a specified amount of time
+    public static bool KillActor(ABattle battle, AMission mission, AiActor actor, int waitTime = 0)
+    {
+        if (actor != null)
+        {
+            mission.Timeout(waitTime, () =>
+            {
+                //Console.WriteLine("KillActor: " + actor.Name() );
+                //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
+                battle.OnEventGame(GameEventId.ActorDead, actor, battle.GetDamageInitiators(actor), 0);
+            });
+
+            return true;
+
+            //Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0); //or similar might do the same thing.  If instead of null AIDamageInitiator is included, that would be better . . . 
+        }
+        //Console.WriteLine("KillActor: Actor was NULL");
+        return false;
+    }
+
     public static List<AiActor> GetActorsByNameMatch(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name="", int matcharmy = 0, string type = "")
     {
         try { 
@@ -19990,6 +20083,44 @@ public static class Calcs
         }
     }
 
+    public static int KillActorsByNameMatch(ABattle battle, IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name = "", int matcharmy = 0, string type = "")
+    {
+        List<AiActor> l = GetActorsByNameMatch(GamePlay, mission, actors, name, matcharmy, type);
+        return KillActorsOnList(battle, mission, l);
+
+    }
+
+    //gets all ground actors within given radius and kills them
+    //returns number killed
+    //good for testing objectives etc
+    public static int KillGroundActorsNear(ABattle battle, IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
+    {
+        List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type);
+
+        return KillActorsOnList(battle, mission, l);
+    }
+    
+    //Kills all actors on the list
+    //returns the number killed
+    public static int KillActorsOnList(ABattle battle, AMission mission, List<AiActor> l)
+    {
+        int count = 0;
+        foreach (AiActor a in l)
+        {
+            try
+            {
+                if (a == null) continue;
+                KillActor(battle, mission, a, 2); //2 sec delay gets around possible removal of objects in the list while cycling through it
+                count++;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Calcs.KillActorsOnList ERROR: " + ex.ToString());
+            }
+        }
+        return count;
+    }
+
     public static AiActor GetGroundActorNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
     {
         List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type);
@@ -20013,7 +20144,7 @@ public static class Calcs
 
         foreach (AiActor actor in groundActors.Values)
         {
-            if ((AiGroundActor)actor == null) continue;
+            if ((actor as AiGroundActor) == null) continue;
             //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
             //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
             if ((actor as AiGroundActor).Health() < 0.0001) continue; //only count them if they are alive & in some decent state of health

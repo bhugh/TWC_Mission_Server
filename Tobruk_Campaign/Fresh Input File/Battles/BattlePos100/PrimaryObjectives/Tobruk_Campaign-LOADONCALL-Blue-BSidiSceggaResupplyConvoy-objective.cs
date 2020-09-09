@@ -22,7 +22,7 @@ public class Mission : AMission
     public Mission()
     {
 
-        Console.WriteLine("SUBMISSION1 loaded . . . ");
+        Console.WriteLine("SUBMISSION2 loaded . . . ");
 
         try
         {

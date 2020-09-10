@@ -308,7 +308,28 @@ public class SupplyMission : AMission, ISupplyMission
             {"tobruk:Aircraft.WellingtonMkIc_Late", 0},
             {"tobruk:Aircraft.WellingtonMkIc_t", 0},
             {"tobruk:Aircraft.WellingtonMkIc_Torpedo", 0},
-            */
+            */ //WalrusMkI_Trop  //seaplane/bomber/red
+               //WalrusMkI
+               //tobruk:Aircraft.WalrusMkI_Trop
+
+            /*
+             * 
+             * [tobruk:Tobruk_SAAF_B_24Sqn.07]
+                    Flight0  1 2
+                    Flight1  11 12
+                    Flight2  21
+                    Class tobruk:Aircraft.WalrusMkI_Trop
+                    Formation ECHELONRIGHT
+                    CallSign 28
+                    Fuel 100
+                    Weapons 1 1 1 1
+                    SpawnFromScript 1
+                    Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+                    Aging 74
+             * 
+             * 
+             * */
+
             {"bob:Aircraft.BlenheimMkI",90},
             {"bob:Aircraft.BlenheimMkIF",90},
             {"bob:Aircraft.BlenheimMkINF",90},  
@@ -404,8 +425,25 @@ public class SupplyMission : AMission, ISupplyMission
             {"tobruk:Aircraft.Macchi-C202-SeriesIII", 0},
             {"tobruk:Aircraft.Macchi-C202-SeriesVII", 0},
 
-            */
-
+            */            
+            //Aircraft.He-115B-2 //seaplane bomber
+            /*
+             * [tobruk:Tobruk_LW_KG77_III.37]
+                Flight0  1 2 3
+                Flight1  11 12
+                Flight2  21 22
+                Class Aircraft.He-115B-2
+                Formation VIC3
+                CallSign 30
+                Fuel 46
+                Weapons 1 1 3
+                SetOnPark 1
+                SpawnFromScript 1
+                Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+                Aging 47
+             * 
+             * 
+             * */
             //INcluding these three bob: a/c as good cover bomber items, but not available for PLAYERS
             {"bob:Aircraft.He-111P-2",150},   
             {"bob:Aircraft.Do-17Z-2",100},

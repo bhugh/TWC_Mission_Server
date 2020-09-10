@@ -19861,7 +19861,7 @@ public static class Calcs
         bool ret = false;
         if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
           || acType.Contains("Do-215B")
-          || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+          || acType.Contains("Sunderland") || acType.Contains("Walrus") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
         return ret;
     }

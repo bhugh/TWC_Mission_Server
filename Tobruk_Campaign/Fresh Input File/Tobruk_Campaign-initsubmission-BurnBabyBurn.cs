@@ -27,7 +27,7 @@ public class Mission : AMission
     //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //Make this use an automatic path that is always correct
     //##################################################
-    private static string PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/TobrukCampaign/Fresh Input File/";
+    private static string PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/Tobruk_Campaign/Fresh Input File/";
 
     public List<string> BannedPlayerList;
     public Mission()

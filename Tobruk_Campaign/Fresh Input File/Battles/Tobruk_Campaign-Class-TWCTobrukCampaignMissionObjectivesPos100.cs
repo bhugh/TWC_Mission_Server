@@ -95,8 +95,8 @@ public class BattlePos100 : TWCMissionBattles
         mostScore = 100000000;
 
         battle_subdirectory = "Battles/BattlePos100/"; //this will be found inside the main mission directory. Suggest making it match this Class Name within the 'Battles' subdirectory, like "Battles/BattlePos100/" Must end with /
-        bumrush_subdirectory = "Bumrush/"; //this will be found inside the battle_subdirectory.  Must end with /
-        focusairport_subdirectory = "FocusAirport/"; //this will be found inside the battle_subdirectory.  Must end with /
+        bumrush_subdirectory = "Bumrushes/"; //this will be found inside the battle_subdirectory.  Must end with /
+        focusairport_subdirectory = "FocusAirports/"; //this will be found inside the battle_subdirectory.  Must end with /
         primaryobjectives_subdirectory = "PrimaryObjectives/"; //this will be found inside the battle_subdirectory.  Must end with /
         //It is used in RadarPositionTriggersSetup and MissionObjectiveTriggersSetup as the directory to look for any submission files loaded
         //as part of Primary Objectives for this battle
@@ -306,17 +306,17 @@ public class BattlePos100 : TWCMissionBattles
         //That's because too many flak installations seems to bring the server to its knees.
         //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
 
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Derna Fuel", "Dern", po_dir + "Tobruk_Campaign-LOADONCALL-Red-DernaFuel-objective.mis", 2, 5, "RTargDernaFuel", 32277, 264622, 200, 150, 1800, 4, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Tobruk Docks Fuel/Ammo Dump", "Tobr", po_dir + "Tobruk_Campaign-LOADONCALL-Red-TobrukDockFuel2-objective.mis", 2, 5, "RTargTobrukFuel", 160306, 186548, 200, 150, 1800, 2, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Coastal Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanFuelDump-objective.mis", 2, 5, "RCoastalFuel", 127599, 197411, 200, 150, 1800, 2, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanArmorCamp-objective.mis", 2, 5, "RArmorCamp", 195633, 122432, 125, 100, 1800, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Derna Fuel", "DernaCity", po_dir + "Tobruk_Campaign-LOADONCALL-Red-DernaFuel-objective.mis", 2, 5, "RTargDernaFuel", 32277, 264622, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Tobruk Docks Fuel/Ammo Dump", "ToBC_1", po_dir + "Tobruk_Campaign-LOADONCALL-Red-TobrukDockFuel2-objective.mis", 2, 5, "RTargTobrukFuel", 160306, 186548, 200, 150, 2800, 7, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Coastal Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanFuelDump-objective.mis", 2, 5, "RCoastalFuel", 127599, 197411, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanArmorCamp-objective.mis", 2, 5, "RArmorCamp", 195633, 122432, 125, 100, 1800, 30, 200, 48, false, true, 3, 7, "", add);
 
 
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Sidi Barrani Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SidiBarraniFuel.mis", 1, 5, "BSidiBarraniFuelDump", 346862, 135133, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Scegga Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SceggaBritishArmorCamp-objective.mis", 1, 5, "BSceggaArmorCamp", 263026, 51966, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Habata Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-HabataBritishArmorCamp-objective.mis", 1, 5, "BHabataArmorCamp", 301770, 89683, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "BuqBuq Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-BuqBuqBritishArmorCamp-objective.mis", 1, 5, "BBuqBuqArmorCamp", 306575, 116772, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Awdyat Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AwdyatFuel.mis", 1, 5, "BAwdyatFuelDump", 235348, 27829, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Sidi Barrani Fuel Dump", "SidiBar", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SidiBarraniFuel.mis", 1, 5, "BSidiBarraniFuelDump", 346862, 135133, 150, 125, 2500, 6, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Scegga Armor Camp", "Sceg", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SceggaBritishArmorCamp-objective.mis", 1, 5, "BSceggaArmorCamp", 263026, 51966, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Habata Armor Camp", "Habat", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-HabataBritishArmorCamp-objective.mis", 1, 5, "BHabataArmorCamp", 301770, 89683, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "BuqBuq Armor Camp", "BuQBuQ", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-BuqBuqBritishArmorCamp-objective.mis", 1, 5, "BBuqBuqArmorCamp", 306575, 116772, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Awdyat Fuel Dump", "AwD", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AwdyatFuel.mis", 1, 5, "BAwdyatFuelDump", 235348, 27829, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
 
 
 

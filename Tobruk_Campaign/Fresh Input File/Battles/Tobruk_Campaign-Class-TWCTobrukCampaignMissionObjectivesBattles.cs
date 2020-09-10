@@ -106,100 +106,124 @@ public abstract class TWCMissionBattles : TWCTCMO
 
         //Also the objectives list has underlines instead of spaces, like Scegga_No2_airfield - so we'll have to adjust there; not sure why it is.
 
-        msn.gpLogServerAndLog(null, "***Starting Focus Airport/Bumrush setup", null);
+        try
+        {
+
+            msn.gpLogServerAndLog(null, "***Starting Focus Airport/Bumrush setup", null);
 
 
-        if (!msn.MissionObjectivesList.ContainsKey(red_target_airfield + "_spawn")) //.Replace(' ', '_')
+            if (!msn.MissionObjectivesList.ContainsKey(red_target_airfield + "_spawn")) //.Replace(' ', '_')
                 msn.gpLogServerAndLog(null, "**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + red_target_airfield, null);
 
-        if (!msn.MissionObjectivesList.ContainsKey(blue_target_airfield + "_spawn")) //.Replace(' ', '_')
-            msn.gpLogServerAndLog(null, "**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + blue_target_airfield, null);
+            if (!msn.MissionObjectivesList.ContainsKey(blue_target_airfield + "_spawn")) //.Replace(' ', '_')
+                msn.gpLogServerAndLog(null, "**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + blue_target_airfield, null);
 
-        msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName = red_target_airfield + "_spawn";
-        msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName = blue_target_airfield + "_spawn";
+            msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName = red_target_airfield + "_spawn";
+            msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName = blue_target_airfield + "_spawn";
 
-        msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushAirportName = red_target_airfield;
-        msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushAirportName = blue_target_airfield;
+            msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushAirportName = red_target_airfield;
+            msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushAirportName = blue_target_airfield;
 
 
-        if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName))
-        {
-            msn.gpLogServerAndLog(null, "", null);
-            msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! RED Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
-            msn.gpLogServerAndLog(null, "", null);
-            //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");  //doesn't work for some unknown reason//!????
-            System.Environment.Exit(1);
+            if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName))
+            {
+                msn.gpLogServerAndLog(null, "", null);
+                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! RED Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
+                msn.gpLogServerAndLog(null, "", null);
+                //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");  //doesn't work for some unknown reason//!????
+                System.Environment.Exit(1);
+            }
+            else
+            {
+                msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective = msn.MissionObjectivesList[msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName];
+                M.MissionObjective mo = msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective;
+                mo.IsPrimaryTarget = true;
+                mo.IsFocus = true;
+                mo.PrimaryTargetWeight = 200;
+                mo.Points = 30; // 6 primary objects * 5 + the main airport makes 60 points required to start bumrush
+                msn.gpLogServerAndLog(null, "RED Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective.AirfieldName, null);
+
+            }
+
+            if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName))
+            {
+                msn.gpLogServerAndLog(null, "", null);
+                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! BLUE Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
+                msn.gpLogServerAndLog(null, "", null);
+                //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+                System.Environment.Exit(1);
+            }
+            else
+            {
+                msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective = msn.MissionObjectivesList[msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName];
+                M.MissionObjective mo = msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective;
+                mo.IsPrimaryTarget = true;
+                mo.IsFocus = true;
+                mo.PrimaryTargetWeight = 200;
+                mo.Points = 30; // 6 primary objects * 5 + the main airport at 30 points makes 60 points required to start bumrush
+
+                msn.gpLogServerAndLog(null, "BLUE Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
+            }
+
+            bumrush_bluered_misfile_namematch = stripmis(bumrush_bluered_misfile_namematch); //strip off any ".mis" that may be added to th end
+            bumrush_redred_misfile_namematch = stripmis(bumrush_redred_misfile_namematch); //strip off any ".mis" that may be added to th end
+            bumrush_redblue_misfile_namematch = stripmis(bumrush_redblue_misfile_namematch); //strip off any ".mis" that may be added to th end
+            bumrush_blueblue_misfile_namematch = stripmis(bumrush_blueblue_misfile_namematch); //strip off any ".mis" that may be added to th end
+
+            //Check if the files actually exist.  Does NOT actually load them, just checks if they are actually there with correct name!!!!
+            bool blue_red = msn.LoadRandomSubmission(fileID: bumrush_bluered_misfile_namematch, subdir: battle_subdirectory + bumrush_subdirectory, check: true);
+            bool red_red = msn.LoadRandomSubmission(fileID: bumrush_redred_misfile_namematch, subdir: battle_subdirectory + bumrush_subdirectory, check: true);
+            bool blue_blue = msn.LoadRandomSubmission(fileID: bumrush_blueblue_misfile_namematch, subdir: battle_subdirectory + bumrush_subdirectory, check: true);
+            bool red_blue = msn.LoadRandomSubmission(fileID: bumrush_redblue_misfile_namematch, subdir: battle_subdirectory + bumrush_subdirectory, check: true);
+
+            if (!blue_red || !red_red || !blue_blue || !red_blue)
+            {
+                msn.gpLogServerAndLog(null, "", null);
+                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! One of the REQUIRED bumrush .mis files in subdir Bumrushes/ is MISSING or MISNAMED!!!!!! Exiting....", null);
+                msn.gpLogServerAndLog(null, "", null);
+                if (!blue_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_bluered_misfile_namematch, null);
+                if (!red_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redred_misfile_namematch, null);
+                if (!blue_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_blueblue_misfile_namematch, null);
+                if (!red_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redblue_misfile_namematch, null);
+                msn.gpLogServerAndLog(null, "", null);
+                //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+                System.Environment.Exit(1);
+
+            }
+            else
+            {
+                msn.gpLogServerAndLog(null, "All needed BUMRUSH .mis files for both Blue & Red Primary Target Airports are in place.", null);
+            }
+
         }
-        else
+        catch (Exception ex)
         {
-            msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective = msn.MissionObjectivesList[msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName];
-            M.MissionObjective mo = msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective;
-            mo.IsPrimaryTarget = true;
-            mo.IsFocus = true;
-            mo.PrimaryTargetWeight = 200;
-            mo.Points = 30; // 6 primary objects * 5 + the main airport makes 60 points required to start bumrush
-            msn.gpLogServerAndLog(null, "RED Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective.AirfieldName, null);
-
-        }
-
-        if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName))
-        {
-            msn.gpLogServerAndLog(null, "", null);
-            msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! BLUE Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
-            msn.gpLogServerAndLog(null, "", null);
-            //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-            System.Environment.Exit(1);
-        }
-        else
-        {
-            msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective = msn.MissionObjectivesList[msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName];
-            M.MissionObjective mo = msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective;
-            mo.IsPrimaryTarget = true;
-            mo.IsFocus = true;
-            mo.PrimaryTargetWeight = 200;
-            mo.Points = 30; // 6 primary objects * 5 + the main airport at 30 points makes 60 points required to start bumrush
-
-            msn.gpLogServerAndLog(null, "BLUE Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
-        }
-
-        bumrush_bluered_misfile_namematch = stripmis(bumrush_bluered_misfile_namematch); //strip off any ".mis" that may be added to th end
-        bumrush_redred_misfile_namematch = stripmis(bumrush_redred_misfile_namematch); //strip off any ".mis" that may be added to th end
-        bumrush_redblue_misfile_namematch = stripmis(bumrush_redblue_misfile_namematch); //strip off any ".mis" that may be added to th end
-        bumrush_blueblue_misfile_namematch = stripmis(bumrush_blueblue_misfile_namematch); //strip off any ".mis" that may be added to th end
-
-        //Check if the files actually exist.  Does NOT actually load them, just checks if they are actually there with correct name!!!!
-        bool blue_red = msn.LoadRandomSubmission(fileID: bumrush_bluered_misfile_namematch, subdir: "Bumrushes", check: true);
-        bool red_red = msn.LoadRandomSubmission(fileID: bumrush_redred_misfile_namematch, subdir: "Bumrushes", check: true);
-        bool blue_blue = msn.LoadRandomSubmission(fileID: bumrush_blueblue_misfile_namematch, subdir: "Bumrushes", check: true);
-        bool red_blue = msn.LoadRandomSubmission(fileID: bumrush_redblue_misfile_namematch, subdir: "Bumrushes", check: true);
-
-        if (!blue_red || !red_red || !blue_blue || !red_blue)
-        {
-            msn.gpLogServerAndLog(null, "", null);
-            msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! One of the REQUIRED bumrush .mis files in subdir Bumrushes/ is MISSING or MISNAMED!!!!!! Exiting....", null);
-            msn.gpLogServerAndLog(null, "", null);
-            if (!blue_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_bluered_misfile_namematch, null);
-            if (!red_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redred_misfile_namematch, null);
-            if (!blue_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_blueblue_misfile_namematch, null);
-            if (!red_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redblue_misfile_namematch, null);
-            msn.gpLogServerAndLog(null, "", null);
-            //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-            System.Environment.Exit(1);
-
-        }
-        else
-        {
-            msn.gpLogServerAndLog(null, "All needed BUMRUSH .mis files for both Blue & Red Primary Target Airports are in place.", null);
+            Console.WriteLine();
+            Console.WriteLine("*********MAJOR STARTUP ERROR!!!!");
+            Console.WriteLine("Battles: MissionObjectiveAirfieldFocusBumrushSetup() SERIOUS ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + ex.ToString());
+            Console.WriteLine("*********MAJOR STARTUP ERROR!!!!");
+            Console.WriteLine();
         }
 
     }
 
     public override void ReadInitialFocusAirportSubmission()
     {
-        Console.WriteLine("ReadInitFocusAirport reading {0}", focus_airport_misfile_name);
-        focus_airport_misfile_name = stripmis(focus_airport_misfile_name);
-        Console.WriteLine("ReadInitFocusAirport reading UPDATED {0}", focus_airport_misfile_name);
-        msn.ReadInitialSubmissions(focus_airport_misfile_name, 0, 0, subdir: battle_subdirectory+focusairport_subdirectory); //The "focus airports" file(s) for the TOBRUK mission 2020-08
+        try
+        {
+            Console.WriteLine("ReadInitFocusAirport reading {0}", focus_airport_misfile_name);
+            focus_airport_misfile_name = stripmis(focus_airport_misfile_name);
+            Console.WriteLine("ReadInitFocusAirport reading UPDATED {0}", focus_airport_misfile_name);
+            int res = msn.ReadInitialSubmissions(focus_airport_misfile_name, 0, 0, subdir: battle_subdirectory + focusairport_subdirectory); //The "focus airports" file(s) for the TOBRUK mission 2020-08
+        }
+        catch (Exception ex) {
+            Console.WriteLine();
+            Console.WriteLine("*********MAJOR STARTUP ERROR!!!!");
+            Console.WriteLine("Battles: ReadInitialFocusAirportSubmission() MAJOR STARTUP ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + ex.ToString());
+            Console.WriteLine("*********MAJOR STARTUP ERROR!!!!");
+            Console.WriteLine();
+        }
+
     }
 
     public string stripmis(string s)

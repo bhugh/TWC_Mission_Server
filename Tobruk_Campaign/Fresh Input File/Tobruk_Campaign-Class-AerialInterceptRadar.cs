@@ -1772,7 +1772,7 @@ public static class AIRadarCalcs
                 if (msn.GamePlay.gpAirGroups(army) != null && msn.GamePlay.gpAirGroups(army).Length > 0)
                     foreach (AiAirGroup airGroup in msn.GamePlay.gpAirGroups(army))
                     {
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
                             //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
                             if (airGroup.GetItems().Length > 0) foreach (AiActor actor in airGroup.GetItems())

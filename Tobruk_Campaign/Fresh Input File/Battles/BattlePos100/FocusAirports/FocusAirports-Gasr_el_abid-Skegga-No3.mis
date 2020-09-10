@@ -1545,6 +1545,11 @@
   Static2563 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 253262.69 62647.35 -205.00 
   Static2564 Stationary.Environment.FieldKitchen_UK1 gb 253265.91 62644.36 -265.00 
   Static797 Stationary.Environment.Windsock_Strong nn 250426.88 62793.89 30.00 
+  Static67 Stationary.Airfield.BombLoadingCart_UK1_DMG1 nn 250584.52 62813.59 55.00 
+  Static373 Stationary.Environment.GuardTower_UK-GER_1 nn 250663.28 62839.85 55.00 
+  Static374 tobruk:Stationary.TobrukBuilding.WaterTowerTwo nn 250660.89 62894.75 55.00 
+  Static107 Stationary.Environment.Oil_Cart_UK1 gb 249859.27 62971.72 55.00 
+  Static370 Stationary.Environment.Oil_Cart_UK1 gb 250291.69 63049.21 55.00 
   Static0 Stationary.Environment.GuardTower_UK-GER_1 nn 116837.95 67270.34 30.00 
   Static1 Stationary.Environment.Roadway_gate_UK-GER_1 nn 116836.52 67278.80 15.00 
   Static2 Stationary.Airfield.Planelifter_GER1 nn 117366.97 67575.41 0.00 
@@ -1567,8 +1572,8 @@
   Static19 Stationary.Environment.Nev_Staff_GER1 nn 117678.70 67595.16 0.00 
   Static20 Stationary.Environment.Anlasswagen_(starter)_GER1 de 117677.99 67599.08 120.00 
   Static21 Stationary.Environment.Maschinensatz_15_KW_GER1 de 117706.12 67604.13 -60.00 
-  Static23 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 117751.06 67619.51 154.20 
   Static22 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 117752.01 67618.96 -25.80 
+  Static23 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 117751.06 67619.51 154.20 
   Static24 Stationary.BoreSightBoard_Bf109_E3 de 117774.27 67608.66 -5.00 
   Static25 Stationary.BoreSightBoard_Bf109_E3 de 117776.97 67607.53 -170.00 
   Static26 Stationary.Environment.FuelDrum_GER1_3 nn 117802.85 67629.71 7.40 
@@ -1580,8 +1585,8 @@
   Static32 Stationary.Environment.Nev_Staff_GER1 nn 117985.18 67665.80 0.00 
   Static33 Stationary.Environment.JerryCan_GER1_5 nn 117983.51 67678.78 97.40 
   Static34 Stationary.Environment.Crane_GER1 nn 118015.46 67667.20 149.80 
-  Static36 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 118009.57 67687.27 22.40 
   Static35 Stationary.Environment.FuelDrum_GER1_3 nn 118010.06 67686.05 -37.60 
+  Static36 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 118009.57 67687.27 22.40 
   Static37 Stationary.Environment.FuelDrum_GER1_1 nn 118008.85 67688.02 7.40 
   Static38 Stationary.Ford_G917 de 118112.13 67702.17 -90.00 
   Static39 Stationary.Environment.Ladder_GER1 nn 118121.41 67694.91 0.00 
@@ -1593,8 +1598,8 @@
   Static45 Stationary.Opel_Blitz_fuel de 117097.56 67758.96 -85.00 
   Static46 Stationary.Opel_Blitz_fuel de 117128.55 67737.90 20.00 
   Static47 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 117120.73 67772.48 -10.00 
-  Static48 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 117121.32 67773.04 -70.00 
   Static49 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 117122.26 67772.96 -10.00 
+  Static48 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 117121.32 67773.04 -70.00 
   Static50 Stationary.Environment.Anlasswagen_(starter)_GER1 de 118146.66 67715.13 30.00 
   Static51 Stationary.Opel_Blitz_tent de 118175.30 67738.45 -110.00 
   Static52 Stationary.Bf-108B-2 de 118183.68 67739.14 129.20 
@@ -1666,9 +1671,9 @@
   Static120 Stationary.Opel_Blitz_fuel de 117497.88 68271.49 -80.00 
   Static121 Stationary.Opel_Blitz_tent de 117496.95 68285.51 -85.00 
   Static122 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 118307.36 68271.96 7.40 
-  Static123 Stationary.Environment.Chear_UK-GER_1 nn 118299.28 68281.66 45.00 
-  Static124 Stationary.Environment.Chear_UK-GER_1 nn 118298.16 68282.98 20.00 
   Static125 Stationary.Environment.Maschinensatz_8_KW_GER1 de 118312.05 68268.59 -17.30 
+  Static124 Stationary.Environment.Chear_UK-GER_1 nn 118298.16 68282.98 20.00 
+  Static123 Stationary.Environment.Chear_UK-GER_1 nn 118299.28 68281.66 45.00 
   Static126 Stationary.Environment.Chear_UK-GER_1 nn 118301.95 68281.04 65.00 
   Static127 Stationary.Environment.Board_w_map_UK-GER_1 nn 118298.52 68286.78 0.00 
   Static128 Stationary.Environment.Table_empty_UK-GER_1 nn 118303.32 68282.76 0.00 
@@ -1715,8 +1720,8 @@
   Static1026 Stationary.Albion_AM463 gb 311313.69 80325.41 -80.00 
   Static1029 Stationary.Bedford_OY_open gb 311299.34 80347.13 -10.00 
   Static1027 Stationary.Bedford_MW_tank gb 311313.28 80334.84 -95.00 
-  Static1028 Stationary.Bedford_OY_CargoCrate16 gb 311307.88 80346.15 -20.20 /hstart 1.1
   Static1030 Stationary.Bedford_OY_open gb 311308.97 80345.73 -20.00 
+  Static1028 Stationary.Bedford_OY_CargoCrate16 gb 311307.88 80346.15 -20.20 /hstart 1.1
   Static997 tobruk:Stationary.GladiatorMkII_trop gb 311584.69 80332.71 104.80 
   Static998 Stationary.Albion_AM463 gb 311610.22 80335.60 -75.00 
   Static982 tobruk:Stationary.Environment.Windsock_v2 nn 311680.31 80356.90 30.00 
@@ -1731,12 +1736,12 @@
   Static988 Stationary.Environment.SandBagWall_Line_4m nn 311505.97 80398.52 30.00 
   Static989 Stationary.Environment.SandBagWall_Line_4m nn 311503.97 80401.98 30.00 
   Static999 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Box_UK1 nn 311124.09 80498.84 4.20 
-  Static1002 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311122.78 80502.55 -62.80 
   Static1000 Stationary.Ammo_Vehicles.Zwillingssockel_Composition1 nn 311124.72 80500.69 154.20 
+  Static1002 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311122.78 80502.55 -62.80 
   Static1003 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 311125.47 80502.20 4.20 
   Static1001 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 311127.19 80501.76 4.20 
-  Static1007 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311125.56 80505.22 -152.80 
   Static1004 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 nn 311129.41 80501.79 74.20 
+  Static1007 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311125.56 80505.22 -152.80 
   Static1006 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311126.88 80504.44 -192.80 
   Static1005 Stationary.Ammo_Vehicles.2cmFlack38_100_open_GER1 nn 311129.50 80502.80 124.20 
   Static993 tobruk:Stationary.AECM gb 311248.09 80498.57 -30.00 
@@ -1751,8 +1756,8 @@
   Static1039 Stationary.Bedford_OY_open gb 310845.59 80683.42 37.10 
   Static1040 Stationary.Bedford_OY_open gb 310774.69 80789.41 30.50 
   Static1048 Stationary.Environment.Portable_Siren_UK1 gb 311912.00 80798.02 30.00 
-  Static1050 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311915.06 80822.36 50.00 
   Static1051 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311913.66 80824.27 25.00 
+  Static1050 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311915.06 80822.36 50.00 
   Static1049 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311917.06 80821.32 77.70 
   Static1052 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311913.59 80827.09 -10.00 
   Static1054 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 311917.28 80828.84 -30.00 
@@ -1820,8 +1825,8 @@
   Static1073 tobruk:Stationary.HurricaneMkIIaTrop gb 311835.16 81798.39 219.80 
   Static1074 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311836.53 81803.84 9.50 
   Static1084 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 311808.13 81846.11 -62.80 
-  Static1088 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311602.63 81915.44 25.00 
   Static1087 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311604.03 81913.52 50.00 
+  Static1088 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311602.63 81915.44 25.00 
   Static1086 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311606.03 81912.48 77.70 
   Static1089 Stationary.Environment.Chaise_longue_UK-GER_1 nn 311602.56 81918.25 -10.00 
   Static1091 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 311606.56 81917.99 30.00 
@@ -1859,8 +1864,8 @@
   Static3234 Stationary.Environment.GuardTower_UK-GER_1 nn 243213.44 98695.23 90.00 
   Static2946 tobruk:Stationary.Matilda_2A_Late gb 332306.72 97399.81 0.00 
   Static2947 tobruk:Stationary.Matilda_2A_Late gb 332318.53 97406.55 0.00 
-  Static3235 Stationary.Environment.Board_w_map_UK-GER_1 nn 242256.94 98785.66 -31.70 
   Static3236 Stationary.Environment.Chear_UK-GER_1 nn 242261.38 98780.27 83.30 
+  Static3235 Stationary.Environment.Board_w_map_UK-GER_1 nn 242256.94 98785.66 -31.70 
   Static3237 tobruk:Stationary.AECM de 242254.80 98788.20 -60.00 
   Static3238 Stationary.Environment.Chear_UK-GER_1 nn 242264.48 98780.29 93.30 
   Static3239 Stationary.Environment.Chear_UK-GER_1 nn 242267.02 98781.02 118.30 
@@ -1877,16 +1882,16 @@
   Static3243 Stationary.Ammo_Vehicles.Zwillingssockel_Composition1 nn 242525.09 98800.29 124.20 
   Static3245 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 242527.77 98799.98 -25.80 
   Static3244 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 242524.33 98802.88 -92.80 
-  Static3246 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 nn 242529.69 98798.90 44.20 
   Static3247 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 242526.48 98801.23 -25.80 
+  Static3246 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 nn 242529.69 98798.90 44.20 
   Static3248 Stationary.Ammo_Vehicles.2cmFlack38_100_open_GER1 nn 242530.27 98799.73 94.20 
   Static3249 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 242528.84 98802.45 -222.80 
   Static3250 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 242528.08 98803.79 -182.80 
   Static3038 Stationary.Bedford_OY_open gb 332710.38 97384.17 115.00 
   Static3039 Stationary.Bedford_OY_open gb 332724.97 97373.07 115.00 
   Static3251 Stationary.Albion_AM463 de 242947.91 98811.78 -80.00 
-  Static3252 Stationary.Environment.Oil_Cart_UK1 de 242964.67 98813.89 160.00 
   Static3335 Stationary.Bf-109E-1 de 242967.94 98810.06 79.80 
+  Static3252 Stationary.Environment.Oil_Cart_UK1 de 242964.67 98813.89 160.00 
   Static3253 Stationary.Environment.Loudspeaker_UK1 nn 243238.86 98799.54 136.70 
   Static3005 Stationary.Environment.TentRidgeTent_UK1 gb 332289.69 97427.98 115.00 
   Static3006 Stationary.Environment.TentRidgeTent_UK1 gb 332300.19 97435.85 115.00 
@@ -1905,8 +1910,8 @@
   Static2993 Stationary.Environment.Table_empty_UK-GER_1 nn 332546.56 97409.20 115.00 
   Static2997 Stationary.Environment.Chear_UK-GER_1 nn 332547.78 97409.20 115.00 
   Static2998 Stationary.Environment.Chear_UK-GER_1 nn 332549.63 97409.66 115.00 
-  Static2992 Stationary.Environment.Table_empty_UK-GER_1 nn 332549.09 97410.52 115.00 
   Static2994 Stationary.Environment.Chear_UK-GER_1 nn 332548.59 97411.19 115.00 
+  Static2992 Stationary.Environment.Table_empty_UK-GER_1 nn 332549.09 97410.52 115.00 
   Static2988 Stationary.Environment.Chear_UK-GER_1 nn 332551.94 97411.87 115.00 
   Static2990 Stationary.Environment.Chear_UK-GER_1 nn 332554.44 97410.83 115.00 
   Static2986 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 332553.47 97412.41 115.00 
@@ -1924,17 +1929,17 @@
   Static2983 Stationary.Bedford_OY_CargoCrate16 gb 332635.53 97433.67 90.00 
   Static2979 Stationary.Bedford_OY_CargoCrate16 gb 332631.81 97438.90 0.00 
   Static2978 Stationary.Ford_V8_E917_CargoAmmo1 gb 332635.78 97437.97 0.00 
-  Static2975 Stationary.Ford_V8_E917_CargoAmmo1 gb 332642.75 97430.77 0.00 
   Static2977 Stationary.Ford_V8_E917_CargoAmmo1 gb 332637.03 97435.98 0.00 
+  Static2975 Stationary.Ford_V8_E917_CargoAmmo1 gb 332642.75 97430.77 0.00 
   Static2976 Stationary.Ford_V8_E917_CargoAmmo1 gb 332639.25 97434.00 0.00 
   Static2970 Stationary.Ford_V8_E917_CargoAmmo1 gb 332635.53 97439.95 0.00 
-  Static2973 Stationary.Ford_V8_E917_CargoAmmo1 gb 332643.97 97432.76 0.00 
   Static2974 Stationary.Ford_V8_E917_CargoAmmo1 gb 332646.47 97429.78 0.00 
+  Static2973 Stationary.Ford_V8_E917_CargoAmmo1 gb 332643.97 97432.76 0.00 
   Static2971 Stationary.Ford_V8_E917_CargoAmmo1 gb 332639.03 97436.98 0.00 
   Static2982 Stationary.Bedford_OY_CargoCrate16 gb 332634.50 97442.34 90.00 
   Static2972 Stationary.Ford_V8_E917_CargoAmmo1 gb 332641.75 97435.24 0.00 
-  Static2980 Stationary.Bedford_OY_CargoCrate16 gb 332639.22 97439.83 0.00 
   Static2981 Stationary.Bedford_OY_CargoCrate16 gb 332636.72 97442.56 0.00 
+  Static2980 Stationary.Bedford_OY_CargoCrate16 gb 332639.22 97439.83 0.00 
   Static3257 Stationary.Bedford_MW_open de 243156.25 98818.86 -30.00 
   Static3258 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 243154.58 98822.52 -80.80 
   Static3259 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 243154.16 98823.59 100.30 
@@ -1970,9 +1975,9 @@
   Static3267 Stationary.Environment.Portable_Siren_UK1 de 242169.59 99078.19 60.00 
   Static3268 Stationary.Albion_AM463 de 242189.75 99075.78 -120.00 
   Static3269 Stationary.Bedford_MW_tank de 242195.50 99083.28 -135.00 
-  Static3271 Stationary.Bedford_OY_CargoCrate16 de 242198.63 99095.41 -60.20 /hstart 1.1
   Static3270 Stationary.Bedford_OY_open de 242199.20 99094.39 -60.00 
   Static3272 Stationary.Bedford_OY_open de 242192.73 99101.63 -50.00 
+  Static3271 Stationary.Bedford_OY_CargoCrate16 de 242198.63 99095.41 -60.20 /hstart 1.1
   Static3273 Stationary.Bedford_OY_open de 243438.59 99108.94 -90.00 
   Static3274 Stationary.Environment.JerryCan_UK1_2-Gallon_2 nn 243444.92 99105.74 60.60 
   Static3275 Stationary.Environment.FuelDrum_UK1_3 nn 243452.70 99105.57 0.00 
@@ -2024,15 +2029,15 @@
   Static3317 Stationary.AnsonMkI de 242494.06 99745.59 15.30 
   Static3318 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243022.41 99751.18 -70.50 
   Static3319 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243023.41 99752.18 -70.50 
-  Static3320 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243025.69 99752.63 -85.80 
   Static3337 Stationary.Bf-109E-3 de 243028.30 99749.28 184.80 
+  Static3320 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243025.69 99752.63 -85.80 
   Static3321 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243033.13 99746.10 -92.80 
   Static3322 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 243033.27 99755.04 -149.50 
   Static3323 Stationary.Environment.Chaise_longue_UK-GER_1 nn 242488.98 99869.83 47.70 
   Static3324 Stationary.Environment.Chaise_longue_UK-GER_1 nn 242487.77 99871.73 20.00 
   Static3325 Stationary.Environment.Chaise_longue_UK-GER_1 nn 242487.52 99874.09 -5.00 
-  Static3326 Stationary.Environment.FieldKitchen_UK1 de 242494.63 99870.71 60.00 
   Static3327 Stationary.Environment.Chaise_longue_UK-GER_1 nn 242488.88 99876.55 -40.00 
+  Static3326 Stationary.Environment.FieldKitchen_UK1 de 242494.63 99870.71 60.00 
   Static3328 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 242492.20 99874.34 0.00 
   Static3329 Stationary.Austin_K2_Ambulance de 242977.22 99890.87 -100.00 
   Static3330 Stationary.Environment.TentMedicLarge_UK1 nn 242991.36 99901.26 180.00 
@@ -2135,8 +2140,8 @@
   Static611 Stationary.Ammo_Vehicles.10_5cm_LeFH18_carrige_Box_GER1 nn 70074.60 104828.60 27.90 
   Static612 Stationary.Airfield.HydraulicBombLoader_GER1 de 70076.36 104826.73 -289.70 
   Static614 Stationary.Environment.SandBagWall_Arch nn 70076.15 104828.40 124.10 
-  Static616 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 70077.83 104830.55 0.00 /hstart 0.2
   Static617 Stationary.Airfield.BombSled_GER1_Transport de 70077.33 104830.55 0.00 
+  Static616 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 70077.83 104830.55 0.00 /hstart 0.2
   Static604 Stationary.Environment.SandBagWall_Line_12m nn 70080.86 104811.49 -99.30 
   Static606 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 70081.86 104815.92 90.00 
   Static607 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 70082.01 104817.97 80.00 
@@ -2192,8 +2197,8 @@
   Static2680 Stationary.Environment.Chaise_longue_UK-GER_1 nn 293826.78 106577.13 -15.00 
   Static2679 Stationary.Environment.Chaise_longue_UK-GER_1 nn 293827.91 106579.21 -40.00 
   Static2684 Stationary.Environment.FieldKitchen_UK1 gb 293833.91 106574.29 55.00 
-  Static2682 Stationary.Environment.Chaise_longue_UK-GER_1 nn 293830.44 106580.47 -75.00 
   Static2683 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 293833.56 106577.86 -95.00 
+  Static2682 Stationary.Environment.Chaise_longue_UK-GER_1 nn 293830.44 106580.47 -75.00 
   Static2677 Stationary.Bedford_OY_tent gb 293915.72 106605.23 -335.00 
   Static2686 Stationary.Albion_AM463 gb 293832.72 106666.56 -115.00 
   Static2688 tobruk:Stationary.GladiatorMkII_trop gb 293848.16 106653.65 44.80 
@@ -2220,8 +2225,8 @@
   Static2668 Stationary.Environment.FuelDrum_UK1_1 nn 294189.38 106777.43 -182.60 
   Static2667 Stationary.Environment.JerryCan_UK1_4-Gallon_3 nn 294202.59 106764.07 -242.60 
   Static2666 Stationary.Environment.Oil_Cart_UK1 gb 294200.06 106770.37 -250.00 
-  Static2609 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 294696.75 107121.95 142.30 
   Static2604 Stationary.Environment.FuelDrum_UK1_9 nn 294687.78 107130.95 141.80 
+  Static2609 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 294696.75 107121.95 142.30 
   Static2605 Stationary.Environment.TentSmall_UK1 gb 294692.94 107131.91 141.40 
   Static2610 Stationary.Environment.Portable_Siren_UK1 gb 294700.94 107124.02 170.00 
   Static2608 Stationary.Environment.TentSmall_UK1 gb 294698.31 107127.67 140.00 
@@ -2254,8 +2259,8 @@
   Static2631 Stationary.Bedford_OY_open gb 293548.25 107392.09 -65.00 
   Static2632 Stationary.Bedford_OY_open gb 293539.63 107402.05 -45.00 
   Static2648 Stationary.Environment.Stool_UK-GER_1 nn 293661.03 107466.36 -85.00 
-  Static2645 Stationary.Environment.HeightFinder_UK1 gb 293653.03 107476.10 -75.00 
   Static2652 Stationary.Guy_Mk_IA gb 293650.00 107479.96 -245.00 
+  Static2645 Stationary.Environment.HeightFinder_UK1 gb 293653.03 107476.10 -75.00 
   Static2647 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 293657.00 107475.03 -95.00 
   Static2651 Stationary.Environment.Stool_UK-GER_1 nn 293665.31 107467.43 -45.00 
   Static2646 Stationary.Environment.Board_w_map_UK-GER_1 nn 293657.31 107477.31 -45.00 
@@ -2277,6 +2282,26 @@
   Static2624 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 294118.34 107528.39 -90.00 
   Static2626 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 294121.59 107525.94 -120.00 
   Static2614 Stationary.Morris_CS8 gb 294474.38 107522.38 0.00 
+  Static384 Stationary.Environment.JerryCan_GER1_5 de 274722.00 127554.36 0.00 
+  Static395 Stationary.Environment.CamoNetPlaneBig de 274570.16 127717.88 30.00 
+  Static686 Stationary.Environment.CamoNetPlaneBig nn 274587.66 127728.20 -150.00 
+  Static394 Stationary.Environment.CamoNetPlaneBig nn 274550.00 127750.49 30.00 
+  Static393 Stationary.Environment.CamoNetPlaneBig de 274526.88 127784.88 30.00 
+  Static392 Stationary.Environment.CamoNetPlaneBig nn 274515.03 127804.45 30.00 
+  Static687 Stationary.Environment.CamoNetPlaneBig nn 274544.53 127795.40 -150.00 
+  Static587 Stationary.Environment.CamoNetPlaneBig nn 274567.34 127759.92 -150.00 
+  Static391 Stationary.Environment.CamoNetPlaneBig nn 274495.44 127831.13 30.00 
+  Static390 Stationary.Environment.CamoNetPlaneBig nn 274475.88 127858.40 30.00 
+  Static688 Stationary.Environment.CamoNetPlaneBig nn 274522.59 127826.82 -150.00 
+  Static689 Stationary.Environment.CamoNetPlaneBig nn 274504.81 127854.69 -150.00 
+  Static389 Stationary.Environment.CamoNetPlaneBig nn 274461.66 127881.52 30.00 
+  Static388 Stationary.Environment.CamoNetPlaneBig nn 274449.22 127905.83 30.00 
+  Static387 Stationary.Environment.CamoNetPlaneBig nn 274433.25 127931.69 30.00 
+  Static690 Stationary.Environment.CamoNetPlaneBig de 274487.03 127878.41 -150.00 
+  Static691 Stationary.Environment.CamoNetPlaneBig nn 274470.44 127911.02 -150.00 
+  Static385 Stationary.Environment.CamoNetPlaneBig nn 274416.72 127959.75 30.00 
+  Static693 Stationary.Environment.CamoNetPlaneBig nn 274431.88 127969.12 -150.00 
+  Static692 Stationary.Environment.CamoNetPlaneBig nn 274452.03 127937.70 -150.00 
   Static1201 Stationary.Bedford_OY_tent gb 342285.06 128487.77 90.00 
   Static1202 Stationary.Bedford_OY_tent gb 342287.31 128500.03 85.00 
   Static1184 Stationary.Bedford_MW_tank gb 342479.09 128506.55 -215.00 
@@ -2287,8 +2312,8 @@
   Static1192 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 342399.84 128546.17 -27.80 
   Static1193 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Box_UK1 nn 342403.06 128543.89 39.20 
   Static1196 Stationary.Ammo_Vehicles.Zwillingssockel_Composition1 nn 342402.50 128545.77 189.20 
-  Static1198 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 342402.25 128547.42 39.20 
   Static1195 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 342400.59 128549.96 -117.80 
+  Static1198 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 342402.25 128547.42 39.20 
   Static1197 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 342403.94 128548.07 39.20 
   Static1194 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 342402.13 128550.08 -157.80 
   Static1200 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 nn 342405.72 128549.35 109.20 
@@ -2422,8 +2447,8 @@
   Static3444 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 269965.88 130397.98 -95.80 
   Static3445 tobruk:Stationary.Macchi-C202-SeriesVII it 269972.25 130391.88 -15.00 
   Static3446 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 269967.28 130398.09 -70.80 
-  Static3447 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 269968.47 130398.71 -55.80 
   Static3448 Stationary.Ford_G917 de 269965.94 130401.43 -140.00 
+  Static3447 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 269968.47 130398.71 -55.80 
   Static3449 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 269969.34 130399.68 -65.80 
   Static3492 Stationary.Airfield.HydraulicBombLoader_GER1 de 271018.56 130379.77 -229.70 
   Static3151 tobruk:Stationary.TobrukBuilding.Generic.TentRidgeTent_UK1 nn 340774.66 129324.56 -180.00 
@@ -2470,8 +2495,8 @@
   Static3472 Stationary.Environment.Chaise_longue_UK-GER_1 nn 269854.50 130637.11 20.00 
   Static3473 Stationary.Environment.Chaise_longue_UK-GER_1 nn 269856.56 130635.26 25.20 
   Static3474 Stationary.Environment.Chaise_longue_UK-GER_1 nn 269854.41 130639.45 15.00 
-  Static3476 tobruk:Stationary.Bf-109F-2_Trop de 269925.97 130668.38 20.80 
   Static3475 Stationary.Environment.FuelDrum_GER1_2 nn 269920.91 130673.45 67.40 
+  Static3476 tobruk:Stationary.Bf-109F-2_Trop de 269925.97 130668.38 20.80 
   Static3477 Stationary.Environment.Oil_Cart_GER1 de 269955.72 130639.83 90.00 
   Static3478 Stationary.Opel_Blitz_tent de 270956.75 130645.65 -125.00 
   Static3479 Stationary.Opel_Blitz_tent de 270954.03 130653.48 -129.60 
@@ -2511,12 +2536,12 @@
   Static1124 Stationary.Environment.Oil_Cart_UK1 gb 342649.97 129949.83 95.00 
   Static1127 Stationary.Bedford_OY_tent gb 342631.38 129980.42 -125.00 
   Static3341 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 262979.84 131242.89 10.00 
-  Static3343 Stationary.Environment.Chear_UK-GER_1 nn 262981.91 131243.69 -180.00 
   Static3342 Stationary.Environment.Chear_UK-GER_1 nn 262980.47 131244.53 -120.00 
+  Static3343 Stationary.Environment.Chear_UK-GER_1 nn 262981.91 131243.69 -180.00 
   Static3364 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 263680.53 131215.16 -30.00 
-  Static3363 Stationary.Ammo_Vehicles.CargoCrate nn 263721.47 131233.34 -130.80 
-  Static3358 Stationary.Ammo_Vehicles.CargoCrate nn 263722.81 131232.52 -115.80 
   Static3376 Stationary.Environment.Stool_UK-GER_1 nn 263731.78 131223.03 45.00 
+  Static3358 Stationary.Ammo_Vehicles.CargoCrate nn 263722.81 131232.52 -115.80 
+  Static3363 Stationary.Ammo_Vehicles.CargoCrate nn 263721.47 131233.34 -130.80 
   Static3359 Stationary.Ammo_Vehicles.CargoCrate nn 263724.44 131231.30 -55.80 
   Static1114 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 342181.50 130032.30 -5.50 
   Static1115 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 342181.00 130033.63 -5.50 
@@ -2578,13 +2603,13 @@
   Static3367 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 263605.94 132008.52 -0.80 
   Static3380 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 263696.09 132005.78 -175.80 
   Static3381 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 263723.72 132004.67 -150.00 
-  Static2917 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E de 219768.48 133490.23 -25.80 /hstart -6
   Static2886 Stationary.Ammo_Vehicles.BoxWithMGLenta de 219770.66 133488.64 -25.80 
+  Static2917 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E de 219768.48 133490.23 -25.80 /hstart -6
+  Static2887 Stationary.Ammo_Vehicles.8_8_Shell_GER1 de 219770.13 133490.91 -25.80 
   Static2888 Stationary.Ammo_Vehicles.3_7cm_Pac_36_37_composition3_GER1 de 219766.73 133494.78 -25.80 
   Static2889 Stationary.Ammo_Vehicles.3_7inch_QF_AA_composition3_UK1 de 219771.36 133489.94 -25.80 
-  Static2887 Stationary.Ammo_Vehicles.8_8_Shell_GER1 de 219770.13 133490.91 -25.80 
-  Static2892 Stationary.Ammo_Vehicles.CargoCrate_Composition2 de 219774.53 133488.55 -25.80 
   Static2890 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Box_UK1 de 219772.41 133490.28 -25.80 
+  Static2892 Stationary.Ammo_Vehicles.CargoCrate_Composition2 de 219774.53 133488.55 -25.80 
   Static2891 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Open_UK1 de 219771.05 133492.05 -25.80 
   Static2893 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Shell_UK1 de 219772.28 133491.38 -25.80 
   Static2896 Stationary.Ammo_Vehicles.CargoCrate de 219775.36 133490.72 -25.80 
@@ -2599,18 +2624,18 @@
   Static2899 Stationary.Ammo_Vehicles.2cmFlack38_composition3 de 219777.25 133493.78 -25.80 
   Static2902 Stationary.Ammo_Vehicles.CargoCrate_Composition3 de 219778.94 133493.38 -25.80 
   Static2901 Stationary.Ammo_Vehicles.2pdr_AT_composition1_UK1 de 219781.38 133490.19 124.20 
-  Static2905 Stationary.Ammo_Vehicles.8_8cm_Flak18_Pletion_GER1 de 219784.84 133488.33 124.20 
-  Static2903 Stationary.Ammo_Vehicles.2cmFlack38_40_Open_GER1 de 219776.11 133496.30 -25.80 
-  Static2906 Stationary.Ammo_Vehicles.8_8cm_Flak18_Wood_GER1 de 219783.80 133489.25 124.20 
-  Static2904 Stationary.Ammo_Vehicles.2pdr_AT16rdsMetall_Open_UK1 de 219780.94 133492.16 -25.80 
   Static2907 Stationary.Ammo_Vehicles.2cmFlack38_100_open_GER1 de 219776.55 133496.91 -25.80 
-  Static2908 Stationary.Ammo_Vehicles.40mm_Bofors_open_UK1 de 219782.55 133491.73 124.20 
+  Static2904 Stationary.Ammo_Vehicles.2pdr_AT16rdsMetall_Open_UK1 de 219780.94 133492.16 -25.80 
+  Static2905 Stationary.Ammo_Vehicles.8_8cm_Flak18_Pletion_GER1 de 219784.84 133488.33 124.20 
+  Static2906 Stationary.Ammo_Vehicles.8_8cm_Flak18_Wood_GER1 de 219783.80 133489.25 124.20 
+  Static2903 Stationary.Ammo_Vehicles.2cmFlack38_40_Open_GER1 de 219776.11 133496.30 -25.80 
   Static2909 Stationary.Ammo_Vehicles.40mm_Bofors_Open_GER1 de 219783.55 133490.75 124.20 
+  Static2908 Stationary.Ammo_Vehicles.40mm_Bofors_open_UK1 de 219782.55 133491.73 124.20 
   Static2910 Stationary.Ammo_Vehicles.8_8cm_Flak18_composition1_GER1 de 219784.03 133490.14 124.20 
   Static2911 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 de 219778.02 133498.14 -25.80 
-  Static2913 Stationary.Ammo_Vehicles.10_5cm_LeFH18_carrige_Box_GER1 de 219779.89 133498.58 -25.80 
-  Static2912 Stationary.Ammo_Vehicles.40mm_Bofors_composition1_UK1 de 219783.17 133494.05 -25.80 
   Static2914 Stationary.Ammo_Vehicles.40mm_Bofors_composition1_GER1 de 219785.69 133492.73 -25.80 
+  Static2912 Stationary.Ammo_Vehicles.40mm_Bofors_composition1_UK1 de 219783.17 133494.05 -25.80 
+  Static2913 Stationary.Ammo_Vehicles.10_5cm_LeFH18_carrige_Box_GER1 de 219779.89 133498.58 -25.80 
   Static2915 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Shell_GER1 de 219778.52 133500.27 -25.80 
   Static2916 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER de 219779.59 133499.36 -25.80 
   Static2885 Stationary.Environment.JerryCan_UK1_2-Gallon_20 de 219792.02 133495.20 7.40 
@@ -2671,16 +2696,16 @@
   Static2751 Stationary.Environment.TentZeltbahn_GER1 de 239623.94 138258.75 215.00 
   Static2753 Stationary.Environment.TentTroopLarge_GER1 de 239619.13 138265.72 215.00 
   Static2739 Stationary.Environment.FuelDrum_GER1_9 nn 239786.59 138270.41 20.00 
-  Static2740 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 239789.97 138271.19 110.00 
   Static2741 Stationary.Kubelwagen de 239784.53 138276.95 110.00 
+  Static2740 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 239789.97 138271.19 110.00 
   Static2742 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 239788.31 138275.31 20.00 
   Static2743 Stationary.Environment.CamoNetPlane nn 239790.66 138275.67 110.00 
   Static2744 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 239793.34 138272.52 110.00 
   Static2745 Stationary.Environment.Gulaschkanone_GER1 de 239795.09 138278.67 110.00 
   Static2714 Stationary.Environment.CamoNetPlane nn 239485.19 138422.17 400.00 
   Static2715 Stationary.Kubelwagen de 239486.69 138421.88 40.00 
-  Static2719 Stationary.Kubelwagen de 239483.50 138425.58 40.00 
   Static2718 Stationary.Kubelwagen de 239485.13 138423.78 40.00 
+  Static2719 Stationary.Kubelwagen de 239483.50 138425.58 40.00 
   Static2717 Stationary.Kubelwagen de 239482.06 138427.38 40.00 
   Static2713 Stationary.Kubelwagen de 239489.78 138418.31 400.00 
   Static2716 Stationary.Kubelwagen de 239488.16 138420.14 400.00 
@@ -2699,8 +2724,8 @@
   Static2723 Stationary.Environment.TentStaffBig_GER1 de 239483.25 138553.45 125.00 
   Static2724 Stationary.Kubelwagen de 239487.69 138556.45 305.00 
   Static2692 Stationary.Opel_Blitz_tent de 239833.38 138542.36 215.00 
-  Static2695 Stationary.Opel_Blitz_tent de 239829.19 138547.69 215.00 
   Static2693 Stationary.Opel_Blitz_tent de 239831.09 138545.03 215.00 
+  Static2695 Stationary.Opel_Blitz_tent de 239829.19 138547.69 215.00 
   Static2694 Stationary.Opel_Blitz_tent de 239827.16 138550.25 215.00 
   Static2696 Stationary.Environment.CamoNetPlane nn 239832.03 138547.41 215.00 
   Static2725 Stationary.Environment.TentZeltbahnBig_GER1 de 239501.00 138565.36 305.00 
@@ -2717,9 +2742,9 @@
   Static2736 Stationary.Ford_G917 de 239581.53 138604.11 -60.00 
   Static2737 Stationary.Ford_G917 de 239584.47 138605.91 -60.00 
   Static2697 Stationary.Opel_Blitz_tent de 239807.78 138578.36 220.00 
+  Static2699 Stationary.Opel_Blitz_tent de 239805.50 138581.03 220.00 
   Static2698 Stationary.Opel_Blitz_tent de 239803.38 138583.38 220.00 
   Static2700 Stationary.Opel_Blitz_tent de 239801.03 138585.78 220.00 
-  Static2699 Stationary.Opel_Blitz_tent de 239805.50 138581.03 220.00 
   Static2701 Stationary.Environment.CamoNetPlane nn 239805.91 138583.41 220.00 
   Static168 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 150998.56 161413.84 0.00 
   Static809 Stationary.BoreSightBoard_Bf109_E3 de 123625.70 162278.61 -44.80 
@@ -2734,8 +2759,8 @@
   Static805 Stationary.Environment.Crane_GER1 nn 123922.90 162260.58 -33.00 
   Static806 Stationary.BoreSightBoard_Bf109_E3 de 123955.09 162254.08 -60.00 
   Static807 tobruk:Stationary.Bf-109E-7_Trop de 123952.09 162261.14 53.90 
-  Static816 Stationary.Environment.Gulaschkanone_GER1 de 124002.24 162271.89 -15.00 
   Static808 Stationary.Environment.Barrow_UK-GER_1 nn 124007.27 162266.52 -50.70 
+  Static816 Stationary.Environment.Gulaschkanone_GER1 de 124002.24 162271.89 -15.00 
   Static817 Stationary.Environment.Oil_Cart_GER1 de 124041.74 162274.23 -60.90 
   Static818 Stationary.Environment.Maschinensatz_8_KW_GER1 de 124092.37 162263.78 81.40 
   Static819 Stationary.Airfield.Planelifter_GER1 nn 124185.48 162283.86 0.00 
@@ -2748,8 +2773,8 @@
   Static827 Stationary.Environment.Chaise_longue_UK-GER_1 nn 124297.84 162302.13 -257.40 
   Static831 Stationary.Environment.Chaise_longue_UK-GER_1 nn 124300.99 162303.00 -221.30 
   Static832 Stationary.Environment.SandBagWall_Line_12m nn 124302.61 162302.23 -69.30 
-  Static844 Stationary.Environment.Table_w_chess_UK-GER_1 nn 123526.15 162363.80 16.20 
   Static843 Stationary.Environment.Chear_UK-GER_1 nn 123525.70 162364.91 -63.30 
+  Static844 Stationary.Environment.Table_w_chess_UK-GER_1 nn 123526.15 162363.80 16.20 
   Static842 Stationary.Environment.Chear_UK-GER_1 nn 123527.29 162362.98 0.00 
   Static845 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 123555.40 162351.50 80.00 
   Static826 Stationary.Environment.SandBagWall_Line_12m nn 124291.65 162307.25 20.70 
@@ -2761,9 +2786,9 @@
   Static835 Stationary.Environment.SandBagWall_Line_12m nn 124313.78 162306.48 -69.30 
   Static836 Stationary.Environment.SandBagWall_Arch nn 124320.38 162310.11 -25.00 
   Static837 Stationary.Environment.SandBagWall_Line_8m nn 124309.70 162323.13 -69.30 
-  Static839 Stationary.Environment.FireBucket_UK1_empty nn 124312.80 162323.25 0.00 
-  Static838 Stationary.Environment.Portable_Siren_GER1 de 124311.17 162324.88 30.00 
   Static840 Stationary.Environment.SandBagWall_Line_12m nn 124318.77 162317.47 20.70 
+  Static838 Stationary.Environment.Portable_Siren_GER1 de 124311.17 162324.88 30.00 
+  Static839 Stationary.Environment.FireBucket_UK1_empty nn 124312.80 162323.25 0.00 
   Static841 Stationary.Environment.SandBagWall_Arch nn 124315.17 162324.03 -295.00 
   Static846 Stationary.Environment.Bench_UK-GER_1 nn 124367.05 162324.52 15.00 
   Static847 Stationary.Opel_Blitz_tent de 124403.05 162328.31 -243.90 
@@ -2806,8 +2831,8 @@
   Static885 Stationary.Environment.FuelDrum_GER1_1 nn 124251.23 162560.27 120.00 
   Static893 tobruk:Stationary.Bf-109F-2_Trop de 124257.13 162575.27 113.90 
   Static867 Stationary.Ju-87B-2 de 124538.42 162579.20 -255.00 
-  Static868 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 124537.27 162582.14 115.00 
   Static869 Stationary.Airfield.HydraulicBombLoader_GER1 de 124536.38 162583.75 -242.30 
+  Static868 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 124537.27 162582.14 115.00 
   Static870 Stationary.Airfield.HydraulicBombLoader_GER1 de 124593.80 162590.50 -199.70 
   Static886 Stationary.Ju-87B-2 de 124600.63 162595.48 -250.20 
   Static887 Stationary.Weapons_.Bomb_B_SC-250_Type1_J de 124598.84 162598.05 125.00 
@@ -2821,14 +2846,14 @@
   Static896 tobruk:Stationary.He-111H-6 de 123669.50 162901.81 -126.60 
   Static901 Stationary.Opel_Blitz_tent de 123895.60 162892.02 -165.00 
   Static902 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 123893.06 162897.28 -272.10 
-  Static903 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 123930.33 162895.52 -85.80 
   Static905 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 123929.24 162896.97 -85.80 
+  Static903 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 123930.33 162895.52 -85.80 
   Static904 Stationary.Opel_Blitz_tent de 123927.34 162899.41 -157.00 
   Static906 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 123931.20 162897.52 4.20 
   Static907 Stationary.Opel_Blitz_tent de 123949.52 162909.05 -143.50 
   Static921 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 123975.60 162918.42 -25.80 
-  Static922 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 123977.34 162918.19 -1.10 
   Static923 Stationary.Ford_G917 de 123974.23 162921.25 -169.70 
+  Static922 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 123977.34 162918.19 -1.10 
   Static908 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 124168.21 162903.89 -25.80 
   Static909 Stationary.Ammo_Vehicles.Zwillingssockel_Composition1 nn 124176.51 162901.69 124.20 
   Static910 Stationary.Ammo_Vehicles.8_8cm_Flak18_Pletion_GER1 nn 124182.39 162903.59 124.20 
@@ -2865,8 +2890,8 @@
   Static944 Stationary.Kubelwagen de 124438.62 163011.06 -227.10 
   Static945 Stationary.Environment.Bench_UK-GER_1 nn 123665.66 163109.88 -30.00 
   Static946 Stationary.FIAT_SPA_TL_37 it 123678.57 163117.48 -57.90 
-  Static947 Stationary.Environment.JerryCan_UK1_2-Gallon_2 nn 123681.16 163119.34 0.00 
   Static948 Stationary.Opel_Blitz_tent de 123671.88 163129.67 -90.00 
+  Static947 Stationary.Environment.JerryCan_UK1_2-Gallon_2 nn 123681.16 163119.34 0.00 
   Static917 Stationary.Opel_Blitz_cargo_med de 124423.46 163096.75 -157.10 
   Static949 Stationary.Ammo_Vehicles.2cmFlack38_composition3 nn 123685.64 163141.59 -25.80 
   Static950 Stationary.Opel_Blitz_tent de 123695.63 163143.98 30.00 
@@ -2890,42 +2915,42 @@
   Static966 Stationary.Environment.Table_w_chess_UK-GER_1 nn 124282.64 163173.88 0.00 
   Static967 Stationary.Environment.Maschinensatz_15_KW_GER1 de 124271.99 163186.81 81.40 
   Static968 Stationary.Environment.Chaise_longue_UK-GER_1 nn 124280.86 163178.64 -103.60 
-  Static971 Stationary.Environment.Stool_UK-GER_1 nn 124283.38 163177.80 0.00 
   Static970 Stationary.Environment.Chaise_longue_UK-GER_1 nn 124284.89 163176.98 -138.20 
+  Static971 Stationary.Environment.Stool_UK-GER_1 nn 124283.38 163177.80 0.00 
   Static972 Stationary.Environment.Barrow_UK-GER_1 nn 124273.01 163193.81 -28.70 
   Static969 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 124289.04 163171.31 60.00 
   Static975 Stationary.Environment.Portable_Siren_GER1 de 124095.50 163216.80 -30.70 
   Static976 Stationary.Environment.Loudspeaker_GER1 nn 124100.58 163215.06 -54.10 
   Static977 Stationary.Environment.BrunoWire3m nn 124558.92 163220.52 67.50 
-  Static978 Stationary.Environment.SandBagWall_Arch nn 124576.49 163213.94 90.00 /hstart -0.5
   Static979 Stationary.Environment.SandBagWall_Arch nn 124578.61 163211.88 0.00 /hstart -0.5
+  Static978 Stationary.Environment.SandBagWall_Arch nn 124576.49 163213.94 90.00 /hstart -0.5
   Static980 Stationary.Environment.GuardTower_UK-GER_1 nn 124595.89 163204.39 -120.20 
   Static170 Stationary.Ammo_Vehicles.3_7cm_Pac_36_37_Open_GER1 nn 149641.52 163094.88 -25.80 
   Static171 Stationary.Ammo_Vehicles.BoxWithMGLenta nn 149643.69 163093.28 -25.80 
-  Static174 Stationary.Ammo_Vehicles.3_7cm_Pac_36_37_composition3_GER1 nn 149639.77 163099.42 -25.80 
-  Static173 Stationary.Ammo_Vehicles.3_7inch_QF_AA_composition3_UK1 nn 149644.39 163094.59 -25.80 
   Static172 Stationary.Ammo_Vehicles.8_8_Shell_GER1 nn 149643.16 163095.56 -25.80 
+  Static173 Stationary.Ammo_Vehicles.3_7inch_QF_AA_composition3_UK1 nn 149644.39 163094.59 -25.80 
+  Static174 Stationary.Ammo_Vehicles.3_7cm_Pac_36_37_composition3_GER1 nn 149639.77 163099.42 -25.80 
   Static175 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Box_UK1 nn 149645.44 163094.92 -25.80 
   Static177 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Open_UK1 nn 149644.09 163096.70 -25.80 
   Static176 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 149647.56 163093.19 -25.80 
   Static178 Stationary.Ammo_Vehicles.3_7inch_QF_AA_Shell_UK1 nn 149645.31 163096.02 -25.80 
   Static179 Stationary.Ammo_Vehicles.Zwillingssockel_Composition1 nn 149651.98 163091.08 124.20 
-  Static180 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 149650.38 163093.52 -25.80 
   Static181 Stationary.Ammo_Vehicles.CargoCrate nn 149648.39 163095.36 -25.80 
+  Static180 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 149650.38 163093.52 -25.80 
   Static182 Stationary.Ammo_Vehicles.2pdr_AT16rdsWood_open_UK1 nn 149650.88 163095.66 -25.80 
   Static183 Stationary.Ammo_Vehicles.3inch_QF_AA_composition3_UK1 nn 149642.03 163104.14 -25.80 
   Static185 Stationary.Ammo_Vehicles.2pdr_AT_composition1_UK1 nn 149654.41 163094.83 124.20 
   Static186 Stationary.Ammo_Vehicles.2cmFlack38_composition3 nn 149650.28 163098.42 -25.80 
   Static184 Stationary.Ammo_Vehicles.3inch_QF_AA_StandAlone_composition1_UK1 nn 149646.73 163102.25 -25.80 
+  Static189 Stationary.Ammo_Vehicles.2pdr_AT16rdsMetall_Open_UK1 nn 149653.97 163096.80 -25.80 
+  Static187 Stationary.Ammo_Vehicles.8_8cm_Flak18_Pletion_GER1 nn 149657.88 163092.98 124.20 
   Static190 Stationary.Ammo_Vehicles.8_8cm_Flak18_Wood_GER1 nn 149656.84 163093.89 124.20 
   Static188 Stationary.Ammo_Vehicles.2cmFlack38_40_Open_GER1 nn 149649.14 163100.94 -25.80 
   Static191 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 149651.98 163098.02 -25.80 
-  Static187 Stationary.Ammo_Vehicles.8_8cm_Flak18_Pletion_GER1 nn 149657.88 163092.98 124.20 
-  Static189 Stationary.Ammo_Vehicles.2pdr_AT16rdsMetall_Open_UK1 nn 149653.97 163096.80 -25.80 
   Static192 Stationary.Ammo_Vehicles.2cmFlack38_100_open_GER1 nn 149649.59 163101.55 -25.80 
   Static193 Stationary.Ammo_Vehicles.40mm_Bofors_Open_GER1 nn 149656.58 163095.39 124.20 
-  Static194 Stationary.Ammo_Vehicles.40mm_Bofors_open_UK1 nn 149655.59 163096.38 124.20 
   Static195 Stationary.Ammo_Vehicles.8_8cm_Flak18_composition1_GER1 nn 149657.06 163094.78 124.20 
+  Static194 Stationary.Ammo_Vehicles.40mm_Bofors_open_UK1 nn 149655.59 163096.38 124.20 
   Static196 Stationary.Ammo_Vehicles.2cmFlack38_100_GER1 nn 149651.05 163102.78 -25.80 
   Static197 Stationary.Ammo_Vehicles.40mm_Bofors_composition1_UK1 nn 149656.20 163098.70 -25.80 
   Static200 Stationary.Ammo_Vehicles.10_5cm_LeFH18_Shell_GER1 nn 149651.55 163104.91 -25.80 
@@ -2936,38 +2961,38 @@
   Static203 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 149716.88 163092.08 7.40 
   Static205 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_1 nn 149718.02 163091.97 7.40 
   Static204 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_2 nn 149718.34 163091.42 7.40 
-  Static207 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_9 nn 149720.80 163091.63 7.40 
-  Static206 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_3 nn 149718.92 163093.81 7.40 
   Static208 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_3 nn 149721.88 163090.28 7.40 
-  Static211 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 149721.98 163091.53 7.40 
+  Static206 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_3 nn 149718.92 163093.81 7.40 
+  Static207 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_9 nn 149720.80 163091.63 7.40 
   Static209 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_2 nn 149722.27 163090.95 7.40 
+  Static211 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 149721.98 163091.53 7.40 
   Static210 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_9 nn 149717.69 163095.27 7.40 
   Static212 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 149718.98 163095.02 7.40 
   Static213 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_2 nn 149719.38 163094.47 7.40 
   Static215 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_3 nn 149723.44 163092.98 7.40 
   Static214 Stationary.Environment.FuelDrum_GER1_9 nn 149725.02 163090.47 7.40 
-  Static216 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 149722.48 163094.39 7.40 
   Static217 Stationary.Environment.FuelDrum_GER1_2 nn 149725.08 163091.77 7.40 
+  Static216 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 149722.48 163094.39 7.40 
   Static219 Stationary.Environment.FuelDrum_GER1_3 nn 149726.38 163091.22 7.40 
   Static218 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_2 nn 149724.02 163093.63 7.40 
   Static220 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_1 nn 149723.69 163094.22 7.40 
   Static221 Stationary.Environment.FuelDrum_GER1_1 nn 149726.00 163092.19 7.40 
-  Static223 Stationary.Environment.FuelDrum_UK1_9 nn 149729.23 163090.52 7.40 
   Static222 Stationary.Environment.FuelDrum_UK1_3 nn 149728.33 163091.92 7.40 
+  Static223 Stationary.Environment.FuelDrum_UK1_9 nn 149729.23 163090.52 7.40 
   Static225 Stationary.Environment.JerryCan_GER1_3 nn 149724.94 163096.14 7.40 
-  Static227 Stationary.Environment.FuelDrum_UK1_1 nn 149728.75 163092.56 7.40 
   Static226 Stationary.Environment.FuelDrum_UK1_2 nn 149729.63 163091.95 7.40 
   Static224 Stationary.Environment.JerryCan_GER1_5 nn 149724.23 163096.05 7.40 
+  Static227 Stationary.Environment.FuelDrum_UK1_1 nn 149728.75 163092.56 7.40 
   Static228 Stationary.Environment.JerryCan_GER1_2 nn 149725.31 163096.28 7.40 
   Static229 Stationary.Environment.JerryCan_GER1_1 nn 149725.72 163096.48 7.40 
   Static230 Stationary.Environment.JerryCan_GER1_18 nn 149725.33 163097.17 7.40 
   Static231 Stationary.Environment.JerryCan_UK1_4-Gallon_3 nn 149729.97 163094.63 7.40 
+  Static235 Stationary.Environment.JerryCan_UK1_2-Gallon_3 nn 149733.09 163091.48 7.40 
   Static236 Stationary.Environment.JerryCan_UK1_4-Gallon_5 nn 149729.73 163095.47 7.40 
   Static233 Stationary.Environment.JerryCan_UK1_2-Gallon_1 nn 149733.72 163091.53 7.40 
   Static237 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 149730.63 163094.52 7.40 
-  Static232 Stationary.Environment.JerryCan_UK1_2-Gallon_2 nn 149732.55 163092.08 7.40 
   Static234 Stationary.Environment.JerryCan_UK1_2-Gallon_5 nn 149732.81 163092.72 7.40 
-  Static235 Stationary.Environment.JerryCan_UK1_2-Gallon_3 nn 149733.09 163091.48 7.40 
+  Static232 Stationary.Environment.JerryCan_UK1_2-Gallon_2 nn 149732.55 163092.08 7.40 
   Static239 Stationary.Environment.JerryCan_UK1_2-Gallon_20 nn 149733.80 163092.44 7.40 
   Static238 Stationary.Environment.JerryCan_UK1_4-Gallon_1 nn 149731.33 163094.50 7.40 
   Static240 Stationary.Environment.JerryCan_UK1_4-Gallon_20 nn 149731.05 163095.31 7.40 
@@ -2979,8 +3004,8 @@
   Static246 tobruk:Stationary.AECM gb 149717.14 163182.16 0.00 
   Static247 Stationary.Environment.Towed_Bowser_UK1 gb 149727.47 163173.95 0.00 
   Static248 tobruk:Stationary.Environment.AEC_Stationary nn 149716.47 163186.94 0.00 
-  Static250 Stationary.Environment.FireBucket_UK1_empty nn 149725.83 163181.80 0.00 
   Static249 Stationary.Environment.Oil_Cart_GER1 de 149728.53 163178.41 0.00 
+  Static250 Stationary.Environment.FireBucket_UK1_empty nn 149725.83 163181.80 0.00 
   Static251 Stationary.Environment.Anlasswagen_(starter)_GER1 de 149738.97 163169.16 0.00 
   Static252 Stationary.Environment.Oil_Cup_UK1_(glycol) nn 149716.97 163192.36 0.00 
   Static253 Stationary.Environment.Table_w_chess_UK-GER_1 nn 149716.22 163194.61 0.00 
@@ -3009,8 +3034,8 @@
   Static276 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 149790.14 163162.72 0.00 
   Static277 Stationary.Environment.Maschinensatz_15_KW_GER1 de 149797.39 163160.61 0.00 
   Static278 Stationary.Environment.Barrow_UK-GER_1 nn 149805.36 163154.55 0.00 
-  Static279 Stationary.Environment.HeightFinder_UK1 nn 149816.64 163150.42 0.00 
   Static280 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 149807.47 163159.69 0.00 
+  Static279 Stationary.Environment.HeightFinder_UK1 nn 149816.64 163150.42 0.00 
   Static281 Stationary.Environment.Bobbin_cable_UK-GER_1 nn 149818.44 163152.91 0.00 
   Static282 Stationary.Environment.Gulaschkanone_GER1 de 149815.42 163158.31 0.00 
   Static283 Stationary.Environment.TentTroopLarge_GER1 nn 149549.02 163202.03 0.00 
@@ -3079,8 +3104,8 @@
   Static346 Stationary.Opel_Blitz_radio_transport de 149400.22 163350.72 -90.00 
   Static347 Stationary.Kubelwagen de 149396.58 163360.05 -90.00 
   Static348 Stationary.Morris_CDSW gb 149385.28 163372.44 -90.00 
-  Static350 tobruk:Stationary.S37 it 149417.53 163342.56 -90.00 
   Static349 Stationary.Opel_Blitz_fuel de 149408.42 163351.02 -90.00 
+  Static350 tobruk:Stationary.S37 it 149417.53 163342.56 -90.00 
   Static351 Stationary.SdKfz_11 de 149424.69 163342.27 -90.00 
   Static352 Stationary.Guy_Mk_IA gb 149418.50 163349.70 -90.00 
   Static353 Stationary.AEC_Matador gb 149397.72 163372.44 -90.00 
@@ -3124,16 +3149,16 @@
   Static2775 Stationary.Environment.FuelDrum_GER1_9 de 159668.63 186595.16 90.00 /hstart 4.6
   Static2787 Stationary.Environment.FuelDrum_GER1_9 de 159663.44 186600.06 90.00 /hstart 4.6
   Static2764 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 159656.31 186609.89 0.00 /hstart 4.6
-  Static2784 Stationary.Environment.FuelDrum_GER1_9 de 159665.92 186601.27 90.00 /hstart 4.6
   Static2776 Stationary.Environment.FuelDrum_GER1_9 de 159671.63 186595.97 90.00 /hstart 4.6
+  Static2784 Stationary.Environment.FuelDrum_GER1_9 de 159665.92 186601.27 90.00 /hstart 4.6
   Static2780 Stationary.Environment.FuelDrum_GER1_9 de 159669.33 186599.45 90.00 /hstart 4.6
   Static2763 Stationary.Krupp_L2H43_Protze_Flak38_Zwillingssockel36_CargoAmmo6 de 159657.11 186612.73 0.00 /hstart 4.6
-  Static2765 Stationary.Renault_UE_Track_CargoSet4 de 159659.50 186611.56 0.00 /hstart 4.6
   Static2777 Stationary.Environment.FuelDrum_GER1_9 de 159675.13 186595.97 90.00 /hstart 4.6
+  Static2765 Stationary.Renault_UE_Track_CargoSet4 de 159659.50 186611.56 0.00 /hstart 4.6
   Static2783 Stationary.Environment.FuelDrum_GER1_9 de 159672.92 186599.77 90.00 /hstart 4.6
   Static2781 Stationary.Environment.FuelDrum_GER1_9 de 159675.63 186599.77 90.00 /hstart 4.6
-  Static2778 Stationary.Environment.FuelDrum_GER1_9 de 159679.22 186596.27 90.00 /hstart 4.6
   Static2766 Stationary.Krupp_L2H43_Protze_Kfz69 de 159660.67 186615.72 0.00 /hstart 4.6
+  Static2778 Stationary.Environment.FuelDrum_GER1_9 de 159679.22 186596.27 90.00 /hstart 4.6
   Static2767 Stationary.Krupp_L2H43_Protze_Kfz69 de 159671.56 186606.72 90.00 /hstart 4.6
   Static2782 Stationary.Environment.FuelDrum_GER1_9 de 159680.31 186600.16 90.00 /hstart 4.6
   Static2770 Stationary.Opel_Blitz_fuel de 159680.92 186613.16 90.00 /hstart 4.6
@@ -3167,9 +3192,9 @@
   Static2862 Stationary.Environment.CamoNetPlane nn 158812.28 187485.81 110.00 
   Static2864 Stationary.Environment.Gulaschkanone_GER1 de 158816.73 187488.81 110.00 
   Static2833 Stationary.Environment.CamoNetPlane nn 158506.81 187632.31 400.00 
-  Static2835 Stationary.Kubelwagen de 158509.78 187630.27 400.00 
   Static2837 Stationary.Kubelwagen de 158506.77 187633.91 40.00 
   Static2832 Stationary.Kubelwagen de 158511.42 187628.45 400.00 
+  Static2835 Stationary.Kubelwagen de 158509.78 187630.27 400.00 
   Static2838 Stationary.Kubelwagen de 158505.14 187635.72 40.00 
   Static2836 Stationary.Kubelwagen de 158503.70 187637.52 40.00 
   Static2834 Stationary.Kubelwagen de 158508.31 187632.02 40.00 
@@ -3191,8 +3216,8 @@
   Static2843 Stationary.Kubelwagen de 158509.31 187766.59 305.00 
   Static2844 Stationary.Environment.TentZeltbahnBig_GER1 de 158522.64 187775.48 305.00 
   Static2811 Stationary.Opel_Blitz_tent de 158855.02 187752.48 215.00 
-  Static2812 Stationary.Opel_Blitz_tent de 158852.73 187755.16 215.00 
   Static2814 Stationary.Opel_Blitz_tent de 158850.81 187757.83 215.00 
+  Static2812 Stationary.Opel_Blitz_tent de 158852.73 187755.16 215.00 
   Static2813 Stationary.Opel_Blitz_tent de 158848.78 187760.38 215.00 
   Static2815 Stationary.Environment.CamoNetPlane nn 158853.67 187757.55 215.00 
   Static2845 Stationary.Opel_Blitz_cargo_med de 158528.27 187777.80 305.00 
@@ -3207,8 +3232,8 @@
   Static2854 Stationary.Environment.CamoNetPlane nn 158601.17 187813.95 300.00 
   Static2855 Stationary.Ford_G917 de 158603.17 187814.23 -60.00 
   Static2856 Stationary.Ford_G917 de 158606.09 187816.05 -60.00 
-  Static2816 Stationary.Opel_Blitz_tent de 158829.42 187788.48 220.00 
   Static2819 Stationary.Opel_Blitz_tent de 158822.67 187795.91 220.00 
+  Static2816 Stationary.Opel_Blitz_tent de 158829.42 187788.48 220.00 
   Static2817 Stationary.Opel_Blitz_tent de 158825.02 187793.52 220.00 
   Static2818 Stationary.Opel_Blitz_tent de 158827.14 187791.16 220.00 
   Static2820 Stationary.Environment.CamoNetPlane nn 158827.53 187793.55 220.00 
@@ -3230,8 +3255,8 @@
   Static410 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 35757.78 250979.95 -165.80 
   Static411 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 35621.64 251032.05 4.20 
   Static412 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 35623.07 251032.27 5.40 
-  Static414 Stationary.Ford_G917 de 35617.09 251045.31 -75.00 
   Static413 Stationary.Ford_G917 de 35624.04 251038.95 -60.00 
+  Static414 Stationary.Ford_G917 de 35617.09 251045.31 -75.00 
   Static415 tobruk:Stationary.Bf-109F-2_Trop de 36457.05 251016.73 -150.00 
   Static416 tobruk:Stationary.Bf-109F-2_Trop de 36445.41 251043.31 -165.00 
   Static417 Stationary.Environment.Anlasswagen_(starter)_GER1 de 36460.23 251043.94 0.00 
@@ -3282,8 +3307,8 @@
   Static510 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 35507.68 251465.95 -100.80 
   Static523 Stationary.Environment.Portable_Siren_GER1 de 35514.74 251465.92 60.00 
   Static461 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 35490.36 251508.36 7.40 
-  Static460 Stationary.Environment.Oil_Cart_GER1 de 35514.63 251484.11 -49.90 
   Static459 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 35491.05 251507.75 7.40 
+  Static460 Stationary.Environment.Oil_Cart_GER1 de 35514.63 251484.11 -49.90 
   Static462 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 35491.11 251508.91 7.40 
   Static463 tobruk:Stationary.Environment.Misc.FuelDrum_GER1WR_1 nn 35491.25 251510.23 7.40 
   Static464 Stationary.Airfield.Planelifter_GER1 nn 35522.24 251470.52 25.00 
@@ -3307,8 +3332,8 @@
   Static473 Stationary.SdKfz_10_1 de 36242.43 251673.48 -118.70 
   Static474 tobruk:Stationary.SdKfz_253 de 36210.08 251717.23 -150.00 
   Static537 Stationary.FIAT_SPA_TL_37 it 36209.31 251755.44 -132.90 
-  Static534 Stationary.Environment.Chear_UK-GER_1 nn 35363.41 251805.45 -14.30 
   Static532 Stationary.Environment.Chear_UK-GER_1 nn 35365.16 251803.00 0.00 
+  Static534 Stationary.Environment.Chear_UK-GER_1 nn 35363.41 251805.45 -14.30 
   Static535 Stationary.Environment.Chear_UK-GER_1 nn 35363.82 251809.56 -39.30 
   Static533 Stationary.Environment.Board_w_map_UK-GER_1 nn 35373.35 251805.55 165.00 
   Static524 Stationary.Environment.Portable_Siren_GER1 de 35376.30 251810.84 150.00 
@@ -3354,11 +3379,164 @@
   Static504 Stationary.Airfield.Planelifter_GER2 nn 35873.67 252050.05 20.00 
   Static509 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 35945.62 252044.47 -10.80 
   Static518 Stationary.Environment.Crane_GER1 nn 35956.83 252062.88 30.00 
-  Static107 Stationary.Environment.Oil_Cart_UK1 gb 249859.27 62971.72 55.00 
-  Static370 Stationary.Environment.Oil_Cart_UK1 gb 250291.69 63049.21 55.00 
-  Static67 Stationary.Airfield.BombLoadingCart_UK1_DMG1 nn 250584.52 62813.59 55.00 
-  Static373 Stationary.Environment.GuardTower_UK-GER_1 nn 250663.28 62839.85 55.00 
-  Static374 tobruk:Stationary.TobrukBuilding.WaterTowerTwo nn 250660.89 62894.75 55.00 
+  Static694 Stationary.He-115B-2 de 274531.28 127778.78 30.00 
+  Static695 Stationary.He-115B-2 de 274553.09 127746.97 30.00 
+  Static696 Stationary.He-115B-2 de 274552.00 127792.59 30.00 
+  Static697 Stationary.He-115B-2 de 274588.25 127729.23 30.00 
+  Static698 Stationary.He-115B-2 de 274571.91 127717.18 30.00 
+  Static699 Stationary.He-115B-2 de 162163.39 185855.86 30.00 
+  Static700 Stationary.Environment.CamoNetPlaneBig nn 162043.55 186040.58 30.00 
+  Static701 Stationary.Environment.CamoNetPlaneBig nn 162059.52 186014.72 30.00 
+  Static702 Stationary.Environment.CamoNetPlaneBig nn 162077.34 185986.80 30.00 
+  Static703 Stationary.Environment.CamoNetPlaneBig nn 162090.70 185963.75 30.00 
+  Static704 Stationary.Environment.CamoNetPlaneBig nn 162105.73 185940.02 30.00 
+  Static705 Stationary.Environment.CamoNetPlaneBig nn 162125.33 185913.34 30.00 
+  Static706 Stationary.Environment.CamoNetPlaneBig de 162137.17 185893.77 30.00 
+  Static707 Stationary.Environment.CamoNetPlaneBig nn 162160.30 185859.38 30.00 
+  Static708 Stationary.Environment.CamoNetPlaneBig nn 162177.64 185868.81 -150.00 
+  Static709 Stationary.Environment.CamoNetPlaneBig nn 162154.83 185904.30 -150.00 
+  Static710 Stationary.Environment.CamoNetPlaneBig nn 162132.89 185935.70 -150.00 
+  Static711 Stationary.Environment.CamoNetPlaneBig nn 162115.11 185963.58 -150.00 
+  Static712 Stationary.Environment.CamoNetPlaneBig de 162097.33 185987.30 -150.00 
+  Static713 Stationary.Environment.CamoNetPlaneBig nn 162080.73 186019.91 -150.00 
+  Static714 Stationary.Environment.CamoNetPlaneBig nn 162062.33 186046.59 -150.00 
+  Static715 Stationary.He-115B-2 de 162141.58 185887.67 30.00 
+  Static716 Stationary.He-115B-2 de 162162.28 185901.48 30.00 
+  Static717 Stationary.Environment.CamoNetPlaneBig nn 162027.02 186068.64 30.00 
+  Static718 Stationary.Environment.CamoNetPlaneBig nn 162042.17 186078.02 -150.00 
+  Static719 Stationary.Environment.JerryCan_GER1_5 de 162332.30 185663.25 0.00 
+  Static720 Stationary.Environment.CamoNetPlaneBig de 162180.45 185826.77 30.00 
+  Static721 Stationary.Environment.CamoNetPlaneBig nn 162197.95 185837.09 -150.00 
+  Static722 Stationary.He-115B-2 de 162198.53 185838.13 30.00 
+  Static723 Stationary.He-115B-2 de 162182.22 185826.08 30.00 
+  Static724 Stationary.Environment.CamoNetPlaneBig nn 162017.50 186085.67 30.00 
+  Static725 Stationary.Environment.CamoNetPlaneBig nn 162032.73 186090.98 -150.00 
+  Static726 Stationary.He-115B-2 de 95840.39 198966.17 30.00 
+  Static727 Stationary.Environment.CamoNetPlaneBig nn 95720.55 199150.89 30.00 
+  Static728 Stationary.Environment.CamoNetPlaneBig nn 95736.52 199125.03 30.00 
+  Static729 Stationary.Environment.CamoNetPlaneBig nn 95748.96 199100.72 30.00 
+  Static730 Stationary.Environment.CamoNetPlaneBig nn 95763.18 199077.59 30.00 
+  Static731 Stationary.Environment.CamoNetPlaneBig nn 95782.74 199050.33 30.00 
+  Static732 Stationary.Environment.CamoNetPlaneBig nn 95802.33 199023.64 30.00 
+  Static733 Stationary.Environment.CamoNetPlaneBig de 95814.18 199004.08 30.00 
+  Static734 Stationary.Environment.CamoNetPlaneBig nn 95837.30 198969.69 30.00 
+  Static735 Stationary.Environment.CamoNetPlaneBig nn 95854.64 198979.11 -150.00 
+  Static736 Stationary.Environment.CamoNetPlaneBig nn 95831.83 199014.59 -150.00 
+  Static737 Stationary.Environment.CamoNetPlaneBig nn 95809.89 199046.02 -150.00 
+  Static738 Stationary.Environment.CamoNetPlaneBig nn 95792.11 199073.89 -150.00 
+  Static739 Stationary.Environment.CamoNetPlaneBig de 95774.33 199097.61 -150.00 
+  Static740 Stationary.Environment.CamoNetPlaneBig nn 95757.74 199130.22 -150.00 
+  Static741 Stationary.Environment.CamoNetPlaneBig nn 95739.33 199156.89 -150.00 
+  Static742 Stationary.He-115B-2 de 95818.59 198997.97 30.00 
+  Static743 Stationary.He-115B-2 de 95839.29 199011.80 30.00 
+  Static744 Stationary.Environment.CamoNetPlaneBig nn 95704.02 199178.95 30.00 
+  Static745 Stationary.Environment.CamoNetPlaneBig nn 95719.18 199188.31 -150.00 
+  Static746 Stationary.Environment.JerryCan_GER1_5 de 95420.88 198872.42 0.00 
+  Static747 Stationary.Environment.CamoNetPlaneBig de 95857.46 198937.08 30.00 
+  Static748 Stationary.Environment.CamoNetPlaneBig nn 95874.96 198947.39 -150.00 
+  Static749 Stationary.He-115B-2 de 95875.54 198948.42 30.00 
+  Static750 Stationary.He-115B-2 de 95859.22 198936.38 30.00 
+  Static751 Stationary.Environment.CamoNetPlaneBig de 95508.18 198951.95 30.00 
+  Static752 Stationary.Environment.CamoNetPlaneBig de 95526.48 198919.92 30.00 
+  Static753 Stationary.Environment.CamoNetPlaneBig de 95531.05 198963.39 -150.00 
+  Static754 Stationary.Environment.CamoNetPlaneBig de 95549.36 198930.22 -150.00 
+  Static755 Stationary.He-115B-2 de 95529.98 198966.86 30.00 
+  Static756 Stationary.He-115B-2 de 95550.57 198925.67 30.00 
+  Static757 Stationary.He-115B-2 de 95526.54 198913.08 30.00 
+  Static758 Stationary.He-115B-2 de 95504.80 198951.98 30.00 
+  Static759 Stationary.He-115B-2 de 76146.81 225242.77 -90.00 
+  Static760 Stationary.Environment.CamoNetPlaneBig nn 76366.71 225254.20 -90.00 
+  Static761 Stationary.Environment.CamoNetPlaneBig nn 76336.33 225253.30 -90.00 
+  Static762 Stationary.Environment.CamoNetPlaneBig nn 76309.05 225254.67 -90.00 
+  Static763 Stationary.Environment.CamoNetPlaneBig nn 76281.92 225253.92 -90.00 
+  Static764 Stationary.Environment.CamoNetPlaneBig nn 76248.52 225250.63 -90.00 
+  Static765 Stationary.Environment.CamoNetPlaneBig nn 76215.63 225247.00 -90.00 
+  Static766 Stationary.Environment.CamoNetPlaneBig de 76192.75 225246.52 -90.00 
+  Static767 Stationary.Environment.CamoNetPlaneBig nn 76151.41 225243.69 -90.00 
+  Static768 Stationary.Environment.CamoNetPlaneBig nn 76150.91 225223.95 -270.00 
+  Static769 Stationary.Environment.CamoNetPlaneBig nn 76193.04 225225.97 -270.00 
+  Static770 Stationary.Environment.CamoNetPlaneBig nn 76231.22 225229.27 -270.00 
+  Static771 Stationary.Environment.CamoNetPlaneBig nn 76264.24 225230.72 -270.00 
+  Static772 Stationary.Environment.CamoNetPlaneBig de 76293.67 225234.27 -270.00 
+  Static773 Stationary.Environment.CamoNetPlaneBig nn 76330.21 225232.33 -270.00 
+  Static774 Stationary.Environment.CamoNetPlaneBig nn 76362.52 225234.92 -270.00 
+  Static775 Stationary.He-115B-2 de 76185.27 225245.75 -90.00 
+  Static776 Stationary.He-115B-2 de 76186.88 225220.91 -90.00 
+  Static777 Stationary.Environment.CamoNetPlaneBig nn 76399.27 225254.48 -90.00 
+  Static778 Stationary.Environment.CamoNetPlaneBig nn 76399.80 225236.67 -270.00 
+  Static779 Stationary.Environment.JerryCan_GER1_5 de 75895.55 225192.80 -120.00 
+  Static780 Stationary.Environment.CamoNetPlaneBig de 76113.09 225242.53 -90.00 
+  Static781 Stationary.Environment.CamoNetPlaneBig nn 76113.27 225222.22 -270.00 
+  Static782 Stationary.He-115B-2 de 76113.88 225221.20 -90.00 
+  Static783 Stationary.He-115B-2 de 76111.60 225241.36 -90.00 
+  Static784 Stationary.Environment.CamoNetPlaneBig de 76038.72 225169.91 -30.00 
+  Static785 Stationary.Environment.CamoNetPlaneBig de 76055.34 225160.78 -210.00 
+  Static786 Stationary.He-115B-2 de 76047.12 225166.27 -90.00 
+  Static787 Stationary.Environment.CamoNetPlaneBig nn 76439.89 225231.39 -270.00 
+  Static788 Stationary.Environment.CamoNetPlaneBig nn 76484.45 225228.64 -270.00 
+  Static789 Stationary.Environment.CamoNetPlaneBig nn 76526.27 225230.02 -270.00 
+  Static790 Stationary.Environment.CamoNetPlaneBig nn 76568.08 225228.64 -270.00 
+  Static791 Stationary.Environment.CamoNetPlaneBig nn 76609.89 225227.95 -270.00 
+  Static792 Stationary.Environment.CamoNetPlaneBig nn 76653.76 225226.59 -270.00 
+  Static793 Stationary.Environment.CamoNetPlaneBig nn 76692.83 225225.22 -270.00 
+  Static794 Stationary.Environment.CamoNetPlaneBig nn 76738.07 225221.80 -270.00 
+  Static795 Stationary.Environment.CamoNetPlaneBig nn 76779.20 225219.73 -270.00 
+  Static796 Stationary.Environment.CamoNetPlaneBig nn 76825.13 225223.16 -270.00 
+  Static798 Stationary.Environment.CamoNetPlaneBig nn 76826.50 225240.98 -455.00 
+  Static799 tobruk:Stationary.Environment.25meterStonewall nn 76817.13 225264.41 -455.00 
+  Static800 tobruk:Stationary.Environment.25meterStonewall nn 76825.83 225276.03 -545.00 
+  Static801 tobruk:Stationary.Environment.25meterStonewall nn 76837.58 225262.86 -635.00 
+  Static802 Stationary.He-115B-2 de 20301.02 269597.03 210.00 
+  Static862 Stationary.Environment.CamoNetPlaneBig nn 20420.86 269412.31 210.00 
+  Static864 Stationary.Environment.CamoNetPlaneBig nn 20404.89 269438.16 210.00 
+  Static1287 Stationary.Environment.CamoNetPlaneBig nn 20392.45 269462.47 210.00 
+  Static1725 Stationary.Environment.CamoNetPlaneBig nn 20378.23 269485.59 210.00 
+  Static1939 Stationary.Environment.CamoNetPlaneBig nn 20358.67 269512.88 210.00 
+  Static2120 Stationary.Environment.CamoNetPlaneBig nn 20339.08 269539.53 210.00 
+  Static2245 Stationary.Environment.CamoNetPlaneBig de 20327.23 269559.13 210.00 
+  Static2246 Stationary.Environment.CamoNetPlaneBig nn 20304.11 269593.50 210.00 
+  Static2247 Stationary.Environment.CamoNetPlaneBig nn 20286.77 269584.06 30.00 
+  Static2248 Stationary.Environment.CamoNetPlaneBig nn 20309.58 269548.59 30.00 
+  Static2249 Stationary.Environment.CamoNetPlaneBig nn 20331.52 269517.16 30.00 
+  Static2250 Stationary.Environment.CamoNetPlaneBig nn 20349.30 269489.31 30.00 
+  Static2251 Stationary.Environment.CamoNetPlaneBig de 20367.08 269465.59 30.00 
+  Static2252 Stationary.Environment.CamoNetPlaneBig nn 20383.67 269432.97 30.00 
+  Static2253 Stationary.Environment.CamoNetPlaneBig nn 20402.08 269406.28 30.00 
+  Static2254 Stationary.He-115B-2 de 20322.82 269565.22 210.00 
+  Static2255 Stationary.He-115B-2 de 20302.12 269551.41 210.00 
+  Static2256 Stationary.Environment.CamoNetPlaneBig nn 20437.39 269384.25 210.00 
+  Static2257 Stationary.Environment.CamoNetPlaneBig nn 20422.23 269374.88 30.00 
+  Static2258 Stationary.Environment.JerryCan_GER1_5 de 20221.18 269679.78 180.00 
+  Static2259 Stationary.Environment.CamoNetPlaneBig de 20283.95 269626.13 210.00 
+  Static2260 Stationary.Environment.CamoNetPlaneBig nn 20266.45 269615.78 30.00 
+  Static2261 Stationary.He-115B-2 de 20265.87 269614.75 210.00 
+  Static2262 Stationary.He-115B-2 de 20282.19 269626.81 210.00 
+  Static2264 Stationary.Environment.CamoNetPlaneBig nn 348082.25 135196.55 180.00 
+  Static2265 Stationary.Environment.CamoNetPlaneBig nn 348089.25 135226.13 180.00 
+  Static2266 Stationary.Environment.CamoNetPlaneBig nn 348097.63 135252.11 180.00 
+  Static2267 Stationary.Environment.CamoNetPlaneBig nn 348103.94 135278.52 180.00 
+  Static2268 Stationary.Environment.CamoNetPlaneBig nn 348109.38 135311.63 165.00 
+  Static2269 Stationary.Environment.CamoNetPlaneBig nn 348114.38 135344.34 180.00 
+  Static2271 Stationary.Environment.CamoNetPlaneBig nn 348127.81 135407.23 180.00 
+  Static2272 Stationary.Environment.CamoNetPlaneBig nn 348114.19 135407.66 0.00 
+  Static2273 Stationary.Environment.CamoNetPlaneBig nn 348103.88 135368.19 -15.00 
+  Static2274 Stationary.Environment.CamoNetPlaneBig nn 348096.38 135334.92 -15.00 
+  Static2275 Stationary.Environment.CamoNetPlaneBig nn 348088.47 135299.50 -15.00 
+  Static2277 Stationary.Environment.CamoNetPlaneBig nn 348070.56 135237.47 0.00 
+  Static2278 Stationary.Environment.CamoNetPlaneBig nn 348064.72 135205.58 0.00 
+  Static2281 Stationary.Environment.CamoNetPlaneBig nn 348074.09 135165.02 180.00 
+  Static2282 Stationary.Environment.CamoNetPlaneBig nn 348056.75 135169.11 0.00 
+  Static2283 Stationary.Environment.JerryCan_GER1_5 gb 348203.31 136075.81 150.00 
+  Static2284 Stationary.Environment.CamoNetPlaneBig gb 348136.63 135444.55 180.00 
+  Static2285 Stationary.Environment.CamoNetPlaneBig nn 348116.94 135443.94 0.00 
+  Static2286 Stationary.He-115B-2 gb 348115.81 135449.31 180.00 
+  Static2287 tobruk:Stationary.WalrusMkI_Trop gb 348135.88 135446.28 180.00 
+  Static2263 Stationary.Environment.CamoNetPlaneBig nn 348125.94 135376.63 180.00 
+  Static2270 Stationary.Environment.CamoNetPlaneBig nn 348079.13 135267.77 -15.00 
+  Static2276 tobruk:Stationary.WalrusMkI_Trop gb 348110.94 135405.03 180.00 
+  Static2279 tobruk:Stationary.WalrusMkI_Trop gb 348128.56 135371.11 180.00 
+  Static2280 tobruk:Stationary.WalrusMkI_Trop gb 348103.00 135370.63 180.00 
+  Static2288 tobruk:Stationary.WalrusMkI_Trop gb 348131.13 135488.02 180.00 
 [Buildings]
   0_bld tobruk:buildings.House$CamoNetPlaneBig 1 117814.42 68358.11 -75.00
   1_bld tobruk:buildings.House$CamoNetPlaneBig 1 118003.70 68407.49 -80.00
@@ -4428,8 +4606,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop    
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace1]
@@ -4455,8 +4633,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4483,8 +4661,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4512,7 +4690,7 @@
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4539,8 +4717,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4567,8 +4745,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop    
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4595,8 +4773,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4857,8 +5035,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4937,8 +5115,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -4965,8 +5143,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop    
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -5045,7 +5223,7 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
@@ -5073,8 +5251,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -5101,8 +5279,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -5129,8 +5307,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
   tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop    
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop

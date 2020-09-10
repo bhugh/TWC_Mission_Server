@@ -602,6 +602,8 @@ public class Mission : AMission, IMainMission
             //SMissionObjectivesList = MissionObjectivesList as IMissionObjecit;
 
             //initialize giant sector overview, which gives a quick total of airgroups (ind=0) and aircraft (ind=1) for the entire map.
+            //Which x,y position is which sector # is defined by a routein in Calcs.  It makes the 36000x36000 map grid into 3x3 with 0 and 10 acting as negative/positive overflows
+            //If a player is off map this can be a problem
             GiantSectorOverview[0] = new int[10, 2]; //army = 0 is ie admins
             GiantSectorOverview[1] = new int[10, 2];
             GiantSectorOverview[2] = new int[10, 2];
@@ -1543,7 +1545,8 @@ public class Mission : AMission, IMainMission
 
             //For now, all things we handle below are on land, so if the land type is water we just
             //get out of here immediately
-            if (landType == maddox.game.LandTypes.WATER) return;
+            //if (landType == maddox.game.LandTypes.WATER) return;
+            //TOBRUK!!!  Now some airports are on water
 
             //twcLogServer(null, "bombe 6", null);
 
@@ -1636,7 +1639,11 @@ public class Mission : AMission, IMainMission
                         multiplier = 1.6;
                     }
 
-                    scoreBase *= multiplier;
+                    //It's harder to bomb a seaport/stuff in the water
+                    //Also in seabased definition, the RADIUS should be made smaller.  But that is left up to mission designers.
+                    if (landType == maddox.game.LandTypes.WATER) multiplier = multiplier / 2;
+
+                        scoreBase *= multiplier;
 
 
                     if (mass_kg <= 0) mass_kg = 22;  //50 lb bomb; 22kg
@@ -1690,7 +1697,10 @@ public class Mission : AMission, IMainMission
                     //if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
                     double smokeProb = .06;
                     if (mass_kg > 200) smokeProb = .06 + (mass_kg / 200 * 0.06); //probability of a smoke goes up with larger ordnance.  But for TOBRUK we're never using BuildingFireBig as it just seems TOO big.  Generally we're using LESS smoke in Tobruk due to server slowdowns/FPS issues
-                    if (stb_random.NextDouble() > smokeProb) firetype = ""; //smoking crater only sometimes.  Cut this lower in TOBRUK because smoke seems to slow down framerates a lot
+
+                    if (landType == maddox.game.LandTypes.WATER) smokeProb = smokeProb / 15; //very little smoke on water, but we'll say if it's in a seaport there could be some once in a while
+
+                        if (stb_random.NextDouble() > smokeProb) firetype = ""; //smoking crater only sometimes.  Cut this lower in TOBRUK because smoke seems to slow down framerates a lot
                     //todo: finer grained bigger/smaller fire depending on bomb tonnage
 
                     //twcLogServer(null, "bombe 8", null);
@@ -1708,6 +1718,7 @@ public class Mission : AMission, IMainMission
                     string cratertype = "BombCrater_firmSoil_mediumkg";
                     if (mass_kg > 100) cratertype = "BombCrater_firmSoil_largekg"; //250lb bomb or larger
                     if (mass_kg > 200) cratertype = "BombCrater_firmSoil_EXlargekg"; //500lb bomb or larger.  EXLarge is actually 3 large craters slightly offset to make 1 bigger crater
+                    if (landType == maddox.game.LandTypes.WATER) cratertype = "";// no craters in a seaport
 
                     double percent = 0;
                     double prev_percent = 0;
@@ -3686,7 +3697,7 @@ public class Mission : AMission, IMainMission
                     {
                         foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                            if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                             {
                                 foreach (AiActor actor in airGroup.GetItems())
                                 {
@@ -4150,7 +4161,7 @@ public class Mission : AMission, IMainMission
                         //Console.WriteLine("groupAllAircraft: 0.5");
                         doneAG.Add(airGroup);
                         //aigroup_count++;
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
                             bool first = true;
                             //Console.WriteLine("groupAllAircraft: 1");
@@ -4666,9 +4677,10 @@ public class Mission : AMission, IMainMission
             for (int i = 2; i > -1; i--)
             {
                 string msg4 = string.Format("{0:D3}:{1:D3} {2:D3}:{3:D3} {4:D3}:{5:D3} ",
-                    GiantSectorOverview[army][i * 3 + 1, 0], GiantSectorOverview[army][i * 3 + 1, 1],
-                    GiantSectorOverview[army][i * 3 + 2, 0], GiantSectorOverview[army][i * 3 + 2, 1],
-                    GiantSectorOverview[army][i * 3 + 3, 0], GiantSectorOverview[army][i * 3 + 3, 1]
+                    GiantSectorOverview[army][i * 3 + 1, 0], GiantSectorOverview[army][i * 4 + 1, 1],
+                    GiantSectorOverview[army][i * 3 + 2, 0], GiantSectorOverview[army][i * 4 + 2, 1],
+                    GiantSectorOverview[army][i * 3 + 3, 0], GiantSectorOverview[army][i * 4 + 3, 1]
+                    
                     );
 
                 retmsg += msg4 + newline;
@@ -5016,7 +5028,7 @@ public class Mission : AMission, IMainMission
                     if (airGroupInfoDict != null && airGroupInfoDict.ContainsKey(aiairgroup))
                     {
                         padig = airGroupInfoDict[aiairgroup];
-                        if (aiairgroup.GetItems().Length > 0) pa = aiairgroup.GetItems()[0];
+                        if (aiairgroup != null && aiairgroup.GetItems().Length > 0) pa = aiairgroup.GetItems()[0];
                         else { Console.WriteLine("AIAGRRR: No a/c in this airgroup, returning"); return; }
                         p = pa as AiAircraft;
                         player_Vwld = new Vector3d(padig.vel.x, padig.vel.y, padig.vel.z);
@@ -5144,7 +5156,7 @@ public class Mission : AMission, IMainMission
                                     {
                                         posmessage = "";
                                         aigroup_count++;
-                                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                                         {
                                             poscount = airGroup.NOfAirc;
                                             foreach (AiActor actor in airGroup.GetItems())
@@ -5513,6 +5525,7 @@ public class Mission : AMission, IMainMission
 
                                                 //Console.WriteLine("LPAA: Processing ag: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
                                                 AirGroupInfo agid = airGroupInfoDict[airGroup];
+                                                if (agid.actor == null) continue; //can't do anything with this . . .
                                                 if (agid.actor.Army() != army) continue;
                                                 if (!agid.isLeader) continue;
 
@@ -5530,6 +5543,7 @@ public class Mission : AMission, IMainMission
 
                                                 AiActor actor = agid.actor;
                                                 AiAircraft a = actor as AiAircraft;
+                                                if (a == null) continue; //can't do anything with null
                                                 //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
                                                 totalcount = agid.AGGcount;
                                                 poscount = agid.AGGcountAboveRadar;
@@ -5699,11 +5713,15 @@ public class Mission : AMission, IMainMission
                                                     + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
                                                     + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
 
-                                                    if (playerArmy == -4)
+                                                    try
                                                     {
-                                                        GiantSectorOverview[0][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
-                                                        GiantSectorOverview[0][agid.AGGgiantKeypad, 1] += poscount; //A simple count of how many enemy aircraft (index =1) in this sector
+                                                        if (playerArmy == -4)
+                                                        {
+                                                            GiantSectorOverview[0][agid.AGGgiantKeypad, 0]++; //A simple count of how many enemy airgroups (index = 0) in this sector
+                                                            GiantSectorOverview[0][agid.AGGgiantKeypad, 1] += poscount; //A simple count of how many enemy aircraft (index =1) in this sector
+                                                        }
                                                     }
+                                                    catch (Exception ex) { Console.WriteLine("Radar ERROR: GiantSectorOverview (probably exceeded index): " + ex.ToString()); }
 
                                                     //-radar.txt data file structure is:
                                                     //First line header info - just ignore it
@@ -7056,10 +7074,10 @@ public class Mission : AMission, IMainMission
         //NEED TO DISPOSE OF ALL TIMERS USED ANYWHERE IN THE CODE, HERE.  Otherwise they keep runnign & calling the callback method until the server is restarted !!!!!
         try
         {
-            balanceAILoadTimer.Dispose();
-            MO_BRAdvanceBumrushPhaseTimer.Dispose();
-            MO_BRBumrushCheckTimer.Dispose();
-            MO_BRBumrushAttackTimer.Dispose();
+            if (balanceAILoadTimer != null) balanceAILoadTimer.Dispose();
+            if (MO_BRAdvanceBumrushPhaseTimer != null) MO_BRAdvanceBumrushPhaseTimer.Dispose();
+            if (MO_BRBumrushCheckTimer != null) MO_BRBumrushCheckTimer.Dispose();
+            if (MO_BRBumrushAttackTimer != null) MO_BRBumrushAttackTimer.Dispose();
         }
         catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
 
@@ -7094,7 +7112,7 @@ public class Mission : AMission, IMainMission
      * 
      * **************************************/
 
-    public void ReadInitialSubmissions(string filenameID, int timespread = 60, double wait = 0, string subdir = "")
+    public int ReadInitialSubmissions(string filenameID, int timespread = 60, double wait = 0, string subdir = "")
     {
         List<string> InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH + "/" + subdir, filenameID); // gets .mis files with with word filenameID in them
                                                                                                                     //string[] InitSubMissions = GetFilenamesFromDirectory(CLOD_PATH + FILE_PATH, filenameID); // gets .mis files with with word filenameID in them
@@ -7134,6 +7152,8 @@ public class Mission : AMission, IMainMission
                 });
             }
         }
+
+        return InitSubMissions.Count;
 
     }
 
@@ -7421,7 +7441,7 @@ public class Mission : AMission, IMainMission
         string cover_misListon_string = "(off)";
         if (covermis_listOn) cover_misListon_string = "(on)";
         string t= covermission.BAM_getPlayerBombAimMode_string(player);
-        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover Targeting ["+ t + "]", "Cover - List available aircraft", "Cover - Aircraft position " + cover_misListon_string, "Cover - Release Aircraft to land" }, new bool[] { true, false, false, true, false, true, false, true, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover Targeting ["+ t + "]", "Cover - List available aircraft", "Cover - Aircraft position " + cover_misListon_string, "Cover - Release Aircraft to land" }, new bool[] { true, false, false, true, false, true, true, true, false });
     }
 
 
@@ -7667,7 +7687,8 @@ public class Mission : AMission, IMainMission
                 {
                     covermission.listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
                 }
-                setMainMenu(player);
+                setSubMenu4(player); //stay on this menu so you can tap it repeatedly
+                //setMainMenu(player);
 
             }
             //Cover - Position of your cover a/c
@@ -8786,7 +8807,8 @@ public class Mission : AMission, IMainMission
             mission_objectives.MissionObjectiveTriggersSetup();
             twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
             twc_tobruk_campaign_mission_objectives.MissionObjectiveTriggersSetup();
-            MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives    
+            MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives  
+            twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup(); //must always be done right AFTER MO_MissionObjectiveAirfieldsSetup as it tweaks the airfields setup
             MO_SelectPrimaryObjectives(1, 0, fresh: true);
             MO_SelectPrimaryObjectives(2, 0, fresh: true);
             mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
@@ -10049,7 +10071,7 @@ public class Mission : AMission, IMainMission
                 if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
                     foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                     {
-                        if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                         {
                             //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
                             if (airGroup.GetItems().Length > 0) foreach (AiActor actor in airGroup.GetItems())
@@ -10682,7 +10704,7 @@ public class Mission : AMission, IMainMission
             MOProducerOrStorageType = MOProdStorType;
             MOTriggerType = MO_TriggerType.Airfield;
             ID = tup.Item2 + "_spawn";
-            //Console.WriteLine("New MissionObjective airport: " + ID);
+            Console.WriteLine("Creating NEW MissionObjective airport: " + ID);
             Name = tup.Item2;
 
             //If the airport name doesn't include a word like "airport" then add it to the end (just for clarify)
@@ -11265,7 +11287,7 @@ public class Mission : AMission, IMainMission
                     Console.WriteLine("twc_tobruk_campaign_mission_objectives.UpdateMissionObjectives ERROR: " + ex.ToString());
                 }
 
-            try
+                try
                 {
                     msn.twc_tobruk_campaign_mission_objectives.FlakDictionariesSetup();
                     Console.WriteLine("TTCMO updated FlakDictionaries");
@@ -11292,6 +11314,7 @@ public class Mission : AMission, IMainMission
                         //MissionObjectiveTriggersSetup();
                         Console.WriteLine("TTCMO loaded bumrush, radar, objective dictionaries (1)");
                         msn.MO_MissionObjectiveAirfieldsSetup(mission, gameplay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
+                        msn.twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup(); //must always be done right AFTER MO_MissionObjectiveAirfieldsSetup as it tweaks the airfields setup
                     }
                     catch (Exception ex)
                     {
@@ -11405,22 +11428,28 @@ public class Mission : AMission, IMainMission
         {
             if (msn.MissionObjectivesList.Keys.Contains(tn))
             {
+                Console.WriteLine();
                 Console.WriteLine("*************MissionObjective initialize WARNING****************");
                 Console.WriteLine("MissionObjective initialize: Objective Trigger ID " + tn + " : " + n + " IS DUPLICATED in the .cs file.  This duplicate occurence will be ignored.");
+                Console.WriteLine();
                 return false;
             }
             if (mtt == MO_TriggerType.Trigger)
             {
                 if (gp == null)
                 {
+                    Console.WriteLine();
                     Console.WriteLine("*************MissionObjective initialize WARNING****************");
                     Console.WriteLine("gp is null!");
+                    Console.WriteLine();
 
                 }
                 if (gp.gpGetTrigger(tn) == null)
                 {
+                    Console.WriteLine();
                     Console.WriteLine("*************MissionObjective initialize WARNING****************");
                     Console.WriteLine("MissionObjective initialize: Objective Trigger " + tn + " : " + n + " DOES NOT EXIST in the MAIN .mis file. It may exist in a sub-mission file; please verify.");
+                    Console.WriteLine();
                     //return false;
                     //OK, so now we can include triggers from sub-mission files we can't check this so easily!  So we'll have to check by hand.
                 }
@@ -11480,7 +11509,7 @@ public class Mission : AMission, IMainMission
             if (!addNewOnly || !msn.MissionObjectivesList.ContainsKey(tn))
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.Trigger)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
-                //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
+                Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
                 if (ownerarmy == 1 && x > 210000 && y > 180000 && x < 321000 && y < 270000) ptp *= 1.4; //vastly increase proportion of mission objectives in 'primary' campaign area, and reduce others, for Blue 2020-01
                 else ptp *= 0.8;
                 msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, submissionfile, chiefname, ownerarmy, pts, t, p, x, y, d, pt, ptp, ttr_hours, comment));
@@ -11496,7 +11525,7 @@ public class Mission : AMission, IMainMission
             if (!addNewOnly || !msn.MissionObjectivesList.ContainsKey(tn))
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
-                //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
+                Console.WriteLine("Adding pointarea post2 " + tn + n + " " + pts.ToString());
                 msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment));
             }
         }
@@ -11507,7 +11536,7 @@ public class Mission : AMission, IMainMission
             MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None, 
             string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000)
         {
-            Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
+            //Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
 
             //Console.WriteLine("Adding Trigger post1 " + tn + n + " " + pts.ToString());
             //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
@@ -11515,7 +11544,7 @@ public class Mission : AMission, IMainMission
             if (!addNewOnly || !msn.MissionObjectivesList.ContainsKey(tn))
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
-                //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
+                Console.WriteLine("Adding Mobile post2 " + tn + n + " " + pts.ToString());
                 //msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, comment));
                 msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, MobObjType, mob_hrsbetweenMoves, new Point3d(x_sw, y_sw, 0), new Point3d(x_ne, y_ne, 0), min_move_dist_km, max_move_dist_km, ProdStorType, comment, radar_effective_radius_m: radar_effective_radius_m));
             }
@@ -12387,7 +12416,7 @@ added Rouen Flak
                 Console.WriteLine("Checking airfield {0} already exists? {1}", af_name, MissionObjectivesList.ContainsKey(af_name));
                 if (!addNewOnly || !MissionObjectivesList.ContainsKey(af_name))
                 {
-                    
+                    Console.Write("Airfieldsetup: adding new airfield " + af_name);
 
                     int NumNearbyTargets = MO_MissionObjectivesNear(AirfieldTargets[ap].Item7, 20000);  //was 15,000 - 2020-01
                     double IndWeight = weight;
@@ -12410,6 +12439,7 @@ added Rouen Flak
                     num_added++;
                 } else if (MissionObjectivesList.ContainsKey(af_name))
                 {
+                    Console.Write("Airfieldsetup: updating existing airfield " + af_name);
                     //AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
                     //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
                     Tuple<bool, string, double, double, DateTime, double, Point3d> oldAp = AirfieldTargets[ap];
@@ -12435,6 +12465,7 @@ added Rouen Flak
                         //it was destroyed, but now it is time to undestroy the airport
                         if (!mo.TimeToUndestroy_UTC.HasValue || DateTime.Compare(mo.TimeToUndestroy_UTC.Value, DateTime.UtcNow) < 0) //airport should always have an undestroy time.  IF not, we assume the undestroy time is right now.
                         {
+                            Console.Write("Airfieldsetup: updating airfield; time to undestroy it, " + af_name);
                             mo.Destroyed = false;
                             mo.DestroyedPercent = 0;
                             mo.TimeToUndestroy_UTC = null;
@@ -12444,12 +12475,14 @@ added Rouen Flak
                         }
                         else //it is still destroyed, so we need to mark it destroyed & actually destroy it
                         {
+                            Console.Write("Airfieldsetup: updating airfield; it is still destroyed, " + af_name);
                             AirfieldDisable(ap, 1);
                         }
                     }
                     else if (PointsTaken > 0) //damaged but not completely destroyed.  So we scatter some craters in proportion to how destroyed it is.
                                               //TODO: Here we COULD save the old crater pattern exactly as it was @ mission start, and then restore it exactly . . .
                     {
+                        Console.Write("Airfieldsetup: updating airfield; it is partially destroyed, " + af_name);
                         double percent = PointsTaken / PointsToKnockout;
                         AirfieldDisable(ap, percent);
 
@@ -12457,6 +12490,7 @@ added Rouen Flak
                     //For TOBRUK all airports are targets but only 1 point, and 0% possibility of being chosen as a primary objective unless it is the Focus Airport
                     mo.Points = 1;
                     mo.PrimaryTargetWeight = 0;
+                    if (af_name.ToLower().Contains("seaplane")) mo.PrimaryTargetWeight = 2; //slight chance of choosing seaplane bases however
 
                     AirfieldTargets.Remove(ap); //not sure if this is 100% necessary??
                     AirfieldTargets[ap] = new Tuple<bool, string, double, double, DateTime, double, Point3d>(
@@ -12475,21 +12509,6 @@ added Rouen Flak
 
             }
         //Console.WriteLine("Mission Objectives: Added " + num_added.ToString() + " airports to Mission Objectives, updated " + num_updated.ToString() + " weight " + weight.ToString("N5"));
-
-        //Set up focus airfields for Bumrush mission
-        //BUMRUSH!!!!! Here is where we set the level of the Bumrush airport.
-        //Remember the list BumrushTargetAirfieldsList starts counting with ZERO.  So the first on the list is level "0"
-        //Second on the  list is level=1, etc.
-        //THE OLD WAY!:
-        //MO_BRMissionObjectiveAirfieldFocusBumrushSetup(this, GamePlay, level: 1);
-        //THE NEW WAY:
-        try
-        {
-            twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup();
-        }
-        catch (Exception ex) { Console.WriteLine("*****************************************twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup MAJOR ERROR!!!!!!!!!!!: " + ex.ToString()); }
-
-
 
     }
 
@@ -13559,7 +13578,7 @@ added Rouen Flak
 
                 bool withinMinMax = false;
                 double distFromOldPos_m = Calcs.CalculatePointDistance(newPos, mo.Pos);
-                Console.WriteLine("Trying location {0:F0} {1:F0} for " + mo.Name, newPos.x, newPos.y);
+                //Console.WriteLine("Trying location {0:F0} {1:F0} for " + mo.Name, newPos.x, newPos.y);
                 
                 //move by a certain min & max amount
                 if (distFromOldPos_m <= mo.MobileMaxMoveDist_km * 1000 && distFromOldPos_m >= mo.MobileMinMoveDist_km * 1000) withinMinMax = true;                
@@ -13632,7 +13651,7 @@ added Rouen Flak
             //Console.WriteLine("Cirles: " + t.ToString() + " " + subHeading.ToString());
 
             f = PlaceObjectsInCircles(f, mttnr.things, newPos, mttnr.radius_m, mttnr.range_m, Convert.ToInt32(mttnr.howmany + random.Next(Convert.ToInt32(mttnr.howmany / 4.0)) + mttnr.howmany / 2.0), mo.OwnerArmy, subHeading: subHeading, percentSide: 33, stretcherType: stretchType, stretcherAmt: stretchPercent * mttnr.radius_m, avoidWater: true, resetCount: resetCount);
-            Console.WriteLine("mobile obj: {0} {1} ", mo.ID, resetCount);
+            //Console.WriteLine("mobile obj: {0} {1} ", mo.ID, resetCount);
             resetCount = false;
 
         }
@@ -14917,7 +14936,7 @@ added Rouen Flak
                                 int timeleft_sec = calcTimeLeft_min() * 60;
                                 if (time > timeleft_sec) time = timeleft_sec;
                                 if (time < 1) time = 1;//Sometimes timeleft is <0, maybe?
-
+                                
                                 Timeout(random.Next(time), () =>
                                 {
                                     mo.makeScouted(player);
@@ -14926,7 +14945,7 @@ added Rouen Flak
                                         string af = "RAF";
                                         if (army == 1) af = "Luftwaffe";
                                         string name = "";
-                                        if (player != null && player.Name() != null) name = "by " + player.Name();
+                                        if (player != null && player.Name() != null) name = " by " + player.Name();
                                         string msg7 = ">>>Recon" + name + " has identified a possible group of high-ranking " + af + " officers near " + mo.Name;
                                         twcLogServer(null, msg7, null);
                                     }
@@ -15012,16 +15031,15 @@ added Rouen Flak
         if (leak) recipients = AllPlayersInArmyArray(3 - army); //Leak displays the enemy's current target list to the opposite army players
 
         int numDisplayed = 0;
-        double totDelay = 0;
-        msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
-        if (leak) msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES (INTELLIGENCE LEAK from low-level General Staff recon photos):";
-        if (display) twcLogServer(recipients, msg, new object[] { });
-        retmsg = msg + newline;
+        double totDelay = 0;        
 
         if (MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus > 0 || MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0)
         {
-
-            retmsg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
+            if (leak) return "";//No need for leaks in bumrush stage
+            msg = ArmiesL[army].ToUpper() + " SOLE REMAINING OBJECTIVE:";
+                        
+            if (display) twcLogServer(recipients, msg, new object[] { });
+            retmsg = msg + newline;
 
             int ar = 1;
             if (MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) ar = 2;
@@ -15116,6 +15134,10 @@ added Rouen Flak
         }
         else
         {
+            msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
+            if (leak) msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES (INTELLIGENCE LEAK from low-level General Staff recon photos):";
+            if (display) twcLogServer(recipients, msg, new object[] { });
+            retmsg = msg + newline;
             if (!leak)
             {
 
@@ -15455,11 +15477,14 @@ added Rouen Flak
             Console.WriteLine("twc_tobruk_campaign_mission_objectives SETUP MAJOR ERROR: " + ex.ToString());
         }
 
-        //MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
+        MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: false); //must do this after the Radar & Triggers setup, as it uses info from those objectives
                                                                               //Also, confusing, we must run this TWICE: Once before the routine below to UPDATE the MOs, because otherwise there is nothing to update.
                                                                               //But a 2nd time, after the update, because that is what transfers airport destroyed etc info from the MOList to the airport list.
                                                                               //Arrgh.
+                                                                              //AND... Bumrush airport updates must be run AFTER the first time and BEFORE the second time...
                                                                               //Console.WriteLine("#4");
+
+
 
         //UPDATE newly constructed MOList with the vital data needed from the OLD_MOList
         //This allows us to keep the needed data from session to session, the "current/changeable" data - but ALSO to update the basic data for every trigger simply by changing it in this .cs file.
@@ -15472,7 +15497,7 @@ added Rouen Flak
             MissionObjective mo = MissionObjectivesList[ID];
             MissionObjective mo_old = MissionObjectivesList_OLD[ID];
             if (mo_old.Destroyed) Console.WriteLine("Destroyed: {0}", mo.Name);
-            //Console.WriteLine("{0} {1} ", mo.Name, mo.TimeToUndestroy_UTC.Value);
+            Console.WriteLine("{0} {1} {2} ", ID, mo.Name, mo.Scouted);
             //Console.WriteLine("{0} {1} ", mo.Name, mo.TimeToUndestroy_UTC.Value);
             // if (mo_old.TimeToUndestroy_UTC.HasValue) Console.WriteLine("Destroyed: {0} {1:HHmm} ", mo.Name, mo_old.TimeToUndestroy_UTC.Value);
             //if (mo_old.LastHitTime_UTC.HasValue) Console.WriteLine("Destroyed: {0} {1:HHmm}", mo.Name, mo_old.LastHitTime_UTC.Value);
@@ -15519,8 +15544,23 @@ added Rouen Flak
 
         }
         MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: true); //must do this both BEFORE and AFTER the UPDATE ^^^^ setup, as now the AirportList info needs to be updated to reflect destroyed, damaged, etc.
-        //Also after restoring damaged & destroy info (^^^^) because it will damage/destroy airports based on that info.
-        
+                                                                             //Also after restoring damaged & destroy info (^^^^) because it will damage/destroy airports based on that info.
+
+        //BUMRUSH!!!!! Here is where we set the level of the Bumrush airport.
+        //Set up focus airfields for Bumrush mission
+        //So this generally tweaks ONLY objective points, which is a primary objective, which has a higher priority for primary objective selection etc.  But it COULD
+        //tweak almost anything related to the MissionObjective, so we should just do it last so as to not disturb whatever the mission designer is doing there.
+        try
+        {
+            twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("*****************************************twc_tobruk_campaign_mission_objectives.MissionObjectiveAirfieldFocusBumrushSetup MAJOR ERROR!!!!!!!!!!!: " + ex.ToString());
+            Console.WriteLine();
+        }
+
         //We are restoring, succesfully, from saved state here, so we must also restore the BumrushState & put ourselves in the correct phase.
         MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus = MO_BRBumrushInfoRestored[ArmiesE.Blue].BumrushStatus;
         MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus = MO_BRBumrushInfoRestored[ArmiesE.Red].BumrushStatus;
@@ -16789,7 +16829,7 @@ added Rouen Flak
 
         //Turned airport & 6 main objectives, so now we unleash the final bum rush
         //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
-        if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > 75 && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus <1 && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
+        if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus <1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1  && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
             || TestingOverrideArmy == 2) // Blue first stage complete
         {
             //WriteResults_Out_File("2");
@@ -16833,7 +16873,7 @@ added Rouen Flak
 
         //Turned airport & 6 main objectives, so now we unleash the final bum rush
         //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
-        if ((MissionObjectiveScore[ArmiesE.Red] >= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush && rp > 75 && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1  
+        if ((MissionObjectiveScore[ArmiesE.Red] >= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush && rp > MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1
             && MissionObjectiveScore[ArmiesE.Red] < MO_PointsRequiredToTurnMap[ArmiesE.Red])
             || TestingOverrideArmy == 1) // Red first stage complete
         {
@@ -19718,7 +19758,8 @@ public static class Calcs
         return lat_rem * 3 + lng_rem + 1;
     }
     //Giant keypad covering the entire map.  Lower left is 1, upper right is 9
-    //
+    //Note that (especially in TOBRUK) if a player is OFF THE MAP a bit they will be some negative 1 or 14 other weirdo numbers
+    //So we're restricting it to 3X3 plus 0 is any negative overflow and 10 is any positive overflow
     public static int giantkeypad(Point3d p)
     {
         //These are the max x,y values on the whole map
@@ -19726,7 +19767,10 @@ public static class Calcs
         double sizey = 360000;
         int lat_rem = (int)Math.Floor(3 * (p.y % sizey) / sizey);
         int lng_rem = (int)Math.Floor(3 * (p.x % sizex) / sizex);
-        return lat_rem * 3 + lng_rem + 1;
+        int ret = lat_rem * 3 + lng_rem + 1;
+        if (ret > 10) ret = 10;
+        if (ret < 0) ret = 0;
+        return ret;
     }
 
     public static int NoOfAircraft(int number)
@@ -19807,7 +19851,7 @@ public static class Calcs
     public static bool isHeavyBomber(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
-        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isHeavyBomber(aircraft);
 
     }
@@ -19830,7 +19874,7 @@ public static class Calcs
     public static bool isDiveBomber(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
-        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isDiveBomber(aircraft);
 
     }

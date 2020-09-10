@@ -6,7 +6,7 @@
   MAP tobruk:Land$Tobruk
   DespawnAfterLandingTimeout 600
   BattleArea 10000 10000 360000 360000 10000
-  TIME 7.42138905890752
+  TIME 7.42138906859327
   WeatherIndex 1
   CloudsHeight 649
   BreezeActivity 0
@@ -30,6 +30,9 @@
   BoB_LW_LG2_I.11
   tobruk:Tobruk_USAAF_F_64Sqn.01
   tobruk:Tobruk_LW_StG3_III.05
+  BoB_RAF_B_218Sqn.27
+  tobruk:Tobruk_LW_KG77_III.37
+  tobruk:Tobruk_SAAF_B_24Sqn.07
 [BoB_RAF_F_141Sqn_Early.03]
   Flight0  1 2 3 4
   Flight1  11 12
@@ -202,7 +205,7 @@
   Aging 0
 [BoB_RAF_B_218Sqn.07_Way]
   NORMFLY 365603.78 204230.62 5000.00 300.00
-  GATTACK_TARG 183499.47 185287.96 5000.00 300.00 Static8 0 /GAttackType LEVEL /GAttackPasses ALL_OUT
+  GATTACK_TARG 183499.47 185287.96 5000.00 300.00 /GAttackType LEVEL /GAttackPasses ALL_OUT
   NORMFLY 153819.71 187465.42 5000.00 300.00
   NORMFLY 141559.65 181406.39 5000.00 300.00
   NORMFLY 147571.34 162661.28 5000.00 300.00
@@ -221,7 +224,7 @@
 [tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37_Way]
   NORMFLY 23482.30 261501.39 2000.00 300.00
   NORMFLY 233514.67 171990.38 2000.00 300.00
-  GATTACK_TARG 330058.56 140216.93 2000.00 300.00 Static799 0
+  GATTACK_TARG 330058.56 140216.93 2000.00 300.00
   NORMFLY 348120.38 135664.67 2000.00 300.00
   NORMFLY 365870.44 138389.10 2000.00 300.00
   NORMFLY 368347.20 148874.02 2000.00 300.00
@@ -284,10 +287,68 @@
   NORMFLY 296789.33 93849.60 5000.00 300.00
   NORMFLY 326824.19 102677.51 5000.00 300.00
   NORMFLY 345223.05 107845.36 5000.00 300.00
-  GATTACK_TARG 350027.20 133229.59 5000.00 300.00 Static799 0 /GAttackType DIVE
+  GATTACK_TARG 350027.20 133229.59 5000.00 300.00 /GAttackType DIVE
   NORMFLY 342530.64 137809.77 5000.00 300.00
   NORMFLY 281278.26 152164.68 5000.00 300.00
   LANDING 215982.52 158746.21 5000.00 300.00
+[BoB_RAF_B_218Sqn.27]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Flight2  21
+  Class tobruk:Aircraft.SunderlandMkI_Trop
+  Formation LINEABREAST
+  CallSign 26
+  Fuel 40
+  Weapons 1 1 1 1 1 1
+  SetOnPark 1
+  SpawnFromScript 1
+  Skill 0.37 0.37 0.32 0.47 0.37 0.32 0.32 0.32
+  Aging 0
+[BoB_RAF_B_218Sqn.27_Way]
+  TAKEOFF 348269.21 136101.34 0 0
+  NORMFLY 195885.79 175293.10 3500.00 240.00
+  GATTACK_POINT 37617.93 256846.34 3500.00 240.00
+  NORMFLY 19698.49 266270.91 3500.00 240.00
+  LANDING 348147.23 136238.39 0.00 240.00
+[tobruk:Tobruk_LW_KG77_III.37]
+  Flight0  1 2 3
+  Flight1  11 12
+  Flight2  21 22
+  Class Aircraft.He-115B-2
+  Formation VIC3
+  CallSign 30
+  Fuel 46
+  Weapons 1 1 3
+  SetOnPark 1
+  SpawnFromScript 1
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Aging 47
+[tobruk:Tobruk_LW_KG77_III.37_Way]
+  TAKEOFF 76077.29 225172.24 0 0
+  NORMFLY 198046.71 199490.21 2350.00 275.00
+  NORMFLY 266147.71 170613.46 2350.00 275.00
+  NORMFLY 342044.84 129365.31 2350.00 275.00
+  NORMFLY 357899.37 120769.47 2350.00 275.00
+  LANDING 75844.39 225107.96 150.00 250.00
+[tobruk:Tobruk_SAAF_B_24Sqn.07]
+  Flight0  1 2
+  Flight1  11 12
+  Flight2  21
+  Class tobruk:Aircraft.WalrusMkI_Trop
+  Formation ECHELONRIGHT
+  CallSign 28
+  Fuel 100
+  Weapons 1 1 1 1
+  SpawnFromScript 1
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Aging 74
+[tobruk:Tobruk_SAAF_B_24Sqn.07_Way]
+  NORMFLY 348286.38 135907.67 2350.00 218.00
+  NORMFLY 348286.38 135907.67 25.00 218.00
+  NORMFLY 272129.67 121476.91 3300.00 218.00
+  GATTACK_POINT 56947.00 146483.97 3300.00 218.00
+  HUNTING 47058.48 147520.60 3300.00 218.00
+  LANDING 348126.04 136042.60 150.00 218.00
 [CustomChiefs]
 [Chiefs]
   0_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
@@ -733,11 +794,11 @@
   Static110 Stationary.Bedford_MW_tent gb 289527.75 119692.09 0.00 /skin materialsDesert1
   Static109 Stationary.Bedford_MW_open gb 289587.06 119782.45 0.00 /skin materialsDesert1
   Static111 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 289449.34 119817.97 0.00 /skin materialsDesert1
-  Static1157 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 273783.03 127421.25 535.00 
-  Static1156 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 273792.44 127579.48 535.00 
-  Static1155 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 273806.53 127808.22 535.00 
-  Static936 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274434.78 128027.55 535.00 
-  Static937 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274190.38 128190.48 535.00 
+  Static1157 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274431.16 127441.37 535.00 
+  Static1156 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274503.16 127639.82 535.00 
+  Static1155 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274707.22 127694.23 535.00 
+  Static936 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274439.25 127940.38 535.00 
+  Static937 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 274228.38 128018.39 535.00 
   Static830 Stationary.Pz_35t de 210428.97 130350.03 675.00 
   Static831 Stationary.Pz_35t de 210432.53 130352.94 675.00 
   Static836 Stationary.Pz_35t de 210435.80 130355.67 675.00 
@@ -903,39 +964,6 @@
   Static1158 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 346889.59 134837.75 535.00 
   Static328 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 346937.16 134889.03 0.00 
   Static326 Stationary.Bedford_MW_open gb 347074.88 134853.52 0.00 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   Static837 Stationary.Environment.JP3_Generator_15_KW_UK1 de 262282.53 147763.27 0.00 
   Static999 Stationary.Environment.CamoNetCrates nn 156825.97 184881.86 395.00 
   Static1000 Stationary.Environment.TentZeltbahnBig_GER1 de 156830.73 184877.63 393.60 
@@ -1002,41 +1030,20 @@
   Static952 Stationary.Opel_Blitz_tent de 156982.41 185231.94 220.00 
   Static951 Stationary.Opel_Blitz_tent de 156980.27 185234.28 220.00 
   Static954 Stationary.Environment.CamoNetPlane nn 156982.80 185234.31 220.00 
-
   Static818 Stationary.Ford_V8_E917_open de 151518.91 185960.69 0.00 
-
-
-
-
-
-
-
-
-
-
   Static749 Stationary.Ford_G917_CargoAmmo1 de 150084.36 186267.67 0.00 /hstart 1
   Static748 Stationary.Ford_V8_E917_open de 150085.47 186267.72 0.00 
-
   Static907 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162038.38 186235.59 535.00 
-
-
   Static740 Stationary.Opel_Blitz_cargo de 160490.59 186461.59 675.00 
   Static902 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 160691.31 186436.42 535.00 
-
-
   Static741 Stationary.Morris_CS8 de 160399.73 186521.89 675.00 /skin materialsDesert1
   Static742 Stationary.Opel_Blitz_cargo de 160446.44 186558.41 675.00 /skin materialsDesert1
   Static897 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 160459.31 186504.31 535.00 
-
-
   Static896 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 160256.45 186586.78 535.00 
-
   Static904 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 159733.27 186655.13 535.00 
   Static903 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 159952.30 186650.66 535.00 
-
   Static905 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 159605.88 186711.00 535.00 
   Static744 Stationary.Ford_V8_E917_open de 151634.42 186860.97 0.00 
-
   Static906 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 159462.83 186766.88 535.00 
   Static867 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158857.88 187115.52 675.00 
   Static849 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158867.84 187107.20 675.00 
@@ -1055,7 +1062,6 @@
   Static885 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 158915.86 187145.84 820.00 /hstart -4
   Static848 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158914.77 187164.09 675.00 
   Static861 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158887.22 187201.02 675.00 
-
   Static733 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127428.55 197052.44 675.00 
   Static739 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127493.38 197046.78 675.00 
   Static735 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127738.13 197026.11 675.00 
@@ -1207,6 +1213,58 @@
   Static913 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 32210.43 265106.41 535.00 
   Static919 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 32359.56 265211.56 535.00 
   Static918 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 32251.25 265228.84 535.00 
+  Static0 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 347854.75 135599.02 535.00 
+  Static3 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348053.81 135194.89 535.00 
+  Static7 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348409.69 135197.91 535.00 
+  Static8 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 347764.28 135653.31 535.00 
+  Static9 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348047.78 135915.69 535.00 
+  Static10 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348385.56 136226.33 535.00 
+  Static11 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348687.16 136549.03 535.00 
+  Static12 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 347936.19 136304.75 535.00 
+  Static13 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348485.09 135852.36 535.00 
+  Static14 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 161745.09 185941.28 535.00 
+  Static15 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162177.48 185764.25 535.00 
+  Static16 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162619.30 185584.08 535.00 
+  Static17 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 163111.22 185339.69 535.00 
+  Static18 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162841.75 185740.75 535.00 
+  Static19 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 161939.36 186041.55 535.00 
+  Static20 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162279.33 185850.41 535.00 
+  Static22 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162484.56 185776.78 535.00 
+  Static23 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 161831.25 185508.88 535.00 
+  Static25 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162750.89 185220.61 535.00 
+  Static26 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95035.70 199431.63 535.00 
+  Static27 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95270.13 199033.09 535.00 
+  Static28 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95551.44 198575.95 535.00 
+  Static29 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95688.19 198251.67 535.00 
+  Static30 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95867.91 198458.75 535.00 
+  Static31 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95985.13 198747.88 535.00 
+  Static32 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95836.66 199068.25 535.00 
+  Static33 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95535.81 199259.70 535.00 
+  Static34 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 94902.86 198869.00 535.00 
+  Static35 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 95336.55 198025.06 535.00 
+  Static36 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75490.27 225508.27 535.00 
+  Static37 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75814.55 225355.89 535.00 
+  Static38 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 76431.88 224969.08 535.00 
+  Static39 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 76814.78 224648.70 535.00 
+  Static40 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 76693.66 225082.39 535.00 
+  Static41 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 76568.63 225398.86 535.00 
+  Static42 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75416.03 224976.89 535.00 
+  Static43 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 76002.10 224523.67 535.00 
+  Static44 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75650.46 225820.83 535.00 
+  Static45 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 19772.81 269465.28 535.00 
+  Static46 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20145.22 269590.16 535.00 
+  Static47 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20508.72 269737.34 535.00 
+  Static48 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20836.53 269844.38 535.00 
+  Static49 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20611.30 270178.88 535.00 
+  Static50 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 19855.32 270265.84 535.00 
+  Static51 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 19540.89 270145.44 535.00 
+  Static52 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20444.04 269561.16 535.00 
+  Static53 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20381.61 269487.59 535.00 
+  Static54 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20591.23 269422.91 535.00 
+  Static55 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20742.87 269632.53 535.00 
+  Static56 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20272.33 269572.31 535.00 
+  Static57 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20495.34 269387.22 535.00 
+  Static58 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 20468.58 269996.03 535.00 
 [Buildings]
   0_bld tobruk:buildings.House$TentTroopLarge_GER1 1 210418.63 130431.36 465.00
   1_bld tobruk:buildings.House$TentTroopLarge_GER1 1 210426.81 130433.59 465.00
@@ -1284,12 +1342,12 @@
   GerBomb2Hr TTime 8200
   GerBomb3Hr TTime 12500
   GerBomb4Hr TTime 14500
-  GerBomb5Hr TTime 16200  
+  GerBomb5Hr TTime 16200
   BritRaid1Hr TTime 3200
   BritRaid2Hr TTime 7600
   BritRaid3Hr TTime 11500
   BritRaid4Hr TTime 14800
-  BritRaid5Hr TTime 18100  
+  BritRaid5Hr TTime 18100
   BritBomb1Hr TTime 3100
   BritBomb2Hr TTime 8000
   BritBomb3Hr TTime 10500
@@ -1305,6 +1363,12 @@
   DernaFuel TGroundDestroyed 100 32314 264665 150
   RTobrukTanker TGroupDestroyed 0_Chief 100
   RTobrukCruiser TGroupDestroyed 1_Chief 100
+  HE115-3.75 TTime 11100
+  HE115-0.75 TTime 3000
+  Sunderland5 TTime 13000
+  Sunderland2 TTime 7375
+  Walrus4.5 TTime 11400
+  Walrus1.5 TTime 5250
 [Action]
   GermanPatrol1 ASpawnGroup 0 BoB_LW_LG2_I.02
   GermanPatrol2 ASpawnGroup 0 BoB_LW_LG2_I.03
@@ -1320,7 +1384,7 @@
   GerRaidBarrani3Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
   GerRaidBarrani4Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
   GerRaidBarrani5Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerBomb1Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37  
+  GerBomb1Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
   GerBomb2Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
   GerBomb3Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
   GerBomb4Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
@@ -1335,6 +1399,12 @@
   BritBomb3Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
   BritBomb4Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
   BritBomb5Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  Sunderland2 ASpawnGroup 1 BoB_RAF_B_218Sqn.27
+  HE115-3.75 ASpawnGroup 1 tobruk:Tobruk_LW_KG77_III.37
+  HE115-0.75 ASpawnGroup 1 tobruk:Tobruk_LW_KG77_III.37
+  Sunderland5 ASpawnGroup 1 BoB_RAF_B_218Sqn.27
+  Walrus4.5 ASpawnGroup 1 tobruk:Tobruk_SAAF_B_24Sqn.07
+  Walrus1.5 ASpawnGroup 1 tobruk:Tobruk_SAAF_B_24Sqn.07
 [BirthPlace]
   Sidi_Barrani 1 342085 129234 0 1 1 1 . . . 0
   Sawani_el_qasn 1 313761 107269 0 1 1 1 . . . 0
@@ -1388,9 +1458,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-
-  tobruk:Aircraft.SpitfireMkVbTrop  
-  tobruk:Aircraft.WellingtonMkIc_Late_trop  
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1428,11 +1497,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-
   tobruk:Aircraft.SpitfireMkVbTrop
-
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1470,11 +1536,8 @@
   tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
-
   tobruk:Aircraft.SpitfireMkVbTrop
-
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
@@ -1513,9 +1576,7 @@
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
-
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop

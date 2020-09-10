@@ -275,14 +275,14 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //Points required, assuming they are doing it entirely with Primary Targets; ie, secondary or other targets do not count towards this total
         //at all
         msn.MO_PointsRequiredToTurnMap = new Dictionary<ArmiesE, double>() {
-            {ArmiesE.Red, 120 },
+            {ArmiesE.Red, 121 },
             {ArmiesE.Blue, 120 }
         };
 
 
         msn.MO_BRBumrushInfo = new Dictionary<ArmiesE, M.MO_BRBumrushInfoType>() {
             { ArmiesE.Red, new M.MO_BRBumrushInfoType() {
-                PointsRequiredToBeginBumrush= 60,
+                PointsRequiredToBeginBumrush= 61, //guarantees all our important MOs (5 pts X 6) plus the Focus Airport (30 pts) plus at least one more to get the extra 6 point.
                 BumrushStatus= 0,
                 BumrushObjective = null,
               }
@@ -686,6 +686,7 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
     */
 
     //Nothing needed at this level; we just call the corresponding routine in current_subclass.MissionObjectiveAirfieldFocusBumrushSetup() which does all the mission-specific work
+    //This must be called 
     public override void MissionObjectiveAirfieldFocusBumrushSetup()
     {
         try
@@ -694,7 +695,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
-            Console.WriteLine("TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("*********************************************");
+            Console.WriteLine("*********************************************MissionObjectiveAirfieldFocusBumrushSetup() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
     }
@@ -708,7 +711,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
-            Console.WriteLine("TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("*********************************************");
+            Console.WriteLine("*********************************************TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
 
@@ -721,7 +726,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
+            Console.WriteLine("*********************************************");
             Console.WriteLine("TWCTobrukCampaign LaunchABumrush() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
     }

@@ -4884,13 +4884,17 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
 
     public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
     {
-        Point3d startPos = from.Pos();
-        List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
-        if (airGroups.Count == 0) return null;
-        int choice = ran.Next(airGroups.Count);
-        if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
-            choice = ran.Next(airGroups.Count);
-        return airGroups[choice];
+        try
+        {
+            Point3d startPos = from.Pos();
+            List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
+            if (airGroups.Count == 0) return null;
+            int choice = ran.Next(airGroups.Count);
+            if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
+                choice = ran.Next(airGroups.Count);
+            return airGroups[choice];
+        }
+        catch (Exception ex) { Console.WriteLine("Cover getRandomNearbyEnemyAirGroup ERROR: " + ex.ToString()); return null; }
 
     }
 
@@ -4911,7 +4915,7 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                 {
                     foreach (AiAirGroup airGroup in Airgroups)
                     {
-                        if (airGroup.GetItems().Length == 0) continue;
+                        if (airGroup == null || airGroup.GetItems().Length == 0) continue;
                         //AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
 
                         if (airGroup.Pos().z > StartPos.z - lowAlt_m && airGroup.Pos().z < StartPos.z + highAlt_m && airGroup.Pos().distance(ref StartPos) <= distance_m)
@@ -4921,9 +4925,9 @@ public string selectCoverPlane(string acName, ArmiesE army, Player player)
                     return returnAirGroups;
                 }
                 else
-                    return null;
+                return null;
             }
-            catch (Exception ex) { Console.WriteLine("-stats getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
+            catch (Exception ex) { Console.WriteLine("-COVER getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
 
         }
 

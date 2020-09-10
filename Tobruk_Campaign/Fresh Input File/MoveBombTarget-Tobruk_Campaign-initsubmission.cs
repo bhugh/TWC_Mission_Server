@@ -120,7 +120,7 @@ public class Mission : AMission
     }
 
     private bool isAiControlledAirGroup(AiAirGroup airGroup) {
-        if (airGroup.GetItems().Length == 0) return true; //really should be null or something?
+        if (airGroup == null || airGroup.GetItems().Length == 0) return true; //really should be null or something?
         else return isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft);
     }
 
@@ -367,7 +367,7 @@ public class Mission : AMission
                         foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
                             //Console.WriteLine("AG: " + airGroup.Name());
-                            airGroups.Add(airGroup);
+                            if (airGroup != null) airGroups.Add(airGroup);
                         }
                     }
                 }
@@ -520,7 +520,7 @@ public class Mission : AMission
             {
                 foreach (AiAirGroup airGroup in Airgroups)
                 {
-                    if (airGroup.GetItems().Length == 0) continue;
+                    if (airGroup == null || airGroup.GetItems().Length == 0) continue;
                     AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
                     string acType = Calcs.GetAircraftType(a);
 
@@ -905,6 +905,7 @@ public class Mission : AMission
                 {
                     AiWayPoint nextWP = wp;
                     //Console.WriteLine( "Target: {0}", new object[] { wp });
+                    if (wp == null || (wp as AiAirWayPoint) == null) continue;
 
                     if ((wp as AiAirWayPoint).Action == null) return false;
 
@@ -1247,7 +1248,7 @@ public class Mission : AMission
         {
             //Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
             //!AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
-            if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
+            if (airGroup == null || !AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
             int currWay = airGroup.GetCurrentWayPoint();
@@ -1265,6 +1266,8 @@ public class Mission : AMission
             if (airportDistance_m > 8000) return;
 
             if (GamePlay.gpFrontArmy(airGroup.Pos().x, airGroup.Pos().y) != airGroup.getArmy()) return;
+
+            if (airGroup == null) return;
 
             List<AiActor> items = new List<AiActor>(airGroup.GetItems());
 
@@ -1309,7 +1312,7 @@ public class Mission : AMission
          * */
         try
         {
-            if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
+            if (airGroup == null || !AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             Console.WriteLine("Airgroup {0} info & attached groups: {1}", airGroup.Name(), task);
             
@@ -1397,7 +1400,7 @@ public class Mission : AMission
         foreach (AiAirGroup airGroup in airGroups)
         {
 
-            if (airGroup.GetItems().Length > 0 && isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft))
+            if (airGroup != null && airGroup.GetItems().Length > 0 && isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft))
             {
                 //Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup " + airGroup.Name());
                 interceptNearestEnemyOnRadar(airGroup);
@@ -2029,6 +2032,7 @@ public class Mission : AMission
 
 
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+            
             if (!isAiControlledAirGroup(airGroup)) return;
             if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
             AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
@@ -2430,7 +2434,7 @@ public class Mission : AMission
     public int getAircraftAmmo(AiAirGroup airGroup)
     {
         int ammo = -1;
-        if (airGroup.GetItems().Length == 0) return -1;
+        if (airGroup == null || airGroup.GetItems().Length == 0) return -1;
 
         foreach (AiAircraft a in airGroup.GetItems())
         {
@@ -2915,7 +2919,7 @@ public static class Calcs
     public static bool isHeavyBomber(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
-        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isHeavyBomber(aircraft);
 
     }
@@ -2937,7 +2941,7 @@ public static class Calcs
     public static bool isDiveBomber(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
-        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isDiveBomber(aircraft);
 
     }

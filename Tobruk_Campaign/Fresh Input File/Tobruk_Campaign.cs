@@ -4634,60 +4634,72 @@ public class Mission : AMission, IMainMission
 
     public string showGiantSectorOverview(Player player = null, int army = 0, bool display = true, bool html = false)
     {
-
-        double delay = 22;
-
-        Player[] to = null;
-        if (player != null) to = new Player[] { player };
-
-        string newline = Environment.NewLine;
-        if (html) newline = "<br>" + Environment.NewLine;
-        string retmsg = "";
-
-        if (display) Timeout(0.4, () => twcLogServer(to, "Requesting Map Overview summary from headquarters, please stand by . . . ", null));
-
-
-        string msg = "***Schematic Map Overview of Enemy Activity***";
-        retmsg += msg + newline;
-
-
-        string msg2 = "Airgroups:Aircraft in each Large Map Keypad Area";
-        retmsg += msg2 + newline;
-
-
-        string msg3 = "For more details, ask your Commander or Radar Operator to consult the Contact Plotting Table - or simply patrol the area, use Tab-4-1";
-        retmsg += msg3 + newline;
-
-        /*for (int i = 1; i < 10; i++)
+        try
         {
-            string tild = "~";
-            if (GiantSectorOverview[player.Army()][i, 1] == 0) tild = "";
 
-            twcLogServer(new Player[] { player }, "Sector {0}: {1} enemy airgroups, {2}{3} aircraft",new object [] { i, GiantSectorOverview[player.Army()][i, 0], tild, GiantSectorOverview[player.Army()][i, 1] });
-        }*/
-        //Console.WriteLine("Giant: " + GiantSectorOverview.ToString());
-        Timeout(delay, () =>
-        {
-            if (display)
+            double delay = 8;
+
+            Player[] to = null;
+            if (player != null) to = new Player[] { player };
+
+            string newline = Environment.NewLine;
+            if (html) newline = "<br>" + Environment.NewLine;
+            string retmsg = "";
+
+            if (display) Timeout(0.4, () => twcLogServer(to, "Requesting Map Overview summary from headquarters, please stand by . . . ", null));
+
+
+            string msg = "***Schematic Map Overview of Enemy Activity***";
+            retmsg += msg + newline;
+
+
+            string msg2 = "Airgroups:Aircraft in each Large Map Keypad Area";
+            retmsg += msg2 + newline;
+
+
+           //string msg3 = "For more details, ask your Commander or Radar Operator to consult the Contact Plotting Table - or simply patrol the area, use Tab-4-1";
+            //retmsg += msg3 + newline;
+
+            /*for (int i = 1; i < 10; i++)
             {
+                string tild = "~";
+                if (GiantSectorOverview[player.Army()][i, 1] == 0) tild = "";
+
+                twcLogServer(new Player[] { player }, "Sector {0}: {1} enemy airgroups, {2}{3} aircraft",new object [] { i, GiantSectorOverview[player.Army()][i, 0], tild, GiantSectorOverview[player.Army()][i, 1] });
+            }*/
+            //Console.WriteLine("Giant: " + GiantSectorOverview.ToString());
+
+            if (display) Timeout(delay, () =>
+            {
+
                 twcLogServer(to, msg, null);
                 twcLogServer(to, msg2, null);
-                twcLogServer(to, msg3, null);
-            }
+                //twcLogServer(to, msg3, null);
+
+            });
+
+            var msgList = new List<string>();
+
             for (int i = 2; i > -1; i--)
             {
                 string msg4 = string.Format("{0:D3}:{1:D3} {2:D3}:{3:D3} {4:D3}:{5:D3} ",
-                    GiantSectorOverview[army][i * 3 + 1, 0], GiantSectorOverview[army][i * 4 + 1, 1],
-                    GiantSectorOverview[army][i * 3 + 2, 0], GiantSectorOverview[army][i * 4 + 2, 1],
-                    GiantSectorOverview[army][i * 3 + 3, 0], GiantSectorOverview[army][i * 4 + 3, 1]
-                    
+                    GiantSectorOverview[army][i * 3 + 1, 0], GiantSectorOverview[army][i * 3 + 1, 1],
+                    GiantSectorOverview[army][i * 3 + 2, 0], GiantSectorOverview[army][i * 3 + 2, 1],
+                    GiantSectorOverview[army][i * 3 + 3, 0], GiantSectorOverview[army][i * 3 + 3, 1]
+
                     );
 
                 retmsg += msg4 + newline;
-                if (display) twcLogServer(to, msg4, null);
+                msgList.Add(msg4);
+                
             }
-        });
-        return retmsg;
+
+            if (display) Timeout(delay, () => { foreach (string m in msgList) { twcLogServer(to, m, null); } });
+
+            return retmsg;
+        }
+        catch (Exception ex)
+        { Console.WriteLine("showGiantSectorOverview ERROR: {0}", ex); return ""; }
     }
 
     /************************************************
@@ -11131,15 +11143,17 @@ public class Mission : AMission, IMainMission
         }
 
         //Elevation is an estimate, rounded, gets closer as the more times scouted
+        //Elevation is in meters for Blue, feet for Red.  Confusing.
         private void estimateElevationXnumtimesScouted()
         {
             double elev = lastScoutedPos.z;
             Point3d tempPos = lastScoutedPos;
             int remainder;
             int roundTo = 85 - numTimesScouted * 20;
+            if (OwnerArmy == 1) roundTo *= 3; //meters to feet, but want to stick with round #s
             if (roundTo < 0) return;
-            elev = Math.DivRem(Convert.ToInt32(elev), roundTo, out remainder ) * roundTo;
-            
+
+            elev = Math.DivRem(Convert.ToInt32(elev), roundTo, out remainder ) * roundTo;            
             tempPos.z = elev;
             lastScoutedPos = tempPos;
         }
@@ -15552,12 +15566,18 @@ added Rouen Flak
 
             if (mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)
             {
-                double z = Calcs.LandElevation_m(mo.Pos); //saving altitude/elevation of the objective. //saving altitude/elevation of the objective.
+                double z = Calcs.LandElevation_m(mo_old.Pos); //saving altitude/elevation of the objective. //saving altitude/elevation of the objective.
                 if (mo.AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
                 mo.Pos = new Point3d(mo_old.Pos.x, mo_old.Pos.y, z) ; //Only transfer pos across IF the item is a mobile objective.  For all other objectives, that allows us to change the location by just updating the objectives list in this .cs files
                 mo.Sector = mo_old.Sector;
                 mo.bigSector = mo_old.bigSector;
             }
+
+            //EXPERIMENT to update elevation fo all objs. 2020/09/10
+            //So this is perhaps a good thing to do in case map elevation changes or ???
+            double zz = Calcs.LandElevation_m(mo.Pos); 
+            if (mo.AttackingArmy == 1) zz = Calcs.meters2feet(zz); //(in feet for Red army)
+            mo.Pos = new Point3d(mo.Pos.x, mo.Pos.y, zz); 
 
             mo.OrdnanceOnTarget_kg = mo_old.OrdnanceOnTarget_kg;
             mo.ObjectsDestroyed_num = mo_old.ObjectsDestroyed_num;
@@ -15567,7 +15587,8 @@ added Rouen Flak
 
         }
         MO_MissionObjectiveAirfieldsSetup(this, GamePlay, addNewOnly: true); //must do this both BEFORE and AFTER the UPDATE ^^^^ setup, as now the AirportList info needs to be updated to reflect destroyed, damaged, etc.
-                                                                             //Also after restoring damaged & destroy info (^^^^) because it will damage/destroy airports based on that info.
+                                                                                //First time addNewOnly: FALSE to get ALL airports, 2nd time TRUE to get only the NEW airports                                                                     
+                                                                                //Also after restoring damaged & destroy info (^^^^) because it will damage/destroy airports based on that info.
 
         //BUMRUSH!!!!! Here is where we set the level of the Bumrush airport.
         //Set up focus airfields for Bumrush mission
@@ -19315,7 +19336,7 @@ public static class Calcs
                               Point3d p1,
                               Point3d p2)
     {
-        if (p1.x != p2.x || p1.y != p2.y ) return false;
+        if (p1.x != p2.x || p1.y != p2.y) return false;
         else return true;
 
     }
@@ -20123,10 +20144,10 @@ public static class Calcs
         return false;
     }
 
-    public static List<AiActor> GetActorsByNameMatch(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name="", int matcharmy = 0, string type = "")
+    public static List<AiActor> GetActorsByNameMatch(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name = "", int matcharmy = 0, string type = "")
     {
-        try { 
-        List<AiActor> l = new List<AiActor>();
+        try {
+            List<AiActor> l = new List<AiActor>();
 
             foreach (AiActor actor in actors.Values)
             {
@@ -20150,7 +20171,7 @@ public static class Calcs
                 l.Add(actor);
             }
 
-        return l;
+            return l;
         }
         catch (Exception ex)
         {
@@ -20175,7 +20196,7 @@ public static class Calcs
 
         return KillActorsOnList(battle, mission, l);
     }
-    
+
     //Kills all actors on the list
     //returns the number killed
     public static int KillActorsOnList(ABattle battle, AMission mission, List<AiActor> l)
@@ -20205,7 +20226,7 @@ public static class Calcs
         int index = clc_random.Next(l.Count);
         return l[index];
     }
-        //OK, this so this one actually works.
+    //OK, this so this one actually works.
 
     //  You can use type is "Artillery" "Vehicle" or "" to get both.
     public static List<AiActor> GetGroundActorsNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
@@ -20216,7 +20237,7 @@ public static class Calcs
 
         List<AiActor> l = new List<AiActor>();
 
-      
+
 
         foreach (AiActor actor in groundActors.Values)
         {
@@ -20302,7 +20323,7 @@ public static class Calcs
             bool veh = isActorVehicle(actor);
             if (!art && !veh) continue;
             if (type.ToLower() == "vehicle" && !veh) continue;
-            if (type.ToLower() == "artillery" && !art) continue;            
+            if (type.ToLower() == "artillery" && !art) continue;
             if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
 
             //Console.WriteLine("Found groundactor " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString()+ " " + actor.Army());
@@ -20315,13 +20336,13 @@ public static class Calcs
 
     public static bool isActorArtillery(AiActor actor) {
         //return false;
-        
+
         AiGroup aig = actor.Group();
         if ((aig as AiGroundGroup) != null && (aig as AiGroundGroup).GroupType() == AiGroundGroupType.Artillery) return true;
         AiGroundActor gactor = actor as AiGroundActor;
         if (gactor == null) return false;
         if (agatArtillery.Contains(gactor.Type())) return true;
-        return false;        
+        return false;
     }
 
     public static AiGroundActorType[] agatVehicle = { AiGroundActorType.Amphibian, AiGroundActorType.Bus, AiGroundActorType.Car, AiGroundActorType.LightTruck, AiGroundActorType.Motorcycle, AiGroundActorType.SPG, AiGroundActorType.Tank, AiGroundActorType.Tractor, AiGroundActorType.Trailer, AiGroundActorType.Truck };
@@ -20644,8 +20665,8 @@ public static class Calcs
                 if (matcharmy > 0 && g.country != matchstring) continue;
                 if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
                 {
-                    mission.Timeout(clc_random.Next(20, 330), () => { if (g !=null ) g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
-                                                                                       //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
+                    mission.Timeout(clc_random.Next(20, 330), () => { if (g != null) g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
+                                                                                                      //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
                     countStat++;
                 }
             }
@@ -20730,7 +20751,7 @@ public static class Calcs
         {
             if (sta == null) continue;
             if (sta.country != myCountry) return true;
-            Console.WriteLine("Checking: " + sta.Name + " - " + sta.country);            
+            Console.WriteLine("Checking: " + sta.Name + " - " + sta.country);
 
         }
         return ret;
@@ -20754,7 +20775,11 @@ public static class Calcs
 GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Find all groundstationaries within 1000 meters of map coordinate (250000,252000)
 [/code]
  */
-
+        //if on water, NO craters and only occasional smoke
+        if ((type.ToLower().Contains("crater") || type.ToLower().Contains("fire") ||
+                (type.ToLower().Contains("smoke")  && clc_random.Next(10)>0 )
+                )
+            && GamePlay.gpLandType(x, y) == maddox.game.LandTypes.WATER) return f;
         if (resetCount) lSOFcount = 0;
         bool returnFile = true;
         //AMission mission = GamePlay as AMission;
@@ -20781,37 +20806,41 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
     public static void loadCratersAndSmoke(IGamePlay GamePlay, Mission msn, double x, double y, double z, string type = "", double duration_s = 300, string path = "", string type2 = "")
     {
-            //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
+        //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
 
-            /*
-            NOTE THAT as of CloD 4.57 you can create these objects but you can't get their handle back via groundstationarys to delete/remove/destroy them later.
-            These are the only groundstationaries I know about that have this problem.
+        /*
+        NOTE THAT as of CloD 4.57 you can create these objects but you can't get their handle back via groundstationarys to delete/remove/destroy them later.
+        These are the only groundstationaries I know about that have this problem.
 
-            Example of how to get groundstationaries within a distance of a given point--except not that it will NOT list any smoke or fire groundstationaries!
-            [code]
-            GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Find all groundstationaries within 1000 meters of map coordinate (250000,252000)
-            [/code]
-            */
-
-
-            //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
-            // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
-            // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
-            // BombCrater_firmSoil_EXlargekg doesn't actually exist but will place TWO BombCrater_firmSoil_largekg craters near each other
-            /* Samples: 
-             * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
-        Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
-        Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
-        Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
-        Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
-        Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
-        Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
-        Static0 Stationary.Environment.BombCrater_firmSoil_mediumkg nn 251217.50 257427.39 -520.00 
-        Static2 Stationary.Environment.BombCrater_firmSoil_largekg nn 251211.73 257398.98 -520.00 
-        Static1 Stationary.Environment.BombCrater_firmSoil_smallkg nn 251256.22 257410.66 -520.00
-
-            Not sure if height is above sea level or above ground level.
+        Example of how to get groundstationaries within a distance of a given point--except not that it will NOT list any smoke or fire groundstationaries!
+        [code]
+        GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Find all groundstationaries within 1000 meters of map coordinate (250000,252000)
+        [/code]
         */
+
+
+        //duration_s is how long the item will last before being destroyed (ie, disappearing) BUT (IMPORTANT!) it only works for the bomb craters, NOT for the smoke effects.
+        // Choices for string type are: Smoke1, Smoke2, BuildingFireSmall, BuildingFireBig, BigSitySmoke_0, BigSitySmoke_1, 
+        // BombCrater_firmSoil_mediumkg, BombCrater_firmSoil_smallkg, BombCrater_firmSoil_largekg
+        // BombCrater_firmSoil_EXlargekg doesn't actually exist but will place TWO BombCrater_firmSoil_largekg craters near each other
+        /* Samples: 
+         * Static555 Smoke.Environment.Smoke1 nn 63748.22 187791.27 110.00 /height 16.24
+    Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24
+    Static557 Smoke.Environment.Smoke2 nn 63688.12 187764.03 110.00 /height 16.24
+    Static534 Smoke.Environment.BuildingFireSmall nn 63432.15 187668.28 110.00 /height 15.08
+    Static542 Smoke.Environment.BuildingFireBig nn 63703.02 187760.81 110.00 /height 15.08
+    Static580 Smoke.Environment.BigSitySmoke_0 nn 63561.45 187794.80 110.00 /height 17.01
+    Static580 Smoke.Environment.BigSitySmoke_1 nn 63561.45 187794.80 110.00 /height 17.01
+    Static0 Stationary.Environment.BombCrater_firmSoil_mediumkg nn 251217.50 257427.39 -520.00 
+    Static2 Stationary.Environment.BombCrater_firmSoil_largekg nn 251211.73 257398.98 -520.00 
+    Static1 Stationary.Environment.BombCrater_firmSoil_smallkg nn 251256.22 257410.66 -520.00
+
+        Not sure if height is above sea level or above ground level.
+    */
+
+        //if on water, NO craters and only occasional smoke
+        if ((type.ToLower().Contains("crater") || type2.ToLower().Contains("fire"))
+            && GamePlay.gpLandType(x, y) == maddox.game.LandTypes.WATER) return;
 
         msn.Timeout(duration_s, () =>
         {

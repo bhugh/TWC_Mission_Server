@@ -4138,8 +4138,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1) //x,y == -1,-1 means we're actually not targeted at anythign
                 {
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m)
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(10)>0) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new taret about every 10*16 seconds.
                     {
+                        
                         diveTarget = true;
                         Console.WriteLine("reusing old ground target");
                         if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) newTarget = airgroupTargets[airGroup];
@@ -4235,7 +4236,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 {
                                     newGroundTarget = stationaries[newStaIndex];
-                                    Console.WriteLine("Bomber Target: Found a stationary" + stationaries[newStaIndex].Name + " " + stationaries[newStaIndex].Title + " " + stationaries[newStaIndex].Type + " {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+                                    Console.WriteLine("MBT: Found a stationary" + stationaries[newStaIndex].Name + " " + stationaries[newStaIndex].Title + " " + stationaries[newStaIndex].Type + " {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
                                                                                                                                                                                                                                                                                                                                                      //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
                                     diveTarget = true;
                                     break;
@@ -4262,7 +4263,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (newTarget != null)
                 {
-                    Console.WriteLine("MBT: Found a stationary, updating attack position");
+                    Console.WriteLine("MBT: Found a ground target, updating attack position");
                     newPos.x = newTarget.Pos().x;
                     newPos.y = newTarget.Pos().y;
                 }

@@ -1332,7 +1332,7 @@
   GermanPatrol1 TPassThrough 5 1 236829 150147 15700
   GermanPatrol2 TPassThrough 5 1 257837 139394 19350
   BritishPatrol1 TPassThrough 5 2 273420 112376 8750
-  BritishPatrol2 TPassThrough 0 290513 140369 10150
+  BritishPatrol2 TPassThrough 5 290513 140369 10150
   GerRaidBarrani1Hr TTime 3600
   GerRaidBarrani2Hr TTime 7400
   GerRaidBarrani3Hr TTime 11000
@@ -1370,10 +1370,10 @@
   Walrus4.5 TTime 11400
   Walrus1.5 TTime 5250
 [Action]
-  GermanPatrol1 ASpawnGroup 1 BoB_LW_LG2_I.02
+  GermanPatrol1 ASpawnGroup 1 BoB_LW_LG2_I.03
   GermanPatrol2 ASpawnGroup 1 BoB_LW_LG2_I.03
-  BritishPatrol1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.03
-  BritishPatrol2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  BritishPatrol1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  BritishPatrol2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
   Convoytrg1 ASpawnGroup 1 12_Chief
   Convoytrg2ger ASpawnGroup 1 20_Chief
   Convoytrg3gersouth ASpawnGroup 1 21_Chief

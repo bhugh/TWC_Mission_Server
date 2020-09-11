@@ -6283,6 +6283,10 @@ struct
                 System.Console.WriteLine("smoke&fire - Exception: " + ex.ToString());                                    
             }
     }); */
+
+        if ((type.ToLower().Contains("crater") || type2.ToLower().Contains("fire"))
+        && GamePlay.gpLandType(x, y) == maddox.game.LandTypes.WATER) return;
+
         Timeout(duration_s, () =>
         {
                 //Console.WriteLine("Deleting stationary smokes . . . ");

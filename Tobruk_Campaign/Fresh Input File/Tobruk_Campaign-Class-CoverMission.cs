@@ -857,7 +857,7 @@ public class CoverMission : AMission, ICoverMission
             {"bob:Aircraft.Bf-110C-4B",true},
             {"bob:Aircraft.Bf-110C-4Late",false},
             {"bob:Aircraft.Bf-110C-4N",false},
-            {"bob:Aircraft.Bf-110C-4-NJG",false},
+            {"bob:Aircraft.Bf-110C-4-NJG",true},
             {"bob:Aircraft.Bf-110C-6",false},
             {"bob:Aircraft.Bf-110C-7",false},
             {"bob:Aircraft.BR-20M",false},

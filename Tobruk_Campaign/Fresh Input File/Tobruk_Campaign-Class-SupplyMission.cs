@@ -457,7 +457,7 @@ public class SupplyMission : AMission, ISupplyMission
             {"tobruk:Aircraft.Bf-109F-4_trop_Derated", 15},
             {"tobruk:Aircraft.Bf-109F-4Z_trop", 90},
             {"tobruk:Aircraft.Bf-110C-4B_Trop", 90},            
-            {"tobruk:Aircraft.Bf-110C-4N-NJG_Trop", 30},
+            {"tobruk:Aircraft.Bf-110C-4N-NJG_Trop", 110},
             {"tobruk:Aircraft.Bf-110C-6_Trop", 20},
             {"tobruk:Aircraft.Bf-110C-7_Trop", 25},
             {"tobruk:Aircraft.BR-20M_Trop", 90},
@@ -1422,7 +1422,15 @@ public void ReadSupply(string suffix)
                     */
 
                     Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-                    if (Force) Console.WriteLine("valout2= FORCED!");
+                    if (Force) //In this case we hav e probably just announced to the player that the a/c was safely returned to stock.  So
+                    {
+                        //If this is from <Cover, we have likely lost the owning player that point, oh well.
+                        Timeout(4.33, () =>
+                        {
+                            GamePlay.gpLogServer(new Player[] { player }, String.Format( "UPDATE: {0} was lost in action; {1:N0} remain in reserve", cart.InternalTypeName(), AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()]), null);
+                        });
+                        Console.WriteLine("valout2= FORCED!");
+                    }
                 }
         }
         catch (Exception ex) { Console.WriteLine("Supply - CheckActorOut ERROR: " + ex.ToString()); }

@@ -1370,35 +1370,35 @@
   Walrus4.5 TTime 11400
   Walrus1.5 TTime 5250
 [Action]
-  GermanPatrol1 ASpawnGroup 0 BoB_LW_LG2_I.02
-  GermanPatrol2 ASpawnGroup 0 BoB_LW_LG2_I.03
-  BritishPatrol1 ASpawnGroup 0 BoB_RAF_F_FatCat_Early.03
-  BritishPatrol2 ASpawnGroup 0 BoB_RAF_F_FatCat_Early.13
-  Convoytrg1 ASpawnGroup 0 12_Chief
-  Convoytrg2ger ASpawnGroup 0 20_Chief
-  Convoytrg3gersouth ASpawnGroup 0 21_Chief
-  Contrgger4 ASpawnGroup 0 22_Chief
-  ArmorMovingGer ASpawnGroup 0 BoB_RAF_B_218Sqn.11
-  GerRaidBarrani1Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerRaidBarrani2Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerRaidBarrani3Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerRaidBarrani4Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerRaidBarrani5Hr ASpawnGroup 0 tobruk:Tobruk_LW_StG3_III.05
-  GerBomb1Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
-  GerBomb2Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
-  GerBomb3Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
-  GerBomb4Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
-  GerBomb5Hr ASpawnGroup 0 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
-  BritRaid1Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
-  BritRaid2Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
-  BritRaid3Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
-  BritRaid4Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
-  BritRaid5Hr ASpawnGroup 0 tobruk:Tobruk_USAAF_F_64Sqn.01
-  BritBomb1Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
-  BritBomb2Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
-  BritBomb3Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
-  BritBomb4Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
-  BritBomb5Hr ASpawnGroup 0 BoB_RAF_B_218Sqn.07
+  GermanPatrol1 ASpawnGroup 1 BoB_LW_LG2_I.02
+  GermanPatrol2 ASpawnGroup 1 BoB_LW_LG2_I.03
+  BritishPatrol1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.03
+  BritishPatrol2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Convoytrg1 ASpawnGroup 1 12_Chief
+  Convoytrg2ger ASpawnGroup 1 20_Chief
+  Convoytrg3gersouth ASpawnGroup 1 21_Chief
+  Contrgger4 ASpawnGroup 1 22_Chief
+  ArmorMovingGer ASpawnGroup 1 BoB_RAF_B_218Sqn.11
+  GerRaidBarrani1Hr ASpawnGroup 1 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani2Hr ASpawnGroup 1 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani3Hr ASpawnGroup 1 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani4Hr ASpawnGroup 1 tobruk:Tobruk_LW_StG3_III.05
+  GerRaidBarrani5Hr ASpawnGroup 1 tobruk:Tobruk_LW_StG3_III.05
+  GerBomb1Hr ASpawnGroup 1 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb2Hr ASpawnGroup 1 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb3Hr ASpawnGroup 1 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb4Hr ASpawnGroup 1 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  GerBomb5Hr ASpawnGroup 1 tobruk:Tobruk_RA_35St_86_Gruppo_190Sq.37
+  BritRaid1Hr ASpawnGroup 1 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid2Hr ASpawnGroup 1 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid3Hr ASpawnGroup 1 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid4Hr ASpawnGroup 1 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritRaid5Hr ASpawnGroup 1 tobruk:Tobruk_USAAF_F_64Sqn.01
+  BritBomb1Hr ASpawnGroup 1 BoB_RAF_B_218Sqn.07
+  BritBomb2Hr ASpawnGroup 1 BoB_RAF_B_218Sqn.07
+  BritBomb3Hr ASpawnGroup 1 BoB_RAF_B_218Sqn.07
+  BritBomb4Hr ASpawnGroup 1 BoB_RAF_B_218Sqn.07
+  BritBomb5Hr ASpawnGroup 1 BoB_RAF_B_218Sqn.07
   Sunderland2 ASpawnGroup 1 BoB_RAF_B_218Sqn.27
   HE115-3.75 ASpawnGroup 1 tobruk:Tobruk_LW_KG77_III.37
   HE115-0.75 ASpawnGroup 1 tobruk:Tobruk_LW_KG77_III.37

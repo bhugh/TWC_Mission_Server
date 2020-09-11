@@ -6866,8 +6866,10 @@ public class Mission : AMission, IMainMission
                         } 
             *  
             *  Then you can just use triggers from the sub-mission as normal.
+            *  
+            *  
+            *  UPDATE!!!!! It turns out all this is NOT NECESSARY if you just set //MissionNumberListener = -1;  Then you get the triggers from ALL missions
             */
-
 
 
             // if (!DataDictionary.ContainsKey("MAIN.MISSION")) DataDictionary.Add("MAIN.MISSION", this);
@@ -7441,7 +7443,7 @@ public class Mission : AMission, IMainMission
         string cover_misListon_string = "(off)";
         if (covermis_listOn) cover_misListon_string = "(on)";
         string t= covermission.BAM_getPlayerBombAimMode_string(player);
-        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover Targeting ["+ t + "]", "Cover - List available aircraft", "Cover - Aircraft position " + cover_misListon_string, "Cover - Release Aircraft to land" }, new bool[] { true, false, false, true, false, true, true, true, false });
+        GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover Targeting ["+ t + "]", "Cover - List available aircraft", "Cover - Aircraft position " + cover_misListon_string, "Cover - Release Aircraft to land" }, new bool[] { true, true, true, true, true, true, true, true, false });
     }
 
 
@@ -7641,8 +7643,8 @@ public class Mission : AMission, IMainMission
                 {
                     TWCKnickebeinMission.KniStop(player);
                 }
-                //setSubMenu4(player);
-                setMainMenu(player);
+                setSubMenu4(player);
+                //setMainMenu(player);
                 
             }
             //Knickebein - current KB info
@@ -7652,7 +7654,8 @@ public class Mission : AMission, IMainMission
                 {
                     TWCKnickebeinMission.KniInfo(player);
                 }
-                setMainMenu(player);
+                setSubMenu4(player);
+                //setMainMenu(player);
             }
             else if (menuItemIndex == 4)  //MORE (next) menu
             {
@@ -7665,7 +7668,8 @@ public class Mission : AMission, IMainMission
                 {
                     TWCKnickebeinMission.KniList(player);
                 }
-                setMainMenu(player);
+                setSubMenu4(player);
+                //setMainMenu(player);
 
             }
             //Cover - select/start
@@ -7712,7 +7716,7 @@ public class Mission : AMission, IMainMission
                 {
                     covermission.landCoverAircraft(player);
                 }
-                setMainMenu(player);
+                setMainMenu(player); //This one resets to MAINMENU so as to prevent accidental double-taps of the "9" key from landing all the player's cover a/c.  But all the rest of the buttons on this menu just stay on Menu4
             }
             else
             { //make sure there is a catch-all ELSE or ELSE menu screw-ups WILL occur
@@ -10635,7 +10639,8 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            //double z = twcLandscape.HQ(Pos.x, Pos.y); 
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
@@ -10747,7 +10752,8 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - OwnerArmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
@@ -10827,7 +10833,7 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
@@ -10921,7 +10927,7 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
@@ -11034,7 +11040,7 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - ownerarmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            double z = twcLandscape.HQ(Pos.x, Pos.y); //saving altitude/elevation of the objective.
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
@@ -11146,7 +11152,9 @@ public class Mission : AMission, IMainMission
                     else
                     {
                         if (actorList[0] == null) return;
-                        lastScoutedPos = actorList[0].Pos();
+                        Point3d tempPos = actorList[0].Pos();
+                        tempPos.z = Calcs.LandElevation_m(tempPos);
+                        lastScoutedPos = tempPos;
                         lastScoutedSector = Calcs.correctedSectorNameDoubleKeypad(msn, lastScoutedPos);
                     }
                 }
@@ -15529,7 +15537,7 @@ added Rouen Flak
 
             if (mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)
             {
-                double z = twcLandscape.HQ(mo.Pos.x, mo.Pos.y); //saving altitude/elevation of the objective.
+                double z = Calcs.LandElevation_m(mo.Pos); //saving altitude/elevation of the objective. //saving altitude/elevation of the objective.
                 if (mo.AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
                 mo.Pos = new Point3d(mo_old.Pos.x, mo_old.Pos.y, z) ; //Only transfer pos across IF the item is a mobile objective.  For all other objectives, that allows us to change the location by just updating the objectives list in this .cs files
                 mo.Sector = mo_old.Sector;
@@ -22156,6 +22164,8 @@ namespace cevent
 
 class twcLandscape : maddox.core.WLandscape
 {
+    //DON'T USE THIS DIRECTLY!@@@
+    //Instead use Calcs.LandElevation_m(Pos); //corrects for negative elevation values over water
     public static double HQ(double x, double y)
     {
         //wcLandscape twcL = new twcLandscape();

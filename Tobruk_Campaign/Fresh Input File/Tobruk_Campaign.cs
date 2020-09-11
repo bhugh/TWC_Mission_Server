@@ -16601,124 +16601,131 @@ added Rouen Flak
 
     }
 
-public void MO_BRBumrushCheck(object obj)
-{
-    try
+    public void MO_BRBumrushCheck(object obj)
     {
-        //Tuple<int, MissionObjective> tup = obj as Tuple<int, MissionObjective>;
-
-        int army = (int)obj;
-        MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
-
-        //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushSituationReport()
-        //They calc the same thing & should always match
-
-        int objectivesAchievedArmy = 1; //This is the one with all 6 objectives achieved & with the possibility to move the front forward
-        if (MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) objectivesAchievedArmy = 2;
-
-        int attackingArmy = objectivesAchievedArmy;
-        int defendingArmy = 3 - objectivesAchievedArmy;
-        if (MO_BRBumrushInfo[(ArmiesE)objectivesAchievedArmy].BumrushStatus % 2 == 0)
+        try
         {
-            attackingArmy = 3 - objectivesAchievedArmy;
-            defendingArmy = objectivesAchievedArmy;
-        }
-
-        //30km distant seems about the furthest we place any ground convoys.  Even if some are a bit higher than 30km there should always be some closer than that
-        //from the start.  By time those are destroyed the >30km will be there etc.
-        int attackingVeryFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, 30000, matcharmy: attackingArmy, type: "Vehicle");
+            //Tuple<int, MissionObjective> tup = obj as Tuple<int, MissionObjective>;
 
 
+            //MO_BRLastBumrushStartTime = DateTime.UtcNow;
 
-        //int result = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.Pos, 2MO_BRBumrushAirbaseOccupyDistance_m army, AiGroundGroupType.Vehicle);
-        int redClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 1, type: "Vehicle");
+            //So, don't even CHECK the BRstatus until the BR has been going for 5 min or more.  This should prevent...anamolies.
+            TimeSpan TimeSinceLastBumrushStart = DateTime.UtcNow - MO_BRLastBumrushStartTime;
+            if (TimeSinceLastBumrushStart.TotalSeconds < 300) return;
 
-        int blueClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 2, type: "Vehicle");
+            int army = (int)obj;
+            MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
 
-        int redFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Vehicle");
-        int redFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Artillery");
+            //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushSituationReport()
+            //They calc the same thing & should always match
 
-        int redFar = redFarArtillery + redFarVehicle;
+            int objectivesAchievedArmy = 1; //This is the one with all 6 objectives achieved & with the possibility to move the front forward
+            if (MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) objectivesAchievedArmy = 2;
 
-        int blueFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Vehicle");
-        int blueFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Artillery");
-
-        int blueFar = blueFarArtillery + blueFarVehicle;
-
-
-        if (blueClose > 1)
-        {
-            twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding.");
-        }
-
-        if (redClose > 1)
-        {
-            twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
-        }
-
-        if (blueClose > 6 && redFar < 1)  //We have a winner, BLUE!
-        {
-
-            MO_BRStopBumrushPhase(army);
-            //they immediately win (even if no previous points earned) . . . but WHAT do they win?
-            //If they are the attacking army, they WIN THE MAP.
-            if (army == 2)
+            int attackingArmy = objectivesAchievedArmy;
+            int defendingArmy = 3 - objectivesAchievedArmy;
+            if (MO_BRBumrushInfo[(ArmiesE)objectivesAchievedArmy].BumrushStatus % 2 == 0)
             {
-                MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
-                //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
-            }
-            //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
-            //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
-            //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
-            else
-            {
-                MissionObjectiveScore[ArmiesE.Blue] += MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                MO_CheckObjectivesComplete(BumrushRepelArmy: 2);
-                //EndMission();
-                //MO_CheckObjectivesComplete();
+                attackingArmy = 3 - objectivesAchievedArmy;
+                defendingArmy = objectivesAchievedArmy;
             }
 
-        }
-        else if (redClose > 6 && blueFar < 1)  //We have a winner, RED!
-        {
-            MO_BRStopBumrushPhase(army);
-            if (army == 1)
+            //30km distant seems about the furthest we place any ground convoys.  Even if some are a bit higher than 30km there should always be some closer than that
+            //from the start.  By time those are destroyed the >30km will be there etc.
+            int attackingVeryFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, 30000, matcharmy: attackingArmy, type: "Vehicle");
+
+
+
+            //int result = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.Pos, 2MO_BRBumrushAirbaseOccupyDistance_m army, AiGroundGroupType.Vehicle);
+            int redClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 1, type: "Vehicle");
+
+            int blueClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 2, type: "Vehicle");
+
+            int redFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Vehicle");
+            int redFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Artillery");
+
+            int redFar = redFarArtillery + redFarVehicle;
+
+            int blueFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Vehicle");
+            int blueFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Artillery");
+
+            int blueFar = blueFarArtillery + blueFarVehicle;
+
+
+            if (blueClose > 1)
+            {
+                twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+            }
+
+            if (redClose > 1)
+            {
+                twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+            }
+
+            if (blueClose > 6 && redFar < 1)  //We have a winner, BLUE!
             {
 
+                MO_BRStopBumrushPhase(army);
+                //they immediately win (even if no previous points earned) . . . but WHAT do they win?
+                //If they are the attacking army, they WIN THE MAP.
+                if (army == 2)
+                {
+                    MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
+                    //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
+                    MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
+                }
+                //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
+                //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+                //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+                else
+                {
+                    MissionObjectiveScore[ArmiesE.Blue] += MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                    MO_CheckObjectivesComplete(BumrushRepelArmy: 2);
+                    //EndMission();
+                    //MO_CheckObjectivesComplete();
+                }
 
-                //they immediately win (even if no previous points earned)
-                MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
-
-                //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
             }
-            //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
-            //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
-            //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
-            else
+            else if (redClose > 6 && blueFar < 1)  //We have a winner, RED!
             {
-                MissionObjectiveScore[ArmiesE.Red] += MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                MO_CheckObjectivesComplete(BumrushRepelArmy: 1);
-                //EndMission();
-                //MO_CheckObjectivesComplete();
+                MO_BRStopBumrushPhase(army);
+                if (army == 1)
+                {
+
+
+                    //they immediately win (even if no previous points earned)
+                    MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
+
+                    //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
+                    MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
+                }
+                //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
+                //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+                //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+                else
+                {
+                    MissionObjectiveScore[ArmiesE.Red] += MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                    MO_CheckObjectivesComplete(BumrushRepelArmy: 1);
+                    //EndMission();
+                    //MO_CheckObjectivesComplete();
+                }
+
+
+            }
+            else if (attackingVeryFarVehicle == 0 && MO_BRBumrushTimeLeft_min_double() > 1)
+            {
+                twcLogServer(null, ArmiesL[defendingArmy] + " has eliminated ALL enemy threats and attack vehicles near the target airport.");
+                twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
+                GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking");
+                Timeout(20, () => { MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
+
             }
 
-
         }
-        else if (attackingVeryFarVehicle == 0 && MO_BRBumrushTimeLeft_min_double() > 1)
-        {
-            twcLogServer(null, ArmiesL[defendingArmy] + " has eliminated ALL enemy threats and attack vehicles near the target airport.");
-            twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
-            GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking");
-            Timeout(20, () => { MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
-
-        }
+        catch (Exception ex) { Console.WriteLine("BumrushCheck: ERROR! " + ex.ToString()); }
 
     }
-    catch (Exception ex) { Console.WriteLine("BumrushCheck: ERROR! " + ex.ToString()); }
-
-}
 
     public string MO_BRBumrushTimeLeft_min_string()
     {

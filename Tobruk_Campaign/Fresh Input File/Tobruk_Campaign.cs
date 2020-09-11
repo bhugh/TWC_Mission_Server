@@ -10752,7 +10752,7 @@ public class Mission : AMission, IMainMission
             AttackingArmy = 3 - OwnerArmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
-            
+
             double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
@@ -10996,7 +10996,7 @@ public class Mission : AMission, IMainMission
             double min_move_dist_km,
             double max_move_dist_km,
             MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None,
-            string comment = "", double radar_effective_radius_m = 20000, 
+            string comment = "", double radar_effective_radius_m = 20000,
             string chief_name = "")
 
         {
@@ -11108,26 +11108,40 @@ public class Mission : AMission, IMainMission
         {
             try
             {
-            Point3d pos = Pos; //Some objectives move now, possibly every time the mission restarts, so this records & savesthe current position/sector at the time scouted.  It will report this until re-scouted
+                Point3d pos = Pos; //Some objectives move now, possibly every time the mission restarts, so this records & savesthe current position/sector at the time scouted.  It will report this until re-scouted
 
-            //Now see if it is a _chief type (mobile) objective and if so, update recon position according to that.
-            if (ChiefName != null && ChiefName.Length > 0)
-            {
-                List<AiActor> actorList = msn.GetActorsByNameMatch(ChiefName);
-                if (actorList != null && actorList.Count > 0) foreach (AiActor a in actorList)
-                    {
-                        if ((a as AiActor) != null)
+                //Now see if it is a _chief type (mobile) objective and if so, update recon position according to that.
+                if (ChiefName != null && ChiefName.Length > 0)
+                {
+                    List<AiActor> actorList = msn.GetActorsByNameMatch(ChiefName);
+                    if (actorList != null && actorList.Count > 0) foreach (AiActor a in actorList)
                         {
-                            pos = a.Pos();
+                            if ((a as AiActor) != null)
+                            {
+                                pos = a.Pos();
                                 Console.Write("MO: Got Objective pos by CHIEF {0:N0} {1:N0}", pos.x, pos.y);
-                            break;
+                                break;
+                            }
                         }
-                    }
-            }
+                }
 
-            return pos;
+                return pos;
 
             } catch (Exception ex) { Console.WriteLine("returnCurrentPosWithChief ERROR: " + ex.ToString()); return Pos; }
+        }
+
+        //Elevation is an estimate, rounded, gets closer as the more times scouted
+        private void estimateElevationXnumtimesScouted()
+        {
+            double elev = lastScoutedPos.z;
+            Point3d tempPos = lastScoutedPos;
+            int remainder;
+            int roundTo = 85 - numTimesScouted * 20;
+            if (roundTo < 0) return;
+            elev = Math.DivRem(Convert.ToInt32(elev), roundTo, out remainder ) * roundTo;
+            
+            tempPos.z = elev;
+            lastScoutedPos = tempPos;
         }
 
         //If the objective has an associated Chief then we can use that to find it's actual position for scouting/recon purposes
@@ -11176,7 +11190,8 @@ public class Mission : AMission, IMainMission
                 //lastScoutedSector = Sector;
                 //New: updates position of objective, taking into consideration the possibility the objective is a _Chief that moves during the mission
                 updateCurrentReconPosWithChief();
-                if (numTimesScouted > 1 && !Calcs.Point3dEqual(oldLastScoutedPos, lastScoutedPos)) lastScoutedSector += "!!moved!!";
+                estimateElevationXnumtimesScouted();
+                if (numTimesScouted > 1 && !Calcs.Point3dEqualXY(oldLastScoutedPos, lastScoutedPos)) lastScoutedSector += "!!moved!!";
             } else //for disabled objectives (generally those scouted earlier but now re-scouted and disabled) 
             {
                 lastScoutedPos = new Point3d(-1, -1, -1); //Some objectives move now, so this records & savesthe current position/sector at the time scouted.  It will report this until re-scouted
@@ -19294,6 +19309,15 @@ public static class Calcs
         }
 
         return degAngle;
+    }
+    //Equal in x & y, ignoring z
+    public static bool Point3dEqualXY(
+                              Point3d p1,
+                              Point3d p2)
+    {
+        if (p1.x != p2.x || p1.y != p2.y ) return false;
+        else return true;
+
     }
     //Could make an extension method for this, or something?  Instead?  But this works:
     public static bool Point3dEqual(

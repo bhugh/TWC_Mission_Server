@@ -1878,7 +1878,7 @@ public class Mission : AMission, IMainMission
     int currentEndMission = 0;
     //END MISSION WITH WARNING MESSAGES ETC/////////////////////////////////
     //string winner should be "Red" or "Blue" exactly and only!!!
-    public void EndMission(int endseconds = 0, string winner = "")
+    public void EndMission(int endseconds = 0, string winner = "", bool BumrushRepelOnly = false)
     {
         currentEndMission++;
         int thisEndMission = currentEndMission; //Allows possibility to cancel/abort EndMission by incrementing currentEndMission, or, more importantly, if EndMission is called 2X (specifically if one side turns the map after EndMission has already started but before the mission has actually closed down) the 2nd time will supersede.
@@ -1951,9 +1951,9 @@ public class Mission : AMission, IMainMission
 
 
                 //Save map state & data
-                double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
+                double misResult = SaveMapState(winner, BumrushRepelOnly: BumrushRepelOnly); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
-                CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+                CheckStatsData(winner, BumrushRepelOnly: BumrushRepelOnly); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
                 MO_WriteMissionObjects(wait: true);
                 final_SaveMapState_completed = true;
                 final_MO_WriteMissionObjects_completed = true;
@@ -2397,7 +2397,7 @@ public class Mission : AMission, IMainMission
     double BlueScoutPhotosI = 0;
     double BlueScoutedObjectivesI = 0;
 
-    public void CheckStatsData(string winner = "")
+    public void CheckStatsData(string winner = "", bool BumrushRepelOnly = false)
     {
         /************************************************
          * 
@@ -2491,7 +2491,10 @@ public class Mission : AMission, IMainMission
 
 
         //Get the current campaign state
-        Tuple<double, string> res = CalcMapMove(winner, false, false, null);
+        Tuple<double, string> res;
+        if (BumrushRepelOnly) res = CalcMapMove("", false, false, null, BumrushRepelOnly: BumrushRepelOnly);  //Bumrushrepel isn't a "real" victory/ they don't get the Map Turn special points
+        else res = CalcMapMove(winner, false, false, null);
+
         //sw.Write(res.Item2); //Item2 is a detail breakout of current campaign score.  Could be included in final stats for the mission, perhaps
         double newMapState = CampaignMapState + res.Item1 + MissionObjectiveScore[ArmiesE.Red] / 100.0 - MissionObjectiveScore[ArmiesE.Blue] / 100.0;
         if (winner != "") newMapState = CampaignMapState; //if a winner/map turn we have already re-calced the new map state
@@ -2528,12 +2531,23 @@ public class Mission : AMission, IMainMission
             outputmsg = "Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue]) + "<br>" + Environment.NewLine + "<br>" + Environment.NewLine; 
             outputmsg += "Red Objectives complete (" + MissionObjectiveScore[ArmiesE.Red].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Red]) + "<br>" + Environment.NewLine;
 
+            if (MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus > 0 || MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0)
+            {
+                outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+                outputmsg += MO_ListRemainingPrimaryObjectives(null, 1, 12, 0, display: false, html: true, leak: false);
+                outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+                outputmsg += MO_BRBumrushSituationReport(null, delay:0, display: false, html: true, silentIfInactive: true);
+                outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+
+            }
+
             outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
             outputmsg += campaign_summary; //note: this include .NewLine but not <br>
             if (winner != "")
             {
                 outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
-                outputmsg += winner.ToUpper() + " HAS WON THE BATTLE & COMPLETED ALL OBJECTIVES! Congratulations, " + winner + "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+                if (BumrushRepelOnly) outputmsg += winner.ToUpper() + " HAS REPELLED THE ATTACK AND RETAKEN THE AIRPORT! Congratulations, " + winner + "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
+                else outputmsg += winner.ToUpper() + " HAS WON THE BATTLE, COMPLETED ALL OBJECTIVES, AND TAKEN THE AIRPORT! Congratulations, " + winner + "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
                 outputmsg += winner.ToUpper() + " players who contributed to this historic victory by scouting high priority areas identified by HQ: <br>" + Environment.NewLine;
                 outputmsg += MO_PlayersWhoScoutedObjectivesList(winner) + "<br>" + Environment.NewLine;
                 outputmsg += winner.ToUpper() + " players who contributed to this historic victory by assisting in the destruction of the objectives identified by HQ: <br>" + Environment.NewLine;
@@ -2662,7 +2676,7 @@ public class Mission : AMission, IMainMission
     //CalcMapMove - returns a double with DOUBLE the current mission score and STRING the text message detailing the score
     //This figures the score at intermediate points during the session, but also the final score at end of session or when
     //one team or the other turns the map
-    public Tuple<double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null)
+    public Tuple<double, string> CalcMapMove(string winner, bool final = true, bool output = true, Player player = null, bool BumrushRepelOnly = false)
     {
         double MapMove = 0;
         string msg = "";
@@ -2681,9 +2695,10 @@ public class Mission : AMission, IMainMission
         //airport they are awarded a flat 100 map points (=100X100 points as shown) and so we calculate map moves on 0, 100, 200, -100, -200 etc
         if (winner == "Red")
         {
-            //msg = "Red moved the campaign forward by achieving all Primary Objectives and turning the map!";
-            //outputmsg += msg + Environment.NewLine;
-            //if (output) gpLogServerAndLog(recipients, msg, null);
+            msg = "Red moved the campaign forward by achieving all primary objectives, assaulting and occupying the new airport, and moving the front forward!";
+            if (BumrushRepelOnly) msg = "Red successfully repelled the attack on the airport and now has a chance to move the front forward!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
             //return new Tuple<double, string>(1.2 + MissionObjectiveScore[ArmiesE.Red] / 100.0 + RedTotalF / 1000.0, outputmsg); //1 is the 100 point bonus, plus we're adding in the objective points at this time, plus we're adding in the individual victory bonus 2X
 
             //TOBRUK we're just advancing the map by increments  of 1000.  (ie 10 (X100 = 1000) for RED)
@@ -2691,9 +2706,10 @@ public class Mission : AMission, IMainMission
         }
         if (winner == "Blue")
         {
-            //msg = "Blue moved the campaign forward by achieving all Primary Objectives and turning the map!";
-            //outputmsg += msg + Environment.NewLine;
-            //if (output) gpLogServerAndLog(recipients, msg, null);
+            msg = "Blue moved the campaign forward by achieving all primary objectives, assaulting and occupying the new airport, and moving the front forward!";
+            if (BumrushRepelOnly) msg = "Blue successfully repelled the attack on the airport and now has a chance to move the front forward!";
+            outputmsg += msg + Environment.NewLine;
+            if (output) gpLogServerAndLog(recipients, msg, null);
             //return new Tuple<double, string>(-1.2 - MissionObjectiveScore[ArmiesE.Blue] / 100.0 - BlueTotalF / 1000.0, outputmsg); //-1 is the 100 point BLUE bonus, plus we're adding (or rather SUBTRACTING since this is the blue side) in the objective points at this time, plus we're adding in the individual victory bonus 2X
 
             //TOBRUK we're just advancing the map by increments  of 1000.  (ie -10 (X100 = 1000) for BLUE)
@@ -2934,10 +2950,10 @@ public class Mission : AMission, IMainMission
     //Also, saves the previous version of the _MapState file as *_MapState_old.txt
     public bool MapStateSaved = false;
     public bool MapStateBackedUp = false;
-    public double SaveMapState(string winner, bool intermediateSave = false, bool startupSave = false, bool intermediateWin = false)
+    public double SaveMapState(string winner, bool intermediateSave = false, bool startupSave = false, bool intermediateWin = false, bool BumrushRepelOnly = false)
     {
         //Console.WriteLine("Map Save #0");
-        Tuple<double, string> res = CalcMapMove(winner, true, true, null);
+        Tuple<double, string> res = CalcMapMove(winner, true, true, null, BumrushRepelOnly: BumrushRepelOnly);
         if (!intermediateSave && MapStateSaved) return res.Item1; //Due to the way it works (adding a certain value to the value in the file), we can only save map state ONCE per session.  So we can call it a few times near the end to be safe, but it only will save once at most
         try
         {
@@ -12153,7 +12169,7 @@ added Rouen Flak
         });
 
     }
-    public void MO_MissionObjectiveRollingWinnerHandler(ArmiesE army)
+    public void MO_MissionObjectiveRollingWinnerHandler(ArmiesE army, bool BumrushRepelVictory = false)
     {
 
         Task.Run(() =>
@@ -12172,6 +12188,10 @@ added Rouen Flak
 
             //MO_MissionObjectiveRollingWinnersReward(army); //clear all destroyed radar, airfields, scouted objects, current primary objectives scored, for winner; 
 
+            //For TOBRUK we're going to restart the mission here
+            //Have to do this before erasing mission/objectives points @ the next step (MO_MissionObjectiveWinnersReward(army);)
+            EndMission(endseconds: 1 * 60, winner: ArmiesL[(int)army], BumrushRepelOnly: BumrushRepelVictory); //We've taken care of "winner" above, don't do it in EndMission - just leave as ""
+
             //TOBRUK!!! back to regular old Winner's Reward.  That way we can choose new objectives etc right away.
             MO_MissionObjectiveWinnersReward(army);
 
@@ -12188,17 +12208,22 @@ added Rouen Flak
             */
 
             //TOBRUK way:
-            MO_SelectPrimaryObjectives(1, 0, fresh: true);
-            MO_SelectPrimaryObjectives(2, 0, fresh: true);
+            MO_SelectPrimaryObjectives(1, 0, eraseOnly: true);
+            MO_SelectPrimaryObjectives(2, 0, eraseOnly: true);
+            //Even if a Bumrush Repel victory, we can still erase all primaries.  This might scramble things up a little for the winners, but they will still have all of their destroyed objectives.  Whereas the losers will lose ALL of their destroyed objectives.
+            //We don't select NEW objectives here because if the map advances, we'll load a new Battle and that will have entirely NEW objectives to choose from
+
             MO_WritePrimaryObjectives();
-            mission_objectives.SelectSuggestedObjectives(ArmiesE.Red);
-            mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
+            //mission_objectives.SelectSuggestedObjectives(ArmiesE.Red);
+            //mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
             MissionObjectiveScore[ArmiesE.Red] = 0;
             MissionObjectiveScore[ArmiesE.Blue] = 0;
             MissionObjectivesCompletedString[ArmiesE.Red] = "";
             MissionObjectivesCompletedString[ArmiesE.Blue] = "";
 
             //NOTE:  COULD just do MO_MissionObjectiveWinnersReward(ArmiesE army) here, which more or less completely clears the decks
+
+            
         });
 
         //TODO: Add a list of all players who helped turn the map.  And/or players who helped destroy each objective.
@@ -12298,9 +12323,6 @@ added Rouen Flak
 
         MissionObjectiveScore[(ArmiesE)army] = 0;
         MissionObjectivesCompletedString[(ArmiesE)army] = "";
-
-        //For TOBRUK we're going to restart the mission here
-        EndMission(endseconds: 1 * 60, winner: ""); //We've taken care of "winner" above, don't do it in EndMission - just leave as ""
 
     }
 
@@ -12748,8 +12770,9 @@ added Rouen Flak
     //This creates a randomized list of Blue or Red Primary Objectives totalling (at least) the required point total
     //And sets the IsPrimaryTarget flag for each in that army, de-selecting the IsPrimaryTarget flag for all others
     //Only chooses from those in the PrimaryTargetWeight     
-    //Will do either army=1 or army=2 or BOTH ARMIES if army=0   
-    public void MO_SelectPrimaryObjectives(int army = 0, double totalPoints = 0, bool fresh = false)
+    //Will do either army=1 or army=2 or BOTH ARMIES if army=0  
+    //eraseOnly = true erases all current primary objectives without choosing any new ones.  Needed for TOBRUK.
+    public void MO_SelectPrimaryObjectives(int army = 0, double totalPoints = 0, bool fresh = false, bool eraseOnly = false)
     {
 
         List<string> keys = new List<string>(MissionObjectivesList.Keys);
@@ -12773,6 +12796,8 @@ added Rouen Flak
                 {
                     if (MissionObjectivesList[key].AttackingArmy == a) MissionObjectivesList[key].IsPrimaryTarget = false;
                 }
+
+            if (eraseOnly) continue;
             
             int counter = 1;
 
@@ -12849,9 +12874,11 @@ added Rouen Flak
                 bool done = false;
                 foreach (var key in keys)
                 {
+                    //So TOBRUK we can have situations where all of one side's primary objectives are destroyed etc. 
+                    //So we gradually loosen up the criteria
                     MissionObjective mo = MissionObjectivesList[key];
                     //2020-08 - avoid ship type for now as obviously that puts the general i nteh water. In future we could change his camp to a small flottilla or something instead.
-                    if (mo.AttackingArmy == a && mo.IsEnabled && mo.IsPrimaryTarget && !mo.Destroyed && !mo.ObjectiveAchievedForPoints && !(mo.MOObjectiveType==MO_ObjectiveType.Ship))
+                    if ((mo.AttackingArmy == a || x > 4) && (mo.IsEnabled | x > 3) && (mo.IsPrimaryTarget || x > 2) && (!mo.Destroyed || x > 0) && ( !mo.ObjectiveAchievedForPoints || x > 1) && !(mo.MOObjectiveType==MO_ObjectiveType.Ship || x > 5))
                     {
                         mo.hasGeneralStaff = true;
                         done = true;
@@ -12891,8 +12918,10 @@ added Rouen Flak
     //public Dictionary<ArmiesE, Tuple<Point3d, string, string, string, string, string, string, bool>> GeneralStaffLocations; //location, objective key, objective name, name of general staff group, sector, sector keypad, sector double keypad, whether discovered yet
     public static Dictionary<ArmiesE, string[]> GeneralStaffNames = new Dictionary<ArmiesE, string[]>() //army here is the TARGETING army, so General etc is from the opposite army
     {
-        {ArmiesE.Red, new string [] { "Generalfeldmarschall Kesselring and his staff", "Generalfeldmarschall Sperrle and his staff", "Generalfeldmarschall Kesselring and a few high Luftwaffe officers", "General Jeschonnek and his personal aides", "Luftwaffe General Kreipe and his aides" } },
-        {ArmiesE.Blue, new string [] {"Air Chief Marshal Dowding and a small staff", "Air Vice-Marshal Park and his aides, checking on fighter preparations,", "Air Chief Marshall Leigh-Mallory and and high-ranking RAF officers", "Air Vice-Marshal Brand and his staff", "Air Chief Marshall Breadner and his aides" }}
+        //{ArmiesE.Red, new string [] { "Generalfeldmarschall Kesselring and his staff", "Generalfeldmarschall Sperrle and his staff", "Generalfeldmarschall Kesselring and a few high Luftwaffe officers", "General Jeschonnek and his personal aides", "Luftwaffe General Kreipe and his aides" } },
+        {ArmiesE.Red, new string [] { "Generalleutnant Rommel and his staff", "Marshal Balbo and his staff", "General Berti and his Italian Tenth Army staff", "Governor-General Gariboldi and his personal aides", "Lieutenant General Tellera and his staff", "Governor General Graziani and his personal aides"} },
+        {ArmiesE.Blue, new string [] { "Lieutenant General Richard O'Connor and a small staff", "Commander-in-Chief Auchinleck and a group of high-ranking officers", "Lieutenant General Alexander and his aides", "Air Chief Marshal Tedder and his staff", "Admiral Cunningham and his aides", "Major General Harding and his command staff", "Lieutenant General Connor and his staff", "General Gott and the 8th Army commanders", "General Montgomery and his commanders", "Lieutenant-General Anderson and his staff officers", "Brigadier McNabb and his aides",
+        "Major-General Evelegh and his staff", "Lieutenant-General Allfrey and the GOC V Corps command staff", "Colonel Kœnig and the Free French commanders"}}
     };
 
 
@@ -16572,97 +16601,124 @@ added Rouen Flak
 
     }
 
-    public void MO_BRBumrushCheck(object obj)
+public void MO_BRBumrushCheck(object obj)
+{
+    try
     {
-        try
+        //Tuple<int, MissionObjective> tup = obj as Tuple<int, MissionObjective>;
+
+        int army = (int)obj;
+        MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
+
+        //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushSituationReport()
+        //They calc the same thing & should always match
+
+        int objectivesAchievedArmy = 1; //This is the one with all 6 objectives achieved & with the possibility to move the front forward
+        if (MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) objectivesAchievedArmy = 2;
+
+        int attackingArmy = objectivesAchievedArmy;
+        int defendingArmy = 3 - objectivesAchievedArmy;
+        if (MO_BRBumrushInfo[(ArmiesE)objectivesAchievedArmy].BumrushStatus % 2 == 0)
         {
-            //Tuple<int, MissionObjective> tup = obj as Tuple<int, MissionObjective>;
+            attackingArmy = 3 - objectivesAchievedArmy;
+            defendingArmy = objectivesAchievedArmy;
+        }
 
-            int army = (int)obj;
-            MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
+        //30km distant seems about the furthest we place any ground convoys.  Even if some are a bit higher than 30km there should always be some closer than that
+        //from the start.  By time those are destroyed the >30km will be there etc.
+        int attackingVeryFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, 30000, matcharmy: attackingArmy, type: "Vehicle");
 
-            //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushSituationReport()
-            //They calc the same thing & should always match
 
-            int objectivesAchievedArmy = 1; //This is the one with all 6 objectives achieved & with the possibility to move the front forward
-            if (MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) objectivesAchievedArmy = 2;
 
-            int attackingArmy = objectivesAchievedArmy;
-            int defendingArmy = 3 - objectivesAchievedArmy;
-            if (MO_BRBumrushInfo[(ArmiesE)objectivesAchievedArmy].BumrushStatus % 2 == 0)
+        //int result = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.Pos, 2MO_BRBumrushAirbaseOccupyDistance_m army, AiGroundGroupType.Vehicle);
+        int redClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 1, type: "Vehicle");
+
+        int blueClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 2, type: "Vehicle");
+
+        int redFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Vehicle");
+        int redFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Artillery");
+
+        int redFar = redFarArtillery + redFarVehicle;
+
+        int blueFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Vehicle");
+        int blueFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Artillery");
+
+        int blueFar = blueFarArtillery + blueFarVehicle;
+
+
+        if (blueClose > 1)
+        {
+            twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+        }
+
+        if (redClose > 1)
+        {
+            twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+        }
+
+        if (blueClose > 6 && redFar < 1)  //We have a winner, BLUE!
+        {
+
+            MO_BRStopBumrushPhase(army);
+            //they immediately win (even if no previous points earned) . . . but WHAT do they win?
+            //If they are the attacking army, they WIN THE MAP.
+            if (army == 2)
             {
-                attackingArmy = 3 - objectivesAchievedArmy;
-                defendingArmy = objectivesAchievedArmy;
-            }
-
-            //30km distant seems about the furthest we place any ground convoys.  Even if some are a bit higher than 30km there should always be some closer than that
-            //from the start.  By time those are destroyed the >30km will be there etc.
-            int attackingVeryFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, 30000, matcharmy: attackingArmy, type: "Vehicle");
-                        
-
-
-            //int result = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.Pos, 2MO_BRBumrushAirbaseOccupyDistance_m army, AiGroundGroupType.Vehicle);
-            int redClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 1, type: "Vehicle");            
-
-            int blueClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: 2, type: "Vehicle");
-
-            int redFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Vehicle");
-            int redFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 1, type: "Artillery");
-
-            int redFar = redFarArtillery + redFarVehicle;
-
-            int blueFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Vehicle");
-            int blueFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: 2, type: "Artillery");
-
-            int blueFar = blueFarArtillery + blueFarVehicle;
-
-
-            if (blueClose > 1)
-            {
-                twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding.");
-            }
-
-            if (redClose > 1)
-            {
-                twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
-            }
-
-            if (blueClose > 6 && redFar < 1)  //We have a winner, BLUE!
-            {
-
-                MO_BRStopBumrushPhase(army);
-                //they immediately win (even if no previous points earned)
                 MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
-
                 //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
                 MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
-
-
             }
-            else if (redClose > 6 && blueFar < 1)  //We have a winner, RED!
+            //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
+            //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+            //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+            else
+            {
+                MissionObjectiveScore[ArmiesE.Blue] += MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                MO_CheckObjectivesComplete(BumrushRepelArmy: 2);
+                //EndMission();
+                //MO_CheckObjectivesComplete();
+            }
+
+        }
+        else if (redClose > 6 && blueFar < 1)  //We have a winner, RED!
+        {
+            MO_BRStopBumrushPhase(army);
+            if (army == 1)
             {
 
-                MO_BRStopBumrushPhase(army);
+
                 //they immediately win (even if no previous points earned)
                 MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
 
                 //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
                 MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
-
-
-            } else if (attackingVeryFarVehicle == 0 && MO_BRBumrushTimeLeft_min_double() > 1)
+            }
+            //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
+            //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+            //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+            else
             {
-                twcLogServer(null, ArmiesL[defendingArmy] + " has eliminated ALL enemy threats and attack vehicles near the target airport.");
-                twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
-                GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking");
-                Timeout(20, ()=>{ MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
-
+                MissionObjectiveScore[ArmiesE.Red] += MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                MO_CheckObjectivesComplete(BumrushRepelArmy: 1);
+                //EndMission();
+                //MO_CheckObjectivesComplete();
             }
 
+
         }
-        catch (Exception ex) { Console.WriteLine("BumrushCheck: ERROR! " + ex.ToString()); }
+        else if (attackingVeryFarVehicle == 0 && MO_BRBumrushTimeLeft_min_double() > 1)
+        {
+            twcLogServer(null, ArmiesL[defendingArmy] + " has eliminated ALL enemy threats and attack vehicles near the target airport.");
+            twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
+            GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking");
+            Timeout(20, () => { MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
+
+        }
 
     }
+    catch (Exception ex) { Console.WriteLine("BumrushCheck: ERROR! " + ex.ToString()); }
+
+}
 
     public string MO_BRBumrushTimeLeft_min_string()
     {
@@ -16864,29 +16920,29 @@ added Rouen Flak
         }
     }
 
-    public void MO_CheckObjectivesComplete(int TestingOverrideArmy = 0)
+    public void MO_CheckObjectivesComplete(int TestingOverrideArmy = 0, int BumrushRepelArmy = 0)
     {
 
 
         
         double bp = MO_PercentPrimaryObjectives((int)ArmiesE.Blue);
 
-        //Turned airport & 6 main objectives, so now we unleash the final bum rush
-        //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
-        if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus <1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1  && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
-            || TestingOverrideArmy == 2) // Blue first stage complete
+    //Turned airport & 6 main objectives, so now we unleash the final bum rush
+    //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
+    if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1 && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
+        || TestingOverrideArmy == 2) // Blue first stage complete
+    {
+        //WriteResults_Out_File("2");
+        Task.Run(() => WriteResults_Out_File("2"));
+        Timeout(10, () =>
         {
-            //WriteResults_Out_File("2");
-            Task.Run(() => WriteResults_Out_File("2"));
-            Timeout(10, () =>
-            {
-                twcLogServer(null, "Blue has launched ground columns now trying to overrun the target airport!!!", new object[] { });
-                GamePlay.gpHUDLogCenter("Blue making a run on the airport to turn the map!!!");
-            });            
-            
-            MO_BRStartBumrushPhase((int)ArmiesE.Blue);
+            twcLogServer(null, "Blue has launched ground columns now trying to overrun the target airport!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Blue making a run on the airport to turn the map!!!");
+        });
 
-        }
+        MO_BRStartBumrushPhase((int)ArmiesE.Blue);
+
+    }
 
 
         //Turn the map by completing ALL primary objectives
@@ -16895,18 +16951,27 @@ added Rouen Flak
         //THEN you need another 60 points to successfully turn the map
         if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_PointsRequiredToTurnMap[ArmiesE.Blue])
             //|| bp >= MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MissionObjectiveScore[ArmiesE.Blue] >= MO_PointsRequiredWithMissingPrimary[ArmiesE.Blue]
-            || TestingOverrideArmy == 2)// Blue battle Success
+            || TestingOverrideArmy == 2 || BumrushRepelArmy == 2)// Blue battle Success
 
         {
             //WriteResults_Out_File("2");
             Task.Run(() => WriteResults_Out_File("2"));
             Timeout(10, () =>
             {
-                twcLogServer(null, "Blue has successfully turned the map and taken over the airport!!!", new object[] { });
-                GamePlay.gpHUDLogCenter("Blue has Successfully Turned the Map!!!");
+                if (BumrushRepelArmy == 2) {
+                    twcLogServer(null, "Blue has successfully repelled the attack and taken over the airport!!!", new object[] { });
+                    GamePlay.gpHUDLogCenter("Blue has Successfully Retaken the Airport!!!");
+                    MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue, BumrushRepelVictory:true);
+                }
+                else
+                {
+                    twcLogServer(null, "Blue has successfully turned the map and taken over the airport!!!", new object[] { });
+                    GamePlay.gpHUDLogCenter("Blue has Successfully Turned the Map!!!");
+                    //EndMission(70, "Blue");
+                    MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue);
+                }
             });
-            EndMission(70, "Blue");
-            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue);
+
         }
 
 
@@ -16919,7 +16984,7 @@ added Rouen Flak
         //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
         if ((MissionObjectiveScore[ArmiesE.Red] >= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush && rp > MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1
             && MissionObjectiveScore[ArmiesE.Red] < MO_PointsRequiredToTurnMap[ArmiesE.Red])
-            || TestingOverrideArmy == 1) // Red first stage complete
+            || TestingOverrideArmy == 1 ) // Red first stage complete
         {
             //WriteResults_Out_File("2");
             Task.Run(() => WriteResults_Out_File("2"));
@@ -16932,19 +16997,24 @@ added Rouen Flak
 
         }
 
-        if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredToTurnMap[ArmiesE.Red] )            
-            || TestingOverrideArmy == 1)// Red battle Success
+    if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredToTurnMap[ArmiesE.Red])
+        || TestingOverrideArmy == 1 || BumrushRepelArmy == 1)// Red battle Success
+    {
+        //WriteResults_Out_File("1");
+        Task.Run(() => WriteResults_Out_File("1"));
+        if (BumrushRepelArmy == 1)
         {
-            //WriteResults_Out_File("1");
-            Task.Run(() => WriteResults_Out_File("1"));
-            Timeout(10, () =>
-            {
-                twcLogServer(null, "Red has successfully turned the map and taken over the airport!!!", new object[] { });
-                GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
-            });
-            EndMission(70, "Red");
-            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
+            twcLogServer(null, "Red has successfully repelled the attack and taken over the airport!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red has Successfully Retaken the Airport!!!");
         }
+        else
+        {
+            twcLogServer(null, "Red has successfully turned the map and taken over the airport!!!", new object[] { });
+            GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
+        }
+        //EndMission(70, "Red");
+        MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
+    }
 
         //Console.WriteLine("Figuring leaks:  {0} {1} {2} {3}", MissionObjectiveScore[ArmiesE.Red], MO_PointsRequired[ArmiesE.Red], bp, MO_PrimaryObjectivesRemaining( (int)ArmiesE.Red));
 

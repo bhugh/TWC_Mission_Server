@@ -1229,6 +1229,7 @@ public class CoverMission : AMission, ICoverMission
                     targetname = "";
                     if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target != null) targetname = (CurrentWaypoints[currWay] as AiAirWayPoint).Target.Name();
                     if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor != null) targettype = ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor).Type().ToString();
+                    if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary != null) targettype = ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary).Title;
                     p = (CurrentWaypoints[currWay] as AiWayPoint).P;
                 }
 
@@ -4231,12 +4232,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                                 if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive && !diveTarget && !airgroupGroundTargets.ContainsValue(stationaries[newStaIndex])
-                                && statArmy == 3 - airGroup.getArmy()
+                                && statArmy == 3 - airGroup.getArmy() && !stationaries[newStaIndex].Title.ToLower().Contains("crater")
+                                && !stationaries[newStaIndex].Title.ToLower().Contains("smoke") && !stationaries[newStaIndex].Title.ToLower().Contains("fire")//avoid choosing a smoke, fire, or crater to attack. There might be some other types to avoid, too but these are the main offenders.
                                 ) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
 
                                 {
                                     newGroundTarget = stationaries[newStaIndex];
-                                    Console.WriteLine("MBT: Found a stationary" + stationaries[newStaIndex].Name + " " + stationaries[newStaIndex].Title + " " + stationaries[newStaIndex].Type + " {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+                                    Console.WriteLine("MBT: Found a stationary " + stationaries[newStaIndex].Name + " 1 " + stationaries[newStaIndex].Title + " 2 " + stationaries[newStaIndex].Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
                                                                                                                                                                                                                                                                                                                                                      //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
                                     diveTarget = true;
                                     break;

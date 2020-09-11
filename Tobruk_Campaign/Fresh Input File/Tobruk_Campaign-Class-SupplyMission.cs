@@ -330,9 +330,10 @@ public class SupplyMission : AMission, ISupplyMission
              * 
              * */
 
-            {"bob:Aircraft.BlenheimMkI",90},
-            {"bob:Aircraft.BlenheimMkIF",90},
-            {"bob:Aircraft.BlenheimMkINF",90},  
+            //bob: items are generally for cover ONLY, not for player use in Tobruk map
+            {"bob:Aircraft.BlenheimMkI",120},
+            {"bob:Aircraft.BlenheimMkIF",120},
+            {"bob:Aircraft.BlenheimMkINF",120},  
             {"tobruk:Aircraft.BeaufighterMkIC_Trop", 90},
             {"tobruk:Aircraft.BeaufighterMkIC", 125 }, //will be used as Cover Fighter ONLY */
             {"tobruk:Aircraft.BeaufighterMkIF_Late_Trop", 90},            
@@ -444,7 +445,8 @@ public class SupplyMission : AMission, ISupplyMission
              * 
              * 
              * */
-            //INcluding these three bob: a/c as good cover bomber items, but not available for PLAYERS
+            //INcluding these bob: a/c as good cover fighter/bomber items, but not available for PLAYERS
+            {"bob:Aircraft.Bf-110C-4-NJG", 120},
             {"bob:Aircraft.He-111P-2",150},   
             {"bob:Aircraft.Do-17Z-2",100},
             {"bob:Aircraft.Bf-110C-4B", 125}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE

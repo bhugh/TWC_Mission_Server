@@ -2159,6 +2159,8 @@ public class Mission : AMission
                     {
                         try
                         {
+                            /* CloD way
+                             * 
                             if (ran.NextDouble() > 0.5)
                             {
                                 if (army == 1) endPos.y = twcmap_maxY + offMapBufferForLeavingMap;
@@ -2179,6 +2181,16 @@ public class Mission : AMission
                                 if (endPos.y > twcmap_maxY + offMapBufferForLeavingMap) endPos.y = twcmap_maxY + offMapBufferForLeavingMap;
                                 if (endPos.y < twcmap_minY - offMapBufferForLeavingMap) endPos.y = twcmap_minY - offMapBufferForLeavingMap;
                             }
+                            */
+
+                            //TOBRUK way.  It only makes sense to go east or west.  North==ocean, south==desert
+                            if (army == 1) endPos.x = twcmap_maxX + offMapBufferForLeavingMap;
+                            else if (army == 2) endPos.x = twcmap_minX - offMapBufferForLeavingMap;
+                            else endPos.x = twcmap_maxX + offMapBufferForLeavingMap;
+                            endPos.y = nextWP.P.y + (ran.NextDouble() * 300000 - 150000); //Math.Sqrt(ran.NextDouble()) makes it favor things closer to 0; ie .y usuallyi won't move up OR down by too much
+                            if (endPos.y > twcmap_maxY +  offMapBufferForLeavingMap) endPos.y = twcmap_maxY +  offMapBufferForLeavingMap;
+                            if (endPos.y < twcmap_minY -  offMapBufferForLeavingMap) endPos.y = twcmap_minY -  offMapBufferForLeavingMap;
+
                             //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
                             //so if we hit a distance < 120km we call it good enough
                             //otherwise we take the shortest distance based on 10 random tries

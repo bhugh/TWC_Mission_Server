@@ -7107,7 +7107,7 @@ public class Mission : AMission, IMainMission
             if (balanceAILoadTimer != null) balanceAILoadTimer.Dispose();
             if (MO_BRAdvanceBumrushPhaseTimer != null) MO_BRAdvanceBumrushPhaseTimer.Dispose();
             if (MO_BRBumrushCheckTimer != null) MO_BRBumrushCheckTimer.Dispose();
-            if (MO_BRBumrushAttackTimer != null) MO_BRBumrushAttackTimer.Dispose();
+            if (MO_BRBumrushAIAttackTimer != null) MO_BRBumrushAIAttackTimer.Dispose();
         }
         catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
 
@@ -10467,10 +10467,13 @@ public class Mission : AMission, IMainMission
     //
     //We're tracking this separately for Red & Blue as FOR NOW only one side can have a bumrush situation going.  BUT . . . in the future maybe if
     //both sides complete their initial objective we could have TWO bumrush situations going on simultaneously
+    /*
+     * This is MO_BRBumrushInfo now
     public Dictionary<ArmiesE, int> MO_BRBumRushStatus = new Dictionary<ArmiesE, int>() {
         {ArmiesE.Red, 0 },
         {ArmiesE.Blue, 0 }
     };
+    */
 
     //////////////////////******************************************/////////////////////////////
     //Amount of points require in case percent of primary is less than 100% but more than MO_PercentPrimaryTargetsRequired
@@ -13055,10 +13058,17 @@ added Rouen Flak
                 "Stationary.Environment.Table_w_dinner_UK-GER_1",
                 "Stationary.Environment.Table_empty_UK-GER_1",
                 "Stationary.Environment.Table_w_chess_UK-GER_1",
-                "Stationary.Environment.Table_w_dinner_UK-GER_1",};
+                "Stationary.Environment.Table_w_dinner_UK-GER_1",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",
+                "tobruk:Stationary.TobrukBuilding.Generic.BoardWithMapT",};
 
             var cars = new List<string> { "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo",
-                "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo",
+                "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", "Stationary.Opel_Blitz_cargo", 
+                "Stationary.Opel_Blitz_tent", 
                 "Stationary.BMW_R71_w_MG_34",
                 "Stationary.BMW_R71_w_MG_34",
                 "Stationary.Scammell_Pioneer_R100",
@@ -13072,7 +13082,12 @@ added Rouen Flak
             string enemy = "de";
             if (a == 2) enemy = "gb";
 
-            var trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463" };
+            var trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Opel_Blitz_tent", };
+
+            var camo = new List<string> { "Stationary.Environment.CamoNetCars", "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer", "Stationary.Environment.CamoNetPlane",
+            "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer","Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer",
+            "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer","Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer",
+            "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer","Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetHowitizer",};
 
             /*Stationary.Albion_AM463
                 Stationary.Bedford_MW_tent
@@ -13090,7 +13105,7 @@ added Rouen Flak
             for (int i = 0; i < 9; i++) {
 
                 string side = "nn";
-                if (random.Next(3) == 0) side = enemy; //setting them as enemy makes them show up as black dots.  These are small so should be pretty dim black dots.
+                if (random.Next(6) == 0) side = enemy; //setting them as enemy makes them show up as black dots.  These are small so should be pretty dim black dots.
 
                 //Timeout(10 + 2 * i, () =>
                 //{ 
@@ -13112,7 +13127,7 @@ added Rouen Flak
                 double ney = newPos.y + Math.Sin(angle1) * radius2;
 
                 string side = "nn";
-                if (random.Next(4) == 0) side = enemy;
+                if (random.Next(7) == 0) side = enemy;
 
                 //Timeout(30 + 2 * i, () =>
                 //{
@@ -13130,11 +13145,35 @@ added Rouen Flak
                 double ney = newPos.y + Math.Sin(angle1) * radius2;
 
                 string side = "nn";
-                if (random.Next(5) == 0) side = enemy;
+                if (random.Next(8) == 0) side = enemy;
 
                 //Timeout(50 + 2 * i, () =>
                 //{
                 f = Calcs.makeStatic(f, GamePlay, this, nex, ney, newPos.z, type: trucks[i], heading: hdg + random.Next(15), side: side);
+                //});
+            }
+
+            Calcs.Shuffle(camo);
+            for (int i = 0; i < 9; i++)
+            {
+                //double angle1 = i * 2.0 / 7.0 * Math.PI + random.NextDouble();
+                //double radius2 = random.Next(5) + 12;
+
+                double nex = 0;
+                double ney = 0;
+
+                while (Calcs.CalculatePointDistance(new Point3d(nex, ney, 0), newPos) > 20) {
+                    nex = newPos.x + random.Next(40) - 20;
+                    ney = newPos.y + random.Next(40) - 20;
+                    if (random.Next(30) == 0) break; //safety exit
+                }                
+
+                string side = "nn"; //Camo is always "neutral"
+                //if (random.Next(5) == 0) side = enemy;
+
+                //Timeout(50 + 2 * i, () =>
+                //{
+                f = Calcs.makeStatic(f, GamePlay, this, nex, ney, newPos.z, type: camo[i], heading: hdg + random.Next(15), side: side);
                 //});
             }
 
@@ -16328,8 +16367,9 @@ added Rouen Flak
     //Note: myTimer.Change(Timeout.Infinite, Timeout.Infinite); will stop it (though not stop a currently running thread started by it)
     public System.Threading.Timer MO_BRAdvanceBumrushPhaseTimer;
     public System.Threading.Timer MO_BRBumrushCheckTimer;
-    public System.Threading.Timer MO_BRBumrushAttackTimer;
-    public readonly int MO_BRBumrushAttackTimer_period = 5400000;
+    public System.Threading.Timer MO_BRBumrushAIAttackTimer;
+    public readonly int MO_BRBumrushPhaseTimer_period_min = 90;
+    public readonly int MO_BRBumrushAIAttackTimer_period_sec = 270;
     public DateTime MO_BRLastBumrushStartTime;
     public DateTime MO_BRNextBumrushStartTime;
     public readonly double MO_BRBumrushAirbaseOccupyDistance_m = 500; //attacking vehicles must get this close to center of airbase to officially "occupy" it
@@ -16348,14 +16388,14 @@ added Rouen Flak
         MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
         Console.WriteLine("Bumrush: Starting timer for BumrushPhase! " + DateTime.UtcNow.ToString("T"));
         MO_BRLastBumrushStartTime = DateTime.UtcNow;
-        MO_BRNextBumrushStartTime = MO_BRLastBumrushStartTime.AddMilliseconds(MO_BRBumrushAttackTimer_period);
+        MO_BRNextBumrushStartTime = MO_BRLastBumrushStartTime.AddMinutes(MO_BRBumrushPhaseTimer_period_min);
 
         MO_BRAdvanceBumrushPhaseTimer = new System.Threading.Timer(
             MO_BRAdvanceBumrushPhase,
             //new Tuple<int,MissionObjective>(army, mo),
             new Tuple <int, bool>(army,false), //bool is whether or not thMO_BRAdvanceBumrushPhaseTimer must be restarted; ie TRUE = an interrupted timer/early restart 
             dueTime: 100, //wait time @ startup (ms).  So run it once in just 100ms; this starts the bumrush
-            period: MO_BRBumrushAttackTimer_period); //periodically call the callback at this interval to advance the bumrush to next phase.  Every 90 minutes = 540 seconds.
+            period: MO_BRBumrushPhaseTimer_period_min * 60 * 1000); //periodically call the callback at this interval to advance the bumrush to next phase.  Every 90 minutes = 540 seconds.
 
         MO_BRBumrushCheckTimer = new System.Threading.Timer(
             MO_BRBumrushCheck,
@@ -16364,13 +16404,13 @@ added Rouen Flak
             dueTime: 300000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
             period: 74000); //periodically call the callback at this interval to advance the bumrush to next phase.  Every 74 seconds.
 
-        MO_BRBumrushAttackTimer = new System.Threading.Timer(
-            MO_BRBumrushAttack,
+        MO_BRBumrushAIAttackTimer = new System.Threading.Timer(
+            MO_BRBumrushAIAttack,
             //new Tuple<int, MissionObjective>(army, mo),
             army,
             //dueTime: 300000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
             dueTime: 23000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
-            period: (int)4.5*60*1000); //periodically call the callback at this interval call in an AI airmission to try to kill the advancing bumrush.  Every 5 minutes.
+            period: MO_BRBumrushAIAttackTimer_period_sec*1000); //periodically call the callback at this interval call in an AI airmission to try to kill the advancing bumrush.  Every 5 minutes.
 
     }
     public void MO_BRStopBumrushPhase(int army)
@@ -16403,7 +16443,7 @@ added Rouen Flak
         //Turn off the timers/stop them executing
         MO_BRAdvanceBumrushPhaseTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         MO_BRBumrushCheckTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-        MO_BRBumrushAttackTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+        MO_BRBumrushAIAttackTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus = 0;
 
     }
@@ -16423,17 +16463,17 @@ added Rouen Flak
             Tuple<int, bool> tup = (Tuple<int, bool>)obj;
             int army = tup.Item1;
             bool resetTimer = tup.Item2;
-            
+
             if (resetTimer)
             {
                 //We're advancing the Bumrush Phase early so we have to reset the timer, too, to give the next army their full period
                 Console.WriteLine("Advance Bumrush Phase for " + ArmiesL[army] + " - also restarting Bumrush Timer due to early interruption of Bumrush");
-                MO_BRAdvanceBumrushPhaseTimer.Change(MO_BRBumrushAttackTimer_period, MO_BRBumrushAttackTimer_period);
+                MO_BRAdvanceBumrushPhaseTimer.Change(MO_BRBumrushPhaseTimer_period_min * 60 * 1000, MO_BRBumrushPhaseTimer_period_min * 60 * 1000);
             }
 
             Console.WriteLine("Bumrush: AdvanceBumrushPhase now, re-starting timers, LastStartTime, NextStartTime for BumrushPhase! " + DateTime.UtcNow.ToString("T"));
             MO_BRLastBumrushStartTime = DateTime.UtcNow;
-            MO_BRNextBumrushStartTime = MO_BRLastBumrushStartTime.AddMilliseconds(MO_BRBumrushAttackTimer_period);
+            MO_BRNextBumrushStartTime = MO_BRLastBumrushStartTime.AddMinutes(MO_BRBumrushPhaseTimer_period_min);
 
             MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
 
@@ -16466,19 +16506,20 @@ added Rouen Flak
             });
 
             //TODO: Not sure if this removal thing is really working right
-            if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 4000);
+            if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 5000); //increasing radius to 5km for safety...
 
-                //MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
-                // (attackingArmy, army, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+            //MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
+            // (attackingArmy, army, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
 
-                twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
-            } catch (Exception ex) { Console.WriteLine("AdvanceBumrushPhase: ERROR! " + ex.ToString()); }
+            twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+        }
+        catch (Exception ex) { Console.WriteLine("AdvanceBumrushPhase: ERROR! " + ex.ToString()); }
 
     }
 
     
 
-    public void MO_BRBumrushAttack(object obj)
+    public void MO_BRBumrushAIAttack(object obj)
     {
         try
         {
@@ -16501,39 +16542,64 @@ added Rouen Flak
 
             //AiGroundGroup nearestGG = nearestGroundGroup(GamePlay, mo.Pos, 7000, army, AiGroundGroupType.Vehicle);
 
-            //Find out where the ACTUAL closest GG to the target is.
-            //If the nearest GG is IN THE AIRPORT we don't fool around, we just send the planes to KILL IT.
-            AiGroundGroup actualNearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: 0);
+            //So, try the next bit a few times as it seems we are often running into invalid groups/actors.  Probably because they ahve been killed?
+            bool success = false;
+            bool launchextra = false;
+            AiGroundGroup actualNearestGG=null;
+            Point3d actualNearestGGpos;
+            double actualNearestGGDistance_m=10000000;
+            AiGroundGroup nearestGG=null;
+
+            for (int i = 0; i < 15; i++)
+            {
+                //Find out where the ACTUAL closest GG to the target is.
+                //If the nearest GG is IN THE AIRPORT we don't fool around, we just send the planes to KILL IT.
+                actualNearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: i);
+
+
+                if (actualNearestGG == null || actualNearestGG.GetItems().Length==0)
+                {
+                    Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, try again {0}", i);
+                    continue;
+                }
+
+                actualNearestGGpos = new Point3d(-100000, -100000, -100000);
+                actualNearestGG.GetPos(out actualNearestGGpos);
+                actualNearestGGDistance_m = Calcs.CalculatePointDistance(mo.Pos, actualNearestGGpos);
+                if (actualNearestGGDistance_m < 600) launchextra = true;
+
+                int rness = 20;
+                if (actualNearestGGDistance_m < 2500) rness = 10;
+                if (actualNearestGGDistance_m < 1000) rness = 1;
+
+                nearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: rness);
+
+                if (nearestGG == null || nearestGG.GetItems().Length == 0)
+                {
+                    Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, try again {0}", i);
+                    continue;
+                }
+
+                if (!GamePlay.gpActorIsValid(nearestGG))
+                {
+                    Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, the actor was 'invalid'. try again {0}", i);
+                    continue;
+
+                }
+                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, the actor was 'invalid'. try again {0}", i);
+                success = true;
+                break;
+            }
             
-
-            if (actualNearestGG == null)
+            //If the enemy is close to/in the center launch and extra attack @ double the regular time
+            if (launchextra) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(obj); });
+            
+            if (!success)
             {
-                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, exiting");
+                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack was found after many tries, no attack launched, exiting");
                 return;
             }
 
-            Point3d actualNearestGGpos = new Point3d(-100000, -100000, -100000);
-            actualNearestGG.GetPos(out actualNearestGGpos);
-            double actualNearestGGDistance_m = Calcs.CalculatePointDistance(mo.Pos, actualNearestGGpos);
-
-            int rness = 20;
-            if (actualNearestGGDistance_m < 2500) rness = 10;
-            if (actualNearestGGDistance_m < 1000) rness = 1;
-
-            AiGroundGroup nearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: rness);
-
-            if (nearestGG == null)
-            {
-                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, exiting");
-                return;
-            }
-
-            if (!GamePlay.gpActorIsValid(nearestGG))
-            {
-                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, the actor was 'invalid'. Exiting...");
-                return;
-
-            }
             Console.WriteLine("MO_BRBumrushAttack - Ground Group will be attacked, " + (nearestGG as AiActor).Name()); // + " " + nearestGG.ID()); 
 
             //Timeout(random.Next(10, 6*60), ()=> {
@@ -16546,10 +16612,29 @@ added Rouen Flak
                     int numWayPoints = 1;
                     string gat_targ = "";
 
+                    int attackingClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: MO_BRCurrentAttackingArmy(), type: "Vehicle");
+
+                    int defendingFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: MO_BRCurrentDefendingArmy(), type: "Vehicle");
+                    int defendingFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: MO_BRCurrentDefendingArmy(), type: "Artillery");
+
+                    int defendingFar = defendingFarArtillery + defendingFarVehicle;
+
+                    //Make the attack flights larger as the enemy gets closer & more of them in the center (vs fewer of the enemy in the defending area)
+                    double nextFlightMult = 1;
+                    if (actualNearestGGDistance_m < 2500) nextFlightMult *= 1.05;
+                    if (actualNearestGGDistance_m < 1500) nextFlightMult *= 1.05;
+                    if (actualNearestGGDistance_m < 1000) nextFlightMult *= 1.05;
+                    if (actualNearestGGDistance_m < 500) nextFlightMult *= 1.1;
+                    if (attackingClose>5) nextFlightMult *= 1.05;
+                    if (attackingClose > 12) nextFlightMult *= 1.05;
+                    if (attackingClose > 19) nextFlightMult *= 1.05;
+                    if (attackingClose > 5 && defendingFar < 3) nextFlightMult *= 1.1;
+
+
                     //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
                     //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
                     double direction = -1;
-                    if (army == 2) direction = 1;
+                    if (army == 1) direction = 1;
 
                     Point3d gat = new Point3d(mo.Pos.x + random.Next(1000, 3000), mo.Pos.y + random.Next(1000, 3000), alt_m);
                     if (nearestGG != null && nearestGG.GetItems().Length > 0)
@@ -16580,7 +16665,7 @@ added Rouen Flak
                     if (actualNearestGGDistance_m < 500) airportBombChance = 1;
 
 
-                    ISectionFile f = Calcs.BuildBomber(GamePlay, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, attack_type: "LEVEL", airportBombChance: airportBombChance);
+                    ISectionFile f = Calcs.BuildBomber(GamePlay, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, attack_type: "LEVEL", airportBombChance: airportBombChance, nextFlightMult:nextFlightMult);
                     f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/bomberbuild" + random.Next(10, 99).ToString()); //testing)
                     GamePlay.gpPostMissionLoad(f);
                 }
@@ -16652,6 +16737,8 @@ added Rouen Flak
 
             int blueFar = blueFarArtillery + blueFarVehicle;
 
+            //Put out the sitrep to the LOG every time we check.  So we know what happened EXACTLy if map turned, didn't turn, etc
+            Console.WriteLine(MO_BRBumrushSituationReport(null, 100,0, display:false, html:false, silentIfInactive:false));
 
             if (blueClose > 1)
             {
@@ -16663,7 +16750,7 @@ added Rouen Flak
                 twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
             }
 
-            if (blueClose > 6 && redFar < 1)  //We have a winner, BLUE!
+            if (blueClose > 6 && redFar < 1 && attackingArmy == 2)  //We have a winner, BLUE!
             {
 
                 MO_BRStopBumrushPhase(army);
@@ -16687,7 +16774,7 @@ added Rouen Flak
                 }
 
             }
-            else if (redClose > 6 && blueFar < 1)  //We have a winner, RED!
+            else if (redClose > 6 && blueFar < 1 && attackingArmy == 1)  //We have a winner, RED!
             {
                 MO_BRStopBumrushPhase(army);
                 if (army == 1)
@@ -16727,17 +16814,26 @@ added Rouen Flak
 
     }
 
+    public bool MO_BRBumrushActive()
+    {
+        if (MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus > 0 || MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0) return true;
+        else return false;
+
+    }
+
     public string MO_BRBumrushTimeLeft_min_string()
     {
+        if (!MO_BRBumrushActive()) return "0";
         TimeSpan timeleft = MO_BRNextBumrushStartTime - DateTime.UtcNow;
         return (timeleft.TotalMinutes.ToString("N0"));
 
     }
+
     public double MO_BRBumrushTimeLeft_min_double()
     {
+        if (!MO_BRBumrushActive()) return 0;
         TimeSpan timeleft = MO_BRNextBumrushStartTime - DateTime.UtcNow;
         return (timeleft.TotalMinutes);
-
     }
 
     //1, 2, or 0 if no current OBJECTIVESACHEIVEDARMY (ie, no current Bumrush)
@@ -17702,15 +17798,59 @@ added Rouen Flak
     * **********************************************************************************************************************/
 
 
+    //TOBRUK the map seems too busy.  So we cull the regular/hourly AI raids.
+    //These have special name that ENDS WITH "HR" or "hr".  These denote hourly or timed raids.
 
-    //return TRUE if AI spawns should be stopped bec of too many players
-    //FALSE if AI/trigger missions can continue
-    public bool stopAI()
+    public bool tobrukCullAI(string triggername)
     {
+        int nump = Calcs.gpNumberOfPlayers(GamePlay);
+        Console.WriteLine("tobrukCullAI: " + nump.ToString() + " players currently online");
 
+
+        if (!triggername.ToLower().EndsWith("hr")) return false; //Check if the trigger/action name ends with "hr" or "HR" or "Hr".  This denotes regular timed raids.
+
+        //To reduce excessive random AI aircraft in Tobruk.
+        //Usually keep just 33% of triggers.  However if a BUMRUSH is active keep only 10%.  
+        int pctToKeep = 40;
+        if (MO_BRBumrushActive()) pctToKeep = 10;
+
+        if (random.Next(100) > pctToKeep)
+        {
+            Console.WriteLine("stopAI: Stopping AI Trigger/cutting Tobruk triggers (NAME ENDING IN \"Hr\" {0}% to reduce excess traffic", 100-pctToKeep);
+            return true;
+        }
+
+
+        Console.WriteLine("stopAI: NOT stopping AI Trigger/too few players online & NOT stopped by Tobruk special cull");
+        return false;
+
+    }
+
+    //return TRUE if this action has been called within the past time_min minutes
+    //otherwise FALSE.
+    //Used to prevent actions from being called too frequently.  IE a trigger in the .mis that runs every time a player flies through a certain zone    
+    
+    Dictionary<string, DateTime> recentlyCalledActions_dict = new Dictionary<string, DateTime>();
+
+    public bool recentlyCalled( string shortName, double time_min = 60)
+    {
+        if (!recentlyCalledActions_dict.ContainsKey(shortName))
+        {
+            recentlyCalledActions_dict[shortName] = DateTime.UtcNow;
+            return false;
+        }
+        TimeSpan sinceCalled = DateTime.UtcNow - recentlyCalledActions_dict[shortName];
+        recentlyCalledActions_dict[shortName] = DateTime.UtcNow;
+        if (sinceCalled.TotalMinutes < time_min) return true;
+        return false;
+    }
+        //return TRUE if AI spawns should be stopped bec of too many players
+        //FALSE if AI/trigger missions can continue
+        public bool stopAI()
+    {        
         int nump = Calcs.gpNumberOfPlayers(GamePlay);
         Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
-        if (nump==0 && !ON_TESTSERVER)
+        if (nump == 0 && !ON_TESTSERVER)
         {
             Console.WriteLine("stopAI: Stopping AI Trigger NO players online");
             return true;
@@ -17719,12 +17859,12 @@ added Rouen Flak
         {
             Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
             return true;
-        }
-        else
-        {
-            Console.WriteLine("stopAI: NOT stopping AI Trigger/too few players online");
-            return false;
-        }
+        }    
+
+
+        Console.WriteLine("stopAI: NOT stopping AI Trigger/too few players online & NOT stopped by Tobruk special cull");
+        return false;
+
     }
 
     //The generic ONTRIGGER code often used to trigger all actions whenever a trigger is called
@@ -18645,645 +18785,7 @@ added Rouen Flak
             Timeout(600, () => sendScreenMessageTo(1, "Heavy Bomber Raid  heading West w/escorts", null));
             //GamePlay.gpGetTrigger(shortName).Enable = false;
         }			
-  /*      else if ("Timer1_90min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol2");//90 min after start second front patrol then again every 90 min
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Fighters near front lines", null));
-        //  Timeout(600, () => sendScreenMessageTo(2, "Our Fighters covering front lines", null));
-        }
-        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol3");// second 110 patrol 180 min later
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Beware of front line fighters!", null));
-          Timeout(600, () => sendScreenMessageTo(2, "Again our fighters cover he front lines", null));
-        }
-        else if ("Timer1_270min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_B_Front_Patrol4");// 3rd patrol of front using different aircraft
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Air trafic increase near front lines!", null));
-            Timeout(600, () => sendScreenMessageTo(2, "Last flight of our fighters headed to front lines!", null));
-        }
-          else if ("Timer1_92min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("StukaRaid2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(2, "Heavy Stuka raid on front lines Escorts needed Launching Freecamp Now!!!.", null));
-            Timeout(600, () => sendScreenMessageTo(1, "Activity in Le Havre Area!!", null));
-        }
-        else if ("Timer1_95min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Heading to Rouen Fuel targets low and fast", null));
-        //    Timeout(600, () => sendScreenMessageTo(2, "A formation of eastbound Blenheims have been spotted over Lympne at 6000m!!!.", null));
-        }
-        else if ("Timer3_120min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid3");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(2, "Spies report Blenheim aircraft heading East toward Rouen.", null));
-        //    Timeout(600, () => sendScreenMessageTo(1, "BR.20Ms have been spotted over Boulogne @ 13K ft. heading west!", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("Timer1_300min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Blenhiem_Raid");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-       else if ("Timer3_90min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-
-        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }			
-
-        else if  ("Timer1_30min".Equals(shortName) && active && !stopAI())
-        {
-			AiAction action = GamePlay.gpGetAction("Cher_Cover_Hi");
-			if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            Timeout(600, () => sendScreenMessageTo(1, "testing cher hi patrol", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("Timer1_180min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Timed_Rouen_Diep_Patrol");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            Timeout(600, () => sendScreenMessageTo(1, "testing ", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-	        else if ("  Heavy_Bomber_Raid_3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("109_Escort_2_London");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-
-            Timeout(600, () => sendScreenMessageTo(1, "testing 3.5 hours Heavy Bomber Raid w/escorts #3 ", null));
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }	
-*/
-		/*       else if ("Timer1_300min".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("General_Inspection_Red");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Second Test 300 min in", null));
-        //    Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Wellingtons have been spotted over St. Mary's Bay @ 6km!", null));
-        }
-         
-		 /*     From Here raids remmed out for now Do not delete just re write
-		 else if ("F15".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("action15");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(2, "He-111's requesting escort.  Meet over Calais @ 6km in 10 minutes.", null));
-         //   Timeout(600, () => sendScreenMessageTo(1, "He-111's have been spotted over Calais @ 20K ft. heading west!", null));
-        }
-        else if ("F16".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("action16");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            Timeout(10, () => sendScreenMessageTo(1, "Blenheims requesting escort. Meet at St. Mary's Bay at 20K ft in 10 minutes.", null));
-         //   Timeout(600, () => sendScreenMessageTo(2, "An eastbound formation of Blenheims have been spotted over St. Mary's Bay at 6km.", null));
-        }
-        else if ("F17".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("action17");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            sendScreenMessageTo(1, "Do 17's have been spotted east of Calais @ 20K ft.", null);
-         //   sendScreenMessageTo(2, " third run Do 17's requesting escort! Meet at Calais at 6000m in 10 minutes", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("F18".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("action18");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            sendScreenMessageTo(1, "Wellingtons requesting escort! Meet at Dymchurch @ 20K ft. in 10 minutes.", null);
-         //   sendScreenMessageTo(2, "Wellingtons have been spotted west of Dymchurch at 6000m.  Destroy them!", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-
-
-		// from this point on no messages about triggers should Show Fatal 10/19
-         
-
-        else if ("escort1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("escort1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Escort1 109s launched", null);
-         //   sendScreenMessageTo(2, "Cover 109s launched for test", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("escort2".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("escort2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            //sendScreenMessageTo(1, "Escort2 Cover 109s launched", null);
-            //sendScreenMessageTo(2, "Secondary Cover 109s launched for test", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("escort3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("escort2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-            //sendScreenMessageTo(1, "Escort3 Cover 109s launched", null);
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("redspitcover1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("escort2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Spits launched", null);
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("redhurrycover1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("redhurrycover1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Hurricanes launched", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-        }
-        else if ("Willmingtondefensered".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Willmingtondefensered");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense Willmington", null);
-        //    sendScreenMessageTo(2, "Spits launched launched for yet another  test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset Willmington(ZD1)30 min", null);
-            });
-        }
-        else if ("Redhilldefensered2".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Redhilldefensered2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-          //  sendScreenMessageTo(1, "Air defense Redhill", null);
-         //   sendScreenMessageTo(2, "Spits launched Redhill defense test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-             //   sendScreenMessageTo(1, " Trigger reset Redhill(ZD2)30 min", null);
-            });
-        }
-
-        else if ("AirdefenseCalais".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("escort2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-          //  sendScreenMessageTo(1, "Air defense Calais", null);
-          //  sendScreenMessageTo(2, "Air defense Calais ", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset Calais2 30 min", null);
-            });
-        }
-
-        else if ("StOmar".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("StOmar");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Air defense St Omar", null);
-        //    sendScreenMessageTo(2, "Air defense St Omar test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset St Omar 30 min", null);
-            });
-        }
-        else if ("HighAltCalais".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("HighAltCalais");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "HighAltCalais", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-             //   sendScreenMessageTo(1, " Trigger reset HighAltCalais 30 min", null);
-            });
-        }
-        else if ("109Cover3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("109Cover3");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Air defense test of code 3 hr launch", null);
-         //   sendScreenMessageTo(1, "Mission time should be top of hour4", null);
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Gladiatorintercept".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Gladiatorintercept");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Gladiator intercept Test of trigger", null);
-        //    sendScreenMessageTo(2, "Gladiator intercept  test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, "Timer reset Dungeness trigger active", null);
-            });
-        }
-
-        else if ("zonedefenseblue1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("zonedefenseblue1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "A 110 cover Letoquet Test of trigger", null);
-        //    sendScreenMessageTo(2, "110  test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, "Timer reset Letoquet(BZ1)trigger active", null);
-            });
-        }
-        else if ("zonedefenseblue2".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("zonedefenseblue2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense Oye Plague", null);
-        //    sendScreenMessageTo(2, "Air defense Oye Plague test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset Oye Plague 30 min", null);
-            });
-        }
-
-
-
-        else if ("zonedefenseblue3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("zonedefenseblue3");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense Wissant", null);
-        //    sendScreenMessageTo(2, "Air defense Wissant test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset Wissant3 30 min", null);
-            });
-        }
-        else if ("zonedefenseblue4".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("zonedefenseblue4");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Air defense Calais", null);
-         //   sendScreenMessageTo(2, "Air defense Calais test", null);
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-             //   sendScreenMessageTo(1, " Trigger reset Calais offshore 30 min", null);
-            });
-        }
-        else if ("London1air".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("London1air");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense London", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset London 30 min", null);
-            });
-        }
-        else if ("London2air".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("London2air");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Air defense London2", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-            //    sendScreenMessageTo(1, " Trigger reset London 30 min", null);
-            });
-        }
-        else if ("London3air".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("London3air");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense London3", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-             //   sendScreenMessageTo(1, " Trigger reset London 30 min", null);
-            });
-        }
-        else if ("Thems1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Thems1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense Eastchurch", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-           //     sendScreenMessageTo(1, " Trigger reset North 30 min", null);
-            });
-        }
-        else if ("Beau1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Beau1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Air defense Brookland", null);
-
-            GamePlay.gpGetTrigger(shortName).Enable = false;
-            Timeout(3600, () => {
-                GamePlay.gpGetTrigger(shortName).Enable = true;
-             //   sendScreenMessageTo(1, " Trigger reset North 30 min", null);
-            });
-        }
-        else if ("Fatal1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Fatal1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Coastal Patrol 1", null);
-            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Fatal2".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Fatal2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Coastal Patrol 2", null);
-            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Fatal3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Fatal3");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Coastal Patrol 3", null);
-            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Fatal4".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Fatal4");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Coastal Patrol 4", null);
-            twcLogServer(null, "Check time for coastal patrol for testing", new object[] { });
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Pegwelldefense1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Pegwelldefense1");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Northern Patrol 1", null);
-            twcLogServer(null, "Pegwell defense triggered look for aicraft pegwell bay", new object[] { });
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Pegwelldefense2".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Pegwelldefense2");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-        //    sendScreenMessageTo(1, "Northern Patrol 2", null);
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Pegwelldefense3".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Pegwelldefense3");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Northern Patrol 3", null);
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-        else if ("Pegwelldefense1".Equals(shortName) && active && !stopAI())
-        {
-            AiAction action = GamePlay.gpGetAction("Pegwelldefense4");
-            if (action != null)
-            {
-                action.Do();
-                Console.WriteLine("Triggered action " + action.Name);
-            }
-         //   sendScreenMessageTo(1, "Northern Patrol 4", null);
-
-            //GamePlay.gpGetTrigger(shortName).Enable = false;
-
-        }
-                */		
+  
         else
         {
             //This final ELSE ensures that any other triggers in the mission file (ie time triggers)
@@ -19305,11 +18807,21 @@ added Rouen Flak
     }  //End OnTrigger
 
     public void execAction(string shortName, string origin = "") {
+        
         AiAction action = GamePlay.gpGetAction(shortName);
-        if (action != null && !stopAI())
+        
+        bool stopai = stopAI();
+        bool tcull = tobrukCullAI(shortName);
+        bool rcall = recentlyCalled(shortName, 60);
+        
+        if (action != null && !stopai && !tcull && !rcall)
+
         {
             Console.WriteLine(origin +": Activating action " + shortName + " from trigger " + shortName);
             action.Do();
+        }  else
+        {
+            Console.WriteLine(origin + ": Skipping action " + shortName + " because null: {0} many players: {1} tobrukCull: {2} toorecentlycalled: {3} ", action==null, stopai, tcull, rcall);
         }
     }
 
@@ -20349,9 +19861,9 @@ public static class Calcs
         // For %reasons% this doesn't typically work right if AiGroundGroupType.Artillery
         // So we just use this alternate counting method instead, in that case:
         //if (type == AiGroundGroupType.Artillery) return CountGroundArtillery(GamePlay, location, radius_m, matcharmy);
-
+        
         int count = 0;
-
+        
         //So this \/ \/ \/ \/ is the OLD way but it turns out that it MISSES TONS OF STUFF because NOT ALL GROUND ACTORS are in GROUND GROUPS!!!!!!!!!!
         //So the NEW better working way is BELOW THAT.  Still maybe not perfect.
         /*
@@ -20395,6 +19907,7 @@ public static class Calcs
             //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
             //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
             if ((actor as AiGroundActor).Health() < 0.0001) continue; //only count them if they are alive & in some decent state of health
+            if (!GamePlay.gpActorIsValid(actor)) continue; //maybe not necessary/harmful??!
             if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
             bool art = isActorArtillery(actor);
             bool veh = isActorVehicle(actor);
@@ -20481,6 +19994,8 @@ public static class Calcs
                         //foreach (AiGroundGroup groundGroup in GamePlay.gpGroundGroups(army))
                         foreach (AiGroundGroup groundGroup in aggs)
                         {
+                            if (groundGroup == null) continue;
+                            if (!GamePlay.gpActorIsValid(groundGroup)) continue;
                             if (type != null && groundGroup.GroupType() != type) continue;
                             Point3d grouppos = new Point3d(-100000, -100000, -100000);
                             //If group pos isn't even close to the airport we just skip it
@@ -20723,96 +20238,119 @@ public static class Calcs
         Task.Run(() =>
         {
 
-
-            Console.WriteLine("Removing artillery, AA, and ground vehicles at " + x_m.ToString() + ", " + y_m.ToString() + " radius: " + radius_m.ToString());
-
-            string matchstring = "";
-            if (matcharmy == 1) matchstring = "gb";
-            if (matcharmy == 2) matchstring = "de";
-
-            int countStat = 0;
-            int countAct = 0;
-
-            //Stationaries - so not sure if we need to remove these; they are not actors ?!?
-            List<GroundStationary> gs = GamePlay.gpGroundStationarys(x_m, y_m, radius_m).ToList();
-            foreach (GroundStationary g in gs)
+            try
             {
-                if (g == null || (g as GroundStationary) == null) continue;
-                Console.WriteLine("Groundstat " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
-                if (matcharmy > 0 && g.country != matchstring) continue;
-                if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
-                {
-                    mission.Timeout(clc_random.Next(20, 330), () => { if (g != null) g.Destroy(); }); //COULD check to make sure they are the same type we placed, here.
-                                                                                                      //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
-                    countStat++;
-                }
-            }
+                Console.WriteLine("Removing artillery, AA, and ground vehicles at " + x_m.ToString() + ", " + y_m.ToString() + " radius: " + radius_m.ToString());
 
-            /*
-            //Ground Actors
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-            {
-                foreach (int army in GamePlay.gpArmies())
-                {
-                    if (matcharmy != 0 && matcharmy != army) continue;
+                string matchstring = "";
+                if (matcharmy == 1) matchstring = "gb";
+                if (matcharmy == 2) matchstring = "de";
 
-                    if (GamePlay.gpGroundGroups(army) != null && GamePlay.gpGroundGroups(army).Length > 0)
+                int countStat = 0;
+                int countAct = 0;
+
+                try
+                {
+                    //Stationaries - so not sure if we need to remove these; they are not actors ?!?
+                    List<GroundStationary> gs = GamePlay.gpGroundStationarys(x_m, y_m, radius_m).ToList();
+                    foreach (GroundStationary g in gs)
                     {
-                        foreach (AiGroundGroup groundGroup in GamePlay.gpGroundGroups(army))
+                        if (g == null || (g as GroundStationary) == null) continue;
+                        Console.WriteLine("Groundstat within radius: " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
+                        if (matcharmy > 0 && g.country != matchstring) continue;
+                        if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
                         {
-                            
-                            //if (groundGroup.GroupType() != AiGroundGroupType.Artillery && groundGroup.GroupType() != AiGroundGroupType.Vehicle) continue;
-                            Point3d grouppos = new Point3d(-100000, -100000, -100000);
-                            //If group pos isn't even close to the airport we just skip it
-                            //But when we're close to the target position we actually count, exact pos of each individual actor
-                            groundGroup.GetPos(out grouppos);
-                            Console.WriteLine("Groundgroup " + groundGroup.ID() + " " + groundGroup.GroupType().ToString() + " at " + grouppos.ToString() + " | " + Calcs.CalculatePointDistance(new Point2d(x_m, y_m), grouppos).ToString() + " R " + radius_m.ToString());
-                            //Console.WriteLine("Groundgroup " + groundGroup.ID() + " at " + grouppos.ToString() + " | " + location.ToString() + " | " + Calcs.CalculatePointDistance(location, grouppos).ToString() + " R " + radius.ToString());
-                            //if (Calcs.CalculatePointDistance(new Point2d(x_m, y_m), grouppos) > 5 * radius_m) continue;
-                            if (groundGroup.GetItems() != null && groundGroup.GetItems().Length > 0)
+                            mission.Timeout(clc_random.Next(2, 180), () => {
+
+                            if (g != null)
                             {
-                                
-                                foreach (AiActor actor in groundGroup.GetItems())
-                                {
-                                    Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
-                                    if ((AiGroundActor)actor == null) continue;                                    
-                                    if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
-                                    //mission.Timeout(clc_random.Next(20, 600), () => {
-                                    mission.Timeout(clc_random.Next(5, 10), () => {
-                                        string firetype = "BuildingFireSmall";
-                                        if (clc_random.NextDouble() < 0.6333) firetype = "Smoke1";
-                                        if (clc_random.NextDouble() < 0.3333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype);
-                                        (actor as AiCart).Destroy();
-                                        
-                                    });
-                                    countAct++;
-                                }
-
+                                Console.WriteLine("Groundstat DESTROYING " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
+                                g.Destroy();
                             }
+                             }); //COULD check to make sure they are the same type we placed, here.
+                            //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
+                            countStat++;
                         }
-                    } */
+                    }
 
+                    /*
+                    //Ground Actors
+                    if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+                    {
+                        foreach (int army in GamePlay.gpArmies())
+                        {
+                            if (matcharmy != 0 && matcharmy != army) continue;
 
+                            if (GamePlay.gpGroundGroups(army) != null && GamePlay.gpGroundGroups(army).Length > 0)
+                            {
+                                foreach (AiGroundGroup groundGroup in GamePlay.gpGroundGroups(army))
+                                {
 
-            foreach (AiActor actor in groundActors.Values)
-            {
-                if (actor == null || (AiGroundActor)actor == null) continue;
-                Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
-                if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
-                if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
-                mission.Timeout(clc_random.Next(20, 330), () =>
+                                    //if (groundGroup.GroupType() != AiGroundGroupType.Artillery && groundGroup.GroupType() != AiGroundGroupType.Vehicle) continue;
+                                    Point3d grouppos = new Point3d(-100000, -100000, -100000);
+                                    //If group pos isn't even close to the airport we just skip it
+                                    //But when we're close to the target position we actually count, exact pos of each individual actor
+                                    groundGroup.GetPos(out grouppos);
+                                    Console.WriteLine("Groundgroup " + groundGroup.ID() + " " + groundGroup.GroupType().ToString() + " at " + grouppos.ToString() + " | " + Calcs.CalculatePointDistance(new Point2d(x_m, y_m), grouppos).ToString() + " R " + radius_m.ToString());
+                                    //Console.WriteLine("Groundgroup " + groundGroup.ID() + " at " + grouppos.ToString() + " | " + location.ToString() + " | " + Calcs.CalculatePointDistance(location, grouppos).ToString() + " R " + radius.ToString());
+                                    //if (Calcs.CalculatePointDistance(new Point2d(x_m, y_m), grouppos) > 5 * radius_m) continue;
+                                    if (groundGroup.GetItems() != null && groundGroup.GetItems().Length > 0)
+                                    {
+
+                                        foreach (AiActor actor in groundGroup.GetItems())
+                                        {
+                                            Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+                                            if ((AiGroundActor)actor == null) continue;                                    
+                                            if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
+                                            //mission.Timeout(clc_random.Next(20, 600), () => {
+                                            mission.Timeout(clc_random.Next(5, 10), () => {
+                                                string firetype = "BuildingFireSmall";
+                                                if (clc_random.NextDouble() < 0.6333) firetype = "Smoke1";
+                                                if (clc_random.NextDouble() < 0.3333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype);
+                                                (actor as AiCart).Destroy();
+
+                                            });
+                                            countAct++;
+                                        }
+
+                                    }
+                                }
+                            } */
+
+                }
+                catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: STATIONARIES ERROR! " + ex.ToString()); }
+
+                try
                 {
+                    foreach (AiActor actor in groundActors.Values)
+                    {
+                        if (actor == null || (AiGroundActor)actor == null) continue;
+                        
+                        if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
+                        if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
+                        Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+                        mission.Timeout(clc_random.Next(2, 180), () =>
+                        {
+                            string firetype = "BuildingFireSmall";
+                            //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireLarge";
+                            if (clc_random.NextDouble() < 0.02333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype);
 
-                    string firetype = "BuildingFireSmall";
-                    //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireLarge";
-                    if (clc_random.NextDouble() < 0.05333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype);
-                    if (actor != null) (actor as AiCart).Destroy();
+                            if (actor != null)
+                            {
+                                Console.WriteLine("Groundact DESTROYING " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+                                (actor as AiCart).Destroy();
+                            }
 
-                });
-                countAct++;
+                        });
+                        countAct++;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: ACTORS ERROR! " + ex.ToString()); }
+
+                Console.WriteLine("removeArtilleryAAGroundVehicles at {0:n0}, {1:n} radius {2:n}. Removed {3} stationaries, {4} groundactors", new object[] { x_m, y_m, radius_m, countStat, countAct });
+
             }
-
-            Console.WriteLine("removeArtilleryAAGroundVehicles at {0:n0}, {1:n} radius {2:n}. Removed {3} stationaries, {4} groundactors", new object[] { x_m, y_m, radius_m, countStat, countAct });
+            catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: ERROR! " + ex.ToString()); }
 
 
         });
@@ -21600,10 +21138,12 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 //Weapons 1 3  //Hurricane 2C - needs more planes, lower altitude ~800m
                 //Weapons 1 2//Hurricane  1FB- needs more planes, lower altitude ~800m  .  Only drops half ordnance, so not using.
 
-    public static ISectionFile BuildBomber(IGamePlay GamePlay, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string attack_type="LEVEL", double airportBombChance = 0.15, double nextFlightChance = 0.5)
+    public static ISectionFile BuildBomber(IGamePlay GamePlay, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string attack_type="LEVEL", double airportBombChance = 0.15, double nextFlightMult = 1)
     {
         try
         {
+            double nextFlightChance = 0.5; //Chance  of choosing a 2nd, 3rd flight
+
             ISectionFile f = GamePlay.gpCreateSectionFile();
 
             string aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.Ju-88A-5Late_Trop", "tobruk:Aircraft.Ju-88A-5_Trop", "tobruk:Aircraft.Ju-88A-5", "tobruk:Aircraft.Ju-87B-2_Trop", "bob:Aircraft.Ju-87B-2", "tobruk:Aircraft.Bf-110C-4B_Trop", "bob:Aircraft.Bf-110C-4B", "tobruk:Aircraft.BR-20M_Trop", "bob:Aircraft.BR-20M", "tobruk:Aircraft.He-111H-2_Trop", "bob:Aircraft.He-111H-2"
@@ -21623,6 +21163,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 weapons = "1 1 5 0 2";
                 groupname = "BoB_RAF_B_7Sqn." + clc_random.Next(1, 15).ToString("00");
             }
+            Console.WriteLine("Bumrush Attack group: " + aircraft);
 
             if (aircraft.Contains("Ju-87"))
             {
@@ -21675,12 +21216,13 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             s = "AirGroups";
             k = groupname; v = ""; f.add(s, k, v);
             s = groupname;
+
             k = "Flight0"; v = Calcs.randSTR(new string[] { "1", "1", "1", "1 2", "1 2", "1 2", "1 2", "1 2 3", "1 2 3" }); f.add(s, k, v);
-            if (clc_random.NextDouble() < nextFlightChance)
+            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult)
             {
                 k = "Flight1"; v = Calcs.randSTR(new string[] { "11", "11", "11 12", "11 12", "11 12", "11 12", "11 12", "11 12 13", "11 12 13" }); f.add(s, k, v);
             }
-            if (clc_random.NextDouble() < nextFlightChance)
+            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult)
             {
                 k = "Flight2"; v = Calcs.randSTR(new string[] { "", "", "", "", "21", "21", "", "21 22", "21 22" }); f.add(s, k, v);
             }

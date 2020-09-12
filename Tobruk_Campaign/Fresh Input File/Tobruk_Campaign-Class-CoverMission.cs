@@ -3029,6 +3029,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     double r = 0.9;
                     if (j == 3) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
                     else r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted towards the center of that range
+                    r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
 
 
                     if (player.Army() == 1) //So Red bomber pilots have been complaining that Blue fighter cover is more effective than theirs.  This is probably true given (especially) the formidable AI ability of a pair of 110 fighters just due to CloD's built-in 110 AI algorithms.  So . . . trying to bump up Red cover fighter abilities a little to compensate.
@@ -5221,6 +5222,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         double offMapBuffer = 25000;
         for (int i = 1; i < 16; i++)
         {
+            /* CLoD way..
             if (ran.NextDouble() > 0.5)
             {
 
@@ -5242,6 +5244,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
                 if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
             }
+
+            */
+
+            //TOBRUK way.  It only makes sense to go east or west.  North==ocean, south==desert
+                if (army == 1) endPos.x = twcmap_maxX + offMapBuffer;
+                else if (army == 2) endPos.x = twcmap_minX - offMapBuffer;
+                else endPos.x = twcmap_maxX + offMapBuffer;
+                endPos.y = currPos.y + (ran.NextDouble() * 300000 - 150000); //Math.Sqrt(ran.NextDouble()) makes it favor things closer to 0; ie .y usuallyi won't move up OR down by too much
+                if (endPos.y > twcmap_maxY + offMapBuffer) endPos.y = twcmap_maxY + offMapBuffer;
+                if (endPos.y < twcmap_minY - offMapBuffer) endPos.y = twcmap_minY - offMapBuffer;
+            
             //so, we want to try to find a somewhat short distance for the aircraft to exit the map.
             //We take the shortest distance based on several random tries
             double distance_m = CoverCalcs.CalculatePointDistance(endPos, currPos);

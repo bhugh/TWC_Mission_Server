@@ -135,10 +135,11 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         mostScore = 100000000; //This is the generic base mission stuff, so it should apply to ANY AND EVERY score possible
         leastScore = -100000000; //Also, the most & least stuff isn't really implemented for this base mission (only for the Pos100 Neg100 etc specific Battle Missions)
 
-        Console.WriteLine(" TWCTobrukCampaignMissionObjectives real score is {0} - for testing setting it to {1}", sc, 10);
+        
         score = sc;
-        //score = 100; //TESTING!!!!! Using a fake/test score. To use the REAL SCORE rem out this line.      
-                    
+        //score = 100; //TESTING!!!!! Using a fake/test score. To use the REAL SCORE rem out these lines.      
+        //Console.WriteLine(" TWCTobrukCampaignMissionObjectives real score is {0} - for testing setting it to {1}", sc, score);
+
 
         focus_airport_misfile_name = "";
 

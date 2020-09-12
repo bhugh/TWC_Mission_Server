@@ -802,6 +802,16 @@ public class Mission : AMission, IMainMission
         }
     }
 
+    /*****************************************************************************************
+     * 
+     * New Mission methods, TF 5.0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * 
+     * ABattle has a new method AMission GetBaseMission()
+     *
+     * AMission has a new method object[] OnIntraMissionsMessage(string sMsg, object[] args = null), which allows missions to send arbitrary data to each other.          
+     * 
+     * **************/
+
     bool OnTick_End_Mission_Triggered = false;
     public override void OnTickGame()
     {
@@ -1401,10 +1411,11 @@ public class Mission : AMission, IMainMission
 
                         //Console.WriteLine("Disabling airport {0:F0} {1:F0} {2} {3} {4}", new Object []  { craterPos.x.ToString("0.00"), craterPos.y.ToString("0.00"), round, stripe, crater });
 
-                        if (random.Next(11) < 1)
+                        if (random.Next(17) < 1)
                         {
                             string s = "BuildingFireSmall";
-                            if (random.Next(7)>3) s = "Smoke2";
+                            if (random.Next(35) == 0) s = "BuildingFireBig" ;
+                            //if (random.Next(7)>3) s = "Smoke2";
                             f2 = Calcs.loadSmokeOrFire(GamePlay, this, craterPos.x, craterPos.y, craterPos.z, s, random.Next(5 * 3600) + 3600, f: f2, resetCount: resetCount);
                             resetCount = false;
                         }
@@ -11749,9 +11760,14 @@ public class Mission : AMission, IMainMission
 
         public void MissionObjectiveTriggersSetup(bool addNewOnly = false)
         {
+            //2020-09: ALL MISSIONOBJECTIVETRIGGERSSETUP NOW MOVED TO \Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs
+            //And various sub-classes of that class.
+            //Info below is left simply as documentation/examples
+            //
+
             //Format: addTrigger(MO_ObjectiveType.Building (Aircraft, airport, etc), "Name,                      OwnerArmy,Points,ID,TriggerType,PercRequired,XLoc,YLoc,Radius,IsPrimaryTarget,IsPrimaryTargetWeight,TimeToRepairIfDestroyed_hours,Comment "");
-              //PercRequired doesn't actually do anything because the perc required is set in the TRIGGER in the .mis file.  However if you accurately record here the same
-              //percent to kill value in the .mis file we can do interesting/helpful things with it here.
+            //PercRequired doesn't actually do anything because the perc required is set in the TRIGGER in the .mis file.  However if you accurately record here the same
+            //percent to kill value in the .mis file we can do interesting/helpful things with it here.
             bool add = addNewOnly;
             //BLUE TARGETS
 
@@ -11830,17 +11846,7 @@ public class Mission : AMission, IMainMission
             /*
             addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 3, 7, "", add);
             addPointArea(MO_ObjectiveType.Building, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 120, 48, true, true, 3, 7, "", add);
-            addPointArea(MO_ObjectiveType.Building, "Dover Naval Operations Fuel", "Dove", "", 1, 3, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 120, 48, true, true, 3, 7, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Southhampton Docks Industrial Area", "Sout", "", 1, 8, "SouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 120, 24, true, true, 2, 10, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Artillery Assembly Factory", "", "Tobruk_Campaign-LOADONCALL-shoreham-artillery-assembly-objective.mis", 1, 3, "BTargShorehamArtilleryFactory", 137046, 200038, 150, 90, 3000, 5, 120, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Submarine Base", "", "", 1, 4, "BTargShorehamSubmarineBase", 137054, 198034, 150, 90, 3000, 3, 120, 24, true, true, 3, 8, "", add);
-
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Portsmouth Small Industrial Area SW", "Port", "", 1, 8, "BTargPortsmouthSmallIndustrialArea", 75235, 193676, 350, 350, 8000, 10, 120, 24, true, true, 1, 10, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Portsmouth Large Industrial Area NE", "Port", "", 1, 10, "BTargPortsmouthLargeIndustrialArea", 77048, 193985, 850, 850, 10000, 15, 120, 24, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole North Industrial Port Area", "Pool", "", 1, 10, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 550, 400, 10000, 10, 120, 24, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Poole South Industrial Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 120, 24, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Crowborough RAF High Command Bunker", "", "Tobruk_Campaign-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 120, 24, true, true, 2, 10, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Tobruk_Campaign-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
+         
             addPointArea(MO_ObjectiveType.MilitaryArea, "Folkestone Navy Docks Area", "Folk", "Tobruk_Campaign-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 7, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 40, 160, 24, true, true, 2, 8, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
@@ -11855,22 +11861,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Dunkirk Naval Docks Area", "Dunk", "Tobruk_Campaign-LOADONCALL-dunkirk-naval-docks-objective.mis", 2, 10, "BTargDunkirkNavyDocks", 314227, 225610, 1150, 850, 10000, 40, 160, 24, true, true, 2, 8, "", add);
 
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne-sur-Mer Submarine Base", "Boul", "Tobruk_Campaign-LOADONCALL-boulognesurmer-submarine-base-objective.mis", 2, 6, "BTargBoulSubmarine", 265859, 192867, 250, 150, 10000, 15, 160, 24, true, true, 2, 8, "", add);
-
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Boulogne Naval Docks Area", "Boul", "Tobruk_Campaign-LOADONCALL-boulogne-naval-docks-objective.mis", 2, 10, "BTargBoulogneNavyDocks", 265531, 190133, 750, 650, 10000, 40, 160, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk West Industrial Area", "Dunk", "", 2, 8, "BTargDunkirkWestIndustrialArea", 312748, 223835, 850, 750, 10000, 6, 140, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk Central-West Industrial Area", "Dunk", "", 2, 8, "BTargDunkirkCentralWestIndustrialArea", 314753, 224055, 1200, 1300, 10000, 13, 140, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Dunkirk East Docks Area", "Dunk", "", 2, 8, "BTargDunkirkEastDocksArea", 320103, 225534, 1200, 1250, 10000, 1, 140, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Industrial Area", "Cala", "", 2, 10, "BTargCalaisIndustrialArea", 284945, 217045, 800, 850, 12000, 12, 130, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Boulogne West Industrial Area", "Boul", "", 2, 10, "BTargBoulogneWestIndustrialArea", 264576, 189495, 650, 700, 11000, 4, 130, 24, true, true, 2, 8, "", add);
-
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 4, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 120, 24, true, true, 2, 6, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Etaples Landing Craft Assembly Site", "", "Tobruk_Campaign-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 250, 200, 3000, 3, 120, 24, true, true, 2, 6, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Berck Amphibious Craft Assembly Site", "", "Tobruk_Campaign-LOADONCALL-berck-landingcraft-objective.mis", 2, 4, "RTargBerckLandingCraft", 269247, 147771, 250, 200, 3000, 5, 120, 24, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Calais Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 10, 120, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Veurne Military Manufacturing Area", "", "", 2, 8, "RTargVeurneMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 120, 24, true, true, 2, 10, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Le Crotoy Landing Craft Manufacturing Area", "", "Tobruk_Campaign-LOADONCALL-lecrotoyberck-landingcraft-objective.mis", 2, 11, "RTargLeCrotoyLandingCraftManufactureAreaBomb", 271541, 132815, 1200, 1000, 11000, 9, 120, 24, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.IndustrialArea, "Le Crotoy Forest Luftwaffe High Command Bunker", "", "Tobruk_Campaign-LOADONCALL-lecrotyoy-forest-bunker-objective.mis", 2, 6, "LeCrotoyForestBunker", 277853, 138221, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
+        
             addPointArea(MO_ObjectiveType.IndustrialArea, "Dieppe Cliffside German Special Forces Command Bunker", "", "Tobruk_Campaign-LOADONCALL-Dieppe-shoreline-bunker-objective.mis", 2, 6, "DieppeCliffsBunker", 238972, 107365, 70, 50, 4000, 20, 120, 24, true, true, 2, 8, "", add);
 
             */
@@ -11878,20 +11869,7 @@ public class Mission : AMission, IMainMission
 
             /*
             addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Army Camp", "", 2, 1, "RMobileArmyCamp", 270276, 169671, 200, 150, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.ArmyEncampment, 15, 10000, 10000, 278420, 271000, 2, 7, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Army Camp", "", 1, 2, "BMobileArmyCamp", 279965, 104219, 200, 150, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.ArmyEncampment, 15, 197500, 10000, 370000, 190000, 2, 7, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Secret Base", "", 1, 2, "BSecretAirbase", 289965, 104219, 700, 600, 10000, 10, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SecretAirbaseGB, 60, 197500, 10000, 370000, 190000, 10, 35, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Secret Base", "", 2, 1, "RSecretAirbase", 180276, 169671, 800, 600, 10000, 10, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SecretAirbaseDE, 60, 10000, 10000, 278420, 271000, 10, 35, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Intelligence Unit", "", 1, 1, "BMobileIntelligence", 249965, 114219, 550, 450, 10000, 10, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 197500, 10000, 370000, 190000, 10, 45, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Intelligence Unit", "", 2, 5, "RMobileIntelligence", 180276, 179671, 550, 450, 10000, 10, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 10000, 10000, 278420, 271000, 10, 45, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.Radar, "Mobile Radar 1", "", 2, 1, "RMobileRadar1", 210276, 169671, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.MobileRadar1, 15, 10000, 10000, 278420, 271000, 5, 35, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Mobile Radar 1", "", 1, 1, "BMobileRadar1", 279965, 104219, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.MobileRadar1, 30, 197500, 10000, 370000, 190000, 5, 35, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.Radar, "Mobile Radar 2", "", 2, 1, "RMobileRadar2", 210276, 179671, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.MobileRadar1, 45, 10000, 10000, 278420, 271000, 10, 45, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-            addMobile(MO_ObjectiveType.Radar, "Mobile Radar 2", "", 1, 1, "BMobileRadar2", 279965, 184219, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.MobileRadar1, 45, 197500, 10000, 370000, 190000, 10, 45, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 2, 1, "RMobileArmour1", 231978, 220669, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SmallArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 5, MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 1, 1, "BMobileArmour1", 240196, 143824, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.SmallArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 5,MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 2, 1, "RLargeMobileArmour", 145508, 231881, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.LargeArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 1,  MO_ProducerOrStorageType.None, "", add);
-            addMobile(MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 1, 1, "BLargeMobileArmour", 221410, 136331, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.LargeArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 1, MO_ProducerOrStorageType.None, "", add);            
-            addMobile(MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 2, 1, "RIntelligenceListening", 262939, 143597, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.CamoGroup, 45, 10000, 10000, 278420, 271000, 5, 20, MO_ProducerOrStorageType.None, "", add);
+        
             addMobile(MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 1, 1, "BIntelligenceListening", 212979, 182491, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, MO_MobileObjectiveType.CamoGroup, 45, 197500, 10000, 370000, 190000, 5, 20, MO_ProducerOrStorageType.None, "", add);
 
             */
@@ -11917,10 +11895,6 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             /*41 162099 50034 50
          *
 
-***************** add unfinished convoys for british attack here***********
-
-
-
     /*    
 */
         }
@@ -11931,82 +11905,13 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             {
                     { "az", "/Flak areas/AbiarZaidflak.mis" },
                     { "ar", "/Flak areas/Akramhaflak.mis" },
-                    { "aah", "/Flak areas/AlmiaAhalkhafiaflak.mis" },
-                    { "aaq", "/Flak areas/AlsmarAlmafqudflak.mis" },
-                    { "ahb", "/Flak areas/Althaebanflak.mis" },
-                    { "AA", "/Flak areas/AlukhtAlddayieaflak.mis" },
-                    { "AS1AS2", "/Flak areas/Amseat1_2flak.mis" },
-                    { "AwD", "/Flak areas/Awdyatflak.mis" },
-                    { "Bard", "/Flak areas/Baradiaflak.mis" },					
-                    { "BeL", "/Flak areas/BeltatAlQazahflak.mis" },
-                    { "BrH", "/Flak areas/BirAlHakimflak.mis" },
-                    { "BBas", "/Flak areas/BirBasurflak.mis" },
-                    { "BBaH2", "/Flak areas/BirelBaheira2_1flak.mis" },			
-                    { "BieGasr", "/Flak areas/BirelGasrflak.mis" },
-                    { "BirMalN", "/Flak areas/BirElMallaNorthflak.mis" },
-                    { "BirMalS", "/Flak areas/BirElMallaSouthflak.mis" },
-                    { "BombaN", "/Flak areas/BombaNorthflak.mis" },
-                    { "BuQBuQ", "/Flak areas/BuqBuqflak.mis" },
-                    { "Burj", "/Flak areas/BurjAleaqarabflak.mis" },
-                    { "DernaCity", "/Flak areas/DernaCityflak.mis" },
-                    { "DerEW", "/Flak areas/DernaEast&Westflak.mis" },
-                    { "DernaSi", "/Flak areas/DernaSiretchreibaflak.mis" },
-                    { "EAdem1_2", "/Flak areas/ElAdemNO1_NO2flak.mis" },
-                    { "Gan2_3", "/Flak areas/Gambt2_3flak.mis" },
-                    { "Gam1_5", "/Flak areas/Gambut1_5flak.mis" },
-                    { "GasrAbid", "/Flak areas/GasrAbid_FortNeghil.mis" },
-                    { "GasrAbidS", "/Flak areas/GasrAbidSouthflak.mis" },
-                    { "GasrArid", "/Flak areas/GasrAridflak.mis" },// watch tricky spelling
-                    { "Gaz1", "/Flak areas/Gazala1flak.mis" },
-                    { "Gaz2_3", "/Flak areas/Gazala2_3flak.mis" },
-                    { "Habat", "/Flak areas/Habataflak.mis" },
-                    { "Helfire", "/Flak areas/Halfayaflak.mis" },
-                    { "HaQfat", "/Flak areas/Haqfatsflak.mis" },
-                    { "Mart2", "/Flak areas/Martuba2flak.mis" },
-                    { "Mart3", "/Flak areas/Martuba3flak.mis" },
-                    { "Mart4", "/Flak areas/Martuba4_1flak.mis" },
-                    { "Mart5", "/Flak areas/Martuba5flak.mis" },
-                    { "Menlo", "/Flak areas/MeneloBayflak.mis" },
-                    { "Swani", "/Flak areas/Sawaniflak.mis" },
-                    { "Sceg", "/Flak areas/SceggaAllflak.mis" },
-                    { "SidiAZ", "/Flak areas/SidiAzeizflak.mis" },
-                    { "SidiBar", "/Flak areas/SidiBarraniairfieldflak.mis" },
-					{ "SidiCoast", "/Flak areas/SidiBarraniCoastalflak.mis" },
-                    { "SidiRez", "/Flak areas/SidiRezeghflak.mis" },
-					{ "Siwi", "/Flak areas/Siwiflak.mis" },
-                    { "TarQ", "/Flak areas/Tariqflak.mis" },
-                    { "ToB5", "/Flak areas/Tobruk_5flak.mis" },
-					{ "ToBC_1", "/Flak areas/TobrukCity&1flak.mis" },
-                    { "ToB2_3", "/Flak areas/Torbuk2_3flak.mis" },
-                    { "Trimy", "/Flak areas/Trimmi2_1flak.mis" },
+             
                     { "None", "/Flak areas/Noneflak.mis" },
 				
 				
 				
 				
-				/*	
-				 	
-				Oye Plage Freya Radar",    	
-				Coquelles Freya Radar",    
-                Dunkirk Freya Radar",      
-                Herderlot-Plage Freya Radar
-                Berck Freya Radar",        
-                Radar Dieppee",            
-                Radar Le Treport",         
-                Radar Somme River",        
-                Radar AMBETEUSE",          
-                Radar BOULOGNE",           
-                Radar Le Touquet",                      
-                Veulettes-sur-Mer Radar",  
-                Le Havre Freya Radar",     
-                Ouistreham Freya Radar",   
-                Bayeux Beach Freya Radar", 
-                Beauguillot Beach Freya Rad
-				Radar Tatihou",            
-				Radar Querqueville", 
-added Rouen Flak 
-				*/	
-					
+				
 					
 					
 					
@@ -12019,55 +11924,7 @@ added Rouen Flak
         public Dictionary<string, string> Airfield_to_FlakMissions = new Dictionary<string, string>()
             {
                     { "az", "/Flak areas/AbiarZaidflak.mis" },
-                    { "ar", "/Flak areas/Akramhaflak.mis" },
-                    { "aah", "/Flak areas/AlmiaAhalkhafiaflak.mis" },
-                    { "aaq", "/Flak areas/AlsmarAlmafqudflak.mis" },
-                    { "ahb", "/Flak areas/Althaebanflak.mis" },
-                    { "AA", "/Flak areas/AlukhtAlddayieaflak.mis" },
-                    { "AS1AS2", "/Flak areas/Amseat1_2flak.mis" },
-                    { "AwD", "/Flak areas/Awdyatflak.mis" },
-                    { "Bard", "/Flak areas/Baradiaflak.mis" },
-                    { "BeL", "/Flak areas/BeltatAlQazahflak.mis" },
-                    { "BrH", "/Flak areas/BirAlHakimflak.mis" },
-                    { "BBas", "/Flak areas/BirBasurflak.mis" },
-                    { "BBaH2", "/Flak areas/BirelBaheira2_1flak.mis" },
-                    { "BieGasr", "/Flak areas/BirelGasrflak.mis" },
-                    { "BirMalN", "/Flak areas/BirElMallaNorthflak.mis" },
-                    { "BirMalS", "/Flak areas/BirElMallaSouthflak.mis" },
-                    { "BombaN", "/Flak areas/BombaNorthflak.mis" },
-                    { "BuQBuQ", "/Flak areas/BuqBuqflak.mis" },
-                    { "Burj", "/Flak areas/BurjAleaqarabflak.mis" },
-                    { "DernaCity", "/Flak areas/DernaCityflak.mis" },
-                    { "DerEW", "/Flak areas/DernaEast&Westflak.mis" },
-                    { "DernaSi", "/Flak areas/DernaSiretchreibaflak.mis" },
-                    { "EAdem1_2", "/Flak areas/ElAdemNO1_NO2flak.mis" },
-                    { "Gan2_3", "/Flak areas/Gambt2_3flak.mis" },
-                    { "Gam1_5", "/Flak areas/Gambut1_5flak.mis" },
-                    { "GasrAbid", "/Flak areas/GasrAbid_FortNeghil.mis" },
-                    { "GasrAbidS", "/Flak areas/GasrAbidSouthflak.mis" },
-                    { "GasrArid", "/Flak areas/GasrAridflak.mis" },// watch tricky spelling
-                    { "Gaz1", "/Flak areas/Gazala1flak.mis" },
-                    { "Gaz2_3", "/Flak areas/Gazala2_3flak.mis" },
-                    { "Habat", "/Flak areas/Habataflak.mis" },
-                    { "Helfire", "/Flak areas/Halfayaflak.mis" },
-                    { "HaQfat", "/Flak areas/Haqfatsflak.mis" },
-                    { "Mart2", "/Flak areas/Martuba2flak.mis" },
-                    { "Mart3", "/Flak areas/Martuba3flak.mis" },
-                    { "Mart4", "/Flak areas/Martuba4_1flak.mis" },
-                    { "Mart5", "/Flak areas/Martuba5flak.mis" },
-                    { "Menlo", "/Flak areas/MeneloBayflak.mis" },
-                    { "Swani", "/Flak areas/Sawaniflak.mis" },
-                    { "Sceg", "/Flak areas/SceggaAllflak.mis" },
-                    { "SidiAZ", "/Flak areas/SidiAzeizflak.mis" },
-                    { "SidiBar", "/Flak areas/SidiBarraniairfieldflak.mis" },
-                    { "SidiCoast", "/Flak areas/SidiBarraniCoastalflak.mis" },
-                    { "SidiRez", "/Flak areas/SidiRezeghflak.mis" },
-                    { "Siwi", "/Flak areas/Siwiflak.mis" },
-                    { "TarQ", "/Flak areas/Tariqflak.mis" },
-                    { "ToB5", "/Flak areas/Tobruk_5flak.mis" },
-                    { "ToBC_1", "/Flak areas/TobrukCity&1flak.mis" },
-                    { "ToB2_3", "/Flak areas/Torbuk2_3flak.mis" },
-                    { "Trimy", "/Flak areas/Trimmi2_1flak.mis" },
+                   
                     { "None", "/Flak areas/Noneflak.mis" },
 				
 							
@@ -16369,7 +16226,7 @@ added Rouen Flak
     public System.Threading.Timer MO_BRBumrushCheckTimer;
     public System.Threading.Timer MO_BRBumrushAIAttackTimer;
     public readonly int MO_BRBumrushPhaseTimer_period_min = 90;
-    public readonly int MO_BRBumrushAIAttackTimer_period_sec = 270;
+    public readonly int MO_BRBumrushAIAttackTimer_period_sec = 330;
     public DateTime MO_BRLastBumrushStartTime;
     public DateTime MO_BRNextBumrushStartTime;
     public readonly double MO_BRBumrushAirbaseOccupyDistance_m = 500; //attacking vehicles must get this close to center of airbase to officially "occupy" it
@@ -16406,8 +16263,8 @@ added Rouen Flak
 
         MO_BRBumrushAIAttackTimer = new System.Threading.Timer(
             MO_BRBumrushAIAttack,
-            //new Tuple<int, MissionObjective>(army, mo),
-            army,
+            new Tuple<int, bool>(army, false), //false = the routine is NOT being called from itself recursively
+            //army,
             //dueTime: 300000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
             dueTime: 23000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
             period: MO_BRBumrushAIAttackTimer_period_sec*1000); //periodically call the callback at this interval call in an AI airmission to try to kill the advancing bumrush.  Every 5 minutes.
@@ -16505,13 +16362,18 @@ added Rouen Flak
                 GamePlay.gpLogServer(null, ArmiesL[attackingArmy] + " support the attack! " + ArmiesL[defendingArmy] + " repel the attack!", null);
             });
 
-            //TODO: Not sure if this removal thing is really working right
+            //TODO: Not sure if this removal thing is really working right.  2020-09 - now it seems to be working OK.
+            //It spreads the deletes over 30 seconds.
             if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 5000); //increasing radius to 5km for safety...
 
             //MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
             // (attackingArmy, army, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+            //Because deleting old stuf takes 30 secs we wait a bit longer than that to load the new stuff
+            Timeout(40, () =>
+            {
+                twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
+            });
 
-            twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
         }
         catch (Exception ex) { Console.WriteLine("AdvanceBumrushPhase: ERROR! " + ex.ToString()); }
 
@@ -16523,7 +16385,12 @@ added Rouen Flak
     {
         try
         {
-            int army = (int)obj;
+            Console.WriteLine("MO_BRBumrushAttack starting at {0:HHmmss}", DateTime.UtcNow);
+            var tup = (Tuple<int,bool>)obj;
+            //int army = (int)obj;
+            int army = tup.Item1;
+            bool recursiveRoutineCall = tup.Item2; //If the routine was called by itself; in that case we want ot avoid calling it AGAIN recursively.
+
             MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
 
             int attackingArmy = army;
@@ -16592,7 +16459,7 @@ added Rouen Flak
             }
             
             //If the enemy is close to/in the center launch and extra attack @ double the regular time
-            if (launchextra) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(obj); });
+            //if (launchextra &&) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(obj); });
             
             if (!success)
             {
@@ -16623,17 +16490,23 @@ added Rouen Flak
                     double nextFlightMult = 1;
                     if (actualNearestGGDistance_m < 2500) nextFlightMult *= 1.05;
                     if (actualNearestGGDistance_m < 1500) nextFlightMult *= 1.05;
-                    if (actualNearestGGDistance_m < 1000) nextFlightMult *= 1.05;
-                    if (actualNearestGGDistance_m < 500) nextFlightMult *= 1.1;
+                    if (actualNearestGGDistance_m < 1000) nextFlightMult *= 1.1;
+                    if (actualNearestGGDistance_m < 500) nextFlightMult *= 1.15;
                     if (attackingClose>5) nextFlightMult *= 1.05;
-                    if (attackingClose > 12) nextFlightMult *= 1.05;
-                    if (attackingClose > 19) nextFlightMult *= 1.05;
-                    if (attackingClose > 5 && defendingFar < 3) nextFlightMult *= 1.1;
+                    if (attackingClose > 12) nextFlightMult *= 1.1;
+                    if (attackingClose > 19) nextFlightMult *= 1.15;
+                    if (attackingClose > 5 && defendingFar < 3) nextFlightMult *= 1.15;
+
+                    //SOMETIMES when things are getting real close, launch and extra mission in between the two.
+                    //BUT keep track of whether this attack was called recursively in a similar way and if so, don't recursively continue that.
+                    if (!recursiveRoutineCall && attackingClose > 5 && defendingFar < 3 && random.Next(5)==0) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(new Tuple<int,bool>(army, true) as object); }); //true meaning, this routine is calling itself recursively
 
 
-                    //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
-                    //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
-                    double direction = -1;
+
+
+                        //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
+                        //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
+                        double direction = -1;
                     if (army == 1) direction = 1;
 
                     Point3d gat = new Point3d(mo.Pos.x + random.Next(1000, 3000), mo.Pos.y + random.Next(1000, 3000), alt_m);
@@ -20233,6 +20106,7 @@ public static class Calcs
     }
 
     //army 1=red, 2=blue, 0=both
+    //Removes items as indicates; spreads the deletes over 30 seconds.
     public static void removeArtilleryAAGroundVehicles(IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, double x_m, double y_m, double radius_m, int matcharmy = 0)
     {
         Task.Run(() =>
@@ -20260,7 +20134,7 @@ public static class Calcs
                         if (matcharmy > 0 && g.country != matchstring) continue;
                         if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
                         {
-                            mission.Timeout(clc_random.Next(2, 180), () => {
+                            mission.Timeout(clc_random.Next(1, 30), () => {
 
                             if (g != null)
                             {
@@ -20329,11 +20203,11 @@ public static class Calcs
                         if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
                         if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
                         Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
-                        mission.Timeout(clc_random.Next(2, 180), () =>
+                        mission.Timeout(clc_random.Next(1, 30), () =>
                         {
                             string firetype = "BuildingFireSmall";
-                            //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireLarge";
-                            if (clc_random.NextDouble() < 0.02333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype);
+                            //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireBig";
+                            //if (clc_random.NextDouble() < 0.05333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype); //too much smoke already
 
                             if (actor != null)
                             {
@@ -20375,7 +20249,7 @@ public static class Calcs
     private static int lSOFcount = 0;
 
     //returnFile just returns the file, not loading it, so you can assemble several into one load
-    public static ISectionFile loadSmokeOrFire(maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, string type = "BuildingFireBig", double duration_s = 300, ISectionFile f = null, bool resetCount = false)
+    public static ISectionFile loadSmokeOrFire(maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, string type = "BuildingFireSmall", double duration_s = 300, ISectionFile f = null, bool resetCount = false)
     {
         /* Sample: Static556 Smoke.Environment.Smoke1 nn 63718.50 187780.80 110.00 /height 16.24 
          possible types: Smoke1 Smoke2 BuildingFireSmall BuildingFireBig BigSitySmoke_0 BigSitySmoke_1

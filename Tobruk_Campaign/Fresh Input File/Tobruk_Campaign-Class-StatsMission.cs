@@ -5933,11 +5933,14 @@ struct
 
             //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
             // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
-            string firetype = "BuildingFireSmall";
+            //Tobruk, making smoke etc less
+            string firetype = "";
+            if (stb_random.Next(100)>66) firetype = "BuildingFireSmall";
             //if (mass_kg > 200) firetype = "BigSitySmoke_1"; //500lb bomb or larger
             //if (mass_kg > 200) firetype = "Smoke1"; //500lb bomb or larger
             //TOBRUK trying to minimize smoke effects a bit
-            if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+            //if (mass_kg > 200) firetype = "BuildingFireBig"; //500lb bomb or larger
+            if (mass_kg > 200) firetype = "BuildingFireSmall"; //500lb bomb or larger
 
             //TOBRUK adding in possibility of bombs landing on water
             if (landType == maddox.game.LandTypes.WATER)

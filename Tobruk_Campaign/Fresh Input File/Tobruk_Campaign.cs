@@ -16226,7 +16226,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public System.Threading.Timer MO_BRBumrushCheckTimer;
     public System.Threading.Timer MO_BRBumrushAIAttackTimer;
     public readonly int MO_BRBumrushPhaseTimer_period_min = 90;
-    public readonly int MO_BRBumrushAIAttackTimer_period_sec = 330;
+    public readonly int MO_BRBumrushAIAttackTimer_period_sec = 270;
     public DateTime MO_BRLastBumrushStartTime;
     public DateTime MO_BRNextBumrushStartTime;
     public readonly double MO_BRBumrushAirbaseOccupyDistance_m = 500; //attacking vehicles must get this close to center of airbase to officially "occupy" it
@@ -16497,12 +16497,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     if (attackingClose > 19) nextFlightMult *= 1.15;
                     if (attackingClose > 5 && defendingFar < 3) nextFlightMult *= 1.15;
 
-                    //SOMETIMES when things are getting real close, launch and extra mission in between the two.
-                    //BUT keep track of whether this attack was called recursively in a similar way and if so, don't recursively continue that.
-                    if (!recursiveRoutineCall && attackingClose > 5 && defendingFar < 3 && random.Next(5)==0) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(new Tuple<int,bool>(army, true) as object); }); //true meaning, this routine is calling itself recursively
-
-
-
+                    //SOMETIMES when things are getting real close, launch an extra mission in between the two.
+                    //BUT keep track of whether this attack was called recursively in a similar way and if so, don't recursively continue that. Or we get like 5 missions called all at once and then that continues recursively, not good
+                    if (!recursiveRoutineCall && attackingClose > 5 && defendingFar < 3 && random.Next(3)==0) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(new Tuple<int,bool>(army, true) as object); }); //true meaning, this routine is calling itself recursively
 
                         //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
                         //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
@@ -16527,7 +16524,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     Point3d p4 = new Point3d((gat.x - gap.x) * 0.2 + gap.x, (gat.y - gap.y) * 0.2 + gap.y, alt_m); //a point between ground attack (vehicles) &  point attack (airport) but closer to the airport
 
                     Point3d p6 = new Point3d(gap.x - gat.x + gap.x, gap.y - gat.y + gap.y, alt_m); //point in same direction of vector from a/p to ground vehicles, but on opposite side of airport
-                    Point3d lan = new Point3d(gat.x - direction * random.Next(267000, 433000), gat.y + random.Next(-280000, 290000), random.Next(250, 350)); //take it right off the map if nothing else
+                    Point3d lan = new Point3d(gat.x + direction * random.Next(267000, 433000), gat.y + random.Next(-280000, 290000), random.Next(250, 350)); //take it right off the map if nothing else
 
                     //Bomb the center of the a/p more frequently when the time is low & when convoys are nearby
                     double airportBombChance = 0.15;
@@ -16538,7 +16535,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     if (actualNearestGGDistance_m < 500) airportBombChance = 1;
 
 
-                    ISectionFile f = Calcs.BuildBomber(GamePlay, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, attack_type: "LEVEL", airportBombChance: airportBombChance, nextFlightMult:nextFlightMult);
+                    ISectionFile f = Calcs.BuildBomber(GamePlay, this, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, attack_type: "LEVEL", airportBombChance: airportBombChance, nextFlightMult:nextFlightMult);
                     f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/bomberbuild" + random.Next(10, 99).ToString()); //testing)
                     GamePlay.gpPostMissionLoad(f);
                 }
@@ -21012,7 +21009,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 //Weapons 1 3  //Hurricane 2C - needs more planes, lower altitude ~800m
                 //Weapons 1 2//Hurricane  1FB- needs more planes, lower altitude ~800m  .  Only drops half ordnance, so not using.
 
-    public static ISectionFile BuildBomber(IGamePlay GamePlay, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string attack_type="LEVEL", double airportBombChance = 0.15, double nextFlightMult = 1)
+    public static ISectionFile BuildBomber(IGamePlay GamePlay, Mission mission, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string attack_type="LEVEL", double airportBombChance = 0.15, double nextFlightMult = 1)
     {
         try
         {
@@ -21149,9 +21146,18 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
                 k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, gap.z, vel_kmh }); f.add(s, k, v);
                 k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { newPoint.x, newPoint.y, newPoint.z, vel_kmh }); f.add(s, k, v);
-                k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);
-
+                k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);                        
             }
+
+            //New point 1/4 of the way from p6 to lan
+            //If there is a friendly airport  nearby there, make it land there
+            Point3d apLook = new Point3d ((3*p6.x + lan.x)/4, (3*p6.y + lan.y)/4, lan.z);
+            AiAirport ap = mission.covermission.Stb_nearestAirport(apLook, bomberArmy, isSeaplane: false);
+            if (ap != null && CalculatePointDistance(ap.Pos(), p6)>10000)
+            {
+                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { ap.Pos().x, ap.Pos().y, lan.z, vel_kmh }); f.add(s, k, v);
+            }
+
             k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { lan.x, lan.y, lan.z, vel_kmh }); f.add(s, k, v);
 
             return f;

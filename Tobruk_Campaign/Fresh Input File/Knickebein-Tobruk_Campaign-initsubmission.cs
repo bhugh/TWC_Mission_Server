@@ -788,7 +788,7 @@ public class Mission : AMission, IKnickebeinMission
 
         try
         {
-            HashSet<player> p = KniCalcs.playersInPlane(a);
+            HashSet<Player> p = KniCalcs.playersInPlane(a);
             foreach (Player player in p)
             {
                 knickeb.setAnchorPoint(player);

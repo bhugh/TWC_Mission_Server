@@ -3935,129 +3935,134 @@ public class Mission : AMission, IMainMission
         public AirGroupInfo(AiActor act, AiAirGroup ag, Mission msn, double tm)
         {
             //Console.WriteLine("AGI 1");
-
-            nearbyAirGroups = new HashSet<AiAirGroup>();  // { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
-            groupedAirGroups = new HashSet<AiAirGroup>(); //{ get; set; } //groups that have been nearby for that past X iterations, thus 
-
-            AiAircraft a = act as AiAircraft;
-            actor = act;
-            airGroup = ag;
-            //Console.WriteLine("AGI 2");
-            nearbyAirGroups.Add(ag); //always add self
-            time = tm;
-            //Console.WriteLine("AGI 3");
-            isAI = msn.isAiControlledPlane2(a);
-            if (isAI) AGGAIorHuman = aiorhuman.AI;
-            else AGGAIorHuman = aiorhuman.Human;
-            count = airGroup.NOfAirc;
-            AGGcount = count;
-            mission = msn;
-            if (isAI)
+            if (ag == null || act == null || act as AiAircraft == null) return;
+            try
             {
-                playerNames = actor.Name();
-                AGGplayerNames = actor.Name();
-            }
-            else
-            {
-                bool first = true;
-                string aplayername = "";
-                /*
-                if (a.Player(0) != null && a.Player(0).Name() != null)
+
+                nearbyAirGroups = new HashSet<AiAirGroup>();  // { get; set; } //those groups that are nearby OR near any nearby aircraft of the same type (greedy)
+                groupedAirGroups = new HashSet<AiAirGroup>(); //{ get; set; } //groups that have been nearby for that past X iterations, thus 
+
+                AiAircraft a = act as AiAircraft;
+                actor = act;
+                airGroup = ag;
+                //Console.WriteLine("AGI 2");
+                nearbyAirGroups.Add(ag); //always add self
+                time = tm;
+                //Console.WriteLine("AGI 3");
+                isAI = msn.isAiControlledPlane2(a);
+                if (isAI) AGGAIorHuman = aiorhuman.AI;
+                else AGGAIorHuman = aiorhuman.Human;
+                count = airGroup.NOfAirc;
+                AGGcount = count;
+                mission = msn;
+                if (isAI)
                 {
-                    aplayername = a.Player(0).Name();
+                    playerNames = actor.Name();
+                    AGGplayerNames = actor.Name();
                 }
-                */
-                for (int i = 0; i < a.Places(); i++)
+                else
                 {
-                    if (a.Player(i) != null && a.Player(i).Name() != null)
+                    bool first = true;
+                    string aplayername = "";
+                    /*
+                    if (a.Player(0) != null && a.Player(0).Name() != null)
                     {
-                        if (!first) aplayername += " - ";
-                        aplayername += a.Player(i).Name();
-                        first = false;
-
+                        aplayername = a.Player(0).Name();
                     }
+                    */
+                    for (int i = 0; i < a.Places(); i++)
+                    {
+                        if (a.Player(i) != null && a.Player(i).Name() != null)
+                        {
+                            if (!first) aplayername += " - ";
+                            aplayername += a.Player(i).Name();
+                            first = false;
+
+                        }
+                    }
+                    playerNames = aplayername;
+                    AGGplayerNames = playerNames;
                 }
-                playerNames = aplayername;
-                AGGplayerNames = playerNames;
+
+                AGGtypeNames = Calcs.GetAircraftType(a);
+
+
+
+                //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
+
+
+                //bool isAI = isAiControlledPlane2(a);
+                //Console.WriteLine("AGI 4");
+                string acType = Calcs.GetAircraftType(a);
+                isHeavyBomber = false;
+                if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMk") || acType.Contains("Wellington")) isHeavyBomber = true;
+                AGGisHeavyBomber = isHeavyBomber;
+
+                string t = a.Type().ToString().ToUpper();
+                if (t.Contains("FIGHTER") || t.Contains("JABO") || t.Contains("SCOUT")) t = "F";
+                else if (t.Contains("BOMBER") || t.Contains("AMPHIB") || t.Contains("BLENHEIM")) t = "B";
+                else t = t.Substring(0, 1);  //Otherwise, the first letter - whatever it is
+                AGGtype = t;
+
+                /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
+
+                 + a.Type() + " " 
+                 + a.TypedName() + " " 
+                 +  a.AirGroup().ID(), new object[] { });
+                */
+                pos = a.Pos();
+                AGGpos = pos;
+                sector = Calcs.correctedSectorName(mission as Mission, pos);
+                AGGsector = sector;
+                sectorKeyp = Calcs.correctedSectorNameKeypad(mission as Mission, pos);
+                AGGsectorKeyp = sectorKeyp;
+                giantKeypad = Calcs.giantkeypad(pos);
+                AGGgiantKeypad = giantKeypad;
+                AGGmaxAlt_m = pos.z;
+                AGGminAlt_m = pos.z;
+                AGGaveAlt_m = pos.z;
+                altAGL_m = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
+                altAGL_ft = Calcs.meters2feet(altAGL_m);
+                AGGavealtAGL_ft = altAGL_ft;
+
+                //Thread.Sleep(100);
+                //pos2=a.Pos();
+                //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
+                Vector3d Vwld = ag.Vwld();
+                /*
+                vel_mps = Calcs.CalculatePointDistance(Vwld);
+                vel_mph = Calcs.meterspsec2milesphour(vel_mps);
+                vel_mph_10 = Calcs.RoundInterval(vel_mph, 10);
+                heading = (Calcs.CalculateBearingDegree(Vwld));
+                heading_10 = Calcs.GetDegreesIn10Step(heading);
+                dis_m = Calcs.CalculatePointDistance(a.Pos(), p.Pos());
+                dis_mi = Calcs.meters2miles(dis_m);
+                dis_10 = (int)dis_mi;
+                if (dis_mi > 20) dis_10 = Calcs.RoundInterval(dis_mi, 10);
+                bearing = Calcs.CalculateGradientAngle(p.Pos(), a.Pos());
+                bearing_10 = Calcs.GetDegreesIn10Step(bearing);
+
+                longlat = Calcs.Il2Point3dToLongLat(a.Pos());
+                */
+                /* alt_km = a.Pos().z / 1000;
+                alt_ft = Calcs.meters2feet(a.Pos().z);
+                altAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
+                altAGL_ft = Calcs.meters2feet(altAGL_m);
+                alt_angels = Calcs.Feet2Angels(alt_ft);
+                sector = GamePlay.gpSectorName(a.Pos().x, a.Pos().y).ToString();
+                sector = sector.Replace(",", ""); // remove the comma */
+                //Console.WriteLine("AGI 5");
+                vel = new Point3d(Vwld.x, Vwld.y, Vwld.z);
+                AGGvel = vel;
+                double vel_mps = Calcs.CalculatePointDistance(vel);
+                belowRadar = (mission as Mission).belowRadar(altAGL_ft, vel_mps, airGroup, a);
+                if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1; }
+                else { AGGcountAboveRadar = 1; AGGcountBelowRadar = 0; }
+                AGGradarDropout = false;
+
             }
-
-            AGGtypeNames = Calcs.GetAircraftType(actor as AiAircraft);
-
-
-
-            //if (!player_place_set &&  (a.Place () is AiAircraft)) {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"
-
-
-            //bool isAI = isAiControlledPlane2(a);
-            //Console.WriteLine("AGI 4");
-            string acType = Calcs.GetAircraftType(a);
-            isHeavyBomber = false;
-            if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMk") || acType.Contains("Wellington")) isHeavyBomber = true;
-            AGGisHeavyBomber = isHeavyBomber;
-
-            string t = a.Type().ToString().ToUpper();
-            if (type.Contains("FIGHTER") || type.Contains("JABO") || type.Contains("SCOUT")) t = "F";
-            else if (type.Contains("BOMBER") || type.Contains("AMPHIB") || type.Contains("BLENHEIM")) t = "B";
-            else t = type.Substring(0, 1);  //Otherwise, the first letter - whatever it is
-            AGGtype = t;
-
-            /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-             
-             + a.Type() + " " 
-             + a.TypedName() + " " 
-             +  a.AirGroup().ID(), new object[] { });
-            */
-            pos = a.Pos();
-            AGGpos = pos;
-            sector = Calcs.correctedSectorName(mission as Mission, pos);
-            AGGsector = sector;
-            sectorKeyp = Calcs.correctedSectorNameKeypad(mission as Mission, pos);
-            AGGsectorKeyp = sectorKeyp;
-            giantKeypad = Calcs.giantkeypad(pos);
-            AGGgiantKeypad = giantKeypad;
-            AGGmaxAlt_m = pos.z;
-            AGGminAlt_m = pos.z;
-            AGGaveAlt_m = pos.z;
-            altAGL_m = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-            altAGL_ft = Calcs.meters2feet(altAGL_m);
-            AGGavealtAGL_ft = altAGL_ft;
-
-            //Thread.Sleep(100);
-            //pos2=a.Pos();
-            //bearing=Calcs.CalculateGradientAngle (pos1,pos2);
-            Vector3d Vwld = ag.Vwld();
-            /*
-            vel_mps = Calcs.CalculatePointDistance(Vwld);
-            vel_mph = Calcs.meterspsec2milesphour(vel_mps);
-            vel_mph_10 = Calcs.RoundInterval(vel_mph, 10);
-            heading = (Calcs.CalculateBearingDegree(Vwld));
-            heading_10 = Calcs.GetDegreesIn10Step(heading);
-            dis_m = Calcs.CalculatePointDistance(a.Pos(), p.Pos());
-            dis_mi = Calcs.meters2miles(dis_m);
-            dis_10 = (int)dis_mi;
-            if (dis_mi > 20) dis_10 = Calcs.RoundInterval(dis_mi, 10);
-            bearing = Calcs.CalculateGradientAngle(p.Pos(), a.Pos());
-            bearing_10 = Calcs.GetDegreesIn10Step(bearing);
-
-            longlat = Calcs.Il2Point3dToLongLat(a.Pos());
-            */
-            /* alt_km = a.Pos().z / 1000;
-            alt_ft = Calcs.meters2feet(a.Pos().z);
-            altAGL_m = (actor as AiAircraft).getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // I THINK (?) that Z_AltitudeAGL is in meters?
-            altAGL_ft = Calcs.meters2feet(altAGL_m);
-            alt_angels = Calcs.Feet2Angels(alt_ft);
-            sector = GamePlay.gpSectorName(a.Pos().x, a.Pos().y).ToString();
-            sector = sector.Replace(",", ""); // remove the comma */
-            //Console.WriteLine("AGI 5");
-            vel = new Point3d(Vwld.x, Vwld.y, Vwld.z);
-            AGGvel = vel;
-            double vel_mps = Calcs.CalculatePointDistance(vel);
-            belowRadar = (mission as Mission).belowRadar(altAGL_ft, vel_mps, airGroup, a);
-            if (belowRadar) { AGGcountAboveRadar = 0; AGGcountBelowRadar = 1; }
-            else { AGGcountAboveRadar = 1; AGGcountBelowRadar = 0; }
-            AGGradarDropout = false;
-
-
+            catch (Exception ex)
+            { Console.WriteLine("AirgroupInfo ERROR: {0}", ex); }
         }
 
         public void addAG(AiAirGroup ag)
@@ -4174,6 +4179,7 @@ public class Mission : AMission, IMainMission
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
             if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
+                 
                 foreach (int army in GamePlay.gpArmies())
                 {
                     //Console.WriteLine("groupAllAircraft: 0");
@@ -4181,85 +4187,87 @@ public class Mission : AMission, IMainMission
 
                     HashSet<AiAirGroup> doneAG = new HashSet<AiAirGroup>();
 
-
-                    //if (GamePlay.gpAirGroups(army) != null)
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                    try
                     {
-                        if (airGroup == null) continue;
-                        //Console.WriteLine("groupAllAircraft: 0.5");
-                        doneAG.Add(airGroup);
-                        //aigroup_count++;
-                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        //if (GamePlay.gpAirGroups(army) != null)
+                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
                         {
-                            bool first = true;
-                            //Console.WriteLine("groupAllAircraft: 1");
-                            //poscount = airGroup.NOfAirc;
-                            foreach (AiActor actor in airGroup.GetItems())
+                            if (airGroup == null) continue;
+                            //Console.WriteLine("groupAllAircraft: 0.5");
+                            doneAG.Add(airGroup);
+                            //aigroup_count++;
+                            if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
                             {
-                                
-                                //Console.WriteLine("groupAllAircraft: 1.1");
-                                if (actor != null && actor is AiAircraft)
+                                bool first = true;
+                                //Console.WriteLine("groupAllAircraft: 1");
+                                //poscount = airGroup.NOfAirc;
+                                foreach (AiActor actor in airGroup.GetItems())
                                 {
-                                    //Keep a tally of the total number  of a/c altogether and for each side.
-                                    //We do it by AIRGROUP so we really only need to do this for the first one in the group
-                                    if (first)
+
+                                    //Console.WriteLine("groupAllAircraft: 1.1");
+                                    if (actor != null && actor is AiAircraft)
                                     {
-                                        int num = airGroup.GetItems().Length;
-                                        if (army == 1) numRedAircraft += airGroup.NOfAirc;  //I THINK*** that NOfAirc will be more accurate as AC get killed etc over the course of the mission.  We'll see
-                                        else if (army == 2) numBlueAircraft += airGroup.NOfAirc;
-                                        numTotalAircraft += num;
-
-                                        //Console.WriteLine("groupAllAircraft: 1.2 getitems count:{0} red:{1} blue:{2} total:{3} NOfAirc:{4}", num, numRedAircraft, numBlueAircraft, numTotalAircraft, airGroup.NOfAirc);
-                                        first = false;
-                                    }
-                                    
-
-                                    CurrentAG[army].Add(airGroup);
-                                    //Console.WriteLine("groupAllAircraft: 1.3");
-
-                                    //AirGroupInfo tmp = new AirGroupInfo(actor, airGroup, this, Time.current());
-                                    AirGroupInfo tmp = new AirGroupInfo();
-                                    //Console.WriteLine("groupAllAircraft: 1.3a");
-                                    //Console.WriteLine("groupAllAircraft: 1.3a {0} {1} {2}", actor, airGroup, this);
-
-                                    /*
-                                    if (!airGroupInfoDict.TryGetValue(airGroup, out tmp))
-                                    {
-                                        Console.WriteLine("groupAllAircraft: 1.3b");
-                                        tmp = new AirGroupInfo(actor, airGroup, this, 32);
-                                        airGroupInfoDict[airGroup] = tmp;
-                                    }*/
-
-                                    if (!(airGroupInfoDict.ContainsKey(airGroup))) airGroupInfoDict[airGroup] = new AirGroupInfo(actor, airGroup, this, Time.current());
-
-                                    //Console.WriteLine("groupAllAircraft: 1.4");
-                                    foreach (AiAirGroup airGroup2 in GamePlay.gpAirGroups(army))
-                                    {
-                                        //Console.WriteLine("groupAllAircraft: 1.5");
-                                        if (doneAG.Contains(airGroup2)) continue;
-                                        if (airGroup2 != null && airGroup2.GetItems() != null && airGroup2.GetItems().Length > 0)
+                                        //Keep a tally of the total number  of a/c altogether and for each side.
+                                        //We do it by AIRGROUP so we really only need to do this for the first one in the group
+                                        if (first)
                                         {
-                                            //Console.WriteLine("groupAllAircraft: 1.6");
-                                            //poscount2 = airGroup.NOfAirc;
-                                            foreach (AiActor actor2 in airGroup2.GetItems())
+                                            int num = airGroup.GetItems().Length;
+                                            if (army == 1) numRedAircraft += airGroup.NOfAirc;  //I THINK*** that NOfAirc will be more accurate as AC get killed etc over the course of the mission.  We'll see
+                                            else if (army == 2) numBlueAircraft += airGroup.NOfAirc;
+                                            numTotalAircraft += num;
+
+                                            //Console.WriteLine("groupAllAircraft: 1.2 getitems count:{0} red:{1} blue:{2} total:{3} NOfAirc:{4}", num, numRedAircraft, numBlueAircraft, numTotalAircraft, airGroup.NOfAirc);
+                                            first = false;
+                                        }
+
+
+                                        CurrentAG[army].Add(airGroup);
+                                        //Console.WriteLine("groupAllAircraft: 1.3");
+
+                                        //AirGroupInfo tmp = new AirGroupInfo(actor, airGroup, this, Time.current());
+                                        AirGroupInfo tmp = new AirGroupInfo();
+                                        //Console.WriteLine("groupAllAircraft: 1.3a");
+                                        //Console.WriteLine("groupAllAircraft: 1.3a {0} {1} {2}", actor, airGroup, this);
+
+                                        /*
+                                        if (!airGroupInfoDict.TryGetValue(airGroup, out tmp))
+                                        {
+                                            Console.WriteLine("groupAllAircraft: 1.3b");
+                                            tmp = new AirGroupInfo(actor, airGroup, this, 32);
+                                            airGroupInfoDict[airGroup] = tmp;
+                                        }*/
+
+                                        if (!(airGroupInfoDict.ContainsKey(airGroup))) airGroupInfoDict[airGroup] = new AirGroupInfo(actor, airGroup, this, Time.current());
+
+                                        //Console.WriteLine("groupAllAircraft: 1.4");
+                                        foreach (AiAirGroup airGroup2 in GamePlay.gpAirGroups(army))
+                                        {
+                                            //Console.WriteLine("groupAllAircraft: 1.5");
+                                            if (doneAG.Contains(airGroup2)) continue;
+                                            if (airGroup2 != null && airGroup2.GetItems() != null && airGroup2.GetItems().Length > 0)
                                             {
-                                                if (actor2 != null && actor2 is AiAircraft)
+                                                //Console.WriteLine("groupAllAircraft: 1.6");
+                                                //poscount2 = airGroup.NOfAirc;
+                                                foreach (AiActor actor2 in airGroup2.GetItems())
                                                 {
-                                                    //Console.WriteLine("groupAllAircraft: 1.7");
-                                                    if (!airGroupInfoDict.ContainsKey(airGroup2)) airGroupInfoDict[airGroup2] = new AirGroupInfo(actor2, airGroup2, this, Time.current());
-                                                    /*
-                                                    AirGroupInfo tmp1 = new AirGroupInfo();
-                                                    if (!airGroupInfoDict.TryGetValue(airGroup2, out tmp1))
+                                                    if (actor2 != null && actor2 is AiAircraft)
                                                     {
-                                                        Console.WriteLine("groupAllAircraft: 1.7b");
-                                                        tmp1 = new AirGroupInfo(actor, airGroup2, this, 32);
+                                                        //Console.WriteLine("groupAllAircraft: 1.7");
+                                                        if (!airGroupInfoDict.ContainsKey(airGroup2)) airGroupInfoDict[airGroup2] = new AirGroupInfo(actor2, airGroup2, this, Time.current());
+                                                        /*
+                                                        AirGroupInfo tmp1 = new AirGroupInfo();
+                                                        if (!airGroupInfoDict.TryGetValue(airGroup2, out tmp1))
+                                                        {
+                                                            Console.WriteLine("groupAllAircraft: 1.7b");
+                                                            tmp1 = new AirGroupInfo(actor, airGroup2, this, 32);
+                                                        }
+                                                        */
+                                                        //Console.WriteLine("groupAllAircraft: 1.8");
+                                                        airGroupInfoDict[airGroup2].checkIfNearbyAndAdd(airGroupInfoDict[airGroup]);
+                                                        break;  //we only need the first one of each AI group
+
+
                                                     }
-                                                    */
-                                                    //Console.WriteLine("groupAllAircraft: 1.8");
-                                                    airGroupInfoDict[airGroup2].checkIfNearbyAndAdd(airGroupInfoDict[airGroup]);
-                                                    break;  //we only need the first one of each AI group
-
-
                                                 }
                                             }
                                         }
@@ -4267,7 +4275,10 @@ public class Mission : AMission, IMainMission
                                 }
                             }
                         }
+
                     }
+                    catch (Exception ex)
+                    { Console.WriteLine("GroupAirgroups foreach #4 ERROR: {0}", ex); }
 
                     //Console.WriteLine("groupAllAircraft: 2.2 getitems red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
 
@@ -4277,51 +4288,58 @@ public class Mission : AMission, IMainMission
                     //CurrentAGGroupLeaders[army] = new HashSet<AiAirGroup>();
                     HashSet<AiAirGroup> DoneAGnearby = new HashSet<AiAirGroup>();
 
-                    foreach (AiAirGroup airGroup in CurrentAG[army])
+                    try
                     {
-                        //Console.WriteLine("groupAllAircraft: 4");
-                        if (DoneAGnearby.Contains(airGroup))
+
+                        foreach (AiAirGroup airGroup in CurrentAG[army])
                         {
-                            continue;
-                        }
-                        //Console.WriteLine("groupAllAircraft: 4.1");
-                        //CurrentAGGroupLeaders[army].Add(airGroup); //This ag is the primary/lead of this airgroup
-                        //airGroupInfoDict[airGroup].isLeader = true;    //.isLeader = true;
+                            //Console.WriteLine("groupAllAircraft: 4");
+                            if (DoneAGnearby.Contains(airGroup))
+                            {
+                                continue;
+                            }
+                            //Console.WriteLine("groupAllAircraft: 4.1");
+                            //CurrentAGGroupLeaders[army].Add(airGroup); //This ag is the primary/lead of this airgroup
+                            //airGroupInfoDict[airGroup].isLeader = true;    //.isLeader = true;
 
-                        //Console.WriteLine("groupAllAircraft: 4.2");
-                        bool complete = false;
-                        int i = 0;
-                        while (!complete && i < 40)
-                        {  //keep adding nearby aircraft greedily, but with a circuit breaker of 40X
-                            complete = true;
-                            i++;
-                            HashSet<AiAirGroup> nb = new HashSet<AiAirGroup>(airGroupInfoDict[airGroup].nearbyAirGroups);
-                            //HashSet <AiAirGroup> nb = ;
-                            //Console.WriteLine("groupAllAircraft: 4.3");
-                            if (nb != null) foreach (AiAirGroup ag in nb)
-                                {
-                                    //Console.WriteLine("groupAllAircraft: 4.35");
-                                    if (DoneAGnearby.Contains(ag)) continue;
-
-                                    //Console.WriteLine("groupAllAircraft: 4.4");
-                                    if (airGroupInfoDict.ContainsKey(ag))
+                            //Console.WriteLine("groupAllAircraft: 4.2");
+                            bool complete = false;
+                            int i = 0;
+                            while (!complete && i < 40)
+                            {  //keep adding nearby aircraft greedily, but with a circuit breaker of 40X
+                                complete = true;
+                                i++;
+                                HashSet<AiAirGroup> nb = new HashSet<AiAirGroup>(airGroupInfoDict[airGroup].nearbyAirGroups);
+                                //HashSet <AiAirGroup> nb = ;
+                                //Console.WriteLine("groupAllAircraft: 4.3");
+                                if (nb != null) foreach (AiAirGroup ag in nb)
                                     {
-                                        complete = false;
-                                        airGroupInfoDict[airGroup].mutuallyAddNearbyAirgroups(airGroupInfoDict[ag]);  //any a/c that is close an a/c close to the leader, is close to & grouped with the leader.  A "greedy" algorithm.
-                                                                                                                      //Console.WriteLine("groupAllAircraft: 4.5");
-                                        airGroupInfoDict[ag].leader = airGroup;
-                                        airGroupInfoDict[ag].isLeader = false;
-                                    }
-                                    //Console.WriteLine("groupAllAircraft: 4.6");
-                                    DoneAGnearby.Add(ag);
-                                    //Console.WriteLine("groupAllAircraft: 4.7");
-                                }
-                            //Console.WriteLine("groupAllAircraft: 4.8");
-                        }
+                                        //Console.WriteLine("groupAllAircraft: 4.35");
+                                        if (DoneAGnearby.Contains(ag)) continue;
 
-                        //DoneAGgrouped.UnionWith(airGroupInfoDict[airGroup].nearbyAirGroups);
+                                        //Console.WriteLine("groupAllAircraft: 4.4");
+                                        if (airGroupInfoDict.ContainsKey(ag))
+                                        {
+                                            complete = false;
+                                            airGroupInfoDict[airGroup].mutuallyAddNearbyAirgroups(airGroupInfoDict[ag]);  //any a/c that is close an a/c close to the leader, is close to & grouped with the leader.  A "greedy" algorithm.
+                                                                                                                          //Console.WriteLine("groupAllAircraft: 4.5");
+                                            airGroupInfoDict[ag].leader = airGroup;
+                                            airGroupInfoDict[ag].isLeader = false;
+                                        }
+                                        //Console.WriteLine("groupAllAircraft: 4.6");
+                                        DoneAGnearby.Add(ag);
+                                        //Console.WriteLine("groupAllAircraft: 4.7");
+                                    }
+                                //Console.WriteLine("groupAllAircraft: 4.8");
+                            }
+
+                            //DoneAGgrouped.UnionWith(airGroupInfoDict[airGroup].nearbyAirGroups);
+
+                        }
 
                     }
+                    catch (Exception ex)
+                    { Console.WriteLine("GroupAirgroups foreach #3 ERROR: {0}", ex); }
 
                     /*Dictionary<AiAirGroup, AirGroupInfo> a1 = airGroupInfoCircArr.Get(0); //Last iteration
                     Dictionary<AiAirGroup, AirGroupInfo> a2 = airGroupInfoCircArr.Get(1); //2nd to last iteration
@@ -4341,138 +4359,146 @@ public class Mission : AMission, IMainMission
                     //Console.WriteLine("groupAllAircraft: 4.9 {0}",army);
                     HashSet<AiAirGroup> DoneAGgrouped = new HashSet<AiAirGroup>();
 
-                    foreach (AiAirGroup airGroup in CurrentAG[army])
+                    try
                     {
-                        //Console.WriteLine("groupAllAircraft: a4");
-                        if (DoneAGgrouped.Contains(airGroup))
+
+                        foreach (AiAirGroup airGroup in CurrentAG[army])
                         {
-                            continue;
-                        }
-                        //Console.WriteLine("groupAllAircraft: a4.1");
-                        CurrentAGGroupLeaders[army].Add(airGroup); //This ag is the primary/lead of this airgroup
-                        airGroupInfoDict[airGroup].isLeader = true;    //.isLeader = true;
-
-                        //Console.WriteLine("groupAllAircraft: a4.2");
-                        bool complete = false;
-                        int i = 0;
-                        HashSet<AiAirGroup> nb = airGroupInfoDict[airGroup].nearbyAirGroups;
-                        HashSet<AiAirGroup> grouped = new HashSet<AiAirGroup>(nb);
-                        //airGroupInfoDict[airGroup].groupedAirGroups = nb;  //we start off with the a/c that are nearby us now
-
-                        //Console.WriteLine("Grouping: Leader {0} started with {1} groups at {2:N0}", airGroupInfoDict[airGroup].playerNames, grouped.Count, airGroupInfoDict[airGroup].time);
-
-                        int maxStack = 6;//We are saving 6 of the aiGroupInfoCircArr; we save a new one every 30 seconds approx.  So 6 means the a/c have been flying together for about 3 minutes
-                        if (aGICA.Length < maxStack) maxStack = aGICA.Length;
-
-                        for (i = 0; i < maxStack; i++) {
-                            //aGICA
-
-                            HashSet<AiAirGroup> nba = new HashSet<AiAirGroup>();
-                            if (aGICA[i] != null && aGICA[i].ContainsKey(airGroup))
+                            //Console.WriteLine("groupAllAircraft: a4");
+                            if (DoneAGgrouped.Contains(airGroup))
                             {
-                                nba = new HashSet<AiAirGroup>(aGICA[i][airGroup].nearbyAirGroups);
-                                double time = aGICA[i][airGroup].time;
+                                continue;
+                            }
+                            //Console.WriteLine("groupAllAircraft: a4.1");
+                            CurrentAGGroupLeaders[army].Add(airGroup); //This ag is the primary/lead of this airgroup
+                            airGroupInfoDict[airGroup].isLeader = true;    //.isLeader = true;
+
+                            //Console.WriteLine("groupAllAircraft: a4.2");
+                            bool complete = false;
+                            int i = 0;
+                            HashSet<AiAirGroup> nb = airGroupInfoDict[airGroup].nearbyAirGroups;
+                            HashSet<AiAirGroup> grouped = new HashSet<AiAirGroup>(nb);
+                            //airGroupInfoDict[airGroup].groupedAirGroups = nb;  //we start off with the a/c that are nearby us now
+
+                            //Console.WriteLine("Grouping: Leader {0} started with {1} groups at {2:N0}", airGroupInfoDict[airGroup].playerNames, grouped.Count, airGroupInfoDict[airGroup].time);
+
+                            int maxStack = 6;//We are saving 6 of the aiGroupInfoCircArr; we save a new one every 30 seconds approx.  So 6 means the a/c have been flying together for about 3 minutes
+                            if (aGICA.Length < maxStack) maxStack = aGICA.Length;
+
+                            for (i = 0; i < maxStack; i++)
+                            {
+                                //aGICA
+
+                                HashSet<AiAirGroup> nba = new HashSet<AiAirGroup>();
+                                if (aGICA[i] != null && aGICA[i].ContainsKey(airGroup))
+                                {
+                                    nba = new HashSet<AiAirGroup>(aGICA[i][airGroup].nearbyAirGroups);
+                                    double time = aGICA[i][airGroup].time;
+                                    //if (nba != null)
+                                    if (nba.Count > 0) grouped.IntersectWith(nba);  //Now we eliminate any that were NOT nearby last run
+                                                                                    //Console.WriteLine("Grouping: Leader {0} step{5}: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nba.Count, aGICA[i][airGroup].nearbyAirGroups.Count, time, i);
+                                }
+                            }
+                            /*
+                            //We are intersecting here, so if the 2nd hashset is EMPTY or DOESN'T EXIST
+                            //we'll end up with a grouping with 0 elements, not even the original a/c.
+                            //So we check to make sure the airGroupInfoDict from previous runs exists, and then
+                            //also that it's length is >0.  It should always be at least 1 as it should include itself
+                            HashSet<AiAirGroup> nba = new HashSet<AiAirGroup>();
+                            if (a1 != null && a1.ContainsKey(airGroup))
+                            {
+                                nba = new HashSet<AiAirGroup>(a1[airGroup].nearbyAirGroups);
+                                double time = a1[airGroup].time;
                                 //if (nba != null)
                                 if (nba.Count > 0) grouped.IntersectWith(nba);  //Now we eliminate any that were NOT nearby last run
-                                //Console.WriteLine("Grouping: Leader {0} step{5}: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nba.Count, aGICA[i][airGroup].nearbyAirGroups.Count, time, i);
+                                Console.WriteLine("Grouping: Leader {0} step2: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nba.Count, a1[airGroup].nearbyAirGroups.Count, time);
                             }
-                        }
-                        /*
-                        //We are intersecting here, so if the 2nd hashset is EMPTY or DOESN'T EXIST
-                        //we'll end up with a grouping with 0 elements, not even the original a/c.
-                        //So we check to make sure the airGroupInfoDict from previous runs exists, and then
-                        //also that it's length is >0.  It should always be at least 1 as it should include itself
-                        HashSet<AiAirGroup> nba = new HashSet<AiAirGroup>();
-                        if (a1 != null && a1.ContainsKey(airGroup))
-                        {
-                            nba = new HashSet<AiAirGroup>(a1[airGroup].nearbyAirGroups);
-                            double time = a1[airGroup].time;
-                            //if (nba != null)
-                            if (nba.Count > 0) grouped.IntersectWith(nba);  //Now we eliminate any that were NOT nearby last run
-                            Console.WriteLine("Grouping: Leader {0} step2: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nba.Count, a1[airGroup].nearbyAirGroups.Count, time);
-                        }
-                        HashSet<AiAirGroup> nbb = new HashSet<AiAirGroup>();
-                        if (a2 != null && a2.ContainsKey(airGroup))
-                        {
-                            nbb = new HashSet<AiAirGroup>(a1[airGroup].nearbyAirGroups);
-                            double time = a2[airGroup].time;
-                            //if (nba != null)
-                            if (nbb.Count > 0) grouped.IntersectWith(nbb);  //Now we eliminate any that were NOT nearby last run
-                            Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nbb.Count, a2[airGroup].nearbyAirGroups.Count, time);
-                        }
-                        */
-                        /*
-
-                        HashSet<AiAirGroup> nbb = new HashSet<AiAirGroup>();
-                        if (a2 != null && a2.ContainsKey(airGroup))
-                        {
-                            nbb = a2[airGroup].nearbyAirGroups;
-                            //if (set && nbb != null)
-                            if (nbb.Count > 0) airGroupInfoDict[airGroup].groupedAirGroups.IntersectWith(nbb);  //Eliminate any NOT nearby two runs ago
-                            Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} possible ", airGroupInfoDict[airGroup].playerNames, airGroupInfoDict[airGroup].groupedAirGroups.Count, nbb.Count);
-                        }
-                        */
-
-                        //HashSet<AiAirGroup> gag = new HashSet<AiAirGroup> ( airGroupInfoDict[airGroup].groupedAirGroups);
-                        HashSet<AiAirGroup> toremovefrom_gag = new HashSet<AiAirGroup>();
-
-                        //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].playerNames, grouped.Count);
-
-                        //Console.WriteLine("groupAllAircraft: a4.3");
-                        if (grouped != null) foreach (AiAirGroup ag in grouped)
+                            HashSet<AiAirGroup> nbb = new HashSet<AiAirGroup>();
+                            if (a2 != null && a2.ContainsKey(airGroup))
                             {
+                                nbb = new HashSet<AiAirGroup>(a1[airGroup].nearbyAirGroups);
+                                double time = a2[airGroup].time;
+                                //if (nba != null)
+                                if (nbb.Count > 0) grouped.IntersectWith(nbb);  //Now we eliminate any that were NOT nearby last run
+                                Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} ({3}) possible at {4:N0} ", airGroupInfoDict[airGroup].playerNames, grouped.Count, nbb.Count, a2[airGroup].nearbyAirGroups.Count, time);
+                            }
+                            */
+                            /*
 
+                            HashSet<AiAirGroup> nbb = new HashSet<AiAirGroup>();
+                            if (a2 != null && a2.ContainsKey(airGroup))
+                            {
+                                nbb = a2[airGroup].nearbyAirGroups;
+                                //if (set && nbb != null)
+                                if (nbb.Count > 0) airGroupInfoDict[airGroup].groupedAirGroups.IntersectWith(nbb);  //Eliminate any NOT nearby two runs ago
+                                Console.WriteLine("Grouping: Leader {0} step3: {1} groups of {2} possible ", airGroupInfoDict[airGroup].playerNames, airGroupInfoDict[airGroup].groupedAirGroups.Count, nbb.Count);
+                            }
+                            */
 
-                                //Console.WriteLine("groupAllAircraft: a4.4");
-                                if (airGroupInfoDict.ContainsKey(ag))
+                            //HashSet<AiAirGroup> gag = new HashSet<AiAirGroup> ( airGroupInfoDict[airGroup].groupedAirGroups);
+                            HashSet<AiAirGroup> toremovefrom_gag = new HashSet<AiAirGroup>();
+
+                            //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].playerNames, grouped.Count);
+
+                            //Console.WriteLine("groupAllAircraft: a4.3");
+                            if (grouped != null) foreach (AiAirGroup ag in grouped)
                                 {
 
-                                    //Console.WriteLine("groupAllAircraft: a4.35");
-                                    if (DoneAGgrouped.Contains(ag))
+
+                                    //Console.WriteLine("groupAllAircraft: a4.4");
+                                    if (airGroupInfoDict.ContainsKey(ag))
                                     {
-                                        if (airGroupInfoDict[ag].leader != airGroup) //ag is close to more than one a/c but another has already claimed it as leader, and that one hasn't also claimed airGroup as part of its group.  So, we have to remove ag from airGroup's group as it's already been claimed by another
+
+                                        //Console.WriteLine("groupAllAircraft: a4.35");
+                                        if (DoneAGgrouped.Contains(ag))
                                         {
-                                            //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ag);
-                                            //mysteriously, we can't remove it inside the foreach loop (even though we're supposedly running on a copy?!) so we save it for later removal
-                                            toremovefrom_gag.Add(ag);
+                                            if (airGroupInfoDict[ag].leader != airGroup) //ag is close to more than one a/c but another has already claimed it as leader, and that one hasn't also claimed airGroup as part of its group.  So, we have to remove ag from airGroup's group as it's already been claimed by another
+                                            {
+                                                //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ag);
+                                                //mysteriously, we can't remove it inside the foreach loop (even though we're supposedly running on a copy?!) so we save it for later removal
+                                                toremovefrom_gag.Add(ag);
+                                            }
+                                            continue;
                                         }
-                                        continue;
+                                        complete = false;
+                                        //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[ag].actor.Name());
+                                        airGroupInfoDict[ag].groupedAirGroups = grouped;  //the airgroups in this grouping
+                                                                                          //Console.WriteLine("groupAllAircraft: a4.5");
+                                        if (ag != airGroup)
+                                        {
+                                            airGroupInfoDict[ag].leader = airGroup;
+                                            airGroupInfoDict[ag].isLeader = false;
+                                            if (CurrentAGGroupLeaders[army].Contains(ag)) CurrentAGGroupLeaders[army].Remove(ag); //Make sure we have but one leader for the group & it has 
+                                        }
                                     }
-                                    complete = false;
-                                    //Console.WriteLine("Grouping: Leader {0} added {1} groups ", airGroupInfoDict[airGroup].actor.Name(), airGroupInfoDict[ag].actor.Name());
-                                    airGroupInfoDict[ag].groupedAirGroups = grouped;  //the airgroups in this grouping
-                                    //Console.WriteLine("groupAllAircraft: a4.5");
-                                    if (ag != airGroup)
-                                    {
-                                        airGroupInfoDict[ag].leader = airGroup;
-                                        airGroupInfoDict[ag].isLeader = false;
-                                        if (CurrentAGGroupLeaders[army].Contains(ag)) CurrentAGGroupLeaders[army].Remove(ag); //Make sure we have but one leader for the group & it has 
-                                    }
+                                    //Console.WriteLine("groupAllAircraft: a4.6");
+                                    DoneAGgrouped.Add(ag);
+                                    //Console.WriteLine("groupAllAircraft: a4.7");
                                 }
-                                //Console.WriteLine("groupAllAircraft: a4.6");
-                                DoneAGgrouped.Add(ag);
-                                //Console.WriteLine("groupAllAircraft: a4.7");
+                            else
+                            {
+                                Console.WriteLine("groupAllAircraft ERROR: No AirGroup in the grouping - this should never happen!");
                             }
-                        else
-                        {
-                            Console.WriteLine("groupAllAircraft ERROR: No AirGroup in the grouping - this should never happen!");
+                            //Console.WriteLine("groupAllAircraft: a4.8");
+
+                            //now remove any ags that were claimed by another previous leader
+                            //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ag);
+                            //foreach (AiAirGroup ai2 in toremovefrom_gag) airGroupInfoDict[airGroup].groupedAirGroups.Remove(ai2);                            
+                            foreach (AiAirGroup ai2 in toremovefrom_gag) grouped.Remove(ai2);
+                            foreach (AiAirGroup ai3 in grouped) airGroupInfoDict[ai3].groupedAirGroups = grouped;  //grouped just change, so we re-add it to each AG in the group
+                                                                                                                   //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ai2);
+
+
+                            //DoneAGgrouped.UnionWith(airGroupInfoDict[airGroup].nearbyAirGroups);
+
                         }
-                        //Console.WriteLine("groupAllAircraft: a4.8");
-
-                        //now remove any ags that were claimed by another previous leader
-                        //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ag);
-                        //foreach (AiAirGroup ai2 in toremovefrom_gag) airGroupInfoDict[airGroup].groupedAirGroups.Remove(ai2);                            
-                        foreach (AiAirGroup ai2 in toremovefrom_gag) grouped.Remove(ai2);
-                        foreach (AiAirGroup ai3 in grouped) airGroupInfoDict[ai3].groupedAirGroups = grouped;  //grouped just change, so we re-add it to each AG in the group
-                        //airGroupInfoDict[airGroup].groupedAirGroups.Remove(ai2);
-
-
-                        //DoneAGgrouped.UnionWith(airGroupInfoDict[airGroup].nearbyAirGroups);
-
                     }
+                    catch (Exception ex)
+                    { Console.WriteLine("GroupAirgroups foreach #2 ERROR: {0}", ex); }
 
                     //Console.WriteLine("groupAllAircraft: 5");
 
+                    try { 
                     //Now go through each group & calculate needed info such as # of aircraft in group.  Later we can add fancier ways of figuring group velocity, direction, altitude etc but for now we're
                     //just using the values from the primary aircraft of the group
                     if (CurrentAGGroupLeaders[army] != null) foreach (AiAirGroup airGroup in CurrentAGGroupLeaders[army])
@@ -4644,6 +4670,9 @@ public class Mission : AMission, IMainMission
                             //Console.WriteLine("Airgroup Grouping: {0} {1} {2} {3:0} {4:0} {5:0} ", agid.actor.Name(), agid.count, agid.AGGcount, agid.AGGcountAboveRadar, agid.AGGcountBelowRadar, agid.AGGids);
                             //agid.AGGpos.x, agid.AGGpos.y, agid.AGGpos.z, agid.AGGtype, ah, agid.AGGisHeavyBomber, agid.AGGavePos.x, agid.AGGavePos.y,agid.AGGaveAlt_m, agid.AGGmaxAlt_m, agid.AGGids, agid.AGGplayerNames, agid.AGGvel.x, agid.AGGvel.y, agid.AGGvel.z);
                         }
+                    }
+                    catch (Exception ex)
+                    { Console.WriteLine("GroupAirgroups foreach #1 ERROR: {0}", ex); }
 
 
 
@@ -4803,13 +4832,13 @@ public class Mission : AMission, IMainMission
 
         //if (player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea(player.Place().Pos(), radarArmy: player.Army())) return true;
         //TOBRUK
-        if (player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea_TOBRUK(player.Place().Pos(), radarArmy: player.Army())) return true;
+        if (player == null || player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea_TOBRUK(player.Place().Pos(), radarArmy: player.Army())) return true;
         if (belowRadar(player)) return true;
         return false;
     }
     public bool belowRadar(Player player)
     {
-        if (player.Place() != null && (player.Place() as AiAircraft) != null) return belowRadar(player.Place() as AiAircraft);
+        if (player != null || player.Place() != null && (player.Place() as AiAircraft) != null) return belowRadar(player.Place() as AiAircraft);
         else return true;
     }
 
@@ -4828,6 +4857,7 @@ public class Mission : AMission, IMainMission
     //TRUE if off the radar, false otherwise
     public bool belowRadar(double altAGL_ft, double vel_mps, AiAirGroup airGroup = null, AiAircraft aircraft = null)
     {
+        try { 
         //So mostly flying "below radar" is quite safe and undetected.  But in some cases there will be a detection, either because radar got a return somehow, or (far
         //more likely) the aircraft was spotted by an observer or some other way.  So this type of thing is far more likely to happen when over
         //enemy ground and far, far more  likely when near an enemy objective, which is likely to be well guarded etc.
@@ -4877,6 +4907,9 @@ public class Mission : AMission, IMainMission
         if (altAGL_ft < 20 && vel_mps < 20 && random.NextDouble() < 0.9 && Stb_distanceToNearestAirport(aircraft as AiActor) < 2500) return false; //So airplanes on the ground, taxiing at airport, etc, are picked up.  This isn't radar per se but intelligence or intercepts of radio chatter & other comms giving indications of future movements & where they are happening.
         if (random.NextDouble() < (1 - leakageRate) || (altAGL_ft < 250 && random.NextDouble() < (1 - below250LeakageRate))) return below;
         else return false;  //so, sometimes, 20% of the time or 5% of the time below 100 ft AGL, aircraft below radar elevation show up somehow, leakage probably, or maybe an observer spotted them
+
+        }
+        catch (Exception ex) { Console.WriteLine("ERROR belowRadar()! " + ex.ToString()); return false; }
     }
 
     public System.IO.FileInfo fi;// = new System.IO.FileInfo(STATSCS_FULL_PATH + MISSION_ID + "_radar.txt"); //file to write to
@@ -11170,7 +11203,7 @@ public class Mission : AMission, IMainMission
                             if ((a as AiActor) != null)
                             {
                                 pos = a.Pos();
-                                Console.Write("MO: Got Objective pos by CHIEF {0:N0} {1:N0}", pos.x, pos.y);
+                                //Console.Write("MO: Got Objective pos by CHIEF {0:N0} {1:N0}", pos.x, pos.y);
                                 break;
                             }
                         }
@@ -17133,33 +17166,37 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     public bool MO_isRadarEnabledByArea_TOBRUK(Point3d pos, bool admin = false, int radarArmy = 0)
     {
-        if (admin || radarArmy == 0 || radarArmy > 2) return true;
+        try
+        {
+            if (admin || radarArmy == 0 || radarArmy > 2) return true;
 
-        if (mission_objectives == null) { Console.WriteLine("#1.51  Mission Objectives really doesn't exist!"); return true; }
+            if (mission_objectives == null) { Console.WriteLine("#1.51  Mission Objectives really doesn't exist!"); return true; }
 
-        if (MO_IsPointInDestroyedRadarArea_TOBRUK(pos, radarArmy)) return false;
+            if (MO_IsPointInDestroyedRadarArea_TOBRUK(pos, radarArmy)) return false;
 
-        //things that are just out of range of our mobile radar units
-        double dist_m = MO_DistanceFromNearestRadarUnit(pos, radarArmy);
-        if (dist_m > 145000) return false;  //Basing this in Freya, service range 130km https://en.wikipedia.org/wiki/Radar_in_World_War_II#Transportable_Radio_Unit
-        if (dist_m > 120000 && random.Next(25000) < (dist_m-120000) ) return false;  //Phases in gradually 120000-145000
+            //things that are just out of range of our mobile radar units
+            double dist_m = MO_DistanceFromNearestRadarUnit(pos, radarArmy);
+            if (dist_m > 145000) return false;  //Basing this in Freya, service range 130km https://en.wikipedia.org/wiki/Radar_in_World_War_II#Transportable_Radio_Unit
+            if (dist_m > 120000 && random.Next(25000) < (dist_m - 120000)) return false;  //Phases in gradually 120000-145000
 
-        //OK< we don't have to worry about the "close to the ground/radar clutter" aspect because that is all covered by the belowRadar routine.
-        //This routine just answers the question, is this objective in an area where radar coverage is possible.
-        /*
-        //Things that are right on top of an objective
-        if (dist_m < 4000) return true; //Always detect if very close to an objective.  Let's say, observers etc
+            //OK< we don't have to worry about the "close to the ground/radar clutter" aspect because that is all covered by the belowRadar routine.
+            //This routine just answers the question, is this objective in an area where radar coverage is possible.
+            /*
+            //Things that are right on top of an objective
+            if (dist_m < 4000) return true; //Always detect if very close to an objective.  Let's say, observers etc
 
-        //Things in the "clutter zone" ie relatively close to an objective
-        double elev_m = Calcs.LandElevation_m(pos);
-        if (dist_m < 50000 && (pos.z - elev_m) < 80) return false; //always below radar <70m AGL
-        if (dist_m < 50000 && posz - elev_m < 160 && random.Next(80) > ((posz - elev_m)-80)) return false; //phase out rdar 70m-140m
-        */
+            //Things in the "clutter zone" ie relatively close to an objective
+            double elev_m = Calcs.LandElevation_m(pos);
+            if (dist_m < 50000 && (pos.z - elev_m) < 80) return false; //always below radar <70m AGL
+            if (dist_m < 50000 && posz - elev_m < 160 && random.Next(80) > ((posz - elev_m)-80)) return false; //phase out rdar 70m-140m
+            */
 
-        //things that are at the radar horizon or beyond but still within range of the radar
-        double minHeight_m = MO_minHeightForRadarDetection(dist_m);
-        if (dist_m >= 50000 && pos.z < minHeight_m) return false; //This is in the radar shadow area, "below the horizon" from the point of view of the radar
-        return true;
+            //things that are at the radar horizon or beyond but still within range of the radar
+            double minHeight_m = MO_minHeightForRadarDetection(dist_m);
+            if (dist_m >= 50000 && pos.z < minHeight_m) return false; //This is in the radar shadow area, "below the horizon" from the point of view of the radar
+            return true;
+        }
+        catch (Exception ex) { Console.WriteLine("MO_isRadarEnabledByArea_TOBRUK ERROR: "+ex.ToString()); return true; }
     }
 
     //Figure out which radar areas are disabled depending on army, admin radar, which objectives have been destroyed, etc.

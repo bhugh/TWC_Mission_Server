@@ -416,11 +416,11 @@
   LANDING 361424.64 118918.66 200.00 240.00
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
-  1_Chief Ship.tobruk:Zara_CA it /sleep 0/skill 1/slowfire 1
-  8_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1/pax_skin0 mixed
-  9_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1/skin0 materialsSummer1_gray/pax_skin0 mixed
-[0_Chief_Road]
+  2002_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
+  2003_Chief Ship.tobruk:Zara_CA it /sleep 0/skill 1/slowfire 1
+  2004_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1/pax_skin0 mixed
+  2005_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1/skin0 materialsSummer1_gray/pax_skin0 mixed
+[2002_Chief_Road]
   158220.80 231616.00 38.40  0 2 5.83
   172859.73 214570.67 38.40  0 2 2.92
   188701.86 200733.86 38.40  0 2 2.92
@@ -428,7 +428,7 @@
   192110.94 183889.06 38.40  0 2 2.92
   179076.27 183688.53 38.40  0 2 2.92
   165239.47 185693.86 38.40
-[1_Chief_Road]
+[2003_Chief_Road]
   161995.38 185210.53 38.40  0 2 5.83
   163883.94 184609.63 38.40  0 2 5.83
   164777.72 185069.14 38.40  0 2 5.83
@@ -449,7 +449,7 @@
   76136.81 222398.45 38.40  0 2 1.00
   76167.28 223434.20 38.40  0 2 1.00
   75852.49 219910.63 38.40
-[8_Chief_Road]
+[2004_Chief_Road]
   357990.84 237331.02 38.40  0 2 5.00
   359780.00 174400.36 38.40  0 2 5.00
   322024.06 168181.98 38.40  0 2 5.00
@@ -457,7 +457,7 @@
   315758.63 137298.56 38.40  0 2 5.00
   336928.94 138322.33 38.40  0 2 5.00
   346645.25 136912.14 38.40
-[9_Chief_Road]
+[2005_Chief_Road]
   295708.00 193686.89 38.40  0 2 3.89
   301057.75 183294.55 38.40  0 2 2.92
   312769.91 168987.53 38.40  0 2 2.92
@@ -1425,13 +1425,13 @@
   GerArmorCamp TGroundDestroyed 35 210317 130379 2100
   GermanFuelSupply TGroundDestroyed 77 127625 197326 350
   TobrukFuelDocks TGroundDestroyed 86 160447 186532 150
-  BSidiBarraniTanker TGroupDestroyed 9_Chief 100
-  BSidiBarraniCorvette TGroupDestroyed 8_Chief 100
-  GermanTanker TGroupDestroyed 0_Chief 100
-  ZaraCrusier TGroupDestroyed 1_Chief 100
+  BSidiBarraniTanker TGroupDestroyed 2005_Chief 100
+  BSidiBarraniCorvette TGroupDestroyed 2004_Chief 100
+  GermanTanker TGroupDestroyed 2002_Chief 100
+  ZaraCrusier TGroupDestroyed 2003_Chief 100
   DernaFuel TGroundDestroyed 100 32314 264665 150
-  RTobrukTanker TGroupDestroyed 0_Chief 100
-  RTobrukCruiser TGroupDestroyed 1_Chief 100
+  RTobrukTanker TGroupDestroyed 2002_Chief 100
+  RTobrukCruiser TGroupDestroyed 2003_Chief 100
   HE115-3.75 TTime 11100
   HE115-0.75 TTime 3000
   Sunderland5 TTime 13000

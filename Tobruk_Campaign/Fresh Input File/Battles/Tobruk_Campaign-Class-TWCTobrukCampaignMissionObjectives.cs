@@ -424,11 +424,13 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //    mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Tobruk-Gasr Resupply Convoy", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-RTobrukGasrResupplyConvoy-objective.mis", "1006_Chief", 2, 5, "RTobrukGasrResupplyConvoy", "TGroupDestroyed", 100, 197907, 95422, 100, false, 200, 24, "", add);  //g          
 
 
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "2003_Chief", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 2, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 0, 24, "", add);  //g            
 
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "", 1, 2, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 2, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 0, 24, "", add);  //g     
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 2, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 0, 24, "", add);  //g            
 
 
         //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)

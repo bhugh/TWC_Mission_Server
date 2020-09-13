@@ -558,7 +558,7 @@ public class Mission : AMission, IMainMission
                 SERVER_ID_SHORT = "TobrukTEST"; //FOR TESTING, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
                 ON_TESTSERVER = true;
             }
-            if (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower().Contains("twc_server3"))
+            if (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower().Contains("twc_server2"))
             {
                 SERVER_ID_SHORT = "TobrukMission"; //FOR PRACTICE/TESTING SERVER, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
                 ON_TESTSERVER = false;

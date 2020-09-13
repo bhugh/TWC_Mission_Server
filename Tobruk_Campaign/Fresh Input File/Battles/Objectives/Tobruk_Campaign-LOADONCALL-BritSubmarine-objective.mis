@@ -1,0 +1,41 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  2005_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
+[2005_Chief_Road]
+  346954.88 136122.23 38.40  0 2 1.11
+  342020.53 136697.30 38.40  0 2 1.11
+  338578.41 136366.72 38.40  0 2 4.58
+  293497.06 125285.04 38.40  0 2 4.72
+  372541.00 149107.77 38.40  0 2 4.58
+  347849.28 147947.58 38.40  0 2 4.58
+  321099.41 141111.09 38.40  0 2 4.58
+  296446.09 135852.70 38.40  0 2 4.58
+  344655.28 137410.86 38.40  0 2 4.58
+  345839.59 137068.97 38.40  0 2 1.11
+  346736.00 136672.48 38.40  0 2 1.11
+  346925.63 136431.16 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BBarraniSub TGroupDestroyed 2005_Chief 100

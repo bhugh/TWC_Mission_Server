@@ -378,7 +378,7 @@ public class aPlayer : Player
 public class Mission : AMission, IMainMission
 //public class Mission : BaseMission, IMainMission
 {
-    Random random, stb_random;
+    public Random random, stb_random;
     //Constants constants; 
     public int PERCENT_SUBMISSIONS_TO_LOAD = 100; //percentage of the aircraft sub-missions to load.  50 will load just half of the sub-missions etc.
     public string MISSION_ID { get; set; }
@@ -3995,10 +3995,11 @@ public class Mission : AMission, IMainMission
             if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMk") || acType.Contains("Wellington")) isHeavyBomber = true;
             AGGisHeavyBomber = isHeavyBomber;
 
-            string t = a.Type().ToString();
-            if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
-            else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
-            AGGtype = type;
+            string t = a.Type().ToString().ToUpper();
+            if (type.Contains("FIGHTER") || type.Contains("JABO") || type.Contains("SCOUT")) t = "F";
+            else if (type.Contains("BOMBER") || type.Contains("AMPHIB") || type.Contains("BLENHEIM")) t = "B";
+            else t = type.Substring(0, 1);  //Otherwise, the first letter - whatever it is
+            AGGtype = t;
 
             /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
              
@@ -4800,7 +4801,9 @@ public class Mission : AMission, IMainMission
     public bool offRadar(Player player)
     {
 
-        if (player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea(player.Place().Pos(), radarArmy: player.Army())) return true;
+        //if (player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea(player.Place().Pos(), radarArmy: player.Army())) return true;
+        //TOBRUK
+        if (player.Place() == null || player.Army() == null || !MO_isRadarEnabledByArea_TOBRUK(player.Place().Pos(), radarArmy: player.Army())) return true;
         if (belowRadar(player)) return true;
         return false;
     }
@@ -5207,7 +5210,9 @@ public class Mission : AMission, IMainMission
 
 
                                                     //Check on any radar outages or restrictions for each army, and remove any radar returns from areas where radar is restricted or inoperative
-                                                    if (!MO_isRadarEnabledByArea(a.Pos(), admin, radarArmy)) break; //breaks us out of this airGroup
+                                                    //if (!MO_isRadarEnabledByArea(a.Pos(), admin, radarArmy)) break; //breaks us out of this airGroup
+                                                    //TOBRUK
+                                                    if (!MO_isRadarEnabledByArea_TOBRUK(a.Pos(), admin, radarArmy)) break; //breaks us out of this airGroup
 
                                                     if (!player_place_set)
                                                     {  //if player==null or not in an a/c we use the very first a/c encountered as a "stand-in"                                                                        
@@ -5228,9 +5233,11 @@ public class Mission : AMission, IMainMission
                                                     string acType = Calcs.GetAircraftType(a);
                                                     isHeavyBomber = Calcs.isHeavyBomber(acType);
 
-                                                    type = a.Type().ToString();
-                                                    if (type.Contains("Fighter") || type.Contains("fighter")) type = "F";
-                                                    else if (type.Contains("Bomber") || type.Contains("bomber")) type = "B";
+                                                    type = a.Type().ToString().ToUpper();
+                                                    if (type.Contains("FIGHTER") || type.Contains("JABO") || type.Contains("SCOUT")) type = "F";
+                                                    else if (type.Contains("BOMBER") || type.Contains("AMPHIB") || type.Contains("BLENHEIM")) type = "B";
+                                                    else type = type.Substring(0, 1);  //Otherwise, the first letter - whatever it is
+
                                                     if (a == p && radar_realism >= 0) type = "Your position (" + p.Pos().x.ToString("N0") + ", " + p.Pos().y.ToString("N0") + ", " + p.Pos().z.ToString("N0") + ")";
                                                     /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
                                                      
@@ -5589,7 +5596,9 @@ public class Mission : AMission, IMainMission
                                                 belowradarcount = agid.AGGcountBelowRadar;
 
                                                 //Check on any radar outages or restrictions for each army, and remove any radar returns from areas where radar is restricted or inoperative
-                                                if (!MO_isRadarEnabledByArea(agid.AGGavePos, admin, radarArmy)) continue;
+                                                //if (!MO_isRadarEnabledByArea(agid.AGGavePos, admin, radarArmy)) continue;
+                                                //TOBRUK
+                                                if (!MO_isRadarEnabledByArea_TOBRUK(agid.AGGavePos, admin, radarArmy)) continue;
 
                                                 //Console.WriteLine("LPAA: Processing ag2: PA{0} {1} {2} ", playerArmy, airGroup.getArmy(), airGroup.NOfAirc);
 
@@ -9857,7 +9866,7 @@ public class Mission : AMission, IMainMission
 
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
-        base.OnActorCreated(missionNumber, shortName, actor);       
+        //base.OnActorCreated(missionNumber, shortName, actor);       
         
         AiAircraft a = actor as AiAircraft;        
         AiGroundActor g = actor as AiGroundActor;
@@ -10530,8 +10539,8 @@ public class Mission : AMission, IMainMission
                                                                                                                                                                                                                                                              //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
     public enum MO_ProducerOrStorageType { None, Beaufighter, SpitfireII, SpitfireIa, Spitfire, Blenheim, Wellington, Hurricane, BF109_3, BF109_1, BF109_4, BF109, BF110, HE111, G50, JU88, JU87, fighter, bomber, fuel, bullets_shells, bombs };
 
-    public enum MO_MobileObjectiveType { None, ArmyEncampment, MobileRadar1, MobileRadar2, CamoGroup, SmallArmourGroup, LargeArmourGroup, SecretAirbaseGB, SecretAirbaseDE, SecretAircraftResearchGB, SecretAircraftResearchDE };
-    public enum MO_MobileObjectiveThings { Humans, Items, Trucks, Tents, Tables, Buildings, Radar, Sentry, Trenches, Sandbags, Armor_Tanks, Cars, Jerrycans, GBFighters, GBBombers, DEFighters, DEBombers, Hedgehogs, Misc, Camo, Detritus };
+    public enum MO_MobileObjectiveType { None, ArmyEncampment, MobileRadar1, MobileRadar2, DesertRadar, CamoGroup, SmallArmourGroup, LargeArmourGroup, SecretAirbaseGB, SecretAirbaseDE, SecretAircraftResearchGB, SecretAircraftResearchDE };
+    public enum MO_MobileObjectiveThings { Humans, Items, Trucks, Tents, Tables, Buildings, Radar, Small_Radar, Sentry, Trenches, Sandbags, Armor_Tanks, Cars, Jerrycans, GBFighters, GBBombers, DEFighters, DEBombers, Hedgehogs, Misc, Camo, Detritus };
 
 
     [DataContract()]
@@ -13096,6 +13105,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     public static List<string> MO_Radar = new List<string> { "Stationary.RadioBeacon.GenericLongRangeMast", "Stationary.Radar.EnglishRadar1", "Stationary.Radar.EnglishRadar2", "Stationary.Radar.EnglishRadar3", "Stationary.Radar.Wotan_I", "Stationary.Radar.Wotan_II", "Stationary.Radar.Wotan_II_ADD1", "Stationary.Radar.Wotan_II_ADD2", "Stationary.RadioBeacon.GenericLongRangeMast", "Stationary.Opel_Blitz_radio", };
 
+    public static List<string> MO_Small_Radar = new List<string> { "Stationary.Radar.Wotan_I", "Stationary.Radar.Wotan_II", "Stationary.Opel_Blitz_radio", };
+
     public static List<string> MO_Jerrycan71 = new List<string> { "Stationary.Environment.JerryCan_GER1_1" }; //71, 141 etc refers to the radius this jerrycan covers - for purposes of giving players credit for bombing nearby areas.
     public static List<string> MO_Jerrycan141 = new List<string> { "Stationary.Environment.JerryCan_GER1_2" };
     public static List<string> MO_Jerrycan282 = new List<string> { "Stationary.Environment.JerryCan_GER1_3" };
@@ -13164,6 +13175,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
                 { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 180, 0.2) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
         },
@@ -13178,6 +13190,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 179, 0.2) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
         },
@@ -13193,6 +13206,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 162, 3) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
          },
@@ -13207,6 +13221,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 60, 161, 2) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
         },
@@ -13221,6 +13236,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50, 2) },
                 { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 12, 50, 0.2) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 30, 53, 2) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 80, 20) },
 
             }
         },
@@ -13234,6 +13250,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22, 18) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 45, 0.5) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 53, 4) },
+                { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 100, 30) },
 
             }
         },
@@ -13247,6 +13264,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 25, 20) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60, 0.2) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 67, 3 ) },
+                    { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 120, 30) },
 
 
                 }
@@ -13261,6 +13279,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 70, 2) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75, 0.1) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 83, 5) },
+                    { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 140, 30) },
                 }
             },
             { MO_MobileObjectiveType.MobileRadar1,
@@ -13271,8 +13290,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 15, 7 )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 65, 0.3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 71, 3) },
-
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 71, 3) },                    
                 }
             },
                     { MO_MobileObjectiveType.MobileRadar2,
@@ -13284,6 +13302,15 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 30, 20 )},
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75, 0.2) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 85, 7) },
+
+                }
+            },
+                    { MO_MobileObjectiveType.DesertRadar,
+                    new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
+                   
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,2, 50, 20 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
+                    { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 1, 140, 30) },
 
                 }
             },
@@ -14458,18 +14485,23 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public class ScoutPhotoRecord_class : Dictionary<Tuple<int, int, aPlayer>, List<string>> { };
     */
 
-    public void displayInterestingScoutTargets(Player player)
+    //List interesting targets for player, if within radius of distance_m.  The inclusion of distance_m is to avoid displaying updates for, say, mobile/moving target position
+    //When the player is too far away to actually observe the MO's new position.
+    public void displayInterestingScoutTargets(Player player, double distance_m=20000)
     {
-        Console.WriteLine("Listing all interesting scout targets " + player.Name());
+        Console.WriteLine("Listing interesting scout targets for " + player.Name() + " at {0:N0}m", distance_m);
         if (!ScoutInterestingTargets.ContainsKey(player)) return;
 
         string sectorList = "";
+        if (player == null || player.Place() == null) return;
 
         foreach (string s in ScoutInterestingTargets[player])
         {
                 string moving = "";
                 Console.WriteLine("Listing all interesting scout targets " + s);
                 if (!MissionObjectivesList.ContainsKey(s)) continue;
+            MissionObjective mo = MissionObjectivesList[s];
+            if (Calcs.CalculatePointDistance(mo.returnCurrentPosWithChief(), player.Place().Pos()) > distance_m) continue;
                 if (MissionObjectivesList[s].hasChief()) moving = "(moving)";
                 string sect = Calcs.correctedSectorNameDoubleKeypad(this,(MissionObjectivesList[s].returnCurrentPosWithChief()));            
                 sectorList += sect + moving + " ";
@@ -14479,14 +14511,14 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             gpLogServerAndLog(new Player[] { player }, ">>> Interesting sectors from your recon flight for a closer look or high-res screenshot photos: " + sectorList, null);
         }
 
-    public void displayNewInterestingScoutTarget(Player player, string moID) {
+    public void displayNewInterestingScoutTarget(Player player, string moID, double distance_m = 20000) {
         Timeout(10, () =>
         {
             gpLogServerAndLog(new Player[] { player }, ">>> Preliminary analysis indicates a high-res screenshot photo of sector " + MissionObjectivesList[moID].lastScoutedSector + " may help locate important targets in that area.", null);
         });
         Timeout(20, () =>
         {
-            displayInterestingScoutTargets(player);
+            displayInterestingScoutTargets(player, distance_m);
         });
     }
 
@@ -14519,7 +14551,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     {
         //TODO: This fails silently if the player isn't in a plane
         //Task.Run(() =>
+
         {
+            if (player == null || player.Place() == null) return;
             bool firstPhotoThisSession = true;
             if (LastPhotoTime_sec.ContainsKey(player)) firstPhotoThisSession = false;
             int currTime_sec = Time.tickCounter() / 33;
@@ -14629,26 +14663,27 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             var recordKey = new Tuple<int, int, aPlayer>(ScoutPhotoID, army, new aPlayer(player));
             ScoutPhotoRecord.Add(recordKey, keys);
 
-            if (interestingScoutTarget || random.NextDouble() < 0.33) //so once in a while we display interesting scout target sectors, if there are any so far
+            if (interestingScoutTarget || random.NextDouble() < 0.33) //so once in a while we display interesting scout target sectors, if there are any so far and they are still nearby.
             {
                 Timeout(12, () =>
                 {
                     Console.WriteLine("displaying interesting scout targets");
-                    displayInterestingScoutTargets(player);
+                    displayInterestingScoutTargets(player, radiusCovered_m * 1.75);
                 });
             }
 
-            Timeout(60 * 60, () =>
+            Timeout(2 * 60 * 60, () =>
             {
                 if (ScoutPhotoRecord.ContainsKey(recordKey) && !photosRecorded.Contains(recordKey)) //if it's still in the photorecord but NOT in the photosrecorded, we spoil
                 {
                     int total = ScoutPhotoRecord[recordKey].Count();
                     ScoutPhotoRecord.Remove(recordKey);
-                    if (total > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photo taken over 1 hour ago identifying " + total.ToString() + " objectives was spoiled due to equipment malfunction during an overly extended flight.", new object[] { });
+                    if (total > 0) twcLogServer(new Player[] { player }, "I'm sorry to inform you that your reconnaissance photo taken over 2 hours ago identifying " + total.ToString() + " objectives was spoiled due to equipment malfunction during an overly extended flight.", new object[] { });
                 }
 
-            }); //spoil it after 1 hour if not returned
+            }); //spoil it after 2 hours if not returned
 
+            /*
             if (numScouted == 0)
             {
                 Timeout(3, () =>
@@ -14657,6 +14692,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     return;
                 });
             }
+            */
 
             numScouted += Convert.ToInt32(Math.Round(random.Next(numScouted * 3) / 4.0 - numScouted * 3.0 / 8.0)); //fuzz the result a little
             if (numScouted < 0) numScouted = 0;
@@ -14677,7 +14713,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 });
                 Timeout(4.5, () =>
                 {
-                    twcLogServer(new Player[] { player }, "You have one hour to return and land safely or the photo will be spoiled.", new object[] { });
+                    twcLogServer(new Player[] { player }, "You have two hours to return and land safely or the photo will be spoiled.", new object[] { });
                 });
             }
             /*
@@ -17058,10 +17094,78 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         return false;
     }
 
+    public bool MO_IsPointInDestroyedRadarArea_TOBRUK(Point3d p, int army)
+    {
+        var DR = new List<MissionObjective>();
+
+        if (army == 1 || army == 2) DR = DestroyedRadar[(ArmiesE)army];
+        else return false;
+
+        foreach (MissionObjective value in DR)
+        {
+
+                Point3d calcPos = new Point3d(value.Pos.x, value.Pos.y, p.z);
+
+                double dist = Calcs.CalculatePointDistance(p, calcPos);
+                //Console.WriteLine(value.Name + " " + army.ToString() + " " + dist.ToString("F0") + " " + value.RadarEffectiveRadius.ToString("F0") + " " + p.x.ToString("F0") + " " + p.y.ToString("F0") + " " + value.Pos.x.ToString("F0") + " " + value.Pos.y.ToString("F0"));
+                if (dist < value.RadarEffectiveRadius) return true;
+
+        }
+        return false;
+    }
+
+    //TOBRUK - radar coverage is based on distance from nearest objective
+    //This provides the distance to the nearest objective of the army given
+    public double MO_DistanceFromNearestRadarUnit(Point3d p, int army)
+    {
+        double closestDist_m = 1000000;
+        bool first = true;
+        foreach (MissionObjective mo in MissionObjectivesList.Values)
+        {
+            if (!mo.IsEnabled || mo.OwnerArmy != army || mo.Destroyed) continue;
+            double dist_m = Calcs.CalculatePointDistance(p, mo.returnCurrentPosWithChief());
+
+            if (first || dist_m< closestDist_m) { first = false; closestDist_m = dist_m; }
+            
+        }
+        return closestDist_m;
+    }
+
+    public bool MO_isRadarEnabledByArea_TOBRUK(Point3d pos, bool admin = false, int radarArmy = 0)
+    {
+        if (admin || radarArmy == 0 || radarArmy > 2) return true;
+
+        if (mission_objectives == null) { Console.WriteLine("#1.51  Mission Objectives really doesn't exist!"); return true; }
+
+        if (MO_IsPointInDestroyedRadarArea_TOBRUK(pos, radarArmy)) return false;
+
+        //things that are just out of range of our mobile radar units
+        double dist_m = MO_DistanceFromNearestRadarUnit(pos, radarArmy);
+        if (dist_m > 145000) return false;  //Basing this in Freya, service range 130km https://en.wikipedia.org/wiki/Radar_in_World_War_II#Transportable_Radio_Unit
+        if (dist_m > 120000 && random.Next(25000) < (dist_m-120000) ) return false;  //Phases in gradually 120000-145000
+
+        //OK< we don't have to worry about the "close to the ground/radar clutter" aspect because that is all covered by the belowRadar routine.
+        //This routine just answers the question, is this objective in an area where radar coverage is possible.
+        /*
+        //Things that are right on top of an objective
+        if (dist_m < 4000) return true; //Always detect if very close to an objective.  Let's say, observers etc
+
+        //Things in the "clutter zone" ie relatively close to an objective
+        double elev_m = Calcs.LandElevation_m(pos);
+        if (dist_m < 50000 && (pos.z - elev_m) < 80) return false; //always below radar <70m AGL
+        if (dist_m < 50000 && posz - elev_m < 160 && random.Next(80) > ((posz - elev_m)-80)) return false; //phase out rdar 70m-140m
+        */
+
+        //things that are at the radar horizon or beyond but still within range of the radar
+        double minHeight_m = MO_minHeightForRadarDetection(dist_m);
+        if (dist_m >= 50000 && pos.z < minHeight_m) return false; //This is in the radar shadow area, "below the horizon" from the point of view of the radar
+        return true;
+    }
+
     //Figure out which radar areas are disabled depending on army, admin radar, which objectives have been destroyed, etc.
     //Returns TRUE if radar is enabled for that area/army, returns FALSE if radar is disabled/out for that area/army
     //radarArmy 1 = red, 2=blue, 0=admin, anything else is not allowed (in practice this will ignore any radar outages)
-    public bool MO_isRadarEnabledByArea(Point3d pos, bool admin = false, int radarArmy = 0)
+    public bool MO_isRadarEnabledByArea_CLOD(Point3d pos, bool admin = false, int radarArmy = 0)
     {
         if (admin || radarArmy == 0 || radarArmy > 2) return true;
 
@@ -17188,6 +17292,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     //implementation of radar etc all tend to be just as important
     //On the other hand, the 120 meter height was probably nicely operative over the ocean.  But what we're more worried about here is the
     //penetration into the other side's land area.  There, the effective height is more like 20 meters or maybe less, because both sides are about equally high and have various hills, bluffs, etc rising 100-120 meters or so above sea level.  So we're going with the 20 meter distance which is more realistic as to how hard it was then to pick things up close to teh ground (except for, over nice flat water).
+    //https://en.wikipedia.org/wiki/Radar_horizon
     public double MO_minHeightForRadarDetection(double distance_m, double radarHeight_m = 20)
     {
         return Math.Pow((distance_m - Math.Sqrt(2 * radarHeight_m * RADAR_RADIUS_OF_EARTH_m)), 2) / 2 / RADAR_RADIUS_OF_EARTH_m;

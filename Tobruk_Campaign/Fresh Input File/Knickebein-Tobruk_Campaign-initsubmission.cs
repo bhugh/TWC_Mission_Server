@@ -20,6 +20,7 @@ using maddox.game.page;
 using part;
 
 using TWCComms;
+using System.Media;
 
 
 /*
@@ -47,8 +48,8 @@ public class KnickebeinTarget
         this.player = player;
         this.initialPoint = initialPoint;
         this.targetPoint = targetPoint;
-        this.targetBearingAngle_deg = Calcs.CalculateGradientAngle(this.initialPoint, this.targetPoint);
-        this.targetBearingAngle_magnetic_deg = Calcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
+        this.targetBearingAngle_deg = KniCalcs.CalculateGradientAngle(this.initialPoint, this.targetPoint);
+        this.targetBearingAngle_magnetic_deg = KniCalcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
         chatOrHud = ChatOrHud.Hud;
         this.mission = mission;
         
@@ -62,8 +63,8 @@ public class KnickebeinTarget
         //this.initialPoint = new Point3d (0,0,0);
         //if (player.Place() != null) this.initialPoint = player.Place().Pos();
         this.initialPoint = mission.knickeb.getAnchorPoint(player);
-        this.targetBearingAngle_deg = Calcs.CalculateGradientAngle(this.initialPoint, this.targetPoint);
-        this.targetBearingAngle_magnetic_deg = Calcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
+        this.targetBearingAngle_deg = KniCalcs.CalculateGradientAngle(this.initialPoint, this.targetPoint);
+        this.targetBearingAngle_magnetic_deg = KniCalcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
 
     }
     public KnickebeinTarget(Player player, double angle_deg, double dist, Mission mission)
@@ -75,13 +76,13 @@ public class KnickebeinTarget
         //if (player.Place() != null) this.initialPoint = player.Place().Pos();
         this.initialPoint = mission.knickeb.getAnchorPoint(player);
         double dist_m = dist * 1000; //if army==2 we assume distance in km
-        if (player.Army() == 1) dist_m = Calcs.miles2meters(dist);
-        this.targetPoint = Calcs.EndPointfromStartPointAngleDist(this.initialPoint, angle_deg, dist_m);
+        if (player.Army() == 1) dist_m = KniCalcs.miles2meters(dist);
+        this.targetPoint = KniCalcs.EndPointfromStartPointAngleDist(this.initialPoint, angle_deg, dist_m);
         this.targetBearingAngle_deg = angle_deg;
-        this.targetBearingAngle_magnetic_deg = Calcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
-        if (Math.Round(this.targetBearingAngle_deg) != Math.Round(Calcs.CalculateGradientAngle(this.initialPoint, this.targetPoint)))
+        this.targetBearingAngle_magnetic_deg = KniCalcs.realBearingDegreetoCompass(this.targetBearingAngle_deg);
+        if (Math.Round(this.targetBearingAngle_deg) != Math.Round(KniCalcs.CalculateGradientAngle(this.initialPoint, this.targetPoint)))
         {
-            Console.WriteLine("Knicke: HELP! Given angle {0} calced angle {1}", this.targetBearingAngle_deg, Calcs.CalculateGradientAngle(this.initialPoint, this.targetPoint));
+            Console.WriteLine("Knicke: HELP! Given angle {0} calced angle {1}", this.targetBearingAngle_deg, KniCalcs.CalculateGradientAngle(this.initialPoint, this.targetPoint));
         }
         
     }
@@ -159,14 +160,14 @@ public class KnickebeinTarget
     {
         AiActor actor = player.Place();
         if (actor == null) return new string(' ', 12);
-        double currentTargetBearingAngle_deg = Calcs.CalculateGradientAngle(actor.Pos(), this.targetPoint);
+        double currentTargetBearingAngle_deg = KniCalcs.CalculateGradientAngle(actor.Pos(), this.targetPoint);
         double deltaBearingAngle_deg = this.targetBearingAngle_deg - currentTargetBearingAngle_deg;
         //we want the result in the range +180 to -180 so that we will display between +5/-5 degrees of the current heading
         //this also works for 
         if (deltaBearingAngle_deg > 180) deltaBearingAngle_deg -= 360;
         if (deltaBearingAngle_deg < -180) deltaBearingAngle_deg += 360;
 
-        double distFromLine = Calcs.distancePointToLine(this.initialPoint, this.targetPoint, actor.Pos());
+        double distFromLine = KniCalcs.distancePointToLine(this.initialPoint, this.targetPoint, actor.Pos());
                     
 
         int deltaBear = Convert.ToInt32(Math.Round(distFromLine/100));
@@ -202,8 +203,8 @@ public class KnickebeinTarget
         //So this is right triangle with aircraft point - targetPoint the hypotenuse & aircraftpoint-beam + beam crossing point-target point the two sides
         //So, just the distance formula b = sqrt(c^2-a^2)
         //we double calculate distFromBeam_m here & in directionPip() so a bit of work could avoid that
-        double currentTargetPointdistance_m = Calcs.CalculatePointDistance( actor.Pos(), this.targetPoint);
-        double distFromBeam_m = Calcs.distancePointToLine(this.initialPoint, this.targetPoint, actor.Pos());
+        double currentTargetPointdistance_m = KniCalcs.CalculatePointDistance( actor.Pos(), this.targetPoint);
+        double distFromBeam_m = KniCalcs.distancePointToLine(this.initialPoint, this.targetPoint, actor.Pos());
         double distFromCrossBeam_m = Math.Sqrt(currentTargetPointdistance_m * currentTargetPointdistance_m - distFromBeam_m * distFromBeam_m);
 
         //bool noshow = false;
@@ -355,8 +356,8 @@ public class Knickebeinholder
             //if (player.Place() != null) initialPoint = player.Place().Pos();
             Point3d initialPoint = getAnchorPoint(player);
             double dist_m = distance * 1000; //if army==2 we assume distance in km
-            if (player.Army() == 1) dist_m = Calcs.miles2meters(distance); //If army = 1 distance inmiles
-            Point3d targetPoint = Calcs.EndPointfromStartPointAngleDist(initialPoint, angle_deg, dist_m);
+            if (player.Army() == 1) dist_m = KniCalcs.miles2meters(distance); //If army = 1 distance inmiles
+            Point3d targetPoint = KniCalcs.EndPointfromStartPointAngleDist(initialPoint, angle_deg, dist_m);
             
             //add it to the knickebein list
             KniAdd(player, targetPoint);
@@ -478,7 +479,7 @@ public class Knickebeinholder
 
         Point3d currPoint = currpoints[currWay];
 
-        string sector = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint);
+        string sector = KniCalcs.correctedSectorNameDoubleKeypad(mission, currPoint);
 
         if (contin)
         {
@@ -529,7 +530,7 @@ public class Knickebeinholder
             int currWay1 = 0;
             if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay1 = knickebeinCurrentWaypoint[player];
             Point3d currPoint1 = currpoints[currWay1];
-            string sector1 = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint1);
+            string sector1 = KniCalcs.correctedSectorNameDoubleKeypad(mission, currPoint1);
             if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Resuming Knickebein waypoint #{0} to {1} ({2:N0},{3:N0})", new object[] { currWay1 + 1, sector1, Math.Round(currPoint1.x), Math.Round(currPoint1.y) });
             if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Beam heading is {0:F0} degrees magnetic", new object[] { Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg) }); //note the gplogserver IGNORES any formatting requests such as N0 or F0 . . . .
 
@@ -551,7 +552,7 @@ public class Knickebeinholder
 
         Point3d currPoint = currpoints[currWay];
 
-        string sector = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint);
+        string sector = KniCalcs.correctedSectorNameDoubleKeypad(mission, currPoint);
         Console.WriteLine("KOSON5");
 
         if (currWay != currWaySave)
@@ -566,7 +567,7 @@ public class Knickebeinholder
 
         Point3d anchorPoint = knickebeins[player].initialPoint;
 
-        string anchorSector = Calcs.correctedSectorNameDoubleKeypad(mission, anchorPoint);
+        string anchorSector = KniCalcs.correctedSectorNameDoubleKeypad(mission, anchorPoint);
 
         if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Starting Knickebein waypoint #{0} {4} to {1} ({5:N0},{6:N0})->({2:N0},{3:N0})", new object[] { currWay + 1, sector, Math.Round(currPoint.x), Math.Round(currPoint.y), anchorSector, Math.Round(anchorPoint.x), Math.Round(anchorPoint.y) });
 
@@ -593,8 +594,8 @@ public class Knickebeinholder
         int currWay = 0;
         if (knickebeinCurrentWaypoint.ContainsKey(player)) currWay = knickebeinCurrentWaypoint[player];
 
-        string initialSector = Calcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].initialPoint);
-        string targetSector = Calcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].targetPoint);
+        string initialSector = KniCalcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].initialPoint);
+        string targetSector = KniCalcs.correctedSectorNameDoubleKeypad(mission, knickebeins[player].targetPoint);
 
         if (mission.GamePlay != null) mission.GamePlay.gpLogServer(new Player[] { player }, "Current Knickebein: Waypoint #{0} magnetic bearing {1} degrees from {2} ({3:N0}/{4:N0})  to {5} ({6:N0}/{7:N0})", new object[] { currWay + 1, Math.Round(knickebeins[player].targetBearingAngle_magnetic_deg), initialSector, Math.Round(knickebeins[player].initialPoint.x), Math.Round(knickebeins[player].initialPoint.y), targetSector, Math.Round(knickebeins[player].targetPoint.x), Math.Round(knickebeins[player].targetPoint.y) });     
         
@@ -689,6 +690,9 @@ public class Knickebeinholder
         double bearing_deg = 0;
         if (knickebeins.ContainsKey(player)) bearing_deg = knickebeins[player].targetBearingAngle_deg;
 
+        Point3d anchorPoint = getAnchorPoint(player);
+        string anchorSector = KniCalcs.correctedSectorNameDoubleKeypad(mission, anchorPoint);
+
 
         msg = ">>>>>Your current Knickebein Waypoints List";
         retmsg += msg + newline;
@@ -699,8 +703,8 @@ public class Knickebeinholder
         foreach (Point3d currPoint in currpoints)
         {
             ct++;
-            string sector = Calcs.correctedSectorNameDoubleKeypad(mission, currPoint);
-            msg = string.Format("Waypoint #{0} to {1} ({2:F0}/{3:F0})", new object[] { ct, sector, currPoint.x, currPoint.y });
+            string sector = KniCalcs.correctedSectorNameDoubleKeypad(mission, currPoint);
+            msg = string.Format("Waypoint #{0} {4} ({5:F0}/{6:F0}) to {1} ({2:F0}/{3:F0})", new object[] { ct, sector, currPoint.x, currPoint.y, anchorSector, anchorPoint.x, anchorPoint.y });
             retmsg += msg + newline;
             mission.GamePlay.gpLogServer(new Player[] { player }, msg, null);
         }
@@ -739,21 +743,21 @@ public class Mission : AMission, IKnickebeinMission
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
 
-        base.OnPlaceEnter(player, actor, placeIndex);
+        //base.OnPlaceEnter(player, actor, placeIndex);
         //startKnickebein(player);
 
     }
 
     public override void OnBattleStarted()
     {
-        base.OnBattleStarted();
+        //base.OnBattleStarted();
 
 
     }
 
     public override void OnMissionLoaded(int missionNumber)
     {
-        base.OnMissionLoaded(missionNumber);
+        //base.OnMissionLoaded(missionNumber);
 
         //Console.WriteLine("-knickebein.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
 
@@ -775,9 +779,27 @@ public class Mission : AMission, IKnickebeinMission
         }
     }
 
+    //Set the knickebein anchor point whenever a player enters and aircraft
+    public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
+    {
+
+        AiAircraft a = actor as AiAircraft;
+        if (a == null) return;
+
+        try
+        {
+            HashSet<player> p = KniCalcs.playersInPlane(a);
+            foreach (Player player in p)
+            {
+                knickeb.setAnchorPoint(player);
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("ERROR KNICKEBEIN OnActorCreated! " + ex.ToString()); }
+    }
+
     public override void OnBattleStoped()
     {
-        base.OnBattleStoped();
+        //base.OnBattleStoped();
 
         if (GamePlay is GameDef)
         {
@@ -879,7 +901,7 @@ public class Mission : AMission, IKnickebeinMission
 
 
                 //Case of entering apoint like <kniadd 300000 100000
-                if (words.Length == 2 && Calcs.isDigitOrPlusMinusPoint(words[0]) && Calcs.isDigitOrPlusMinusPoint(words[1]))
+                if (words.Length == 2 && KniCalcs.isDigitOrPlusMinusPoint(words[0]) && KniCalcs.isDigitOrPlusMinusPoint(words[1]))
 
                 {
                     double x = 0;
@@ -900,7 +922,7 @@ public class Mission : AMission, IKnickebeinMission
                     foreach (string word in words)
                     {
                         if (word.StartsWith("<ka")) continue;
-                        Point3d point = Calcs.sectordoublekeypad2point(word.Trim().ToUpper());
+                        Point3d point = KniCalcs.sectordoublekeypad2point(word.Trim().ToUpper());
                         if (point.x == 0 && point.y == 0) continue;
                         points.Add(point);
                     }
@@ -912,7 +934,7 @@ public class Mission : AMission, IKnickebeinMission
                         if (point.x == 0 && point.y == 0) continue;
                         //Knickebeins.startQuickKnickebein(Player player, double angle_deg, double distance);
                         int wp = knickeb.KniAdd(player, point);
-                        GamePlay.gpLogServer(new Player[] { player }, "Knickebein Waypoint #{0} at {1} added to your flight plan ({2:N0},{3:N0})", new object[] { wp, Calcs.correctedSectorNameDoubleKeypad(this, point), Math.Round(point.x), Math.Round(point.y) });
+                        GamePlay.gpLogServer(new Player[] { player }, "Knickebein Waypoint #{0} at {1} added to your flight plan ({2:N0},{3:N0})", new object[] { wp, KniCalcs.correctedSectorNameDoubleKeypad(this, point), Math.Round(point.x), Math.Round(point.y) });
                     }
                     GamePlay.gpLogServer(new Player[] { player }, "To use: Tab-4-4-4-4 menu OR <kstart <knext <kprev <koff <kon <kclear <khelp", null);
                 }
@@ -1089,12 +1111,12 @@ public class Mission : AMission, IKnickebeinMission
             //Ok, this is tricky.  If we want to use "<k" as a shortcut it can only be like "<k" or "<k3" or "<k 3" because otherwise 
             //we start matching all kinds of things like "<ko" or "<km" or whatever, that might means something       
 
-            if (msg.StartsWith("<k") && !((msg.Trim() == "<k") || (msg.StartsWith("<ks")) || (msg.StartsWith("<k ")) || Calcs.isDigit(msg.Replace("<k", "").Trim()))) return;
+            if (msg.StartsWith("<k") && !((msg.Trim() == "<k") || (msg.StartsWith("<ks")) || (msg.StartsWith("<k ")) || KniCalcs.isDigit(msg.Replace("<k", "").Trim()))) return;
 
             string wp_string = msg.Replace("<kstart ", "").Replace("<kstart", "").Replace("<ks", "").Replace("<k", "").Trim();
             //string[] words = msg.Split(' ');
             int wp = 0;
-            if (Calcs.isDigit(wp_string))
+            if (KniCalcs.isDigit(wp_string))
             {
                 try { if (wp_string.Length > 0) wp = Convert.ToInt32(wp_string); }
                 catch (Exception ex) { }
@@ -1168,7 +1190,7 @@ public class Mission : AMission, IKnickebeinMission
 
 
 //Various helpful calculations, formulas, etc.
-public static class Calcs
+public static class KniCalcs
 {
     //Various public/static methods
     //http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
@@ -1372,8 +1394,8 @@ public static class Calcs
                         Point3d startPoint, double angle_deg, double dist)
     {
         Point3d ret = startPoint;
-        ret.x = startPoint.x + Math.Sin(Calcs.DegreesToRadians(angle_deg)) * dist;
-        ret.y = startPoint.y + Math.Cos(Calcs.DegreesToRadians(angle_deg)) * dist;
+        ret.x = startPoint.x + Math.Sin(KniCalcs.DegreesToRadians(angle_deg)) * dist;
+        ret.y = startPoint.y + Math.Cos(KniCalcs.DegreesToRadians(angle_deg)) * dist;
         return ret;
     }
 
@@ -1739,6 +1761,20 @@ public static class Calcs
             result = part[1]; // get the part after the "." in the type string
         }
         return result;
+    }
+
+    public static HashSet<Player> playersInPlane(AiAircraft aircraft)
+
+    { // returns list of players in the aircraft (unique list - no duplicates)
+        HashSet<Player> players = new HashSet<Player>();
+        if (aircraft == null) return players;
+
+        //check if a player is in any of the "places"
+        for (int i = 0; i < aircraft.Places(); i++)
+        {
+            if (aircraft.Player(i) != null) players.Add(aircraft.Player(i));
+        }
+        return players;
     }
 
     public static string randSTR(string[] strings)

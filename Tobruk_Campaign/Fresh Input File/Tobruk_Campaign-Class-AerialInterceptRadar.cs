@@ -321,7 +321,7 @@ public class AIRadarTarget
     private void display_recurs()
     {
         if (!this.turnedOn) return;
-        if (this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullV3d)) turnOff();
+        if (this.player == null || this.player.Place()==null || this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullV3d)) turnOff();
         double t = 2.1;
         //double dist = displayPips();        
         if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft

@@ -474,13 +474,28 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 1", "", 1, 1, "BMobileRadar1", 279965, 104219, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 30, 197500, 10000, 370000, 190000, 5, 35, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
         mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 2, 1, "RMobileRadar2", 210276, 179671, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 10000, 10000, 278420, 271000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
         mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 1, 1, "BMobileRadar2", 279965, 184219, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 197500, 10000, 370000, 190000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 2, 1, "RMobileArmour1", 231978, 220669, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SmallArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 1, 1, "BMobileArmour1", 240196, 143824, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SmallArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 2, 1, "RLargeMobileArmour", 145508, 231881, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.LargeArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 1, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 1, 1, "BLargeMobileArmour", 221410, 136331, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.LargeArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 1, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 2, 1, "RIntelligenceListening", 262939, 143597, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.CamoGroup, 45, 10000, 10000, 278420, 271000, 5, 20, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 1, 1, "BIntelligenceListening", 212979, 182491, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.CamoGroup, 45, 197500, 10000, 370000, 190000, 5, 20, M.MO_ProducerOrStorageType.None, "", add);
+        /*
+        // public void addMobile(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_MobileObjectiveType 
+            MobObjType = MO_MobileObjectiveType.ArmyEncampment,
+            double mob_hrsbetweenMoves = 12, double x_sw = 0, double y_sw = 0, double x_ne = 360000, double y_ne = 360000, //boundaries of rectangle where it can live
+            double min_move_dist_km = 2,
+            double max_move_dist_km = 5,
+            MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None, 
+            string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000)
+        */
 
+        for (int i = 1; i < 16; i++)
+        {
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 2, 2, "RDesertRadar"+i.ToString(), msn.random.Next(10000, 278420), msn.random.Next(10000, 271000), 150, 100, 0, 3, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 50000);
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 1, 2, "BDesertRadar" + i.ToString(), msn.random.Next(197500, 370000), msn.random.Next(10000, 190000), 150, 100, 0, 3, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 50000);
+        }
 
 
         if (current_subclass != null)

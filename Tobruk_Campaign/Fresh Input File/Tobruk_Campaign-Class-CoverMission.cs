@@ -1109,6 +1109,12 @@ public class CoverMission : AMission, ICoverMission
         return true;
 
     }
+    //returns false if it's been turned off or true if turned on.
+    public void turnOnRegularDisplay_listPositionCurrentCoverAircraft(Player player = null)
+    {
+        bool ret = toggleregularDisplay_listPositionCurrentCoverAircraft(player);
+        if (!ret) toggleregularDisplay_listPositionCurrentCoverAircraft(player);
+    }
 
     public void listPositionCurrentCoverAircraft_obj(object ob)
     {
@@ -2409,15 +2415,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                         }
+
+                        //auto turn-on regular cover a/c for player
+                        Timeout(10, () => { turnOnRegularDisplay_listPositionCurrentCoverAircraft(player); });
                     }
 
-
-
                 }
-
                 setCoverAircraftCurrentlyAvailable();
-
-
             });
 
 

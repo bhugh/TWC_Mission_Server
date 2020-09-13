@@ -760,6 +760,9 @@ public class Mission : AMission, IKnickebeinMission
         //base.OnMissionLoaded(missionNumber);
 
         //Console.WriteLine("-knickebein.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+        
+        //Listen to OnXXX calls from ALL missions, not only this one
+        MissionNumberListener = -1;
 
         TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
 
@@ -780,6 +783,7 @@ public class Mission : AMission, IKnickebeinMission
     }
 
     //Set the knickebein anchor point whenever a player enters and aircraft
+    //Needs MissionNumberListener = -1; to work properly
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
 

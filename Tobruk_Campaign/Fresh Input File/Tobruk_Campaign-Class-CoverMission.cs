@@ -1241,15 +1241,15 @@ public class CoverMission : AMission, ICoverMission
                     action = (CurrentWaypoints[currWay] as AiAirWayPoint).Action.ToString();
                     targetname = "";
                     if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target != null) targetname = (CurrentWaypoints[currWay] as AiAirWayPoint).Target.Name();
-                    if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor != null) targettype = ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor).Type().ToString();
-                    if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary != null) targettype = ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary).Title;
+                    if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor != null) targettype += ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as AiGroundActor).Type().ToString();
+                    if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary != null) targettype += ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary).Title;
                     p = (CurrentWaypoints[currWay] as AiWayPoint).P;
                 }
 
 
                 //msg += " " + bomb + " " + tsk + " " + action;
                 msg += bomb + action;
-                if (action.Contains("GATTACK")) msg += String.Format(" {0} ({1})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
+                if (action.Contains("GATTACK")) msg += String.Format(" {0} ({1}, {2})", targettype, targetname, Calcs.correctedSectorNameDoubleKeypad(this, p));
 
                 delay += 0.06;
                 Timeout(delay, () =>
@@ -4200,12 +4200,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                     if (dist_m < preferredMove_m)
                                     {
                                         //Console.WriteLine("MBT: FOUND a ground actor within preferredMove - breaking");                                        
+                                        Console.WriteLine("MBT: FOUND a ground actor for cover target: " + newTarget.Name() + " " + groundType + " " + closest_m.ToString("N0") + " ({0:N0}, {1:N1}) ", act.Pos().x, act.Pos().y);
                                         break;
                                     }
 
                                 }
-                                Console.WriteLine("MBT: FOUND a ground actor for cover target: " + newTarget.Name() + " " + groundType + " " + closest_m.ToString("N0"));
+                                
                             }
+
+                            
                         }
                     }
                     catch (Exception ex) { Console.WriteLine("Bomb select #1 ERROR: " + ex.ToString()); }
@@ -4250,7 +4253,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 {
                                     newGroundTarget = stationaries[newStaIndex];
-                                    Console.WriteLine("MBT: Found a stationary " + stationaries[newStaIndex].Name + " 1 " + stationaries[newStaIndex].Title + " 2 " + stationaries[newStaIndex].Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+                                    Console.WriteLine("MBT: Found a stationary for target: " + stationaries[newStaIndex].Name + " 1 " + stationaries[newStaIndex].Title + " 2 " + stationaries[newStaIndex].Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
                                                                                                                                                                                                                                                                                                                                                      //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
                                     diveTarget = true;
                                     break;

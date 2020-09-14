@@ -13591,7 +13591,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         if (!startup && mo.MobileNextMoveTime_dt.HasValue && mo.MobileNextMoveTime_dt.Value.CompareTo(currTime) > 0) return; //only update them at start of session OR if their nextmovetime is null OR in the past
 
-        Console.WriteLine("Handling placement of mobile objective " + mo.Name);
+        Console.WriteLine("Handling placement of mobile objective ({0})" + mo.Name, ArmiesL[mo.OwnerArmy]);
 
         if (!startup && mo.MobileNextMoveTime_dt.HasValue && mo.MobileNextMoveTime_dt.Value.CompareTo(currTime) <= 0) {
             Console.WriteLine("It's time to move " + mo.ID + " " + mo.Name);
@@ -13603,7 +13603,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         if (!mo.MobileNextMoveTime_dt.HasValue || (mo.MobileNextMoveTime_dt.HasValue && mo.MobileNextMoveTime_dt.Value.CompareTo(currTime) <= 0)) //if move time is null OR it exists & is in the past, then reset it now AND select the new location now
         {
-            Console.WriteLine("Picking a new location for mobile objective {0:F0} {1:F0}" + mo.Name, newPos.x, newPos.y);
+            Console.WriteLine("Picking a new location for mobile objective ({2}) {0:F0} {1:F0} " + mo.Name, newPos.x, newPos.y, ArmiesL[mo.OwnerArmy]);
             mo.MobileNextMoveTime_dt = currTime.AddHours(mo.MobileMoveTime_hrs);
 
 
@@ -13618,7 +13618,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             //try to find a place that is not water, not near an airport, outwards at least mo.radius + adder_m from the center of the objective, within min/max move distance specified
             //try it a bunch of times if no success
-            int maxSearchNum = 3250;
+            int maxSearchNum = 23250;
             for (int i = 0; i < maxSearchNum; i++)
             {
                 
@@ -13660,27 +13660,29 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 int terr = GamePlay.gpFrontArmy(newPos.x, newPos.y);
                 bool onEnemyTerritory = (mo.AttackingArmy == terr); //We can place these on friend OR neutral territory but not enemy.  Unless there is NO other choice.
 
-                if (!waterinObjectiveArea && farEnoughFromAirport && withinMinMax && !onEnemyTerritory) break;
-                if (!waterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && i >= maxSearchNum - 400)
-                {
-                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters.  Just picking another location.");
+                if (!waterinObjectiveArea && farEnoughFromAirport && withinMinMax) Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4} {5} OnEnemyTerr: {6}",new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory});
+
+                if (!waterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && withinMinMax) break;
+                if (!waterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && i >= maxSearchNum/3.0) 
+                { 
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters.  Just picking another location meeting ALL other criteria except it is a big jump. {0} min search, {1} searched.", maxSearchNum / 3.0, i);
                     break; //if not working we'll relax the requirement for moving by a certain amount
                 }
-                if (!waterinObjectiveArea && !onEnemyTerritory && i >= maxSearchNum - 1150) // if still not working we'll relax the requirement to avoid airport
+                if (!waterinObjectiveArea && !onEnemyTerritory && i >= 2.0*maxSearchNum/3.0) // if still not working we'll relax the requirement to avoid airport
                 {
-                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && outside of airport radius.  Just picking another location.");
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && outside of airport radius.  Just picking another location meeting all criteria except Big Jump & Close to Airport. {0} min search, {1} searched.", 2.0 * maxSearchNum / 3.0, i);
                     break; //if not working we'll relax the requirement for moving by a certain amount
                 }
-                if (!onEnemyTerritory && i >= maxSearchNum - 150) // if still not working we'll relax the requirement to avoid airport
+                if (!onEnemyTerritory && i >= 5.0*maxSearchNum/6.0) // if still not working we'll relax the requirement to avoid airport
                 {
-                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && not on water && outside of airport radius.  Just picking another location.");
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && not on water && outside of airport radius.  Just picking another location outside of Enemy Territory. {0} min search, {1} searched.", 5.0 * maxSearchNum / 6.0, i);
                     break; //if not working we'll relax the requirement for moving by a certain amount
                 }
                 if (i >= maxSearchNum - 1)
                 {
                     Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water or on enemy territory, and right movement distance. Placing near center of area as last resort.");
-                    newPos.x = (swPos.x + nePos.x) / 2.0 + random.NextDouble() * 4000 - 2000;
-                    newPos.y = (swPos.y + nePos.y) / 2.0 + random.NextDouble() * 4000 - 2000;
+                    newPos.x = (swPos.x + nePos.x) / 2.0 + random.NextDouble() * 10000 - 5000;
+                    newPos.y = (swPos.y + nePos.y) / 2.0 + random.NextDouble() * 10000 - 5000;
                 }
             }
         }
@@ -13728,7 +13730,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/mobileobj_" + mo.ID); //testing)
 
-        Console.WriteLine("The mobile objective {0} is at ({1:F0},{2:F0})", new object[] { mo.Name, mo.Pos.x, mo.Pos.y });
+        Console.WriteLine("The mobile objective {0} ({3}) is at ({1:F0},{2:F0})", new object[] { mo.Name, mo.Pos.x, mo.Pos.y, ArmiesL[mo.OwnerArmy] });
 
     }
 

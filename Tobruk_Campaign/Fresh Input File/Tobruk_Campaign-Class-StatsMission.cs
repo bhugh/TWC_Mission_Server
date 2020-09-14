@@ -6693,17 +6693,29 @@ struct
             //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + placeIndex.ToString());
 
             //check if the player is timed out due to a previous death
-            int TimedOut_seconds = stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(player.Name());
+            int TimedOut_seconds = 0;
+            if (player != null) TimedOut_seconds = stb_StatRecorder.StbSr_IsPlayerTimedOutDueToDeath(player.Name());
 
-            Console.WriteLine("Player timed out due to death {0} {1}", stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name(), TimedOut_seconds);
+            double playerFrontDistance_m = 0;
+            //GamePlay.gpFrontDistance(army,x,y)
+            //Note that it gives the distance to the army territory; so if you're IN the territory of that army you will get 0.  IE if 100,100 is IN army 1 terr, GamePlay.gpFrontDistance(1,100,100) =0
+            //Below, we need to put the ENEMY army in, not the player army.  Ie, 3-playerArmy, not playerArmy
+            if (player != null && aircraft != null && TimedOut_seconds> 0) playerFrontDistance_m = GamePlay.gpFrontDistance(3-player.Army(), aircraft.Pos().x, aircraft.Pos().y);
 
-            if (TimedOut_seconds > 0 && aircraft != null)
+            Console.WriteLine("Player timed out due to death {0} {1} dist: {2}", stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name(), TimedOut_seconds, playerFrontDistance_m);
+
+
+
+            if (TimedOut_seconds > 0 && aircraft != null && playerFrontDistance_m < 40000)
             {
+                
+                Console.WriteLine("Player timed out due to death {0} {1} dist: {2}", stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name(), TimedOut_seconds, playerFrontDistance_m);
+
                 int timeOut_minutes = (int)(TimedOut_seconds / 60);
-                string message = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name() + " is restricted from flying. " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " remains in your pilot restriction.";
+                string message = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name() + " is restricted from flying from forward airports. " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " remains in your pilot restriction.";
                 //System.Console.WriteLine(message);
                 Stb_Message(new Player[] { player }, message, null);
-                Timeout(2.0, () => { Stb_Message(new Player[] { player }, "To encourage a more realistic approach to piloting and battle, pilots who die are grounded for a period of time. You could try operating artillery or a ground vehicle.", null); });
+                Timeout(2.0, () => { Stb_Message(new Player[] { player }, "To encourage a more realistic approach to piloting and battle, pilots who die are grounded from front-line airfields for a period of time. You could try operating artillery, a ground vehicle, or spawning in to an airfield at least 40km in the rear.", null); });
                 Timeout(4.0, () => { Stb_Message(new Player[] { player }, "A pause after player death also allows us to properly wrap up player stats for your previous life.", null); });
                 if (stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(6.0, () => { Stb_Message(new Player[] { player }, "If Fatal had his way you would not be able to rejoin the Campaign at all! So since this is only a simulation take a 5 min break and return <S>", null); });//enter the chat command <override to continue immediately.
                                                                                                                                                                                                                                                                                                                       //Timeout(10.0, () => { Stb_Message(new Player[] { player }, message, null); });                                                                                                                                                                                                                                                                                      //This should work: player.PlaceEnter(aircraft, place);  int place is indxplace

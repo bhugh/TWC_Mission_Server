@@ -8560,6 +8560,38 @@ public class Mission : AMission, IMainMission
             }
 
         }
+        //
+        else if (msg.StartsWith("<dist") && admin_privilege_level(player) >= 2)
+        {
+            /*
+             * this checks if the plane is near or over enemy teritory
+                GamePlay.GamePlay.gpFrontDistance(int army, double x, double y);
+                returns a double that gives the distance to enemy front (if exist)
+                it returns 0 if you are over enemy teritory or the area you specify.
+                if you would know the distance to friendly teritory simply set for army the same army you are.
+                Before you should check with GamePlay.gpFrontExist() (returns bool) if a front (frontmarkers) exist. 
+            public override void OnTickGame()
+                {
+                //Point3d P = PlayerPlane.Pos();
+
+                if (!OverEnemyTeritory && GamePlay.gpFrontDistance(1, PlayerPlane.Pos().x, PlayerPlane.Pos().y) <= 0)
+                {
+                GamePlay.gpHUDLogCenter("Sie befinden sich nun über Feindgebiet!");
+                OverEnemyTeritory = true;
+                }
+                else
+                {
+                OverEnemyTeritory = false;
+                }
+            http://forum.1cpublishing.eu/showthread.php?t=26673
+            */
+            double playerFrontDistance_m = GamePlay.gpFrontDistance(player.Army(), player.Place().Pos().x, player.Place().Pos().y);
+            double playerFrontDistance2_m = GamePlay.gpFrontDistance(3-player.Army(), player.Place().Pos().x, player.Place().Pos().y);
+
+            twcLogServer(new Player[] { player }, "Your distance from your front " + playerFrontDistance_m.ToString("N0") + " " + playerFrontDistance2_m.ToString("N0"), null);
+
+
+        }
         else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
         {
             //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists

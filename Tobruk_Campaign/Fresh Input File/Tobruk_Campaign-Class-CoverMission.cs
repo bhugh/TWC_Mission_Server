@@ -1109,6 +1109,13 @@ public class CoverMission : AMission, ICoverMission
         return true;
 
     }
+    public bool isOn_Display_listPositionCurrentCoverAircraft(Player player = null)
+    {
+        if (player == null) return false;
+        if (COVER_ListPositionTimer.ContainsKey(player)) return true;
+        else return false;
+
+    }
     //returns false if it's been turned off or true if turned on.
     public void turnOnRegularDisplay_listPositionCurrentCoverAircraft(Player player = null)
     {
@@ -4144,12 +4151,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1) //x,y == -1,-1 means we're actually not targeted at anythign
                 {
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(10)>0) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new taret about every 10*16 seconds.
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(7)>0) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new taret about every 10*16 seconds.
                     {
                         
                         diveTarget = true;
                         Console.WriteLine("reusing old ground target");
-                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) newTarget = airgroupTargets[airGroup];
+                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive() && (airgroupTargets[airGroup] as AiGroundActor).Health() > 0) newTarget = airgroupTargets[airGroup];
                         else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive) newGroundTarget = airgroupGroundTargets[airGroup];
                         else
                         {

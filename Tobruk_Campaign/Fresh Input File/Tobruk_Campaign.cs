@@ -7522,7 +7522,7 @@ public class Mission : AMission, IMainMission
     private void setSubMenu4(Player player)
     {
         string cover_misListon_string = "(off)";
-        if (covermis_listOn) cover_misListon_string = "(on)";
+        if (covermission.isOn_Display_listPositionCurrentCoverAircraft(player)) cover_misListon_string = "(on)";
         string t= covermission.BAM_getPlayerBombAimMode_string(player);
         GamePlay.gpSetOrderMissionMenu(player, true, 4, new string[] { "Knickebein - On/Next", "Knickebein - Off", "Knickebein - Current KB Info", "Back...", "Knickebein - List", "Cover Targeting ["+ t + "]", "Cover - List available aircraft", "Cover - Aircraft position " + cover_misListon_string, "Cover - Release Aircraft to land" }, new bool[] { true, true, true, true, true, true, true, true, false });
     }
@@ -8584,6 +8584,7 @@ public class Mission : AMission, IMainMission
                 OverEnemyTeritory = false;
                 }
             http://forum.1cpublishing.eu/showthread.php?t=26673
+            If army==1 and you're in army 1 territory gpFrontDistance(1, will = 0. You would want gpFrontDistance(2, in that case
             */
             double playerFrontDistance_m = GamePlay.gpFrontDistance(player.Army(), player.Place().Pos().x, player.Place().Pos().y);
             double playerFrontDistance2_m = GamePlay.gpFrontDistance(3-player.Army(), player.Place().Pos().x, player.Place().Pos().y);
@@ -13085,7 +13086,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             }
 
             Calcs.Shuffle(camo);
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 15; i++)
             {
                 //double angle1 = i * 2.0 / 7.0 * Math.PI + random.NextDouble();
                 //double radius2 = random.Next(5) + 12;
@@ -13312,6 +13313,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 10, 8) },
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 15, 10) },
                 { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 7, 30, 5) },
+                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 10, 30, 25) },
                 { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22, 18) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 45, 0.5) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 53, 4) },
@@ -13328,7 +13330,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, 15, 40, 5) },
                     { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 25, 20) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 67, 3 ) },
+                    //{ MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 67, 3 ) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 120, 30) },
 
 
@@ -13354,8 +13356,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 40, 10 )},
                     { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 15, 7 )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 12, 15, 13) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 65, 0.3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 71, 3) },                    
+                    //{ MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 71, 3) },                    
                 }
             },
                     { MO_MobileObjectiveType.MobileRadar2,
@@ -13364,18 +13367,20 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 25, 20 )},
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50, 20 )},
                     { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 10, 30, 25) },
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 30, 20 )},
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 85, 7) },
+                    //{ MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 85, 7) },
 
                 }
             },
                     { MO_MobileObjectiveType.DesertRadar,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                    
-                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,2, 50, 20 )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
-                    { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 1, 140, 30) },
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 2, 40, 20 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 4, 4, .3 )},
+                    //{ MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 1, 8, 3) },
+                    { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 1, 120, 30) },
 
                 }
             },
@@ -13613,7 +13618,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             //try to find a place that is not water, not near an airport, outwards at least mo.radius + adder_m from the center of the objective, within min/max move distance specified
             //try it a bunch of times if no success
-            int maxSearchNum = 2250;
+            int maxSearchNum = 3250;
             for (int i = 0; i < maxSearchNum; i++)
             {
                 
@@ -13652,22 +13657,30 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
                 bool waterinObjectiveArea = MO_WaterInRadius(newPos, searchRadius_m);
 
-                if (!waterinObjectiveArea && farEnoughFromAirport && withinMinMax) break;
-                if (!waterinObjectiveArea && farEnoughFromAirport && i >= maxSearchNum - 400)
+                int terr = GamePlay.gpFrontArmy(newPos.x, newPos.y);
+                bool onEnemyTerritory = (mo.AttackingArmy == terr); //We can place these on friend OR neutral territory but not enemy.  Unless there is NO other choice.
+
+                if (!waterinObjectiveArea && farEnoughFromAirport && withinMinMax && !onEnemyTerritory) break;
+                if (!waterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && i >= maxSearchNum - 400)
                 {
                     Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters.  Just picking another location.");
                     break; //if not working we'll relax the requirement for moving by a certain amount
                 }
-                if (!waterinObjectiveArea && i >= maxSearchNum - 150) // if still not working we'll relax the requirement to avoid airport
+                if (!waterinObjectiveArea && !onEnemyTerritory && i >= maxSearchNum - 1150) // if still not working we'll relax the requirement to avoid airport
                 {
                     Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && outside of airport radius.  Just picking another location.");
                     break; //if not working we'll relax the requirement for moving by a certain amount
                 }
+                if (!onEnemyTerritory && i >= maxSearchNum - 150) // if still not working we'll relax the requirement to avoid airport
+                {
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Couldn't find a location within min/max movement parameters && not on water && outside of airport radius.  Just picking another location.");
+                    break; //if not working we'll relax the requirement for moving by a certain amount
+                }
                 if (i >= maxSearchNum - 1)
                 {
-                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water, and right movement distance. Placing at center of area as last resort.");
-                    newPos.x = (swPos.x + nePos.x) / 2.0;
-                    newPos.y = (swPos.y + nePos.y) / 2.0;
+                    Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - BIG PROBLEM!  Couldn't find a location not too near an airport or on water or on enemy territory, and right movement distance. Placing near center of area as last resort.");
+                    newPos.x = (swPos.x + nePos.x) / 2.0 + random.NextDouble() * 4000 - 2000;
+                    newPos.y = (swPos.y + nePos.y) / 2.0 + random.NextDouble() * 4000 - 2000;
                 }
             }
         }
@@ -13751,7 +13764,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     if (nib < 2) nib = 2;
                     */
                     //Console.WriteLine("RADAR autoFlakPlacement  {0} {1} ", nfb, nib);
-                    nfb = 1;
+                    nfb = 2;
                     nib = 2;
 
                 }
@@ -15440,7 +15453,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     } catch (Exception ex) { Console.WriteLine("MO_InitializeAllObjectives ERROR InitSubmission for Objective NOT loaded: {0} \n\n {1}", s, ex.ToString()); }
 
                 }
-                if (mo.MOTriggerType == MO_TriggerType.PointArea)
+                if (mo.MOTriggerType == MO_TriggerType.PointArea )
                 {
                     MO_PlaceAppropriateJerrycan(mo);
                 }

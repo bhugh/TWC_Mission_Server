@@ -7081,30 +7081,34 @@ struct
                 AiAircraft aircraft = actor as AiAircraft;
                 if (aircraft != null)
                 {
-                    Console.WriteLine("Stats, aircraft damage: {0:N2} due to injuries/crash; rpl: {1} {2}", aircraftDamage, realPosLeave, isLastPlayer);
-                    if (aircraftDamageTotal.ContainsKey(aircraft) && aircraftDamageTotal[aircraft] > 2)
+                    try
                     {
-                        Console.WriteLine("Stats, aircraft damages: {0:N0}", (double)aircraftDamageTotal[aircraft]);
-                        aircraftDamage += (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each item to repair is 15 mins.
-                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft damage", (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0);
-                    }
-                    if (aircraftCutlimbTotal.ContainsKey(aircraft))
-                    {
-                        aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
-                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
-                    }
+                        Console.WriteLine("Stats, aircraft damage: {0:N2} due to injuries/crash; rpl: {1} {2}", aircraftDamage, realPosLeave, isLastPlayer);
+                        if (aircraftDamageTotal.ContainsKey(aircraft) && aircraftDamageTotal[aircraft] > 2)
+                        {
+                            Console.WriteLine("Stats, aircraft damages: {0:N0}", (double)aircraftDamageTotal[aircraft]);
+                            aircraftDamage += (double)aircraftDamageTotal[aircraft] / 2.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each item to repair is 30 mins.
+                            Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft damage", (double)aircraftDamageTotal[aircraft] / 4.0 / 96.0);
+                        }
+                        if (aircraftCutlimbTotal.ContainsKey(aircraft))
+                        {
+                            aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
+                            Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
+                        }
 
-                    //Get damage recorded per aircraft and also self-damage recorded
-                    int acDamages = StatCalcs.listDamages(GamePlay, player, false);
-                    int selfDamages = stb_ContinueMissionRecorder.StbCmr_selfDamageThisFlight(player.Name());
-                    Console.WriteLine("Stats, aircraft damage times: {0} selfDamage times: {1} ", acDamages, selfDamages);
-                    if (selfDamages > acDamages) acDamages = selfDamages; //We don't want to double=count here but also we don't want to miss anything.
-                    if (acDamages> 2)
-                    {
-                        double acDamage_pct = (double)acDamages * 4.0 / 96.0;
-                        if (acDamage_pct > aircraftDamage) aircraftDamage = acDamage_pct; //again this may contain damage already registered above.  We don't want to double-count but also, not undercount.
-                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft recorded damage & recorded self-damage", acDamage_pct);
-                    }
+                        //Get damage recorded per aircraft and also self-damage recorded
+                        int acDamages = StatCalcs.listDamages(GamePlay, player, false);
+                        int selfDamages = 0;
+                        if (player != null && player.Name() != null) selfDamages = stb_ContinueMissionRecorder.StbCmr_selfDamageThisFlight(player.Name());
+                        Console.WriteLine("Stats, aircraft damage times: {0} selfDamage times: {1} ", acDamages, selfDamages);
+                        if (selfDamages > acDamages) acDamages = selfDamages; //We don't want to double=count here but also we don't want to miss anything.
+                        if (acDamages > 2)
+                        {
+                            double acDamage_pct = (double)acDamages / 2.0 / 96.0;
+                            if (acDamage_pct > aircraftDamage) aircraftDamage = acDamage_pct; //again this may contain damage already registered above.  We don't want to double-count but also, not undercount.
+                            Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft recorded damage & recorded self-damage", acDamage_pct);
+                        }
+                    } catch (Exception ex) { Console.WriteLine("Stats OnPlaceLeave DAMAGE error! " + ex.ToString()); }
 
                 }
 
@@ -14103,10 +14107,14 @@ struct
         /// lists damages in server log info window
         /// shows HUD messages if desired
         /// </summary>
-        public static int listDamages(IGamePlay GamePlay, Player CurPlayer, bool bShowMessages)
+        public static int listDamages(IGamePlay GamePlay, Player CurPlayer=null, bool bShowMessages=false, AiAircraft aircraft = null)
         {
             int nDamages = 0;
-            AiAircraft PlayersAircraft = CurPlayer.Place() as AiAircraft;
+            AiAircraft PlayersAircraft = aircraft;
+            if (CurPlayer != null) PlayersAircraft = CurPlayer.Place() as AiAircraft;
+            if (PlayersAircraft == null) return 0; //nothing to do
+            if (CurPlayer == null) bShowMessages = false;
+
             string[] PartNames = Enum.GetNames(typeof(part.NamedDamageTypes));
             part.NamedDamageTypes[] PartVals = (part.NamedDamageTypes[])Enum.GetValues(typeof(part.NamedDamageTypes));
             double dDamage = 0;

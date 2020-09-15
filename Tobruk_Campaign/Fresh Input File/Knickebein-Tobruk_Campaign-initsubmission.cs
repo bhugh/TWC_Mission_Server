@@ -324,6 +324,10 @@ public class Knickebeinholder
         {
             knickebeinAnchorPoint[player] = player.Place().Pos();
             knickebeinAnchorPlace[player] = player.Place();
+            mission.Timeout(7, () =>
+            {
+                mission.GamePlay.gpLogServer(new Player[] { player }, "Knickebein: Your Knickebein anchor point set to " + KniCalcs.correctedSectorNameDoubleKeypad(mission, player.Place().Pos()), new object[] { });
+            });
         }        
 
     }

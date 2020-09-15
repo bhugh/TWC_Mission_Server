@@ -1951,6 +1951,14 @@ struct
             return (cm.posEnterActor == cm.posLeftActor);  //if the two are equal, then same aircraft or actor.  Otherwise, a different a/c or actor.
 
         }
+        public int StbCmr_selfDamageThisFlight(string playerName)
+        {
+            StbContinueMission cm = new StbContinueMission();
+            bool ret = stbCmr_ContinueMissionInfo.TryGetValue(playerName, out cm);
+            if (!ret) return 0; // if the player hasn't been flying before
+            return cm.selfDamageThisFlight;
+
+        }
         public bool StbCmr_HasPlayerLeftPlane(string playerName)
         {
             StbContinueMission cm = new StbContinueMission();
@@ -7084,6 +7092,18 @@ struct
                     {
                         aircraftDamage += (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0;  //we're saying 100% damage is 96 hours to repair and each cut limb to repair is 4 hours.
                         Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft cut limbs", (double)aircraftCutlimbTotal[aircraft] * 4.0 / 96.0);
+                    }
+
+                    //Get damage recorded per aircraft and also self-damage recorded
+                    int acDamages = StatCalcs.listDamages(GamePlay, player, false);
+                    int selfDamages = stb_ContinueMissionRecorder.StbCmr_selfDamageThisFlight(player.Name());
+                    Console.WriteLine("Stats, aircraft damage times: {0} selfDamage times: {1} ", acDamages, selfDamages);
+                    if (selfDamages > acDamages) acDamages = selfDamages; //We don't want to double=count here but also we don't want to miss anything.
+                    if (acDamages> 2)
+                    {
+                        double acDamage_pct = (double)acDamages * 4.0 / 96.0;
+                        if (acDamage_pct > aircraftDamage) aircraftDamage = acDamage_pct; //again this may contain damage already registered above.  We don't want to double-count but also, not undercount.
+                        Console.WriteLine("Stats, aircraft damage: {0:N3} due to aircraft recorded damage & recorded self-damage", acDamage_pct);
                     }
 
                 }

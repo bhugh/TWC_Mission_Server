@@ -14870,35 +14870,39 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         try
         {
             if (player == null) return;
-            if (test ||
-                (player.Place() != null && (player.Place() as AiAircraft) != null &&
-                GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) == player.Army() &&
-                //Stb_distanceToNearestAirport(actor) < 3100 &&
-                Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) < 2 &&
-                player.Place().IsAlive())
-                )
-            {//it's good 
-             //(do nothing)
-            }
-            else
-            {//it's no good
-                string reason = "";
-                if (player.Place() == null || (player.Place() as AiAircraft) == null) reason += "Not in an aircraft - ";
-                if (GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) != player.Army()) reason += "Not in on friendly territory - ";
-                //Stb_distanceToNearestAirport(actor) < 3100 &&
-                double vel_mps = Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()); 
-                if (vel_mps >= 2) reason += "You are still moving (" + vel_mps.ToString("F1") + ") - ";
-                if (!player.Place().IsAlive()) reason += "CLOD says your aircraft is dead/crashed";
-                if (check) {
-                    twcLogServer(new Player[] { player }, "You can't check in your reconnaissance photos now - you must be safely landed, in your aircraft with the photos, on friendly ground and ideally at an air base.", new object[] { });
-                    Timeout(0.05, () => {
-                        twcLogServer(new Player[] { player }, "Reasons: " + reason, new object[] { }); });
+                if (test ||
+                    (player.Place() != null && (player.Place() as AiAircraft) != null &&
+                    GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) == player.Army() &&
+                    //Stb_distanceToNearestAirport(actor) < 3100 &&
+                    Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) < 2 &&
+                    player.Place().IsAlive())
+                    )
+                {//it's good 
+                 //(do nothing)
+                }
+                else
+                {//it's no good
+                    string reason = "";
+                    if (player.Place() == null || (player.Place() as AiAircraft) == null) reason += "Not in an aircraft - ";
+                    if (GamePlay.gpFrontArmy(player.Place().Pos().x, player.Place().Pos().y) != player.Army()) reason += "Not in on friendly territory - ";
+                    //Stb_distanceToNearestAirport(actor) < 3100 &&
+                    double vel_mps = Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld());
+                    if (vel_mps >= 2) reason += "You are still moving (" + vel_mps.ToString("F1") + ") - ";
+                    if (!player.Place().IsAlive()) reason += "CLOD says your aircraft is dead/crashed";
+                    if (check)
+                    {
+                        twcLogServer(new Player[] { player }, "You can't check in your reconnaissance photos now - you must be safely landed, in your aircraft with the photos, on friendly ground and ideally at an air base.", new object[] { });
+                        Timeout(0.05, () =>
+                        {
+                            twcLogServer(new Player[] { player }, "Reasons: " + reason, new object[] { });
+                        });
                     }
                     return;
                 }
 
-                //Console.WriteLine("RCRec: #1");
+                Console.WriteLine("RCRec: #1");
 
+                if (ScoutPhotoRecord == null || ScoutPhotoRecord.Count == 0) return;
 
                 int totalPhotos = 0;
                 int total = 0;
@@ -14913,7 +14917,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 //List<String> mos = MissionObjectivesSuggested[(ArmiesE)army];
                 List<String> mos = MO_ListSuggestedObjectives(null, player.Army(), display: false); //Get the current list of MissionObjectivesSuggested[(ArmiesE)OldObj.AttackingArmy];
 
-                if (ScoutPhotoRecord == null || ScoutPhotoRecord.Count == 0) return;
+                
 
                 var ScoutPhotoRecord_copy = new Dictionary<Tuple<int, int, aPlayer>, List<string>>(ScoutPhotoRecord); //<int,int> = ScoutPhotoID, Army
 

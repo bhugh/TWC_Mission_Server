@@ -120,7 +120,7 @@ public class BattlePos100 : TWCMissionBattles
         bumrush_bluered_misfile_namematch = "Tobruk_Campaign-Rush-Red-Scegga No3 Airfield";  //Scegga No3 is the airport Blue is trying to take over in this mission; this is the Red counterattack
         bumrush_blueblue_misfile_namematch = "Tobruk_Campaign-Rush-Blue-Scegga No3 Airfield";  //Scegga No3 is the airport Blue is trying to take over in this mission; this is the Blue attack
 
-        Console.WriteLine("Pos10 inited, {0} {1} {2} {3}", score, leastScore, mostScore, focus_airport_misfile_name);
+        Console.WriteLine("Pos100 inited, {0} {1} {2} {3}", score, leastScore, mostScore, focus_airport_misfile_name);
 
     }
 

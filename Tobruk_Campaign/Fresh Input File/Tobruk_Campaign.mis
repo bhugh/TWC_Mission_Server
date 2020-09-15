@@ -1536,6 +1536,7 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace1]
   tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
@@ -1575,6 +1576,7 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace3]
   tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
@@ -1614,6 +1616,7 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace4]
   tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
@@ -1653,6 +1656,7 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace5]
   tobruk:Aircraft.Bf-108B-2_Trop
   tobruk:Aircraft.Bf-109E-7_Trop
@@ -1808,6 +1812,7 @@
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace12]
+  tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
@@ -1817,6 +1822,7 @@
   tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace13]
   tobruk:Aircraft.Bf-110C-4B_Trop
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
@@ -1844,7 +1850,7 @@
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop
-  Aircraft.BlenheimMkIVNF_Late
+  tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
   tobruk:Aircraft.HurricaneMkIIc-Late
   tobruk:Aircraft.KittyhawkMkIA-Trop
@@ -1856,9 +1862,8 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace16]
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.Bf-110C-4B_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.BR-20M_Trop
@@ -1871,6 +1876,7 @@
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
 [BirthPlace17]
+  tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
@@ -1880,3 +1886,4 @@
   tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop

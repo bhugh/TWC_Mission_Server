@@ -596,8 +596,8 @@ public class Mission : AMission, IMainMission
             stopwatch = Stopwatch.StartNew();
             RADAR_REALISM = (int)5;
             RESULTS_OUT_FILE = CLOD_PATH + FILE_PATH + @"/" + "MissionResult.txt";
-            radar_messages_store = new ConcurrentDictionary<string, Tuple<long, SortedDictionary<string, string>>>();
-            ai_radar_info_store = new ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>>();
+            radar_messages_store = new ConcurrentDictionary<string, Tuple<long, SortedDictionary<string, string>>>() { };
+            ai_radar_info_store = new ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>>(){};
             MissionObjectivesList = new Dictionary<string, MissionObjective>();
             //SMissionObjectivesList = MissionObjectivesList as IMissionObjecit;
 
@@ -2084,7 +2084,7 @@ public class Mission : AMission, IMainMission
     //LOADING OUR RANDOM SUB-MISSIONS//////////////////////////////
     public List<string> GetFilenamesFromDirectory(string dirPath, string mask = null)
     {
-        List<string> list = new List<string>();
+        List<string> list = new List<string>() { };
         string[] filenames = Directory.GetFiles(dirPath, "*" + mask + "*.mis");
 
         list = new List<string>(filenames);
@@ -4179,18 +4179,22 @@ public class Mission : AMission, IMainMission
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
             if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
-                 
+
                 foreach (int army in GamePlay.gpArmies())
                 {
                     //Console.WriteLine("groupAllAircraft: 0");
                     CurrentAG[army] = new HashSet<AiAirGroup>();
 
                     HashSet<AiAirGroup> doneAG = new HashSet<AiAirGroup>();
+                    
+                    //trying to avoid obj ref not set to instance obj heree which CAN happen if a array is set to null instead of empty.
+                    AiAirGroup[] aGa = GamePlay.gpAirGroups(army);
+                    if (aGa == null || aGa.Count() == 0 ) continue;
 
                     try
                     {
                         //if (GamePlay.gpAirGroups(army) != null)
-                        foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+                        foreach (AiAirGroup airGroup in aGa)
                         {
                             if (airGroup == null) continue;
                             //Console.WriteLine("groupAllAircraft: 0.5");
@@ -4239,8 +4243,12 @@ public class Mission : AMission, IMainMission
 
                                         if (!(airGroupInfoDict.ContainsKey(airGroup))) airGroupInfoDict[airGroup] = new AirGroupInfo(actor, airGroup, this, Time.current());
 
+                                        //trying to avoid obj ref not set to instance obj heree which CAN happen if a array is set to null instead of empty.
+                                        AiAirGroup[] aGa2 = GamePlay.gpAirGroups(army);
+                                        if (aGa2 == null || aGa2.Count() == 0) continue;
+
                                         //Console.WriteLine("groupAllAircraft: 1.4");
-                                        foreach (AiAirGroup airGroup2 in GamePlay.gpAirGroups(army))
+                                        foreach (AiAirGroup airGroup2 in aGa)
                                         {
                                             //Console.WriteLine("groupAllAircraft: 1.5");
                                             if (doneAG.Contains(airGroup2)) continue;
@@ -4347,10 +4355,16 @@ public class Mission : AMission, IMainMission
                     */
                     //Dictionary<AiAirGroup, AirGroupInfo>[] aGICA = new Dictionary<AiAirGroup, AirGroupInfo>[] (airGroupInfoCircArr.ArrayStack); //The array with last pushed on in 0 position
                     Dictionary<AiAirGroup, AirGroupInfo>[] aGICA;
-                    lock (airGroupInfoCircArr)
+
+                    try
                     {
-                        aGICA = airGroupInfoCircArr.ArrayStack.ToArray(); //The array with last pushed on in 0 position
+                        lock (airGroupInfoCircArr)
+                        {
+                            aGICA = airGroupInfoCircArr.ArrayStack.ToArray(); //The array with last pushed on in 0 position
+                        }
                     }
+                    catch (Exception ex)
+                    { Console.WriteLine("GroupAirgroups aGICA ERROR!!!!!!!!!!!!!!! {0}", ex); return; }
 
                     //airGroupInfoCircArr.Push(airGroupInfoDict);
 
@@ -5002,7 +5016,7 @@ public class Mission : AMission, IMainMission
             SortedDictionary<string, string> radar_messages =
                 new SortedDictionary<string, string>(new ReverseComparer<string>()); //reverse sorted so "best" messages come last on the list players receive
             SortedDictionary<string, IAiAirGroupRadarInfo> ai_radar_info =
-                new SortedDictionary<string, IAiAirGroupRadarInfo>(); //NOT reverse sorted so on the list of AI radar returns, the best messages come first
+                new SortedDictionary<string, IAiAirGroupRadarInfo>() { }; //NOT reverse sorted so on the list of AI radar returns, the best messages come first
             //string [] radar_messages, radar_messages_index;             
             int wait_s = 0;
             long refreshtime_ms = 0;
@@ -5140,13 +5154,14 @@ public class Mission : AMission, IMainMission
             savenewmessages = true; //save the messages that are generated
             currtime_ms = stopwatch.ElapsedMilliseconds;
 
-            try {
+            try
+            {
                 //If the person has requested a new radar return too soon, just repeat the old return verbatim
                 //We have 3 cases:
                 // #1. ok to give new radar return
                 // #2. Too soon since last radar return to give a new one
                 // #3. New radar return is underway but not finished, so don't give them a new one. 
-                if (radar_realism > 0 && radar_messages_store.ContainsKey(playername_index) && display && player != null)
+                if (radar_realism > 0 && radar_messages_store != null && radar_messages_store.ContainsKey(playername_index) && display && player != null)
                 {
                     message_data = radar_messages_store[playername_index];
                     long time_elapsed_ms = currtime_ms - message_data.Item1;
@@ -5196,7 +5211,8 @@ public class Mission : AMission, IMainMission
 
             //If they haven't requested a return before, or enough time has elapsed, give them a new return  
             if (savenewmessages)
-            { //try
+            {
+                try
                 {
                     //When we start to work on the messages we save current messages (either blank or the previous one that was fetched from radar_messages_store)
                     //with special time code -1, which means that radar returns are currently underway; don't give them any more until finished.
@@ -5661,12 +5677,12 @@ public class Mission : AMission, IMainMission
 
                                                 //if (a == p && radar_realism >= 0) type = "Your position";
                                                 if (a == p && radar_realism >= 0) continue; //the player is in the DB and we don't want/need to give an intercept to self-location a while ago, as shown in the DB.
-                                                                                            /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
-                                                                                             
-                                                                                             + a.Type() + " " 
-                                                                                             + a.TypedName() + " " 
-                                                                                             +  a.AirGroup().ID(), new object[] { });
-                                                                                            */
+                                                /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " " 
+
+                                                 + a.Type() + " " 
+                                                 + a.TypedName() + " " 
+                                                 +  a.AirGroup().ID(), new object[] { });
+                                                */
                                                 pos1 = agid.AGGavePos;
                                                 //Thread.Sleep(100);
                                                 //pos2=a.Pos();
@@ -6410,7 +6426,7 @@ public class Mission : AMission, IMainMission
 
                     if (radar_realism < 0)
                     {
-                        //try
+                        try
                         {
                             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX9 " + DateTime.UtcNow.TimeOfDay.ToString("T")); //Testing for potential causes of warping
                             string typeSuff = "";
@@ -6673,7 +6689,7 @@ public class Mission : AMission, IMainMission
                                 bigMess += (string.Format("RED session totals: {0:0.0} total points; {1:0.0}/{2:0.0}/{3:0.0}/{4:0.0} Air/AA/Naval/Ground points", RedTotalF,
               RedAirF, RedAAF, RedNavalF, RedGroundF)) + Environment.NewLine;
                                 bigMess += Environment.NewLine;
-                                
+
 
                                 var leakTo = new List<bool>() { false, false, false };  //0, 1, 2 indexes - note that index 0 will be ignored.
                                 try
@@ -6687,7 +6703,8 @@ public class Mission : AMission, IMainMission
                                             leakTo[attackingArmy] = gsl.discovered;
                                         }
                                     }
-                                } catch (Exception ex) { Console.WriteLine("Radar leakTo ERROR: " + ex.ToString()); }
+                                }
+                                catch (Exception ex) { Console.WriteLine("Radar leakTo ERROR: " + ex.ToString()); }
 
                                 bigMess += ("Blue Objectives complete (" + MissionObjectiveScore[ArmiesE.Blue].ToString("F0") + " points):" + (MissionObjectivesCompletedString[ArmiesE.Blue])) + Environment.NewLine;
                                 bigMess += Environment.NewLine;
@@ -6702,7 +6719,7 @@ public class Mission : AMission, IMainMission
 
                                 if (playerArmy == -1 || playerArmy == -2 || playerArmy == -3 || playerArmy == -4) bigMess += (MO_BRBumrushSituationReport(player: player, numToDisplay: 50, delay: 0, display: false, html: false)) + Environment.NewLine;
 
-                                bigMess += Environment.NewLine;                               
+                                bigMess += Environment.NewLine;
 
                                 /***TODO: Need to include some kind of current mission & campaign summary here
                                  * 
@@ -6731,7 +6748,7 @@ public class Mission : AMission, IMainMission
                                     bigMess += (msg) + Environment.NewLine;
                                 }
 
-                                //try
+                                try
                                 {
                                     msg = ListRadarTargetDamage(null, -1, false, false); //Add the list of current radar airport conditions
                                     msg += Environment.NewLine;
@@ -6743,7 +6760,7 @@ public class Mission : AMission, IMainMission
                                         bigMess += (msg);
                                     }
                                 }
-                                //catch (Exception ex) { Console.WriteLine("Radar Write34: " + ex.ToString()); }
+                                catch (Exception ex) { Console.WriteLine("Radar Write34: " + ex.ToString()); }
 
                                 bigMess += Environment.NewLine;
                                 //string netRed = TWCStatsMission.Display_SessionStatsAll(null, 1, false, false);
@@ -6807,7 +6824,7 @@ public class Mission : AMission, IMainMission
 
 
                         }
-                        //catch (Exception ex) { Console.WriteLine("Radar Write1: " + ex.ToString()); }
+                        catch (Exception ex) { Console.WriteLine("Radar Write1: " + ex.ToString()); }
                     }
 
                     TimeSpan timeDiff = DateTime.UtcNow.Subtract(d);
@@ -6870,13 +6887,14 @@ public class Mission : AMission, IMainMission
                     });//timeout      
 
                 }
-                /*catch (Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Radar ERROR37: " + ex.ToString());
-                }*/
+                }
 
-                            }
-        }  catch (Exception ex)
+            }
+        }
+        catch (Exception ex)
         {
             Console.WriteLine("Radar *MAIN* ERROR: " + ex.ToString());
         }
@@ -9913,7 +9931,7 @@ public class Mission : AMission, IMainMission
         try { 
             return Calcs.GetActorsByNameMatch(GamePlay, this, AllActorsDict, name, matcharmy, type);
         } catch (Exception ex) { Console.WriteLine("main.GetActorsByNameMatch ERROR: " + ex.ToString());
-            return new List<AiActor>();
+            return new List<AiActor>() { };
         }
     }
 
@@ -14395,7 +14413,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         int numDisplayed = 0;
         double totDelay = 0;
-        List<string> currentSecondaryObjectives = new List<string>();
+        List<string> currentSecondaryObjectives = new List<string>() { };
 
         try
         {
@@ -15667,7 +15685,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     public List<string> MO_ListAllPrimaryObjectives(int army)
     {
-        var list = new List<string>();
+        var list = new List<string>() { };
 
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
@@ -16569,7 +16587,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     continue;
 
                 }
-                Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, the actor was 'invalid'. try again {0}", i);
+                Console.WriteLine("MO_BRBumrushAttack - ground group found to attack, took {0} tries", i);
                 success = true;
                 break;
             }
@@ -16590,6 +16608,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             {
                 try
                 {
+                    if (nearestGG == null) return;
                     Console.WriteLine("MO_BRBumrushAttack - Starting Ground Group attack for " + (nearestGG as AiActor).Name() + " " + nearestGG.ID());
                     double alt_m = random.Next(400, 800);
                     int numWayPoints = 1;
@@ -19962,21 +19981,25 @@ public static class Calcs
 
         foreach (AiActor actor in groundActors.Values)
         {
-            if ((AiGroundActor)actor == null) continue;
-            //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
-            //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
-            if ((actor as AiGroundActor).Health() < 0.0001) continue; //only count them if they are alive & in some decent state of health
-            if (!GamePlay.gpActorIsValid(actor)) continue; //maybe not necessary/harmful??!
-            if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
-            bool art = isActorArtillery(actor);
-            bool veh = isActorVehicle(actor);
-            if (!art && !veh) continue;
-            if (type.ToLower() == "vehicle" && !veh) continue;
-            if (type.ToLower() == "artillery" && !art) continue;
-            if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
+            try
+            {
+                if (actor == null || actor as AiGroundActor == null) continue;
+                //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+                //Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+                if ((actor as AiGroundActor).Health() < 0.0001) continue; //only count them if they are alive & in some decent state of health
+                if (!GamePlay.gpActorIsValid(actor)) continue; //maybe not necessary/harmful??!
+                if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
+                bool art = isActorArtillery(actor);
+                bool veh = isActorVehicle(actor);
+                if (!art && !veh) continue;
+                if (type.ToLower() == "vehicle" && !veh) continue;
+                if (type.ToLower() == "artillery" && !art) continue;
+                if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
 
-            //Console.WriteLine("Found groundactor " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString()+ " " + actor.Army());
-            count++;
+                //Console.WriteLine("Found groundactor " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString()+ " " + actor.Army());
+                count++;
+            }
+            catch (Exception ex) { Console.WriteLine("CountGroundActors inner loop ERROR: " + ex.ToString()); }
         }
 
         return count;
@@ -20313,25 +20336,31 @@ public static class Calcs
                 {
                     //Stationaries - so not sure if we need to remove these; they are not actors ?!?
                     List<GroundStationary> gs = GamePlay.gpGroundStationarys(x_m, y_m, radius_m).ToList();
-                    foreach (GroundStationary g in gs)
-                    {
-                        if (g == null || (g as GroundStationary) == null) continue;
-                        Console.WriteLine("Groundstat within radius: " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
-                        if (matcharmy > 0 && g.country != matchstring) continue;
-                        if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
+                    if (gs != null) foreach (GroundStationary g in gs)
                         {
-                            mission.Timeout(clc_random.Next(1, 30), () => {
-
-                            if (g != null)
+                            try
                             {
-                                Console.WriteLine("Groundstat DESTROYING " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
-                                g.Destroy();
+                                if (g == null || (g as GroundStationary) == null) continue;
+                                Console.WriteLine("Groundstat within radius: " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
+                                if (matcharmy > 0 && g.country != matchstring) continue;
+                                if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
+                                {
+                                    mission.Timeout(clc_random.Next(1, 30), () =>
+                                    {
+
+                                        if (g != null)
+                                        {
+                                            Console.WriteLine("Groundstat DESTROYING " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
+                                            g.Destroy();
+                                        }
+                                    }); //COULD check to make sure they are the same type we placed, here.
+                                        //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
+                                    countStat++;
+                                }
+
                             }
-                             }); //COULD check to make sure they are the same type we placed, here.
-                            //Timeout makes the group disappear gradually over time but ALSO avoids the issue with deleting items in the list while looping i
-                            countStat++;
+                            catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: STATIONARIES INNER LOOP ERROR! " + ex.ToString()); }
                         }
-                    }
 
                     /*
                     //Ground Actors
@@ -20376,26 +20405,26 @@ public static class Calcs
                                     }
                                 }
                             } */
-
                 }
-                catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: STATIONARIES ERROR! " + ex.ToString()); }
+                catch (Exception ex) { Console.WriteLine("RemoveAllGroundStationariesActors: STATIONARIES 1 ERROR! " + ex.ToString()); }
+
 
                 try
                 {
                     foreach (AiActor actor in groundActors.Values)
                     {
                         if (actor == null || (AiGroundActor)actor == null) continue;
-                        
+
                         if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
                         if (CalculatePointDistance(new Point2d(x_m, y_m), actor.Pos()) > radius_m) continue;
                         Console.WriteLine("Groundact " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
                         mission.Timeout(clc_random.Next(1, 30), () =>
                         {
                             string firetype = "BuildingFireSmall";
-                            //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireBig";
-                            //if (clc_random.NextDouble() < 0.05333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype); //too much smoke already
+                        //if (clc_random.NextDouble() < 0.02333) firetype = "BuildingFireBig";
+                        //if (clc_random.NextDouble() < 0.05333) Calcs.loadSmokeOrFire(GamePlay, mission, actor.Pos().x, actor.Pos().y, 0, firetype); //too much smoke already
 
-                            if (actor != null)
+                        if (actor != null)
                             {
                                 Console.WriteLine("Groundact DESTROYING " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
                                 (actor as AiCart).Destroy();
@@ -21562,7 +21591,7 @@ namespace Ini
         }
         public List<string> IniReadList(string Section, string Key)
         {
-            List<string> l = new List<string>();
+            List<string> l = new List<string>() { };
 
             int total = IniReadValue(Section, "Count", (int)0);
 

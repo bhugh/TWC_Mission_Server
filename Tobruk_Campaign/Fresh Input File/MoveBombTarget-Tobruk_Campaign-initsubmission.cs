@@ -465,8 +465,12 @@ public class Mission : AMission
             Point3d StartPos = from.Pos();
 
             //Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 1 : 2);
+            AiAirGroup[] aga1 = new AiAirGroup [] { };
+            if (GamePlay.gpAirGroups(1) != null) aga1 = GamePlay.gpAirGroups(1);
+            AiAirGroup[] aga2 = new AiAirGroup[] { };
+            if (GamePlay.gpAirGroups(2) != null) aga1 = GamePlay.gpAirGroups(2);
 
-            Airgroups = GamePlay.gpAirGroups(1).Concat(GamePlay.gpAirGroups(2)).ToArray();  //army 1 pilots UNION army 2 pilots.  Not sure why we can't just get a simple list of ALL pilots in the game, but this is one way to do it
+            Airgroups = aga1.Concat(aga2).ToArray();  //army 1 pilots UNION army 2 pilots.  Not sure why we can't just get a simple list of ALL pilots in the game, but this is one way to do it
             //Concat(back).ToArray()
             if (Airgroups != null)
             {

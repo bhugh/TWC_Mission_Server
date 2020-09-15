@@ -4635,7 +4635,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace2]
@@ -4663,7 +4663,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace3]
@@ -4691,7 +4691,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace4]
@@ -4719,7 +4719,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace5]
@@ -4747,7 +4747,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace6]
@@ -4775,7 +4775,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace7]
@@ -5037,7 +5037,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace17]
@@ -5117,7 +5117,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace20]
@@ -5145,7 +5145,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace21]
@@ -5225,7 +5225,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace24]
@@ -5253,7 +5253,7 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace25]
@@ -5309,6 +5309,6 @@
   tobruk:Aircraft.TomahawkMkII-Late-Trop
   tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop

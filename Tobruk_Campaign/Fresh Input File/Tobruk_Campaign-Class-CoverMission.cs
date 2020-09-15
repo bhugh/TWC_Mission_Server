@@ -4949,7 +4949,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             Point3d startPos = from.Pos();
             List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
-            if (airGroups.Count == 0) return null;
+            if (airGroups == null || airGroups.Count == 0) return null;
             int choice = ran.Next(airGroups.Count);
             if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
                 choice = ran.Next(airGroups.Count);
@@ -4964,8 +4964,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         try
         {
-            if (GamePlay == null) return null;
-            if (from == null) return null;
+            if (GamePlay == null) return new List<AiAirGroup>() { }; 
+            if (from == null) return new List<AiAirGroup>() { }; 
             List<AiAirGroup> returnAirGroups = new List<AiAirGroup>();
             AiAirGroup[] Airgroups;
             Point3d StartPos = from.Pos();
@@ -4986,9 +4986,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 return returnAirGroups;
             }
             else
-                return null;
+            return new List<AiAirGroup>() { };
         }
-        catch (Exception ex) { Console.WriteLine("-COVER getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return null; }
+        catch (Exception ex) { Console.WriteLine("-COVER getNearbyEnemyAirGroups ERROR: " + ex.ToString()); return new List<AiAirGroup>() { }; }
 
     }
 

@@ -788,7 +788,7 @@ public class CoverMission : AMission, ICoverMission
             {"bob:Aircraft.SpitfireMkIa", false},
             {"bob:Aircraft.SpitfireMkIa_100oct", false},
             {"bob:Aircraft.SpitfireMkIIa", false},
-            {"bob:Aircraft.WellingtonMkIc", false},
+            {"bob:Aircraft.WellingtonMkIc", true}, //NOT SURE if this one will drop bombs (more than 1 per mission)
             {"tobruk:Aircraft.BeaufighterMkIC", true},
             {"tobruk:Aircraft.BeaufighterMkIC_Trop", true},
             {"tobruk:Aircraft.BeaufighterMkIF_Late", false},
@@ -832,7 +832,7 @@ public class CoverMission : AMission, ICoverMission
             {"tobruk:Aircraft.TomahawkMkII-Late", false},
             {"tobruk:Aircraft.TomahawkMkII-Late-Trop", false},
             {"tobruk:Aircraft.TomahawkMkII-Trop", true},
-            {"tobruk:Aircraft.WellingtonMkIa_trop", false}, //This is a great plane BUT seems to cause the bug where ppl can't spawn into the server any more. 
+            {"tobruk:Aircraft.WellingtonMkIa_trop", true}, //This is a great plane BUT seems to cause the bug where ppl can't spawn into the server any more. 
             {"tobruk:Aircraft.WellingtonMkIc_Late", false},
             {"tobruk:Aircraft.WellingtonMkIc_Late_trop", false}, //5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW
             {"tobruk:Aircraft.WellingtonMkIc_t", false},
@@ -870,7 +870,7 @@ public class CoverMission : AMission, ICoverMission
             {"bob:Aircraft.He-111H-2",false},
             {"bob:Aircraft.He-111P-2",true},
             {"bob:Aircraft.Ju-87B-2",false},
-            {"bob:Aircraft.Ju-88A-1",false},
+            {"bob:Aircraft.Ju-88A-1",true},
             {"bob:Aircraft.Do-17Z-2",true},
             {"tobruk:Aircraft.Bf-108B-2_Trop",true},
             {"tobruk:Aircraft.Bf-109E-7",false},
@@ -896,7 +896,7 @@ public class CoverMission : AMission, ICoverMission
             {"tobruk:Aircraft.CR42_Trop",true},
             {"tobruk:Aircraft.D520_Serie1",false},
             {"tobruk:Aircraft.D520_Serie1_Trop",true},
-            {"tobruk:Aircraft.DH82A_Trop",true}, //Tiger Moth/no weapons at a ll
+            {"tobruk:Aircraft.DH82A_Trop",false}, //Tiger Moth/no weapons at all
             {"tobruk:Aircraft.G50_Trop",true},
             {"tobruk:Aircraft.He-111H-2_Trop",true},
             {"tobruk:Aircraft.He-111H-6",false},

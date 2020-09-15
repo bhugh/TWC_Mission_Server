@@ -333,7 +333,8 @@ public class SupplyMission : AMission, ISupplyMission
             //bob: items are generally for cover ONLY, not for player use in Tobruk map
             {"bob:Aircraft.BlenheimMkI",120},
             {"bob:Aircraft.BlenheimMkIF",120},
-            {"bob:Aircraft.BlenheimMkINF",120},  
+            {"bob:Aircraft.BlenheimMkINF",120},
+            {"bob:Aircraft.WellingtonMkIc",120},
             {"tobruk:Aircraft.BeaufighterMkIC_Trop", 90},
             {"tobruk:Aircraft.BeaufighterMkIC", 125 }, //will be used as Cover Fighter ONLY */
             {"tobruk:Aircraft.BeaufighterMkIF_Late_Trop", 90},            
@@ -358,10 +359,10 @@ public class SupplyMission : AMission, ISupplyMission
             {"tobruk:Aircraft.SpitfireMkVbTrop", 50},
             {"tobruk:Aircraft.TomahawkMkII-Late-Trop", 70},
             {"tobruk:Aircraft.TomahawkMkII-Trop", 50},
-            {"tobruk:Aircraft.WellingtonMkIa_trop", 50},            
+            {"tobruk:Aircraft.WellingtonMkIa_trop", 75},            
             {"tobruk:Aircraft.WellingtonMkIc_Late_trop", 50},            
             {"tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop", 50},
-            {"tobruk:Aircraft.WellingtonMkIc_trop", 50}, 
+            {"tobruk:Aircraft.WellingtonMkIc_trop", 60}, 
 
                     } },
         { ArmiesE.Blue, new Dictionary <string,double>(){
@@ -450,6 +451,7 @@ public class SupplyMission : AMission, ISupplyMission
             {"bob:Aircraft.He-111P-2",150},   
             {"bob:Aircraft.Do-17Z-2",100},
             {"bob:Aircraft.Bf-110C-4B", 125}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
+            {"bob:Aircraft.Ju-88A-1", 80},
 
             {"tobruk:Aircraft.Bf-108B-2_Trop", 76},
             {"tobruk:Aircraft.Bf-109E-7_Trop", 90},
@@ -616,10 +618,12 @@ public class SupplyMission : AMission, ISupplyMission
             {"bob:Aircraft.SpitfireMkIa", 0},
             {"bob:Aircraft.SpitfireMkIa_100oct", 0},
             {"bob:Aircraft.SpitfireMkIIa", 0},
-            {"bob:Aircraft.WellingtonMkIc", 0}, */
+            {"bob:Aircraft.WellingtonMkIc", 0}, */                        
+
             {"bob:Aircraft.BlenheimMkI",2}, //Cover bomber ONLY
             {"bob:Aircraft.BlenheimMkIF",2}, //Cover bomber ONLY
             {"bob:Aircraft.BlenheimMkINF",2}, //Cover bomber ONLY 
+            {"bob:Aircraft.WellingtonMkIc",2}, //Cover bomber ONLY 
             {"tobruk:Aircraft.BeaufighterMkIC", 4}, //Cover fighter ONLY
             {"tobruk:Aircraft.BeaufighterMkIC_Trop", 2}, 
             {"tobruk:Aircraft.BeaufighterMkIF_Late", 0},
@@ -705,10 +709,13 @@ public class SupplyMission : AMission, ISupplyMission
             {"bob:Aircraft.He-111P-2", 0},
             {"bob:Aircraft.Ju-87B-2", 0},
             {"bob:Aircraft.Ju-88A-1", 0}, */
-            
+
+
+            {"bob:Aircraft.Bf-110C-4-NJG", 2},
             {"bob:Aircraft.He-111P-2", 2}, //Cover bomber ONLY
             {"bob:Aircraft.Do-17Z-2", 2}, //Cover bomber ONLY
             {"bob:Aircraft.Bf-110C-4B", 4}, //Cover fighter ONLY for Tobruk
+            {"bob:Aircraft.Ju-88A-1", 1},
 
             {"tobruk:Aircraft.Bf-108B-2_Trop", 2},
             {"tobruk:Aircraft.Bf-109E-7", 0},

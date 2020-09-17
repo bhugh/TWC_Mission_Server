@@ -175,6 +175,7 @@ public class CoverMission : AMission, ICoverMission
     {
         Task.Run(() =>
         {
+            if (GamePlay == null) return;
             Timeout(2.125432 * 60, () => checkPlayersCoverACDisappeared_recurs());
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVXX2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             foreach (Player player in GamePlay.gpRemotePlayers()) checkPlayerAirgroups(player);
@@ -231,7 +232,7 @@ public class CoverMission : AMission, ICoverMission
 
                 //Timeout(10, () => checkPlayersCoverACDisappeared_recurs()); //testings
 
-                if (GamePlay is GameDef)
+                if (GamePlay != null && GamePlay is GameDef)
                 {
                     //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
                     (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
@@ -258,7 +259,7 @@ public class CoverMission : AMission, ICoverMission
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped2: " + ex.ToString()); }
 
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
             (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
@@ -333,6 +334,7 @@ public class CoverMission : AMission, ICoverMission
 
         Timeout(4.3, () =>
         {
+            if (GamePlay == null) return;
             string m = String.Format("COVER: Your cover airgroup targeting mode reset to '{0}'", "(none)");
             GamePlay.gpLogServer(new Player[] { player }, m, null);
         });
@@ -375,6 +377,7 @@ public class CoverMission : AMission, ICoverMission
 
     public void BAM_toggleBombAimMode_withmessages(Player player)
     {
+        if (GamePlay == null) return;
         bool removeLastBombPoint = true;
         string s = BAM_toggleBombAimMode(player);
 
@@ -471,7 +474,7 @@ public class CoverMission : AMission, ICoverMission
             PBP_playerBombPoint[player] = new Tuple<Point3d, DateTime>(pos, DateTime.UtcNow);
             updated = true;
         }
-        if (updated && BAM_isBombPoint(player))
+        if (updated && BAM_isBombPoint(player) && GamePlay != null)
         {
             GamePlay.gpLogServer(new Player[] { player }, "COVER {0} set new target point for cover bombers in sector {1} ", new object[] { player.Name(), Calcs.correctedSectorNameDoubleKeypad(this, pos) });
         }
@@ -678,7 +681,7 @@ public class CoverMission : AMission, ICoverMission
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because left map OK.");
 
                     }
-                    else if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
+                    else if (Z_AltitudeAGL < 5 && GamePlay != null && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
@@ -687,7 +690,7 @@ public class CoverMission : AMission, ICoverMission
                     }
                     // crash landing in solid ground
 
-                    else if (Z_AltitudeAGL < 5 && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
+                    else if (Z_AltitudeAGL < 5 && GamePlay != null && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
                     {
                         if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
@@ -1143,7 +1146,7 @@ public class CoverMission : AMission, ICoverMission
         try
         {
 
-            if (player == null) return "";
+            if (player == null || GamePlay == null) return "";
             string nl = Environment.NewLine;
             if (html) nl = "<br>" + nl;
             string retmsg = "";
@@ -1274,6 +1277,7 @@ public class CoverMission : AMission, ICoverMission
     //army = ArmiesE.None lists both armies
     public string listCoverAircraftCurrentlyAvailable(ArmiesE army, Player player = null, bool display = true, bool html = false)
     {
+        if (GamePlay == null) return "";
         string nl = Environment.NewLine;
         if (html) nl = "<br>" + nl;
         string retmsg = "";
@@ -2054,7 +2058,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             EscortMakeLand(airGroup, null);
             numret++;
         }
-        GamePlay.gpLogServer(null, numret.ToString() + " groups of escort aircraft/bombers have been instructed to land at the nearest friendly airport and returned to General Supply.", new object[] { });
+        if (GamePlay != null) GamePlay.gpLogServer(null, numret.ToString() + " groups of escort aircraft/bombers have been instructed to land at the nearest friendly airport and returned to General Supply.", new object[] { });
     }
 
     Dictionary<Player, int> TimeOfPlayerLastLandRequest = new Dictionary<Player, int>();
@@ -2890,6 +2894,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
           */
+        if (GamePlay == null) return "";
+
         //default spawn location is Bembridge, landed, 0 mph & on the ground
         string locx = "76923.96";
         //string locy = "179922.36"; //real Bembridge location
@@ -4040,7 +4046,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         try
         {
-            if (airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double>(null, null, 0); }
+            if (GamePlay == null ||airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double>(null, null, 0); }
             Console.WriteLine("MBT: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
 
             double changeL_XY_m = 100;
@@ -5072,6 +5078,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     private Tuple<double, Point3d, bool> Stb_distanceToNearestFriendlyAirport(AiActor actor, bool birthplacefind = false)  //<distance, location, whether or not an airspawn
     {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        if (GamePlay == null) return new Tuple<double, Point3d, bool>(Math.Sqrt(d2), new Point3d(0,0,0),false);
         double d2Min = d2;
         if (actor == null) return new Tuple<double, Point3d, bool>(d2Min, new Point3d(-1, -1, -1), false);
         Point3d pd = actor.Pos();
@@ -5175,6 +5182,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     public AiAirport Stb_nearestAirport(Point3d location, int army = 0, bool? isSeaplane = null)
     {
         AiAirport NearestAirfield = null;
+        if (GamePlay == null) return null;
         AiAirport[] airports = GamePlay.gpAirports();
         Point3d StartPos = location;
 
@@ -6212,7 +6220,7 @@ public static class CoverCalcs
     public static int numPlayersInArmy(int army, CoverMission mission)
     {
         int ret = 0;
-        if (mission.GamePlay.gpRemotePlayers() != null && mission.GamePlay.gpRemotePlayers().Length > 0)
+        if (mission != null && mission.GamePlay !=null && mission.GamePlay.gpRemotePlayers() != null && mission.GamePlay.gpRemotePlayers().Length > 0)
         {
             foreach (Player p in mission.GamePlay.gpRemotePlayers())
             {
@@ -6226,6 +6234,8 @@ public static class CoverCalcs
     public static AiAirport GetRandomAirfieldNear(IGamePlay GamePlay, Point3d location, double distance)
     {
         List<AiAirport> CloseAirfields = new List<AiAirport>();
+        if (GamePlay == null) return null;
+
         AiAirport[] airports = GamePlay.gpAirports();
         Point3d StartPos = location;
 
@@ -6267,10 +6277,11 @@ public static class CoverCalcs
 
         Not sure if height is above sea level or above ground level.
         */
+        if (GamePlay == null) return;
 
         //mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
         //GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
-        mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
+            mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
         mission.Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
         mission.Timeout(4.5, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete4)", new object[] { }); });
 
@@ -6402,6 +6413,9 @@ public static class CoverCalcs
     {   // Purpose: Returns an array of all the AiActors in the game.
         // Use: GamePlay.gpGetActors();
         List<AiActor> result = new List<AiActor>();
+
+        if (msn.GamePlay == null) return result.ToArray();
+
         //List<int> armies = new List<int>(msn.GamePlay.gpArmies());
         List<int> armies = new List<int>() { 1, 2 };
         for (int i = 0; i < armies.Count; i++)
@@ -6442,6 +6456,7 @@ public static class CoverCalcs
     public static void listAllGroundActors(IGamePlay gp, int missionNumber = -1)
     {
         //TODO: Make it list only the actors in that mission by prefixing "XX:" if missionNumber is included.
+        if (gp == null) return;
         gp.gpLogServer(null, "Listing all ground actors:", new object[] { });
 
         int group_count = 0;
@@ -6489,6 +6504,7 @@ public static class CoverCalcs
     public static AiActor[] gpGetAllGroundActors(CoverMission msn, int lastMissionLoaded)
     {
         List<AiActor> result = new List<AiActor>();
+        if (msn.GamePlay == null) return result.ToArray();
         List<int> armies = new List<int>(msn.GamePlay.gpArmies());
         //List<int> armies = new List<int>() { 1, 2 };
         result = msn.mainmission.AllGroundDict.Values.ToList();        

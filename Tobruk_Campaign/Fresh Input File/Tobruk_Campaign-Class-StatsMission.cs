@@ -767,7 +767,7 @@ public class StatsMission : AMission, IStatsMission
             timer = new System.Threading.Timer(
                 new TimerCallback(saveAircraftParams_recurs),
                 null,
-                3000, //wait time @ startup, in ms
+                33000, //wait time @ startup, in ms
                 recursInterval); //periodically call the callback at this interval
             //saveAircraftParams_recurs(paramsInstance);            
         }
@@ -1012,6 +1012,7 @@ public class StatsMission : AMission, IStatsMission
         {
             try
             {
+                if (mission.GamePlay == null) return; //nothing to do
                 if (Monitor.TryEnter(StbAircraftParamStack_locker)) //lock the recursive/timer so that only one instance can run at a time
                 {
                     try
@@ -2592,6 +2593,9 @@ struct
 
           */
         //default spawn location is Bembridge, landed, 0 mph & on the ground
+
+        if (GamePlay == null) return ""; //nothing to do
+
         string locx = "76923.96";
         //string locy = "179922.36"; //real Bembridge location
         string locy = "178322.36"; //1600 meters off Bembridge
@@ -3478,6 +3482,7 @@ struct
     //It's sort of a stack for gplogserver messages
     public void gpLogServerWithDelay(Player[] to, object data, object[] third = null)
     {
+        if (GamePlay == null) return; //nothing to do
         //defined above:
         //public Int64 lastGpLogServerMsg_tick = 0;
         //public Int64 GpLogServerMsgDelay_tick = 1000000; //1 mill ticks or 0.1 second
@@ -3501,7 +3506,7 @@ struct
     //the messages can be seen on the lobby/map screen
     public void Stb_Chat(string line, Player player)
     {
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             (GamePlay as GameDef).gameInterface.CmdExec("chat " + line + " TO " + player.Name());
         }
@@ -3891,7 +3896,7 @@ struct
     public void Stb_destroyAllAIAircraft()
     {
         //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        if (GamePlay!= null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
             foreach (int army in GamePlay.gpArmies())
             {
@@ -3955,7 +3960,22 @@ struct
         } catch (Exception ex)
         {
             Console.WriteLine("Stb_returnListAllAIAircraft ERROR: " + ex.ToString());
-            return ist;
+
+            //TOBRUK SPECIAL
+            //TERRIBLE KLUDGE
+            //If we run into this situation of server is continually throwing error on any call to ".Armies()" and is stuck we just restart
+            //See https://theairtacticalassaultgroup.com/forum/showthread.php?t=34169&p=363848#post363848
+            if (ex.ToString().Contains("WYb4kT81Gj7ZXGv75lN9rAO6lAoq30CfWyWdUQD$AYNK.Armies()"))
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Stb_returnListAllAIAircraft KLUDGE!!! BAD ERROR!!!! .Armies()!!!!! Restarting server now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Console.WriteLine();
+                Console.WriteLine();
+                mainmission.EndMission(1, "");
+            }
+        
+        return ist;
         }
     }
 
@@ -3979,7 +3999,7 @@ struct
         removeOffMapPlayersTimer = new System.Threading.Timer(
             new TimerCallback(Stb_RemoveOffMapPlayers),
             null,
-            30000, //wait time @ startup
+            39000, //wait time @ startup
             18500); //periodically call the callback at this interval
         //Timeout(18.5, () => { Stb_RemoveOffMapPlayers_recurs(); });
         //Timeout(5, () => { Console.WriteLine("CHANGETARGET: Just changed for all"); });
@@ -4154,7 +4174,22 @@ struct
                     }
                 }
             }
-            catch (Exception ex) { Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString()); }
+            catch (Exception ex) { 
+                Console.WriteLine("Stb_RemoveOffMapPlayers ERROR: " + ex.ToString());
+
+                //TOBRUK SPECIAL
+                //TERRIBLE KLUDGE
+                //If we run into this situation of server is continually throwing error on any call to ".Armies()" and is stuck we just restart
+                //See https://theairtacticalassaultgroup.com/forum/showthread.php?t=34169&p=363848#post363848
+                if (ex.ToString().Contains("WYb4kT81Gj7ZXGv75lN9rAO6lAoq30CfWyWdUQD$AYNK.Armies()")) {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Stb_RemoveOffMapPlayers KLUDGE!!! BAD ERROR!!!! .Armies()!!!!! Restarting server now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    mainmission.EndMission(1, "");
+                }
+            }
             finally
             {
                 Monitor.Exit(removeOffMapPlayersTimer_locker);
@@ -4182,7 +4217,7 @@ struct
         //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
         if (player.Place() == null || (player.Place() as AiAircraft) == null) return;
 
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
             foreach (int army in GamePlay.gpArmies())
             {
@@ -4308,7 +4343,7 @@ struct
     {
         try
         {
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
                 foreach (int army in GamePlay.gpArmies())
                 {
@@ -4519,6 +4554,7 @@ struct
     private double Stb_distanceToNearestAirport(AiActor actor, bool birthplacefind = false)
     {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        if (GamePlay == null) return d2;
         double d2Min = d2;
         if (actor == null) return d2Min;
         Point3d pd = actor.Pos();
@@ -4762,7 +4798,7 @@ struct
                                     //If we load missions as sub-missions, as we often do, it is vital to have this in Init, not in "onbattlestarted" or some other place where it may never be detected or triggered if this sub-mission isn't loaded at the very start.
                                     //Console.WriteLine("starting chat1");
                                     //Start Chat Server
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             //Console.WriteLine("starting chat2");
             (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
@@ -4809,7 +4845,7 @@ struct
             List<Player> Players = new List<Player>();
 
             // Multiplayer
-            if (GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
+            if (GamePlay != null && GamePlay.gpRemotePlayers() != null && GamePlay.gpRemotePlayers().Length > 0)
             {
                 foreach (Player p in GamePlay.gpRemotePlayers())
                 {
@@ -4883,7 +4919,7 @@ struct
 
         try
         {
-            if (GamePlay is GameDef)
+            if (GamePlay != null && GamePlay is GameDef)
             {
                 //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
                 (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
@@ -5139,7 +5175,7 @@ struct
                 acEnter = -1;
             }
 
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
                 foreach (int army in GamePlay.gpArmies())
                 {
@@ -5174,6 +5210,7 @@ struct
         else if (msg.StartsWith("<ent") && player.Name().Substring(0, 4) == @"TWC_")
         {
 
+            if (GamePlay == null) return;
             string name = msg.Substring(5);
             AiActor actor = GamePlay.gpActorByName(name) as AiActor;
             if (actor != null) gpLogServerAndLog(new Player[] { player }, "Moving to " + name, new object[] { });
@@ -5344,6 +5381,7 @@ struct
 
                 Timeout(12, () =>
                     {
+                        if (GamePlay == null ) return;
                         int terr = GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y);
                         string msg6 = "You are in ENEMY territory";
                         if (terr == 00) msg6 = "You are in NEUTRAL territory";

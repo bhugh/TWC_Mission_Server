@@ -1498,7 +1498,6 @@
   "Blue High Alt Bomber Approach" 2 17807 46924 5000 1 1 1 . . . 0
   "High Alt Bomber Approach" 1 333767 15641 5000 1 1 1 . . . 0
 [BirthPlace0]
-  tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
@@ -1511,24 +1510,15 @@
   tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.GladiatorMkII_trop
   tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIa
   tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb
   tobruk:Aircraft.HurricaneMkIIb-Late
   tobruk:Aircraft.HurricaneMkIIbTrop
   tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc
   tobruk:Aircraft.HurricaneMkIIc-Late
   tobruk:Aircraft.HurricaneMkIIc-Trop
   tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId
   tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII
   tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkIIb
-  tobruk:Aircraft.SpitfireMkVa
-  tobruk:Aircraft.SpitfireMkVb
-  tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
@@ -1538,7 +1528,6 @@
   tobruk:Aircraft.WellingtonMkIc_trop
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace1]
-  tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
@@ -1551,24 +1540,15 @@
   tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.GladiatorMkII_trop
   tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIa
   tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb
   tobruk:Aircraft.HurricaneMkIIb-Late
   tobruk:Aircraft.HurricaneMkIIbTrop
   tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc
   tobruk:Aircraft.HurricaneMkIIc-Late
   tobruk:Aircraft.HurricaneMkIIc-Trop
   tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId
   tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII
   tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkIIb
-  tobruk:Aircraft.SpitfireMkVa
-  tobruk:Aircraft.SpitfireMkVb
-  tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
@@ -1578,7 +1558,6 @@
   tobruk:Aircraft.WellingtonMkIc_trop
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace3]
-  tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
@@ -1591,24 +1570,15 @@
   tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.GladiatorMkII_trop
   tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIa
   tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb
   tobruk:Aircraft.HurricaneMkIIb-Late
   tobruk:Aircraft.HurricaneMkIIbTrop
   tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc
   tobruk:Aircraft.HurricaneMkIIc-Late
   tobruk:Aircraft.HurricaneMkIIc-Trop
   tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId
   tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII
   tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkIIb
-  tobruk:Aircraft.SpitfireMkVa
-  tobruk:Aircraft.SpitfireMkVb
-  tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
@@ -1618,7 +1588,6 @@
   tobruk:Aircraft.WellingtonMkIc_trop
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace4]
-  tobruk:Aircraft.BeaufighterMkIC
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
@@ -1631,24 +1600,15 @@
   tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.GladiatorMkII_trop
   tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIa
   tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb
   tobruk:Aircraft.HurricaneMkIIb-Late
   tobruk:Aircraft.HurricaneMkIIbTrop
   tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc
   tobruk:Aircraft.HurricaneMkIIc-Late
   tobruk:Aircraft.HurricaneMkIIc-Trop
   tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId
   tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII
   tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkIIb
-  tobruk:Aircraft.SpitfireMkVa
-  tobruk:Aircraft.SpitfireMkVb
-  tobruk:Aircraft.SpitfireMkVb-HF
   tobruk:Aircraft.SpitfireMkVb-HF-Late
   tobruk:Aircraft.SpitfireMkVb-HF-Trop
   tobruk:Aircraft.SpitfireMkVbTrop
@@ -1669,9 +1629,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1680,7 +1640,9 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace6]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1694,9 +1656,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1705,7 +1667,9 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace7]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1769,6 +1733,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1777,15 +1744,37 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace10]
-  tobruk:Aircraft.BR-20M_Trop
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
   tobruk:Aircraft.Ju-88A-5_Trop
   tobruk:Aircraft.Ju-88A-5Late_Trop
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace11]
   tobruk:Aircraft.Bf-108B-2_Trop
   tobruk:Aircraft.Bf-109E-7_Trop
@@ -1798,9 +1787,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1809,81 +1798,172 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace12]
-  tobruk:Aircraft.DH82A_Trop
-  tobruk:Aircraft.BeaufighterMkIC
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Trop
-  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  tobruk:Aircraft.WellingtonMkIc_trop
-  tobruk:Aircraft.WellingtonMkIa_trop
-[BirthPlace13]
-  tobruk:Aircraft.Bf-110C-4B_Trop
-  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
-  tobruk:Aircraft.Bf-110C-6_Trop
-  tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
-  tobruk:Aircraft.He-111H-2_Trop
-  tobruk:Aircraft.He-111H-6_Trop
-  tobruk:Aircraft.Ju-87B-2_Trop
-  tobruk:Aircraft.Ju-88A-5_Trop
-  tobruk:Aircraft.Ju-88A-5Late_Trop
-  tobruk:Aircraft.Ju-88C-2_Trop
-  tobruk:Aircraft.Ju-88C-4_Trop
-  tobruk:Aircraft.Ju-88C-4Late_Trop
-[BirthPlace14]
-  tobruk:Aircraft.Bf-109E-7_Trop
-  tobruk:Aircraft.Bf-109E-7N_Trop
-  tobruk:Aircraft.Bf-109F-4Z_trop
-  tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
-  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
-[BirthPlace15]
-  tobruk:Aircraft.BeaufighterMkIC
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Trop
-  tobruk:Aircraft.DH82A_Trop
-  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
-  tobruk:Aircraft.HurricaneMkIIc-Late
-  tobruk:Aircraft.KittyhawkMkIA-Trop
-  tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.TomahawkMkII-Late
-  tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
-  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  tobruk:Aircraft.WellingtonMkIc_trop
-  tobruk:Aircraft.WellingtonMkIa_trop
-[BirthPlace16]
-  tobruk:Aircraft.Bf-110C-4B_Trop
-  tobruk:Aircraft.Bf-110C-6_Trop
-  tobruk:Aircraft.BR-20M_Trop
-  tobruk:Aircraft.He-111H-2_Trop
-  tobruk:Aircraft.He-111H-6_Trop
-  tobruk:Aircraft.Ju-87B-2_Trop
-  tobruk:Aircraft.Ju-88A-5_Trop
-  tobruk:Aircraft.Ju-88A-5Late_Trop
-  tobruk:Aircraft.Ju-88C-2_Trop
-  tobruk:Aircraft.Ju-88C-4_Trop
-  tobruk:Aircraft.Ju-88C-4Late_Trop
-[BirthPlace17]
-  tobruk:Aircraft.DH82A_Trop
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop
+  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
   tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.DH82A_Trop
+  tobruk:Aircraft.GladiatorMkII_trop
+  tobruk:Aircraft.HurricaneMkI_FB-Trop
+  tobruk:Aircraft.HurricaneMkIIaTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop-Late
+  tobruk:Aircraft.HurricaneMkIIc-Trop
+  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
+  tobruk:Aircraft.HurricaneMkIId-Trop
+  tobruk:Aircraft.KittyhawkMkIA-Trop
+  tobruk:Aircraft.MartletMkIII_Trop
+  tobruk:Aircraft.SpitfireMkVb-HF-Trop
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.TomahawkMkII-Late-Trop
+  tobruk:Aircraft.TomahawkMkII-Trop
   tobruk:Aircraft.WellingtonMkIc_Late_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
+[BirthPlace13]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace14]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace15]
+  tobruk:Aircraft.BeaufighterMkIC_Trop
+  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
+  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Trop
+  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.DH82A_Trop
+  tobruk:Aircraft.GladiatorMkII_trop
+  tobruk:Aircraft.HurricaneMkI_FB-Trop
+  tobruk:Aircraft.HurricaneMkIIaTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop-Late
+  tobruk:Aircraft.HurricaneMkIIc-Trop
+  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
+  tobruk:Aircraft.HurricaneMkIId-Trop
+  tobruk:Aircraft.KittyhawkMkIA-Trop
+  tobruk:Aircraft.MartletMkIII_Trop
+  tobruk:Aircraft.SpitfireMkVb-HF-Trop
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.TomahawkMkII-Late-Trop
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
   tobruk:Aircraft.WellingtonMkIa_trop
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+  tobruk:Aircraft.WellingtonMkIc_trop
+[BirthPlace16]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace17]
+  tobruk:Aircraft.BeaufighterMkIC_Trop
+  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
+  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Trop
+  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.DH82A_Trop
+  tobruk:Aircraft.GladiatorMkII_trop
+  tobruk:Aircraft.HurricaneMkI_FB-Trop
+  tobruk:Aircraft.HurricaneMkIIaTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop-Late
+  tobruk:Aircraft.HurricaneMkIIc-Trop
+  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
+  tobruk:Aircraft.HurricaneMkIId-Trop
+  tobruk:Aircraft.KittyhawkMkIA-Trop
+  tobruk:Aircraft.MartletMkIII_Trop
+  tobruk:Aircraft.SpitfireMkVb-HF-Trop
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.TomahawkMkII-Late-Trop
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+  tobruk:Aircraft.WellingtonMkIc_trop

@@ -590,7 +590,7 @@ public class Mission : AMission, IMainMission
             LOG_FULL_PATH = CLOD_PATH + FILE_PATH + @"/" + LOG_FILE_NAME;
             STATSCS_FULL_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/missions/Multi/Fatal/";  // Where we save things RELEVANT TO THE ENTIRE CAMPAIGN AS A WHOLE 
                                                                                                                        //(Note that a campaign may have several missions, each in their own FILE_PATH folder; this is the main folder that holds stats files, team stats, player registration lists, etc that are all relevant to the Campaign as a whole
-                                                                                                                       // Must match location -stats.cs is saving SessStats.txt to  
+                                                                                                                      // Must match location -stats.cs is saving SessStats.txt to  
 
 
             stopwatch = Stopwatch.StartNew();
@@ -1345,7 +1345,10 @@ public class Mission : AMission, IMainMission
                 foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
                 {
                     Point3d bp_pos = bp.Pos();
-                    if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                    Timeout(random.NextDouble() * 10, () =>
+                     {
+                         if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                    });
                 }
 
                 foreach (GroundStationary gg in GamePlay.gpGroundStationarys(pos.x, pos.y, radius)) //all stationaries w/i 10 or whatever meters of this object
@@ -1353,7 +1356,10 @@ public class Mission : AMission, IMainMission
                     if (random.Next(3) < 1)
                     {
                         //Console.WriteLine("Airfield dest: Removing airfield item " + gg.Name);
-                        gg.Destroy();
+                        Timeout(random.NextDouble() * 10, () =>
+                        {
+                            gg.Destroy();
+                        });
                     }
                 }
             }
@@ -1428,8 +1434,10 @@ public class Mission : AMission, IMainMission
             }
 
             //Timeout(70 + random.Next(70, 150), () => GamePlay.gpPostMissionLoad(f2));
-            GamePlay.gpPostMissionLoad(f2);
-
+           Timeout(random.NextDouble() * 10 + 10, () =>
+           {
+               GamePlay.gpPostMissionLoad(f2);
+           });
 
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
             //f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.txt"); //testing
@@ -1520,6 +1528,7 @@ public class Mission : AMission, IMainMission
 
         try
         {
+            if (GamePlay == null) return;
             //Console.WriteLine("main_bombexp_DoWork");
             //twcLogServer(null, "bombe 1", null);
             //twcLogServer(null, string.Format("bombe {0:N0} {1:N0} {2:N0}", pos.x, pos.y, pos.z), null);
@@ -3500,7 +3509,10 @@ public class Mission : AMission, IMainMission
 
             }
             saveName = "frontfile.txt";
-            GamePlay.gpPostMissionLoad(f);
+            Timeout(random.NextDouble() * 10, () =>
+            {
+                GamePlay.gpPostMissionLoad(f);
+            });
             if (saveName != null) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + saveName); //testing
             Console.WriteLine("Drew current frontline");
         });
@@ -3526,7 +3538,7 @@ public class Mission : AMission, IMainMission
 
             if (actor as Player != null)
             {
-                Task.Run(() => MO_SpoilPlayerScoutPhotos(actor as Player));
+                MO_SpoilPlayerScoutPhotos(actor as Player);
             }
 
             try
@@ -3683,6 +3695,7 @@ public class Mission : AMission, IMainMission
 
         try
         {
+            if (GamePlay == null) return;
             if (GamePlay.gpFrontArmy((aircraft as AiActor).Pos().x, (aircraft as AiActor).Pos().y) == (aircraft as AiActor).Army())
 
                 MO_RecordPlayerScoutPhotos(playersInPlane(aircraft));
@@ -3712,11 +3725,12 @@ public class Mission : AMission, IMainMission
     //this will destroy ALL ai controlled aircraft on the server
     public void destroyAIAircraft(Player player)
     {
-        Task.Run(() =>
+
+        //Task.Run(() =>
         {
 
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
                 foreach (int army in GamePlay.gpArmies())
                 {
@@ -3740,7 +3754,10 @@ public class Mission : AMission, IMainMission
                                              + a.TypedName() + " " 
                                              +  a.AirGroup().ID(), new object[] { });
                                             */
-                                            a.Destroy();
+                                            Timeout(random.NextDouble() * 10, () =>
+                                            {
+                                                a.Destroy();
+                                            });
 
                                         }
 
@@ -3752,7 +3769,7 @@ public class Mission : AMission, IMainMission
                     }
                 }
             }
-        });
+        }
     }
     #region onbuildingkilled
 
@@ -4177,9 +4194,10 @@ public class Mission : AMission, IMainMission
             //First go through & identify which airgroups are nearby to which others individually
 
             //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-            if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+            if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
             {
-
+                Console.WriteLine("groupallaircraft: gpArmies " + string.Join(",", GamePlay.gpArmies().Select(x => x.ToString()).ToArray()));
+                
                 foreach (int army in GamePlay.gpArmies())
                 {
                     //Console.WriteLine("groupAllAircraft: 0");
@@ -4699,8 +4717,7 @@ public class Mission : AMission, IMainMission
             }
 
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("GPAAXX2-2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        } catch (Exception ex)
-        { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
+        } catch (Exception ex)    { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
     }
 
     public string showGiantSectorOverview(Player player = null, int army = 0, bool display = true, bool html = false)
@@ -4788,7 +4805,8 @@ public class Mission : AMission, IMainMission
         Timeout(127, () => { aiAirGroupRadarReturns_recurs(); });
         //Console.WriteLine("groupAllAircraft: -1");
         if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MRXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        Task.Run(() => aiAirGroupRadarReturns());
+        //Task.Run(() => aiAirGroupRadarReturns());
+        aiAirGroupRadarReturns();
         //aiAirGroupRadarReturns();
 
 
@@ -4805,16 +4823,18 @@ public class Mission : AMission, IMainMission
         }
 
         //Console.WriteLine("AIAGRR: Checking radar returns for AI groups");
-
-        if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
+        Task.Run( () =>
             {
-                AirGroupInfo agi = airGroupInfoDict[airGroup];
-                if (!agi.isAI || agi.type != "F") continue; //we're only doing aiaircraft here, and fighters
+                if (airGroupInfoDict != null) foreach (AiAirGroup airGroup in airGroupInfoDict.Keys)
+                    {
+                        AirGroupInfo agi = airGroupInfoDict[airGroup];
+                        if (!agi.isAI || agi.type != "F") continue; //we're only doing aiaircraft here, and fighters
 
-                //Console.WriteLine("AIAGRR: Checking radar returns for " + agi.playerNames);
-                listPositionAllAircraft(player: null, playerArmy: airGroup.getArmy(), inOwnArmy: false, radar_realism: RADAR_REALISM, aiairgroup: airGroup);
+                        //Console.WriteLine("AIAGRR: Checking radar returns for " + agi.playerNames);
+                        listPositionAllAircraft(player: null, playerArmy: airGroup.getArmy(), inOwnArmy: false, radar_realism: RADAR_REALISM, aiairgroup: airGroup);
+                    }
             }
-
+        );
     }
 
     public class AiAirGroupRadarInfo : IAiAirGroupRadarInfo
@@ -5233,7 +5253,7 @@ public class Mission : AMission, IMainMission
 
 
                     //List<Tuple<AiAircraft, int>> aircraftPlaces = new List<Tuple<AiAircraft, int>>();
-                    if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+                    if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
                     {
                         foreach (int army in GamePlay.gpArmies())
                         {
@@ -8604,6 +8624,7 @@ public class Mission : AMission, IMainMission
             http://forum.1cpublishing.eu/showthread.php?t=26673
             If army==1 and you're in army 1 territory gpFrontDistance(1, will = 0. You would want gpFrontDistance(2, in that case
             */
+            if (GamePlay == null) return;
             double playerFrontDistance_m = GamePlay.gpFrontDistance(player.Army(), player.Place().Pos().x, player.Place().Pos().y);
             double playerFrontDistance2_m = GamePlay.gpFrontDistance(3-player.Army(), player.Place().Pos().x, player.Place().Pos().y);
 
@@ -9887,9 +9908,16 @@ public class Mission : AMission, IMainMission
         IEnumerable<string> lines = Calcs.SplitToLines(str, maxChunkSize);
         //for (int i = 0; i < str.Length; i += maxChunkSize)
         //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
-
+        double delay = 0.01;
         //foreach (string line in lines) gpLogServerWithDelay(to, line, third);
-        foreach (string line in lines) GamePlay.gpLogServer(to, line, third);
+        foreach (string line in lines)
+        {
+            Timeout(delay, () =>
+           {
+               GamePlay.gpLogServer(to, line, third);
+           });
+            delay += 0.01;
+        }
 
 
     }
@@ -10200,7 +10228,7 @@ public class Mission : AMission, IMainMission
         double maxY = 362000;
         //////////////Comment this out as we don`t have Your Debug mode  
         //DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
             foreach (int army in GamePlay.gpArmies())
             {
@@ -10371,6 +10399,7 @@ public class Mission : AMission, IMainMission
     private double Stb_distanceToNearestAirport(AiActor actor)
     {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        if (GamePlay == null ) return d2;
         double d2Min = d2;
         if (actor == null) return d2Min;
         Point3d pd = actor.Pos();
@@ -12415,6 +12444,16 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
 
         //int NumNearbyTargets = MissionObjectivesNear();
+        if (GamePlay == null)
+        {
+            Console.Write("");
+            Console.Write("Airfieldsetup: MAJOR ERROR *************************************************** ");
+            Console.Write("Airfieldsetup: MAJOR ERROR GamePlay not initialized, nothing done.  Exiting.");
+            Console.Write("Airfieldsetup: MAJOR ERROR *************************************************** ");
+            Console.Write("");
+            Console.Write("");
+            EndMission(endseconds: 0);
+        }
 
         int count = AirfieldTargets.Count;
         double weight = (double)170 / (double)count; //500/count gives you about 1 airfield target about 1 of every 3 sets of targets.  2020/02/27 was 300/count, made it 200/count to slightly decrease airports chosen for mission objectives.  There ARE a lot of them typically; maybe a little too many?  Also increased points given to airport destruction from 3 to 5 now that it takes much more tonnage to take
@@ -13608,6 +13647,17 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         }
 
         if (!startup && mo.MobileNextMoveTime_dt.HasValue && mo.MobileNextMoveTime_dt.Value.CompareTo(currTime) > 0) return; //only update them at start of session OR if their nextmovetime is null OR in the past
+
+        if (GamePlay == null)
+        {
+            Console.Write("");
+            Console.Write("MO_HandleMobileObjectivePlacement: MAJOR ERROR *************************************************** ");
+            Console.Write("MO_HandleMobileObjectivePlacement: MAJOR ERROR GamePlay not initialized, nothing done.  Exiting routine. " + mo.Name );
+            Console.Write("MO_HandleMobileObjectivePlacement: MAJOR ERROR *************************************************** ");
+            Console.Write("");
+            Console.Write("");
+            return;
+        }
 
         Console.WriteLine("Handling placement of mobile objective ({0})" + mo.Name, ArmiesL[mo.OwnerArmy]);
 
@@ -14865,6 +14915,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public void MO_RecordPlayerScoutPhotos(Player player, bool check = false, bool test = false)
     {
         if (check) twcLogServer(new Player[] { player }, "Checking recon photos . . . ", new object[] { });
+        if (GamePlay == null) return;
         Task.Run(() =>
         {
         try
@@ -16491,7 +16542,10 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1)
             {
-                GamePlay.gpHUDLogCenter("The " + ArmiesL[defendingArmy] + " attack on " + mo.Name + " failed."); //they were the ATTACKING army but now DEFENDING becuase they failed
+                Timeout(1, () =>
+                {
+                    GamePlay.gpHUDLogCenter("The " + ArmiesL[defendingArmy] + " attack on " + mo.Name + " failed."); //they were the ATTACKING army but now DEFENDING becuase they failed
+                });
             }
             Timeout(20, () =>
             {
@@ -16502,12 +16556,15 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             //TODO: Not sure if this removal thing is really working right.  2020-09 - now it seems to be working OK.
             //It spreads the deletes over 30 seconds.
-            if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 5000); //increasing radius to 5km for safety...
+            Timeout(01, () =>
+            {
+              if (MO_BRBumrushInfo[(ArmiesE)army].BumrushStatus > 1) Calcs.removeArtilleryAAGroundVehicles(GamePlay, this, AllGroundDict, mo.Pos.x, mo.Pos.y, 8000); //increasing radius to 8.0km for safety...
+            });
 
             //MO_BRLaunchABumrush(attackingArmy, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);            
             // (attackingArmy, army, MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
             //Because deleting old stuf takes 30 secs we wait a bit longer than that to load the new stuff
-            Timeout(40, () =>
+            Timeout(80, () =>
             {
                 twc_tobruk_campaign_mission_objectives.LaunchABumrush(objectivesAchievedArmy: army, attackingArmy: attackingArmy, AirportName: MO_BRBumrushInfo[(ArmiesE)army].BumrushAirportName);
             });
@@ -16769,7 +16826,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 {
                     MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
                     //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                    MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
+                    Timeout (0.02, ()=> MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
                 }
                 //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
                 //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
@@ -16777,7 +16834,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 else
                 {
                     MissionObjectiveScore[ArmiesE.Blue] += MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                    MO_CheckObjectivesComplete(BumrushRepelArmy: 2);
+                    Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 2));
                     //EndMission();
                     //MO_CheckObjectivesComplete();
                 }
@@ -16794,7 +16851,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
 
                     //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                    MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52);
+                    Timeout(0.02, () => MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
                 }
                 //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
                 //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
@@ -16802,7 +16859,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 else
                 {
                     MissionObjectiveScore[ArmiesE.Red] += MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                    MO_CheckObjectivesComplete(BumrushRepelArmy: 1);
+                    Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 1));
                     //EndMission();
                     //MO_CheckObjectivesComplete();
                 }
@@ -16813,7 +16870,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             {
                 twcLogServer(null, ArmiesL[defendingArmy] + " has eliminated ALL enemy threats and attack vehicles near the target airport.");
                 twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
-                GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking");
+                Timeout(0.02, () => GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking"));
                 Timeout(20, () => { MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
 
             }
@@ -16832,17 +16889,22 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     public string MO_BRBumrushTimeLeft_min_string()
     {
-        if (!MO_BRBumrushActive()) return "0";
+        /*if (!MO_BRBumrushActive()) return "0";
         TimeSpan timeleft = MO_BRNextBumrushStartTime - DateTime.UtcNow;
-        return (timeleft.TotalMinutes.ToString("N0"));
+        return (timeleft.TotalMinutes.ToString("N0")); */
+        return MO_BRBumrushTimeLeft_min_double().ToString("N0");        
 
     }
 
     public double MO_BRBumrushTimeLeft_min_double()
     {
+        double timeLeft_min = 0;
         if (!MO_BRBumrushActive()) return 0;
-        TimeSpan timeleft = MO_BRNextBumrushStartTime - DateTime.UtcNow;
-        return (timeleft.TotalMinutes);
+        double missionTimeLeft_min = calcTimeLeft_min();
+        TimeSpan timeLeft = MO_BRNextBumrushStartTime - DateTime.UtcNow;
+        timeLeft_min = timeLeft.TotalMinutes;
+        if (missionTimeLeft_min < timeLeft_min) timeLeft_min = missionTimeLeft_min; //If time left in mission is less then we'll show that instead.
+        return (timeLeft_min);
     }
 
     //1, 2, or 0 if no current OBJECTIVESACHEIVEDARMY (ie, no current Bumrush)
@@ -16979,7 +17041,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     redFarOldArtillery = redFarArtillery;
                     blueFarOldArtillery = blueFarArtillery;
 
-                    if (redFarNew > 0 || blueFarNew > 0)
+                    if (redFarNew > 0 || blueFarNew > 0 || i==start)
                     {
                         string within = " within ";
                         if (i > start) within = String.Format(" {0}m-", i - add);
@@ -17118,14 +17180,16 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         {
             twcLogServer(null, "Red has successfully repelled the attack and taken over the airport!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Red has Successfully Retaken the Airport!!!");
+            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red, BumrushRepelVictory: true);
         }
         else
         {
             twcLogServer(null, "Red has successfully turned the map and taken over the airport!!!", new object[] { });
             GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
+            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
         }
         //EndMission(70, "Red");
-        MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
+        
     }
 
         //Console.WriteLine("Figuring leaks:  {0} {1} {2} {3}", MissionObjectiveScore[ArmiesE.Red], MO_PointsRequired[ArmiesE.Red], bp, MO_PrimaryObjectivesRemaining( (int)ArmiesE.Red));
@@ -17145,6 +17209,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     //So inland, on home soil, both sides used observation networks to locate enemy aircraft & activity
     public bool MO_IsPointInHomeSoilObservationArea(Point3d pos, int attackingArmy)
     {
+        if (GamePlay == null) return false;
         if (attackingArmy != 1 && attackingArmy != 2) return false;
 
         int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
@@ -17754,7 +17819,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         //Reason is, some artillery continually hits the ground in the area where they're firing.
 
         //Console.WriteLine("main_PointArea_bomb");
-
+        if (GamePlay == null) return;
         int terr = GamePlay.gpFrontArmy(pos.x, pos.y);
         if (initiator != null)
             if ( initiator.Player == null || initiator.Player.Name() == null) //It's AI        
@@ -19726,6 +19791,7 @@ public static class Calcs
     public static double distanceToNearestAirport(this IGamePlay GamePlay, AiActor actor)
     {
         double d2 = 10000000000000000; //we compare distanceSQUARED so this must be the square of some super-large distance in meters && we'll return anything closer than this.  Also if we don't find anything we return the sqrt of this number, which we would like to be a large number to show there is nothing nearby.  If say d2 = 1000000 then sqrt (d2) = 1000 meters which probably not too helpful.
+        if (GamePlay == null) return d2;
         double d2Min = d2;
         if (actor == null) return d2Min;
         Point3d pd = actor.Pos();
@@ -19770,6 +19836,7 @@ public static class Calcs
     public static AiAirport nearestAirport(this IGamePlay GamePlay, Point3d location, int army = 0)
     {
         AiAirport NearestAirfield = null;
+        if (GamePlay == null) return null;
         AiAirport[] airports = GamePlay.gpAirports();
         Point3d StartPos = location;
 
@@ -20065,7 +20132,7 @@ public static class Calcs
 
         AiGroundGroup foundgg = null;
 
-        if (GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+        if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
         {
             try
             {
@@ -20349,7 +20416,7 @@ public static class Calcs
                                 if (matcharmy > 0 && g.country != matchstring) continue;
                                 if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery)
                                 {
-                                    mission.Timeout(clc_random.Next(1, 30), () =>
+                                    mission.Timeout(clc_random.Next(0, 76), () =>
                                     {
 
                                         if (g != null)
@@ -21321,7 +21388,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             }
             k = "Class"; v = aircraft; f.add(s, k, v);
             k = "Formation"; v = formation; f.add(s, k, v);
-            k = "CallSign"; v = clc_random.Next(1, 49).ToString(); f.add(s, k, v);
+            k = "CallSign"; v = clc_random.Next(1, 33).ToString(); f.add(s, k, v); //looks like maybe there are only 35 official callsigns and up through TF 5.005 choosing the last of those will cause an regular error.
             k = "Fuel"; v = "40"; f.add(s, k, v);
             k = "Weapons"; v = weapons; f.add(s, k, v);
             k = "Skill"; v = "0.32 0.32 1 0.58 0.32 1 0.32 0.32"; f.add(s, k, v);

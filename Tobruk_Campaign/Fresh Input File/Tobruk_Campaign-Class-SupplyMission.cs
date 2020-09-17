@@ -128,7 +128,7 @@ public class SupplyMission : AMission, ISupplyMission
 
 
 
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
             (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
@@ -140,7 +140,7 @@ public class SupplyMission : AMission, ISupplyMission
     {
         base.OnBattleStoped();
 
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
             (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
@@ -1474,7 +1474,7 @@ public void ReadSupply(string suffix)
                     string numString = AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString("n0");
                     Timeout(3.33, () =>
                     {
-                        GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned safely and added to stock; "
+                        GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned and added to stock; "
                             + numString + " " + "currently in stock", null);
                     });
 
@@ -1729,7 +1729,7 @@ private int NumberPlayerInActor(AiActor actor)
 
     private bool OverEnemyTerritory(AiActor actor)
     {
-        if (actor == null) return false;
+        if (actor == null || GamePlay == null ) return false;
         if (!GamePlay.gpFrontExist()) return false;
 
         if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())
@@ -1740,8 +1740,7 @@ private int NumberPlayerInActor(AiActor actor)
 
     public void SupplyOnPlaceEnter(Player player, AiActor actor, int placeIndex=0)
     {
-        //base.OnPlaceEnter(player, actor, placeIndex);
-        
+        //base.OnPlaceEnter(player, actor, placeIndex);        
         string ret = DisplayNumberOfAvailablePlanes(actor);
         if (ret == "") return;//"" returned if not a real place change or actor/player doesn't exist
 

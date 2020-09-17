@@ -787,7 +787,7 @@ public class AIRadarMission : AMission
 
         if (missionNumber == MissionNumber)
         {
-            if (GamePlay is GameDef)
+            if (GamePlay != null && GamePlay is GameDef)
             {
                 //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
                 Console.WriteLine("Aerial Radar initializing eventchat.");
@@ -807,7 +807,7 @@ public class AIRadarMission : AMission
     {
         base.OnBattleStoped();
 
-        if (GamePlay is GameDef)
+        if (GamePlay != null && GamePlay is GameDef)
         {
             //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
             (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
@@ -1483,6 +1483,7 @@ public static class AIRadarCalcs
 
     public static string correctedSectorName(AIRadarMission msn, Point3d p)
     {
+        if (msn.GamePlay == null) return "";
 
         string sector = msn.GamePlay.gpSectorName(p.x, p.y);
         sector = sector.Replace(",", ""); // remove the comma
@@ -1765,7 +1766,7 @@ public static class AIRadarCalcs
     {
         var ret = new List<AiAircraft>();
 
-        if (msn.GamePlay.gpArmies() != null && msn.GamePlay.gpArmies().Length > 0)
+        if (msn.GamePlay!=null && msn.GamePlay.gpArmies() != null && msn.GamePlay.gpArmies().Length > 0)
         {
             foreach (int army in msn.GamePlay.gpArmies())
             {
@@ -1800,7 +1801,7 @@ public static class AIRadarCalcs
     public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, AIRadarMission mission, double x, double y, double z, string type, double duration_s = 300, string path = "")
     {
 
-
+        if (GamePlay == null) return;
         mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
         //GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
         mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });

@@ -1,6 +1,6 @@
 ////$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesNeg10.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs"
-//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"
 
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll
@@ -135,10 +135,11 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         mostScore = 100000000; //This is the generic base mission stuff, so it should apply to ANY AND EVERY score possible
         leastScore = -100000000; //Also, the most & least stuff isn't really implemented for this base mission (only for the Pos100 Neg100 etc specific Battle Missions)
 
-        Console.WriteLine(" TWCTobrukCampaignMissionObjectives real score is {0} - for testing setting it to {1}", sc, 10);
+        
         score = sc;
-        score = 100; //TESTING!!!!! Using a fake/test score. To use the REAL SCORE rem out this line.      
-                    
+        //score = 100; //TESTING!!!!! Using a fake/test score. To use the REAL SCORE rem out these lines.      
+        //Console.WriteLine(" TWCTobrukCampaignMissionObjectives real score is {0} - for testing setting it to {1}", sc, score);
+
 
         focus_airport_misfile_name = "";
 
@@ -275,20 +276,20 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //Points required, assuming they are doing it entirely with Primary Targets; ie, secondary or other targets do not count towards this total
         //at all
         msn.MO_PointsRequiredToTurnMap = new Dictionary<ArmiesE, double>() {
-            {ArmiesE.Red, 120 },
+            {ArmiesE.Red, 121 },
             {ArmiesE.Blue, 120 }
         };
 
 
         msn.MO_BRBumrushInfo = new Dictionary<ArmiesE, M.MO_BRBumrushInfoType>() {
             { ArmiesE.Red, new M.MO_BRBumrushInfoType() {
-                PointsRequiredToBeginBumrush= 60,
+                PointsRequiredToBeginBumrush= 61, //guarantees all our important MOs (5 pts X 6) plus the Focus Airport (30 pts) plus at least one more to get the extra 6 point.
                 BumrushStatus= 0,
                 BumrushObjective = null,
               }
             },
             { ArmiesE.Blue, new M.MO_BRBumrushInfoType() {
-                PointsRequiredToBeginBumrush= 60,
+                PointsRequiredToBeginBumrush= 61,
                 BumrushStatus= 0,
                 BumrushObjective = null,
               }
@@ -423,11 +424,13 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //    mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Tobruk-Gasr Resupply Convoy", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-RTobrukGasrResupplyConvoy-objective.mis", "1006_Chief", 2, 5, "RTobrukGasrResupplyConvoy", "TGroupDestroyed", 100, 197907, 95422, 100, false, 200, 24, "", add);  //g          
 
 
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "2003_Chief", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 2, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 0, 24, "", add);  //g            
 
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "", 1, 2, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 0, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 2, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 0, 24, "", add);  //g     
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 2, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 0, 24, "", add);  //g            
 
 
         //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
@@ -469,17 +472,34 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Secret Base", "", 2, 1, "RSecretAirbase", 180276, 169671, 800, 600, 10000, 10, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SecretAirbaseDE, 60, 10000, 10000, 278420, 271000, 10, 35, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Intelligence Unit", "", 1, 1, "BMobileIntelligence", 249965, 114219, 550, 450, 10000, 10, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 197500, 10000, 370000, 190000, 10, 45, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Intelligence Unit", "", 2, 5, "RMobileIntelligence", 180276, 179671, 550, 450, 10000, 10, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SecretAircraftResearchGB, 30, 10000, 10000, 278420, 271000, 10, 45, M.MO_ProducerOrStorageType.None, "", add);
-        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 1", "", 2, 1, "RMobileRadar1", 210276, 169671, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 15, 10000, 10000, 278420, 271000, 5, 35, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 1", "", 1, 1, "BMobileRadar1", 279965, 104219, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 30, 197500, 10000, 370000, 190000, 5, 35, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 2, 1, "RMobileRadar2", 210276, 179671, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 10000, 10000, 278420, 271000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 20000);
-        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 1, 1, "BMobileRadar2", 279965, 184219, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 197500, 10000, 370000, 190000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 1", "", 2, 1, "RMobileRadar1", 210276, 169671, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 15, 10000, 10000, 278420, 271000, 5, 35, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 40000);
+        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 1", "", 1, 1, "BMobileRadar1", 279965, 104219, 200, 150, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 30, 197500, 10000, 370000, 190000, 5, 35, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 50000);
+        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 2, 1, "RMobileRadar2", 210276, 179671, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 10000, 10000, 278420, 271000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 40000);
+        mmo.addMobile(M.MO_ObjectiveType.Radar, "Mobile Radar 2", "", 1, 1, "BMobileRadar2", 279965, 184219, 300, 250, 7000, 12, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.MobileRadar1, 45, 197500, 10000, 370000, 190000, 10, 45, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 50000);
+
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 2, 1, "RMobileArmour1", 231978, 220669, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SmallArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Mobile Armour Unit 1", "", 1, 1, "BMobileArmour1", 240196, 143824, 250, 200, 7000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.SmallArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 2, 1, "RLargeMobileArmour", 145508, 231881, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.LargeArmourGroup, 15, 10000, 10000, 278420, 271000, 2, 1, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Large Mobile Armour Unit", "", 1, 1, "BLargeMobileArmour", 221410, 136331, 250, 200, 9000, 17, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.LargeArmourGroup, 15, 197500, 10000, 370000, 190000, 2, 1, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 2, 1, "RIntelligenceListening", 262939, 143597, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.CamoGroup, 45, 10000, 10000, 278420, 271000, 5, 20, M.MO_ProducerOrStorageType.None, "", add);
         mmo.addMobile(M.MO_ObjectiveType.MilitaryArea, "Intelligence Listening Post", "", 1, 1, "BIntelligenceListening", 212979, 182491, 250, 200, 4000, 15, 1, 36, true, true, 1, 3, M.MO_MobileObjectiveType.CamoGroup, 45, 197500, 10000, 370000, 190000, 5, 20, M.MO_ProducerOrStorageType.None, "", add);
+        /*
+        // public void addMobile(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_MobileObjectiveType 
+            MobObjType = MO_MobileObjectiveType.ArmyEncampment,
+            double mob_hrsbetweenMoves = 12, double x_sw = 0, double y_sw = 0, double x_ne = 360000, double y_ne = 360000, //boundaries of rectangle where it can live
+            double min_move_dist_km = 2,
+            double max_move_dist_km = 5,
+            MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None, 
+            string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000)
+        */
 
+        for (int i = 1; i < 16; i++)
+        {
+            //These have abt 3 trucks, XXX5-6 camo objectsXXX, plus 2 radars.  So requiring 11 objects killed of all those is not too much.
+            //Camo just made them too visible
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 2, 2, "RDesertRadar"+i.ToString(), msn.random.Next(10000, 278420), msn.random.Next(10000, 271000), 200, 150, 0, 5, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 1, 2, "BDesertRadar" + i.ToString(), msn.random.Next(197500, 370000), msn.random.Next(10000, 190000), 200, 150, 0, 5, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+        }
 
 
         if (current_subclass != null)
@@ -686,6 +706,7 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
     */
 
     //Nothing needed at this level; we just call the corresponding routine in current_subclass.MissionObjectiveAirfieldFocusBumrushSetup() which does all the mission-specific work
+    //This must be called 
     public override void MissionObjectiveAirfieldFocusBumrushSetup()
     {
         try
@@ -694,7 +715,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
-            Console.WriteLine("TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("*********************************************");
+            Console.WriteLine("*********************************************MissionObjectiveAirfieldFocusBumrushSetup() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
     }
@@ -708,7 +731,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
-            Console.WriteLine("TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("*********************************************");
+            Console.WriteLine("*********************************************TWCTobrukCampaignReadInitialFocusAirportSubmission() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
 
@@ -721,7 +746,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         }
         catch (Exception ex)
         {
+            Console.WriteLine("*********************************************");
             Console.WriteLine("TWCTobrukCampaign LaunchABumrush() ERROR: " + ex.ToString());
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
     }

@@ -289,7 +289,7 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
               }
             },
             { ArmiesE.Blue, new M.MO_BRBumrushInfoType() {
-                PointsRequiredToBeginBumrush= 60,
+                PointsRequiredToBeginBumrush= 61,
                 BumrushStatus= 0,
                 BumrushObjective = null,
               }

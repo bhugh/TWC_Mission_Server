@@ -232,9 +232,13 @@
 [Stationary]
   Static1 Artillery.Bofors_StandAlone gb 249355.22 61825.75 0.00 /timeout 0/radius_hide 0
   Static3 Artillery.Bofors_StandAlone gb 250450.08 61908.96 0.00 /timeout 720/radius_hide 0
-  Static2 Artillery.Bofors_StandAlone gb 250068.48 62037.31 0.00 /timeout 720/radius_hide 0
+  Static2 Artillery.Bofors_StandAlone gb 250068.48 62044.32 0.00 /timeout 720/radius_hide 0
   Static0 Artillery.Bofors_StandAlone gb 248651.55 62133.66 0.00 /timeout 720/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone gb 250705.03 62593.63 0.00 /timeout 0/radius_hide 0
   Static5 Artillery.Bofors_StandAlone gb 250992.66 62820.37 0.00 /timeout 720/radius_hide 0
+  Static11 Artillery.Bofors_StandAlone gb 253060.47 63074.53 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors_StandAlone gb 252761.44 63168.88 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone gb 252772.19 63333.07 0.00 /timeout 0/radius_hide 0
   Static7 Artillery.Bofors_StandAlone gb 248900.67 63511.93 0.00 /timeout 720/radius_hide 0
   Static4 Artillery.Bofors_StandAlone gb 250335.02 63744.88 0.00 /timeout 720/radius_hide 0
   Static6 Artillery.Bofors_StandAlone gb 249059.89 63989.09 0.00 /timeout 0/radius_hide 0
@@ -255,9 +259,6 @@
   252470.68 64082.04 8
   252418.74 63857.28
 [BirthPlace]
-  "Tank Spawn" 1 250270 53009 0 1 1 1 . . . 0
   "Tank Spawn " 1 252771 63683 0 1 1 1 . . . 0
 [BirthPlace0]
-  tobruk:Aircraft.DH82A_Trop
-[BirthPlace1]
   tobruk:Aircraft.DH82A_Trop

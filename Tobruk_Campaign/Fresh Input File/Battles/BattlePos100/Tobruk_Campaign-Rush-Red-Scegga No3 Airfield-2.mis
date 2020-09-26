@@ -283,6 +283,12 @@
   Static4 Artillery.Bofors de 249374.38 63879.25 0.00 /timeout 390000/radius_hide 0
   Static0 Artillery.Bofors de 249616.02 63958.36 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static1 Artillery.Bofors de 249698.13 63991.70 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors de 248954.16 63456.96 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors de 248862.89 63283.12 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors de 248813.94 63117.100 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors de 246887.23 61651.08 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Bofors de 246922.30 61620.37 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Bofors de 246952.81 61628.95 0.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
 [Airdromes]

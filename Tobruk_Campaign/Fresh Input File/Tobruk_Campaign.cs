@@ -7,63 +7,92 @@
 
 /**********************************************************************************
  * 
- * SETUP TOBRUK BUMRUSH MISSIONS!!!!
- * 
- * #1. Main (unchanging) mission elements in Tobruk_Campaign.mis.  ALSO you must put 0_Chief type primary targets here due to restrictions in CLOD.
- * 
- * #2. Any 0_Chief type primary targets must be added below as "addTrigger" type objectives.  Set up the trigger in the .mis file and then add appropriate lines around line 11047
- * 
- * #2. Put the airports & frontline .mis file in ..\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\FocusAirports with a name like: Tobruk_Campaign-initairports-WHATEVERYOUWANTTOCALLIT.mis.  This includes any changeable elements you that vary as the campaign moves from area to area of the map.
- * 
- * #3. Put separate .mis files for any other objectives into ..\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\PrimaryObjectives
- * 
- * Then also add them as objectives below, around line 11086, as "addPointArea" type objectives.  Make sure to include the filename here - it will look something like this:
- * 
- *     addPointArea(MO_ObjectiveType.MilitaryArea, "Sidi Barrani Fuel Dump", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Blue-SidiBarraniFuel.mis", 1, 5, "BSidiBarraniFuelDump", 346862, 135133, 150, 125, 1800, 8, 200, 48, false, true, 3, 7, "", add);
- *     
- * #4. Make sure your focus airports (one for each side) are included in the list around line 11792, looks like this:
- * 
- *    String[] MO_BRBumrushTargetAirfieldsList = { "Tariq", "Scegga No3 Airfield", "Gasr el Abid South", "Sidi_Azeiz", "Sidi_Rezzegh" };
- *    
- * #5. Around line 11792, specify which set of airports is are the two Focus Airports for this mission, via this line:
- * 
- *     MO_BRMissionObjectiveAirfieldFocusBumrushSetup(this, GamePlay, level: 1);
- *     
- *    Remember this is a list and they start counting with 0.  So specifying level: 1 means that "Scegga No3 Airfield" will be the Blue AF's target (ie, a Red airfield that Blue will try to take over).
- *    
- *    The Red AF's target will be the next airfield on the list, in this case "Gasr el Abid South".
- *    
- * #5A.  The purpose of all this setup is so that you can switch to a different set of Focus Airports simply by updating/adding to BumrushTargetAirfieldsList as needed, then changing the value of level: to the one that is to be the Blue target, then switch out the "changeable airports" .mis file in \FocusAirports, and you should be able to run the mission
- * 
- * #6. Put the Bumrush .mis files in to folder Fresh Input file\Bumrushes.  They must be named like this:
- * 
- *      Tobruk_Campaign-Rush-Blue-Scegga No3-1.mis
- *      Tobruk_Campaign-Rush-Blue-Scegga No3-1.mis      
- *      Tobruk_Campaign-Rush-Red-Gasr el Abid South-1.mis
- *      Tobruk_Campaign-Rush-Red-Gasr el Abid South-1.mis
- * 
- *  - You need FOUR bumrush .mis files - one for Blue and one for Red for EACH of the two Focus airports
- *  - The exact filename is VERY important.  
- *      - It always starts with "Tobruk_Campaign-Rush-Blue-" or "Tobruk_Campaign-Rush-Red-"
- *      - "Blue" contains Blue forces attacking from the Blue side of the map - similarly with Red.
- *      - The next part is the name of the Birthplace/Spawn Point/Airport as found in the Focus Airports .mis file
- *          ---->  *****EXACT***** birthplace name MUST be used or this will not work!!!!
- *          ---->  It is the same name you put into Step #4. BumrushTargetAirfieldsList.  Now you must put it into the filename exactly the same
- *      -After the birthplace/airport name you can put other identifiers of your choice; they don't matter.  But if you have two or more files for one side/airport, one of those will be randomly selected to actually run during the Bumrush phase.
- *          - For example you could make these files:   
- *                 Tobruk_Campaign-Rush-Blue-Scegga No3-1.mis
- *                 Tobruk_Campaign-Rush-Blue-Scegga No3-2.mis
- *                 Tobruk_Campaign-Rush-Blue-Scegga No3-3.mis
- *                 
- *                 One of those three will be randomly selected for the Scegga No3 Blue Bumrush.
- *         
- * 
- * 
- * #7. Also you want to include necessary flak .mis files for each area in Tobruk_Campaign\Fresh Input File\Flak areas, then update the list near line 11213 under "public Dictionary<string, string> FlakMissions = new Dictionary<string, string>()" AND also be sure to include the flak mission key in the mission objective setup line.
- * 
- * #8. And it should work!
- * 
- * #9. If there is a mismatch on Focus Airport names, the mission will display a nasty error message and stop.  So if you can't get the mission .cs to run at all, double check that.
+        ******TOBRUK CAMPAIGN BATTLE SETUP INSTRUCTIONS*******
+        *
+        * Generally, Mission Objective information & values can be set up in three places:
+        *  
+        *  #1. Tobruk_Campaign.cs - generally speaking, only a few defaults values & info
+        *  
+        *  #2. Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs - all of the general objectives, mobile objectives, values and settings we anticipate using for the entire campaign, or that we anticipate using as DEFAULT values for the entire campaign, which can be overriden in individual battle files if we want
+        *  
+        *  #3. Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs or similarly named file
+        *      --> This file is named according to the score needed.  So Pos100.cs means a score of +100 (or probably a range +50 to +150), Pos200.cs is +200, Pos300.cs is +300, Neg100.cs is -100,
+        *          Neg200.cs is -200, Zero.cs is 0 etc.  (Naming is just a convention we'll use to keep things straight.  The actual score used is set in the variables below.)
+        *      --> The actual score values where this file will be activated are set below. Something like this for Pos100.cs:
+        *             leastScore = 50;
+        *             mostScore = 150;
+        *             
+        *             However...note that the last battle created, it would be smart to set the score to some huge value so that we are never left without a battle file to use.  
+        *             So if our last file is say Pos500.cs then set the values something like
+        *             
+        *                leastScore = 450;
+        *                mostScore = 10000000000;
+        *                
+        *            This will make Pos500.cs used for score 500 OR anything above it.    
+        *            
+        *  **********>>>>>>>>>>>> All that seems kind of complicated (and it is) but the purpose is so that file #1 sets up default values which can be superceded and added to 
+        *  in file/class #2 and then further superceded and added to in file/class #3.  So you can have objectives and settings and code valid for any campaign we make, for this 
+        *  whole campaign, or for one particular battle within the campaign
+        *  
+        *  How to set up a Battle:
+        *            
+        *   #1. In your Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs  or similarly named file you set up a number of variables with your Battle's subdirectory, airport files, bumrush files, objective files, etc etc etc.
+        *          Look below for  battle_subdirectory = "Battles/BattlePos100/";  and a number of lines below that
+        *          
+        *   #2. Set up your Pos100 (or whatever your new battle .cs file is called) in several places in ...\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs .  
+        *       Try searching for "Pos100" to find all relevant places.
+        *       
+        *        * Add a line like //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"  near the top of the file
+        *        
+        *        *  In method TWCTobrukCampaignMissionObjectives() add lines like these, being careful to make ALL needed adjustments:
+        *   
+        *                 TWCTCMO battle_pos200 = new BattlePos200(g, m, sc);
+        *                 Console.WriteLine("Pos200 inited (return), {0} {1} {2} {3}", battle_pos200.score, battle_pos200.leastScore, battle_pos200.mostScore, battle_pos200.focus_airport_misfile_name);
+        *                 register_subclass(battle_pos200);
+        *   
+        *   #3. On mission startup, method MissionObjectiveAirfieldFocusBumrushSetup() in file ...\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs  
+        *       will go through & read all the airport & bumrush files you have have set up in these variables, and verify that they exist.  
+        *       
+        *       ***IMPORTANT!*** If they don't exist, have a different name, not in the subdirectory specified, etc, they mission will simply EXIT with an error message.
+        *       If you can't get your mission to start at all, this is almost certainly the problem.
+        *       
+        *   #4. Additionally, on startup method MissionObjectiveAirfieldFocusBumrushSetup() sets up your specified bumrush airports as Objectives with primaryobjectiveweight 200 and objective points=30.  
+        *   
+        *        Our usual scheme for points:  60 points to start the bumrush phase.  That is 6 normal objectives set for 5 points each (30 points) and then the bumrush airport at 30 points.
+        *        Then 120 points to turn the map - the first 60 points ot start Bumrush and then 60 more points for winning it.
+        *        Note that all these point values are set in \Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs BumRushCampaignValuesSetup() and you can override them 
+        *        in each individual battle if you like, but setting up BumRushCampaignValuesSetup() in your \Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs 
+        *        (or similarly named) file
+        *        
+        *   #5. Set up the primary objectives you want for the battle. To make items the primary objectives for this battle, you need to do three things below:
+        *   
+        *        #1 Add the objective here under MissionObjectiveTriggersSetup (OR add some code to change the values of an existing objective to make it into a primary objective)
+        *        
+        *        #2 Make the points value what you want it (usually 5 points): ... "1006_Chief", 2, 5, "RTobrukGasrResupplyConvoy", ...  (2 is owner army, 
+        *           5 is points value, RTobrukGasrResupplyConvoy is objective ID
+        *             
+        *        #3 Set the primary target weight high enough.  This value varies 0-200, so if you want a target definitely or usually chosen set it to 200 or very close.  
+        *           0=never chosen; 200=highest probability of being chosen.  (Even at 200 it won't necessarily ALWAYS be chosen because the selection process randomizes 
+        *           the order of the list and then adds primary objectives until reaching the required total primary objective score. So if it needs 40 points and 
+        *           you have 7 possible objectives each worth 10 points, it will keep choosing until it choses 4 of them and has 40 points, then stop--even if all are set 
+        *           at 200 weight.)
+        *           
+        *            #3A. If you make more Primary Objectives than strictly necessary, that can be a good thing if the battle ends up being played repeatedly.  
+        *            At minimum you need 6 objectives at 5pts each.  But say you make 10 objectives and make all of them 5 points & 200 weight.  
+        *            Now every time the map is turned to this battle & new objectives selected, 6 of those 10 objectives will be randomly selected.
+        *            
+        *            #3B. Also I like to add a point or two to the objectives required score, which will ensure that one or two of the various airports, 
+        *            mobile radar, desert radar, etc etc etc objectives around the  map are always included as primaries.
+        *        
+        *        #4 If you want to, go to file \Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs 
+        *        (or similarly named file for your battle, \Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesXXXYYY.cs ), 
+        *        un-rem the values in BumRushCampaignValuesSetup()  and change them as desired.  Note that these are set in Tobruk_Campaign.cs and 
+        *        then overriden in Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs and then you can override them again here if you want.
+        *        
+        *        #5. There are various other things you can personalize per campaign or per battle, such as flak files.
+        *        
+        *        
+        ***************************************************************************************************************************************
  * 
  * ********************************************************************************************/
 
@@ -428,18 +457,19 @@ public class Mission : AMission, IMainMission
     public int MO_Objective_Percent_To_Disable = 20; //How many of the mission objectives on the list to randomly disable on a given day.
     //public int MO_Objective_Percent_To_Disable = 0; //for testing
     public int START_MISSION_TICK = -1;
+    public double START_MISSION_TIME_HRS = 0;
     //So 20:15/8:15 pm is about the latest you can run a mission and still have any light.
     //5:00AM IS GOOD FOR START, 4:45AM IS GOOD ENOUGH & NICE LOOKING.  4:30AM IS REALLY NICe looking, esp once in air, but probably too dark to taxi reasonably.   The sun is just up at 4:30am.
-    //public int END_MISSION_TICK = 720000; //6 HOURS
-    //public int END_MISSION_TICK = 1440000; //12 Hours
-    //public int END_MISSION_TICK = 1680000; //14 Hours
-    //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
-    //public int END_MISSION_TICK = 720000; //14 Hours-ish
-    public int END_MISSION_TICK = 720000; //6.4 Hours-ish
-    //public int END_MISSION_TICK = 350000; //3 Hours-ish
-    //public int END_MISSION_TICK = 198600; //just over 90 minutes, mayber 100 minutes.  So just one bumrush period & a little more.
+    //public int MISSION_LENGTH_HRS = 720000; //6 HOURS
+    //public int MISSION_LENGTH_HRS = 1440000; //12 Hours
+    //public int MISSION_LENGTH_HRS = 1680000; //14 Hours
+    //public int MISSION_LENGTH_HRS = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
+    //public int MISSION_LENGTH_HRS = 720000; //14 Hours-ish
+    public double MISSION_LENGTH_HRS = 6.5; //720000; //6.4 Hours-ish
+    //public int MISSION_LENGTH_HRS = 350000; //3 Hours-ish
+    //public int MISSION_LENGTH_HRS = 198600; //just over 90 minutes, mayber 100 minutes.  So just one bumrush period & a little more.
 
-    public double END_MISSION_TIME_HRS = 20.5; //So this means, the server will never run past 20.15 hours (8:15pm) server time, regardless of then it starts.  Reason is, it gets too dark after that.  So the mission will run either to ENDMISSION_TIME **OR** END_MISSION_TICK, whichever happens first.  END_MISSION_TICK is really redundant now but maybe it is a good failsafe to prevent everlasting missions?  Also we could use it to set a runtime shorter than the absolute max possible, thus we could start at different times of day and run a certain amount of time designated by END_MISSION_TICK, but never start earlier than DESIRED_MISSION_START_TIME or run later than ENDMISSION_TIME
+    public double END_MISSION_TIME_HRS = 20.5; //So this means, the server will never run past 20.15 hours (8:15pm) server time, regardless of then it starts.  Reason is, it gets too dark after that.  So the mission will run either to ENDMISSION_TIME **OR** MISSION_LENGTH_HRS, whichever happens first.  MISSION_LENGTH_HRS is really redundant now but maybe it is a good failsafe to prevent everlasting missions?  Also we could use it to set a runtime shorter than the absolute max possible, thus we could start at different times of day and run a certain amount of time designated by MISSION_LENGTH_HRS, but never start earlier than DESIRED_MISSION_START_TIME or run later than ENDMISSION_TIME
     //public double END_MISSION_TIME_HRS = 4.51; //TESTING
     public double EARLIEST_MISSION_START_TIME_HRS = 6.6; //The time we would like to/plan to start the mission.  0430 hours, 4:30am. This will be used as the start time unless the mission previously ended/stopped/crashed/was turned at some different time; in which case it will start again at the time it crashed unless it is too late in the day (see SHORTEST_MISSION_LENGTH_ALLOWED)
     //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
@@ -910,7 +940,11 @@ public class Mission : AMission, IMainMission
 
 
 
-        if (START_MISSION_TICK == -1) START_MISSION_TICK = Time.tickCounter();
+        if (START_MISSION_TICK == -1)
+        {
+            START_MISSION_TICK = Time.tickCounter();
+            START_MISSION_TIME_HRS = GamePlay.gpTimeofDay();
+        }
 
         int tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
 
@@ -985,11 +1019,11 @@ public class Mission : AMission, IMainMission
         }
 
         //So, this could be done every minute or whatever, instead of every tick . . . _recurs
-        if ((tickSinceStarted >= END_MISSION_TICK || GamePlay.gpTimeofDay() >= END_MISSION_TIME_HRS) && !OnTick_End_Mission_Triggered)//End mission at EITHER: End_mission_tick OR if End_misison_time_hours is in the past.
+        if ((GamePlay.gpTimeofDay() - START_MISSION_TIME_HRS >= MISSION_LENGTH_HRS || GamePlay.gpTimeofDay() >= END_MISSION_TIME_HRS) && !OnTick_End_Mission_Triggered)//End mission at EITHER: End_mission_tick OR if End_misison_time_hours is in the past.
                                                                                                                                       //if (Time.tickCounter() == 720)// Red battle Success.  //For testing/very short mission
         {
 
-            Console.WriteLine("EndMissTick/Time: {0} {1} {2} {3} {4} ", tickSinceStarted, END_MISSION_TICK, GamePlay.gpTimeofDay(), END_MISSION_TIME_HRS, START_MISSION_TICK);
+            Console.WriteLine("EndMissTick/Time: {0} {1} {2} {3} {4} ", tickSinceStarted, MISSION_LENGTH_HRS, GamePlay.gpTimeofDay(), END_MISSION_TIME_HRS, START_MISSION_TICK);
             //WriteResults_Out_File("3");
             Task.Run(() => WriteResults_Out_File("3"));
             /*
@@ -1012,7 +1046,7 @@ public class Mission : AMission, IMainMission
             //TOBRUK: Half as often (every 2000 ticks instead of 1000)
             //do this regardless of whether players are loaded, so it must be first here
             //NOTE if you launch these too early on, like tick 0, it will produce errors every time because certain things are not set up.  Delay them 1 minute or so for best results
-            if ((Time.tickCounter()) % 2000 == 1000)
+            if ((Time.tickCounter()) % 2000 == 1000 || ( (Time.tickCounter()) % 2000 == 0 && MO_BRBumrushActive() )) //double radar speed during bumrush phase, only for army 1,2 (not admin)
             {
                 ///////////////////////////////////////////    
                 //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
@@ -1028,7 +1062,7 @@ public class Mission : AMission, IMainMission
                 //RADAR_REALISM = saveRealism;
 
             }
-            if ((Time.tickCounter()) % 2000 == 1334)
+            if ((Time.tickCounter()) % 2000 == 1334 || ((Time.tickCounter()) % 2000 == 334 && MO_BRBumrushActive())) //double radar speed during bumrush phase, only for army 1,2 (not admin)
             {
                 ///////////////////////////////////////////    
                 //int saveRealism = RADAR_REALISM; //save the accurate radar contact lists
@@ -1691,13 +1725,22 @@ public class Mission : AMission, IMainMission
 
                     double individualscore = score;
 
-                    if (!ai && (isEnemy == 0 || isEnemy == 2))
+                    //if (!ai && (isEnemy == 0 || isEnemy == 2))
+                    //TOBRUK update, neutral territory is OK ( isEnemy ==2)
+
+
+                    if (!ai && (isEnemy == 0))
                     {
  
                         if (initiator.Player != null)
                         {
                             bool nearbyTargs = Calcs.anyEnemyOrNeutralStationaries(GamePlay, pos.x, pos.y, 2000, initiator.Player.Army());
-                            if (!nearbyTargs)
+
+                            int matcharmy = initiator.Player.Army();
+
+                            int numberNearbyEnemyGroundActors = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, pos, 2500, matcharmy: 3 - matcharmy, type: "");
+
+                            if (!nearbyTargs && numberNearbyEnemyGroundActors == 0)
                             {
                                 individualscore = -individualscore;  //Bombing on friendly/neutral territory earns you a NEGATIVE score
                                                                      //but, still helps destroy that base (for your enemies) as usual
@@ -2554,7 +2597,7 @@ public class Mission : AMission, IMainMission
             if (MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus > 0 || MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0)
             {
                 outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
-                outputmsg += MO_ListRemainingPrimaryObjectives(null, 1, 12, 0, display: false, html: true, leak: false);
+                outputmsg += MO_ListRemainingPrimaryObjectives(null, 1, 24, 0, display: false, html: true, leak: false);
                 outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
                 outputmsg += MO_BRBumrushSituationReport(null, delay:0, display: false, html: true, silentIfInactive: true);
                 outputmsg += "<br>" + Environment.NewLine + "<br>" + Environment.NewLine;
@@ -2900,10 +2943,12 @@ public class Mission : AMission, IMainMission
         }
         if (MapMove == 0)
         {
+            /*
             string msg7 = word + "the campaign is at a COMPLETE STALEMATE since the map last turned!";
             outputmsg += msg7 + Environment.NewLine;
             if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg7, null); });
-            delay_s += 0.04;        
+            delay_s += 0.04;  
+            */
         }
 
         if (!firstMapMove_saved) firstMapMove = MapMove;
@@ -2926,10 +2971,12 @@ public class Mission : AMission, IMainMission
         }
         if (thisSessionMapMove == 0)
         {
+            /*
             string msg7 = word + "the campaign is at a COMPLETE STALEMATE this session!";
             outputmsg += msg7 + Environment.NewLine;
             if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg7, null); });
             delay_s += 0.04;
+            */
         }
 
 
@@ -3749,11 +3796,11 @@ public class Mission : AMission, IMainMission
                                         {
 
 
-                                            /* if (DEBUG) twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " "                                          
+                                           twcLogServer(new Player[] { player }, "DEBUG: Destroying: Airgroup: " + a.AirGroup() + " "                                          
                                              + a.Type() + " " 
                                              + a.TypedName() + " " 
                                              +  a.AirGroup().ID(), new object[] { });
-                                            */
+                                            
                                             Timeout(random.NextDouble() * 10, () =>
                                             {
                                                 a.Destroy();
@@ -5046,7 +5093,18 @@ public class Mission : AMission, IMainMission
             //from the radar DB as well as other a/c location/velocity, so it's ALL somewhat stale.
             if (radar_realism >= 1) { wait_s = 1; refreshtime_ms = 60 * 1000; }
             //if (radar_realism >= 5) { wait_s = 10; refreshtime_ms = 2 * 60 * 1000; } //CloD Blitz/Campaign Serer settings
-            if (radar_realism >= 5) { wait_s = 15; refreshtime_ms = 7 / 2 * 60 * 1000; } //Tobruk Campaign Settings/radar in desert was spottier/worse
+            if (radar_realism >= 5)
+            {
+                if (MO_BRBumrushActive() && MO_BRCurrentBumrushMissionObjective() != null && player != null && player.Place() != null && (player.Place() is AiAircraft) &&
+                    Calcs.CalculatePointDistance(MO_BRCurrentBumrushMissionObjective().Pos, (player.Place() as AiAircraft).Pos()) < 40000)
+                {
+                    wait_s = 3; refreshtime_ms = 15 * 1000; //So within the Bumrush area, during bumrush, they have set up special radar thingers & they are much faster. Unless the enemy has destroyed them of course.
+                }
+                else
+                {
+                    wait_s = 15; refreshtime_ms = 7 / 2 * 60 * 1000; //Tobruk Campaign Settings/radar in desert was spottier/worse
+                } 
+            }
             //if (radar_realism >= 5) { wait_s = 5; refreshtime_ms = Convert.ToInt32 (0.02 * 60 * 1000); } //FOR TESTING - MUCH FASTER
             if (radar_realism >= 9) { wait_s = 30; refreshtime_ms = 5 * 60 * 1000; }
 
@@ -6959,7 +7017,7 @@ public class Mission : AMission, IMainMission
             //happening when the first player connects
 
             //TOBRUK: Disabling this FOR NOW.  2020/09.
-            //CheckAndChangeStartTimeAndWeather(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
+            CheckAndChangeStartTimeAndWeather(); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
 
             //HOW TO ADD TRIGGERS FROM A SUBMISSION TO THE MAIN MISSION
             //by  ATAG_Oskar
@@ -8180,7 +8238,7 @@ public class Mission : AMission, IMainMission
                  * Display objectives remaining
                  */
                 setMainMenu(player);
-                Task.Run(() => MO_ListRemainingPrimaryObjectives(player, player.Army(), 12));
+                Task.Run(() => MO_ListRemainingPrimaryObjectives(player, player.Army(), 24));
             }
             else if (menuItemIndex == 7)
             {
@@ -8626,7 +8684,7 @@ public class Mission : AMission, IMainMission
             */
             if (GamePlay == null) return;
             double playerFrontDistance_m = GamePlay.gpFrontDistance(player.Army(), player.Place().Pos().x, player.Place().Pos().y);
-            double playerFrontDistance2_m = GamePlay.gpFrontDistance(3-player.Army(), player.Place().Pos().x, player.Place().Pos().y);
+            double playerFrontDistance2_m = GamePlay.gpFrontDistance(3 - player.Army(), player.Place().Pos().x, player.Place().Pos().y);
 
             twcLogServer(new Player[] { player }, "Your distance from your front " + playerFrontDistance_m.ToString("N0") + " " + playerFrontDistance2_m.ToString("N0"), null);
 
@@ -8763,9 +8821,9 @@ public class Mission : AMission, IMainMission
 
                     int blueFar = blueFarArtillery + blueFarVehicle;
 
-                    if (redFar > 0 || blueFar > 0)                        
+                    if (redFar > 0 || blueFar > 0)
                     {
-                        twcLogServer(new Player[] { player }, "Current convoy/artillery sitrep for " + mo.Name + " at " + i.ToString() + ": Red - " + redFarVehicle.ToString() + "," +redFarArtillery.ToString() + "  Blue - " + blueFarVehicle.ToString() + "," + redFarArtillery.ToString(), null);
+                        twcLogServer(new Player[] { player }, "Current convoy/artillery sitrep for " + mo.Name + " at " + i.ToString() + ": Red - " + redFarVehicle.ToString() + "," + redFarArtillery.ToString() + "  Blue - " + blueFarVehicle.ToString() + "," + redFarArtillery.ToString(), null);
                         //twcLogServer(new Player[] { player }, "Artillery: Red - " + redFarArtillery.ToString() + "  Blue - " + blueFarArtillery.ToString(), null);
                         resultbr = true;
                     }
@@ -8843,7 +8901,8 @@ public class Mission : AMission, IMainMission
                     }
                     //twcLogServer(new Player[] { player }, "4", new object[] { });
 
-                    if ((!mo.ObjectiveAchievedForPoints || !mo.Destroyed) && mo.AttackingArmy == currArmy && mo.IsPrimaryTarget)
+                    //if ((!mo.ObjectiveAchievedForPoints || !mo.Destroyed) && mo.AttackingArmy == currArmy && mo.IsPrimaryTarget)
+                    if (mo.AttackingArmy == currArmy && mo.IsPrimaryTarget)
                     {
                         MO_DestroyObjective(moKey, true);
                     }
@@ -8935,11 +8994,11 @@ public class Mission : AMission, IMainMission
             int kabnm = 0;
             int kgan = 0;
 
-            if (mo1.ChiefName.Length>0) kabnm = Calcs.KillActorsByNameMatch(gpBattle, GamePlay, this, AllActorsDict, mo1.ChiefName);
+            if (mo1.ChiefName.Length > 0) kabnm = Calcs.KillActorsByNameMatch(gpBattle, GamePlay, this, AllActorsDict, mo1.ChiefName);
 
-            kgan = Calcs.KillGroundActorsNear(gpBattle, GamePlay, this, AllActorsDict, mo1.returnCurrentPosWithChief(), 3000 );            
+            kgan = Calcs.KillGroundActorsNear(gpBattle, GamePlay, this, AllActorsDict, mo1.returnCurrentPosWithChief(), 3000);
 
-            twcLogServer(new Player[] { player }, "Killed {0} actors by match with name {1} and {2} actors near the objectives {3} ", new object[] { kabnm, mo1.ChiefName,kgan, mo1.Name });
+            twcLogServer(new Player[] { player }, "Killed {0} actors by match with name {1} and {2} actors near the objectives {3} ", new object[] { kabnm, mo1.ChiefName, kgan, mo1.Name });
 
 
         }
@@ -8959,7 +9018,18 @@ public class Mission : AMission, IMainMission
 
             twcLogServer(new Player[] { player }, "RESETTING ALL mission objectives, objectives scouted, re-read mission objectives afresh, current team scores", new object[] { });
 
-            MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
+            try
+            {
+                MO_BRStopBumrushPhase(1);
+            }
+            catch { }
+            try
+            {
+                MO_BRStopBumrushPhase(2);
+            }
+            catch { }
+
+        MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
             mission_objectives.RadarPositionTriggersSetup();
             mission_objectives.MissionObjectiveTriggersSetup();
             twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
@@ -8992,7 +9062,28 @@ public class Mission : AMission, IMainMission
             //MO_CheckObjectivesComplete(TestingOverrideArmy: 2);
             MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue);
         }
+        //MO_BRBumrushCheck,
+        //new Tuple<int, MissionObjective>(army, mo),
+        //army,
+        //new Tuple<int, bool, int>(army, false, 0),
+        else if (msg.StartsWith("<testbumwinblue") && admin_privilege_level(player) >= 2)
+        {
+            twcLogServer(new Player[] { player }, "Testing BLUE win of current bumrush battle now", new object[] { });
+            MO_BRBumrushCheck(new Tuple<int, bool, int>(MO_BRCurrentBumrushArmy, true, 2));
+            
+        }
+        else if (msg.StartsWith("<testbumwinred") && admin_privilege_level(player) >= 2)
+        {
+            twcLogServer(new Player[] { player }, "Testing RED win of current bumrush battle now", new object[] { });
+            MO_BRBumrushCheck(new Tuple<int, bool, int>(MO_BRCurrentBumrushArmy, true, 1));
 
+        }
+        else if (msg.StartsWith("<testbumadvance") && admin_privilege_level(player) >= 2)
+        {
+            twcLogServer(new Player[] { player }, "Advancing bumrush to next phase NOW", new object[] { });            
+            MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(MO_BRCurrentBumrushArmy, true));
+        }
+        //MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); }
         //removeSmokeFireCraters(Point3d p, double radius_m)
         else if (msg.StartsWith("<testclean") && admin_privilege_level(player) >= 2)
         {
@@ -9238,7 +9329,7 @@ public class Mission : AMission, IMainMission
         else if (msg.StartsWith("<test") && admin_privilege_level(player) >= 2)
         {
             var radar_messages = new Dictionary<string, string> {
-                {  "1", "a;dslfkaj;ldkf ja;ldfj a;slf ja;slfjjfeifjeij aij fiajf iasjf iajdf iajf aisjfd aisdfj aisfdj asidfj asifdj aisf jaisfj " },
+                {  "1", "YOU TYPED <TEST a;dslfkaj;ldkf ja;ldfj a;slf ja;slfjjfeifjeij aij fiajf iasjf iajdf iajf aisjfd aisdfj aisfdj asidfj asifdj aisf jaisfj " },
                 {  "2", "a;dslfkaj;ldkf ja;ldfj a;slf ja;slfjjfeifjeij aij fiajf iasjf iajdf iajf aisjfd aisdfj aisfdj asidfj asifdj aisf jaisfj " },
                 {  "3", "a;dslfkaj;ldkf ja;ldfj a;slf ja;slfjjfeifjeij aij fiajf iasjf iajdf iajf aisjfd aisdfj aisfdj asidfj asifdj aisf jaisfj " },
                 {  "4", "a;dslfkaj;ldkf ja;ldfj a;slf ja;slfjjfeifjeij aij fiajf iasjf iajdf iajf aisjfd aisdfj aisfdj asidfj asifdj aisf jaisfj " },
@@ -9263,6 +9354,8 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "Server test commands: <rctest, <testturnred, <testturnblue, <rcdest, <rcrecord, <obair objectiveID (make airspawn above OBJ) <obflaktest objectiveID place flak guns to kill objective, <killtest ID kill all actors @ objective", new object[] { });
             twcLogServer(new Player[] { player }, "Server test commands: <bombtest ID bomb an ap <apdest disable and airfield, <testturnred <testturnblue", new object[] { });
             twcLogServer(new Player[] { player }, "Server test commands: <obdest ID - destroy an objective or <obdest red, <obdest blue, <brcount Bumrush current count, <brremove remove current Bumrush", new object[] { });
+            //"<testbumwinblue"
+            twcLogServer(new Player[] { player }, "<testbumwinblue <testbumwinred - in the Bumrush phase, test one side wining @ that point; <testbumadvance - advance bumrush phase now", new object[] { });
 
         }
         else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
@@ -9399,7 +9492,7 @@ public class Mission : AMission, IMainMission
         missionFile = Regex.Replace(missionFile, @"^\s*CloudsHeight\s*\d*\.?\d*\s*$", desiredCloudsHeightString, ro);//looks for a line with something like <spaces> XXXXXX <spaces> 34.234 .. Case irrelevant = replaces it
 
         int WeatherIndex = 1; //Can be 0=clear, 1 = light clouds, 2 = medium clouds
-        if (random.NextDouble() > .95) WeatherIndex = 2;//rarely, make it medium clouds
+        if (random.NextDouble() > .96) WeatherIndex = 2;//rarely, make it medium clouds
         if (random.NextDouble() > .80) WeatherIndex = 0;//more commonly, make it clear
         string desiredWeatherIndexString = "  WeatherIndex " + WeatherIndex.ToString("F0");
         missionFile = Regex.Replace(missionFile, @"^\s*WeatherIndex\s*\d*\.?\d*\s*$", desiredWeatherIndexString, ro);//looks for a line with something like <spaces> XXXXX <spaces> 34.234 .. Case irrelevant = replaces it
@@ -9589,7 +9682,7 @@ public class Mission : AMission, IMainMission
     public void CheckAndChangeStartTimeAndWeather()
     {
         //rem out the following line to make it: testing, don't skip
-        if (ON_TESTSERVER  && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
+        //if (ON_TESTSERVER  && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
         bool ret = true;
         double lastMissionCurrentTime_hr = 0;
         //MO_WriteMissionObject(GamePlay.gpTimeofDay(), "MissionCurrentTime", wait);
@@ -9614,15 +9707,16 @@ public class Mission : AMission, IMainMission
         twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
 
         //So once in a while we restart the mission simply to change the weather, aircraft, etc.  This will change cloudsheight & weatherindex, AI aircraft types.
-        bool restartToChangeWeather = false;   
-        if (random.NextDouble() < 0.333) restartToChangeWeather = true;
+        //bool restartToChangeWeather = false;   
+        //if (random.NextDouble() < 0.333) restartToChangeWeather = true;
 
         //rem out the following line to make it: testing, do it always
-        if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 && !restartToChangeWeather) return; //0.5 == 30 minutes, 1/2 hour
+        //if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 && !restartToChangeWeather) return; //0.5 == 30 minutes, 1/2 hour
 
         string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
 
-        twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2}. Restart to change weather? {3}", currTime, desiredStartTime_hrs, desiredString, restartToChangeWeather));
+        //twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2}. Restart to change weather? {3}", currTime, desiredStartTime_hrs, desiredString, restartToChangeWeather));
+        twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2}. ", currTime, desiredStartTime_hrs, desiredString));
 
         string filepath_mis = stb_FullPath + @"/" + MISSION_ID + ".mis";
         string filepath_mis_save = stb_FullPath + @"/" + MISSION_ID + ".mis_save";
@@ -9688,6 +9782,8 @@ public class Mission : AMission, IMainMission
         //OK, new .mis file with new time is in place, now restart & run it!
 
 
+        //TOBRUK:!!!!!! We are just re-writing the .mis file to change the time around, and possible weather. But we don't re-start, we just save it to use on next restart.
+        /*
 
         //We are NOT saving any mission state here, we MUST only run this routine at the very beginning of the mission, before anything has happened.
         twcLogServer(null, "Restarting Mission to change start time of day . . . ", new object[] { });
@@ -9699,69 +9795,107 @@ public class Mission : AMission, IMainMission
         //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
         //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
         //Here we DON"T want a smooth exit saving everything.  Saving everything messes everything up. Just quit.
+        */
         /*if (GamePlay is GameDef)
         {
             (GamePlay as GameDef).gameInterface.CmdExec("exit");
         }*/
+        /*
         //Process.GetCurrentProcess().Kill();
         Thread.Sleep(2075); //allow messages to show up/be logged?
         //Environment.Exit(0);
         Process.GetCurrentProcess().Kill();
         System.Environment.Exit(1);
+        */
     }
     //Ranges 0 to 1.  0= just started, 1=full mission time complete
     public double calcProportionTimeComplete()
     {
-        double tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
-        double perc = tickSinceStarted / ((double)END_MISSION_TICK);
+        //double tickSinceStarted = Time.tickCounter() - START_MISSION_TICK;
+        double timeSinceStarted_hrs = GamePlay.gpTimeofDay() - START_MISSION_TIME_HRS;
+        //double perc = tickSinceStarted / ((double)MISSION_LENGTH_HRS);
+        double perc = timeSinceStarted_hrs / ((double)MISSION_LENGTH_HRS);
+
 
         if (perc < 0) perc = 0;
         if (perc > 1) perc = 1;
         return perc;
     }
 
-    public int calcTimeLeft_min()
+    //returns true if there is enough time left (possibly after the adjustment)
+    //false if NOT enough time left
+    //If true & not enough time left, adjusts the end mission time to accommodate the extra time requested exactly.
+    //TODO: Can use values for latest allowed time etc to figure out if we can do it or not
+    //We have to change/adjust two things here: 
+    // - time left in mission (MISSION_LENGTH_HRS)
+    // - latest time mission is allowed to run (ie, sunset or whatever) (END_MISSION_TIME_HRS)
+    public bool adjustTimeLeft(double timeNeeded_min=10, double cutoff_min = 70, bool force = false)
     {
+        int timeLeft_min = calcTimeLeft_min();
+        double extraTimeNeeded_min = timeNeeded_min - timeLeft_min;
+        //END_MISSION_TIME_HRS
 
-        Tick_Mission_Time = END_MISSION_TICK - Time.tickCounter();
-        var Mission_Time = Tick_Mission_Time / 2000;
-        TimeSpan Convert_Ticks_min = TimeSpan.FromMinutes(Mission_Time);
-        //string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks_min.Hours, Convert_Ticks_min.Minutes, Convert_Ticks_min.Seconds);
+        double timeLeft_EMT_hr = END_MISSION_TIME_HRS - GamePlay.gpTimeofDay(); //End_Mission_Time is the last time of day allowed.
+        double timeLeft_EMT_min = timeLeft_EMT_hr * 60.0;
 
-        //Method #2 - if our last allowed time in the evening is earlier than this, then we go with that instead
-        double timeLeft = END_MISSION_TIME_HRS - GamePlay.gpTimeofDay();
-        TimeSpan Convert_Hours_min = TimeSpan.FromHours(timeLeft);
 
-        if (Convert_Hours_min.CompareTo(Convert_Ticks_min) <= 0) return Convert.ToInt32(Convert_Hours_min.TotalMinutes);  //whichever happens **soonest** we return
-        else return Convert.ToInt32(Convert_Ticks_min.TotalMinutes);
+        if (extraTimeNeeded_min <= 0 && timeNeeded_min <= timeLeft_EMT_min) return true;
+        if ((extraTimeNeeded_min >= cutoff_min || timeNeeded_min > timeLeft_EMT_min ) && !force) return false;
+
+        //Tick_Mission_Time =  - ;
+        if (extraTimeNeeded_min > 0 ) MISSION_LENGTH_HRS = MISSION_LENGTH_HRS + extraTimeNeeded_min / 60.0; ; //2000 ticks/min - see note below
+
+        //double timeLeft_EMT_hr = END_MISSION_TIME_HRS - GamePlay.gpTimeofDay();
+
+        if (timeNeeded_min > timeLeft_EMT_min) END_MISSION_TIME_HRS = GamePlay.gpTimeofDay() + timeNeeded_min / 60.0;
+
+        Console.WriteLine("Extended mission time left to {0:N0} from now, {1:N0} extra minutes", timeNeeded_min, extraTimeNeeded_min);
+        return true;
     }
 
     //Calcs minutes left as an int
+    public int calcTimeLeft_min()
+    {
+
+        double Mission_Timeleft_hrs = MISSION_LENGTH_HRS - (GamePlay.gpTimeofDay() - START_MISSION_TIME_HRS);
+        double Mission_Timeleft_min = Mission_Timeleft_hrs * 60;
+        //var Mission_Time_TF = Time.TicksToSecs(Tick_Mission_Time)/60;
+
+        //Console.WriteLine("tick/sec" + Time.SecsToTicks(1) + " /2000 method: {0:N2} TF method: {1:N2}", Mission_Time, Mission_Time_TF);
+        //So it appears that the server always SHOOTS FOR 33 tick/sec or 2000 ticks/min.  But, if things are slow etc sometimes it doesn't quite meet that.
+        //If y ou use the Time.TicksToSecs it will return the aCTUAL CURRENT VALUE of ticks/sec, which usually is NOT what you want.  If the server happens to be in the middle of slowdown it will suddentlyi switch 
+        //from 33 to 23 to 16 to 6 or whatever.  So any calculations you do with it will be WACKY.
+        //We need to switch all this to just just normal time instead of ticks.  IN the meanwhile, use constant value 2000 ticks/minute or 33.33 ticks/second.  ///DONE 2020/09/26
+
+        TimeSpan Mission_Timeleft_ts = TimeSpan.FromMinutes(Mission_Timeleft_min);
+        //string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks_min.Hours, Convert_Ticks_min.Minutes, Convert_Ticks_min.Seconds);
+
+        //Method #2 - if our last allowed time in the evening is earlier than this, then we go with that instead
+        double timeLeft_tilsunset_hrs = END_MISSION_TIME_HRS - GamePlay.gpTimeofDay();
+        TimeSpan timeLeft_tilsunset_ts = TimeSpan.FromHours(timeLeft_tilsunset_hrs);
+
+        if (timeLeft_tilsunset_ts.CompareTo(Mission_Timeleft_ts) <= 0) return Convert.ToInt32(timeLeft_tilsunset_ts.TotalMinutes);  //whichever happens **soonest** we return
+        else return Convert.ToInt32(Mission_Timeleft_ts.TotalMinutes);
+    }
+
+    //Calcs minutes left & returns it as a string
     public string calcTimeLeft()
     {
 
-        //Method #1 - ticks/ max tick time allowed for mission
-        Tick_Mission_Time = END_MISSION_TICK - Time.tickCounter();
-        var Mission_Time = Tick_Mission_Time / 2000;
-        TimeSpan Convert_Ticks = TimeSpan.FromMinutes(Mission_Time);
-        //string Time_Remaining = string.Format("{0:D2}:{1:D2}:{2:D2}", Convert_Ticks.Hours, Convert_Ticks.Minutes, Convert_Ticks.Seconds);
-        string Time_Remaining_tick = string.Format("{0:D2}hr {1:D2}min    ", Convert_Ticks.Hours, Convert_Ticks.Minutes);
+        int timeLeft_min = calcTimeLeft_min();
+        TimeSpan timeLeft_ts = TimeSpan.FromMinutes(timeLeft_min);
+        string Time_Remaining_hours_str = string.Format("{0:D2}hr {1:D2}min    ", timeLeft_ts.Hours, timeLeft_ts.Minutes);
 
-        //Method #2 - if our last allowed time in the evening is earlier than this, then we go with that instead
-        double timeLeft = END_MISSION_TIME_HRS - GamePlay.gpTimeofDay();
-        TimeSpan Convert_Hours = TimeSpan.FromHours(timeLeft);
-        string Time_Remaining_hours = string.Format("{0:D2}hr {1:D2}min    ", Convert_Hours.Hours, Convert_Hours.Minutes);
-
-        if (Convert_Hours.CompareTo(Convert_Ticks) <= 0) return Time_Remaining_hours; //whichever happens **soonest** we return
-
-        else return Time_Remaining_tick;
+        return Time_Remaining_hours_str;
     }
-    //Displays time left to player & also returns the time left message as a string
-    //Calling with (null, false) will just return the message rather than displaying it
+
+
 
     public int month = -1;
     public int day = -1;
 
+    //Displays time left to player & also returns the time left message as a string & DateTime
+    //Calling with (null, false) will just return the message rather than displaying it
     public Tuple<string, DateTime> showTimeLeft(Player player = null, bool showMessage = true)
     {
         if (month == -1) month = random.Next(7, 10);
@@ -10058,7 +10192,7 @@ public class Mission : AMission, IMainMission
 
 
         //Console.WriteLine("3");
-        int destroyminutes = 150;//Destroy AI a/c this many minutes after they are spawned in.
+        int destroyminutes = 180;//Destroy AI a/c this many minutes after they are spawned in.
         //Note that MoveBombTarget-.cs takes care of destroying aircraft when their task is set to "LANDING" and no live players
         //are nearby.  Plus, a/c are destroyed when they fly off the map & MoveBombTarget-.cs will make them do that at 
         //the end of any planned WAYPOINTS they have been given.
@@ -10076,7 +10210,7 @@ public class Mission : AMission, IMainMission
               +  a.AirGroup().ID(), new object[] { });
             */
             if (a == null) return;
-            bool iACP = isAiControlledPlane2(a);
+            bool iACP = isAiControlledPlane2(a);  //Both #1. IS airplane, #2 is AI controlled
             if (!iACP)
             {
                 //Timeout(35.232, () => { skincheckmission.DeleteLargeSkinFiles(); });
@@ -10117,7 +10251,7 @@ public class Mission : AMission, IMainMission
                     }
 
                 }
-                              );
+                );
 
                 Timeout(ot - 5, () =>
                 {
@@ -10131,7 +10265,7 @@ public class Mission : AMission, IMainMission
                 //Timeout(75, () =>  //75 sec - 1.5 minutes for testing
                 Timeout(ot, () =>  //960 sec - 16 minutes for real use
                 {
-                    DebugAndLog("DEBUG: Destroying: " + a.AirGroup() + " "
+                    Console.WriteLine("DEBUG: Removing old spawned-in aircraft: " + a.AirGroup() + " "
                         + a.Type() + " "
                         + a.TypedName() + " "
                         + a.AirGroup().ID() + " timeout: " + ot);
@@ -10152,8 +10286,10 @@ public class Mission : AMission, IMainMission
      * ***************************************************/
 
 
-    #region Returns whether aircraft is an Ai plane (no humans in any seats)
-    private bool isAiControlledPlane2(AiAircraft aircraft)
+    #region 
+    //Returns whether aircraft is an Ai plane (no humans in any seats)
+    //And to be true, MUST be an aircraft, not any other type of actor
+    public bool isAiControlledPlane2(AiAircraft aircraft)
 
     { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
         if (aircraft == null) return false;
@@ -10282,12 +10418,12 @@ public class Mission : AMission, IMainMission
                                           )
                                             // ai aircraft only
                                             {
-                                                /*Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType(a) + " "
+                                                Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType(a) + " "
                                                 + a.Type() + " "
                                                 + a.TypedName() + " "
                                                 + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
                                                 Z_AltitudeAGL, Z_VelocityTAS, aagt
-                                               ); */
+                                               ); 
                                                 numremoved++;
                                                 Timeout(numremoved * 10, () => { a.Destroy(); }); //Destroy the a/c, but space it out a bit so there is no giant stutter 
 
@@ -10559,6 +10695,9 @@ public class Mission : AMission, IMainMission
 
     }
 
+    //Note that these are (or CAN BE) over-written by Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs
+    //and then also Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs
+    //and Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPosXXX.cs or Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesNegXXX.cs in turn
     public Dictionary<ArmiesE, MO_BRBumrushInfoType> MO_BRBumrushInfo = new Dictionary<ArmiesE, MO_BRBumrushInfoType>() {
         {ArmiesE.Red, new MO_BRBumrushInfoType() {
             PointsRequiredToBeginBumrush= 60,
@@ -12154,7 +12293,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public void MO_MissionObjectiveRollingWinnerHandler(ArmiesE army, bool BumrushRepelVictory = false)
     {
 
-        Task.Run(() =>
+        //Task.Run(() =>
         {
             Console.WriteLine(ArmiesL[(int)army] + " has turned the battle - giving reward, selecting new objectives");
             MO_turnedMapAnnouncements(army);
@@ -12175,7 +12314,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             EndMission(endseconds: 1 * 60, winner: ArmiesL[(int)army], BumrushRepelOnly: BumrushRepelVictory); //We've taken care of "winner" above, don't do it in EndMission - just leave as ""
 
             //TOBRUK!!! back to regular old Winner's Reward.  That way we can choose new objectives etc right away.
-            MO_MissionObjectiveWinnersReward(army);
+            MO_MissionObjectiveWinnersReward(army, bumrushRepelVictory: BumrushRepelVictory);
 
             //For TOBRUK we are doing this a little different - this is the Blitz/CLOD way:
             /* 
@@ -12190,23 +12329,51 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             */
 
             //TOBRUK way:
-            MO_SelectPrimaryObjectives(1, 0, eraseOnly: true);
-            MO_SelectPrimaryObjectives(2, 0, eraseOnly: true);
-            //Even if a Bumrush Repel victory, we can still erase all primaries.  This might scramble things up a little for the winners, but they will still have all of their destroyed objectives.  Whereas the losers will lose ALL of their destroyed objectives.
-            //We don't select NEW objectives here because if the map advances, we'll load a new Battle and that will have entirely NEW objectives to choose from
 
-            MO_WritePrimaryObjectives();
-            //mission_objectives.SelectSuggestedObjectives(ArmiesE.Red);
-            //mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
-            MissionObjectiveScore[ArmiesE.Red] = 0;
-            MissionObjectiveScore[ArmiesE.Blue] = 0;
-            MissionObjectivesCompletedString[ArmiesE.Red] = "";
-            MissionObjectivesCompletedString[ArmiesE.Blue] = "";
+            //BUMRUSH REPEL VICTORY means one side has repelled their bumrush airport attack
+            //So that side (ONLY) retains their destroyed primary objectives (forpoints) AND score so they can just proceed from there
+            //The OTHER side gets ALL primaries and ALL forpoints objectives wiped to zero and they start over with NO objectives completed
+            if (BumrushRepelVictory)
+            {
+                //MO_SelectPrimaryObjectives((int)army, 0, eraseOnly: true, eraseForPoints: false); //winner
+                //MO_SelectPrimaryObjectives(3 - (int)army, 0, eraseOnly: true, eraseForPoints: true); //loser
+                                                                                                //Even if a Bumrush Repel victory, we can still erase all primaries.  This might scramble things up a little for the winners, but they will still have all of their destroyed objectives.  Whereas the losers will lose ALL of their destroyed objectives.
+                                                                                                //We don't select NEW objectives here because if the map advances, we'll load a new Battle and that will have entirely NEW objectives to choose from
+
+                MO_WritePrimaryObjectives();
+                //mission_objectives.SelectSuggestedObjectives(ArmiesE.Red);
+                //mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
+                //LOSER gets all points & objectives erased & must start over with that battle from the zero point
+                //MissionObjectiveScore[(ArmiesE)(3 - army)] = 0; //loser gets points zeroed out                                                            
+                //MissionObjectivesCompletedString[(ArmiesE)(3 - army)] = ""; //AND all objectives completed are erased
+
+                //But WINNER gets to keep current objectives completed score AND list of completed objectives (thus the below are rem-ed out)
+                //MissionObjectiveScore[ArmiesE(army)] = 0; 
+                //MissionObjectivesCompletedString[ArmiesE(army)] = "";
+            } 
+            // NORMAL WIN, the attacking army has WON the bumrush airport, and they advance the front
+            //The means ALL objectives & objective scores are cleared for BOTH armies
+            else
+            {
+                //MO_SelectPrimaryObjectives((int)army, 0, eraseOnly: true, eraseForPoints: true); //winner
+                //MO_SelectPrimaryObjectives(3 - (int)army, 0, eraseOnly: true, eraseForPoints: true); //loser
+                                                                                                //Even if a Bumrush Repel victory, we can still erase all primaries.  This might scramble things up a little for the winners, but they will still have all of their destroyed objectives.  Whereas the losers will lose ALL of their destroyed objectives.
+                                                                                                //We don't select NEW objectives here because if the map advances, we'll load a new Battle and that will have entirely NEW objectives to choose from
+                MO_WritePrimaryObjectives();
+                //mission_objectives.SelectSuggestedObjectives(ArmiesE.Red);
+                //mission_objectives.SelectSuggestedObjectives(ArmiesE.Blue);
+                //MissionObjectiveScore[army] = 0; //loser gets points zeroed out
+                //MissionObjectiveScore[(ArmiesE)(3 - (int)army)] = 0; //loser gets points zeroed out
+                                                              //MissionObjectiveScore[ArmiesE.Blue] = 0;
+                //MissionObjectivesCompletedString[army] = "";
+                //MissionObjectivesCompletedString[(ArmiesE)(3 - (int)army)] = "";
+
+            }
 
             //NOTE:  COULD just do MO_MissionObjectiveWinnersReward(ArmiesE army) here, which more or less completely clears the decks
 
             
-        });
+        }//);
 
         //TODO: Add a list of all players who helped turn the map.  And/or players who helped destroy each objective.
     }
@@ -12310,44 +12477,88 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     //When one side completes their full objective/reaches their score then they clear the decks
     //and everything destroyed is restored again
-    public void MO_MissionObjectiveWinnersReward(ArmiesE army)
+    public void MO_MissionObjectiveWinnersReward(ArmiesE army, bool bumrushRepelVictory = false)
     {
+
+        string objList = "";
+        double objScore = 0;
         foreach (string ID in MissionObjectivesList.Keys)
         {
             MissionObjective mo = MissionObjectivesList[ID];
 
+            //For the enemy's targets, we have to undestroy/unscout/un-forPoints everything because we'll be re-selecting our new targets from all of these.
             if (mo.OwnerArmy == (int)army)
             {
+
                 mo.Destroyed = false;
                 mo.DestroyedPercent = 0;
                 mo.TimeToUndestroy_UTC = null;
                 mo.LastHitTime_UTC = null;
-                //We don't reset mo.ObjectiveAchievedForPoints here because the other side is still working on their objectives list.  So it is restored for use by the winning side but still counts towards objectives/points for the other side.  This is getting messy . . . 
-                /*  hmm, this was a mistake but we **could** really do it.  When one side turns the map, the other side loses all of its recon photos.  Hmm.
-                mo.Scouted = false;
-                mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
-                */
-            }
-
-            if (mo.AttackingArmy == (int)army)
-            {
-                //TOBRUK new thing, we need to get objectives undestroyed immediately so we can use them again.
-                mo.Destroyed = false;
-                mo.DestroyedPercent = 0;
-                mo.TimeToUndestroy_UTC = null;
-                mo.LastHitTime_UTC = null;
-                //TOBRUK end
-
-                mo.ObjectiveAchievedForPoints = false; //this resets the objectives list for scoring purposes.  If items are still actually destroyed they can stay that way until they're repaired.  But for scoring purposes, the winning side is now starting over as though nothing were destroyed.
                 mo.IsPrimaryTarget = false;
-                mo.hasGeneralStaff = false; //Might need to not mess with this, but it goes along with removing all primary objectives
+                mo.ObjectiveAchievedForPoints = false;
+                mo.OrdnanceOnTarget_kg = 0;
+                mo.ObjectsDestroyed_num = 0;
                 mo.Scouted = false; //And we have to reset scouting because now we have a full NEW set of objectives to get
                 mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
             }
+
+            //We don't reset mo.ObjectiveAchievedForPoints here because the other side is still working on their objectives list.  So it is restored for use by the winning side but still counts towards objectives/points for the other side.  This is getting messy . . . 
+            /*  hmm, this was a mistake but we **could** really do it.  When one side turns the map, the other side loses all of its recon photos.  Hmm.
+            mo.Scouted = false;
+            mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
+            */
+
+
+            if (mo.AttackingArmy == (int)army)
+            {
+                //For the army that repelled the bumrush attack, they get to KEEP their achieved objectives and move forward.
+                //so we have to retain those destroyed objs & also retotal their points & keep the list of achieved objectives to move forward
+                if (bumrushRepelVictory && mo.ObjectiveAchievedForPoints)
+                {
+                    objList += " - " + mo.Name;
+                    objScore += mo.Points;
+
+                }
+                else
+                {
+
+                    //TOBRUK new thing, we need to get objectives undestroyed immediately so we can use them again.
+                    //Unless they're primaries we already destroyed & and retaining after bumrush repel, see above
+                    mo.Destroyed = false;
+                    mo.DestroyedPercent = 0;
+                    mo.TimeToUndestroy_UTC = null;
+                    mo.LastHitTime_UTC = null;
+
+
+                    mo.ObjectiveAchievedForPoints = false; //this resets the objectives list for scoring purposes.  If items are still actually destroyed they can stay that way until they're repaired.  But for scoring purposes, the winning side is now starting over as though nothing were destroyed.
+                    mo.IsPrimaryTarget = false;
+                    mo.hasGeneralStaff = false; //Might need to not mess with this, but it goes along with removing all primary objectives
+                    mo.Scouted = false; //And we have to reset scouting because now we have a full NEW set of objectives to get
+                    mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
+                    mo.ObjectiveAchievedForPoints = false;
+                    mo.OrdnanceOnTarget_kg = 0;
+                    mo.ObjectsDestroyed_num = 0;
+                }
+
+            }
         }
 
-        MissionObjectiveScore[(ArmiesE)army] = 0;
-        MissionObjectivesCompletedString[(ArmiesE)army] = "";
+        //In bumrushRepelVictory, the 
+        if (bumrushRepelVictory)
+        {
+            MissionObjectiveScore[army] = objScore; //loser gets points zeroed out                                                            
+            MissionObjectivesCompletedString[army] = objList; //AND all objectives completed are erased
+
+        }
+        else
+        {
+
+            MissionObjectiveScore[(ArmiesE)army] = 0;
+            MissionObjectivesCompletedString[(ArmiesE)army] = "";
+        }
+        //Losing army always gets entire objectives/scores wiped out
+        MissionObjectiveScore[(ArmiesE)(3 - (int)army)] = 0;
+        MissionObjectivesCompletedString[(ArmiesE)(3 - (int)army)] = "";
 
     }
 
@@ -12559,7 +12770,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 }
 
             }
-        //Console.WriteLine("Mission Objectives: Added " + num_added.ToString() + " airports to Mission Objectives, updated " + num_updated.ToString() + " weight " + weight.ToString("N5"));
+        Console.WriteLine("Mission Objectives: Added " + num_added.ToString() + " airports to Mission Objectives, updated " + num_updated.ToString() + " weight " + weight.ToString("N5"));
 
     }
 
@@ -12764,7 +12975,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     //Only chooses from those in the PrimaryTargetWeight     
     //Will do either army=1 or army=2 or BOTH ARMIES if army=0  
     //eraseOnly = true erases all current primary objectives without choosing any new ones.  Needed for TOBRUK.
-    public void MO_SelectPrimaryObjectives(int army = 0, double totalPoints = 0, bool fresh = false, bool eraseOnly = false)
+    //eraseForPoints is valid only if fresh is true and setse "forPoints = false, isDestroyed=false & destroyed% to 0.  Basically it sets the objectives up so it needs to be destroyed again from point zero.
+    //Whereas fresh= true + eraseForPoints = false will leave all objectives destroyed/forPoints exactly as they currently are
+    public void MO_SelectPrimaryObjectives(int army = 0, double totalPoints = 0, bool fresh = false, bool eraseOnly = false, bool eraseForPoints = false)
     {
 
         List<string> keys = new List<string>(MissionObjectivesList.Keys);
@@ -12786,14 +12999,23 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             //If some have already been chosen, we have to respect the previously chosen IsPrimaryTarget = true;          
             if (fresh) foreach (var key in keys)
                 {
-                    if (MissionObjectivesList[key].AttackingArmy == a) MissionObjectivesList[key].IsPrimaryTarget = false;
+                    if (MissionObjectivesList[key].AttackingArmy == a)
+                    {
+                        MissionObjectivesList[key].IsPrimaryTarget = false;
+                        if (eraseForPoints)
+                        {
+                            MissionObjectivesList[key].ObjectiveAchievedForPoints = false; //TOBRUK, if you don't zero this out the army can't achieve their
+                            MissionObjectivesList[key].Destroyed = false;
+                            MissionObjectivesList[key].DestroyedPercent =0;
+                        }
+                    }
                 }
 
             if (eraseOnly) continue;
             
             int counter = 1;
 
-            for (int x = 0; x < 15; x++) //unlikely but possible that we'd need to cycle through the list of targets multiple times to select enough targets to reach the points. Could happen though if PrimaryTargetWeights are set low, or only a few possible objectives available in the list. 
+            for (int x = 0; x < 25; x++) //unlikely but possible that we'd need to cycle through the list of targets multiple times to select enough targets to reach the points. Could happen though if PrimaryTargetWeights are set low, or only a few possible objectives available in the list. 
             {
                 foreach (var key in keys)
                 {
@@ -12809,8 +13031,22 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                         if (mo.PrimaryTargetWeight < 200 && (mo.Destroyed || mo.ObjectiveAchievedForPoints || mo.DestroyedPercent > 2)) continue;
                         //Console.WriteLine("Checking 2" + mo.Name);
                         double r = stb_random.NextDouble() * 200; //was 100.  This will cut chance of everything being chosen, in half.  Except airports and a few other things, which we increased by a lot.  2020-01
-                        //Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID);
-                        if (mo.PrimaryTargetWeight < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 200% is never skipped, 100% skipped half the time, 50% 3/4 of the time, 0% skipped always
+                        Console.WriteLine("Select Primary " + mo.PrimaryTargetWeight + " " + r.ToString("N4") + " " + mo.ID + " poinrts req: " + MO_BRBumrushInfo[(ArmiesE)a].PointsRequiredToBeginBumrush.ToString("N0") + totalPoints.ToString("N0")
+                            );
+                        Point3d pos = mo.returnCurrentPosWithChief();
+
+                        //Except for the very highest-weighted mission objectives, make them more likely to be chosen if near the front,; less likely if distant
+                        double frontDistance = GamePlay.gpFrontDistance(mo.AttackingArmy, pos.x, pos.y);
+                        double distanceMult = 1;
+                        if (mo.PrimaryTargetWeight<100)
+                        {
+                            
+                            if (frontDistance > 240000) distanceMult = 0.1;
+                            else if (frontDistance > 160000) distanceMult = 0.2;
+                            else if (frontDistance > 80000) distanceMult = 0.4;
+                        }
+
+                        if (mo.PrimaryTargetWeight * distanceMult < r) continue; //implement weight; if weight is less than the random number then this one is skipped; so 200% is never skipped, 100% skipped half the time, 50% 3/4 of the time, 0% skipped always
                         //Console.WriteLine("Checking 3" + mo.Name);
                         if (totalPoints < MO_BRBumrushInfo[(ArmiesE)a].PointsRequiredToBeginBumrush)
                         {
@@ -13820,7 +14056,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             nfb = 2;
             nib = 2;
 
-
+            if (mo.MOObjectiveType.Equals(MO_ObjectiveType.Ship)) return; 
 
             //too much flak seems to bring the server to it's knees, so if not a primary just 2x2 flak, otherwise what is requested
             if (!mo.IsEnabled || !mo.IsPrimaryTarget)
@@ -13852,7 +14088,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 //If they want to jump into flak (placed in the bumrush.mis file) that is one thing.  But too many AI flak makes
                 //defense of the base almost 100% certain.
                 nfb = 1;
-                nib = 2;
+                nib = 3;
             }
 
 
@@ -14582,12 +14818,12 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     else if (mo.OwnerArmy == 2) af = "Luftwaffe";
                     int timeLeft_min = calcTimeLeft_min();
                     string msg7 = ">>>Recon has identified a possible group of high-ranking " + af + " officers in sector " + gsl.sector + " near " + mo.Name;
-                    if (timeLeft_min < END_MISSION_TICK / 2000 / 2 || mo.numTimesScouted > 1) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorKeypad + " near " + mo.Name;
-                    if (timeLeft_min < END_MISSION_TICK / 2000 / 4 || mo.numTimesScouted > 2) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
+                    if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 2 || mo.numTimesScouted > 1) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorKeypad + " near " + mo.Name;
+                    if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 4 || mo.numTimesScouted > 2) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
                     if (mo.numTimesScouted > 3) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
                     if (mo.numTimesScouted > 4) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " within less than 1 km, in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
                     if (mo.numTimesScouted > 5) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " to sector " + gsl.sectorDoublekeypad + " within a few hundred meters of (" + (gsl.pos.x + random.Next(1000) - 200).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 200).ToString("F0") + ") in the area of " + mo.Name;
-                    //if (timeLeft_min < END_MISSION_TICK / 2000 / 8) msg7 = ">>>" + gsl.staffGroupName + " may have been spotted in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
+                    //if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 8) msg7 = ">>>" + gsl.staffGroupName + " may have been spotted in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
                     retmsg += msg7 + Environment.NewLine;
                     totDelay += delay;
                     Timeout(totDelay, () =>
@@ -15168,7 +15404,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     }
 
     //note - only lists first 12 targets BY DEFAULT
-    public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 12, double delay = 0.2, bool display = true, bool html = false, bool leak = false)
+    public string MO_ListRemainingPrimaryObjectives(Player player, int army, int numToDisplay = 24, double delay = 0.2, bool display = true, bool html = false, bool leak = false)
     {
 
         string newline = Environment.NewLine;
@@ -15184,7 +15420,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         int numDisplayed = 0;
         double totDelay = 0;        
 
-        if (MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus > 0 || MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus > 0)
+        if (MO_BRBumrushActive())
         {
             if (leak) return "";//No need for leaks in bumrush stage
             msg = ArmiesL[army].ToUpper() + " SOLE REMAINING OBJECTIVE:";
@@ -15283,7 +15519,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             }
 
         }
-        else
+        
+        if (!MO_BRBumrushActive() || army != MO_BRObjectivesAchievedArmy()) //We'll display the objectives if bumrush is inactive, but also when it IS active, for the army that does not have objectives achieved
         {
             msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES:";
             if (leak) msg = "REMAINING " + ArmiesL[army].ToUpper() + " PRIMARY OBJECTIVES (INTELLIGENCE LEAK from low-level General Staff recon photos):";
@@ -16416,8 +16653,11 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public System.Threading.Timer MO_BRBumrushAIAttackTimer;
     public readonly int MO_BRBumrushPhaseTimer_period_min = 90;
     public readonly int MO_BRBumrushAIAttackTimer_period_sec = 270;
+    public int MO_BRCurrentBumrushArmy = 0;
     public DateTime MO_BRLastBumrushStartTime;
     public DateTime MO_BRNextBumrushStartTime;
+    public DateTime MO_BRBumrushAirportHeldStartTime = DateTime.MaxValue; //How long since the attacking army has been occupying the airport with sufficient vehicles
+    public readonly double MO_BRBumrushAirbaseOccupyTimeRequired_sec = 300; //How long the attacking army must hold the center area to declare victory
     public readonly double MO_BRBumrushAirbaseOccupyDistance_m = 500; //attacking vehicles must get this close to center of airbase to officially "occupy" it
     public readonly double MO_BRBumrushAirbaseClearPerimeterDistance_m = 3500; //defending vehicles must be cleared out this far center of airbase for a victory
 
@@ -16426,6 +16666,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public void MO_BRStartBumrushPhase(int army)
         
     {
+        MO_BRCurrentBumrushArmy = army;
         //Prevent this from running more than once concurrently
         //If we want to stop & restart over a single session/mission we'll have to do some rejiggering
         if (MO_BRBumrushPhase_lock) return;
@@ -16446,9 +16687,10 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         MO_BRBumrushCheckTimer = new System.Threading.Timer(
             MO_BRBumrushCheck,
             //new Tuple<int, MissionObjective>(army, mo),
-            army,
+            //army,
+            new Tuple<int, bool, int>(army, false, 0),
             dueTime: 300000, //wait time @ startup (ms).   We're going to wait 5 minutes before starting to check because  why not
-            period: 74000); //periodically call the callback at this interval to advance the bumrush to next phase.  Every 74 seconds.
+            period: Convert.ToInt32((MO_BRBumrushAirbaseOccupyTimeRequired_sec /4.0 + 1) *1000)); //periodically call the callback at this interval to advance the bumrush to next phase.  Every 76 seconds.  4*76 = 304 
 
         MO_BRBumrushAIAttackTimer = new System.Threading.Timer(
             MO_BRBumrushAIAttack,
@@ -16467,7 +16709,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         
         MO_BRBumrushInfo[(ArmiesE)1].BumrushStatus = 0;
         MO_BRBumrushInfo[(ArmiesE)2].BumrushStatus = 0;
-        
+        MO_BRCurrentBumrushArmy = 0;
+
         Console.WriteLine("Bumrush: Ending Bumrush phase, stopping all Bumrush timers" + DateTime.UtcNow.ToString("T"));
 
         //TODO: Here is where we could advance everything to the next bumrush airport, setup the new MO_BRBumrushInfo for the new airports, etc.
@@ -16494,6 +16737,33 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     }
 
+    public void MO_BRExtendBumrushPhaseTimer_ifneeded(int army, int duetime_sec)
+    {
+
+        //TimeSpan duetime_ts = until_dt - DateTime.UtcNow;
+        if (DateTime.UtcNow.AddSeconds(duetime_sec) <= MO_BRNextBumrushStartTime )
+        {
+            Console.WriteLine("Bumrush ExtendPhaseTimer: No extension needed, now: " + DateTime.UtcNow.ToString("T") + " next phase: " + MO_BRNextBumrushStartTime.ToString("T") + " duetime secs: " + (duetime_sec).ToString("N0"));
+            return;
+        }
+
+        //Console.WriteLine("Bumrush: Extending timer for BumrushPhase " + DateTime.UtcNow.ToString("T") + " to " + until_dt.ToString("T") + " duetime " + duetime_ts.TotalMilliseconds);
+        Console.WriteLine("Bumrush ExtendPhaseTimer: Extending timer for BumrushPhase " + DateTime.UtcNow.ToString("T") + " duetime secs " + (duetime_sec).ToString("N0") );
+
+        MO_BRNextBumrushStartTime = (DateTime.UtcNow.AddSeconds(duetime_sec));
+
+        adjustTimeLeft(duetime_sec/60, force:true);  //Will adjust time left to acommodate extended bumrush period
+
+        //Extend the next phase change to the until date/time
+        MO_BRAdvanceBumrushPhaseTimer.Change(
+            //dueTime: duetime_ts.TotalMilliseconds,
+            dueTime: duetime_sec * 1000,
+            period: MO_BRBumrushPhaseTimer_period_min * 60 * 1000
+        );
+       
+
+    }
+
     public void MO_BRAdvanceBumrushPhase(object obj)
     {
         try
@@ -16501,7 +16771,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             //Tuple<int,MissionObjective> tup = obj as Tuple<int, MissionObjective>;
 
             //TODO!!!!!!! Must cleanup any vehicles, flak etc from OLD bumrush mission before loading the new one.
-            //   --DONE?! (check it reallyi works, though.  2020/08/29)
+            //   --DONE?! (check it really works, though.  2020/08/29)
             //#########################################
             //TODO!!!!!!! Make auto-launch bomber  missions to attack convoys
             //   ---DONE.
@@ -16518,8 +16788,13 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             }
 
             Console.WriteLine("Bumrush: AdvanceBumrushPhase now, re-starting timers, LastStartTime, NextStartTime for BumrushPhase! " + DateTime.UtcNow.ToString("T"));
-            MO_BRLastBumrushStartTime = DateTime.UtcNow;
+            MO_BRLastBumrushStartTime = DateTime.UtcNow;            
             MO_BRNextBumrushStartTime = MO_BRLastBumrushStartTime.AddMinutes(MO_BRBumrushPhaseTimer_period_min);
+
+            bool enoughTime = adjustTimeLeft(MO_BRBumrushPhaseTimer_period_min);  //Will either adjust time left to acommodate entire bumrush period (if possible) OR return FALSE and then we can just end it.
+
+            if (!enoughTime) EndMission(endseconds: 1 * 60);
+
 
             MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
 
@@ -16574,14 +16849,14 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
     }
 
-    
+
 
     public void MO_BRBumrushAIAttack(object obj)
     {
         try
         {
             Console.WriteLine("MO_BRBumrushAttack starting at {0:HHmmss}", DateTime.UtcNow);
-            var tup = (Tuple<int,bool>)obj;
+            var tup = (Tuple<int, bool>)obj;
             //int army = (int)obj;
             int army = tup.Item1;
             bool recursiveRoutineCall = tup.Item2; //If the routine was called by itself; in that case we want ot avoid calling it AGAIN recursively.
@@ -16607,10 +16882,32 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             //So, try the next bit a few times as it seems we are often running into invalid groups/actors.  Probably because they ahve been killed?
             bool success = false;
             bool launchextra = false;
-            AiGroundGroup actualNearestGG=null;
+            AiGroundGroup actualNearestGG = null;
             Point3d actualNearestGGpos;
-            double actualNearestGGDistance_m=10000000;
-            AiGroundGroup nearestGG=null;
+            double actualNearestGGDistance_m = 10000000;
+            AiGroundGroup nearestGG = null;
+            AiGroundGroup anotherRandomGG = null;
+
+            List<AiActor> GroundActorsInBullseye = Calcs.GetGroundActorsNear(GamePlay, this, AllGroundDict, mo.Pos, radius_m: 600, matcharmy: attackingArmy, type: "Vehicle");
+
+            int attackingClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: MO_BRCurrentAttackingArmy(), type: "Vehicle");
+
+            AiGroundGroup GroundActorGrpInBullseye = null;
+            AiActor GroundActorInBullseye = null;
+
+            if (attackingClose > 2 && GroundActorsInBullseye.Count > 0)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    int index = random.Next(GroundActorsInBullseye.Count);
+                    GroundActorInBullseye = GroundActorsInBullseye[index];
+                    if (GroundActorInBullseye != null && GroundActorInBullseye is AiGroundActor && GamePlay.gpActorIsValid(GroundActorInBullseye))
+                    {
+                        GroundActorGrpInBullseye = GroundActorInBullseye.Group() as AiGroundGroup;
+                        break;
+                    }
+                }
+            }
 
             for (int i = 0; i < 15; i++)
             {
@@ -16619,7 +16916,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 actualNearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: i);
 
 
-                if (actualNearestGG == null || actualNearestGG.GetItems().Length==0)
+                if (actualNearestGG == null || actualNearestGG.GetItems().Length == 0)
                 {
                     Console.WriteLine("MO_BRBumrushAttack - no ground group to attack, try again {0}", i);
                     continue;
@@ -16635,6 +16932,17 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 if (actualNearestGGDistance_m < 1000) rness = 1;
 
                 nearestGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: rness);
+
+                //So choose ONE of the groups in the bullseye most of the time if there are more than a couple actors in it
+                //But if 5 or more attack it EVERY time.
+                //This is differnt from the old method, in that we get all the ACTORS in the bullseye & then choose randomly from them
+                //so we don't get stuck on just one group that is perhaps in a difficult place or otherwise  problematic
+                if (attackingClose > 2 && random.Next(0, 100) > 20) nearestGG = GroundActorGrpInBullseye;
+                else if (attackingClose > 4 && random.Next(0, 100) > 3) nearestGG = GroundActorGrpInBullseye;
+
+                anotherRandomGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: 20);
+                if (nearestGG == anotherRandomGG) anotherRandomGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: 30);
+                if (nearestGG == anotherRandomGG) anotherRandomGG = Calcs.nearestGroundGroup(GamePlay, mo.Pos, 20000.0, attackingArmy, AiGroundGroupType.Vehicle, randomness: 98);
 
                 if (nearestGG == null || nearestGG.GetItems().Length == 0)
                 {
@@ -16652,10 +16960,10 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 success = true;
                 break;
             }
-            
+
             //If the enemy is close to/in the center launch and extra attack @ double the regular time
             //if (launchextra &&) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(obj); });
-            
+
             if (!success)
             {
                 Console.WriteLine("MO_BRBumrushAttack - no ground group to attack was found after many tries, no attack launched, exiting");
@@ -16665,17 +16973,19 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             Console.WriteLine("MO_BRBumrushAttack - Ground Group will be attacked, " + (nearestGG as AiActor).Name()); // + " " + nearestGG.ID()); 
 
             //Timeout(random.Next(10, 6*60), ()=> {
-            Timeout(random.Next(1, 60), () =>
+            //Hmm, we have calced the target position above & if we wait at all it gets really stale.  So, don't
+            Timeout(random.Next(0, 2), () =>
             {
                 try
                 {
                     if (nearestGG == null) return;
                     Console.WriteLine("MO_BRBumrushAttack - Starting Ground Group attack for " + (nearestGG as AiActor).Name() + " " + nearestGG.ID());
-                    double alt_m = random.Next(400, 800);
+                    int moPosz_int = Convert.ToInt32(mo.Pos.z);
+                    double alt_m = random.Next(moPosz_int + 200, moPosz_int + 500);
                     int numWayPoints = 1;
                     string gat_targ = "";
 
-                    int attackingClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: MO_BRCurrentAttackingArmy(), type: "Vehicle");
+                    //int attackingClose = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseOccupyDistance_m, matcharmy: MO_BRCurrentAttackingArmy(), type: "Vehicle");
 
                     int defendingFarVehicle = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: MO_BRCurrentDefendingArmy(), type: "Vehicle");
                     int defendingFarArtillery = Calcs.CountGroundActors(GamePlay, this, AllGroundDict, mo.Pos, MO_BRBumrushAirbaseClearPerimeterDistance_m, matcharmy: MO_BRCurrentDefendingArmy(), type: "Artillery");
@@ -16683,23 +16993,50 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     int defendingFar = defendingFarArtillery + defendingFarVehicle;
 
                     //Make the attack flights larger as the enemy gets closer & more of them in the center (vs fewer of the enemy in the defending area)
-                    double nextFlightMult = 1;
-                    if (actualNearestGGDistance_m < 2500) nextFlightMult *= 1.05;
-                    if (actualNearestGGDistance_m < 1500) nextFlightMult *= 1.05;
-                    if (actualNearestGGDistance_m < 1000) nextFlightMult *= 1.1;
-                    if (actualNearestGGDistance_m < 500) nextFlightMult *= 1.15;
-                    if (attackingClose>5) nextFlightMult *= 1.05;
-                    if (attackingClose > 12) nextFlightMult *= 1.1;
-                    if (attackingClose > 19) nextFlightMult *= 1.15;
-                    if (attackingClose > 5 && defendingFar < 3) nextFlightMult *= 1.15;
+                    //Also make the attack altitude lower, which improves accuracy by a lot
+                    int numInFlight = random.Next(1, 5);
+                    //if (actualNearestGGDistance_m < 2500) numInFlight *= 1.05;
+                    if (actualNearestGGDistance_m < 1500) { numInFlight++; alt_m = random.Next(moPosz_int + 100, moPosz_int + 300); }
+                    if (actualNearestGGDistance_m < 1000) { alt_m = random.Next(moPosz_int + 50, moPosz_int + 200); }
+                    if (actualNearestGGDistance_m < 500) { numInFlight++; alt_m = random.Next(moPosz_int + 50, moPosz_int + 100); }
+                    if (attackingClose > 2) { alt_m -= 50; }
+                    if (attackingClose > 5) { numInFlight++; alt_m -= 50; }
+                    if (attackingClose > 8) { alt_m -= 50; }
+                    if (attackingClose > 5 && defendingFar < 5) { numInFlight++; alt_m -= 50; }
 
-                    //SOMETIMES when things are getting real close, launch an extra mission in between the two.
+                    if (alt_m < mo.Pos.z) alt_m = mo.Pos.z;
+
+                    if (recursiveRoutineCall) numInFlight = random.Next(1, 3); //just one or two in this case, because recursive calls are  more frequent, thus need to be smaller
+
+                    //SOMETIMES when things are getting real close, launch an extra mission or TWO in between the next two regular missions.
                     //BUT keep track of whether this attack was called recursively in a similar way and if so, don't recursively continue that. Or we get like 5 missions called all at once and then that continues recursively, not good
-                    if (!recursiveRoutineCall && attackingClose > 5 && defendingFar < 3 && random.Next(3)==0) Timeout(MO_BRBumrushAIAttackTimer_period_sec/2, ()=> { MO_BRBumrushAIAttack(new Tuple<int,bool>(army, true) as object); }); //true meaning, this routine is calling itself recursively
+                    //Also recursively called missions will be small
 
-                        //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
-                        //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
-                        double direction = -1;
+                    //Hmm, on trials, perhaps more frequent small missions are the solution.  One Ju88 or BR20 or a couple of Blenheims take out a whole column IF they get there.  Don't need 12 of them.
+                    if (!recursiveRoutineCall)
+                    {
+                        if (attackingClose > 5)
+                        {
+                            Timeout(MO_BRBumrushAIAttackTimer_period_sec / 7.0 + random.NextDouble() * MO_BRBumrushAIAttackTimer_period_sec / 4.0, () => { MO_BRBumrushAIAttack(new Tuple<int, bool>(army, true) as object); });
+                            Timeout(MO_BRBumrushAIAttackTimer_period_sec / 2.0 + random.NextDouble() * 5.0 * MO_BRBumrushAIAttackTimer_period_sec / 12.0, () => { MO_BRBumrushAIAttack(new Tuple<int, bool>(army, true) as object); });
+                            if (numInFlight > 2) numInFlight = 2;  //we're adding more flights, so limit size of the flight we're sending now.  More frequent but smaller flights is the plan.
+                        }
+                        else
+                        if ((attackingClose > 3 && defendingFar < 6) || attackingClose > 5)
+                        {
+                            Timeout(3.0 * MO_BRBumrushAIAttackTimer_period_sec / 8.0 + random.NextDouble() * MO_BRBumrushAIAttackTimer_period_sec / 4.0, () =>
+                                {
+                                    MO_BRBumrushAIAttack(new Tuple<int, bool>(army, true) as object);  //true meaning, this routine is calling itself recursively
+                                });
+                            if (numInFlight > 3) numInFlight = 3;  //we're adding more flights, so limit size of the flight we're sending now.  More frequent but smaller flights is the plan.
+                        }
+                    }
+
+
+
+                    //If attacking army is red, then bombers will be blue.  Blue bombers come more from the west & Red bombers more from the east.
+                    //This will add/subtract from the targetposition to start the bombers east OR west as appropriate.
+                    double direction = -1;
                     if (army == 1) direction = 1;
 
                     Point3d gat = new Point3d(mo.Pos.x + random.Next(1000, 3000), mo.Pos.y + random.Next(1000, 3000), alt_m);
@@ -16715,6 +17052,18 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     }
                     Point3d gap = mo.Pos;
                     gap.z = alt_m;
+                    string gap_targ = "";
+
+                    if (anotherRandomGG != null && GamePlay.gpActorIsValid(anotherRandomGG) && anotherRandomGG.GetItems().Length > 0 && anotherRandomGG != nearestGG)
+                    {
+                        Point3d grouppos = new Point3d(-100000, -100000, -100000);
+                        anotherRandomGG.GetPos(out grouppos);
+                        gap = grouppos;
+                        gap.z = alt_m;
+                        gap_targ = (anotherRandomGG as AiActor).Name();
+
+                    }
+
                     Point3d p1 = new Point3d(gat.x + direction * random.Next(7000, 9000), gat.y + random.Next(-3500, 3500), random.Next(250, 350));
                     Point3d p2 = new Point3d(gat.x - gap.x + gat.x, gat.y - gap.y + gat.y, alt_m); //point in same direction of vector from a/p to ground vehicles, and 2X as far from the a/p 
                     Point3d p4 = new Point3d((gat.x - gap.x) * 0.2 + gap.x, (gat.y - gap.y) * 0.2 + gap.y, alt_m); //a point between ground attack (vehicles) &  point attack (airport) but closer to the airport
@@ -16730,16 +17079,46 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     if (Calcs.CalculatePointDistance(gat, gap) < 500) airportBombChance = 1;
                     if (actualNearestGGDistance_m < 500) airportBombChance = 1;
 
+                    try
+                    {
+                        //Note that alt_m is pretty much ignored, the actual .z value is used
+                        ISectionFile f = Calcs.BuildBomber(GamePlay, this, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, gap_targ: gap_targ, attack_type: "LEVEL", airportBombChance: airportBombChance, numInFlight: numInFlight);
+                        f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/bomberbuild" + random.Next(10, 99).ToString()); //testing)
+                        GamePlay.gpPostMissionLoad(f);
 
-                    ISectionFile f = Calcs.BuildBomber(GamePlay, this, bomberArmy: enemyArmy, vel_kmh: 300, alt_m: alt_m, p1: p1, p2: p2, gat: gat, p4: p4, gap: gap, p6: p6, lan: lan, gat_targ: gat_targ, attack_type: "LEVEL", airportBombChance: airportBombChance, nextFlightMult:nextFlightMult);
-                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/bomberbuild" + random.Next(10, 99).ToString()); //testing)
-                    GamePlay.gpPostMissionLoad(f);
+                        Console.WriteLine("MO_BRBumrushAttack - Ground Group attack for " + (nearestGG as AiActor).Name() + " " + nearestGG.ID() + " gat: {0:N0} {1:N0} {2:N0} gap: {3:N0} {4:N0} {5:N0} apbombchance: {6:N2} numInflight: {7:N2} ",
+                            new object[] { gat.x, gat.y, gat.z, gap.x, gap.y, gap.z, airportBombChance, numInFlight });
+                    }
+                    catch (Exception ex) { Console.WriteLine("Bumrush Bomber Load 2 ERROR! " + ex.ToString()); }
+
+                    //Now, sometimes & if there are just a few live players online resisting the airfield attack, call in some FIGHTER COVER as well
+                    if (!recursiveRoutineCall && random.Next(5) > -1 && random.Next(5) < 10 - numEnemyPlayers)
+                    {
+
+                        Timeout(random.Next(10, 45), () =>
+                         {
+                             try
+                             {
+                                 //BuildFighter(IGamePlay GamePlay, Mission mission, int planeArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string gap_targ = "", int numInFlight = 2)
+                                 //Note that alt_m is pretty much USED, the actually .z value is ignored
+                                 ISectionFile f2 = Calcs.BuildFighter(GamePlay, this, planeArmy: enemyArmy, vel_kmh: 400, alt_m: alt_m + random.Next(200, 600), p1: p6, p2: gap, gat: gat, p4: p4, gap: mo.Pos, p6: p2, lan: lan, gat_targ: "", gap_targ: "", numInFlight: random.Next(1, 3));
+                                 f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/fighterbuild" + random.Next(10, 99).ToString()); //testing)
+                                     GamePlay.gpPostMissionLoad(f2);
+
+                                 Console.WriteLine("MO_BRBumrushAttack - Fighter cover mission for " + (nearestGG as AiActor).Name() + " " + nearestGG.ID() + " gat: {0:N0} {1:N0} {2:N0} gap: {3:N0} {4:N0} {5:N0} ",
+                            new object[] { gat.x, gat.y, gat.z, gap.x, gap.y, gap.z});
+
+                             }
+                             catch (Exception ex) { Console.WriteLine("Bumrush Fighter Load ERROR! " + ex.ToString()); }
+                         });
+                    }
                 }
                 catch (Exception ex) { Console.WriteLine("Bumrush Bomber Load ERROR! " + ex.ToString()); }
 
 
             });
-        } catch (Exception ex) { Console.WriteLine("BumrushAttack: ERROR! " + ex.ToString()); }
+        }
+        catch (Exception ex) { Console.WriteLine("BumrushAttack: ERROR! " + ex.ToString()); }
     }
 
     //One side has achieved their initial objectives, or tried a bumrush & failed.  So now it's time to launch the first or another bum rush.
@@ -16751,7 +17130,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         LoadRandomSubmission(fileID: MISSION_ID + "-Rush-" + aword + "-" + airportname, subdir: "Bumrushes");
 
     }
-
+    
+    bool MO_BRBumrushTestWin_Keeper = false;
+    
     public void MO_BRBumrushCheck(object obj)
     {
         try
@@ -16761,11 +17142,27 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             //MO_BRLastBumrushStartTime = DateTime.UtcNow;
 
+            //int army = (int)obj;
+            Tuple<int, bool, int> tup = (Tuple<int, bool, int>)obj;
+            int army = tup.Item1;
+            bool testBumrushwin = tup.Item2;
+            int testBumrushWinningArmy = tup.Item3;
+
+            if (testBumrushwin)
+            {
+                Console.WriteLine("Testing Bumrushwin for " + testBumrushWinningArmy.ToString());
+                MO_BRBumrushTestWin_Keeper = true;
+                Timeout(800, () => { MO_BRBumrushTestWin_Keeper = false; });
+            }
+
             //So, don't even CHECK the BRstatus until the BR has been going for 5 min or more.  This should prevent...anamolies.
             TimeSpan TimeSinceLastBumrushStart = DateTime.UtcNow - MO_BRLastBumrushStartTime;
-            if (TimeSinceLastBumrushStart.TotalSeconds < 300) return;
-
-            int army = (int)obj;
+            if (TimeSinceLastBumrushStart.TotalSeconds < 300 && !testBumrushwin)
+            {
+                MO_BRBumrushAirportHeldStartTime = DateTime.MaxValue; 
+                return;
+            }
+            
             MissionObjective mo = MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective;
 
             //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushSituationReport()
@@ -16806,62 +17203,104 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             //Put out the sitrep to the LOG every time we check.  So we know what happened EXACTLy if map turned, didn't turn, etc
             Console.WriteLine(MO_BRBumrushSituationReport(null, 100,0, display:false, html:false, silentIfInactive:false));
 
+            string heldTime_string = "";
+            double heldTime_sec = 0;
+            TimeSpan heldTime_ts = new TimeSpan();
+
+            if (MO_BRBumrushAirportHeldStartTime != DateTime.MaxValue)
+            {
+                heldTime_ts = DateTime.UtcNow - MO_BRBumrushAirportHeldStartTime;
+                heldTime_sec = heldTime_ts.TotalSeconds;
+                heldTime_string = string.Format(" ({0:N0} min of {1:N0})", heldTime_sec/60.0, MO_BRBumrushAirbaseOccupyTimeRequired_sec/60.0);
+            }
+
+            TimeSinceLastBumrushStart = DateTime.UtcNow - MO_BRLastBumrushStartTime;
+
             if (blueClose > 1)
             {
-                twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+                twcLogServer(null, "Blue has " + blueClose.ToString() + " attack vehicles occupying the target airport; Red has " + redFar.ToString() + " attack vehicles/artillery in the area surrounding" + heldTime_string + ".");
             }
 
             if (redClose > 1)
             {
-                twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding.");
+                twcLogServer(null, "Red has " + redClose.ToString() + " attack vehicles occupying the target airport; Blue has " + blueFar.ToString() + " attack vehicles/artillery in the area surrounding" + heldTime_string + ".");
             }
 
-            if (blueClose > 6 && redFar < 1 && attackingArmy == 2)  //We have a winner, BLUE!
+            if ((blueClose > 6 && redFar < 1 && attackingArmy == 2) || MO_BRBumrushTestWin_Keeper && attackingArmy == 2 || (testBumrushwin && testBumrushWinningArmy==2))  //We have a possible winner, BLUE!
             {
 
-                MO_BRStopBumrushPhase(army);
-                //they immediately win (even if no previous points earned) . . . but WHAT do they win?
-                //If they are the attacking army, they WIN THE MAP.
-                if (army == 2)
+                if (MO_BRBumrushAirportHeldStartTime == DateTime.MaxValue)
                 {
-                    MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
-                    //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                    Timeout (0.02, ()=> MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
+                    MO_BRBumrushAirportHeldStartTime = DateTime.UtcNow;
+                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10) * 1000)); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
+                    twcLogServer(null, string.Format(ArmiesL[attackingArmy] + " is now occupying the base.  Must hold for {0:N0} minutes!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
+                    GamePlay.gpHUDLogCenter(string.Format(ArmiesL[attackingArmy] + " occupying base - must hold {0:N0} min!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0}));
                 }
-                //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
-                //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
-                //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+                else if (heldTime_sec < MO_BRBumrushAirbaseOccupyTimeRequired_sec)
+                {
+
+                }
                 else
                 {
-                    MissionObjectiveScore[ArmiesE.Blue] += MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                    Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 2));
-                    //EndMission();
-                    //MO_CheckObjectivesComplete();
+
+                    MO_BRStopBumrushPhase(army);
+                    //they immediately win (even if no previous points earned) . . . but WHAT do they win?
+                    //If they are the attacking army, they WIN THE MAP.
+                    if (army == 2)
+                    {
+                        MissionObjectiveScore[ArmiesE.Blue] += MO_PointsRequiredToTurnMap[ArmiesE.Blue];
+                        //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
+                        Timeout(0.02, () => MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
+                    }
+                    //If they are the DEFENDING ARMY they cause the other army to LOSE the same # of points they originally won to start the bumrush
+                    //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+                    //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+                    else
+                    {
+                        MissionObjectiveScore[ArmiesE.Red] -= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                        Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 2));
+                        //EndMission();
+                        //MO_CheckObjectivesComplete();
+                    }
                 }
 
             }
-            else if (redClose > 6 && blueFar < 1 && attackingArmy == 1)  //We have a winner, RED!
+            else if ( (redClose > 6 && blueFar < 1 && attackingArmy == 1 ) || MO_BRBumrushTestWin_Keeper && attackingArmy == 1 || (testBumrushwin && testBumrushWinningArmy == 1))  //We have a possible winner, RED!
             {
-                MO_BRStopBumrushPhase(army);
-                if (army == 1)
+                if (MO_BRBumrushAirportHeldStartTime == DateTime.MaxValue)
+                {
+                    MO_BRBumrushAirportHeldStartTime = DateTime.UtcNow;
+                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10) * 1000)); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
+                    twcLogServer(null, string.Format(ArmiesL[attackingArmy] + " is now occupying the base.  Must hold for {0:N0} minutes!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
+                    GamePlay.gpHUDLogCenter(string.Format(ArmiesL[attackingArmy] + " occupying base - must hold {0:N0} min!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
+                }
+                else if (heldTime_sec < MO_BRBumrushAirbaseOccupyTimeRequired_sec)
                 {
 
-
-                    //they immediately win (even if no previous points earned)
-                    MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
-
-                    //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
-                    Timeout(0.02, () => MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
                 }
-                //If they are the DEFENDING ARMY they win back the same # of points the opposing army won to start the Bumrush.
-                //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
-                //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
                 else
                 {
-                    MissionObjectiveScore[ArmiesE.Red] += MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
-                    Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 1));
-                    //EndMission();
-                    //MO_CheckObjectivesComplete();
+                    MO_BRStopBumrushPhase(army);
+                    if (army == 1)
+                    {
+
+
+                        //they immediately win (even if no previous points earned)
+                        MissionObjectiveScore[ArmiesE.Red] += MO_PointsRequiredToTurnMap[ArmiesE.Red];
+
+                        //This next bit is a little confusing/the army that just one MIGHT be the owner of this airport, so it amounts to destroying their own airport?!
+                        Timeout(0.02, () => MO_DestroyObjective(MO_BRBumrushInfo[(ArmiesE)army].BumrushObjective.ID, percentdestroyed: 100, timetofixFromNow_sec: 180000, messageDelay_sec: 52));
+                    }
+                    //If they are the DEFENDING ARMY they cause the other army to LOSE the same # of points they originally won to start the bumrush
+                    //And they get all their own things REPAIRED and UNDAMAGED and the ENEMY GETS ALL NEW OBJECTIVES to complete
+                    //Whereas the WINNERS get to KEEP their completed objectives and just finish off the REMAINDER of them
+                    else
+                    {
+                        MissionObjectiveScore[ArmiesE.Red] -= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush; //MO_PointMO_PointsRequiredToTurnMap[ArmiesE.Blue]; }
+                        Timeout(0.02, () => MO_CheckObjectivesComplete(BumrushRepelArmy: 1));
+                        //EndMission();
+                        //MO_CheckObjectivesComplete();
+                    }
                 }
 
 
@@ -16872,7 +17311,11 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 twcLogServer(null, ArmiesL[defendingArmy] + " will now commence a counterattact on the airport.");
                 Timeout(0.02, () => GamePlay.gpHUDLogCenter(ArmiesL[defendingArmy] + " destroyed enemy ground attack - now counterattacking"));
                 Timeout(20, () => { MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); });
+                MO_BRBumrushAirportHeldStartTime = DateTime.MaxValue;
 
+            } else
+            {
+                MO_BRBumrushAirportHeldStartTime = DateTime.MaxValue;
             }
 
         }
@@ -16977,6 +17420,17 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 return retmsg;
             }
 
+            string heldTime_string = "";
+            double heldTime_sec = 0;
+            TimeSpan heldTime_ts = new TimeSpan();
+
+            if (MO_BRBumrushAirportHeldStartTime != DateTime.MaxValue)
+            {
+                heldTime_ts = DateTime.UtcNow - MO_BRBumrushAirportHeldStartTime;
+                heldTime_sec = heldTime_ts.TotalSeconds;
+                heldTime_string = string.Format(" ({0:N1} min of {1:N0})", heldTime_sec/60.0, MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0);
+            }
+
             //TODO - WARNING: Should somehow consolidate nearly identical code here & in BumrushCheck()
             //They calc the same thing & should always match
 
@@ -17047,6 +17501,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                         if (i > start) within = String.Format(" {0}m-", i - add);
                         string msg1 = "Red: " + redFarNewVehicle.ToString("00") + "/" + redFarNewArtillery.ToString("00") 
                             + ",  Blue: " + blueFarNewVehicle.ToString("00") + "/" + blueFarNewArtillery.ToString("00")+ within + i.ToString() + "m";
+
+                        if (i == start) msg1 += heldTime_string;
                         resultbr = true;
                         retmsg += msg1 + newline;
                         totDelay += delay;
@@ -17097,27 +17553,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
     public void MO_CheckObjectivesComplete(int TestingOverrideArmy = 0, int BumrushRepelArmy = 0)
     {
 
-
-        
         double bp = MO_PercentPrimaryObjectives((int)ArmiesE.Blue);
-
-    //Turned airport & 6 main objectives, so now we unleash the final bum rush
-    //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
-    if ((MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1 && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
-        || TestingOverrideArmy == 2) // Blue first stage complete
-    {
-        //WriteResults_Out_File("2");
-        Task.Run(() => WriteResults_Out_File("2"));
-        Timeout(10, () =>
-        {
-            twcLogServer(null, "Blue has launched ground columns now trying to overrun the target airport!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Blue making a run on the airport to turn the map!!!");
-        });
-
-        MO_BRStartBumrushPhase((int)ArmiesE.Blue);
-
-    }
-
+        double rp = MO_PercentPrimaryObjectives((int)ArmiesE.Red);
 
         //Turn the map by completing ALL primary objectives
         //or perhaps some secondaries; enough to reach the total required points.  (6 objectives X 5 points each, plus 1 primary airport target @ 30 points = 60 points)
@@ -17132,10 +17569,11 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             Task.Run(() => WriteResults_Out_File("2"));
             Timeout(10, () =>
             {
-                if (BumrushRepelArmy == 2) {
+                if (BumrushRepelArmy == 2)
+                {
                     twcLogServer(null, "Blue has successfully repelled the attack and taken over the airport!!!", new object[] { });
                     GamePlay.gpHUDLogCenter("Blue has Successfully Retaken the Airport!!!");
-                    MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue, BumrushRepelVictory:true);
+                    MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Blue, BumrushRepelVictory: true);
                 }
                 else
                 {
@@ -17146,19 +17584,59 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 }
             });
 
+
+
         }
+        else if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredToTurnMap[ArmiesE.Red])
+           || TestingOverrideArmy == 1 || BumrushRepelArmy == 1)// Red battle Success
+        {
+            //WriteResults_Out_File("1");
+            Task.Run(() => WriteResults_Out_File("1"));
+            if (BumrushRepelArmy == 1)
+            {
+                twcLogServer(null, "Red has successfully repelled the attack and taken over the airport!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Red has Successfully Retaken the Airport!!!");
+                MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red, BumrushRepelVictory: true);
+            }
+            else
+            {
+                twcLogServer(null, "Red has successfully turned the map and taken over the airport!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
+                MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
+            }
+            //EndMission(70, "Red");
+
+        }
+        else
+
+      //Turned airport & 6 main objectives, so now we unleash the final bum rush
+      //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
+      //NEVER do this in case the Bumrush attack has just been repelled
+      if ((BumrushRepelArmy == 0 && MissionObjectiveScore[ArmiesE.Blue] >= MO_BRBumrushInfo[ArmiesE.Blue].PointsRequiredToBeginBumrush && bp > MO_PercentPrimaryTargetsRequired[ArmiesE.Blue] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1 && MissionObjectiveScore[ArmiesE.Blue] < MO_PointsRequiredToTurnMap[ArmiesE.Blue])
+      || TestingOverrideArmy == 2) // Blue first stage complete
+        {
+            //WriteResults_Out_File("2");
+            Task.Run(() => WriteResults_Out_File("2"));
+            Timeout(10, () =>
+            {
+                twcLogServer(null, "Blue has launched ground columns now trying to overrun the target airport!!!", new object[] { });
+                GamePlay.gpHUDLogCenter("Blue making a run on the airport to turn the map!!!");
+            });
+
+            MO_BRStartBumrushPhase((int)ArmiesE.Blue);
 
 
 
+        }
+        else
 
 
-        double rp = MO_PercentPrimaryObjectives((int)ArmiesE.Red);
-
-        //Turned airport & 6 main objectives, so now we unleash the final bum rush
-        //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
-        if ((MissionObjectiveScore[ArmiesE.Red] >= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush && rp > MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1
-            && MissionObjectiveScore[ArmiesE.Red] < MO_PointsRequiredToTurnMap[ArmiesE.Red])
-            || TestingOverrideArmy == 1 ) // Red first stage complete
+      //Turned airport & 6 main objectives, so now we unleash the final bum rush
+      //OR most primary objectives (greater than specified percentage) plus reaching the higher point level required in that situation
+      //NEVER do this in case the Bumrush attack has just been repelled
+      if ((BumrushRepelArmy == 0 && MissionObjectiveScore[ArmiesE.Red] >= MO_BRBumrushInfo[ArmiesE.Red].PointsRequiredToBeginBumrush && rp > MO_PercentPrimaryTargetsRequired[ArmiesE.Red] && MO_BRBumrushInfo[ArmiesE.Blue].BumrushStatus < 1 && MO_BRBumrushInfo[ArmiesE.Red].BumrushStatus < 1
+          && MissionObjectiveScore[ArmiesE.Red] < MO_PointsRequiredToTurnMap[ArmiesE.Red])
+          || TestingOverrideArmy == 1) // Red first stage complete
         {
             //WriteResults_Out_File("2");
             Task.Run(() => WriteResults_Out_File("2"));
@@ -17171,26 +17649,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         }
 
-    if ((MissionObjectiveScore[ArmiesE.Red] >= MO_PointsRequiredToTurnMap[ArmiesE.Red])
-        || TestingOverrideArmy == 1 || BumrushRepelArmy == 1)// Red battle Success
-    {
-        //WriteResults_Out_File("1");
-        Task.Run(() => WriteResults_Out_File("1"));
-        if (BumrushRepelArmy == 1)
-        {
-            twcLogServer(null, "Red has successfully repelled the attack and taken over the airport!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Red has Successfully Retaken the Airport!!!");
-            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red, BumrushRepelVictory: true);
-        }
-        else
-        {
-            twcLogServer(null, "Red has successfully turned the map and taken over the airport!!!", new object[] { });
-            GamePlay.gpHUDLogCenter("Red has Successfully Turned the Map!!!");
-            MO_MissionObjectiveRollingWinnerHandler(ArmiesE.Red);
-        }
-        //EndMission(70, "Red");
-        
-    }
+
 
         //Console.WriteLine("Figuring leaks:  {0} {1} {2} {3}", MissionObjectiveScore[ArmiesE.Red], MO_PointsRequired[ArmiesE.Red], bp, MO_PrimaryObjectivesRemaining( (int)ArmiesE.Red));
 
@@ -17958,8 +18417,9 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
         //To reduce excessive random AI aircraft in Tobruk.
         //Usually keep just 33% of triggers.  However if a BUMRUSH is active keep only 10%.  
-        int pctToKeep = 40;
-        if (MO_BRBumrushActive()) pctToKeep = 10;
+        //9/26/2020, adjusted to 60/25
+        int pctToKeep = 60;
+        if (MO_BRBumrushActive()) pctToKeep = 25;
 
         if (random.Next(100) > pctToKeep)
         {
@@ -17996,12 +18456,16 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
         public bool stopAI()
     {        
         int nump = Calcs.gpNumberOfPlayers(GamePlay);
+
+        //For TOBRUK< keeping the raids going when noi players online, because  they are multi-hour raids & when players do come in, there will be something going on.
+        /*
         Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
         if (nump == 0 && !ON_TESTSERVER)
         {
             Console.WriteLine("stopAI: Stopping AI Trigger NO players online");
             return true;
         }
+        */
         if (nump > 80 || (nump > 60 && random.NextDouble() > 0.65) || (nump > 40 && random.NextDouble() > 0.2))
         {
             Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
@@ -20124,6 +20588,7 @@ public static class Calcs
     }
 
     //returns the nearest groundgroup in matcharmy (or either army, if matcharmy==0) to the point OR null if nothing is withing radius_m
+    //Randomness can be a number  0-100 and is the % chance of returning a random answer instead of the closest one
     public static AiGroundGroup nearestGroundGroup(this IGamePlay GamePlay, Point3d location, double radius_m, int matcharmy = 0, AiGroundGroupType type = AiGroundGroupType.Vehicle, int randomness = 0)
     {
         int count = 0;
@@ -21272,6 +21737,29 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         return f;
     }
 
+    public static ISectionFile addFlights (string section, ISectionFile f, int numToAdd, int maxInFlight, int maxFlights)
+    {
+        int count = 0;
+        string k, v;
+        Console.WriteLine("Fl: {0} {1} {2}", section, numToAdd, maxInFlight, maxFlights);
+        for (int i = 0; i<maxFlights; i++)
+        {
+            string flight = "";
+            for (int j = 1; j <= maxInFlight; j++) //flights count 0,1,2 but aircraft within the flight a 1,2,3
+            {
+                flight += i.ToString() + j.ToString() + " ";
+                count++;
+                if (count >= numToAdd) break;
+            }
+
+            k = "Flight" + i.ToString(); v = flight; f.add(section, k, v);
+            Console.WriteLine("Fl: {0} {1} {2}", section, k, v);
+
+            if (count >= numToAdd) break;
+        }
+        return f;
+    }
+
     //Make a Bomber that targets ground_attack_target (groundactor, stationary like vehicle convoy, artillery/aa, or stationary item) at most points: p1 p2 gat p4 
     //    (idea is gat is the point you think it will be at but it starts hunting before/after for the same groundactor_target)
     //but also (sometimes) point attack at a later point in the flight in case it misses the ground 
@@ -21298,75 +21786,109 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 //Weapons 1 3  //Hurricane 2C - needs more planes, lower altitude ~800m
                 //Weapons 1 2//Hurricane  1FB- needs more planes, lower altitude ~800m  .  Only drops half ordnance, so not using.
 
-    public static ISectionFile BuildBomber(IGamePlay GamePlay, Mission mission, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string attack_type="LEVEL", double airportBombChance = 0.15, double nextFlightMult = 1)
+    public static ISectionFile BuildBomber(IGamePlay GamePlay, Mission mission, int bomberArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string gap_targ = "", string attack_type="LEVEL", double airportBombChance = 0.15, int numInFlight = 2)
     {
         try
         {
-            double nextFlightChance = 0.5; //Chance  of choosing a 2nd, 3rd flight
+            //double nextFlightChance = 0.5; //Chance  of choosing a 2nd, 3rd flight
 
             ISectionFile f = GamePlay.gpCreateSectionFile();
 
-            string aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.Ju-88A-5Late_Trop", "tobruk:Aircraft.Ju-88A-5_Trop", "tobruk:Aircraft.Ju-88A-5", "tobruk:Aircraft.Ju-87B-2_Trop", "bob:Aircraft.Ju-87B-2", "tobruk:Aircraft.Bf-110C-4B_Trop", "bob:Aircraft.Bf-110C-4B", "tobruk:Aircraft.BR-20M_Trop", "bob:Aircraft.BR-20M", "tobruk:Aircraft.He-111H-2_Trop", "bob:Aircraft.He-111H-2"
+            string aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.Ju-88A-5Late_Trop", "tobruk:Aircraft.Ju-88A-5_Trop", "tobruk:Aircraft.Ju-88A-5",  "tobruk:Aircraft.Ju-88A-5",  "tobruk:Aircraft.Ju-88A-5",  "tobruk:Aircraft.Ju-88A-5", "tobruk:Aircraft.Ju-87B-2_Trop", "tobruk:Aircraft.Ju-87B-2_Trop","bob:Aircraft.Ju-87B-2","bob:Aircraft.Ju-87B-2", "tobruk:Aircraft.Bf-110C-4B_Trop", "bob:Aircraft.Bf-110C-4B", "bob:Aircraft.Bf-110C-4B", "tobruk:Aircraft.BR-20M_Trop","tobruk:Aircraft.BR-20M_Trop","tobruk:Aircraft.BR-20M_Trop","tobruk:Aircraft.BR-20M_Trop", "bob:Aircraft.BR-20M", "bob:Aircraft.He-111H-2"
         });
-            string formation = "FINGERFOUR";
+            //string formation = "FINGERFOUR";
+            string formation = Calcs.randSTR(new string[] { "FINGERFOUR", "FINGERFOUR", "VIC3", "LINEABREAST", "VIC3", "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT", "ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
             string weapons = "1 1 1 1 1 1 4";
             string groupname = "tobruk:Tobruk_LW_JG3_II." + clc_random.Next(1, 15).ToString("00");
+            List<string> detonatorL = new List<string>() {"Bomb.SC-500_GradeIII_K 0 -1 0.08", "Bomb.SD-250 0 -1 0.08", "Bomb.SC-250_Type1_J 2 -1 0.08", "Bomb.SD-500_A 0 -1 0.08", "Bomb.SC-50_GradeII_J 1 -1 0.08"    };
 
             if (bomberArmy == 1)
             {
-                aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.BlenheimMkIV_Trop", "tobruk:Aircraft.BlenheimMkIV_Late_Trop", "bob:Aircraft.BlenheimMkIV_Late", "tobruk:Aircraft.BlenheimMkI_Trop", "tobruk:Aircraft.BeaufighterMkIC_Trop", "tobruk:Aircraft.SunderlandMkI_Trop", "tobruk:Aircraft.BeaufighterMkIC_Trop", "tobruk:Aircraft.BeaufighterMkIC", "tobruk:Aircraft.HurricaneMkIIc-Trop-Late", "tobruk:Aircraft.HurricaneMkIIc-Trop" }); //"tobruk:Aircraft.WellingtonMkIa_trop", "tobruk:Aircraft.WellingtonMkIa_trop",  REMOVING these because launcher lock-up problem caused 2020/09
+                aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.BlenheimMkIV_Trop", "tobruk:Aircraft.BlenheimMkIV_Late_Trop", "bob:Aircraft.BlenheimMkIV_Late", "tobruk:Aircraft.BlenheimMkI_Trop", "tobruk:Aircraft.BeaufighterMkIC_Trop", "tobruk:Aircraft.SunderlandMkI_Trop", "tobruk:Aircraft.BeaufighterMkIC_Trop", "tobruk:Aircraft.BeaufighterMkIC", "tobruk:Aircraft.HurricaneMkIIc-Trop-Late", "tobruk:Aircraft.HurricaneMkIIc-Trop", "tobruk:Aircraft.WellingtonMkIa_trop", "tobruk:Aircraft.WellingtonMkIa_trop", "tobruk:Aircraft.WellingtonMkIc_Late_trop", "tobruk:Aircraft.WellingtonMkIc_Late_trop" }); //,  REMOVING welllingtons because launcher lock-up problem caused 2020/09.  2020/09/17, putting them back.
 
                 //"tobruk:Aircraft.WellingtonMkIa" doesn't exist!  Only "tobruk:Aircraft.WellingtonMkIa_trop"  or "bob:Aircraft.WellingtonMkIc".  But 2020/09/01, the MkIc wellingtons are bugged & wont' release bombs properly.  Ia seems OK.  Haven't tried bob:Ic
 
                 //Welly 1A works great, 9X250 best. But 1C drops one bomb ONLY.  Don't use until fixed.
-                formation = Calcs.randSTR(new string[] { "VIC3", "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
+                formation = Calcs.randSTR(new string[] { "VIC3", "LINEABREAST", "VIC3", "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT","ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
                 weapons = "1 1 5 0 2";
+                detonatorL = new List<string>() { "Bomb.Bomb_GP_40lb_MkIII 0 30 0.025", "Bomb.Bomb_GP_250lb_MkIV 0 30 0.025", "Bomb.Bomb_GP_500lb_MkIV 0 30 0.025" };
                 groupname = "BoB_RAF_B_7Sqn." + clc_random.Next(1, 15).ToString("00");
             }
             Console.WriteLine("Bumrush Attack group: " + aircraft);
 
             if (aircraft.Contains("Ju-87"))
             {
+
                 weapons = "1 1 2 1";
+                detonatorL = new List<string>() { "Bomb.SC-500_GradeIII_J 0 -1 0.08", "Bomb.SC-50_GradeII_J_DivePreferred 0 -1 0.08", "Bomb.SC-250_Type1_J 2 -1 0", "Bomb.SD-250_JB 0 -1 0.08", "Bomb.SD-500_E 0 -1 0.08", "Bomb.SC-250_Type2_J 0 -1 0.08" };
+                attack_type = "DIVE";
+                if (p2.z < 2000) p2.z = 2000;
+                if (gat.z < 2000) gat.z = 2000;
+                numInFlight += clc_random.Next(Convert.ToInt32(numInFlight / 2.0)+1); //might add some extras
+                if (numInFlight < 3) numInFlight = 3; //need @ least 3 to be effective here.  Maybe  4, realistically?
+                //if (gap.z < 2000) gap.z = 2000; //We'll try dive bomb on gat & just regular on gap
+                //BUG: The STUKA (only???!??) if it has TWO landing waypoints, will IMMEDIATELY drop all bombs, upon spawning in.  So, that is crazy.  But only put ONE landing waypoint.
+
+            }
+            if (aircraft.Contains("Ju-88"))
+            {
+                weapons = "1 1 1 1 1 1 4";
             }
             else if (aircraft.Contains("BR-20"))
             {
                 weapons = "1 1 1 1";
+                detonatorL = new List<string>() { "Bomb.Bomb_GP_40lb_MkIII 0 30 0.025", "Bomb.Bomb_GP_250lb_MkIV 0 30 0.025", "Bomb.Bomb_GP_500lb_MkIV 0 30 0.025" };
             }
             else if (aircraft.Contains("Bf-110"))
             {
                 weapons = "1 1 1 4";
-                nextFlightChance = 0.4;
+                //nextFlightChance = 0.4;
             }
             else if (aircraft.Contains("He-111"))
             {
                 weapons = "1 1 1 1 1 1 2";
-                nextFlightChance = 0.3;
+                //nextFlightChance = 0.3;
+            }
+            else if (aircraft.Contains("BlenheimMkIV_Late"))
+            {
+                weapons = "1 1 5 1 2";
             }
             else if (aircraft.Contains("Blenheim"))
             {
                 weapons = "1 1 5 0 2";
             }
+            else if (aircraft.Contains("WellingtonMkIc"))
+            {
+                //2020-09, Wellington 1c only drops one bomb!  But with 11511 it's a 1000 pounder, a doozy.  So a pretty good plane.
+                weapons = "1 1 5 1 1"; //2020/09 wellingtons certain loadout causes lockup of launcher.  So we are just disabling all wellington bomb loadouts for now ( plus all wellingtons period)
+                detonatorL = new List<string>() { "Bomb.Bomb_GP_1000lb_MkI 3 0 0.025" };
+            }
             else if (aircraft.Contains("Wellington"))
             {
-                weapons = "1 1 0"; //2020/09 wellingtons certain loadout causes lockup of launcher.  So we are just disabling all wellington bomb loadouts for now ( plus all wellingtons period)
+                //2020-09, Wellington 1A/1A-trop works well, drops 9X500lb in a salvo
+                weapons = "1 1 1"; //2020/09 wellingtons certain loadout causes lockup of launcher.  So we are just disabling all wellington bomb loadouts for now ( plus all wellingtons period)
+                detonatorL = new List<string>() { "Bomb.Bomb_GP_1000lb_MkI 3 0 0.025", "Bomb.Bomb_GP_250lb_MkIV 3 0 0.12", "Bomb.Bomb_GP_500lb_MkIV 3 0 0.12" };
             }
             else if (aircraft.Contains("Sunderland"))
             {
                 weapons = "1 1 1 1 1 1";
-                nextFlightChance = 0.3;
+                numInFlight = numInFlight/2 + clc_random.Next(Convert.ToInt32(numInFlight / 2.0)+1); //might reduce #s a bit
             }
             else if (aircraft.Contains("Beaufighter"))
             {
                 weapons = "1 1 1";
-                nextFlightChance = 0.7;
+                numInFlight += clc_random.Next(Convert.ToInt32(numInFlight / 2.0)+1); //might add some extras
                 if (formation.Contains("VIC")) formation = Calcs.randSTR(new string[] { "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
+                numInFlight += clc_random.Next(Convert.ToInt32(3.00 * numInFlight / 2.0) + 1); //might add some extras
+                if (numInFlight < 3) numInFlight = 3; //need @ least 3 to be effective here
             }
             else if (aircraft.Contains("Aircraft.HurricaneMkIIc"))
             {
                 weapons = "1 1 1 1 1 1 2";
-                nextFlightChance = 0.8;
+                //nextFlightChance = 0.8;
+                numInFlight += clc_random.Next(Convert.ToInt32(3.00 * numInFlight / 2.0)+1); //might add some extras
                 if (alt_m > 800) alt_m = clc_random.Next(400, 800);
+                if (numInFlight < 4) numInFlight = 4; //need @ least 4 to be effective here.  Maybe 5 realistically
             }
 
             string s = "";
@@ -21377,37 +21899,66 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             k = groupname; v = ""; f.add(s, k, v);
             s = groupname;
 
+            f = addFlights(s, f, numInFlight, 3, 3);
+
+            /*
             k = "Flight0"; v = Calcs.randSTR(new string[] { "1", "1", "1", "1 2", "1 2", "1 2", "1 2", "1 2 3", "1 2 3" }); f.add(s, k, v);
-            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult)
+
+            string adder = "1 2 3";
+            bool secondFl = false;
+            if (nextFlightChance >= 0.8)
             {
-                k = "Flight1"; v = Calcs.randSTR(new string[] { "11", "11", "11 12", "11 12", "11 12", "11 12", "11 12", "11 12 13", "11 12 13" }); f.add(s, k, v);
+                adder = "1 2 3 4";
+                secondFl = true;
+                if (formation.Contains("LINEASTERN")) formation = "LINEABREAST";
             }
-            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult)
+            bool avoidThirdFl = false;
+            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult || secondFl)
             {
+                f.add(s, k, adder); //OK, we're saying adding a new flight always implies the first one is **full**
+                k = "Flight1"; v = Calcs.randSTR(new string[] { "11", "11", "11 12", "11 12", "11 12", "11 12", "11 12", "11 12 13", "11 12 13" }); f.add(s, k, v);
+                if (nextFlightChance >= 0.95) { f.add(s, k, "1 2 3 4"); avoidThirdFl = true; }
+            }
+            
+            if (clc_random.NextDouble() < nextFlightChance * nextFlightMult && !avoidThirdFl)            {
+                f.add(s, k, "11 12 13"); //OK, we're saying adding a new 3rd flight always implies the second one is **full**
                 k = "Flight2"; v = Calcs.randSTR(new string[] { "", "", "", "", "21", "21", "", "21 22", "21 22" }); f.add(s, k, v);
             }
+            */
+
             k = "Class"; v = aircraft; f.add(s, k, v);
             k = "Formation"; v = formation; f.add(s, k, v);
             k = "CallSign"; v = clc_random.Next(1, 33).ToString(); f.add(s, k, v); //looks like maybe there are only 35 official callsigns and up through TF 5.005 choosing the last of those will cause an regular error.
             k = "Fuel"; v = "40"; f.add(s, k, v);
             k = "Weapons"; v = weapons; f.add(s, k, v);
-            k = "Skill"; v = "0.32 0.32 1 0.58 0.32 1 0.32 0.32"; f.add(s, k, v);
+            foreach (string d in detonatorL)
+            {
+                k = "Detonator"; v = d; f.add(s, k, v);
+            }
+            k = "Skill"; v = string.Format("{0:N2} {1:N2} {2:N2} {3:N2} {4:N2} {5:N2} {6:N2} {7:N2}", new object[] {clc_random.Next(25,75)/100.0, clc_random.Next(25, 75) / 100.0, clc_random.Next(25, 75) / 100.0,
+             clc_random.Next(95,101)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0});// "0.32 0.32 1 0.58 0.32 1 0.32 0.32"; f.add(s, k, v);
             k = "Aging"; v = clc_random.Next(5, 90).ToString(); f.add(s, k, v);
 
             s = groupname + "_Way";
             k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p1.x, p1.y, p1.z, vel_kmh }); f.add(s, k, v);
 
             double gatGapDistance_m = Calcs.CalculatePointDistance(gat, gap);
-            if (gatGapDistance_m > 500)
+            if (gatGapDistance_m > 600)
             {
 
-                k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p2.x, p2.y, p2.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p4.x, p4.y, p4.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                if (clc_random.NextDouble() < airportBombChance)
+                if (aircraft.Contains("Ju-87")) { k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p2.x, p2.y, p2.z, vel_kmh }); f.add(s, k, v); }
+                else { k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { p2.x, p2.y, p2.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v); }
+                //k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p2.x, p2.y, p2.z, vel_kmh}); f.add(s, k, v);
+                k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                //k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p4.x, p4.y, p4.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+
+                if (aircraft.Contains("Ju-87")) { k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { gat.x + 100, gat.y + 100, 100, vel_kmh }); f.add(s, k, v); }
+                k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p4.x, p4.y, p4.z, vel_kmh}); f.add(s, k, v);
+                if (clc_random.NextDouble() < airportBombChance || gap_targ.Length>0)
                 {
-                    //Sometimes we just drop them on the airport
-                    k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, gap.z, vel_kmh }); f.add(s, k, v);
+                    //Sometimes we just drop them on the airport OR the alternate ground target/actor
+                    if (gap_targ.Length == 0) { k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, gap.z, vel_kmh }); f.add(s, k, v); }
+                    else { k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gap.x, gap.y, gap.z, vel_kmh, gap_targ, attack_type }); f.add(s, k, v); }
                     k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);
                 }
                 else
@@ -21417,11 +21968,17 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                     Point3d nearPointAdded = new Point3d(Math.Cos(angle) * distance, Math.Sin(angle) * distance, 0); //A point 1000-3200 meters from the center of the airport and at any random angle
 
                     //Sometimes (mostly) we circle back & try to hit the group again.
-                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p2.x, p2.y, p2.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p4.x, p4.y, p4.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
-                    k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x + nearPointAdded.x, gap.y + nearPointAdded.y, gap.z, vel_kmh }); f.add(s, k, v);
+                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                    if (aircraft.Contains("Ju-87")) { k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { gat.x + 100, gat.y + 100, 100, vel_kmh }); f.add(s, k, v); }
+                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { p2.x, p2.y, p2.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                    //k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p2.x, p2.y, p2.z, vel_kmh }); f.add(s, k, v);
+                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                    if (aircraft.Contains("Ju-87")) { k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { gat.x + 100, gat.y + 100, 100, vel_kmh }); f.add(s, k, v); }
+                    //k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} /GAttackType {5}", new object[] { p4.x, p4.y, p4.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                    k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p4.x, p4.y, p4.z, vel_kmh }); f.add(s, k, v);
+                    //Sometimes we just drop them on the airport OR the alternate ground target/actor
+                    if (gap_targ.Length == 0) { k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, gap.z, vel_kmh }); f.add(s, k, v); }
+                    else { k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gap.x, gap.y, gap.z, vel_kmh, gap_targ, attack_type }); f.add(s, k, v); }
                     k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);
                 }
             } 
@@ -21433,7 +21990,15 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 //New point is in the same direction as the vector from p1 to gap. So it continues the flight in this same direction for 3000 meters, then continues to landing point.
                 Point3d newPoint = new Point3d((gap.x - p1.x) / p1GapDistance_m * 3000 + gap.x, (gap.y - p1.y) / p1GapDistance_m * 3000 + gap.y, gap.z);
 
-                k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, gap.z, vel_kmh }); f.add(s, k, v);
+                //Half the time to a target attack, half the time point ON the location of the TARGET.
+                //Experiments in CLoD show, it is hard to say which works better.  Sometimes one, sometimes the other.
+                if (clc_random.Next(2) == 0)
+                {
+                    k = "GATTACK_POINT"; v = String.Format("{0} {1} {2} {3}", new object[] { gat.x, gat.y, gat.z, vel_kmh }); f.add(s, k, v);
+                } else
+                {
+                    k = "GATTACK_TARG"; v = String.Format("{0} {1} {2} {3} {4} 0 /GAttackType {5}", new object[] { gat.x, gat.y, gat.z, vel_kmh, gat_targ, attack_type }); f.add(s, k, v);
+                }
                 k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { newPoint.x, newPoint.y, newPoint.z, vel_kmh }); f.add(s, k, v);
                 k = "NORMFLY"; v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);                        
             }
@@ -21442,12 +22007,16 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             //If there is a friendly airport  nearby there, make it land there
             Point3d apLook = new Point3d ((3*p6.x + lan.x)/4, (3*p6.y + lan.y)/4, lan.z);
             AiAirport ap = mission.covermission.Stb_nearestAirport(apLook, bomberArmy, isSeaplane: false);
-            if (ap != null && CalculatePointDistance(ap.Pos(), p6)>10000)
+            if (ap != null && CalculatePointDistance(ap.Pos(), p6) > 10000)
             {
                 k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { ap.Pos().x, ap.Pos().y, lan.z, vel_kmh }); f.add(s, k, v);
             }
+            else
+            {
 
-            k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { lan.x, lan.y, lan.z, vel_kmh }); f.add(s, k, v);
+                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { lan.x, lan.y, lan.z, vel_kmh }); f.add(s, k, v);
+            }
+            //BUG: The STUKA (only???!??) if it has TWO landing waypoints, will IMMEDIATELY drop all bombs.  So, that is crazy.  But only put ONE landing waypoint.
 
             return f;
         }
@@ -21457,7 +22026,111 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
        }
     }
 
+    public static ISectionFile BuildFighter(IGamePlay GamePlay, Mission mission, int planeArmy, double vel_kmh, double alt_m, Point3d p1, Point3d p2, Point3d gat, Point3d p4, Point3d gap, Point3d p6, Point3d lan, string gat_targ = "1_Chief 1", string gap_targ = "", int numInFlight = 2)
+    {
+        try
+        {
+            //double nextFlightChance = 0.5; //Chance  of choosing a 2nd, 3rd flight
 
+            ISectionFile f = GamePlay.gpCreateSectionFile();
+
+            string aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.Bf-109E-7N_Trop", "tobruk:Aircraft.Bf-109E-7_Trop", "tobruk:Aircraft.Bf-109F-2_Trop", "tobruk:Aircraft.Bf-110C-4N-NJG_Trop",
+                "tobruk:Aircraft.BR-20M_Trop", "tobruk:Aircraft.G50_Trop", "tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota", "tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota"
+                });
+            //string formation = "FINGERFOUR";
+            string formation = Calcs.randSTR(new string[] { "FINGERFOUR", "FINGERFOUR", "VIC3", "LINEABREAST", "VIC3", "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT", "ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
+            
+            //so this is a bomber group ID but it's also used in other routines, MoveBomb etc to let  it know this is a Tobruk bumrush group & so to leave it alone & not re-write its waypoints etc
+            string groupname = "tobruk:Tobruk_LW_JG3_II." + clc_random.Next(1, 15).ToString("00");
+
+            string weapons = "";
+            List<string> detonatorL = new List<string>() { };
+
+
+            if (planeArmy == 1)
+            {
+                aircraft = Calcs.randSTR(new string[] { "tobruk:Aircraft.BeaufighterMkIF_Late_Trop", "tobruk:Aircraft.BeaufighterMkINF_Late_Trop", "tobruk:Aircraft.BlenheimMkIVNF_Late_Trop", "tobruk:Aircraft.HurricaneMkIIbTrop", "tobruk:Aircraft.HurricaneMkIIc-Trop", "tobruk:Aircraft.HurricaneMkIId-Trop", "tobruk:Aircraft.MartletMkIII_Trop", "tobruk:Aircraft.TomahawkMkII-Late-Trop", "tobruk:Aircraft.HurricaneMkIIaTrop", "tobruk:Aircraft.BeaufighterMkIF_Late_Trop", "tobruk:Aircraft.HurricaneMkIIaTrop" 
+                }); //,  REMOVING welllingtons because launcher lock-up problem caused 2020/09.  2020/09/17, putting them back.
+
+                //"tobruk:Aircraft.WellingtonMkIa" doesn't exist!  Only "tobruk:Aircraft.WellingtonMkIa_trop"  or "bob:Aircraft.WellingtonMkIc".  But 2020/09/01, the MkIc wellingtons are bugged & wont' release bombs properly.  Ia seems OK.  Haven't tried bob:Ic
+
+                //Welly 1A works great, 9X250 best. But 1C drops one bomb ONLY.  Don't use until fixed.
+                formation = Calcs.randSTR(new string[] { "VIC3", "LINEABREAST", "VIC3", "LINEABREAST", "LINEASTERN", "ECHELONRIGHT", "ECHELONLEFT", "ECHELONRIGHT", "ECHELONLEFT" }); //VIC only works for blue; VIC3 works for both, per 4.57 trials
+
+                //so this is a bomber group ID but it's also used in other routines, MoveBomb etc to let  it know this is a Tobruk bumrush group & so to leave it alone & not re-write its waypoints etc
+                groupname = "BoB_RAF_B_7Sqn." + clc_random.Next(1, 15).ToString("00");
+
+            }
+            Console.WriteLine("Bumrush Attack FIGHTER group: " + aircraft);          
+
+            string s = "";
+            string k = "";
+            string v = "";
+
+            s = "AirGroups";
+            k = groupname; v = ""; f.add(s, k, v);
+            s = groupname;
+
+            f = addFlights(s, f, numInFlight, 3, 3);
+
+          
+
+            k = "Class"; v = aircraft; f.add(s, k, v);
+            k = "Formation"; v = formation; f.add(s, k, v);
+            k = "CallSign"; v = clc_random.Next(1, 35).ToString(); f.add(s, k, v); //looks like maybe there are only 35 official callsigns and up through TF 5.005 choosing the last of those will cause an regular error.
+            k = "Fuel"; v = "40"; f.add(s, k, v);
+            /* 
+            k = "Weapons"; v = weapons; f.add(s, k, v);
+            foreach (string d in detonatorL)
+            {
+                k = "Detonator"; v = d; f.add(s, k, v);
+            }
+            */
+            k = "Skill"; v = string.Format("{0:N2} {1:N2} {2:N2} {3:N2} {4:N2} {5:N2} {6:N2} {7:N2}", new object[] {clc_random.Next(25,75)/100.0, clc_random.Next(25, 75) / 100.0, clc_random.Next(25, 76) / 100.0,
+             clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0,clc_random.Next(25,75)/100.0});// "0.32 0.32 1 0.58 0.32 1 0.32 0.32"; f.add(s, k, v);
+            k = "Aging"; v = clc_random.Next(5, 90).ToString(); f.add(s, k, v);
+
+
+            //So task HUNTING seems to attack any bomber or fighter it sees.  I think we miostlyi want ot attack fighters here as the goal is to stop fighters from taking out target after t arget
+            //But it could be bombers , too, sometimes and I'm not sure what a 110 or Beaufighter is classified as exactly.
+            //Better would be to look for enemy breather pilots targeting things in the area but that is a bit too complicated probably. (Bit of scripting required.)
+            string[] tsks = new string[] { "HUNTING", "HUNTING", "HUNTING", "AATTACK_FIGHTERS", "AATTACK_FIGHTERS", "AATTACK_FIGHTERS", "AATTACK_FIGHTERS", "AATTACK_FIGHTERS", "AATTACK_FIGHTERS" }; 
+
+            s = groupname + "_Way";
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { p1.x, p1.y, alt_m, vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, alt_m + clc_random.Next(-300, 300), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { p2.x, p2.y, alt_m, vel_kmh}); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, alt_m + clc_random.Next(-300, 300), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { gat.x + 100, gat.y + 100, alt_m + clc_random.Next(-100,100), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, alt_m + clc_random.Next(-300, 300), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { p4.x, p4.y, alt_m + clc_random.Next(-150, 150), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { gap.x, gap.y, alt_m + clc_random.Next(-300, 300), vel_kmh }); f.add(s, k, v);
+            k = Calcs.randSTR(tsks); v = String.Format("{0} {1} {2} {3}", new object[] { p6.x, p6.y, p6.z, vel_kmh }); f.add(s, k, v);
+            
+
+            //New point 1/4 of the way from p6 to lan
+            //If there is a friendly airport  nearby there, make it land there
+            Point3d apLook = new Point3d((3 * p6.x + lan.x) / 4, (3 * p6.y + lan.y) / 4, lan.z);
+            AiAirport ap = mission.covermission.Stb_nearestAirport(apLook, planeArmy, isSeaplane: false);
+            if (ap != null && CalculatePointDistance(ap.Pos(), p6) > 10000)
+            {
+                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { ap.Pos().x, ap.Pos().y, lan.z, vel_kmh }); f.add(s, k, v);
+            }
+            else
+            {
+
+                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { lan.x, lan.y, lan.z, vel_kmh }); f.add(s, k, v);
+            }
+            //BUG: The STUKA (only???!??) if it has TWO landing waypoints, will IMMEDIATELY drop all bombs.  So, that is crazy.  But only put ONE landing waypoint.
+
+            return f;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Calcs Build Fighter ERROR: " + ex.ToString());
+            return GamePlay.gpCreateSectionFile();
+        }
+    }
 
     /*
     /// <summary>

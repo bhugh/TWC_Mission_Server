@@ -1250,20 +1250,22 @@ public class Mission : AMission
     public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
         try
         {
-            //Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
+            if (airGroup == null) return;
+            Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name());
             //!AirgroupsWayPointProcessed.Contains(airGroup), airGroup.GetItems().Length == 0, !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft));
             if (airGroup == null || !AirgroupsWayPointProcessed.Contains(airGroup) || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
             int currWay = airGroup.GetCurrentWayPoint();
             bool landingWaypoint = false;
-            //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
-
+            
             if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
-            //if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
-            if (!landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, loosening this up to try to get rid of useless/finished airgroups more quickly.
-            if (playersNearby(airGroup, 14000)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+            if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
+            //if (!landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, loosening this up to try to get rid of useless/finished airgroups more quickly.
+            Console.WriteLine("MoveBomb: Checking AI  groups for removal (task LANDING) {0} {1} {2} {3} players nearby: {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
+
+            if (playersNearby(airGroup, 16000)) return; //Don't dis-apparate them if there are any players nearby to see it happen
 
             double airportDistance_m = DistanceToNearestAirport(airGroup as AiActor);
 

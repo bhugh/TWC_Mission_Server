@@ -6,9 +6,9 @@
   MAP tobruk:Land$Tobruk
   DespawnAfterLandingTimeout 600
   BattleArea 10000 10000 360000 360000 10000
-  TIME 7.42138906859327
+  TIME 8.76507
   WeatherIndex 1
-  CloudsHeight 649
+  CloudsHeight 736
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]
@@ -1499,9 +1499,7 @@
   "High Alt Bomber Approach" 1 333767 15641 5000 1 1 1 . . . 0
 [BirthPlace0]
   tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop
@@ -1529,9 +1527,7 @@
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace1]
   tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop
@@ -1559,9 +1555,7 @@
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace3]
   tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop
@@ -1589,9 +1583,7 @@
   tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace4]
   tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Late_Trop
   tobruk:Aircraft.BlenheimMkIV_Trop

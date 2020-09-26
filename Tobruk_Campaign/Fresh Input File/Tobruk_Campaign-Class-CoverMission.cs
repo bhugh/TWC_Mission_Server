@@ -860,8 +860,8 @@ public class CoverMission : AMission, ICoverMission
             {"bob:Aircraft.Bf-110C-4B",true},
             {"bob:Aircraft.Bf-110C-4Late",false},
             {"bob:Aircraft.Bf-110C-4N",false},
-            {"bob:Aircraft.Bf-110C-4-NJG",true},
-            {"bob:Aircraft.Bf-110C-6",false},
+            {"bob:Aircraft.Bf-110C-4-NJG",true}, //this is a good cover a/c for bombers
+            {"bob:Aircraft.Bf-110C-6",true},  //this is potentially a good cover a/c for bombers but also a good ground attack a/c, big guns
             {"bob:Aircraft.Bf-110C-7",false},
             {"bob:Aircraft.BR-20M",false},
             {"bob:Aircraft.CR42",false},
@@ -1948,7 +1948,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         if (acType == "") return false;
         bool ret = false;
-        if (acType.Contains("HurricaneMkI_FB") || acType.Contains("Bf-109E-1B") || acType.Contains("Bf-109E-3B") || acType.Contains("Bf-110C-4B") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BeaufighterMkIC") || acType.Contains("HurricaneMkIIb") || acType.Contains("HurricaneMkIIc") || acType.Contains("Bf-110C-7") || acType.Contains("CR42")) ret = true;
+        if (acType.Contains("HurricaneMkI_FB") || acType.Contains("Bf-109E-1B") || acType.Contains("Bf-109E-3B") || acType.Contains("Bf-110C-4B") || acType.Contains("Bf-110C-6") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BeaufighterMkIC") || acType.Contains("HurricaneMkIIb") || acType.Contains("HurricaneMkIIc") || acType.Contains("Bf-110C-7") || acType.Contains("CR42")) ret = true;
         return ret;
     }
     private bool isBomberAllowedCover(Player player)
@@ -1998,7 +1998,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         bool ret = false;
         //We're including heavy two-engine fighter bombers here, like the 110C-4B, Hurricane FBs, Beaufighter FBs, so that people can fly a FB lead a squad of those while flying cover for them
         if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
-          || acType.Contains("Do-215B") || acType.Contains("Bf-110C-4B") || acType.Contains("Bf-110C-7") || acType.Contains("BeaufighterMkIC")
+          || acType.Contains("Do-215B") || acType.Contains("Bf-110C-4B") || acType.Contains("Bf-110C-6") || acType.Contains("Bf-110C-7") || acType.Contains("BeaufighterMkIC")
           || acType.Contains("Sunderland") || acType.Contains("HurricaneMkI_FB") || acType.Contains("HurricaneMkIIb") || acType.Contains("HurricaneMkIIc")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
         return ret;

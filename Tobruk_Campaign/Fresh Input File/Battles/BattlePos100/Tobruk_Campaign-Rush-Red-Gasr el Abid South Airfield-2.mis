@@ -78,11 +78,11 @@
   5_Chief Vehicle.SidiAzeizRush3 gb 
   6_Chief Vehicle.VehicleRush2 de 
   7_Chief Vehicle.VehicleRush2 de 
-  8_Chief Armor.Pz_IVD de /num_units 2
-  9_Chief Armor.Pz_IVD de /num_units 3
+  8_Chief Armor.Pz_IVD de /num_units 3
+  9_Chief Armor.Pz_IVD de 
   10_Chief Armor.Pz_IVD de /num_units 2
   11_Chief Armor.Pz_IVD de 
-  12_Chief Armor.Pz_IVD de 
+  12_Chief Armor.Pz_IVD de /num_units 2
   13_Chief Armor.Pz_IVD de 
 [0_Chief_Road]
   264888.56 107282.20 38.40  0 8 5.28
@@ -237,32 +237,53 @@
   243969.53 93546.35 38.40  0 2 1.94
   244234.88 95079.76 38.40
 [8_Chief_Road]
-  241557.86 94538.16 38.40 720 2 1
-  242175.70 94361.15 38.40
+  242124.80 94413.02 38.40 44 2 1
+  242633.06 94366.26 38.40
 [9_Chief_Road]
-  241528.72 94305.02 38.40 720 2 1
-  242198.52 94211.80 38.40
+  242251.77 94243.70 38.40 33 2 1
+  242662.17 94222.23 38.40
 [10_Chief_Road]
-  241543.30 93955.30 38.40 720 2 1
-  242279.81 93984.47 38.40
+  242296.95 94067.70 38.40 71 2 1
+  242675.69 94109.62 38.40
 [11_Chief_Road]
-  242230.33 94097.62 38.40  0 2 5.56
-  241528.61 94078.07 38.40
+  242674.69 94153.81 38.40 60 2 1
+  242287.61 94111.29 38.40
 [12_Chief_Road]
-  241548.67 94605.68 38.40  0 2 5.56
-  242186.97 94493.88 38.40
+  242036.55 94552.04 38.40 20 2 1
+  242600.86 94498.99 38.40
 [13_Chief_Road]
-  241540.66 93886.14 38.40  0 2 5.56
-  242290.03 93876.20 38.40
+  242289.25 94026.66 38.40 55 2 1
+  242723.23 94006.19 38.40
 [Stationary]
-  Static6 Artillery.Bofors de 246275.58 93451.04 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static6 Artillery.Bofors de 246265.58 93454.38 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static7 Artillery.Bofors de 246312.92 93479.05 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static8 Artillery.Bofors de 244894.61 93583.27 0.00 /timeout 0/radius_hide 0
   Static5 Artillery.Bofors de 244852.56 93635.64 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
-  Static2 Artillery.Bofors de 244836.09 93672.33 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static2 Artillery.Bofors de 244832.77 93672.33 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static14 Artillery.Bofors de 242705.83 93931.43 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors de 246541.39 93893.29 0.00 /timeout 0/radius_hide 0
+  Static22 Stationary.Environment.CamoNetHowitizer nn 242724.31 94002.30 225.00 
+  Static27 Stationary.Environment.SandBagWall_Arch nn 242724.22 94002.32 90.00 
+  Static23 Stationary.Environment.SandBagWall_Arch nn 242727.66 94002.42 285.00 
+  Static28 Stationary.Environment.SandBagWall_Arch nn 242723.97 94009.64 255.00 
+  Static24 Stationary.Environment.SandBagWall_Arch nn 242730.41 94004.49 330.00 
+  Static26 Stationary.Environment.SandBagWall_Arch nn 242727.45 94009.69 90.00 
+  Static25 Stationary.Environment.SandBagWall_Arch nn 242730.41 94007.84 30.00 
+  Static15 Stationary.Environment.CamoNetHowitizer nn 242663.56 94219.80 225.00 
+  Static20 Stationary.Environment.SandBagWall_Arch nn 242665.72 94218.41 90.00 
+  Static16 Stationary.Environment.SandBagWall_Arch nn 242669.16 94218.51 285.00 
+  Static21 Stationary.Environment.SandBagWall_Arch nn 242665.47 94225.73 255.00 
+  Static17 Stationary.Environment.SandBagWall_Arch nn 242671.89 94220.58 330.00 
+  Static19 Stationary.Environment.SandBagWall_Arch nn 242668.95 94225.77 90.00 
+  Static18 Stationary.Environment.SandBagWall_Arch nn 242671.89 94223.93 30.00 
+  Static13 Artillery.Bofors de 242436.25 94281.05 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Bofors de 242564.56 94671.20 0.00 /timeout 0/radius_hide 0
   Static1 Artillery.Bofors de 246530.52 94692.83 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static10 Artillery.Bofors de 246685.34 94711.80 0.00 /timeout 0/radius_hide 0
   Static0 Artillery.Bofors de 246500.66 94752.49 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static3 Artillery.Bofors de 245031.16 94832.78 0.00 /timeout 390000/radius_hide 0
   Static4 Artillery.Bofors de 245084.98 94884.62 0.00 /timeout 390000/radius_hide 0
+  Static9 Artillery.Bofors de 244977.03 94958.68 0.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
 [Airdromes]

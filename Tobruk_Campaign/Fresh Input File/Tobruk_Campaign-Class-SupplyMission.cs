@@ -448,6 +448,7 @@ public class SupplyMission : AMission, ISupplyMission
              * */
             //INcluding these bob: a/c as good cover fighter/bomber items, but not available for PLAYERS
             {"bob:Aircraft.Bf-110C-4-NJG", 120},
+            {"bob:Aircraft.Bf-110C-6", 120},
             {"bob:Aircraft.He-111P-2",150},   
             {"bob:Aircraft.Do-17Z-2",100},
             {"bob:Aircraft.Bf-110C-4B", 125}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
@@ -1123,9 +1124,10 @@ public void ReadSupply(string suffix)
     */
 
 
-
-    private void aircraftCheckOut_add (AiActor actor, Player player)
+    //Returns TRUE if newly added; false if already there.
+    private bool aircraftCheckOut_add (AiActor actor, Player player)
     {
+        bool retur = true;
         string pilotNames = "";
         string aircraftTy8pe = "";
         AiAircraft ac = actor as AiAircraft;
@@ -1159,9 +1161,36 @@ public void ReadSupply(string suffix)
             else pilotNames = "(AI/No Pilot Listed)";
         }
 
-        if (!aircraftCheckedOut.Contains(actor)) aircraftCheckedOut.Add(actor);        
+        if (!aircraftCheckedOut.Contains(actor)) aircraftCheckedOut.Add(actor);
+        else retur = false; //meaning, aircraftCheckedOut already contains actor
+
         if (!aircraftCheckedOutInfo.ContainsKey(actor)) aircraftCheckedOutInfo.Add(actor, new Tuple<int,string,string, DateTime> (actor.Army(), pilotNames, cart.InternalTypeName(), DateTime.UtcNow));
+        return retur;
     }
+
+    /* 
+     * 
+     * 
+     */
+    //Returns any a/c a player  may have checked out currently, or null
+    private AiActor lookup_aircraftCheckOut_ByPlayer(Player player)
+    {
+        if (player == null) return null;
+        string playerNameMatch = player.Name();
+           if (playerNameMatch.Length == 0) return null;
+        
+        foreach (AiActor actor in aircraftCheckedOutInfo.Keys)
+        {
+           
+            Tuple<int, string, string, DateTime> entry = aircraftCheckedOutInfo[actor];
+
+            if (entry.Item2.ToLowerInvariant().Equals(playerNameMatch.Trim().ToLowerInvariant())) return actor;
+
+        }
+
+        return null;
+    }
+    
 
     public string selectSupplyPlane(string acName, ArmiesE army)
     {
@@ -1373,13 +1402,15 @@ public void ReadSupply(string suffix)
             Console.WriteLine("CheckActorOut " + cart.InternalTypeName() + " " + actor.Army().ToString());
             //if (AircraftSupply[(ArmiesE)(actor.Army())].ContainsKey(cart.InternalTypeName())) Console.WriteLine("containskey true");
 
+            bool newCheckOut = false;
+
             //Don't double check-out aircraft, unless Forced to do so via new info from -stats.cs.  Force means we accidentally check it back in & so we're checking it out again for good.
             if (aircraftCheckedOut.Contains(actor) && !Force)
             {
                 Console.WriteLine("Supply: This aircraft has already been checked OUT before: " + cart.InternalTypeName());
                 return;
             }
-            else aircraftCheckOut_add(actor,player);
+            else newCheckOut = aircraftCheckOut_add(actor,player);
 
             DisplayNumberOfAvailablePlanes(actor); //Show this to player, but only on first time plane checked out.
 
@@ -1431,7 +1462,7 @@ public void ReadSupply(string suffix)
                     */
 
                     Console.WriteLine("valout2=" + AircraftSupply[(ArmiesE)actor.Army()][cart.InternalTypeName()].ToString());
-                    if (Force) //In this case we hav e probably just announced to the player that the a/c was safely returned to stock.  So
+                    if (Force && newCheckOut) //In this case we hav e probably just announced to the player that the a/c was safely returned to stock.  and newcheckOut==true indicates, nope we actually just checked in out
                     {
                         //If this is from <Cover, we have likely lost the owning player that point, oh well.
                         Timeout(4.33, () =>
@@ -1770,9 +1801,27 @@ private int NumberPlayerInActor(AiActor actor)
         //base.OnPlaceLeave(player, actor, placeIndex);
         try
         {
+            //So, sometimes Acotr is PLayer, AiPerson, AiGroundActor, & other weird things. 
             string playername = "Unknown";
             if (player != null && player.Name() != null) playername = player.Name();
-            if (actor != null)
+
+            // We can only deal with actor==AiAicraft here.  So if it isn't, we try to get it two ways.
+            if (!(actor is AiAircraft))
+            {
+                if (player.Place() != null && player.Place() is AiAircraft) actor = player.Place();
+                else actor = lookup_aircraftCheckOut_ByPlayer(player);
+            }
+
+            //if act still isn't AiAircraft we just can't do anything.
+
+            if (actor == null && !(actor is AiAircraft))
+            {
+                Console.WriteLine("Supply: PlaceLeave " + playername + ": Actor isn't an AiAircraft and player isn't in an aircraft and player doesn't have an a/c checked out.  The player's a/c may have been checked in already. Doing nothing, exiting.");
+                return;
+            }
+
+
+            
             {
                 Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName());
                 DisplayNumberOfAvailablePlanes(actor);
@@ -1808,8 +1857,19 @@ private int NumberPlayerInActor(AiActor actor)
                         Console.WriteLine("SupOPL: Check-in but with damage");
                         double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage); //-1 if this damage already added
                         AiCart cart = actor as AiCart;
-                        if (hoursToRepair > 0) GamePlay.gpLogServer(new Player[] { player }, ParseTypeName(cart.InternalTypeName()) + " returned damaged; "
-                            + hoursToRepair.ToString("F1") + " hours required for repair and re-stock", null);
+                        if (hoursToRepair > 0 && player != null)
+                        {
+                            string line1 = ParseTypeName(cart.InternalTypeName()) + " returned damaged; ";
+                            string line2 = hoursToRepair.ToString("F1") + " hours required for repair and re-stock";
+
+                            //Stb_Chat(line, player); //Sending this to stb_chat insures the player will see it on the flag screen (usual place they'll be after exiting an a/c); also it will be broadcast to all players...
+                            //GamePlay.gpLogServer(new Player[] { player }, line, null);
+
+                            
+                            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line1 + " TO " + player.Name()); //Sending this to chat insures the player will see it on the flag screen (usual place they'll be after exiting an a/c); also it will be broadcast to all players...
+                            (GamePlay as GameDef).gameInterface.CmdExec("chat " + line2 + " TO " + player.Name()); 
+
+                        }
                         double timeToRepair_sec = hoursToRepair * 60 * 60;
                         double timeLeft_sec = mainmission.calcTimeLeft_min() * 60;
                         if (timeToRepair_sec > timeLeft_sec - 60) timeToRepair_sec = timeLeft_sec - 60;

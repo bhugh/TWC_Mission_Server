@@ -94,11 +94,17 @@
   0_Static Artillery.Zwillingssockel36_GER1 de 0.00 0.00 0.00 
   1_Static Stationary.Ford_G917_CargoFuel1 de 0.00 0.00 0.00 
   Static2 Artillery.Bofors_StandAlone gb 246145.83 93340.80 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
-  Static3 Artillery.Bofors_StandAlone gb 246196.53 93389.61 0.00 /timeout 39000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static3 Artillery.Bofors_StandAlone gb 246190.89 93389.61 0.00 /timeout 39000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static0 Artillery.Bofors_StandAlone gb 244790.67 94528.32 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static5 Artillery.Bofors_StandAlone gb 246594.63 94590.83 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static1 Artillery.Bofors_StandAlone gb 244838.77 94642.16 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static4 Artillery.Bofors_StandAlone gb 246554.45 94671.19 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static6 Artillery.Bofors_StandAlone gb 245429.66 95126.26 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Bofors_StandAlone gb 245003.42 93497.22 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone gb 246581.72 93756.56 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone gb 247962.72 94097.31 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors_StandAlone gb 248033.56 93849.20 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors_StandAlone gb 248077.52 93356.70 0.00 /timeout 0/radius_hide 0
 [1_Chief_Road]
   245772.31 113365.91 38.40  0 11 5.28
   246176.00 112992.00 38.40

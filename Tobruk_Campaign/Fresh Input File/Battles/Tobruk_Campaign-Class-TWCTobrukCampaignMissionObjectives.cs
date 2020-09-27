@@ -1,12 +1,25 @@
 ////$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesNeg10.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos200.cs"
 
 //$reference parts/core/CloDMissionCommunicator.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
 //$reference System.Core.dll 
+
+/***********************************************************************************************************************************
+ * 
+ * IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * 
+ * See full instructions for setting up new Battles at the top of Tobruk_Campaign.cs
+ * 
+ *  - They will need a .cs file setup similar to ...\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos200.cs
+ *  - subdirectory with several needed files placed in subdirectory named similarly to ...\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\BattlesPos200
+ *  - Some lines added/changed below to accommodate the new battle
+ * 
+ * *********************************************************************************************************************************/
 
 
 using System;
@@ -154,6 +167,10 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         Console.WriteLine("Pos100 inited (return), {0} {1} {2} {3}", battle_pos100.score, battle_pos100.leastScore, battle_pos100.mostScore, battle_pos100.focus_airport_misfile_name);
         register_subclass(battle_pos100);
 
+        TWCTCMO battle_pos200 = new BattlePos200(g, m, sc);
+        Console.WriteLine("Pos200 inited (return), {0} {1} {2} {3}", battle_pos200.score, battle_pos200.leastScore, battle_pos200.mostScore, battle_pos200.focus_airport_misfile_name);
+        register_subclass(battle_pos200);
+
         //TWCTobrukCampaignMissionObjectives mission_neg10 = new MissionNeg10();
         //TWCTobrukCampaignMissionObjectives mission_0 = new Mission0(g, m, mo, sc);
         //TWCTobrukCampaignMissionObjectives mission_pos10 = new MissionPos10(g, m, mo, sc);
@@ -277,7 +294,7 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         //at all
         msn.MO_PointsRequiredToTurnMap = new Dictionary<ArmiesE, double>() {
             {ArmiesE.Red, 121 },
-            {ArmiesE.Blue, 120 }
+            {ArmiesE.Blue, 121 }
         };
 
 
@@ -423,14 +440,12 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         // mmo.addTrigger(M.MO_ObjectiveType.Building, "Coal mines in Normandy", "Shor", 1, 3, "BTargNormandyMiningCenter", "TGroundDestroyed", 50, 67510, 26083, 50, false, 100, 24, "", add);			
         //    mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Tobruk-Gasr Resupply Convoy", "", "PrimaryObjectives/Tobruk_Campaign-LOADONCALL-Red-RTobrukGasrResupplyConvoy-objective.mis", "1006_Chief", 2, 5, "RTobrukGasrResupplyConvoy", "TGroupDestroyed", 100, 197907, 95422, 100, false, 200, 24, "", add);  //g          
 
-
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "2003_Chief", 2, 2, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g            
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 2, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 0, 24, "", add);  //g            
-
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 2, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 0, 24, "", add);  //g     
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 2, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 0, 24, "", add);  //g            
+        //bhugh, 2020/09/18 - I moved all of the ship objectives to ObjectivesPos100.cs  - so that we can VARY these ship type objectives by Battle, and also use them
+        //as primary objectives if we want
+        //mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 2, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 0, 24, "", add);  //g       
+        //mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 5, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 0, 24, "", add);  //g            
+        //mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 2, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 0, 24, "", add);  //g
+        //mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 5, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 0, 24, "", add);  //g      
 
 
         //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
@@ -497,8 +512,9 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
         {
             //These have abt 3 trucks, XXX5-6 camo objectsXXX, plus 2 radars.  So requiring 11 objects killed of all those is not too much.
             //Camo just made them too visible
-            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 2, 2, "RDesertRadar"+i.ToString(), msn.random.Next(10000, 278420), msn.random.Next(10000, 271000), 200, 150, 0, 5, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
-            mmo.addMobile(M.MO_ObjectiveType.Radar, "Desert Radar " + i.ToString(), "", 1, 2, "BDesertRadar" + i.ToString(), msn.random.Next(197500, 370000), msn.random.Next(10000, 190000), 200, 150, 0, 5, 2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            //msn.random.NextDouble()*2.2 choosing their primary target weight as between 0, && 2.2.  Making them all =2 seemed a bit too high. Can adjust the 2.2 to increase/decrease chance.
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Blue Desert Radar " + i.ToString(), "", 2, 2, "RDesertRadar"+i.ToString(), msn.random.Next(10000, 278420), msn.random.Next(10000, 271000), 200, 150, 0, 5, msn.random.NextDouble()*2.2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 10000, 10000, 278420, 271000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
+            mmo.addMobile(M.MO_ObjectiveType.Radar, "Red Desert Radar " + i.ToString(), "", 1, 2, "BDesertRadar" + i.ToString(), msn.random.Next(197500, 370000), msn.random.Next(10000, 190000), 200, 150, 0, 5, msn.random.NextDouble() * 2.2, 60, true, true, 1, 2, M.MO_MobileObjectiveType.DesertRadar, 6, 197500, 10000, 370000, 190000, 2, 5, M.MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
         }
 
 
@@ -709,6 +725,7 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
     //This must be called 
     public override void MissionObjectiveAirfieldFocusBumrushSetup()
     {
+        Console.WriteLine("***Starting Focus Airport/Bumrush setup (Battles/Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs)");
         try
         {
             current_subclass.MissionObjectiveAirfieldFocusBumrushSetup();

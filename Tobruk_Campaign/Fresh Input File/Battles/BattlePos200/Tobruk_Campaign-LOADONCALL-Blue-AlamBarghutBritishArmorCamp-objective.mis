@@ -1,0 +1,60 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static27 Stationary.Vickers_Mk_VIC gb 287722.00 118496.11 675.00 
+  Static22 Stationary.Vickers_Mk_VIB gb 287725.56 118499.01 675.00 
+  Static23 tobruk:Stationary.M3_Stuart gb 287728.84 118501.74 675.00 
+  Static4 Stationary.Valentine_I gb 287730.19 118528.56 675.00 
+  Static5 Stationary.Valentine_I gb 287734.59 118523.95 675.00 
+  Static2 Artillery.Bofors_StandAlone gb 287780.34 118497.95 675.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Bofors gb 287671.41 118534.90 590.00 /timeout 0/radius_hide 0
+  Static46 Artillery.Bofors gb 287674.94 118531.95 590.00 /timeout 0/radius_hide 0
+  Static44 Stationary.Ford_V8_E917_tent gb 287678.16 118535.66 770.00 
+  Static43 Stationary.Ford_V8_E917_tent gb 287674.66 118538.59 770.00 
+  Static41 Stationary.Bedford_MW_tank gb 287719.50 118544.43 675.00 
+  Static6 tobruk:Stationary.Crusader_II gb 287739.22 118530.88 675.00 
+  Static26 tobruk:Stationary.Matilda_2A_CS gb 287724.81 118546.70 675.00 
+  Static9 Stationary.Vickers_Mk_VIB gb 287741.16 118539.70 675.00 
+  Static8 Stationary.Vickers_Mk_VIB gb 287730.06 118550.99 675.00 
+  Static7 Stationary.Vickers_Mk_VIC gb 287744.63 118536.45 675.00 
+  Static12 tobruk:Stationary.Crusader_II gb 287750.91 118540.77 675.00 
+  Static11 Stationary.Cruiser_Mk_IV gb 287745.78 118545.24 675.00 
+  Static14 tobruk:Stationary.M3_Grant gb 287739.16 118560.80 675.00 
+  Static16 Stationary.Vickers_Mk_VIC gb 287752.03 118550.20 855.00 
+  Static17 Stationary.Bedford_MW_tank gb 287742.50 118562.70 675.00 
+  Static10 Stationary.Bedford_MW_tank gb 287735.78 118573.98 675.00 
+  Static13 Stationary.Valentine_I gb 287742.38 118574.48 675.00 
+  Static15 Stationary.Vickers_Mk_VIB gb 287756.59 118546.40 675.00 
+  Static42 Stationary.Bedford_MW_tank gb 287774.69 118571.60 675.00 
+  Static25 Stationary.Ford_V8_E917_tent gb 287777.88 118577.63 675.00 
+  Static24 Stationary.Environment.CamoNetTank nn 287721.16 118496.27 675.00 
+  Static0 Stationary.Environment.CamoNetTank nn 287732.72 118526.52 675.00 
+  Static1 Stationary.Environment.CamoNetTank nn 287743.13 118537.77 675.00 
+  Static3 Stationary.Environment.CamoNetTank nn 287748.34 118542.80 675.00 
+  Static18 Stationary.Environment.CamoNetTank nn 287743.53 118573.56 675.00 
+  Static19 Stationary.Environment.CamoNetTank nn 287723.91 118546.58 675.00 
+  Static20 Stationary.Environment.CamoNetTank nn 287729.00 118502.25 675.00 
+  Static21 Stationary.Environment.CamoNetTank nn 287738.19 118532.17 675.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BTagAlamBarghut TGroundDestroyed 100 287733 118539 350

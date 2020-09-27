@@ -105,18 +105,19 @@ public abstract class TWCMissionBattles : TWCTCMO
         //  String[] TargetAirfieldsList = { "Tariq_mysnot", "Habatha_Kabatha", "Wourk-el-SlABU" };
 
         //Also the objectives list has underlines instead of spaces, like Scegga_No2_airfield - so we'll have to adjust there; not sure why it is.
+        Console.WriteLine("***Starting Focus Airport/Bumrush setup (Battles/Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs)");
 
         try
         {
 
-            msn.gpLogServerAndLog(null, "***Starting Focus Airport/Bumrush setup", null);
+            //msn.gpLogServerAndLog(null, "***Starting Focus Airport/Bumrush setup", null);
 
 
             if (!msn.MissionObjectivesList.ContainsKey(red_target_airfield + "_spawn")) //.Replace(' ', '_')
-                msn.gpLogServerAndLog(null, "**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + red_target_airfield, null);
+                Console.WriteLine(" **************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + red_target_airfield, null);
 
             if (!msn.MissionObjectivesList.ContainsKey(blue_target_airfield + "_spawn")) //.Replace(' ', '_')
-                msn.gpLogServerAndLog(null, "**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + blue_target_airfield, null);
+                Console.WriteLine("**************WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A target Airport does not exist, check FocusBumrushSetup: " + blue_target_airfield, null);
 
             msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName = red_target_airfield + "_spawn";
             msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName = blue_target_airfield + "_spawn";
@@ -127,30 +128,33 @@ public abstract class TWCMissionBattles : TWCTCMO
 
             if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName))
             {
-                msn.gpLogServerAndLog(null, "", null);
-                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! RED Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
-                msn.gpLogServerAndLog(null, "", null);
+                Console.WriteLine("", null);
+                Console.WriteLine("*********MAJOR STARTUP ERROR!!!! RED Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
+                Console.WriteLine("", null);
                 //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");  //doesn't work for some unknown reason//!????
+                System.Threading.Thread.Sleep(2200);
                 System.Environment.Exit(1);
             }
             else
             {
+                //Here is where we set up the two Bumrush airports to be primary objectives with primarytargetweight=200 and points=30
                 msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective = msn.MissionObjectivesList[msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjectiveName];
                 M.MissionObjective mo = msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective;
                 mo.IsPrimaryTarget = true;
                 mo.IsFocus = true;
                 mo.PrimaryTargetWeight = 200;
                 mo.Points = 30; // 6 primary objects * 5 + the main airport makes 60 points required to start bumrush
-                msn.gpLogServerAndLog(null, "RED Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective.AirfieldName, null);
+                Console.WriteLine("RED Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Red].BumrushObjective.AirfieldName, null);
 
             }
 
             if (!msn.MissionObjectivesList.ContainsKey(msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjectiveName))
             {
-                msn.gpLogServerAndLog(null, "", null);
-                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! BLUE Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
-                msn.gpLogServerAndLog(null, "", null);
+                Console.WriteLine("", null);
+                Console.WriteLine("*********MAJOR STARTUP ERROR!!!! BLUE Target Airport does not exist as an airfield in the FocusAirports/*.mis file!!!!! Perhaps it is misspelled there? Exiting....", null);
+                Console.WriteLine("", null);
                 //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+                System.Threading.Thread.Sleep(2200);
                 System.Environment.Exit(1);
             }
             else
@@ -162,7 +166,7 @@ public abstract class TWCMissionBattles : TWCTCMO
                 mo.PrimaryTargetWeight = 200;
                 mo.Points = 30; // 6 primary objects * 5 + the main airport at 30 points makes 60 points required to start bumrush
 
-                msn.gpLogServerAndLog(null, "BLUE Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
+                Console.WriteLine("BLUE Primary Target Airport is " + msn.MO_BRBumrushInfo[ArmiesE.Blue].BumrushObjective.AirfieldName, null);
             }
 
             bumrush_bluered_misfile_namematch = stripmis(bumrush_bluered_misfile_namematch); //strip off any ".mis" that may be added to th end
@@ -178,21 +182,22 @@ public abstract class TWCMissionBattles : TWCTCMO
 
             if (!blue_red || !red_red || !blue_blue || !red_blue)
             {
-                msn.gpLogServerAndLog(null, "", null);
-                msn.gpLogServerAndLog(null, "*********MAJOR STARTUP ERROR!!!! One of the REQUIRED bumrush .mis files in subdir Bumrushes/ is MISSING or MISNAMED!!!!!! Exiting....", null);
-                msn.gpLogServerAndLog(null, "", null);
-                if (!blue_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_bluered_misfile_namematch, null);
-                if (!red_red) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redred_misfile_namematch, null);
-                if (!blue_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_blueblue_misfile_namematch, null);
-                if (!red_blue) msn.gpLogServerAndLog(null, "*********MISSING OR MISNAMED FILE: Bumrushes/" + bumrush_redblue_misfile_namematch, null);
-                msn.gpLogServerAndLog(null, "", null);
+                Console.WriteLine("", null);
+                Console.WriteLine("*********MAJOR STARTUP ERROR!!!! One of the REQUIRED bumrush .mis files in subdir Bumrushes/ is MISSING or MISNAMED!!!!!! Exiting....", null);
+                Console.WriteLine("", null);
+                if (!blue_red) Console.WriteLine("*********MISSING OR MISNAMED FILE: " + bumrush_bluered_misfile_namematch, null);
+                if (!red_red) Console.WriteLine("*********MISSING OR MISNAMED FILE: " + bumrush_redred_misfile_namematch, null);
+                if (!blue_blue) Console.WriteLine("*********MISSING OR MISNAMED FILE: " + bumrush_blueblue_misfile_namematch, null);
+                if (!red_blue) Console.WriteLine("*********MISSING OR MISNAMED FILE: " + bumrush_redblue_misfile_namematch, null);
+                Console.WriteLine("", null);
                 //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+                System.Threading.Thread.Sleep(2200);
                 System.Environment.Exit(1);
 
             }
             else
             {
-                msn.gpLogServerAndLog(null, "All needed BUMRUSH .mis files for both Blue & Red Primary Target Airports are in place.", null);
+                Console.WriteLine("All needed BUMRUSH .mis files for both Blue & Red Primary Target Airports are in place.", null);
             }
 
         }

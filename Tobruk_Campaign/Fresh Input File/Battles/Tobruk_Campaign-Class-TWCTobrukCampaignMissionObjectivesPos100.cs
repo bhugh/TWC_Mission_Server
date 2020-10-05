@@ -182,7 +182,7 @@ public class BattlePos100 : TWCMissionBattles
         //leastScore = 50;
         //mostScore = 150;
 
-        leastScore = -100000000; // Will be 50 (for Pos100) but leaving it a very large negative number until we get other battles in place we just leave this very small/large to cover any possibility of score
+        leastScore = 50; // Will be 50 (for Pos100) but leaving it a very large negative number until we get other battles in place we just leave this very small/large to cover any possibility of score
         mostScore = 150;
 
         battle_subdirectory = "Battles/BattlePos100/"; //this will be found inside the main mission directory. Suggest making it match this Class Name within the 'Battles' subdirectory, like "Battles/BattlePos100/" Must end with /
@@ -393,7 +393,7 @@ public class BattlePos100 : TWCMissionBattles
 
         mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 4, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 200, 24, "", add);  //g
         mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 5, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 200, 24, "", add);  //g     
-        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 5, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 200, 24, "", add);  //g      
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2010_Chief", 1, 5, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 200, 24, "", add);  //g      
 
 
 

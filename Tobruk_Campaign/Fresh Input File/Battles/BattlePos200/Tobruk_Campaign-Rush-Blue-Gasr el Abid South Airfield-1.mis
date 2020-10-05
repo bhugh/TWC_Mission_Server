@@ -84,6 +84,11 @@
   11_Chief Armor.Vickers_Mk_VIC gb /num_units 2
   12_Chief Armor.Vickers_Mk_VIC gb 
   13_Chief Armor.Vickers_Mk_VIC gb 
+  14_Chief Armor.Pz_IVD de 
+  15_Chief Armor.Pz_IVD de 
+  16_Chief Armor.Pz_IVD de 
+  17_Chief Armor.Pz_IVD de 
+  18_Chief Armor.Pz_IVD de 
 [0_Chief_Road]
   229602.45 76937.88 38.40  0 5 5.28
   245647.00 93504.13 20.00
@@ -94,17 +99,17 @@
   0_Static Artillery.Zwillingssockel36_GER1 de 0.00 0.00 0.00 
   1_Static Stationary.Ford_G917_CargoFuel1 de 0.00 0.00 0.00 
   Static2 Artillery.Bofors_StandAlone gb 246145.83 93340.80 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static11 Artillery.Bofors_StandAlone gb 248077.52 93356.70 0.00 /timeout 0/radius_hide 0
   Static3 Artillery.Bofors_StandAlone gb 246190.89 93389.61 0.00 /timeout 39000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static7 Artillery.Bofors_StandAlone gb 245003.42 93497.22 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone gb 246581.72 93756.56 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors_StandAlone gb 248033.56 93849.20 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone gb 247962.72 94097.31 0.00 /timeout 0/radius_hide 0
   Static0 Artillery.Bofors_StandAlone gb 244790.67 94528.32 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static5 Artillery.Bofors_StandAlone gb 246594.63 94590.83 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static1 Artillery.Bofors_StandAlone gb 244838.77 94642.16 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static4 Artillery.Bofors_StandAlone gb 246554.45 94671.19 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static6 Artillery.Bofors_StandAlone gb 245429.66 95126.26 0.00 /timeout 0/radius_hide 0
-  Static7 Artillery.Bofors_StandAlone gb 245003.42 93497.22 0.00 /timeout 0/radius_hide 0
-  Static8 Artillery.Bofors_StandAlone gb 246581.72 93756.56 0.00 /timeout 0/radius_hide 0
-  Static9 Artillery.Bofors_StandAlone gb 247962.72 94097.31 0.00 /timeout 0/radius_hide 0
-  Static10 Artillery.Bofors_StandAlone gb 248033.56 93849.20 0.00 /timeout 0/radius_hide 0
-  Static11 Artillery.Bofors_StandAlone gb 248077.52 93356.70 0.00 /timeout 0/radius_hide 0
 [1_Chief_Road]
   245772.31 113365.91 38.40  0 11 5.28
   246176.00 112992.00 38.40
@@ -245,10 +250,26 @@
   S 471 3 0.62 20.00 P 248184.83 93468.66
   S 471 3 0.67 20.00 P 248131.94 93498.03
   248029.58 93465.94 38.40
+[14_Chief_Road]
+  241222.20 96532.15 38.40  0 2 5.56
+  241424.94 96487.33 38.40
+[15_Chief_Road]
+  241058.94 96318.41 38.40  0 2 5.56
+  241244.70 96244.88 38.40
+[16_Chief_Road]
+  240918.22 96092.88 38.40  0 2 5.56
+  241087.09 95991.82 38.40
+[17_Chief_Road]
+  240709.89 95929.73 38.40  0 2 5.56
+  240901.31 95772.09 38.40
+[18_Chief_Road]
+  241329.17 96785.45 38.40  0 2 5.56
+  241655.91 96819.95 38.40
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
   airdrome0 256218.89 95222.51 1 1000 700 0
+  airdrome1 241542.52 95309.63 0 1000 700 0
 [airdrome0_Runways]
   256137.44 95037.09 0.00 1400.00 40.00 0
 [airdrome0_Points]
@@ -261,11 +282,24 @@
   256072.66 94557.14
   255816.42 94842.11 8
   255778.27 94600.43
+[airdrome1_Points]
+  242210.71 95309.68 7 5 3 1
+  242376.88 95361.22 2
+  242562.05 95344.28
+  242099.37 95057.08 4
+  242155.79 94854.38
+  242240.09 95090.86 6
+  242341.18 94882.56
+  242352.44 95164.04 8
+  242572.76 95068.33
 [Action]
   action_2 ASpawnGroup 0 2_Chief
   action_1 ASpawnGroup 0 5_Chief
   action ASpawnGroup 0 0_Chief
 [BirthPlace]
   "Tank Spawn Area" 1 256209 95044 0 1 1 1 . . . 0
+  "Tank Sapwn" 2 241499 95286 0 1 1 1 . . . 0
 [BirthPlace0]
   Aircraft.DH82A
+[BirthPlace1]
+  tobruk:Aircraft.Bf-108B-2_Trop

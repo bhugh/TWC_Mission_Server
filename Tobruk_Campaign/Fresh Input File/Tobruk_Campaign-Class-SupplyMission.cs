@@ -448,7 +448,8 @@ public class SupplyMission : AMission, ISupplyMission
              * */
             //INcluding these bob: a/c as good cover fighter/bomber items, but not available for PLAYERS
             {"bob:Aircraft.Bf-110C-4-NJG", 120},
-            {"bob:Aircraft.Bf-110C-6", 120},
+            {"bob:Aircraft.Bf-110C-6", 120}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
+            {"bob:Aircraft.Bf-110C-7", 120}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
             {"bob:Aircraft.He-111P-2",150},   
             {"bob:Aircraft.Do-17Z-2",100},
             {"bob:Aircraft.Bf-110C-4B", 125}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
@@ -712,7 +713,9 @@ public class SupplyMission : AMission, ISupplyMission
             {"bob:Aircraft.Ju-88A-1", 0}, */
 
 
-            {"bob:Aircraft.Bf-110C-4-NJG", 2},
+            {"bob:Aircraft.Bf-110C-4-NJG", 2},            
+            {"bob:Aircraft.Bf-110C-6", 2}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
+            {"bob:Aircraft.Bf-110C-7", 2}, //cover fighter ONLY for Tobruk (not for players to fly).  Good close air cover type cover aircraft for BLUE
             {"bob:Aircraft.He-111P-2", 2}, //Cover bomber ONLY
             {"bob:Aircraft.Do-17Z-2", 2}, //Cover bomber ONLY
             {"bob:Aircraft.Bf-110C-4B", 4}, //Cover fighter ONLY for Tobruk

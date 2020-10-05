@@ -84,6 +84,10 @@
   12_Chief Armor.Vickers_Mk_VIC gb /num_units 2
   8_Chief Armor.Vickers_Mk_VIC gb 
   13_Chief Armor.Vickers_Mk_VIC gb 
+  14_Chief Armor.Pz_IVD de 
+  15_Chief Armor.Pz_IVD de 
+  16_Chief Armor.Pz_IVD de 
+  17_Chief Armor.Pz_IVD de 
 [0_Chief_Road]
   248656.34 70526.44 38.40  0 5 5.28
   S 769 4 0.50 20.00 P 249701.50 63430.00
@@ -229,6 +233,18 @@
 [13_Chief_Road]
   252779.70 63280.00 38.40  0 2 11.11
   252771.88 63379.11 38.40
+[14_Chief_Road]
+  245550.53 63635.02 38.40  0 2 5.56
+  245770.69 63576.74 38.40
+[15_Chief_Road]
+  245485.66 63466.64 38.40  0 2 5.56
+  245783.11 63408.32 38.40
+[16_Chief_Road]
+  245446.61 63285.34 38.40  0 2 5.56
+  245776.64 63214.12 38.40
+[17_Chief_Road]
+  245440.36 63052.27 38.40  0 2 5.56
+  245698.56 62961.70 38.40
 [Stationary]
   Static1 Artillery.Bofors_StandAlone gb 249355.22 61825.75 0.00 /timeout 0/radius_hide 0
   Static3 Artillery.Bofors_StandAlone gb 250450.08 61908.96 0.00 /timeout 720/radius_hide 0
@@ -246,6 +262,7 @@
 [BuildingsLinks]
 [Airdromes]
   airdrome0 252804.23 63663.26 0 1000 700 0
+  airdrome1 245998.65 61581.19 0 1000 700 0
 [airdrome0_Runways]
   252813.51 63685.41 0.00 1400.00 40.00 0
 [airdrome0_Points]
@@ -258,7 +275,22 @@
   252703.50 63858.42
   252470.68 64082.04 8
   252418.74 63857.28
+[airdrome1_Runways]
+  246008.17 61574.11 -90.00 1400.00 40.00 0
+[airdrome1_Points]
+  245298.65 61581.19 7 5 3 1
+  245412.58 61665.18 2
+  245565.08 61643.94
+  245421.18 61615.94 4
+  245569.28 61591.03
+  245419.51 61569.76 6
+  245579.06 61546.20
+  245405.59 61500.09 8
+  245583.24 61483.22
 [BirthPlace]
   "Tank Spawn " 1 252771 63683 0 1 1 1 . . . 0
+  "Tank Spawn" 2 246033 61561 0 1 1 1 . . . 0
 [BirthPlace0]
+  tobruk:Aircraft.DH82A_Trop
+[BirthPlace1]
   tobruk:Aircraft.DH82A_Trop

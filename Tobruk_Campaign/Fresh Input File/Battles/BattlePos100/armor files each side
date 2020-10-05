@@ -1,0 +1,18 @@
+[Vehicle.GermanArmor]
+  Car.Horch_108_Typ_1A_w_Zwillingssockel36
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Pz_IVD
+  Tank.Pz_IVD
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Pz_IIIF
+  Tank.Pz_IIIF
+  Tank.Krupp_L2H43_Protze_Flak38
+[Vehicle.BritishArmor]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.M3_Grant

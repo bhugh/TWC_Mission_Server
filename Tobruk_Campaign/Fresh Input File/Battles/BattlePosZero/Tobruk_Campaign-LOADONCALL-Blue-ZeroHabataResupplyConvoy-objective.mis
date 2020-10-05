@@ -1,0 +1,126 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 1.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[CustomChiefs]
+  Vehicle.BritishArmor $core/icons/tank.mma
+  Vehicle.VehicleRush2 $core/icons/tank.mma
+  Vehicle.SidiAzeizRush3 $core/icons/tank.mma
+  Vehicle.VehicleRush4 $core/icons/tank.mma
+  Vehicle.VehicleRush5 $core/icons/tank.mma
+[Vehicle.BritishArmor]
+  tobruk:Tank.Semovente_75-18_M41
+  tobruk:Tank.CV-35
+  tobruk:Tank.M13_40
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+[Vehicle.VehicleRush2]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.M3_Grant
+[Vehicle.SidiAzeizRush3]
+  tobruk:Tank.Semovente_75-18_M41
+  tobruk:Tank.CV-35
+  tobruk:Tank.M13_40
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+[Vehicle.VehicleRush4]
+  tobruk:Tank.Semovente_75-18_M41
+  tobruk:Tank.CV-35
+  tobruk:Tank.M13_40
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+[Vehicle.VehicleRush5]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.M3_Grant
+[Chiefs]
+  2006_Chief Vehicle.VehicleRush5 gb 
+[2006_Chief_Road]
+  353763.94 128548.80 38.40  0 29 1.00
+  353536.16 128348.56 20.00
+  353571.00 128296.00 20.00
+  353504.00 128224.00 38.40
+  353408.19 127936.49 20.00
+  353454.75 127871.45 20.00
+  353407.66 127794.65 20.00
+  351942.16 126463.49 20.00
+  351872.06 126390.88 20.00
+  351861.59 126396.96 20.00
+  351807.16 126382.77 20.00
+  350321.69 125567.99 20.00
+  344514.09 120447.40 20.00
+  336367.72 112191.13 20.00
+  330287.66 101772.12 20.00
+  330176.06 101759.08 20.00
+  330189.44 101663.33 20.00
+  330226.59 101631.77 20.00
+  330205.84 101536.80 20.00
+  330212.22 101503.57 20.00
+  330562.78 98189.04 20.00
+  330634.28 98112.32 20.00
+  330912.09 97806.45 20.00
+  330944.22 97728.17 20.00
+  331008.00 97673.51 20.00
+  331171.44 97586.32 20.00
+  331200.75 97531.59 20.00
+  335930.75 84510.22 20.00
+  335869.63 84493.66 38.40  0 19 2.08
+  335870.50 84352.07 20.00
+  335778.66 84290.13 20.00
+  311615.25 83836.67 20.00
+  311543.00 83829.00 20.00
+  311426.06 83701.13 20.00
+  311433.00 83749.00 20.00
+  311427.00 83690.00 20.00
+  311471.88 83609.48 20.00
+  311942.69 82239.75 20.00
+  311969.00 82120.00 20.00
+  311951.00 82056.00 20.00
+  311992.00 81992.00 20.00
+  311997.63 81983.12 20.00
+  312048.78 81663.21 20.00
+  311946.00 81546.00 20.00
+  311835.47 81599.55 20.00
+  311520.00 81248.00 38.40
+  311401.91 81133.91 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BHabataResupplyConvoy TGroupDestroyed Zero6_Chief 100

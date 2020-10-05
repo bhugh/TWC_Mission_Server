@@ -1,0 +1,170 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static137 Artillery.Bofors gb 344156.31 113066.23 -630.00 /timeout 0/radius_hide 0
+  Static138 Artillery.3_inch_20_CWT_QF_Mk_I gb 344153.13 113075.55 -630.00 /timeout 0/radius_hide 0
+  Static139 Artillery.3_inch_20_CWT_QF_Mk_I gb 344165.78 113065.81 -630.00 /timeout 0/radius_hide 0
+  Static142 Artillery.Bofors gb 344162.59 113074.98 -630.00 /timeout 0/radius_hide 0
+  Static28 Stationary.Environment.Oil_Cart_UK1 gb 344232.63 113085.70 90.00 
+  Static29 Stationary.Environment.Oil_Cart_UK1 gb 344233.88 113085.73 90.00 
+  Static30 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 344235.84 113085.38 90.00 
+  Static31 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 344238.25 113085.38 90.00 
+  Static33 Stationary.Environment.Towed_Bowser_UK1 gb 344240.88 113082.77 -270.00 
+  Static57 Artillery.3_inch_20_CWT_QF_Mk_I gb 344305.69 113063.02 -630.00 /timeout 0/radius_hide 0
+  Static0 Artillery.Bofors gb 344308.00 113071.20 -630.00 /timeout 0/radius_hide 0
+  Static52 Artillery.Bofors gb 344314.75 113066.09 -630.00 /timeout 0/radius_hide 0
+  Static56 Artillery.3_inch_20_CWT_QF_Mk_I gb 344315.78 113075.95 -630.00 /timeout 0/radius_hide 0
+  Static140 Artillery.3_inch_20_CWT_QF_Mk_I gb 344159.50 113141.62 -630.00 /timeout 0/radius_hide 0
+  Static136 Artillery.Bofors gb 344161.47 113150.12 -630.00 /timeout 0/radius_hide 0
+  Static143 Artillery.Bofors gb 344168.00 113145.09 -630.00 /timeout 0/radius_hide 0
+  Static98 Stationary.Environment.Chear_UK-GER_1 nn 344184.19 113101.20 65.00 
+  Static97 Stationary.Environment.Chear_UK-GER_1 nn 344183.56 113101.59 60.00 
+  Static96 Stationary.Environment.Chear_UK-GER_1 nn 344182.91 113102.12 30.00 
+  Static99 Stationary.Environment.Chear_UK-GER_1 nn 344185.00 113100.98 75.00 
+  Static94 Stationary.Environment.Chear_UK-GER_1 nn 344184.81 113102.16 50.00 
+  Static93 Stationary.Environment.Chear_UK-GER_1 nn 344184.25 113102.49 55.00 
+  Static92 Stationary.Environment.Chear_UK-GER_1 nn 344183.69 113102.95 60.00 
+  Static95 Stationary.Environment.Chear_UK-GER_1 nn 344185.63 113101.95 65.00 
+  Static89 Stationary.Environment.Stool_UK-GER_1 nn 344187.41 113102.52 -105.00 
+  Static86 Stationary.Environment.Table_w_dinner_UK-GER_1 nn 344187.56 113103.31 -105.00 
+  Static90 Stationary.Environment.Stool_UK-GER_1 nn 344187.06 113103.34 -105.00 
+  Static85 Stationary.Environment.Board_w_map_UK-GER_1 nn 344185.06 113105.31 -75.00 
+  Static91 Stationary.Environment.Portable_Siren_UK1 gb 344192.47 113098.24 -195.00 
+  Static83 Stationary.Environment.TentStaffBig_GER1 gb 344189.97 113100.98 90.00 
+  Static88 Stationary.Environment.Stool_UK-GER_1 nn 344188.25 113103.02 -105.00 
+  Static87 Stationary.Environment.Stool_UK-GER_1 nn 344187.69 113103.73 -105.00 
+  Static84 Stationary.Environment.TentStaffSmall_GER1 gb 344189.91 113106.87 90.00 
+  Static59 Stationary.Environment.TentSmall_UK1 gb 344190.41 113115.20 90.00 
+  Static60 Stationary.Environment.TentSmall_UK1 gb 344193.00 113115.20 90.00 
+  Static70 Stationary.Environment.TentSmall_UK1 gb 344195.50 113115.13 90.00 
+  Static65 Stationary.Environment.TentSmall_UK1 gb 344190.50 113120.38 90.00 
+  Static47 Stationary.Austin_K2_Ambulance gb 344218.44 113093.27 -720.00 
+  Static32 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 344214.84 113096.88 0.00 
+  Static61 Stationary.Environment.TentSmall_UK1 gb 344198.13 113115.20 90.00 
+  Static27 Stationary.Environment.TentMedicSmall_UK1 gb 344210.72 113101.73 90.00 
+  Static66 Stationary.Environment.TentSmall_UK1 gb 344193.00 113120.41 90.00 
+  Static72 Stationary.Environment.TentSmall_UK1 gb 344190.41 113124.81 90.00 
+  Static62 Stationary.Environment.TentSmall_UK1 gb 344200.59 113115.20 90.00 
+  Static67 Stationary.Environment.TentSmall_UK1 gb 344195.53 113120.48 90.00 
+  Static73 Stationary.Environment.TentSmall_UK1 gb 344193.00 113124.84 90.00 
+  Static63 Stationary.Environment.TentSmall_UK1 gb 344202.97 113115.20 90.00 
+  Static68 Stationary.Environment.TentSmall_UK1 gb 344198.13 113120.55 90.00 
+  Static71 Stationary.Environment.TentSmall_UK1 gb 344195.53 113124.74 90.00 
+  Static78 Stationary.Environment.TentSmall_UK1 gb 344190.50 113129.99 90.00 
+  Static46 Stationary.Austin_K2_Ambulance gb 344225.81 113094.20 -840.00 
+  Static69 Stationary.Environment.TentSmall_UK1 gb 344200.72 113120.48 90.00 
+  Static74 Stationary.Environment.TentSmall_UK1 gb 344198.13 113124.81 90.00 
+  Static79 Stationary.Environment.TentSmall_UK1 gb 344193.00 113130.05 90.00 
+  Static64 Stationary.Environment.TentSmall_UK1 gb 344203.16 113120.45 90.00 
+  Static80 Stationary.Environment.TentSmall_UK1 gb 344195.53 113130.09 90.00 
+  Static75 Stationary.Environment.TentSmall_UK1 gb 344200.63 113124.80 90.00 
+  Static2 Stationary.Environment.TentSmall_UK1 gb 344211.19 113115.45 90.00 
+  Static76 Stationary.Environment.TentSmall_UK1 gb 344202.97 113124.81 90.00 
+  Static81 Stationary.Environment.TentSmall_UK1 gb 344198.13 113130.16 90.00 
+  Static3 Stationary.Environment.TentSmall_UK1 gb 344213.81 113115.48 90.00 
+  Static82 Stationary.Environment.TentSmall_UK1 gb 344200.72 113130.09 90.00 
+  Static13 Stationary.Environment.TentSmall_UK1 gb 344216.31 113115.38 90.00 
+  Static8 Stationary.Environment.TentSmall_UK1 gb 344211.28 113120.63 90.00 
+  Static77 Stationary.Environment.TentSmall_UK1 gb 344203.16 113130.09 90.00 
+  Static9 Stationary.Environment.TentSmall_UK1 gb 344213.81 113120.70 90.00 
+  Static4 Stationary.Environment.TentSmall_UK1 gb 344218.91 113115.45 90.00 
+  Static15 Stationary.Environment.TentSmall_UK1 gb 344211.19 113125.09 90.00 
+  Static5 Stationary.Environment.TentSmall_UK1 gb 344221.38 113115.45 90.00 
+  Static10 Stationary.Environment.TentSmall_UK1 gb 344216.31 113120.73 90.00 
+  Static26 Stationary.Environment.TentTroopLarge_GER1 gb 344234.78 113101.80 90.00 
+  Static16 Stationary.Environment.TentSmall_UK1 gb 344213.81 113125.09 90.00 
+  Static11 Stationary.Environment.TentSmall_UK1 gb 344218.91 113120.80 90.00 
+  Static6 Stationary.Environment.TentSmall_UK1 gb 344223.78 113115.45 90.00 
+  Static20 Stationary.Environment.TentSmall_UK1 gb 344211.28 113130.27 90.00 
+  Static14 Stationary.Environment.TentSmall_UK1 gb 344216.31 113124.99 90.00 
+  Static12 Stationary.Environment.TentSmall_UK1 gb 344221.50 113120.73 90.00 
+  Static1 Stationary.Environment.TentSmall_UK1 gb 344218.94 113125.06 90.00 
+  Static21 Stationary.Environment.TentSmall_UK1 gb 344213.81 113130.30 90.00 
+  Static7 Stationary.Environment.TentSmall_UK1 gb 344223.97 113120.73 90.00 
+  Static22 Stationary.Environment.TentSmall_UK1 gb 344216.31 113130.34 90.00 
+  Static39 Stationary.Environment.FieldKitchen_UK1 gb 344238.59 113107.41 -90.00 
+  Static17 Stationary.Environment.TentSmall_UK1 gb 344221.41 113125.06 90.00 
+  Static113 Stationary.Environment.TentSmall_UK1 gb 344232.34 113115.48 90.00 
+  Static18 Stationary.Environment.TentSmall_UK1 gb 344223.78 113125.06 90.00 
+  Static23 Stationary.Environment.TentSmall_UK1 gb 344218.91 113130.41 90.00 
+  Static114 Stationary.Environment.TentSmall_UK1 gb 344234.97 113115.48 90.00 
+  Static24 Stationary.Environment.TentSmall_UK1 gb 344221.50 113130.34 90.00 
+  Static124 Stationary.Environment.TentSmall_UK1 gb 344237.47 113115.38 90.00 
+  Static119 Stationary.Environment.TentSmall_UK1 gb 344232.44 113120.66 90.00 
+  Static19 Stationary.Environment.TentSmall_UK1 gb 344223.97 113130.34 90.00 
+  Static120 Stationary.Environment.TentSmall_UK1 gb 344234.97 113120.70 90.00 
+  Static115 Stationary.Environment.TentSmall_UK1 gb 344240.06 113115.45 90.00 
+  Static126 Stationary.Environment.TentSmall_UK1 gb 344232.34 113125.09 90.00 
+  Static121 Stationary.Environment.TentSmall_UK1 gb 344237.47 113120.73 90.00 
+  Static127 Stationary.Environment.TentSmall_UK1 gb 344234.97 113125.09 90.00 
+  Static122 Stationary.Environment.TentSmall_UK1 gb 344240.06 113120.80 90.00 
+  Static125 Stationary.Environment.TentSmall_UK1 gb 344237.47 113124.99 90.00 
+  Static131 Stationary.Environment.TentSmall_UK1 gb 344232.44 113130.27 90.00 
+  Static112 Stationary.Environment.TentSmall_UK1 gb 344240.06 113125.09 90.00 
+  Static132 Stationary.Environment.TentSmall_UK1 gb 344234.97 113130.30 90.00 
+  Static133 Stationary.Environment.TentSmall_UK1 gb 344237.47 113130.37 90.00 
+  Static134 Stationary.Environment.TentSmall_UK1 gb 344240.06 113130.41 90.00 
+  Static38 Stationary.Environment.JerryCan_UK1_2-Gallon_3 nn 344250.88 113087.06 -300.00 
+  Static35 Stationary.Environment.JerryCan_UK1_4-Gallon_20 nn 344249.91 113087.59 -270.00 
+  Static34 Stationary.Environment.JerryCan_UK1_4-Gallon_20 nn 344249.94 113088.99 -270.00 
+  Static37 Stationary.Environment.JerryCan_UK1_4-Gallon_5 nn 344250.94 113087.84 -270.00 
+  Static36 Stationary.Environment.JerryCan_UK1_4-Gallon_20 nn 344251.19 113088.99 -270.00 
+  Static42 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 344248.72 113091.66 -270.00 
+  Static43 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 344248.75 113093.37 -450.00 
+  Static40 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 344251.22 113091.66 -90.00 
+  Static25 Stationary.Environment.TentTroopLarge_GER1 gb 344242.38 113101.73 90.00 
+  Static44 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 344249.47 113094.95 -630.00 
+  Static41 Stationary.Ammo_Vehicles.CargoCrate_Composition1 nn 344251.22 113093.38 -270.00 
+  Static45 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 344253.06 113092.37 -720.00 
+  Static48 Stationary.Morris_CS8 gb 344248.28 113099.91 -630.00 
+  Static49 Stationary.Morris_CS8 gb 344251.13 113099.98 -630.00 
+  Static51 Stationary.Morris_CS8_tent gb 344253.72 113099.95 -630.00 
+  Static50 Stationary.Morris_CS8 gb 344256.72 113099.99 -630.00 
+  Static116 Stationary.Environment.TentSmall_UK1 gb 344242.53 113115.45 90.00 
+  Static117 Stationary.Environment.TentSmall_UK1 gb 344244.94 113115.45 90.00 
+  Static123 Stationary.Environment.TentSmall_UK1 gb 344242.66 113120.73 90.00 
+  Static118 Stationary.Environment.TentSmall_UK1 gb 344245.13 113120.73 90.00 
+  Static128 Stationary.Environment.TentSmall_UK1 gb 344242.56 113125.06 90.00 
+  Static105 Stationary.Ford_V8_E917_tent gb 344252.47 113117.70 -630.00 
+  Static129 Stationary.Environment.TentSmall_UK1 gb 344244.94 113125.06 90.00 
+  Static135 Stationary.Environment.TentSmall_UK1 gb 344242.66 113130.37 90.00 
+  Static106 Stationary.Ford_V8_E917_tent gb 344256.28 113117.48 -630.00 
+  Static130 Stationary.Environment.TentSmall_UK1 gb 344245.13 113130.34 90.00 
+  Static100 Stationary.Ford_V8_E917_tent gb 344252.25 113125.23 -630.00 
+  Static107 Stationary.Ford_V8_E917_tent gb 344260.56 113117.62 -630.00 
+  Static108 Stationary.Ford_V8_E917_tent gb 344264.19 113118.02 -630.00 
+  Static101 Stationary.Ford_V8_E917_tent gb 344256.19 113125.52 -630.00 
+  Static102 Stationary.Ford_V8_E917_tent gb 344259.91 113125.34 -630.00 
+  Static109 Stationary.Ford_V8_E917_tent gb 344267.84 113117.95 -630.00 
+  Static103 Stationary.Ford_V8_E917_tent gb 344263.50 113125.41 -630.00 
+  Static111 Stationary.Ford_V8_E917_tent gb 344272.03 113118.09 -630.00 
+  Static104 Stationary.Ford_V8_E917_tent gb 344267.13 113125.41 -630.00 
+  Static110 Stationary.Ford_V8_E917_tent gb 344271.63 113125.20 -630.00 
+  Static58 Artillery.Bofors gb 344306.66 113144.48 -630.00 /timeout 0/radius_hide 0
+  Static55 Artillery.3_inch_20_CWT_QF_Mk_I gb 344315.34 113143.38 -630.00 /timeout 0/radius_hide 0
+  Static141 Artillery.3_inch_20_CWT_QF_Mk_I gb 344172.31 113153.16 -630.00 /timeout 0/radius_hide 0
+  Static54 Artillery.3_inch_20_CWT_QF_Mk_I gb 344302.72 113151.20 -630.00 /timeout 0/radius_hide 0
+  Static53 Artillery.Bofors gb 344311.88 113150.88 -630.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BTargNibeiwaTroops TGroundDestroyed 100 332601 97335 250

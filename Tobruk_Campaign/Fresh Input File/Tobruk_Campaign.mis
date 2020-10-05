@@ -6,9 +6,9 @@
   MAP tobruk:Land$Tobruk
   DespawnAfterLandingTimeout 600
   BattleArea 10000 10000 360000 360000 10000
-  TIME 8.76507
-  WeatherIndex 1
-  CloudsHeight 736
+  TIME 9.34867
+  WeatherIndex 2
+  CloudsHeight 709
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]

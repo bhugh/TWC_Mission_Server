@@ -1,0 +1,64 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static75 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127461.70 197277.55 675.00 
+  Static72 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127526.52 197271.89 675.00 
+  Static4 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127615.58 197303.86 675.00 
+  Static11 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127620.56 197263.58 675.00 
+  Static9 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127630.51 197255.28 675.00 
+  Static15 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127624.67 197267.63 820.00 /hstart -4
+  Static6 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127622.51 197294.83 820.00 /hstart -4
+  Static13 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127667.89 197249.88 675.00 
+  Static8 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127677.44 197259.02 675.00 
+  Static12 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127672.88 197268.56 675.00 
+  Static14 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127676.63 197271.42 820.00 /hstart -4
+  Static7 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 127678.53 197293.92 820.00 /hstart -4
+  Static5 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127672.05 197303.86 675.00 
+  Static10 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127684.92 197262.75 675.00 
+  Static73 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127771.27 197251.22 675.00 
+  Static22 Stationary.Opel_Blitz_cargo de 127747.32 197306.38 675.00 
+  Static53 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127528.20 197329.11 675.00 
+  Static2 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127622.22 197312.58 675.00 
+  Static0 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127619.73 197317.97 675.00 
+  Static1 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127677.44 197312.17 675.00 
+  Static3 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127649.89 197349.08 675.00 
+  Static74 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 127741.85 197341.88 675.00 
+  Static71 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127482.38 197406.75 675.00 
+  Static68 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 127723.31 197388.22 675.00 
+  Static16 Artillery.Bofors_StandAlone de 127938.45 197424.52 -45.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors_StandAlone de 127481.64 197508.38 -45.00 /timeout 0/radius_hide 0
+  Static18 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127550.54 197524.61 675.00 
+  Static23 Stationary.Opel_Blitz_cargo de 127560.59 197565.36 675.00 
+  Static19 Stationary.Opel_Blitz_cargo de 127690.00 197507.86 675.00 
+  Static52 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 127760.23 197561.27 675.00 
+  Static17 Artillery.Bofors_StandAlone de 127805.04 197554.70 -45.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Bofors_StandAlone de 127498.54 197595.91 -45.00 /timeout 0/radius_hide 0
+  Static69 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 127579.05 197575.42 675.00 
+  Static65 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 127612.81 197625.61 675.00 
+  Static64 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 127620.14 197601.45 675.00 
+  Static70 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 127737.16 197573.59 675.00 
+  Static66 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 127739.20 197601.47 675.00 
+  Static67 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 127720.78 197625.66 675.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  GermanFuelDump TGroundDestroyed 75 127713 197435 400

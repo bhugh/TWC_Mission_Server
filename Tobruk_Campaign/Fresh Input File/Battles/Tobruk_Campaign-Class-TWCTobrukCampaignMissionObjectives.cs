@@ -1,5 +1,6 @@
 ////$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesNeg10.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesBattles.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPosZero.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos100.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectivesPos200.cs"
 
@@ -162,6 +163,10 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
          * Add the $include file for the .cs above, then add the class and register it below
          * 
          * ***************************************************************************************************/
+        TWCTCMO battle_posZero = new BattlePosZero(g, m, sc);
+        Console.WriteLine("PosZero inited (return), {0} {1} {2} {3}", battle_posZero.score, battle_posZero.leastScore, battle_posZero.mostScore, battle_posZero.focus_airport_misfile_name);
+        register_subclass(battle_posZero);
+
 
         TWCTCMO battle_pos100 = new BattlePos100(g, m, sc);
         Console.WriteLine("Pos100 inited (return), {0} {1} {2} {3}", battle_pos100.score, battle_pos100.leastScore, battle_pos100.mostScore, battle_pos100.focus_airport_misfile_name);
@@ -590,8 +595,8 @@ public class TWCTobrukCampaignMissionObjectives : TWCTCMO {
                     { "ToBC_1", "/Flak areas/TobrukCity&1flak.mis" },
                     { "ToB2_3", "/Flak areas/Torbuk2_3flak.mis" },
                     { "Trimy", "/Flak areas/Trimmi2_1flak.mis" },
+                    { "ToBH", "/Flak areas/TobrukHarborflak.mis" },
                     { "None", "/Flak areas/Noneflak.mis" },
-
 
             };
         }

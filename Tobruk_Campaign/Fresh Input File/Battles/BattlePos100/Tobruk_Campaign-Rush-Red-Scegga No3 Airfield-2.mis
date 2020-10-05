@@ -84,6 +84,12 @@
   7_Chief Vehicle.VehicleRush4 de 
   12_Chief Armor.Pz_IVD de 
   13_Chief Armor.Pz_IVD de 
+  14_Chief Armor.Matilda_2A gb 
+  15_Chief Armor.Matilda_2A gb 
+  16_Chief Armor.Matilda_2A gb 
+  17_Chief Armor.Matilda_2A gb 
+  18_Chief Armor.Matilda_2A gb 
+  19_Chief Armor.Matilda_2A gb 
 [0_Chief_Road]
   262469.25 73964.98 38.40  0 4 5.28
   S 445 2 0.36 20.00 P 259505.25 70593.79
@@ -274,25 +280,44 @@
 [13_Chief_Road]
   247041.31 61393.88 38.40 75 2 1
   247114.67 61448.95 38.40
+[14_Chief_Road]
+  254099.81 64695.85 38.40  0 2 4.17
+  253410.00 64541.23 38.40
+[15_Chief_Road]
+  254147.39 64422.30 38.40  0 2 4.17
+  253528.94 64160.65 38.40
+[16_Chief_Road]
+  254218.75 64089.29 38.40  0 2 4.17
+  253600.30 63827.63 38.40
+[17_Chief_Road]
+  254313.91 63708.70 38.40  0 2 4.17
+  253695.44 63470.83 38.40
+[18_Chief_Road]
+  253945.20 64541.23 38.40  0 2 4.17
+  253624.08 64481.77 38.40
+[19_Chief_Road]
+  254052.25 64148.75 38.40  0 2 4.17
+  253671.66 64089.29 38.40
 [Stationary]
+  Static12 Artillery.Bofors de 246922.30 61620.37 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Bofors de 246952.81 61628.95 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors de 246887.23 61651.08 0.00 /timeout 0/radius_hide 0
   Static5 Artillery.Bofors de 249637.94 62067.19 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static2 Artillery.Bofors de 248936.42 62362.34 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static7 Artillery.Bofors de 248868.44 62461.86 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static6 Artillery.Bofors de 248838.05 62640.45 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static10 Artillery.Bofors de 248813.94 63117.10 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors de 248862.89 63283.12 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors de 248954.16 63456.96 0.00 /timeout 0/radius_hide 0
   Static3 Artillery.Bofors de 249247.95 63887.92 0.00 /timeout 390000/radius_hide 0
   Static4 Artillery.Bofors de 249374.38 63879.25 0.00 /timeout 390000/radius_hide 0
   Static0 Artillery.Bofors de 249616.02 63958.36 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static1 Artillery.Bofors de 249698.13 63991.70 0.00 /timeout 0/radius_hide 0
-  Static8 Artillery.Bofors de 248954.16 63456.96 0.00 /timeout 0/radius_hide 0
-  Static9 Artillery.Bofors de 248862.89 63283.12 0.00 /timeout 0/radius_hide 0
-  Static10 Artillery.Bofors de 248813.94 63117.100 0.00 /timeout 0/radius_hide 0
-  Static11 Artillery.Bofors de 246887.23 61651.08 0.00 /timeout 0/radius_hide 0
-  Static12 Artillery.Bofors de 246922.30 61620.37 0.00 /timeout 0/radius_hide 0
-  Static13 Artillery.Bofors de 246952.81 61628.95 0.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
 [Airdromes]
   airdrome0 245998.65 61581.19 0 1000 700 0
+  airdrome1 258298.18 64576.92 0 1000 700 0
 [airdrome0_Runways]
   246008.17 61574.11 -90.00 1400.00 40.00 0
 [airdrome0_Points]
@@ -305,12 +330,25 @@
   245579.06 61546.20
   245405.59 61500.09 8
   245583.24 61483.22
+[airdrome1_Points]
+  257598.18 64576.92 7 5 3 1
+  257402.40 64349.57 2
+  257159.24 64342.04
+  257440.37 64448.33 4
+  257174.65 64425.46
+  257417.67 64585.02 6
+  257174.94 64615.27
+  257478.63 64790.10 8
+  257197.56 64888.86
 [Trigger]
   VehicleRush TPassThrough 3 1 240010 137742 350
 [BirthPlace]
   "Tank Spawn" 2 250007 70842 0 1 1 1 . . . 0
   "Tank Spawn " 2 245978 61573 0 1 1 1 . . . 0
+  "Red Tank Spawn" 1 258412 64433 0 1 1 0 . . . 0
 [BirthPlace0]
   tobruk:Aircraft.DH82A_Trop
 [BirthPlace1]
+  tobruk:Aircraft.DH82A_Trop
+[BirthPlace2]
   tobruk:Aircraft.DH82A_Trop

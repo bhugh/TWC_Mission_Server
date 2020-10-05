@@ -84,6 +84,11 @@
   11_Chief Armor.Pz_IVD de 
   12_Chief Armor.Pz_IVD de /num_units 2
   13_Chief Armor.Pz_IVD de 
+  14_Chief Armor.Matilda_2A gb 
+  15_Chief Armor.Matilda_2A gb 
+  16_Chief Armor.Matilda_2A gb 
+  17_Chief Armor.Matilda_2A gb 
+  18_Chief Armor.Matilda_2A gb 
 [0_Chief_Road]
   264888.56 107282.20 38.40  0 8 5.28
   264836.00 107136.14 20.00
@@ -254,6 +259,21 @@
 [13_Chief_Road]
   242289.25 94026.66 38.40 55 2 1
   242723.23 94006.19 38.40
+[14_Chief_Road]
+  247440.50 89335.15 38.40  0 2 4.17
+  247262.36 89743.00 38.40
+[15_Chief_Road]
+  246862.39 89119.99 38.40  0 2 4.17
+  246602.56 89609.53 38.40
+[16_Chief_Road]
+  246513.70 88890.10 38.40  0 2 4.17
+  246261.52 89498.28 38.40
+[17_Chief_Road]
+  247233.11 88059.45 38.40  0 2 4.17
+  246987.91 88356.47 38.40
+[18_Chief_Road]
+  247921.84 88415.92 38.40  0 2 4.17
+  247521.63 88779.15 38.40
 [Stationary]
   Static6 Artillery.Bofors de 246265.58 93454.38 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static7 Artillery.Bofors de 246312.92 93479.05 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
@@ -262,8 +282,8 @@
   Static2 Artillery.Bofors de 244832.77 93672.33 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static14 Artillery.Bofors de 242705.83 93931.43 0.00 /timeout 0/radius_hide 0
   Static11 Artillery.Bofors de 246541.39 93893.29 0.00 /timeout 0/radius_hide 0
-  Static22 Stationary.Environment.CamoNetHowitizer nn 242724.31 94002.30 225.00 
   Static27 Stationary.Environment.SandBagWall_Arch nn 242724.22 94002.32 90.00 
+  Static22 Stationary.Environment.CamoNetHowitizer nn 242724.31 94002.30 225.00 
   Static23 Stationary.Environment.SandBagWall_Arch nn 242727.66 94002.42 285.00 
   Static28 Stationary.Environment.SandBagWall_Arch nn 242723.97 94009.64 255.00 
   Static24 Stationary.Environment.SandBagWall_Arch nn 242730.41 94004.49 330.00 
@@ -288,6 +308,7 @@
 [BuildingsLinks]
 [Airdromes]
   airdrome0 240002.86 93922.22 0 1000 700 0
+  airdrome1 251335.33 89601.05 0 1000 700 0
 [airdrome0_Runways]
   239994.84 93850.36 -75.00 1400.00 40.00 0
 [airdrome0_Points]
@@ -300,7 +321,20 @@
   239536.07 93882.32
   239396.62 93990.05 8
   239492.36 94025.96
+[airdrome1_Points]
+  250635.33 89601.05 7 5 3 1
+  250546.58 89204.34 2
+  250217.07 89204.23
+  250476.82 89378.02 4
+  250173.48 89386.58
+  250459.91 89516.77 6
+  250190.56 89594.95
+  250547.01 89820.53 8
+  250208.19 89985.48
 [BirthPlace]
   "Tank Spawn" 2 240006 93874 0 1 1 1 . . . 0
+  "Red Tank Spawn" 1 251406 89447 0 1 1 0 . . . 0
 [BirthPlace0]
+  tobruk:Aircraft.DH82A_Trop
+[BirthPlace1]
   tobruk:Aircraft.DH82A_Trop

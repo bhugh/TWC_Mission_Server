@@ -3964,7 +3964,8 @@ struct
 
             //TOBRUK SPECIAL
             //TERRIBLE KLUDGE
-            //If we run into this situation of server is continually throwing error on any call to ".Armies()" and is stuck we just restart
+            //If we run into this situation of server is continually throwing error on any call to "
+            //()" and is stuck we just restart
             //See https://theairtacticalassaultgroup.com/forum/showthread.php?t=34169&p=363848#post363848
             if (ex.ToString().Contains("WYb4kT81Gj7ZXGv75lN9rAO6lAoq30CfWyWdUQD$AYNK.Armies()"))
             {
@@ -8905,10 +8906,14 @@ struct
                                           string severity = "";
                                           if (injuriesExtent > .2) severity = "seriously ";
                                           if (injuriesExtent >= .5) severity = "very seriously ";
-                                          string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.  Your career will continue.";
+                                          string msg3 = stb_StatRecorder.StbSr_RankFromName(playerName, actor) + playerName + " was " + severity + "injured in that incredible fiery explosion, but somehow survived.";
                                           if (!RPCL) Stb_Message(new Player[] { player }, msg3, new object[] { });
                                           stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
-                                          recentlyParachutedOrCrashedOrLanded(playerName);
+                                          //recentlyParachutedOrCrashedOrLanded(playerName); //don't RPCL here as it's done OnAircraftCrashLanded
+                                          
+                                          AiActor act = actor;
+                                          if (act as AiAircraft == null) act = player.Place() as AiActor;
+                                          OnAircraftCrashLanded(act, player, act as AiAircraft, injuriesExtent);
                                       }
                                       else if (injuriesExtent == -1) //case of (say) a bomber where the player is inhabiting two positions and one of them is killed, but the other not (-1)
                                       {
@@ -14194,66 +14199,69 @@ struct
             Console.WriteLine();
         }
 
+    /// <summary>
+    /// returns number of damages to aircraft
+    /// lists damages in server log info window
+    /// shows HUD messages if desired
+    /// If player==null just returns # of damages to the given AiAircraft
+    /// </summary>
+    public static int listDamages(IGamePlay GamePlay, Player CurPlayer = null, bool bShowMessages = false, AiAircraft aircraft = null, bool bIsRefueling = false)
+    {
+        int nDamages = 0;
+        AiAircraft PlayersAircraft = aircraft;
+        if (CurPlayer != null) PlayersAircraft = CurPlayer.Place() as AiAircraft;
+        if (PlayersAircraft == null) return 0; //nothing to do
+        if (CurPlayer == null) bShowMessages = false;
 
-        /// <summary>
-        /// returns number of damages to aircraft
-        /// lists damages in server log info window
-        /// shows HUD messages if desired
-        /// </summary>
-        public static int listDamages(IGamePlay GamePlay, Player CurPlayer=null, bool bShowMessages=false, AiAircraft aircraft = null)
+        string[] PartNames = Enum.GetNames(typeof(part.NamedDamageTypes));
+        part.NamedDamageTypes[] PartVals = (part.NamedDamageTypes[])Enum.GetValues(typeof(part.NamedDamageTypes));
+        double dDamage = 0;
+
+        if (bShowMessages)
         {
-            int nDamages = 0;
-            AiAircraft PlayersAircraft = aircraft;
-            if (CurPlayer != null) PlayersAircraft = CurPlayer.Place() as AiAircraft;
-            if (PlayersAircraft == null) return 0; //nothing to do
-            if (CurPlayer == null) bShowMessages = false;
+            GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Checking aircraft for damage (See chat/server info window) ...");
+        }
 
-            string[] PartNames = Enum.GetNames(typeof(part.NamedDamageTypes));
-            part.NamedDamageTypes[] PartVals = (part.NamedDamageTypes[])Enum.GetValues(typeof(part.NamedDamageTypes));
-            double dDamage = 0;
-
-            if (bShowMessages)
+        for (int i = 0; i < PartNames.Length; i++)
+        {
+            try
             {
-                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Checking for damage (See chat/server info window) ...");
-            }
-
-            for (int i = 0; i < PartNames.Length; i++)
-            {
-                try
+                dDamage = PlayersAircraft.getParameter(part.ParameterTypes.M_NamedDamage, (int)(PartVals[i]));
+                if (0 != dDamage)
                 {
-                    dDamage = PlayersAircraft.getParameter(part.ParameterTypes.M_NamedDamage, (int)(PartVals[i]));
-                    if (0 != dDamage)
-                    {
-                        GamePlay.gpLogServer(new Player[] { CurPlayer }, "Damage: " + PartNames[i], null);
-                        nDamages++;
-                    }
-                }
-                catch (IndexOutOfRangeException e)
-                {
+                    GamePlay.gpLogServer(new Player[] { CurPlayer }, "Damage: " + PartNames[i], null);
+                    nDamages++;
                 }
             }
-
-            if (bShowMessages)
+            catch (IndexOutOfRangeException e)
             {
-                if (0 == nDamages)
-                {
-                    GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "No damage");
-                }
-                else
-                {
-                    GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Your aircraft has damage: See chat/server info window.");
-                }
             }
-            if (nDamages > 0)
+        }
+
+        if (bShowMessages)
+        {
+            if (0 == nDamages)
             {
-                GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. Your aircraft has " + nDamages + " damaged parts.  Continue with the refuel/rearm or exit and enter a new fully repaired aircraft--your choice. Continuing to refuel . . . ", null);
+                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "No damage");
             }
             else
             {
-                GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. No damage found. Continuing to refuel . . . ", null);
+                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Your aircraft has damage: See chat/server info window.");
             }
-            return nDamages;
         }
+        if (nDamages > 0)
+        {
+            if (bIsRefueling)
+                GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. Your aircraft has " + nDamages + " damaged parts.  Continue with the refuel/rearm or exit and enter a new fully repaired aircraft--your choice. Continuing to refuel . . . ", null);
+            else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. Your aircraft has " + nDamages + " damaged parts.", null);
+        }
+        else
+        {
+            if (bIsRefueling) GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. No damage found. Continuing to refuel . . . ", null);
+            else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. No damage found.", null);
+        }
+        return nDamages;
+    }
 
         /// <summary>
         /// returns true if all fuel cocks are closed

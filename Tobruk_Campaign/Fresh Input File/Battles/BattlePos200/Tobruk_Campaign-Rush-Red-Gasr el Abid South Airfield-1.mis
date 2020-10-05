@@ -84,6 +84,11 @@
   11_Chief Armor.Pz_IVD de 
   12_Chief Armor.Pz_IVD de 
   13_Chief Armor.Pz_IVD de 
+  14_Chief Armor.Vickers_Mk_VIC gb 
+  15_Chief Armor.Vickers_Mk_VIC gb 
+  16_Chief Armor.Vickers_Mk_VIC gb 
+  17_Chief Armor.Vickers_Mk_VIC gb 
+  18_Chief Armor.Vickers_Mk_VIC gb 
 [0_Chief_Road]
   253111.06 70051.57 38.40  0 4 5.28
   S 335 47 0.76 20.00 P 253326.27 70297.73
@@ -230,24 +235,39 @@
 [13_Chief_Road]
   242639.56 94132.98 38.40  0 2 5.56
   242044.47 94079.91 38.40
+[14_Chief_Road]
+  248280.72 89948.10 38.40  0 2 11.11
+  248112.05 90221.91 38.40
+[15_Chief_Road]
+  248186.53 89750.65 38.40  0 2 11.11
+  248016.58 90051.26 38.40
+[16_Chief_Road]
+  247809.17 89459.23 38.40  0 2 11.11
+  247652.94 89763.97 38.40
+[17_Chief_Road]
+  247675.72 89202.54 38.40  0 2 11.11
+  247447.03 89561.55 38.40
+[18_Chief_Road]
+  247370.75 89017.87 38.40  0 2 11.11
+  247168.67 89498.48 38.40
 [Stationary]
   Static2 Artillery.Bofors de 245199.95 93278.41 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static5 Artillery.Bofors de 245263.19 93261.73 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static10 Artillery.Bofors de 246181.23 93363.29 0.00 /timeout 0/radius_hide 0
   Static6 Artillery.Bofors de 246509.31 93624.67 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
-  Static32 Stationary.Environment.SandBagWall_Arch nn 242190.61 93799.75 -79.100 
   Static31 Stationary.Environment.SandBagWall_Arch nn 242187.39 93801.07 -140.00 
+  Static32 Stationary.Environment.SandBagWall_Arch nn 242190.61 93799.75 -79.10 
   Static30 Stationary.Environment.SandBagWall_Arch nn 242186.81 93804.36 -200.00 
   Static34 Stationary.Environment.SandBagWall_Arch nn 242194.05 93800.41 -275.00 
   Static29 Stationary.Environment.SandBagWall_Arch nn 242189.16 93806.88 -245.00 
   Static28 Stationary.Environment.CamoNetHowitizer nn 242190.45 93807.05 -305.00 
-  Static33 Stationary.Environment.SandBagWall_Arch nn 242192.53 93807.57 -79.100 
+  Static33 Stationary.Environment.SandBagWall_Arch nn 242192.53 93807.57 -79.10 
   Static13 Artillery.Bofors de 242244.08 93876.33 0.00 /timeout 0/radius_hide 0
   Static7 Artillery.Bofors de 246546.66 93782.91 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static8 Artillery.Bofors de 244732.33 93948.26 0.00 /timeout 0/radius_hide 0
   Static24 Stationary.Environment.SandBagWall_Arch nn 242040.22 94076.75 225.00 
-  Static23 Stationary.Environment.SandBagWall_Arch nn 242039.34 94079.98 165.00 
   Static25 Stationary.Environment.SandBagWall_Arch nn 242043.53 94075.73 285.00 
+  Static23 Stationary.Environment.SandBagWall_Arch nn 242039.34 94079.98 165.00 
   Static27 Stationary.Environment.SandBagWall_Arch nn 242046.89 94076.68 90.00 
   Static22 Stationary.Environment.SandBagWall_Arch nn 242041.47 94082.69 120.00 
   Static21 Stationary.Environment.CamoNetHowitizer nn 242042.89 94082.88 60.00 
@@ -255,13 +275,13 @@
   Static12 Artillery.Bofors de 242581.36 94166.65 0.00 /timeout 0/radius_hide 0
   Static11 Artillery.Bofors de 242197.34 94532.98 0.00 /timeout 0/radius_hide 0
   Static3 Artillery.Bofors de 244797.44 94575.68 0.00 /timeout 390000/radius_hide 0
-  Static20 Stationary.Environment.SandBagWall_Arch nn 242052.89 94685.06 30.00 
   Static18 Stationary.Environment.SandBagWall_Arch nn 242050.39 94687.49 225.00 
+  Static20 Stationary.Environment.SandBagWall_Arch nn 242052.89 94685.06 30.00 
   Static17 Stationary.Environment.SandBagWall_Arch nn 242049.63 94690.88 165.00 
-  Static14 Stationary.Environment.CamoNetHowitizer nn 242054.59 94692.63 15.00 
   Static16 Stationary.Environment.SandBagWall_Arch nn 242051.98 94693.25 105.00 
-  Static19 Stationary.Environment.SandBagWall_Arch nn 242057.89 94690.41 225.00 
+  Static14 Stationary.Environment.CamoNetHowitizer nn 242054.59 94692.63 15.00 
   Static15 Stationary.Environment.SandBagWall_Arch nn 242055.39 94692.77 60.00 
+  Static19 Stationary.Environment.SandBagWall_Arch nn 242057.89 94690.41 225.00 
   Static1 Artillery.Bofors de 246577.19 94626.05 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static0 Artillery.Bofors de 246363.77 94909.42 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
   Static4 Artillery.Bofors de 245502.36 95054.91 0.00 /timeout 390000/radius_hide 0
@@ -270,6 +290,7 @@
 [BuildingsLinks]
 [Airdromes]
   airdrome0 239972.62 94019.20 0 1000 700 0
+  airdrome1 251833.60 90132.84 0 1000 700 0
 [airdrome0_Runways]
   239982.09 94011.52 0.00 1400.00 40.00 0
 [airdrome0_Points]
@@ -282,7 +303,20 @@
   239491.57 94486.11
   239578.16 94248.79 8
   239657.15 94462.36
+[airdrome1_Points]
+  251133.60 90132.84 7 5 3 1
+  250928.92 89799.14 2
+  250749.56 89775.86
+  250936.57 89931.51 4
+  250711.25 89939.21
+  250968.09 90094.94 6
+  250703.16 90157.24
+  251029.78 90297.39 8
+  250781.32 90398.57
 [BirthPlace]
   "Tank Spawn" 2 240006 93874 0 1 1 1 . . . 0
+  BirthPlace_0 1 251953 90038 0 1 1 0 . . . 0
 [BirthPlace0]
+  tobruk:Aircraft.DH82A_Trop
+[BirthPlace1]
   tobruk:Aircraft.DH82A_Trop

@@ -862,7 +862,7 @@ public class CoverMission : AMission, ICoverMission
             {"bob:Aircraft.Bf-110C-4N",false},
             {"bob:Aircraft.Bf-110C-4-NJG",true}, //this is a good cover a/c for bombers
             {"bob:Aircraft.Bf-110C-6",true},  //this is potentially a good cover a/c for bombers but also a good ground attack a/c, big guns
-            {"bob:Aircraft.Bf-110C-7",false},
+            {"bob:Aircraft.Bf-110C-7",true}, //this is potentially a good cover a/c for bombers but also a good ground attack a/c, big guns PLUS BOMBS.  Similar to Beaufighter?
             {"bob:Aircraft.BR-20M",false},
             {"bob:Aircraft.CR42",false},
             {"bob:Aircraft.DH82A",false},
@@ -3041,10 +3041,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //List<string> rlist = new List<string>();
                 string[] rlist = new string[8];
 
+                bool isBomber = isHeavyBomber(type);
+
                 for (int j = 0; j < 8; j++)
                 {
                     double r = 0.9;
-                    if (j == 3) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                    if (j == 3)
+                    {
+                        r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                        if (isBomber) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 16.0 + 15.0 / 16.0; //number between 0.9375 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                        //improving aiming accuracy of bombers, also fighter-bombers who might strafe etc
+                    }
                     else r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted towards the center of that range
                     r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
 
@@ -3713,12 +3720,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
         else if (type.Contains("He-111H")) //covers both H-2 & P-2 with just one line different
         {
-            f.add(s, "Belt", "_Gun04 bob:Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG15 MainBelt 4 4 4 2 0 0 0 2 5 5 5 2 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 0 2"); //Only the h-2 has Gun03; the P-2 lacks it & throws an error if it is included
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG15 MainBelt 2 0 4 4 4"); //Only the h-2 has Gun03; the P-2 lacks it & throws an error if it is included
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 2 0 4 4 4");
             f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
@@ -3736,11 +3743,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("He-111P")) //covers both H-2 & P-2 with just one line different
         {
-            f.add(s, "Belt", "_Gun04 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 0 2 5 5 2 5 Residual 50 ResidueBelt 4 2 4 4 2 5 5 2 5 2 0 0 2 0 2");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 2 0 4 4 4");
             f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SC-250_Type1_J 2 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SC-50_GradeII_J 1 -1 " + delay_sec);
@@ -3756,13 +3763,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("110C-2"))
         {
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 4 1 4");
-            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 4 4 1");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt  2 0 4 4 4");
 
             if (weapons.Length == 0) weapons = "1 1 1"; //default
             if (fuel == 0) fuel = 80;
@@ -3770,13 +3777,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("110C-4B"))
         {
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 5 1 5");
-            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 5 3 5");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 0 4 4 4");
 
             if (weapons.Length == 0) weapons = "1 1 1 4"; //default
             if (fuel == 0) fuel = 80;
@@ -3784,13 +3791,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("110C-4"))
         {
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 5 1 5");
-            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 5 3 5");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 0 4 4 4");
 
             if (weapons.Length == 0) weapons = "1 1 1"; //default
             if (fuel == 0) fuel = 80;
@@ -3798,12 +3805,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("110C-6")) //need to make sure this is a good load-out, copied from user-ini
         {
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-            f.add(s, "Belt", "_Gun04 bob:Gun.Mk-101 MainBelt 0 2 0 2 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 0 1 0 0 4 4 4 4 Residual 50 ResidueBelt 0 1 0 1 0 4 1 4 4 1 4");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 0 0 4 4 4 1");
+            f.add(s, "Belt", "_Gun04 bob:Gun.Mk-101 MainBelt 0 1 2"); //One of each of the 3 types 0=HalbPanzer (semi-armorpiercing), 1=Splitter (fragmentation), 2=Hochbrisanz (high explosive) 1 2 might be better for a/c but 0 for ground armor?
+            f.add(s, "Belt", "_Gun05 bob:Gun.MG15 MainBelt 0 0 4 4 4 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 0 0 4 4 4 1");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 0 0 4 4 4 1");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 0 0 4 4 4 1");
 
             if (weapons.Length == 0)
             {
@@ -3816,13 +3823,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("110C-7"))
         {
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 5 1 5");
-            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 5 3 5");
-            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 5 5 5 2 0 0 0 4 4 4 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG17 MainBelt 2 0 4 4 4 0");
+            f.add(s, "Belt", "_Gun06 bob:Gun.MG15 MainBelt 2 0 4 4 4 0");
+            f.add(s, "Belt", "_Gun05 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun04 bob:Gun.MGFF MainBelt 2 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 0 4 4 4");
 
             f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
@@ -3854,9 +3861,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("Ju-87"))
         {
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG17_Wing MainBelt 4 4 4 0 0 0 2 5 5 5 Residual 50 ResidueBelt 4 4 4 2 5 5 5 2 0 0 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG17_Wing MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 1 0 4 4 4 5 5 5 0 0 Residual 50 ResidueBelt 0 1 2 4 4 4 2 5 5 5 2 0 0 2");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17_Wing MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17_Wing MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 2 0 4 4 4");
 
             f.add(s, "Detonator", "Bomb.SC-500_GradeIII_J 0 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SC-50_GradeII_J_DivePreferred 0 -1 " + delay_sec);
@@ -3874,9 +3881,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (type.Contains("Ju-88A-1"))
         {
-            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 4 4 2 4 0 0 2 0 2 5 5 2 5 Residual 50 ResidueBelt 4 4 2 4 2 5 5 2 5 2 0 0 2 0 2");
-            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 1 0 2 4 4 2 4 5 5 2 5 0 2 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
-            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 1 2 0 4 2 4 4 5 2 5 5 2 0 0 Residual 50 ResidueBelt 0 1 2 4 4 2 4 2 5 5 2 5 2 0 2 0 2");
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG15 MainBelt 2 0 4 4 4");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG15 MainBelt 2 0 4 4 4");
 
             f.add(s, "Detonator", "Bomb.SC-500_GradeIII_K 0 -1 " + delay_sec);
             f.add(s, "Detonator", "Bomb.SD-250 0 -1 " + delay_sec);
@@ -5223,6 +5230,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         return Stb_nearestAirport(pd, army, isSeaplane);
     }
 
+    public double Stb_nearestAirport_distance_m(Point3d location, int army = 0, bool? isSeaplane = null)
+    {
+        AiAirport ap = Stb_nearestAirport(location, army , isSeaplane);
+        if (ap == null) return 10000000; //if no airport, return a very large #
+        double dist_m = CoverCalcs.CalculatePointDistance(location, ap.Pos());
+        return dist_m;
+    }
+
     private bool isAiControlledPlane2(AiAircraft aircraft)
 
     { // returns true if specified aircraft is AI controlled with no humans aboard, otherwise false
@@ -5464,6 +5479,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 double saveZ = endPos.z;
                 midPos = getMidPoint(nextWP.P, endPos);
                 midPos.z = saveZ;
+                bool foundAirport = false;
 
                 if (landing)
                 {
@@ -5492,60 +5508,65 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             NewWaypoints.Add(landaaWP); //do add
                             count++;
                             update = true;
+                            foundAirport = true;
+                            Console.WriteLine("COVER FixWayPoints - airport found, adding landing-at-airport WP: {5}  {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { landaawpt, (landaaWP as AiAirWayPoint).Speed, landaaWP.P.x, landaaWP.P.y, landaaWP.P.z, (ap as AiActor).Name() });
                         }
                     }
-                    catch (Exception ex) { Console.WriteLine("Cover FixWayPoints #3: " + ex.ToString()); }
+                    catch (Exception ex) { Console.WriteLine("Cover FixWayPoints ERROR #3: " + ex.ToString()); }
                 }
 
-
-                /* (Vector3d Vwld = airGroup.Vwld();
-                double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
-                if (vel_mps < 70) vel_mps = 70;
-                if (vel_mps > 160) vel_mps = 160;                
-                */
-
-
-                /*
-                 * //Trying to give reasonable airwaypointtypes to the flight, but this just confusing -MoveBombTarget
-                 * //Instead, we'll give all aircraft .ESCORT which prevents them from being shanghaied by -MoveBombTarget and reprogrammed
-                AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
-                if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
-                    aawpt = (nextWP as AiAirWayPoint).Action;
-                else
+                if (!foundAirport)
                 {
-                    string type = "";
-                    string t = aircraft.Type().ToString();
-                    if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
-                    else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
 
-                    if (type == "B") aawpt = AiAirWayPointType.FOLLOW;
+                    /* (Vector3d Vwld = airGroup.Vwld();
+                    double vel_mps = Calcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                    if (vel_mps < 70) vel_mps = 70;
+                    if (vel_mps > 160) vel_mps = 160;                
+                    */
 
+
+                    /*
+                     * //Trying to give reasonable airwaypointtypes to the flight, but this just confusing -MoveBombTarget
+                     * //Instead, we'll give all aircraft .ESCORT which prevents them from being shanghaied by -MoveBombTarget and reprogrammed
+                    AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
+                    if ((nextWP as AiAirWayPoint).Action != AiAirWayPointType.LANDING && (nextWP as AiAirWayPoint).Action != AiAirWayPointType.TAKEOFF)
+                        aawpt = (nextWP as AiAirWayPoint).Action;
+                    else
+                    {
+                        string type = "";
+                        string t = aircraft.Type().ToString();
+                        if (t.Contains("Fighter") || t.Contains("fighter")) type = "F";
+                        else if (t.Contains("Bomber") || t.Contains("bomber")) type = "B";
+
+                        if (type == "B") aawpt = AiAirWayPointType.FOLLOW;
+
+                    }
+                    */
+
+                    //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
+                    //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
+                    AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
+
+                    //add the mid Point
+                    midaaWP = new AiAirWayPoint(ref midPos, speed);
+                    //aaWP.Action = AiAirWayPointType.NORMFLY;
+                    midaaWP.Action = aawpt; //same action for mid & end
+
+                    NewWaypoints.Add(midaaWP); //do add
+                    count++;
+
+                    //Console.WriteLine("CoverFixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+
+                    //add the final Point, which is off the map
+                    endaaWP = new AiAirWayPoint(ref endPos, speed);
+                    //aaWP.Action = AiAirWayPointType.NORMFLY;
+                    //endaaWP.Action = AiAirWayPointType.NORMFLY;
+                    endaaWP.Action = aawpt;
+
+                    NewWaypoints.Add(endaaWP); //do add
+                    count++;
+                    //Console.WriteLine("CoverFixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
                 }
-                */
-
-                //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
-                //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
-                AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
-
-                //add the mid Point
-                midaaWP = new AiAirWayPoint(ref midPos, speed);
-                //aaWP.Action = AiAirWayPointType.NORMFLY;
-                midaaWP.Action = aawpt; //same action for mid & end
-
-                NewWaypoints.Add(midaaWP); //do add
-                count++;
-
-                //Console.WriteLine("CoverFixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
-
-                //add the final Point, which is off the map
-                endaaWP = new AiAirWayPoint(ref endPos, speed);
-                //aaWP.Action = AiAirWayPointType.NORMFLY;
-                //endaaWP.Action = AiAirWayPointType.NORMFLY;
-                endaaWP.Action = aawpt;
-
-                NewWaypoints.Add(endaaWP); //do add
-                count++;
-                //Console.WriteLine("CoverFixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
             }
 
 

@@ -20,8 +20,8 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  2005_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
-[2005_Chief_Road]
+  2010_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
+[2010_Chief_Road]
   346954.88 136122.23 38.40  0 2 1.11
   342020.53 136697.30 38.40  0 2 1.11
   338578.41 136366.72 38.40  0 2 4.58
@@ -38,4 +38,4 @@
 [Buildings]
 [BuildingsLinks]
 [Trigger]
-  BBarraniSub TGroupDestroyed 2005_Chief 100
+  BBarraniSub TGroupDestroyed 2010_Chief 100

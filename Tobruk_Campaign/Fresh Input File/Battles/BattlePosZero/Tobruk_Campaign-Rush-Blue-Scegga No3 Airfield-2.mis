@@ -1,0 +1,389 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+  Armor.ArmorColumn1 $core/icons/tank.mma
+  Vehicle.RepairColumn $core/icons/tank.mma
+  Vehicle.ArmorComand $core/icons/tank.mma
+  Vehicle.BritishDefendedColumn $core/icons/tank.mma
+  Vehicle.GermanBrushFlakCargo $core/icons/tank.mma
+[Armor.ArmorColumn1]
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Pz_IIC
+  Tank.Pz_IIIF
+  Tank.Pz_IIIF
+  Tank.StuG_IIIA
+  Tank.StuG_IIIB
+  Tank.Krupp_L2H43_Protze_Flak38
+[Vehicle.RepairColumn]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  Car.Horch_108_Typ_1A_w_Zwillingssockel36
+  Car.Opel_Blitz_cargo
+  Car.Opel_Blitz_tent
+  Car.Opel_Blitz_radio_transport
+  Car.Opel_Blitz_fuel
+[Vehicle.ArmorComand]
+  Tank.BMW_R71_w_MG_34
+  Car.Opel_Blitz_cargo_med
+  Tank.Krupp_L2H43_Protze_Flak30
+  Car.Ford_V8_E917_open
+  Car.Opel_Blitz_cargo
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.Pz_IVE
+[Vehicle.BritishDefendedColumn]
+  Tank.Krupp_L2H43_Protze_Flak30
+  Car.SdKfz_10_5_Transport
+  Car.Ford_V8_E917_tent
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  tobruk:Car.S37
+  Car.Beaverette_III
+  Car.Beaverette_III
+[Vehicle.GermanBrushFlakCargo]
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Guy_Mk_I
+  Car.Horch_108_Typ_1A_w_Zwillingssockel36
+  Car.Opel_Blitz_cargo
+  Car.Opel_Blitz_cargo
+  Car.Opel_Blitz_radio_transport
+  Tank.Krupp_L2H43_Protze_Flak38
+[Chiefs]
+  0_Chief Armor.ArmorColumn1 de 
+  1_Chief Vehicle.RepairColumn de /skin0 materialsDesert1/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/skin4 materialsDesert1/skin5 materialsDesert1/skin6 materialsDesert1/skin7 materialsDesert1
+  2_Chief Vehicle.GER_Fuel_Column de /skin0 materialsDesert1/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/skin4 materialsDesert1
+  4_Chief Vehicle.ArmorComand de /skin0 materialsDesert1/pax_skin0 materialsDesert1_LW/skin1 materialsDesert1/skin2 materialsDesert1/skin3 materialsDesert1/pax_skin3 materialsDesert1_RAF/skin4 materialsDesert1/pax_skin4 materialsDesert1_LW/marker4 1940-42_var1/skin5 materialsDesert1/pax_skin5 materialsDesert1_LW/skin6 materialsDesert1/pax_skin6 materialsDesert1_LW/skin7 materialsDesert1/pax_skin7 materialsDesert1_LW
+  5_Chief Vehicle.GermanBrushFlakCargo de 
+  6_Chief Vehicle.BritishDefendedColumn gb 
+  7_Chief Vehicle.GermanBrushFlakCargo gb 
+  3_Chief Vehicle.GermanBrushFlakCargo de 
+  9_Chief Armor.Vickers_Mk_VIC gb 
+  10_Chief Armor.Vickers_Mk_VIC gb 
+  11_Chief Armor.Vickers_Mk_VIC gb /num_units 2
+  12_Chief Armor.Vickers_Mk_VIC gb /num_units 2
+  8_Chief Armor.Vickers_Mk_VIC gb 
+  13_Chief Armor.Vickers_Mk_VIC gb 
+  14_Chief Armor.Pz_IVD de 
+  15_Chief Armor.Pz_IVD de 
+  16_Chief Armor.Pz_IVD de 
+  17_Chief Armor.Pz_IVD de 
+[0_Chief_Road]
+  248656.34 70526.44 38.40  0 5 5.28
+  S 769 4 0.50 20.00 P 249701.50 63430.00
+  S 266 6 0.04 20.00 P 249713.56 63360.68
+  S 266 5 0.50 20.00 P 249733.25 63280.37
+  249791.63 63046.19 38.40
+[1_Chief_Road]
+  242854.84 81857.77 38.40  0 5 5.28
+  S 769 4 0.50 20.00 P 249701.50 63430.00
+  S 266 6 0.04 20.00 P 249713.56 63360.68
+  S 266 5 0.50 20.00 P 249733.25 63280.37
+  249810.22 63027.63 38.40  0 2 2.64
+  249869.22 62968.48 38.40
+[2_Chief_Road]
+  230787.30 49672.39 38.40  0 2 6.11
+  246999.08 59994.96 38.40  0 7 3.06
+  S 268 8 0.14 20.00 P 249422.39 62425.01
+  S 768 0 0.37 20.00 P 249472.81 62434.93
+  S 768 0 1.00 20.00 P 249652.69 62474.48
+  249696.00 62560.00 38.40
+  249824.00 62944.00 38.40
+  249840.36 63052.34 38.40
+[4_Chief_Road]
+  234584.56 57124.59 38.40  0 2 5.28
+  240232.83 59187.68 38.40  0 2 2.64
+  244916.47 61130.52 38.40  0 2 2.64
+  247275.64 61893.78 38.40  0 7 2.64
+  S 268 7 0.51 20.00 P 247750.70 62439.07
+  S 268 8 0.14 20.00 P 249422.39 62425.01
+  S 768 0 0.37 20.00 P 249472.81 62434.93
+  S 768 0 1.00 20.00 P 249652.69 62474.48
+  249696.00 62560.00 38.40
+  249893.09 62914.02 38.40
+[5_Chief_Road]
+  238547.61 68967.93 38.40  0 2 5.28
+  247692.91 65646.45 38.40  0 6 1.00
+  S 769 4 0.50 20.00 P 249701.50 63430.00
+  S 266 6 0.04 20.00 P 249713.56 63360.68
+  S 266 5 0.50 20.00 P 249733.25 63280.37
+  249824.00 63200.00 38.40
+  249800.75 62934.23 38.40
+[6_Chief_Road]
+  250315.20 59784.18 38.40 5 2 1
+  251802.02 61559.29 38.40 17 2 1
+  252724.98 60423.48 38.40 24 2 1
+  251776.44 61162.84 38.40 31 4 1
+  S 268 10 0.10 20.00 P 251506.69 62463.98
+  S 268 10 0.00 20.00 P 251391.00 62465.00
+  251354.25 62544.54 38.40 38 4 1
+  S 266 11 0.45 20.00 P 251424.72 62786.01
+  S 266 11 0.42 20.00 P 251396.36 62805.59
+  251968.34 63446.47 38.40 43 2 1
+  253350.03 63695.95 38.40  0 2 2.64
+  252005.05 62930.16 38.40 57 5 1
+  S 266 11 0.94 20.00 P 251794.36 62536.66
+  S 266 12 0.00 20.00 P 251813.00 62526.00
+  S 268 10 0.29 20.00 P 251839.89 62439.49
+  250208.06 59865.09 38.40 71 2 1
+  252171.08 60884.31 38.40  0 2 2.64
+  251373.45 60280.09 38.40  0 2 1.00
+  251610.84 61237.52 38.40  0 5 2.64
+  251616.00 62560.00 38.40
+  S 266 11 0.67 20.00 P 251623.80 62649.30
+  S 266 11 0.62 20.00 P 251581.23 62678.36
+  252066.06 63552.27 38.40
+[7_Chief_Road]
+  261819.45 55865.83 38.40  0 30 5.28
+  S 461 25 0.54 20.00 P 261707.19 55834.85
+  S 461 24 0.67 20.00 P 259757.55 57046.99
+  S 444 41 0.85 20.00 P 259648.52 57121.81
+  S 444 40 0.61 20.00 P 259393.34 60116.79
+  259296.00 60192.00 38.40
+  S 335 51 0.73 20.00 P 256766.53 60393.30
+  S 335 51 0.23 20.00 P 256513.05 61680.14
+  S 265 10 0.70 20.00 P 256400.52 61714.12
+  S 219 0 0.06 20.00 P 256358.17 61786.02
+  S 266 20 0.00 20.00 P 256264.00 61857.00
+  S 266 19 0.75 20.00 P 256169.92 61904.75
+  S 268 13 0.20 20.00 P 256065.14 61955.87
+  S 268 13 0.14 20.00 P 256035.75 61980.94
+  S 266 19 0.42 20.00 P 255949.84 62023.90
+  255969.28 62019.43 20.00
+  S 268 12 0.93 20.00 P 255870.42 62094.96
+  S 268 12 0.83 20.00 P 255745.16 62149.09
+  S 268 12 0.70 20.00 P 255547.69 62211.43
+  S 266 17 0.84 20.00 P 255488.98 62222.41
+  S 266 17 0.81 20.00 P 255468.17 62227.54
+  S 268 12 0.59 20.00 P 255363.72 62256.87
+  S 268 12 0.52 20.00 P 255244.47 62282.17
+  255200.00 62368.00 38.40
+  S 770 1 0.64 20.00 P 255040.14 62591.07
+  S 770 1 1.00 20.00 P 255095.00 62668.00
+  255008.00 62752.00 38.40
+  S 266 29 0.17 20.00 P 254848.05 62877.68
+  S 266 32 0.25 20.00 P 254465.22 63308.48
+  254262.95 63513.07 38.40 46 8 1
+  S 266 32 0.54 20.00 P 254259.59 63204.91
+  S 266 32 0.81 20.00 P 254092.39 63103.05
+  S 266 34 0.62 20.00 P 254264.19 62591.66
+  254240.00 62432.00 38.40
+  254240.00 62240.00 38.40
+  254240.00 62112.00 38.40
+  254191.38 61887.69 38.40  0 2 2.64
+  253482.52 60815.26 38.40  0 2 2.64
+  252352.44 60945.16 38.40  0 2 2.64
+  251903.75 61677.41 38.40 67 2 1
+  250764.56 61243.16 38.40  0 4 2.64
+  S 268 10 0.29 20.00 P 251839.89 62439.49
+  S 266 12 0.13 20.00 P 251865.61 62501.78
+  251923.08 62546.41 38.40  0 2 2.64
+  252077.45 62918.59 38.40  0 2 2.64
+  253165.58 63509.97 38.40 86 2 1
+  253354.83 63178.80 38.40  0 2 2.64
+  252053.80 63983.07 38.40
+[3_Chief_Road]
+  225996.64 71147.93 38.40  0 2 5.28
+  233460.11 67298.84 38.40  0 2 2.64
+  243059.59 64450.19 38.40  0 10 2.64
+  S 268 6 0.79 20.00 P 245088.06 62405.93
+  S 268 7 0.46 20.00 P 247495.17 62441.24
+  S 268 7 0.72 20.00 P 248753.11 62430.55
+  248800.00 62496.00 38.40
+  S 720 2 0.00 20.00 P 249187.00 62870.00
+  S 720 2 0.55 20.00 P 249159.97 62912.53
+  S 721 1 0.83 20.00 P 249284.13 63029.78
+  S 721 1 0.56 20.00 P 249735.73 63028.77
+  249814.08 62987.48 38.40
+[9_Chief_Road]
+  252838.92 63237.57 38.40 720 2 1
+  252804.53 63083.73 38.40
+[10_Chief_Road]
+  252726.77 63078.55 38.40 720 2 1
+  252730.16 63138.10 38.40
+[11_Chief_Road]
+  252888.45 63130.80 38.40 720 2 1
+  252744.00 63211.46 38.40
+[12_Chief_Road]
+  253187.30 63029.81 38.40  0 2 4.17
+  253109.31 63099.71 38.40
+[8_Chief_Road]
+  252991.38 63134.12 38.40  0 2 11.11
+  252821.89 63124.27 38.40
+[13_Chief_Road]
+  252779.70 63280.00 38.40  0 2 11.11
+  252771.88 63379.11 38.40
+[14_Chief_Road]
+  245550.53 63635.02 38.40  0 2 5.56
+  245770.69 63576.74 38.40
+[15_Chief_Road]
+  245485.66 63466.64 38.40  0 2 5.56
+  245783.11 63408.32 38.40
+[16_Chief_Road]
+  245446.61 63285.34 38.40  0 2 5.56
+  245776.64 63214.12 38.40
+[17_Chief_Road]
+  245440.36 63052.27 38.40  0 2 5.56
+  245698.56 62961.70 38.40
+[Stationary]
+  Static1 Artillery.Bofors_StandAlone gb 249355.22 61825.75 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Bofors_StandAlone gb 250450.08 61908.96 0.00 /timeout 720/radius_hide 0
+  Static2 Artillery.Bofors_StandAlone gb 250068.48 62044.32 0.00 /timeout 720/radius_hide 0
+  Static0 Artillery.Bofors_StandAlone gb 248651.55 62133.66 0.00 /timeout 720/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone gb 250705.03 62593.63 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Bofors_StandAlone gb 250992.66 62820.37 0.00 /timeout 720/radius_hide 0
+  Static11 Artillery.Bofors_StandAlone gb 253060.47 63074.53 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Bofors_StandAlone gb 252761.44 63168.88 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone gb 252772.19 63333.07 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Bofors_StandAlone gb 248900.67 63511.93 0.00 /timeout 720/radius_hide 0
+  Static4 Artillery.Bofors_StandAlone gb 250335.02 63744.88 0.00 /timeout 720/radius_hide 0
+  Static6 Artillery.Bofors_StandAlone gb 249059.89 63989.09 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]
+[FrontMarker]
+  FrontMarker0 16042.97 290973.70 2
+  FrontMarker1 35695.21 281147.58 2
+  FrontMarker2 55748.50 280947.05 2
+  FrontMarker3 75400.73 281147.58 2
+  FrontMarker4 95454.03 261294.82 2
+  FrontMarker5 95855.10 240840.45 2
+  FrontMarker6 115908.40 220787.15 2
+  FrontMarker7 135560.63 220787.15 2
+  FrontMarker8 155813.57 221388.75 2
+  FrontMarker9 175867.76 200934.39 2
+  FrontMarker10 195720.53 200934.39 2
+  FrontMarker11 215974.36 200733.85 2
+  FrontMarker12 235827.12 200934.39 2
+  FrontMarker13 240238.85 190506.68 2
+  FrontMarker14 256095.07 177081.90 2
+  FrontMarker15 264023.80 161948.72 2
+  FrontMarker16 265510.44 136845.48 2
+  FrontMarker17 282689.39 132154.10 2
+  FrontMarker18 262787.15 117301.50 2
+  FrontMarker19 253490.85 89582.93 2
+  FrontMarker20 257827.35 65879.40 2
+  FrontMarker21 202710.51 45186.01 2
+  FrontMarker22 175339.99 40710.56 2
+  FrontMarker23 16042.97 301261.65 0
+  FrontMarker24 36096.27 291234.10 0
+  FrontMarker25 56149.57 290633.40 0
+  FrontMarker26 75601.27 291034.46 0
+  FrontMarker27 95654.57 281408.88 0
+  FrontMarker28 106282.82 261155.05 0
+  FrontMarker29 105881.75 241101.75 0
+  FrontMarker30 116309.47 230874.57 0
+  FrontMarker31 135560.63 231275.63 0
+  FrontMarker32 156014.10 231075.10 0
+  FrontMarker33 175867.76 220847.92 0
+  FrontMarker34 195519.99 211222.34 0
+  FrontMarker35 216174.89 211021.80 0
+  FrontMarker36 236027.66 210620.74 0
+  FrontMarker37 249062.30 206810.61 0
+  FrontMarker38 255880.43 201396.22 0
+  FrontMarker39 254452.92 190593.12 0
+  FrontMarker40 256436.16 60123.76 0
+  FrontMarker41 221275.75 45200.74 0
+  FrontMarker42 213096.02 35824.64 0
+  FrontMarker43 192742.75 26393.71 0
+  FrontMarker44 16243.51 311027.33 1
+  FrontMarker45 36096.27 301201.21 1
+  FrontMarker46 56550.64 300599.61 1
+  FrontMarker47 76002.34 300399.08 1
+  FrontMarker48 96055.63 291375.10 1
+  FrontMarker49 115507.33 280546.31 1
+  FrontMarker50 115908.40 261295.15 1
+  FrontMarker51 116108.93 241241.85 1
+  FrontMarker52 136162.23 240840.78 1
+  FrontMarker53 156416.06 240640.25 1
+  FrontMarker54 175266.16 241442.38 1
+  FrontMarker55 196121.59 221188.55 1
+  FrontMarker56 216174.89 220586.95 1
+  FrontMarker57 236629.26 220386.42 1
+  FrontMarker58 256482.02 220787.49 1
+  FrontMarker59 265506.01 210760.84 1
+  FrontMarker60 265506.01 201335.79 1
+  FrontMarker61 275110.35 188220.14 1
+  FrontMarker62 277764.84 176468.14 1
+  FrontMarker63 293716.81 153417.78 1
+  FrontMarker64 278024.50 113542.64 1
+  FrontMarker65 281564.01 99624.85 1
+  FrontMarker66 271877.41 89834.08 1
+  FrontMarker67 259984.26 58125.71 1
+  FrontMarker68 257662.80 56466.20 1
+  FrontMarker69 229122.25 44432.81 1
+  FrontMarker70 226605.10 42268.13 1
+  FrontMarker71 215769.69 30961.53 1
+  FrontMarker72 195269.85 20390.87 1
+  FrontMarker73 289406.76 130711.82 1
+  FrontMarker74 272039.43 124877.69 2
+  FrontMarker75 262518.67 83486.14 0
+  FrontMarker76 267433.95 62187.23 1
+  FrontMarker77 260574.14 101443.44 2
+  FrontMarker78 219070.06 53665.51 2
+  FrontMarker79 226553.68 48914.91 0
+  FrontMarker80 243028.16 50240.60 1
+  FrontMarker81 255695.84 60991.25 2
+  FrontMarker82 226746.34 55945.27 2
+  FrontMarker83 255012.19 73347.01 2
+  FrontMarker84 270338.68 76825.72 1
+  FrontMarker85 263330.84 74607.41 0
+  FrontMarker86 290996.79 135281.16 1
+  FrontMarker87 214725.26 50866.26 2
+  FrontMarker88 189038.60 35561.69 2
+  FrontMarker89 241489.22 55535.16 2
+  FrontMarker90 247589.92 58808.67 2
+  FrontMarker91 249760.44 55565.98 1
+[Airdromes]
+  airdrome0 252804.23 63663.26 0 1000 700 0
+  airdrome1 245998.65 61581.19 0 1000 700 0
+[airdrome0_Runways]
+  252813.51 63685.41 0.00 1400.00 40.00 0
+[airdrome0_Points]
+  252692.25 64242.88 7 5 3 1
+  253136.75 64072.88 2
+  253092.09 63892.52
+  252953.89 64070.78 4
+  252942.75 63875.71
+  252756.05 64049.55 6
+  252703.50 63858.42
+  252470.68 64082.04 8
+  252418.74 63857.28
+[airdrome1_Runways]
+  246008.17 61574.11 -90.00 1400.00 40.00 0
+[airdrome1_Points]
+  245298.65 61581.19 7 5 3 1
+  245412.58 61665.18 2
+  245565.08 61643.94
+  245421.18 61615.94 4
+  245569.28 61591.03
+  245419.51 61569.76 6
+  245579.06 61546.20
+  245405.59 61500.09 8
+  245583.24 61483.22
+[BirthPlace]
+  "Tank Spawn " 1 252771 63683 0 1 1 1 . . . 0
+  "Tank Spawn" 2 246033 61561 0 1 1 1 . . . 0
+[BirthPlace0]
+  tobruk:Aircraft.DH82A_Trop
+[BirthPlace1]
+  tobruk:Aircraft.DH82A_Trop

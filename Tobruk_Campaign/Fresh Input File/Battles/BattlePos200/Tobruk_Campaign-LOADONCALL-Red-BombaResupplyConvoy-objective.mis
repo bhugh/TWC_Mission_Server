@@ -70,8 +70,8 @@
   Tank.Pz_IIIF
   Tank.Krupp_L2H43_Protze_Flak38
 [Chiefs]
-  2007_Chief Vehicle.VehicleRush4 de 
-[2007_Chief_Road]
+  2008_Chief Vehicle.VehicleRush4 de 
+[2008_Chief_Road]
   73677.91 230014.30 38.40  0 40 1.94
   S 297 66 0.00 20.00 P 74036.00 230013.00
   S 297 65 0.16 20.00 P 73890.55 228352.77
@@ -183,4 +183,4 @@
 [Buildings]
 [BuildingsLinks]
 [Trigger]
-  RBombaResupplyConvoy TGroupDestroyed 2007_Chief 100
+  RBombaResupplyConvoy TGroupDestroyed 2008_Chief 100

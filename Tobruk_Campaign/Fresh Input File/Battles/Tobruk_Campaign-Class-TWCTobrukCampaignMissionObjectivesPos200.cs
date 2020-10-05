@@ -389,14 +389,40 @@ public class BattlePos200 : TWCMissionBattles
             mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Siwi-Scegga Resupply Convoy", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-BSiwiSceggaResupplyConvoy-objective.mis", "1008_Chief", 1, 5, "RSiwiSceggaResupplyConvoy", "TGroupDestroyed", 100, 286184, 35204, 100, false, 200, 24, "", add);  //g 
             */
 
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 4, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 200, 24, "", add);  //g
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "2003_Chief", 2, 5, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 200, 24, "", add);  //g            
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 5, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 200, 24, "", add);  //g            
+            /*"2006_Chief", 1, 5, - this is "chief name", OWNER army, and objective points.
+             * Note that the name like "Tobruk_Campaign-LOADONCALL-Blue-HabataResupplyConvoy-objective.mis" means that this a Blue **TARGET**.  So it is a target of Army #2, meaning it is OWNED By Army #1.
+             * 
+             * So  "Tobruk_Campaign-LOADONCALL-Blue-HabataResupplyConvoy-objective.mis", "2006_Chief", 1, 5, is correct - BLUE target (Army #2), RED owner (Army #1)
+             */
 
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 4, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 200, 24, "", add);  //g
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 5, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 200, 24, "", add);  //g     
-            mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2005_Chief", 1, 5, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 200, 24, "", add);  //g      
+        mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Habata Resupply Convoy", "Habat", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-HabataResupplyConvoy-objective.mis", "2006_Chief", 1, 5, "BHabataResupplyConvoy", "TGroupDestroyed", 100, 345037, 134111, 100, false, 200, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Convoy, "El Adem Resupply Convoy", "EAdem1_2", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ElAdemResupplyConvoy-objective.mis", "2007_Chief", 2, 5, "RTobrukElAdemResupplyConvoy", "TGroupDestroyed", 100, 79756, 158961, 100, false, 200, 24, "", add);  //g    
 
+        mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Scegga Resupply Convoy", "Sceg", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SceggaResupplyConvoy-objective.mis", "2011_Chief", 1, 5, "BSceggaResupplyConvoy", "TGroupDestroyed", 100, 330157, 24385, 100, false, 200, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Convoy, "Bomba Resupply Convoy", "BombaN", po_dir + "Tobruk_Campaign-LOADONCALL-Red-BombaResupplyConvoy-objective.mis", "2008_Chief", 2, 5, "RBombaResupplyConvoy", "TGroupDestroyed", 100, 73677, 230014, 100, false, 200, 24, "", add);  //g 
+
+
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Tanker", "Tobr", "", "2002_Chief", 2, 4, "RTobrukTanker", "TGroupDestroyed", 100, 172859, 214570, 100, false, 200, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Tobruk Cruiser", "Tobr", "", "2003_Chief", 2, 5, "RTobrukCruiser", "TGroupDestroyed", 100, 172859, 214570, 100, false, 200, 24, "", add);  //g            
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Bardia U-Boot", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-GerSubmarine-objective.mis", "2001_Chief", 2, 5, "RBardiaUboot", "TGroupDestroyed", 100, 267437, 149991, 100, false, 200, 24, "", add);  //g            
+
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Tanker", "", "", "2005_Chief", 1, 4, "BSidiBarraniTanker", "TGroupDestroyed", 100, 295708, 193686, 100, false, 200, 24, "", add);  //g
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Corvette", "", "", "2004_Chief", 1, 5, "BSidiBarraniCorvette", "TGroupDestroyed", 100, 357990, 237331, 100, false, 200, 24, "", add);  //g     
+        mmo.addTrigger(M.MO_ObjectiveType.Ship, "Sidi Barrani Submarine", "", "Battles/Objectives/Tobruk_Campaign-LOADONCALL-BritSubmarine-objective.mis", "2010_Chief", 1, 5, "BBarraniSub", "TGroupDestroyed", 100, 346954, 136122, 100, false, 200, 24, "", add);  //g      
+
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Gazala Fuel", "Gaz2_3", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GazalaFuel-objective.mis", 2, 5, "RTargGazalaFuel", 97004, 199277, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Marsa Bela Farit Dock Fuel ", "BeLa", po_dir + "Tobruk_Campaign-LOADONCALL-Red-Marsa BelafaritDockFuel2-objective.mis", 2, 5, "RTargMarsaBelaFuel", 205707.13, 176739.11, 200, 150, 2800, 7, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Inland Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanFuelDump-objective.mis", 2, 5, "RTargetInlandFuel", 127599, 197411, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanArmorCamp-objective.mis", 2, 5, "RArmorCamp", 195633, 122432, 125, 100, 1800, 30, 200, 48, false, true, 3, 7, "", add);
+
+
+
+
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Bir El Malla Fuel Dump", "SidiBar", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-BirElMallaFuel.mis", 1, 5, "BSidiBarraniFuelDump", 359414, 98907, 150, 125, 2500, 6, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Alam El Neiyat Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AlamElNeiyatBritishArmorCamp-objective.mis", 1, 5, "BTargAlamNeiyat", 267854, 76291, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
+       // mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "", "", po_dir + "", 1, 5, "AlamElNeiyat", 301770, 89683, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Alam Barghut Armor Camp", "BuQBuQ", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AlamBarghutBritishArmorCamp-objective.mis", 1, 5, "BTagAlamBarghut", 287733, 118539, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Awdyat Armor Camp", "AwD", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AwdatAshAhiyahBritishArmorCamp-objective.mis", 1, 5, "BTargAwdyat", 231676, 30075, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
 
 
 
@@ -424,23 +450,7 @@ public class BattlePos200 : TWCMissionBattles
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
             //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
-
-            /*
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Derna Fuel", "DernaCity", po_dir + "Tobruk_Campaign-LOADONCALL-Red-DernaFuel-objective.mis", 2, 5, "RTargDernaFuel", 32277, 264622, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Tobruk Docks Fuel/Ammo Dump", "ToBC_1", po_dir + "Tobruk_Campaign-LOADONCALL-Red-TobrukDockFuel2-objective.mis", 2, 5, "RTargTobrukFuel", 160306, 186548, 200, 150, 2800, 7, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Coastal Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanFuelDump-objective.mis", 2, 5, "RCoastalFuel", 127599, 197411, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-GermanArmorCamp-objective.mis", 2, 5, "RArmorCamp", 195633, 122432, 125, 100, 1800, 30, 200, 48, false, true, 3, 7, "", add);
-
-
-
-
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Sidi Barrani Fuel Dump", "SidiBar", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SidiBarraniFuel.mis", 1, 5, "BSidiBarraniFuelDump", 346862, 135133, 150, 125, 2500, 6, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Scegga Armor Camp", "Sceg", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-SceggaBritishArmorCamp-objective.mis", 1, 5, "BSceggaArmorCamp", 263026, 51966, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Habata Armor Camp", "Habat", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-HabataBritishArmorCamp-objective.mis", 1, 5, "BHabataArmorCamp", 301770, 89683, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "BuqBuq Armor Camp", "BuQBuQ", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-BuqBuqBritishArmorCamp-objective.mis", 1, 5, "BBuqBuqArmorCamp", 306575, 116772, 150, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
-            mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Awdyat Fuel Dump", "AwD", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AwdyatFuel.mis", 1, 5, "BAwdyatFuelDump", 235348, 27829, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
-            
-            */
+                    
         }
         catch (Exception ex) {
             Console.WriteLine();
@@ -599,7 +609,7 @@ public class BattlePos200 : TWCMissionBattles
          * 
          * ***********************************************************/
 
-    }//FlakDictionariesSetup()
+        }//FlakDictionariesSetup()
 
     public override void BumRushCampaignValuesSetup()
     {

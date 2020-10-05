@@ -1225,8 +1225,11 @@ public class Mission : AMission
             if (update)
             {
                 //Console.WriteLine("MBTITG: Updating this course");
-                airGroup.SetWay(NewWaypoints.ToArray());
-                fixWayPoints(airGroup); //fix any problems that might have resulted from the new waypoint fixes.
+                Timeout(ran.NextDouble() * 10, () =>
+                {
+                    airGroup.SetWay(NewWaypoints.ToArray());
+                    fixWayPoints(airGroup); //fix any problems that might have resulted from the new waypoint fixes.
+                });
                 return true;
             }
             else
@@ -2242,6 +2245,8 @@ public class Mission : AMission
                     midPos.x = (nextWP.P.x * 1 + endPos.x * 1) / 2 + ran.NextDouble() * 70000 - 35000;
                     midPos.y = (nextWP.P.y * 1 + endPos.y * 1) / 2 + ran.NextDouble() * 70000 - 35000;
 
+                    bool foundAirport = false;
+
                     if (landing)
                     {
                         try
@@ -2252,7 +2257,7 @@ public class Mission : AMission
                                 landPos = ap.Pos();
                                 if (Math.Abs(landPos.x - prevWP.P.x) < 200 && Math.Abs(landPos.y - prevWP.P.y) < 200)
                                 {
-                                    landPos.x += ran.Next(200, 600); //Just in case the previous landing point is at this same airport, prevent the double/exact repeat point.
+                                    landPos.x += ran.Next(200, 600); //Just in case the previous waypoint/landing point is at this same airport, prevent the double/exact repeat point.
                                     landPos.y += ran.Next(200, 600);
                                 }
                                 landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
@@ -2262,9 +2267,12 @@ public class Mission : AMission
                                 NewWaypoints.Add(landaaWP); //do add
                                 count++;
                                 update = true;
+                                foundAirport = true;
+
+                                Console.WriteLine("FixWayPoints - airport found, adding landing-at-airport WP: {5}  {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { landaawpt, (landaaWP as AiAirWayPoint).Speed, landaaWP.P.x, landaaWP.P.y, landaaWP.P.z, (ap as AiActor).Name() });
                             }
                         }
-                        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #3: " + ex.ToString()); }
+                        catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints ERROR #3: " + ex.ToString()); }
                     }
 
 
@@ -2291,32 +2299,34 @@ public class Mission : AMission
 
                     }
                     */
+                    if (!foundAirport)
+                    {
+                        //OK, skipping all that now & just making all ending/exitin waypoints LANDING so that hopefully many a/c can just disapparate.  2020/04/01
+                        AiAirWayPointType aawpt = AiAirWayPointType.LANDING;
 
-                    //OK, skipping all that now & just making all ending/exitin waypoints LANDING so that hopefully many a/c can just disapparate.  2020/04/01
-                    AiAirWayPointType aawpt = AiAirWayPointType.LANDING;
+                        //add the mid Point
+                        //midaaWP = new AiAirWayPoint(ref midPos, speed);
+                        midaaWP = new AiAirWayPoint(ref midPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.
+                                                                      //aaWP.Action = AiAirWayPointType.NORMFLY;
+                        midaaWP.Action = aawpt; //same action for mid & end
 
-                    //add the mid Point
-                    //midaaWP = new AiAirWayPoint(ref midPos, speed);
-                    midaaWP = new AiAirWayPoint(ref midPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.
-                    //aaWP.Action = AiAirWayPointType.NORMFLY;
-                    midaaWP.Action = aawpt; //same action for mid & end
-
-                    NewWaypoints.Add(midaaWP); //do add
-                    count++;
+                        NewWaypoints.Add(midaaWP); //do add
+                        count++;
 
 
-                    //Console.WriteLine("FixWayPoints - adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
+                        Console.WriteLine("FixWayPoints - no airport found/adding new mid-end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (midaaWP as AiAirWayPoint).Speed, midaaWP.P.x, midaaWP.P.y, midaaWP.P.z });
 
-                    //add the final Point, which is off the map
-                    //endaaWP = new AiAirWayPoint(ref endPos, speed);
-                    endaaWP = new AiAirWayPoint(ref endPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.  Presumably if they find an airport & land they will slow down as needed.
-                    //aaWP.Action = AiAirWayPointType.NORMFLY;
-                    //endaaWP.Action = AiAirWayPointType.NORMFLY;
-                    endaaWP.Action = AiAirWayPointType.LANDING; 
+                        //add the final Point, which is off the map
+                        //endaaWP = new AiAirWayPoint(ref endPos, speed);
+                        endaaWP = new AiAirWayPoint(ref endPos, 135); //135mps = 300mph.  Trying to get them to **move off the map** as quick as possible.  Presumably if they find an airport & land they will slow down as needed.
+                                                                      //aaWP.Action = AiAirWayPointType.NORMFLY;
+                                                                      //endaaWP.Action = AiAirWayPointType.NORMFLY;
+                        endaaWP.Action = AiAirWayPointType.LANDING;
 
-                    NewWaypoints.Add(endaaWP); //do add
-                    count++;
-                    //Console.WriteLine("FixWayPoints - adding new end WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                        NewWaypoints.Add(endaaWP); //do add
+                        count++;
+                        Console.WriteLine("FixWayPoints - no airport found/adding new end WP TO FLY OFF MAP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { aawpt, (endaaWP as AiAirWayPoint).Speed, endaaWP.P.x, endaaWP.P.y, endaaWP.P.z });
+                    }
                 }
                 catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints #4: " + ex.ToString()); }
             }

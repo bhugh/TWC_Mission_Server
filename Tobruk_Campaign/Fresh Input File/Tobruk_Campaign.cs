@@ -3,6 +3,7 @@
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-StatsMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-SupplyMission.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-AerialInterceptRadar.cs"
+//$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Tobruk_Campaign-Class-MakeLandingGround.cs"
 //$include "$user\missions\Multi\Fatal\Tobruk_Campaign\Fresh Input File\Battles\Tobruk_Campaign-Class-TWCTobrukCampaignMissionObjectives.cs"
 
 /**********************************************************************************
@@ -93,6 +94,581 @@
         *        
         *        
         ***************************************************************************************************************************************
+        
+        
+        ******** HOW TO WRITE A BUMRUSH MISSION (TWC TOBRUK CAMPAIGN SERVER - 29 Sep 2020)************************
+        *
+        *
+        *   So in the Gasr South/Sidi Azeiz Battle, the Reds had completed all of their mission objectives and so 
+        *   started the Bumrush period on the Sidi Azeiz airport late last night.
+        *   
+        *   Overnight when no players at all were in the server, Blue forces successfully attacked and occupied the 
+        *   Sidi Azeiz airport. So this repelled the Red attack and set their forces back to square one to re-do 
+        *   all of their objectives before they could try another attack.\
+        *   
+        *   We don't want this to happen--where an airport is taken over via a complete AI attack with few (or even 
+        *   just 1-2) players from either side in game.  
+        *   
+        *   The objective is to have actually winning/occupying an airport be a fairly difficult action that takes 
+        *   AT MINIMUM a small team of (live) attacking pilots working together effectively in a coordinated way.
+
+        *   So here are the changes I made to the "Tobruk_Campaign-Rush-Blue-Sidi Aziez Airfield-1.mis" file to 
+        *   make this kind of "100% AI/no-live-player airport takeover" impossible.  (Also I had to make one 
+        *   small change to the focus airport mission file, "FocusAirports-Gasr_el_abid SidiAzeiz.mis"--see below.) 
+
+        *   This makes a pretty comprehensive How-To Guide for creating Bumrush missions. 
+        *   
+        *   There is a lot of text below, but it represents about 4 weeks of intensive testing with 
+        *   the first Tobruk Battle Scenario, figuring out what worked and what didn't.
+        *   
+        *   
+        *   ***BIG PICTURE**********
+        *   
+        *     * The Bumrush scenarios are set up so that whichever army is ATTACKING the airport will NEVER succeed 
+        *     via AI alone or even with just a small or haphazard force of live pilots on their side.  They will need
+        *     a solid, well-organized group of live pilots who are able ot focus on and succe3ssfully executive several 
+        *     tasks simultaneously.  
+        *     
+        *     Short of this happening, by a group of live pilots (ideally, more than just 1 or 2), the campaign will remain
+        *     locked in the Bumrush phase.
+        *     
+        *     The reason for this, is that the campaign should not advance--for EITHER side--by simple random action, by AI
+        *     working alone, or by the work of a small, haphazard, or unorganized force of live pilots.  Whichever side wishes to advance
+        *     the map should be required to have a significant, organized, capable force of live pilots online working
+        *     together to win a significantly difficult objective.
+        *     
+        *     Also--if the opposing side is similar well organized, led, and focused, they should be able to make it very,
+        *     very, very difficult for their enemy to take an airfield and move the front forward.
+        *     
+        *     But even in absence of a significant enemy force online at a given time, one side still should not be able to
+        *     advance the front 'automatically'.
+        *     
+        *     These goals are accomplished by these means:
+        *     
+        *         #1. AI air force units from the defending army attack incoming ground units regularly and vigorously, 
+        *         until there are enough live pilots in on that side to take over the job.
+        *         
+        *             - Thus live pilots from the attacking air force must fend off these attacks, or the ground attack will certainly fail.
+        *             
+        *             - HOWEVER AI air attacks alone are not 100% reliable in killing off the attacking ground forces.  
+        *             Many times some ground forces will slip through despite vigorous and repeated AI attacks on it.  So we can't 
+        *             rely on this alone as it is not reliable enough  (AI aircraft are highly variable in exactly 
+        *             which/how many ground units they take out).
+        *             
+        *        #2. The defending army has a number of ground forces near the airport and within 3500m of the airport 
+        *        center, which the attacking army MUST clear out in order to successfully occupy the airport.
+        *        
+        *             - These MUST be set up so that the attacking ground forces or other enemy AI units **DO NOT** do 
+        *             the job of clearing these out.  Clearing out of these units **MUST** be left to players/live 
+        *             pilots from the attacking army.
+        *             
+        *             - Many of these units are set in place for players from the defending army to use.  That 
+        *             means they are AI set in place but set to "time out" for the entire Bumrush period.  That 
+        *             means that if no, or only a few, defending army players are in the server these units are 
+        *             SITTING DUCKS for enemy pilots to destroy.
+        *             
+        *             - For that reason, there must ALSO be sufficient active AI AA units placed near "sleeping" AA 
+        *             units and "sleeping" tanks to keep them at least reasonably defended.
+        *             
+        *        #3. To allow players (of both sides) to jump into the "sleeping" tanks and AI units, you must place
+        *        a "Tank Spawn" spawn point along with an accompanying airfield and airdrome points near the focus airport
+        *        
+        *             - The spawn point/airdrome points MUST be placed on friendly or neutral territory and 
+        *             NEVER on enemy territory (meaning, friendly/neutral territory for whichever side the Tank Spawn is for)
+        *
+        *             - The Tank Spawn spawn point should be placed near the airport/airdrome points that you create to 
+        *             accompany them (typically immediately adjacent or within 100m)
+        *             
+        *             - The airport/airdrome points that you create for this purpose must be placed within 10km of the tanks or AA units you 
+        *             want the players to access.
+        *             
+        *               --> Fulfilling these two placement requirements for Spawn Points/Airdrome Points simultaneously 
+        *               can be tricky.  Typically the AA/Tanks are placed on ENEMY territory yet the Tank Spawn/Airdrome 
+        *               Points must be placed within 10km ofthis and on FRIENDLY or NEUTRAL territory.          
+        *             
+        *             - Players cannot spawn directly into AA or Tanks (as of TF 5.0).  So here is the workaround: 
+        *             Usually we put just one aircraft in the Spawn Point, something unarmed (Tiger Moth for 
+        *             Red, ME108 for Blue).  The pilot spawns into this aircraft, then returns to the Flag Screen 
+        *             to transfer to either AA or Tank positions, which are nearby.  The Flag Screen shows all available tanks/AA 
+        *             within 10km of the pilot's location. Thus the necessity of placing the Tank Spawn/Airdrome points 
+        *             within 10km of  the AA/Tank positions.
+        *             
+        *             - If the pilot spawns out of an aircraft that is landed on enemy territory, this counts as
+        *             capture/death/career end etc (-stats.cs).  Thus the necessity of placing the Tank Spawn/airdrome 
+        *             points on friendly or neutral territory.  IF you place the Tank Spawn on ENEMY territory 
+        *             every pilot who spawns in/out of tha tlocation will lose their career/life/rank.  They will
+        *             not be very happy about this.
+        *             
+        *             - You may need to adjust the front lines (..focus-airports.mis) in order to make the placement possible.  
+        *             Just adjust the front line so that there is some friendly or neutral territory within 10km of the Focus
+        *             Airport and then place the Tank Spawn & associated airdrome points in that area.
+        *             
+        *         #4. End Result: Once in Bumrush Phase, we stay there unless some live pilots/players come in and 
+        *             actively/effectively intervene in support of the ground attack/occupying force.
+        *         
+        *             - If no live players (or only a few not doing anything effective) are in the server, every Bumrush scenario MUST play out this way:
+        *             
+        *                - The Attacking force sends ground troops to occupy the airport
+        *                - Enemy AI air force flies against the attaacking round forces & kills many or most of them.
+        *                - Quite a number of defending forces are placed near the airport (within 3500m) and no automatic/AI 
+        *                  action is taken to kill or remove them.
+        *                - For both of those reasons (ground troops coming to airport attacked & killed by AI, defending forces 
+        *                  around the perimeter NOT attacked or removed) the AI-only attack NEVER succeeds. The Bumrush period 
+        *                  ends unsuccessfully and the other side gets a chance ot attack the airport.
+        *                - For the same reasons (in reverse), that counterattack also (ALWAYS!) fails, unless a number of live pilots/players 
+        *                  come in and take active/effective/coordinated action to support the ground attack.
+        *                  
+        *             - In short, the desired result is that the attack on the airport NEVER succeeds by accident or by AI 
+        *             action alone.  It only succeeds if the attacking ground forces have some real, effective, coordinated,
+        *             support from live players--and more than the amount of support that just 1 or 2 players will be able to provide.
+        *             
+        *             
+        *   ***2. NECESSARY ELEMENTS OF A BUMRUSH MISSION*******************  
+
+        *   In a Bumrush, we have an Attacking Army and a Defending Army.  To win, the 
+        *   Attacking Army must:
+
+        *     - PLACE more than 6 ground units within 500 meters of the airport center
+  
+        *     - CLEAR the area within 3500m of the airport center of ALL enemy ground and 
+        *     AA/artillery unites
+  
+        *     - HOLD this situation (>6 friendly units at airport center, 3500m zone clear
+        *      of all enemy ground units) for 5 minutes.
+  
+        *     - The Attacking Army has 90 minutes to accomplish this. However, if they 
+        *     achieve the PLACE & CLEAR requirements before the 90 minute deadline, the 
+        *     deadline is extended by up to 5 minutes to allow them to hold for required 5 
+        *     minutes and declare victory.
+
+        *   To defend, the defending Army must simply prevent the above three conditions from happening for 90 minutes.
+
+        *   The 10 necessary elements of a Bumrush .mis file:  
+
+        *   #1. Six Attacking Army ground groups coming towards the (exact!) center of the Focus Airfield.  They are 
+        *   generally spaced in time to arrive starting at the 15-20 minute mark, and then arrive every 10-15 minutes through the 90 minute mark.
+
+        *       - If you want to make the Bumrush more or less easy/hard for attackers/defenders you could add say 
+        *       1 more or 1 fewer enemy attack grounds.
+    
+        *       - If your ground groups arrive too clumped together or too widely spaced in time, the mission 
+        *       doesn't work well.  There are long pauses with no action or the AI defense forces are overwhelmed.  
+        *       Generally don't make ground groups arrive at the airport more closely spaced than 10 minutes or much more widely spaced than 15 minutes.
+    
+        *   #2. 4-8 Attacking Army tanks/armoured units placed 3-5km away from the airport on the attacking army 
+        *   side and set to "time out" for most or all of of the mission.  These are for Attacking Army players to hop into and operate.
+
+        *   For example, Attacking Army players could jump into their tanks and drive them onto the airport.  
+        *   They would become part of the >6 ground units needed by the Attacking Army on the Airfield to occupy it.
+
+        *     - Blue, Pz.Kpfw.IV Ausf. D works for this role
+        *     - Red, Matilda IIA Tank, Vickers Mk. VIC Tank work for this role
+  
+        *     --> Note that ****SOME**** other tanks & armor will work for these roles 
+        *     but you absolutely MUST test them first to be sure players can operate them.
+  
+        *     --> For example, Matilda IIA Late Tank, Vickers Mk. VIB Tank, Pz.Kpfw.IV Ausf. 
+        *     E. Pz.Kpfw.IV Ausf. F, and many others with VERY SIMILAR NAMES to the tanks 
+        *     listed above DO NOT WORK as player-controlled ground units. 
+  
+        *     Crusader II DOES NOT WORK as a player-controlled tank.
+  
+        *     --> You can test whether a tank works as player-controlled by "play mission" 
+        *     in FMB and then jump into that vehicle using your assigned keyboard command. 
+  
+        *   #3. An Attacking Army Spawn Point (Tank Spawn) and associated/nearby Airdrome and Airdrome Points.  
+        *   This should be placed on friendly/neutral territory and within 10km of the Attacking Army tanks/armoured 
+        *   units.  This is so that Attacking Army players can spawn into those tanks/armoured units & operate them.
+
+        *   #4. Defending Army Ground Group #1.  DA Group #1 begins within 3500m of the Focus Airfield, 
+        *   stays generally on the Defending Army side of the airfield, DOES NOT enter the airfield area 
+        *   or get close to any Attacking Army ground group track. 
+
+        *   #5. Defending Army Ground Group #2. DA Group #2 begins many km on the Defending Army side of 
+        *   the airfield, travels towards the airfield, and arrives within the 3500m circumference of the 
+        *   airfield about 45 minutes into the mission. From that point it acts similar to DA Group #1, 
+        *   remaining constantly within the 3500m radius of the airport but staying off of the airfield itself and carefully avoiding any contact with enemy ground groups for the duration of the mission (90 minute Bumrush period).
+
+        *    --> The Attacking Army must clear the area within 3500m of the airfield center.  So these 
+        *    to GGs are elements that Attacking Pilots must destroy.  We don't want Attacking AI GGs to 
+        *    destroy them (pointless); thus the careful avoidance of any contact between Attacking GG 
+        *    and Defending GG paths.  These are like defensive units that don't have ammo/fuel/sufficient 
+        *    numbers/clearance from HQ to actually engage the enemy, but that remain in the area in a defensive role.
+ 
+        *   #6. 4-8 Defending Army tanks/armoured units placed 3500m or less from the airport on 
+        *   the attacking army side (suggestion: 3000m or less, for a safety margine) and set to 
+        *   "time out" for most or all of of the mission.  These are for Defending Army players to 
+        *   hop into and operate.  Additionally, they act as a part of the DA ground units within 
+        *   the 3500m perimeter that AA must clear.
+
+        *     --> See note above about which tanks/armored vehicles work & don't
+        *     work in this role. Most DO NOT work.  Test.
+
+        *   #7. An Defending Army Spawn Point (Tank Spawn) and associated/nearby Airdrome and 
+        *   Airdrome Points.  This should be placed on friendly/neutral territory and within 
+        *   10km of the Defending Army tanks/armoured units and ALSO within 10km of the Defending 
+        *   Army AA/artillery units on the Focus Airfield.  The purpose of this Spawn Point/Airdrome 
+        *   Points is so that Defending Army players can spawn into those tanks/armoured units & 
+        *   operate them. Players first spawn into an airplane using the Spawn Point/Airdrome Points; 
+        *   they can transfer from there to tanks or AA/artillery units with 10km.
+
+        *    --> You may need to adjust the Front Lines for this mission (which are set in the 
+        *    Focus Airports .mis file), so that friendly or neutral territory is located within 
+        *    10km of the Focus Airport and the AA/artillery units and tanks/armour you place 
+        *    in the area for players to use.  Then be sure to place the Spawn Point and (most 
+        *    important!) the airdrome points where the player will actually spawn into an airplane, 
+        *    on that neutral or friendly territory.
+ 
+        *    --> This becomes even more complicated because most Bumrush files will be used with 
+        *    TWO Focus Airport .mis files! So you'll have to double-check that each Tank Spawn 
+        *    Point/Airdrome point you place for EACH army will be placed appropriately on neutral 
+        *    or friendly territory for WHICHEVER Focus Airport .mis file you're using.  When 
+        *    designing the Front Lines in y our Focus Airport .mis files, keep the Front Lines 
+        *    close enough to the both focus airports to allow for this.
+ 
+        *    --> Penalty for players if they spawn into an aircraft in enemy territory and then 
+        *    leave it, is end of life/career.  That is why it is important that spawn points/airdrome 
+        *    points (even "Tank Spawn" points) be placed in friendly or neutral territory only. If 
+        *    you get this wrong, many players will be unhappy.  
+
+        *   #8. Defending Army AI AA/artillery units to protect DA tanks.  Suggest 2-4 units placed 
+        *   near the tanks.  "Bofors - Standalone" for Red army & "Bofors" for Blue army. 
+        *   Purpose: To make it a bit harder for Attacking Army players to clear the tanks from 
+        *   the 3500m perimeter, even if no DA players are online; also form part of the DA ground 
+        *   units AA players must clear from the 3500m perimeter.
+
+        *     --> Note that many/most AA/artillery DO NOT WORK as player-controlled. Only a select 
+        *     few do.  Bofors do, and work well--one reason I have used those exclusively.  Test. 
+  
+        *     Documentation/more info about player-usable AA/artillery: 
+        *     https://theairtacticalassaultgroup.com/forum/showthread.php?t=34228&p=364260&viewfull=1#post364260
+
+        *   #9. Defending Army AI AA/artillery units to protect the airports.  Suggest 2-4 units 
+        *   placed around the perimeter of the Focus airport. "Bofors - Standalone" for Red army 
+        *   & "Bofors" for Blue army. Purpose: To attack any Attacking Army ground units that 
+        *   reach the Focus Airport, defend nearby "sleeping" AA/artillery units and the airport 
+        *   itself.  Also they are a portion of the Defending Army ground units the Attacking 
+        *   Army players must clear from the 3500m perimeter.
+
+        *   #10. Defending Army player AA/artilley units.  Suggest 6-8 units placed around the 
+        *   perimeter of the airport, or on it, or nearby. "Bofors - Standalone" for Red army & 
+        *   "Bofors" for Blue army.  These are for Defending Army players to jump into and 
+        *   operate. They should be set up on "timeout" the entire mission so that they do not 
+        *   operate as AI units, but only if a live player jumps in an operates them.       
+
+
+        * 
+        *   ***3. DETAIL EXPLANATION OF EACH OF THE NECESSARY ELEMENTS**********
+
+        *   Here is a list of problem found with a particular Bumrush .mis file, and the 
+        *   adjustments made and reasons the adjustments were necessary.
+
+        *   The mission file under development was the Blue attack bumrush mission for 
+        *   Sidi Azeiz (Tobruk_Campaign-Rush-Blue-Sidi Aziez Airfield-1.mis).
+
+        *   This example explains many of the particulars, potential problems, and reasons 
+        *   for the guidelines above.
+
+        *   #1. Red (defensive) column #1 starts within 3500m of the center of the airport 
+        *   and moves around within that 3500m perimeter throughout the entire 90 minutes, 
+        *   but NEVER circles the airport and NEVER comes within range of a blue column
+
+        *     - I use a lot of short "timeouts" in the waypoints so the group isn't just 
+        *     stationary for 90 minutes. Instead it makes a small move, then waits 2-10 
+        *     minutes, then another move, etc.  So it hangs around the area where we need 
+        *     it, moves sometimes but not continuously, and never moves into any area 
+        *     where it might get into trouble (ie, onto the airfield, where it is bound
+        *     to encounter enemy ground groups, or near the path of any enemy ground group).  
+  
+        *     - The defending ground groups are like a ground group that has taken a defensive 
+        *     position on their side of the airport but doesn't have the ammo/support/numbers/something to go 
+        *     on the offensive against the nearby enemy ground groups. So they are taking a 
+        *     defensive position, waiting for reinforcements, and generally taking a 
+        *     defensive stance but not actively attacking enemy ground groups in the area. 
+        *     (In fact if anything they are actively AVOIDING the enemy ground units. This 
+        *     is for server reasons (ground groups duking it out against each other destroys 
+        *     the server CPU while not affording any realistic way for the pilots to 
+        *     participate or adding anything particular to the live player's experience) but 
+        *     also we can come up with plenty of real-world reasons why a group of ground 
+        *     forces might act this way.)
+  
+        *     - If they leave the 3500m circumference of the airport then they are not 
+        *     counted as enemy which the attacking airforce must clear out to clear the 
+        *     area. So 100% of the time they must stay within the 3500m radius. The only way 
+        *     for attacking forces to get them out of this radius is for players/pilots to 
+        *     come and kill them.
+  
+        *       -> If you drive the group out of the 3500m radius, you have done defending 
+        *       pilots' job for them, for free. -> If you drive them close to enemy ground 
+        *       groups, the enemy ground group will kill them, again doing the job the live 
+        *       pilots/players are supposed to do.
+  
+        *     - The fact that this force was circling the airport perimeter and coming into 
+        *     contact with the enemy ground forces, which killed it, was one reason the Blue 
+        *     (attacking) forces were able to take this airfield with zero effort or 
+        *     intervention by Blue pilots last night.
+
+        *   #2. Red (defensive) column #2 starts somewhat distant from the airport and 
+        *   arrives within the 3500m perimeter about 45 minutes (halfway) into the bumrush 
+        *   period. After arriving within the 3500m perimeter it circles around on the 
+        *   "red" side of the airport, much like column #1. It avoids going onto the 
+        *   airport or moving into any position which might get it into a firefight with 
+        *   Blue ground forces. It just circles around on the red side and just outside 
+        *   the airport perimeter.
+
+        *     - This amounts to reinforcements for column #1's defensive position arrive 
+        *     about halfway through the bumrush
+  
+        *     - This keeps pressure on the attacking air force pilots--even if they have 
+        *     cleared out the 3500m perimeter in the early part of the bumrush battle, there 
+        *     is this second column approaching and entering the perimeter around the 45 
+        *     minutes mark, so they have to keep attacking/clearing the area & can't just 
+        *     rest on their laurels.
+  
+        *     - To adjust the time of arrival at the 3500m perimeter, I just move Waypoint 
+        *     #0 in or out a little until the desired arrival time (10:45 in this case) 
+        *     shows on the waypoint nearest the 3500m perimeter point. This is the same 
+        *     trick I use to adjust the arrival times for all the ground groups (see below).
+  
+        *     - Like Column #1, once the ground group is inside the 3500m perimeter I start 
+        *     adding some timeouts to their waypoint, so they may move 500-1000-2000 meters, 
+        *     then wait (timeout) 5-10 minutes, then move again, wait 2-10 minutes, etc. 
+        *     This keeps them within the required 3500m perimeter and on the red side of the 
+        *     airport for the required period of time, without keeping them entirely 
+        *     stationary and predictable in their location (which make them a bit of sitting 
+        *     ducks for enemy pilots).
+
+        *   #3. Red (defensive) tanks placed within the 3500m airfield perimeter. If they 
+        *   are placed too far away--say, 5000m--then they do not count as part of the 
+        *   ground defenses that the attacking air force must clear from the area in order 
+        *   to win.
+
+        *     - The fact that this force was placed outside of the 3500m perimeter, and thus 
+        *     did not count as part of the ground force that the attacking air force had to 
+        *     clear, was one reason the Blue (attacking) forces were able to take this 
+        *   airfield with zero effort or intervention by Blue pilots.
+
+        *   #4. Red (defensive) Tank Spawn airfied/airdrome points moved to a point 
+        *   outside of enemy territory, but still within 10 km of all tanks & AA that we 
+        *   want the Red (defensive) players to be able to spawn into.
+
+        *     - I had to adjust the front lines in the ..focus-airports.mis file in order to 
+        *     be able to place this spawn point properly
+  
+        *     - I just adjusted the front markers to expand "no man's land" until there was 
+        *     a piece of no-man's land within 10km of the airport/all of the Red AA/tanks
+  
+        *     - If the spawn point/airfield is more than 10km from the AA/tanks then players 
+        *     can't move from the Tiger Moth they have spawned into, to the AA or tank they 
+        *     want. (I believe 10km is the limit for showing available AA/tanks on the flag 
+        *     screen.)
+  
+        *     - If the spawn point/airfield is on enemy territory then when players spawn 
+        *     into an aircraft there and then move out of the aircraft to an AA or tank, 
+        *     -stats.cs counts that as "landing on enemy territory" which will usually get 
+        *     the player killed/imprisoned/career lost, etc. So we need the point where they 
+        *     spawn into the aircraft to be either on friendly OR neutral a territory. (Yet 
+        *     also, as explained above, within 10km any any tank/AA they might want to spawn 
+        *     int.)
+
+        *   #5. 3 or live AA (Red-defensive) placed on the airport or generally around the 
+        *   perimeter. This could be may 2-4 live AA, or maybe even 5-6. But if it is less 
+        *   than 2 or 3 it makes it FAR too easy for the attacking army's pilots to just 
+        *   fly around the airport and surrounding area with no opposition whatsoever and 
+        *   just pick off all the defenses off one by one.
+
+        *     - These are part of the "safety net" that prevents the airport from being 
+        *     overrun by enemy ground forces with no intervention at all from the attacking 
+        *     air force players. If the AI AA are live on the airfield, they will shoot and 
+        *     kill any enemy ground forces that come onto the field. So (minimally!) to 
+        *     allow a successful ground invasion, the attacking players will have to attack 
+        *     & kill these AI AA installations placed on/around the airfield.
+  
+        *     - Any individual AI AA unit often has a bad angle, small hill (or even crater) 
+        *     interrupting its line of fire, etc, and so isn't able to singlehandedly take 
+        *     care of any enemy ground units that arrive on the airfield. That is why it is 
+        *     better to have 2-3-4 AI AA placed in the area; among them all usually at least 
+        *     one has the needed line of fire.
+  
+        *       -> This is another reason to make sure invading ground forces have their final 
+        *       waypoint very near the center of the airfield; this is more likely to place 
+        *       them within a good line of fire of at least one of these AI AA units. If they 
+        *       line up way off to the side they can easily be out of the line of fire.
+    
+        *       -> This function is another reason to stick with Bofors as the AA AI; they are 
+        *       proven to be able to handle this function whereas other AA AI may be defeated 
+        *       by the ground forces instead.
+  
+        *     - Most of the defensive army (Red, in this case) defenses are "timed out," in 
+        *     place for live players to be able to jump into them & use them, and won't do 
+        *     anything to defend themselves in cases where there are few/no defensive 
+        *     players online. In that case they are just sitting ducks unless there are at 
+        *     least some minimal level of AI defenses in place around the airport to defend 
+        *     them.
+  
+        *     - I've followed the convention of using "Bofors - Standalone" for the Red army and regular "Bofors" (ie, the kind mounted on a little wheeled trailer) for Blue army. Thus both sides have an AA unit with similar capabilities & firepower, but the two are visually differentiated for pilots.
+  
+        *     --> Note that many/most AA/artillery DO NOT WORK as player-controlled. Only a select few do.  Bofors do, and work well--one reason I have used those exclusively.  Test. 
+  
+        *     Documentation/more info about player-usable AA/artillery: 
+        *     https://theairtacticalassaultgroup.com/forum/showthread.php?t=34228&p=364260&viewfull=1#post364260
+
+        *   #6. I placed 6-8 "Bofors Standalone" around the field that are "timed out" and 
+        *   so inactive/won't be operated by AI. But they are available for live players 
+        *   to jump into and use to defend the airport. ALSO (and IMPORTANT!!) they become 
+        *   part of the group of enemy ground forces that the attacking air force players 
+        *   must clear from the field in order to occupy it and take it over.
+
+        *     - I just put these Bofors on "timeout" for 12 hours, which means they will 
+        *     just sit inactive for our entire mission (90 minutes Bumrush) unless a player 
+        *     jumps in to operate them.
+  
+        *     - Again for consistency/visual ID/known to work correctly I use "Bofors 
+        *     Standalone" for Red & "Bofors" for Blue for this function.
+  
+        *     - The fact that airfield did not have any of these "timed out" Bofors placed 
+        *     around it is one reason that the Blue ground troops were able to take over 
+        *     this airfield even though zero live pilots from either side where in the 
+        *     server at the time.
+  
+        *     - Coming in & clearing the airfield of both the live & "timed-out" AA units is 
+        *     one of the first jobs the attacking air force pilots will need to do if they 
+        *     want to have success in attacking & occupying the airfield.
+
+        *   #7. I adjusted all Blue (offensive) ground columns to end their routes pretty 
+        *   much exactly in the center of the airfield. Technically we are looking at, the 
+        *   columns must be within the 500m radius of the center of the airfield to count 
+        *   as "occupying" it. But if you put the end waypoint near 500m, some vehicles 
+        *   may end up within the 500m radius, some just outside of it, etc. Best just to 
+        *   keep that final waypoint within 100m of the airport center point for safety.
+
+        *   #8. For PLAYER-OPERATED TANKS: Changed Matilda IIA Late tanks for Matilda IIA. Remove Crusader II tanks (replaced with Matilda IIA).  Changed Armor.Pz_IVE, Armor.Pz_IVF etc to Armor.Pz_IVD.
+
+        *   These tanks DO NOT WORK as player-controlled vehicles (TF 5.0):
+
+        *    Matilda IIA Late
+        *    Crusader II
+        *    Armor.Pz_IVE
+        *    Armor.Pz_IVF
+        *    Vickers VIB
+        *    A bunch of others
+ 
+        *   These DO WORK as player-controlled:
+
+        *     Matilda IIA
+        *     Vicker VIC
+        *     Armor.Pz_IVD
+        *     A VERY FEW select others
+  
+        *     Documentation about this (which vehicles/AA work/don't work as player-controlled):
+        *     https://theairtacticalassaultgroup.com/forum/showthread.php?t=34228&p=364260&viewfull=1#post364260
+
+        *   #9. I looked at the point of arrival of each attacking ground group (ie, the 
+        *   time of the final waypoint near the airfield center point) and adjust them so 
+        *   that they arrive generally 10-15 minutes apart, and spaced throught the entire 
+        *   90 minute bumrush period.
+
+        *     - If you clump the ground group arrivals too close together then there is a 
+        *     short period of intense activity and then long periods--before and after--of 
+        *     nothing.
+  
+        *     - Also the AI air defenses that are set to attack these groups are just 
+        *     overwhelmed if a bunch of ground groups all arrive at once. So then some of 
+        *     them get through and that is what allows the airfield to be overtaken with 
+        *     zero activity by attacking air force players. Which is what we DON'T want.
+  
+        *     - If we want a bunch of ground groups to arrive at once then we'll have to 
+        *     also calibrate AI air defenses (which kick in when there are few or no 
+        *     breather pilots in-game on that side) to be able to handle a whole bunch of 
+        *     ground groups attacking at once. The result of that won't be good--it will 
+        *     just cause massive slowdowns to the server as AI battles AI in massive battles 
+        *     while few or even NO live players are online. So, that is pointless.
+  
+        *     - Also I added one more Blue ground attack. That makes 6, which seems about 
+        *     the right amount.
+  
+        *     - I generally set the arrival time of the first group somewhere around 15-20 
+        *     minutes after the start of the Bumrush and then roughly spaced out 10-15 
+        *     minutes, or maybe 20 minutes, apart thereafter.
+  
+        *     - The final group should be set to arrive in the final few minutes of the 
+        *     bumrush period (the final 5-10 minutes or so?) - if you don't have something 
+        *     set to arrive during that time frame there is nothing going on and so, little 
+        *     point in having the bumrush extend that long.
+  
+        *     - On the other hand there is no point in having the groups come trailing in if 
+        *     they don't arrive by the 90 minute mark. It will just make players made if 
+        *     they have been fighting to clear the path for them to arrive safely, and then 
+        *     time just runs out before they get on the field. Also I don't know that the 
+        *     time estimates given in the Waypoint fields are 100% accurate, so I try not to 
+        *     cut it *too* close to the 90 minute mark.
+  
+        *     - I check the time of arrival by simply looking at the time given for the 
+        *     final waypoint (at the center of the airport). This seems to be accurate 
+        *     enough.
+  
+        *     - I adjust the arrival time by just moving the first waypoint (Waypoint #0) in 
+        *     or out a little until the desired time (final waypoint time) is achieved.
+  
+        *     - The course of these groups is set so as to avoid (pointless) firefights 
+        *     between Red & Blue ground columns. I just make the courses of the two armies' 
+        *     ground groups entirely avoid each other, and by a wide enough margin that they 
+        *     won't "see" each other and start shooting.
+  
+        *     Here are the arrival times of the Blue groups as I set them up:
+  
+        *     (Mission starts at 10:00) 
+  
+        *       * Chief_23 - 10:21
+        *       * Chief_4 - 10:37
+        *       * Chief_2 - 10:53
+        *       * Chief_3 - 11:04
+        *       * Chief_5 - 11:13
+        *       * Chief_1 - 11:24
+  
+        *     So you can see they start arriving at the airport around 10:21 (at the 
+        *     center--they will be near the perimeter about 5 mins before that) and a new 
+        *     group comes every 15 mins or so thereafter. Towards the end there they are 
+        *     more like 10 mins apart, so there is a sort of accelerando as the bumrush 
+        *     progresses (which is one way, but not the only way, to do it).
+
+
+        *   
+        *   
+        *   ***MAKING A VARIANT BUMRUSH .MIS FILE*****************
+        *   
+        *   Once you have a bumrush .mis file that you KNOW works (suggestion: test), then it is easy to make a 
+        *   variant second .mis file.  Two variant bumrushes for each side/each focus airport is usually enough 
+        *   to make it interesting/unpredictable for players when the battle comes back around, but nothing 
+        *   is stopping you from making 3 or 4.  Suggestion: Test your first .mis well before you do this; 
+        *   otherwise you're changing problems/errors in 4 or 8 different files which isn't fun.
+        *   
+        *   #1. Bumsush file .mis name will have the same beginning & a different suffix at the end.  
+        *   Check your PosXXX.cs file for the details of how you have set this up.  But for 
+        *   example your initial .mis might be "Tobruk_Campaign-Rush-Red-Sidi Azeiz Airfield-1.mis"
+        *   and "Tobruk_Campaign-Rush-Red-Sidi Azeiz Airfield-2.mis" is your variant.  
+        *   
+        *   #2. If your ...PosXXX.cs file is set up correctly, then when a bumrush starts, either one of these files will be selected randomly.
+        *   
+        *   #3. Start with the (known working) -1.mis file and save it with the different filename (...-2.mis)
+        *   
+        *   #4. Scramble around the AA locations on the airfield into a different logical setup.
+        *         - Maybe you add or subtract 1 or 2 active and/or timed-out AA, just to keep things a bit unpredictable for players
+        *   
+        *   #5. Move the tanks for both sides into a different logical location.  (Be sure to keep the defending tanks WELL WITHIN 3500m of the airfield center.  Make sure tanks of both sides are still within 10km of the Tank Spawn location.)
+        *         - Maybe you add or subtract 1 or 2 tanks for each side, for variety
+        *   
+        *   #6. You have already set up the ground group attacks for each side in a logical sequence. So all you do is:
+        *       A. Look at each ground group, find out what time it arrives at the key location (for attacking ground groups--in the center of the airfield; for defending--within the 3500m "must-be-cleared" radius)
+        *       B. Change the path of the ground so it is different (comes in from a different logical direction etc) but **still arrives at its key point within a few minutes of the previous time**)
+        *          -> So for example you find an attack group that comes in from the SW and arrives at 11:09.  Just change it to come in from NW and arrive at 11:08.
+        *          -> Repeat similarly for each of the 6 attacking & 2 defending groups (these are the normal amounts for each side.  For variety you could add/subtract and extra ground group of course).
+        * 
+        *   #7. Now you have a variant of the original Bumrush file that still has the same general dynamics--ground groups arriving from different directions throughout the entire mission, etc.
+        *          -> Save the file
+        *          -> Done
+    
+        *   ********************************************************************
  * 
  * ********************************************************************************************/
 
@@ -427,6 +1003,7 @@ public class Mission : AMission, IMainMission
     public StatsMission statsmission;
     public SupplyMission supplymission;
     public AIRadarMission airadarmission;
+    public LandingGroundMission landinggroundmission;
     //public SkinCheckMission skincheckmission;
     //public BaseMission gcvmission;
 
@@ -471,7 +1048,7 @@ public class Mission : AMission, IMainMission
 
     public double END_MISSION_TIME_HRS = 20.5; //So this means, the server will never run past 20.15 hours (8:15pm) server time, regardless of then it starts.  Reason is, it gets too dark after that.  So the mission will run either to ENDMISSION_TIME **OR** MISSION_LENGTH_HRS, whichever happens first.  MISSION_LENGTH_HRS is really redundant now but maybe it is a good failsafe to prevent everlasting missions?  Also we could use it to set a runtime shorter than the absolute max possible, thus we could start at different times of day and run a certain amount of time designated by MISSION_LENGTH_HRS, but never start earlier than DESIRED_MISSION_START_TIME or run later than ENDMISSION_TIME
     //public double END_MISSION_TIME_HRS = 4.51; //TESTING
-    public double EARLIEST_MISSION_START_TIME_HRS = 6.6; //The time we would like to/plan to start the mission.  0430 hours, 4:30am. This will be used as the start time unless the mission previously ended/stopped/crashed/was turned at some different time; in which case it will start again at the time it crashed unless it is too late in the day (see SHORTEST_MISSION_LENGTH_ALLOWED)
+    public double EARLIEST_MISSION_START_TIME_HRS = 6.8; //The time we would like to/plan to start the mission.  0430 hours, 4:30am. This will be used as the start time unless the mission previously ended/stopped/crashed/was turned at some different time; in which case it will start again at the time it crashed unless it is too late in the day (see SHORTEST_MISSION_LENGTH_ALLOWED)
     //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
     public double SHORTEST_MISSION_LENGTH_ALLOWED_HRS = 3;  //if the mission restarts and there are less than this many hours remaining until END_MISSION_TIME_HRS , then it will just restart at the DESIRED_MISSION_START_TIME.  This has the effect of guarantteeing that missions will run at least this many hours, and also that missions won't start or run later than END_MISSION_TIME_HRS
 
@@ -639,9 +1216,10 @@ public class Mission : AMission, IMainMission
             GiantSectorOverview[2] = new int[10, 2];
 
             supplymission = new SupplyMission(this); //do this towards the end because  it needs all the STATS_FULL_PATH and other similar variables.
+            landinggroundmission = new LandingGroundMission(this);
             //skincheckmission = new SkinCheckMission(this); //must do this PLUS something like gpBattle.creatingMissionScript(covermission, missionNumber + 1); in inited
 
-            
+
 
 
 
@@ -1694,8 +2272,8 @@ public class Mission : AMission, IMainMission
                     }
 
                     //It's harder to bomb a seaport/stuff in the water
-                    //Also in seabased definition, the RADIUS should be made smaller.  But that is left up to mission designers.
-                    if (landType == maddox.game.LandTypes.WATER) multiplier = multiplier / 2;
+                    //Also in seabase definition, the RADIUS should be made smaller.  But that is left up to mission designers.
+                    if (landType == maddox.game.LandTypes.WATER) multiplier = multiplier / 1.2;
 
                         scoreBase *= multiplier;
 
@@ -7353,9 +7931,10 @@ public class Mission : AMission, IMainMission
             gpBattle.creatingMissionScript(statsmission, missionNumber + 2, "");
             gpBattle.creatingMissionScript(supplymission, missionNumber + 3, "");
             gpBattle.creatingMissionScript(airadarmission, missionNumber + 4, "");
+            gpBattle.creatingMissionScript(landinggroundmission, missionNumber + 5, "");
             //gpBattle.creatingMissionScript(gvcmission, missionNumber + 5);
             //gvcmission = new GCV.GCVMission();
-            
+
 
             MissionNumberListener = -1; //Listen to events of every mission
                                         //This is what allows you to catch all the OnTookOff, OnAircraftDamaged, and other similar events.  Vitally important to make this work!
@@ -8613,6 +9192,15 @@ public class Mission : AMission, IMainMission
         {
             MO_RecordPlayerScoutPhotos(player, check: true);
         }
+        //landinggroundmission
+        else if (msg.StartsWith("<makelg")) //try to make a temporary landing ground
+        {
+            landinggroundmission.createTempLandingGround(player);
+        }
+        else if (msg.StartsWith("<testmakelg") && admin_privilege_level(player) >= 1)
+        {
+            landinggroundmission.createTempLandingGround(player, testing: true);
+        }
         else if (msg.StartsWith("<coop start") && admin_privilege_level(player) >= 1)
         {
             twcLogServer(new Player[] { player }, "HELP: Use command '<coop XXX' to change the co-op start time to add XXX more minutes", null);
@@ -8781,6 +9369,7 @@ public class Mission : AMission, IMainMission
             l = MO_PlayersWhoScoutedObjectivesList("Blue");
             Console.WriteLine(l);
         }
+        /*
         else if (msg.StartsWith("<rcdest") && admin_privilege_level(player) >= 2)
         {
             MO_DestroyObjective("BTarget14R", true);
@@ -8798,6 +9387,7 @@ public class Mission : AMission, IMainMission
                MO_DestroyObjective(Mission + "_spawn", true);
            });
         }
+        */
 
         else if (msg.StartsWith("<brcount") && admin_privilege_level(player) >= 2)
         {
@@ -8854,7 +9444,8 @@ public class Mission : AMission, IMainMission
                 int maxLen = 13;
                 if (mo.ID.Length < 13) maxLen = mo.ID.Length;
                 string bname = mo.ID.Substring(0, maxLen) + "_airspawn" + random.Next(10, 99).ToString("F0"); //apparently birthplace names can't be too long?
-                f2 = Calcs.CreateBirthPlace(f2, bname, mo.Pos.x, mo.Pos.y, 1000, mo.AttackingArmy);
+                Point3d pos = mo.returnCurrentPosWithChief();
+                f2 = Calcs.CreateBirthPlace(f2, bname, pos.x, pos.y, 1000, mo.AttackingArmy);
                 GamePlay.gpPostMissionLoad(f2);
                 f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname);
             }
@@ -9029,7 +9620,7 @@ public class Mission : AMission, IMainMission
             }
             catch { }
 
-        MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
+            MissionObjectivesList = new Dictionary<string, MissionObjective>();  //zero out the mission objectives list (otherwise when we run the routine below they will ADD to anything already there)
             mission_objectives.RadarPositionTriggersSetup();
             mission_objectives.MissionObjectiveTriggersSetup();
             twc_tobruk_campaign_mission_objectives.RadarPositionTriggersSetup();
@@ -9070,7 +9661,7 @@ public class Mission : AMission, IMainMission
         {
             twcLogServer(new Player[] { player }, "Testing BLUE win of current bumrush battle now", new object[] { });
             MO_BRBumrushCheck(new Tuple<int, bool, int>(MO_BRCurrentBumrushArmy, true, 2));
-            
+
         }
         else if (msg.StartsWith("<testbumwinred") && admin_privilege_level(player) >= 2)
         {
@@ -9080,7 +9671,7 @@ public class Mission : AMission, IMainMission
         }
         else if (msg.StartsWith("<testbumadvance") && admin_privilege_level(player) >= 2)
         {
-            twcLogServer(new Player[] { player }, "Advancing bumrush to next phase NOW", new object[] { });            
+            twcLogServer(new Player[] { player }, "Advancing bumrush to next phase NOW", new object[] { });
             MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(MO_BRCurrentBumrushArmy, true));
         }
         //MO_BRAdvanceBumrushPhase(new Tuple<int, bool>(army, true)); }
@@ -9351,11 +9942,12 @@ public class Mission : AMission, IMainMission
 
             twcLogServer(new Player[] { player }, "Admin commands: <stock <lost <bluestock <redstock <coop <trigger <action <debugon <debugoff <logon <logoff <endmission", new object[] { });
             twcLogServer(new Player[] { player }, "<resetmission", new object[] { });
-            twcLogServer(new Player[] { player }, "Server test commands: <rctest, <testturnred, <testturnblue, <rcdest, <rcrecord, <obair objectiveID (make airspawn above OBJ) <obflaktest objectiveID place flak guns to kill objective, <killtest ID kill all actors @ objective", new object[] { });
-            twcLogServer(new Player[] { player }, "Server test commands: <bombtest ID bomb an ap <apdest disable and airfield, <testturnred <testturnblue", new object[] { });
+            twcLogServer(new Player[] { player }, "Server test commands: <rctest 100000 100000 - instant recon of that point, <rcrecord record all rctest recon photos, ", new object[] { });
+            twcLogServer(new Player[] { player }, "<testturnred, <testturnblue, <obair objectiveID (make airspawn above OBJ), <obflaktest objectiveID (place flak guns to kill objective), <killtest ID (kill all actors @ objective)", new object[] { });
+            twcLogServer(new Player[] { player }, "Server test commands: <bombtest ID bomb an ap <apdest disable an airfield, <testturnred <testturnblue", new object[] { });
             twcLogServer(new Player[] { player }, "Server test commands: <obdest ID - destroy an objective or <obdest red, <obdest blue, <brcount Bumrush current count, <brremove remove current Bumrush", new object[] { });
             //"<testbumwinblue"
-            twcLogServer(new Player[] { player }, "<testbumwinblue <testbumwinred - in the Bumrush phase, test one side wining @ that point; <testbumadvance - advance bumrush phase now", new object[] { });
+            twcLogServer(new Player[] { player }, "<testbumwinblue <testbumwinred - in the Bumrush phase, test one side winning @ that point; <testbumadvance - advance bumrush phase now", new object[] { });
 
         }
         else if ((msg.StartsWith("<help") || msg.StartsWith("<")) &&
@@ -9371,10 +9963,10 @@ public class Mission : AMission, IMainMission
                 string m = "Commands: <tl Time Left; <rr Rearm/reload; <ai let AI take over gunner position; <recon take recon photo; <record send recon photos to HQ";
                 if (admin_privilege_level(player) >= 2) m += "; <admin";
                 twcLogServer(new Player[] { player }, m, new object[] { });
-                    //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
-                    //twcLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
-                    //GamePlay.gp(, from);
-                });
+                //twcLogServer(new Player[] { player }, "<ap & <apall Airport condition", new object[] { });
+                //twcLogServer(new Player[] { player }, "<coop Use Co-Op start mode only @ beginning of mission", new object[] { });
+                //GamePlay.gp(, from);
+            });
         }
     }
 
@@ -10088,10 +10680,10 @@ public class Mission : AMission, IMainMission
     public Dictionary<string, AiActor> AllGroundDict = new Dictionary<string, AiActor>();
 
     //Aargh, little kludge to allow sub-class to access Calcs.GetActorsByNameMatch.  Arrgh.
-    public List<AiActor> GetActorsByNameMatch(string name = "", int matcharmy = 0, string type = "")
+    public List<AiActor> GetActorsByNameMatch(string name = "", int matcharmy = 0, string type = "", bool onlyArtilleryAndVehicles = false)
     {
         try { 
-            return Calcs.GetActorsByNameMatch(GamePlay, this, AllActorsDict, name, matcharmy, type);
+            return Calcs.GetActorsByNameMatch(GamePlay, this, AllActorsDict, name, matcharmy, type, onlyArtilleryAndVehicles: onlyArtilleryAndVehicles);
         } catch (Exception ex) { Console.WriteLine("main.GetActorsByNameMatch ERROR: " + ex.ToString());
             return new List<AiActor>() { };
         }
@@ -10174,7 +10766,7 @@ public class Mission : AMission, IMainMission
                             if (!AllActorsDict.ContainsKey(ID))
                             {
                                 AllActorsDict.Add(ID, temp);
-                                Console.WriteLine("OnActorCreated: New sub-actor " + temp.Name());
+                                //Console.WriteLine("OnActorCreated: New sub-actor " + temp.Name());
                             }
                             //Console.WriteLine("7");
                             if (temp as AiAircraft != null && !AllAircraftDict.ContainsKey(ID)) AllAircraftDict.Add(ID, temp);
@@ -10785,8 +11377,8 @@ public class Mission : AMission, IMainMission
         {ArmiesE.Blue, new Dictionary<string,DateTime>() }
     };
 
-    public enum MO_TriggerType { Trigger, Static, Airfield, PointArea };
-    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Convoy, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase, IndustrialArea, MilitaryArea, ProductionFacility, StorageFacility, AttackColumn }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
+    public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround };
+    public enum MO_ObjectiveType { Radar, AA, Ship, Building, Fuel, Airfield, Aircraft, Vehicles, Convoy, Bridge, Dam, Dock, RRYard, Railroad, Road, AirfieldComplex, FactoryComplex, ArmyBase, IndustrialArea, MilitaryArea, ProductionFacility, StorageFacility, AttackColumn, TemporaryLandingGround }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
                                                                                                                                                                                                                                                              // a shortage of those items. Similarly if a StorageFacility is destroyed it will cause an immediate loss of some of the existing supply of (say) aircraft of that type.  NOT IMPLEMENTED YET!!!
                                                                                                                                                                                                                                                              //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
     public enum MO_ProducerOrStorageType { None, Beaufighter, SpitfireII, SpitfireIa, Spitfire, Blenheim, Wellington, Hurricane, BF109_3, BF109_1, BF109_4, BF109, BF110, HE111, G50, JU88, JU87, fighter, bomber, fuel, bullets_shells, bombs };
@@ -10872,6 +11464,8 @@ public class Mission : AMission, IMainMission
         [DataMember] public double AirfieldPointsRequired { get; set; } //For airfields, how many damage points required to close it/ 100% damage
         public AiAirport aiairport { get; set; } //CloD internal airport object.  Can't save as [DataMember] due to it being in an external assembly etc
         [DataMember] public string AirfieldName { get; set; } //The ID is generally set to "internal airfieldname_spawn" and name is something like "internal airfieldname Airfield" (unless the actual name already includes "airfield" or "airbase" or similar).  This saves the actual/original airfield name incase we need to find it again.
+
+        [DataMember] public HashSet<string> BirthplaceACTypes { get; set; } //For a Landing Ground Objective, which types of aircraft are included in the spawn area/birthplace 
 
         [DataMember] public List<string> StaticNames { get; set; } //for static targets, the list of static names that will determine if the target is destroyed
         [DataMember] public double StaticPercentageRequired { get; set; } //what percentage of those static targets must be destroyed to eliminate the objective
@@ -11002,7 +11596,7 @@ public class Mission : AMission, IMainMission
         //AIRFIELD initiator
         //public Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>> AirfieldTargets = new Dictionary<AiAirport, Tuple<bool, string, double, double, DateTime, double, Point3d>>();
         //Tuple is: bool airfield disabled, string name, double pointstoknockout, double damage point total, DateTime time of last damage hit, double airfield radius, Point3d airfield center (position)
-        public MissionObjective(Mission m, double pts, double ptp, AiAirport airport, int arm, Tuple<bool, string, double, double, DateTime, double, Point3d> tup, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, bool is_focus = false, string chief_name = "")
+        public MissionObjective(Mission m, double pts, double ptp, AiAirport airport, int ownerarmy, Tuple<bool, string, double, double, DateTime, double, Point3d> tup, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, bool is_focus = false, string chief_name = "")
         //            string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, int ptp, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None)
         //IsFocus is whether or not this AP is one of the special ones--one from each side--that must be knocked out before other certain things happen.  (Tobruk campaign, 2020/08)
         {
@@ -11051,7 +11645,7 @@ public class Mission : AMission, IMainMission
 
 
             //OwnerArmy = airport.Army(); OK, this doesn't work as all .Army() for airports is set to 0        
-            OwnerArmy = arm;
+            OwnerArmy = ownerarmy;
             AttackingArmy = 3 - OwnerArmy;
             if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
 
@@ -11094,7 +11688,92 @@ public class Mission : AMission, IMainMission
             Comment = "Auto-generated from in-game airports list";
         }
 
+        //TEMPORARY LANDING GROUND initiator
+        
+        public MissionObjective(Mission m, string objective_id, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
 
+        {
+
+            msn = m;
+            MOObjectiveType = MO_ObjectiveType.TemporaryLandingGround;
+            MOProducerOrStorageType = MOProdStorType;
+            MOTriggerType = MO_TriggerType.TemporaryLandingGround;
+            ID = objective_id;
+            Console.WriteLine("Creating NEW MissionObjective Temporary Landing Ground: " + ID);
+            Name = objective_id;
+
+            AirfieldName = objective_id;//The ID is generally set to "internal airfieldname_spawn" and name is ""internal airfieldname Airfield" (unless the original name includes a word like "Airfield" or "Airbase" or similar.  This saves the actual/original/exact airfield name incase we need to find it again.
+
+            BirthplaceACTypes = new HashSet<string>(); //For a Landing Ground Objective, which types of aircraft are included in the spawn area/birthplace 
+
+            ChiefName = chief_name; //Name of the chief used in the mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+
+            FlakID = flak_file; //no flak files for airports . . . yet
+            AutoFlakIfPrimary = true;
+            AutoFlak = true;
+            NumFlakBatteries = 2;
+            NumInFlakBattery = 2;
+            //for testing
+            //NumFlakBatteries = 3;
+            //NumInFlakBattery = 4;
+
+
+            Pos = pos;
+
+            MOMobileObjectiveType = MO_MobileObjectiveType.None;
+            MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
+            MobileNextMoveTime_dt = null; //The next date/time when this mobile objective should be moved.
+            MobileMaxMoveDist_km = 0;
+            MobileMinMoveDist_km = 0;
+            MobileSWPoint = Pos;
+            MobileNEPoint = Pos;
+
+            IsEnabled = true;
+            CanBeDisabled = false;  //Airfields are mostly fixed installations; if it's there it's there.
+
+
+            //OwnerArmy = airport.Army(); OK, this doesn't work as all .Army() for airports is set to 0        
+            OwnerArmy = ownerarmy; //This is a bit confused as this target needn't be "attacked".  
+            AttackingArmy = ownerarmy; //Attacked in this case means "army that needs to complete or accomplish this task."
+            //if (AttackingArmy > 2 || AttackingArmy < 1) AttackingArmy = 0;
+
+
+            double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
+            if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
+            Pos = new Point3d(Pos.x, Pos.y, z);
+
+            HUDMessage = ArmiesL[AttackingArmy] + " created a Landing Ground - " + Name;
+            LOGMessage = Name + " created by " + ArmiesL[AttackingArmy] + " - active for" + (this.TimetoRepairIfDestroyed_hr/24.0).ToString("F1") + " days.";
+
+            Points = objective_points;
+            string keyp = Calcs.doubleKeypad(Pos);
+            /* Sector = msn.GamePlay.gpSectorName(x, y).ToString() + "." + keyp;
+            Sector = Sector.Replace(",", ""); // remove the comma     */
+            Sector = Calcs.correctedSectorNameDoubleKeypad(msn, Pos);
+            bigSector = Calcs.makeBigSector(msn, Pos);
+
+            radius = radius_m; //
+
+            TimetoRepairIfDestroyed_hr = timeToRemainActive_hrs; //Another strange one; we're reversing the "destroyed" system - this is how long it stays active once established
+
+            Destroyed = false;
+            DestroyedPercent = 0;
+            ObjectiveAchievedForPoints = false;
+            TimeToUndestroy_UTC = null;
+            LastHitTime_UTC = null;
+
+            Scouted = false;
+            lastScoutedPos = Pos;
+            lastScoutedSector = Sector;
+            PlayersWhoScoutedNames = new Dictionary<string, int>();
+            PlayersWhoContributedNames = new HashSet<string>();
+
+            hasGeneralStaff = false;
+
+            IsPrimaryTarget = false;
+            PrimaryTargetWeight = primaryobjective_weight;
+            IsFocus = false;
+        }
 
         //TRIGGER initiator (for all trigger types except RADAR & AIRFIELD & POINTAREA)
         public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, string flak, string init_submission_filename, string chief_name, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, double ptp, double ttr_hr, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None)
@@ -11461,11 +12140,12 @@ public class Mission : AMission, IMainMission
                 if (ChiefName.Length > 0)
                 {
                     List<AiActor> actorList = msn.GetActorsByNameMatch(ChiefName);
+                    Console.WriteLine("update recon pos: {0} {1}", ChiefName, actorList.Count);
                     if (actorList.Count == 0)
                     {
                         //lastScoutedPos = new Point3d(-1, -1, -1);
                         string addStr = " <Unit dead??>";
-                        if (!lastScoutedSector.Contains(addStr)) lastScoutedSector += " <Unit dead??>"; //If we get noresult we're not sure if the unit has all been KILLED or if there was a mistake of some kind entering the Chief name...
+                        if (!lastScoutedSector.Contains(addStr)) lastScoutedSector += addStr; //If we get noresult we're not sure if the unit has all been KILLED or if there was a mistake of some kind entering the Chief name...
                                                                                                         //So instead of replacing the whole pos/sector with nothing, we leave it at it's default with this little note.
                     }
                     else
@@ -15551,7 +16231,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     {
                         string pc = "";
                         if (mo.DestroyedPercent > 0) pc = ", " + (mo.DestroyedPercent * 100.0).ToString("F0") + "%";
-                        string dl = " Level " + mo.Points.ToString();
+                        string dl = " Priority " + mo.Points.ToString();
                         string ls = "";
                         if (mo.lastTimeScouted_dt.HasValue)
                         {
@@ -15760,8 +16440,11 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     string s = CLOD_PATH + FILE_PATH + "/" + mo.InitSubmissionName;
                     try
                     {
-                        GamePlay.gpPostMissionLoad(s);
-                        Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
+                       Timeout(5, () =>
+                       {
+                           GamePlay.gpPostMissionLoad(s);
+                           Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded");
+                       });
                     } catch (Exception ex) { Console.WriteLine("MO_InitializeAllObjectives ERROR InitSubmission for Objective NOT loaded: {0} \n\n {1}", s, ex.ToString()); }
 
                 }
@@ -16821,6 +17504,16 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 {
                     GamePlay.gpHUDLogCenter("The " + ArmiesL[defendingArmy] + " attack on " + mo.Name + " failed."); //they were the ATTACKING army but now DEFENDING becuase they failed
                 });
+
+                Timeout(8, () =>
+                {
+                    GamePlay.gpLogServer(null, ArmiesL[attackingArmy] + " units defending the airfield area were low on ammo and fuel. They were forced to withdraw." , null); //they were the ATTACKING army but now DEFENDING because they failed
+                });
+
+                Timeout(15, () =>
+                {
+                    GamePlay.gpLogServer(null, "With short supplies forcing the " + ArmiesL[attackingArmy] + " ground units to withdraw from the area, " + ArmiesL[defendingArmy] + " was able to place a few rearguard defending ground units around the airport.  Attackers, beware!", null); //they were the ATTACKING army but now DEFENDING becuase they failed
+                });
             }
             Timeout(20, () =>
             {
@@ -17069,7 +17762,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                     Point3d p4 = new Point3d((gat.x - gap.x) * 0.2 + gap.x, (gat.y - gap.y) * 0.2 + gap.y, alt_m); //a point between ground attack (vehicles) &  point attack (airport) but closer to the airport
 
                     Point3d p6 = new Point3d(gap.x - gat.x + gap.x, gap.y - gat.y + gap.y, alt_m); //point in same direction of vector from a/p to ground vehicles, but on opposite side of airport
-                    Point3d lan = new Point3d(gat.x + direction * random.Next(267000, 433000), gat.y + random.Next(-280000, 290000), random.Next(250, 350)); //take it right off the map if nothing else
+                    Point3d lan = new Point3d(gat.x + direction * random.Next(340000, 433000), gat.y + random.Next(-280000, 290000), random.Next(250, 350)); //take it right off the map if nothing else
 
                     //Bomb the center of the a/p more frequently when the time is low & when convoys are nearby
                     double airportBombChance = 0.15;
@@ -17232,7 +17925,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 if (MO_BRBumrushAirportHeldStartTime == DateTime.MaxValue)
                 {
                     MO_BRBumrushAirportHeldStartTime = DateTime.UtcNow;
-                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10) * 1000)); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
+                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10))); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
                     twcLogServer(null, string.Format(ArmiesL[attackingArmy] + " is now occupying the base.  Must hold for {0:N0} minutes!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
                     GamePlay.gpHUDLogCenter(string.Format(ArmiesL[attackingArmy] + " occupying base - must hold {0:N0} min!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0}));
                 }
@@ -17270,7 +17963,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
                 if (MO_BRBumrushAirportHeldStartTime == DateTime.MaxValue)
                 {
                     MO_BRBumrushAirportHeldStartTime = DateTime.UtcNow;
-                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10) * 1000)); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
+                    MO_BRExtendBumrushPhaseTimer_ifneeded(army, Convert.ToInt32(MO_BRBumrushAirbaseOccupyTimeRequired_sec + (MO_BRBumrushAirbaseOccupyTimeRequired_sec / 4.0 + 1 + 10) )); //Extends the phase turn by time required to hold PLUS one extra winnercheckperiod PLUS 10 extra seconds just to be safe
                     twcLogServer(null, string.Format(ArmiesL[attackingArmy] + " is now occupying the base.  Must hold for {0:N0} minutes!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
                     GamePlay.gpHUDLogCenter(string.Format(ArmiesL[attackingArmy] + " occupying base - must hold {0:N0} min!", new object[] { MO_BRBumrushAirbaseOccupyTimeRequired_sec / 60.0 }));
                 }
@@ -20346,7 +21039,7 @@ public static class Calcs
         return false;
     }
 
-    public static List<AiActor> GetActorsByNameMatch(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name = "", int matcharmy = 0, string type = "")
+    public static List<AiActor> GetActorsByNameMatch(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name = "", int matcharmy = 0, string type = "", bool onlyArtilleryAndVehicles= false)
     {
         try {
             List<AiActor> l = new List<AiActor>();
@@ -20364,7 +21057,7 @@ public static class Calcs
                 if (matcharmy > 0 && actor.Army() != matcharmy) continue;
                 bool art = isActorArtillery(actor);
                 bool veh = isActorVehicle(actor);
-                if (!art && !veh) continue;
+                if (onlyArtilleryAndVehicles && !art && !veh) continue;  //not sure why I thought this would be a good idea?  Maybe for some useages where only artillery & vehicles are needed?
                 if (type.ToLower() == "vehicle" && !veh) continue;
                 if (type.ToLower() == "artillery" && !art) continue;
                 //if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
@@ -20384,7 +21077,7 @@ public static class Calcs
 
     public static int KillActorsByNameMatch(ABattle battle, IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> actors, string name = "", int matcharmy = 0, string type = "")
     {
-        List<AiActor> l = GetActorsByNameMatch(GamePlay, mission, actors, name, matcharmy, type);
+        List<AiActor> l = GetActorsByNameMatch(GamePlay, mission, actors, name, matcharmy, type, onlyArtilleryAndVehicles: true);
         return KillActorsOnList(battle, mission, l);
 
     }
@@ -20394,7 +21087,7 @@ public static class Calcs
     //good for testing objectives etc
     public static int KillGroundActorsNear(ABattle battle, IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
     {
-        List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type);
+        List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type, onlyArtilleryAndVehicles: true);
 
         return KillActorsOnList(battle, mission, l);
     }
@@ -20420,9 +21113,9 @@ public static class Calcs
         return count;
     }
 
-    public static AiActor GetGroundActorNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
+    public static AiActor GetGroundActorNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "", bool onlyArtilleryAndVehicles = false)
     {
-        List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type);
+        List<AiActor> l = GetGroundActorsNear(GamePlay, mission, groundActors, location, radius_m, matcharmy, type, onlyArtilleryAndVehicles: onlyArtilleryAndVehicles);
 
         if (l.Count == 0) return null;
         int index = clc_random.Next(l.Count);
@@ -20431,7 +21124,7 @@ public static class Calcs
     //OK, this so this one actually works.
 
     //  You can use type is "Artillery" "Vehicle" or "" to get both.
-    public static List<AiActor> GetGroundActorsNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
+    public static List<AiActor> GetGroundActorsNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "", bool onlyArtilleryAndVehicles = false)
     {
         // For %reasons% this doesn't typically work right if AiGroundGroupType.Artillery
         // So we just use this alternate counting method instead, in that case:
@@ -20450,12 +21143,41 @@ public static class Calcs
             if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
             bool art = isActorArtillery(actor);
             bool veh = isActorVehicle(actor);
-            if (!art && !veh) continue;
+            if (onlyArtilleryAndVehicles && !art && !veh) continue;
             if (type.ToLower() == "vehicle" && !veh) continue;
             if (type.ToLower() == "artillery" && !art) continue;
             if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
 
             //Console.WriteLine("Found groundactor " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString()+ " " + actor.Army());
+            l.Add(actor);
+        }
+
+        return l;
+    }
+
+    //type == aircraft, groundactor, or blank for any kind of actor
+    public static List<AiActor> GetActorsNear(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> aircraftDict, Point3d location, double radius_m, int matcharmy = 0, string type = "")
+    {
+
+
+        List<AiActor> l = new List<AiActor>();
+
+        type = type.ToLower();
+
+        foreach (AiActor actor in aircraftDict.Values)
+        {
+            if (type == "groundactor" && (actor as AiGroundActor) == null) continue;
+            if (type == "aircraft" && (actor as AiAircraft) == null) continue;
+            //Console.WriteLine("act " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());
+            //Console.WriteLine("act " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString());            
+            if (matcharmy > 0 && actor.Army() != matcharmy) continue;
+            bool art = isActorArtillery(actor);
+            bool veh = isActorVehicle(actor);
+            if (type.ToLower() == "vehicle" && !veh) continue;
+            if (type.ToLower() == "artillery" && !art) continue;
+            if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
+
+            //Console.WriteLine("Found actor " + actor.Name() + " at " + actor.Pos().ToString() + " health " + (actor as AiGroundActor).Health().ToString()+ " " + actor.Army());
             l.Add(actor);
         }
 
@@ -20469,7 +21191,7 @@ public static class Calcs
     //
 
     //  You can use type is "Artillery" "Vehicle" or "" to get both.
-    public static int CountGroundActors(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "")
+    public static int CountGroundActors(this IGamePlay GamePlay, AMission mission, Dictionary<string, AiActor> groundActors, Point3d location, double radius_m, int matcharmy = 0, string type = "", bool onlyArtilleryAndVehicles = false)
     {
         // For %reasons% this doesn't typically work right if AiGroundGroupType.Artillery
         // So we just use this alternate counting method instead, in that case:
@@ -20526,7 +21248,7 @@ public static class Calcs
                 if (matcharmy > 0 && (actor as AiGroundActor).Army() != matcharmy) continue;
                 bool art = isActorArtillery(actor);
                 bool veh = isActorVehicle(actor);
-                if (!art && !veh) continue;
+                if (onlyArtilleryAndVehicles && !art && !veh) continue;
                 if (type.ToLower() == "vehicle" && !veh) continue;
                 if (type.ToLower() == "artillery" && !art) continue;
                 if (CalculatePointDistance(location, actor.Pos()) > radius_m) continue;
@@ -20648,6 +21370,7 @@ public static class Calcs
         return nearestAirport(GamePlay, pd, army);
     }
     //find distance to nearest (friendly) birthplace, counting birthplaces (ie, spawnpoints) ONLY
+    //army=1,2 find matching army, army=0, find either army.
     public static double distanceToNearestBirthplace(IGamePlay GamePlay, Point3d location, int army = 0)
     {
         //AiBirthPlace NearestBirthPlace = null;        
@@ -20656,6 +21379,7 @@ public static class Calcs
 
         foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
         {
+            if (army > 0 && bp.Army() != army) continue;
             Point3d bp_pos = bp.Pos();
             double dist = CalculatePointDistance(bp_pos, location);
             if (dist < bestDist_m) bestDist_m = dist;//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
@@ -22005,8 +22729,22 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
             //New point 1/4 of the way from p6 to lan
             //If there is a friendly airport  nearby there, make it land there
-            Point3d apLook = new Point3d ((3*p6.x + lan.x)/4, (3*p6.y + lan.y)/4, lan.z);
+            double minX = 6666 - 10000; //+/- 10000 because we want to send them beyond the "exit map" margin, not  just to it
+            double minY = 6666 - 10000;
+            double maxX = 362000 + 10000;
+            double maxY = 362000 + 10000;
+
+            Point3d l = lan;
+            if (l.x > maxX) l.x = maxX;
+            if (l.x > minX) l.x = minX;
+            if (l.y > maxY) l.y = maxY;
+            if (l.y > minY) l.y = minY;
+
+            double mu = clc_random.NextDouble() * 5 + 2;
+
+            Point3d apLook = new Point3d (mu*(p6.x + l.x)/2, mu*(p6.y + l.y)/8, lan.z);
             AiAirport ap = mission.covermission.Stb_nearestAirport(apLook, bomberArmy, isSeaplane: false);
+
             if (ap != null && CalculatePointDistance(ap.Pos(), p6) > 10000)
             {
                 k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { ap.Pos().x, ap.Pos().y, lan.z, vel_kmh }); f.add(s, k, v);
@@ -22014,7 +22752,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             else
             {
 
-                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { lan.x, lan.y, lan.z, vel_kmh }); f.add(s, k, v);
+                k = "LANDING"; v = String.Format("{0} {1} {2} {3}", new object[] { l.x, l.y, l.z, vel_kmh }); f.add(s, k, v);
             }
             //BUG: The STUKA (only???!??) if it has TWO landing waypoints, will IMMEDIATELY drop all bombs.  So, that is crazy.  But only put ONE landing waypoint.
 

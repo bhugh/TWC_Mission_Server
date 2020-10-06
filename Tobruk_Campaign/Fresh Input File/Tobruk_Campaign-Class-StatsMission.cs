@@ -14208,58 +14208,67 @@ struct
     public static int listDamages(IGamePlay GamePlay, Player CurPlayer = null, bool bShowMessages = false, AiAircraft aircraft = null, bool bIsRefueling = false)
     {
         int nDamages = 0;
-        AiAircraft PlayersAircraft = aircraft;
-        if (CurPlayer != null) PlayersAircraft = CurPlayer.Place() as AiAircraft;
-        if (PlayersAircraft == null) return 0; //nothing to do
-        if (CurPlayer == null) bShowMessages = false;
-
-        string[] PartNames = Enum.GetNames(typeof(part.NamedDamageTypes));
-        part.NamedDamageTypes[] PartVals = (part.NamedDamageTypes[])Enum.GetValues(typeof(part.NamedDamageTypes));
-        double dDamage = 0;
-
-        if (bShowMessages)
+        try
         {
-            GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Checking aircraft for damage (See chat/server info window) ...");
-        }
+            AiAircraft PlayersAircraft = aircraft;
+            if (CurPlayer != null) PlayersAircraft = CurPlayer.Place() as AiAircraft;
+            if (PlayersAircraft == null) return 0; //nothing to do
+            if (CurPlayer == null) bShowMessages = false;
 
-        for (int i = 0; i < PartNames.Length; i++)
-        {
-            try
+            string[] PartNames = Enum.GetNames(typeof(part.NamedDamageTypes));
+            part.NamedDamageTypes[] PartVals = (part.NamedDamageTypes[])Enum.GetValues(typeof(part.NamedDamageTypes));
+            double dDamage = 0;
+
+            if (bShowMessages)
             {
-                dDamage = PlayersAircraft.getParameter(part.ParameterTypes.M_NamedDamage, (int)(PartVals[i]));
-                if (0 != dDamage)
+                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Checking aircraft for damage (See chat/server info window) ...");
+            }
+
+            for (int i = 0; i < PartNames.Length; i++)
+            {
+                try
                 {
-                    GamePlay.gpLogServer(new Player[] { CurPlayer }, "Damage: " + PartNames[i], null);
-                    nDamages++;
+                    dDamage = PlayersAircraft.getParameter(part.ParameterTypes.M_NamedDamage, (int)(PartVals[i]));
+                    if (0 != dDamage)
+                    {
+                        GamePlay.gpLogServer(new Player[] { CurPlayer }, "Damage: " + PartNames[i], null);
+                        nDamages++;
+                    }
+                }
+                catch (IndexOutOfRangeException e)
+                {
                 }
             }
-            catch (IndexOutOfRangeException e)
-            {
-            }
-        }
 
-        if (bShowMessages)
-        {
-            if (0 == nDamages)
+            if (bShowMessages)
             {
-                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "No damage");
+                if (bIsRefueling)
+                {
+                    if (0 == nDamages)
+                    {
+                        GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "No damage");
+                    }
+                    else
+                    {
+                        GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Your aircraft has damage: See chat/server info window.");
+                    }
+                }
+
+                if (nDamages > 0)
+                {
+                    if (bIsRefueling)
+                        GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. Your aircraft has " + nDamages + " damaged parts.  Continue with the refuel/rearm or exit and enter a new fully repaired aircraft--your choice. Continuing to refuel . . . ", null);
+                    else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. Your aircraft has " + nDamages + " damaged parts.", null);
+                }
+                else
+                {
+                    if (bIsRefueling) GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. No damage found. Continuing to refuel . . . ", null);
+                    else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. No damage found.", new Object[] { });
+                }
             }
-            else
-            {
-                GamePlay.gpHUDLogCenter(new Player[] { CurPlayer }, "Your aircraft has damage: See chat/server info window.");
-            }
         }
-        if (nDamages > 0)
-        {
-            if (bIsRefueling)
-                GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. Your aircraft has " + nDamages + " damaged parts.  Continue with the refuel/rearm or exit and enter a new fully repaired aircraft--your choice. Continuing to refuel . . . ", null);
-            else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. Your aircraft has " + nDamages + " damaged parts.", null);
-        }
-        else
-        {
-            if (bIsRefueling) GamePlay.gpLogServer(new Player[] { CurPlayer }, "Inspection complete. No damage found. Continuing to refuel . . . ", null);
-            else GamePlay.gpLogServer(new Player[] { CurPlayer }, "Aircraft inspection complete. No damage found.", null);
-        }
+        catch (Exception ex) { Console.WriteLine("statscalc listDamages() ERROR: " + ex.ToString());}
+
         return nDamages;
     }
 

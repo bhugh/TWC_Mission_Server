@@ -450,7 +450,31 @@ public class BattlePos200 : TWCMissionBattles
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
             //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
-                    
+
+
+            /***************************************
+             * RED & BLUE LANDING GROUND OBJECTIVES
+             * 
+             * This is a little different from the others - it is on FRIENDLY or NEUTRAL territory (never ENEMY territory)
+             * It MUST BE an existing airport or Landing Ground that is on the map but which DOES NOT have a birthplace/spawn point associated with it
+             * The players activate the airport/landing ground/spawn point by taking 3 or more players/planes, landing safely at the new LG, and using chat command <makelg to register it
+             * OwnerArmy and AttackingArmy are BOTH THE SAME for this objective.  They are BOTH set (automatically per your setting for "ownerarmy") to the army that will own the airport.
+             * It is possible to set one LG in neutral territory that is an objective for BOTH SIDES.  Whichever gets it first will own it and the other side will be out of luck.
+             * *************************************/
+
+            // public void addLandingGround(string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 2, int flak_numbinbattery = 2, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "",  string comment = "", bool addNewOnly = false)
+
+            mmo.addLandingGround(objective_id: "RLGAlamBarghut", name: "Alam Barghut LG", pos: new Point3d(288873, 119366, 0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5,
+                timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 1, auto_flak: true, auto_flak_ifprimary: true,
+                flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None,
+                chief_name: "", comment: "", addNewOnly: false);
+
+            mmo.addLandingGround(objective_id: "BLGMenastirNo1", name: "Menastir LG No1", pos: new Point3d(261619, 147978, 0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5,
+                timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 2, auto_flak: true, auto_flak_ifprimary: true,
+                flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None,
+                chief_name: "", comment: "", addNewOnly: false);
+
+
         }
         catch (Exception ex) {
             Console.WriteLine();

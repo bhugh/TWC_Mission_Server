@@ -6,9 +6,9 @@
   MAP tobruk:Land$Tobruk
   DespawnAfterLandingTimeout 600
   BattleArea 10000 10000 360000 360000 10000
-  TIME 9.34867
-  WeatherIndex 2
-  CloudsHeight 709
+  TIME 11.31921
+  WeatherIndex 1
+  CloudsHeight 1258
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]
@@ -52,7 +52,6 @@
   Skill10 1 1 1 1 1 1 1 1
   Skill11 1 1 1 1 1 1 1 1
   Aging 41
-  BandColor11 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [BoB_RAF_F_141Sqn_Early.03_Way]
   TAKEOFF 285229.07 119642.87 0 0
   HUNTING 274907.21 116174.73 1200.00 300.00
@@ -175,8 +174,6 @@
   Skill1 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
   Skill20 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
   Aging 0
-  BandColor1 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [tobruk:Tobruk_USAAF_F_65Sqn.05_Way]
   TAKEOFF 331010.76 23065.29 0 0
   HUNTING 231413.28 21171.22 1500.00 240.00
@@ -400,19 +397,18 @@
   Skill10 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
   Skill20 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
   Aging 0
-  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [tobruk:Tobruk_USAAF_F_64Sqn.06_Way]
   TAKEOFF 353681.10 129059.01 0 0
   HUNTING 319019.54 124818.50 200.00 240.00
   HUNTING 368799.44 114862.52 800.00 260.00
-  HUNTING 313304.07 115599.100 1200.00 280.00
+  HUNTING 313304.07 115599.10 1200.00 280.00
   HUNTING 365296.41 134590.11 1500.00 300.00
   HUNTING 314779.03 132008.93 2500.00 240.00
   HUNTING 362530.86 95503.67 2500.00 240.00
-  HUNTING 311275.100 106934.61 2500.00 240.00
+  HUNTING 311275.10 106934.61 2500.00 240.00
   HUNTING 361240.27 139752.47 2500.00 300.00
   HUNTING 350731.18 100666.03 2500.00 300.00
-  HUNTING 332847.29 134036.100 1000.00 300.00
+  HUNTING 332847.29 134036.10 1000.00 300.00
   LANDING 361424.64 118918.66 200.00 240.00
 [CustomChiefs]
 [Chiefs]
@@ -471,10 +467,10 @@
   Static773 Stationary.Scammell_Pioneer_TRMU30 gb 337729.38 20977.48 0.00 
   Static775 Stationary.Environment.TentSmall_UK1 gb 337664.31 21010.68 0.00 
   Static784 Stationary.Bedford_OY_CargoAmmo1 gb 337671.06 21006.33 0.00 
-  Static776 Stationary.Environment.TentSmall_UK1 gb 337664.06 21014.09 0.00 
   Static783 Stationary.Bedford_OY_CargoAmmo1 gb 337670.84 21008.43 0.00 
-  Static782 Stationary.Bedford_OY_CargoAmmo1 gb 337670.66 21010.52 0.00 
+  Static776 Stationary.Environment.TentSmall_UK1 gb 337664.06 21014.09 0.00 
   Static785 Stationary.Environment.CamoNetAT nn 337672.03 21008.56 0.00 
+  Static782 Stationary.Bedford_OY_CargoAmmo1 gb 337670.66 21010.52 0.00 
   Static777 Stationary.Environment.TentSmall_UK1 gb 337664.09 21017.01 0.00 
   Static778 Stationary.Environment.TentSmall_UK1 gb 337664.00 21019.82 0.00 
   Static779 Stationary.Environment.TentSmall_UK1 gb 337670.81 21014.50 0.00 
@@ -490,11 +486,11 @@
   Static1321 Stationary.Scammell_Pioneer_TRMU30 gb 363861.47 20857.99 0.00 
   Static762 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 337632.41 21256.45 0.00 
   Static1324 Stationary.Environment.TentSmall_UK1 gb 363801.78 20884.41 0.00 
-  Static1325 Stationary.Environment.TentSmall_UK1 gb 363801.53 20887.83 0.00 
   Static753 Stationary.Bedford_OY_CargoAmmo1 gb 363808.56 20880.06 0.00 
+  Static1325 Stationary.Environment.TentSmall_UK1 gb 363801.53 20887.83 0.00 
   Static752 Stationary.Bedford_OY_CargoAmmo1 gb 363808.31 20882.17 0.00 
-  Static1326 Stationary.Environment.TentSmall_UK1 gb 363801.56 20890.74 0.00 
   Static754 Stationary.Environment.CamoNetAT nn 363809.50 20882.29 0.00 
+  Static1326 Stationary.Environment.TentSmall_UK1 gb 363801.56 20890.74 0.00 
   Static751 Stationary.Bedford_OY_CargoAmmo1 gb 363808.16 20884.25 0.00 
   Static1327 Stationary.Environment.TentSmall_UK1 gb 363801.47 20893.56 0.00 
   Static1328 Stationary.Environment.TentSmall_UK1 gb 363808.28 20888.23 0.00 
@@ -515,8 +511,8 @@
   Static691 Stationary.Bedford_OY_CargoAmmo1 gb 224282.36 44420.58 0.00 
   Static683 Stationary.Environment.TentSmall_UK1 gb 224275.36 44428.34 0.00 
   Static690 Stationary.Bedford_OY_CargoAmmo1 gb 224282.13 44422.68 0.00 
-  Static689 Stationary.Bedford_OY_CargoAmmo1 gb 224281.95 44424.77 0.00 
   Static692 Stationary.Environment.CamoNetAT nn 224283.31 44422.81 0.00 
+  Static689 Stationary.Bedford_OY_CargoAmmo1 gb 224281.95 44424.77 0.00 
   Static684 Stationary.Environment.TentSmall_UK1 gb 224275.38 44431.26 0.00 
   Static685 Stationary.Environment.TentSmall_UK1 gb 224275.30 44434.07 0.00 
   Static686 Stationary.Environment.TentSmall_UK1 gb 224282.09 44428.75 0.00 
@@ -531,17 +527,17 @@
   Static669 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 224243.69 44670.70 0.00 
   Static667 Stationary.Bedford_MW_open gb 224381.41 44635.19 0.00 
   Static713 Stationary.Environment.TentSmall_UK1 gb 255085.00 59703.37 0.00 
-  Static722 Stationary.Bedford_OY_CargoAmmo1 gb 255091.77 59699.02 0.00 
   Static714 Stationary.Environment.TentSmall_UK1 gb 255084.75 59706.78 0.00 
+  Static722 Stationary.Bedford_OY_CargoAmmo1 gb 255091.77 59699.02 0.00 
   Static721 Stationary.Bedford_OY_CargoAmmo1 gb 255091.53 59701.12 0.00 
-  Static723 Stationary.Environment.CamoNetAT nn 255092.72 59701.24 0.00 
   Static715 Stationary.Environment.TentSmall_UK1 gb 255084.78 59709.70 0.00 
+  Static723 Stationary.Environment.CamoNetAT nn 255092.72 59701.24 0.00 
   Static720 Stationary.Bedford_OY_CargoAmmo1 gb 255091.36 59703.20 0.00 
   Static717 Stationary.Environment.TentSmall_UK1 gb 255091.50 59707.18 0.00 
   Static718 Stationary.Environment.TentSmall_UK1 gb 255091.08 59710.15 0.00 
   Static712 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 255126.33 59689.21 0.00 
-  Static710 Stationary.Scammell_Pioneer_TRMU30 gb 255144.67 59676.94 0.00 
   Static711 Stationary.Scammell_Pioneer_TRMU30 gb 255150.09 59670.17 0.00 
+  Static710 Stationary.Scammell_Pioneer_TRMU30 gb 255144.67 59676.94 0.00 
   Static709 Stationary.Scammell_Pioneer_TRMU30 gb 255138.56 59684.42 0.00 
   Static716 Stationary.Environment.TentSmall_UK1 gb 255084.69 59712.51 0.00 
   Static719 Stationary.Environment.TentSmall_UK1 gb 255091.02 59713.60 0.00 
@@ -556,16 +552,16 @@
   Static629 Stationary.Bedford_OY_CargoAmmo1 gb 250924.92 60582.89 0.00 
   Static621 Stationary.Environment.TentSmall_UK1 gb 250917.91 60590.66 0.00 
   Static628 Stationary.Bedford_OY_CargoAmmo1 gb 250924.69 60584.10 0.00 
-  Static630 Stationary.Environment.CamoNetAT nn 250925.88 60585.12 0.00 
   Static622 Stationary.Environment.TentSmall_UK1 gb 250917.94 60593.57 0.00 
+  Static630 Stationary.Environment.CamoNetAT nn 250925.88 60585.12 0.00 
   Static627 Stationary.Bedford_OY_CargoAmmo1 gb 250924.52 60587.08 0.00 
   Static623 Stationary.Environment.TentSmall_UK1 gb 250917.84 60596.39 0.00 
   Static624 Stationary.Environment.TentSmall_UK1 gb 250924.66 60591.05 0.00 
   Static625 Stationary.Environment.TentSmall_UK1 gb 250924.23 60594.02 0.00 
   Static626 Stationary.Environment.TentSmall_UK1 gb 250924.16 60597.48 0.00 
   Static619 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 250959.48 60573.09 0.00 
-  Static618 Stationary.Scammell_Pioneer_TRMU30 gb 250983.23 60554.04 0.00 
   Static617 Stationary.Scammell_Pioneer_TRMU30 gb 250977.83 60560.82 0.00 
+  Static618 Stationary.Scammell_Pioneer_TRMU30 gb 250983.23 60554.04 0.00 
   Static616 Stationary.Scammell_Pioneer_TRMU30 gb 250971.70 60568.29 0.00 
   Static614 Stationary.Bedford_MW_open gb 251021.50 60629.41 0.00 
   Static631 Stationary.Bedford_MW_open gb 250770.52 60689.64 0.00 
@@ -577,8 +573,8 @@
   Static651 Stationary.Environment.TentSmall_UK1 gb 252938.45 63870.21 0.00 
   Static660 Stationary.Bedford_OY_CargoAmmo1 gb 252945.20 63865.86 0.00 
   Static659 Stationary.Bedford_OY_CargoAmmo1 gb 252944.97 63867.96 0.00 
-  Static661 Stationary.Environment.CamoNetAT nn 252946.16 63868.09 0.00 
   Static658 Stationary.Bedford_OY_CargoAmmo1 gb 252944.80 63870.05 0.00 
+  Static661 Stationary.Environment.CamoNetAT nn 252946.16 63868.09 0.00 
   Static650 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 252979.77 63856.05 0.00 
   Static649 Stationary.Scammell_Pioneer_TRMU30 gb 253003.53 63837.01 0.00 
   Static648 Stationary.Scammell_Pioneer_TRMU30 gb 252998.11 63843.79 0.00 
@@ -624,12 +620,12 @@
   Static463 Stationary.Scammell_Pioneer_TRMU30 gb 310280.38 82856.38 0.00 
   Static462 Stationary.Scammell_Pioneer_TRMU30 gb 310274.94 82863.16 0.00 
   Static465 Stationary.Environment.TentSmall_UK1 gb 310215.28 82889.58 0.00 
-  Static466 Stationary.Environment.TentSmall_UK1 gb 310215.03 82892.99 0.00 
   Static474 Stationary.Bedford_OY_CargoAmmo1 gb 310222.03 82885.23 0.00 
+  Static466 Stationary.Environment.TentSmall_UK1 gb 310215.03 82892.99 0.00 
   Static473 Stationary.Bedford_OY_CargoAmmo1 gb 310221.81 82887.33 0.00 
-  Static475 Stationary.Environment.CamoNetAT nn 310223.00 82887.45 0.00 
-  Static467 Stationary.Environment.TentSmall_UK1 gb 310215.06 82895.91 0.00 
   Static472 Stationary.Bedford_OY_CargoAmmo1 gb 310221.63 82889.41 0.00 
+  Static467 Stationary.Environment.TentSmall_UK1 gb 310215.06 82895.91 0.00 
+  Static475 Stationary.Environment.CamoNetAT nn 310223.00 82887.45 0.00 
   Static468 Stationary.Environment.TentSmall_UK1 gb 310214.97 82898.72 0.00 
   Static469 Stationary.Environment.TentSmall_UK1 gb 310221.78 82893.39 0.00 
   Static470 Stationary.Environment.TentSmall_UK1 gb 310221.38 82896.36 0.00 
@@ -649,8 +645,8 @@
   Static598 Stationary.Bedford_OY_CargoAmmo1 gb 359060.28 95629.66 0.00 
   Static590 Stationary.Environment.TentSmall_UK1 gb 359053.28 95637.43 0.00 
   Static597 Stationary.Bedford_OY_CargoAmmo1 gb 359060.03 95631.77 0.00 
-  Static599 Stationary.Environment.CamoNetAT nn 359061.22 95631.89 0.00 
   Static596 Stationary.Bedford_OY_CargoAmmo1 gb 359059.88 95633.85 0.00 
+  Static599 Stationary.Environment.CamoNetAT nn 359061.22 95631.89 0.00 
   Static591 Stationary.Environment.TentSmall_UK1 gb 359053.28 95640.34 0.00 
   Static592 Stationary.Environment.TentSmall_UK1 gb 359053.22 95643.16 0.00 
   Static593 Stationary.Environment.TentSmall_UK1 gb 359060.00 95637.83 0.00 
@@ -669,8 +665,8 @@
   Static536 Stationary.Bedford_OY_CargoAmmo1 gb 331385.31 97059.42 0.00 
   Static528 Stationary.Environment.TentSmall_UK1 gb 331378.31 97067.18 0.00 
   Static535 Stationary.Bedford_OY_CargoAmmo1 gb 331385.09 97061.52 0.00 
-  Static534 Stationary.Bedford_OY_CargoAmmo1 gb 331384.91 97063.61 0.00 
   Static537 Stationary.Environment.CamoNetAT nn 331386.28 97061.65 0.00 
+  Static534 Stationary.Bedford_OY_CargoAmmo1 gb 331384.91 97063.61 0.00 
   Static529 Stationary.Environment.TentSmall_UK1 gb 331378.34 97070.10 0.00 
   Static530 Stationary.Environment.TentSmall_UK1 gb 331378.25 97072.91 0.00 
   Static531 Stationary.Environment.TentSmall_UK1 gb 331385.06 97067.59 0.00 
@@ -693,8 +689,8 @@
   Static559 Stationary.Environment.TentSmall_UK1 gb 333328.66 97327.23 0.00 
   Static566 Stationary.Bedford_OY_CargoAmmo1 gb 333335.41 97321.56 0.00 
   Static568 Stationary.Environment.CamoNetAT nn 333336.59 97321.70 0.00 
-  Static565 Stationary.Bedford_OY_CargoAmmo1 gb 333335.25 97323.65 0.00 
   Static560 Stationary.Environment.TentSmall_UK1 gb 333328.66 97330.14 0.00 
+  Static565 Stationary.Bedford_OY_CargoAmmo1 gb 333335.25 97323.65 0.00 
   Static561 Stationary.Environment.TentSmall_UK1 gb 333328.59 97332.96 0.00 
   Static562 Stationary.Environment.TentSmall_UK1 gb 333335.38 97327.63 0.00 
   Static563 Stationary.Environment.TentSmall_UK1 gb 333334.97 97330.59 0.00 
@@ -714,13 +710,13 @@
   Static545 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 333296.97 97569.59 0.00 
   Static434 Stationary.Environment.TentSmall_UK1 gb 295127.44 106026.16 0.00 
   Static443 Stationary.Bedford_OY_CargoAmmo1 gb 295134.22 106021.80 0.00 
-  Static442 Stationary.Bedford_OY_CargoAmmo1 gb 295133.97 106023.91 0.00 
   Static435 Stationary.Environment.TentSmall_UK1 gb 295127.19 106029.57 0.00 
+  Static442 Stationary.Bedford_OY_CargoAmmo1 gb 295133.97 106023.91 0.00 
   Static441 Stationary.Bedford_OY_CargoAmmo1 gb 295133.78 106025.99 0.00 
-  Static444 Stationary.Environment.CamoNetAT nn 295135.16 106024.04 0.00 
   Static436 Stationary.Environment.TentSmall_UK1 gb 295127.22 106032.48 0.00 
-  Static438 Stationary.Environment.TentSmall_UK1 gb 295133.94 106029.97 0.00 
+  Static444 Stationary.Environment.CamoNetAT nn 295135.16 106024.04 0.00 
   Static437 Stationary.Environment.TentSmall_UK1 gb 295127.13 106035.30 0.00 
+  Static438 Stationary.Environment.TentSmall_UK1 gb 295133.94 106029.97 0.00 
   Static439 Stationary.Environment.TentSmall_UK1 gb 295133.53 106032.94 0.00 
   Static440 Stationary.Environment.TentSmall_UK1 gb 295133.44 106036.39 0.00 
   Static433 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 295168.78 106012.00 0.00 
@@ -739,8 +735,8 @@
   Static412 Stationary.Bedford_OY_CargoAmmo1 gb 314833.38 106708.38 0.00 
   Static404 Stationary.Environment.TentSmall_UK1 gb 314826.38 106716.13 0.00 
   Static411 Stationary.Bedford_OY_CargoAmmo1 gb 314833.16 106710.48 0.00 
-  Static410 Stationary.Bedford_OY_CargoAmmo1 gb 314832.97 106712.56 0.00 
   Static413 Stationary.Environment.CamoNetAT nn 314834.34 106710.60 0.00 
+  Static410 Stationary.Bedford_OY_CargoAmmo1 gb 314832.97 106712.56 0.00 
   Static405 Stationary.Environment.TentSmall_UK1 gb 314826.41 106719.05 0.00 
   Static406 Stationary.Environment.TentSmall_UK1 gb 314826.31 106721.87 0.00 
   Static407 Stationary.Environment.TentSmall_UK1 gb 314833.13 106716.54 0.00 
@@ -755,18 +751,18 @@
   Static388 Stationary.Bedford_MW_open gb 314932.44 106922.98 0.00 
   Static390 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 314794.72 106958.49 0.00 
   Static372 Stationary.Environment.TentSmall_UK1 gb 296923.09 110198.37 0.00 
-  Static381 Stationary.Bedford_OY_CargoAmmo1 gb 296929.84 110194.02 0.00 
   Static373 Stationary.Environment.TentSmall_UK1 gb 296922.84 110201.78 0.00 
+  Static381 Stationary.Bedford_OY_CargoAmmo1 gb 296929.84 110194.02 0.00 
   Static380 Stationary.Bedford_OY_CargoAmmo1 gb 296929.59 110196.13 0.00 
-  Static382 Stationary.Environment.CamoNetAT nn 296930.78 110196.25 0.00 
   Static374 Stationary.Environment.TentSmall_UK1 gb 296922.84 110204.70 0.00 
+  Static382 Stationary.Environment.CamoNetAT nn 296930.78 110196.25 0.00 
   Static379 Stationary.Bedford_OY_CargoAmmo1 gb 296929.44 110198.20 0.00 
   Static375 Stationary.Environment.TentSmall_UK1 gb 296922.78 110207.52 0.00 
   Static376 Stationary.Environment.TentSmall_UK1 gb 296929.56 110202.18 0.00 
   Static377 Stationary.Environment.TentSmall_UK1 gb 296929.16 110205.15 0.00 
   Static371 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 296964.41 110184.21 0.00 
-  Static369 Stationary.Scammell_Pioneer_TRMU30 gb 296982.75 110171.95 0.00 
   Static370 Stationary.Scammell_Pioneer_TRMU30 gb 296988.16 110165.17 0.00 
+  Static369 Stationary.Scammell_Pioneer_TRMU30 gb 296982.75 110171.95 0.00 
   Static368 Stationary.Scammell_Pioneer_TRMU30 gb 296976.63 110179.42 0.00 
   Static378 Stationary.Environment.TentSmall_UK1 gb 296929.09 110208.60 0.00 
   Static366 Stationary.Bedford_MW_open gb 297026.41 110240.54 0.00 
@@ -779,16 +775,16 @@
   Static102 Stationary.Bedford_OY_CargoAmmo1 gb 277170.72 114593.96 0.00 
   Static1254 Stationary.Environment.TentSmall_UK1 gb 277163.72 114601.73 0.00 
   Static101 Stationary.Bedford_OY_CargoAmmo1 gb 277170.47 114596.06 0.00 
-  Static1255 Stationary.Environment.TentSmall_UK1 gb 277163.72 114604.64 0.00 
   Static103 Stationary.Environment.CamoNetAT nn 277171.66 114596.20 0.00 
+  Static1255 Stationary.Environment.TentSmall_UK1 gb 277163.72 114604.64 0.00 
   Static100 Stationary.Bedford_OY_CargoAmmo1 gb 277170.31 114598.15 0.00 
   Static1256 Stationary.Environment.TentSmall_UK1 gb 277163.66 114607.45 0.00 
   Static1257 Stationary.Environment.TentSmall_UK1 gb 277170.44 114602.13 0.00 
   Static98 Stationary.Environment.TentSmall_UK1 gb 277170.03 114605.09 0.00 
   Static99 Stationary.Environment.TentSmall_UK1 gb 277169.97 114608.55 0.00 
   Static1252 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 277205.28 114584.16 0.00 /skin materialsDesert1
-  Static1250 Stationary.Scammell_Pioneer_TRMU30 gb 277223.63 114571.89 0.00 /skin materialsDesert1
   Static1251 Stationary.Scammell_Pioneer_TRMU30 gb 277229.03 114565.12 0.00 /skin materialsDesert1
+  Static1250 Stationary.Scammell_Pioneer_TRMU30 gb 277223.63 114571.89 0.00 /skin materialsDesert1
   Static1249 Stationary.Scammell_Pioneer_TRMU30 gb 277217.50 114579.37 0.00 /skin materialsDesert1
   Static1247 Stationary.Bedford_MW_open gb 277267.28 114640.48 0.00 /skin materialsDesert1
   Static104 Stationary.Bedford_MW_open gb 277016.31 114700.71 0.00 /skin materialsDesert1
@@ -801,11 +797,11 @@
   Static1271 Stationary.Scammell_Pioneer_TRMU30 gb 277624.44 116856.44 0.00 /skin materialsDesert1/pax_skin materialsDesert1_RAF
   Static1273 Stationary.Scammell_Pioneer_TRMU30 gb 277636.00 116842.19 0.00 /skin materialsDesert1/pax_skin materialsDesert1_RAF
   Static1276 Stationary.Environment.TentSmall_UK1 gb 277570.91 116875.39 0.00 
-  Static12851232 Stationary.Bedford_OY_CargoAmmo1 gb 277577.66 116871.04 0.00 
   Static1277 Stationary.Environment.TentSmall_UK1 gb 277570.66 116878.80 0.00 
+  Static12851232 Stationary.Bedford_OY_CargoAmmo1 gb 277577.66 116871.04 0.00 
   Static12841231 Stationary.Bedford_OY_CargoAmmo1 gb 277577.44 116873.14 0.00 
-  Static12861233 Stationary.Environment.CamoNetAT nn 277578.63 116873.27 0.00 
   Static1278 Stationary.Environment.TentSmall_UK1 gb 277570.69 116881.72 0.00 
+  Static12861233 Stationary.Environment.CamoNetAT nn 277578.63 116873.27 0.00 
   Static12831230 Stationary.Bedford_OY_CargoAmmo1 gb 277577.25 116875.23 0.00 
   Static1279 Stationary.Environment.TentSmall_UK1 gb 277570.59 116884.53 0.00 
   Static1280 Stationary.Environment.TentSmall_UK1 gb 277577.41 116879.20 0.00 
@@ -819,13 +815,13 @@
   Static1274 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 277539.00 117121.16 0.00 /skin materialsDesert1
   Static155 Stationary.Environment.TentSmall_UK1 gb 298468.38 118761.00 0.00 
   Static164 Stationary.Bedford_OY_CargoAmmo1 gb 298475.16 118756.66 0.00 
-  Static163 Stationary.Bedford_OY_CargoAmmo1 gb 298474.91 118758.76 0.00 
   Static156 Stationary.Environment.TentSmall_UK1 gb 298468.13 118764.41 0.00 
-  Static162 Stationary.Bedford_OY_CargoAmmo1 gb 298474.75 118760.84 0.00 
+  Static163 Stationary.Bedford_OY_CargoAmmo1 gb 298474.91 118758.76 0.00 
   Static165 Stationary.Environment.CamoNetAT nn 298476.09 118758.88 0.00 
+  Static162 Stationary.Bedford_OY_CargoAmmo1 gb 298474.75 118760.84 0.00 
   Static157 Stationary.Environment.TentSmall_UK1 gb 298468.16 118767.33 0.00 
-  Static159 Stationary.Environment.TentSmall_UK1 gb 298474.88 118764.82 0.00 
   Static158 Stationary.Environment.TentSmall_UK1 gb 298468.06 118770.15 0.00 
+  Static159 Stationary.Environment.TentSmall_UK1 gb 298474.88 118764.82 0.00 
   Static160 Stationary.Environment.TentSmall_UK1 gb 298474.47 118767.78 0.00 
   Static161 Stationary.Environment.TentSmall_UK1 gb 298474.38 118771.24 0.00 
   Static154 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 298509.72 118746.84 0.00 
@@ -838,15 +834,15 @@
   Static141 Stationary.Bedford_MW_tent gb 298514.88 118880.91 0.00 /skin materialsDesert1
   Static140 Stationary.Bedford_MW_open gb 298574.19 118971.26 0.00 /skin materialsDesert1
   Static142 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 298436.47 119006.77 0.00 /skin materialsDesert1
-  Static121 Stationary.Scammell_Pioneer_TRMU30 gb 289540.91 119545.77 0.00 /skin materialsDesert1
   Static122 Stationary.Scammell_Pioneer_TRMU30 gb 289546.31 119539.00 0.00 /skin materialsDesert1
+  Static121 Stationary.Scammell_Pioneer_TRMU30 gb 289540.91 119545.77 0.00 /skin materialsDesert1
   Static124 Stationary.Environment.TentSmall_UK1 gb 289481.25 119572.20 0.00 
   Static133 Stationary.Bedford_OY_CargoAmmo1 gb 289488.00 119567.84 0.00 
-  Static132 Stationary.Bedford_OY_CargoAmmo1 gb 289487.78 119569.95 0.00 
   Static125 Stationary.Environment.TentSmall_UK1 gb 289481.00 119575.61 0.00 
+  Static132 Stationary.Bedford_OY_CargoAmmo1 gb 289487.78 119569.95 0.00 
   Static134 Stationary.Environment.CamoNetAT nn 289488.97 119570.07 0.00 
-  Static126 Stationary.Environment.TentSmall_UK1 gb 289481.03 119578.52 0.00 
   Static131 Stationary.Bedford_OY_CargoAmmo1 gb 289487.59 119572.03 0.00 
+  Static126 Stationary.Environment.TentSmall_UK1 gb 289481.03 119578.52 0.00 
   Static127 Stationary.Environment.TentSmall_UK1 gb 289480.94 119581.34 0.00 
   Static128 Stationary.Environment.TentSmall_UK1 gb 289487.75 119576.01 0.00 
   Static129 Stationary.Environment.TentSmall_UK1 gb 289487.31 119578.98 0.00 
@@ -872,32 +868,32 @@
   Static89 Stationary.Environment.SandBagWall_Arch nn 210485.77 130352.97 855.00 
   Static87 Stationary.Environment.SandBagWall_Arch nn 210488.69 130350.08 675.00 
   Static75 Stationary.Pz_35t de 210431.77 130400.61 675.00 
-  Static76 Stationary.Pz_35t de 210437.14 130382.48 675.00 
   Static77 Stationary.Pz_35t de 210441.33 130378.58 675.00 
+  Static76 Stationary.Pz_35t de 210437.14 130382.48 675.00 
   Static78 Stationary.Pz_35t de 210446.19 130384.81 675.00 
-  Static74 Stationary.Pz_35t de 210437.02 130404.92 675.00 
-  Static79 Stationary.Pz_35t de 210451.59 130390.36 675.00 
   Static80 Stationary.Pz_35t de 210448.11 130393.63 675.00 
   Static6 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 210450.63 130391.26 305.00 /hstart -9.6
+  Static74 Stationary.Pz_35t de 210437.02 130404.92 675.00 
+  Static79 Stationary.Pz_35t de 210451.59 130390.36 675.00 
   Static73 Stationary.Pz_35t de 210439.66 130408.26 675.00 
-  Static81 Stationary.Pz_35t de 210456.48 130395.66 675.00 
   Static82 Stationary.Pz_35t de 210452.73 130399.16 675.00 
+  Static81 Stationary.Pz_35t de 210456.48 130395.66 675.00 
   Static21 Stationary.Pz_35t de 210443.00 130412.09 675.00 
   Static4 Stationary.Pz_35t de 210446.11 130414.72 675.00 
   Static83 Stationary.Pz_35t de 210462.41 130400.95 675.00 
   Static84 Stationary.Pz_35t de 210459.00 130404.13 855.00 
   Static2 Stationary.Pz_35t de 210449.45 130416.63 675.00 
   Static843 Stationary.Pz_35t de 210484.84 130431.55 675.00 /skin MaterialsDesert1/pax_skin materialsDesert1_LW
-  Static92 Stationary.Environment.SandBagWall_Arch nn 210514.33 130417.09 555.00 
   Static93 Stationary.Environment.SandBagWall_Arch nn 210516.84 130415.61 645.00 
+  Static92 Stationary.Environment.SandBagWall_Arch nn 210514.33 130417.09 555.00 
   Static94 Stationary.Environment.SandBagWall_Arch nn 210515.75 130419.55 465.00 
   Static310 Stationary.Environment.TentSmall_UK1 gb 350534.03 129327.83 0.00 
   Static319 Stationary.Bedford_OY_CargoAmmo1 gb 350540.78 129323.48 0.00 
   Static311 Stationary.Environment.TentSmall_UK1 gb 350533.78 129331.24 0.00 
   Static318 Stationary.Bedford_OY_CargoAmmo1 gb 350540.56 129325.59 0.00 
   Static320 Stationary.Environment.CamoNetAT nn 350541.75 129325.71 0.00 
-  Static312 Stationary.Environment.TentSmall_UK1 gb 350533.81 129334.16 0.00 
   Static317 Stationary.Bedford_OY_CargoAmmo1 gb 350540.38 129327.66 0.00 
+  Static312 Stationary.Environment.TentSmall_UK1 gb 350533.81 129334.16 0.00 
   Static313 Stationary.Environment.TentSmall_UK1 gb 350533.72 129336.98 0.00 
   Static314 Stationary.Environment.TentSmall_UK1 gb 350540.53 129331.65 0.00 
   Static315 Stationary.Environment.TentSmall_UK1 gb 350540.09 129334.61 0.00 
@@ -939,11 +935,11 @@
   Static202 Stationary.Bedford_MW_open gb 341481.91 130434.66 0.00 /skin materialsDesert1
   Static246 Stationary.Scammell_Pioneer_TRMU30 gb 347333.00 130874.32 0.00 /skin materialsDesert1
   Static248 Stationary.Environment.TentSmall_UK1 gb 347267.91 130907.52 0.00 
-  Static257 Stationary.Bedford_OY_CargoAmmo1 gb 347274.69 130903.16 0.00 
   Static249 Stationary.Environment.TentSmall_UK1 gb 347267.66 130910.93 0.00 
+  Static257 Stationary.Bedford_OY_CargoAmmo1 gb 347274.69 130903.16 0.00 
   Static256 Stationary.Bedford_OY_CargoAmmo1 gb 347274.44 130905.27 0.00 
-  Static250 Stationary.Environment.TentSmall_UK1 gb 347267.69 130913.84 0.00 
   Static258 Stationary.Environment.CamoNetAT nn 347275.63 130905.40 0.00 
+  Static250 Stationary.Environment.TentSmall_UK1 gb 347267.69 130913.84 0.00 
   Static255 Stationary.Bedford_OY_CargoAmmo1 gb 347274.25 130907.35 0.00 
   Static251 Stationary.Environment.TentSmall_UK1 gb 347267.59 130916.66 0.00 
   Static252 Stationary.Environment.TentSmall_UK1 gb 347274.41 130911.33 0.00 
@@ -966,13 +962,13 @@
   Static276 Stationary.Scammell_Pioneer_TRMU30 gb 349697.09 133869.69 0.00 /skin materialsDesert1
   Static279 Stationary.Environment.TentSmall_UK1 gb 349637.44 133896.11 0.00 
   Static288 Stationary.Bedford_OY_CargoAmmo1 gb 349644.22 133891.77 0.00 
-  Static287 Stationary.Bedford_OY_CargoAmmo1 gb 349643.97 133893.88 0.00 
   Static280 Stationary.Environment.TentSmall_UK1 gb 349637.19 133899.53 0.00 
+  Static287 Stationary.Bedford_OY_CargoAmmo1 gb 349643.97 133893.88 0.00 
   Static286 Stationary.Bedford_OY_CargoAmmo1 gb 349643.78 133895.95 0.00 
-  Static281 Stationary.Environment.TentSmall_UK1 gb 349637.22 133902.44 0.00 
   Static289 Stationary.Environment.CamoNetAT nn 349645.16 133894.00 0.00 
-  Static282 Stationary.Environment.TentSmall_UK1 gb 349637.13 133905.27 0.00 
+  Static281 Stationary.Environment.TentSmall_UK1 gb 349637.22 133902.44 0.00 
   Static283 Stationary.Environment.TentSmall_UK1 gb 349643.94 133899.92 0.00 
+  Static282 Stationary.Environment.TentSmall_UK1 gb 349637.13 133905.27 0.00 
   Static284 Stationary.Environment.TentSmall_UK1 gb 349643.53 133902.89 0.00 
   Static285 Stationary.Environment.TentSmall_UK1 gb 349643.44 133906.36 0.00 
   Static1161 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 349648.50 133937.86 535.00 
@@ -989,8 +985,8 @@
   Static187 Stationary.Environment.TentSmall_UK1 gb 343403.84 134369.17 0.00 
   Static194 Stationary.Bedford_OY_CargoAmmo1 gb 343410.63 134363.50 0.00 
   Static196 Stationary.Environment.CamoNetAT nn 343411.81 134363.63 0.00 
-  Static193 Stationary.Bedford_OY_CargoAmmo1 gb 343410.44 134365.59 0.00 
   Static188 Stationary.Environment.TentSmall_UK1 gb 343403.88 134372.08 0.00 
+  Static193 Stationary.Bedford_OY_CargoAmmo1 gb 343410.44 134365.59 0.00 
   Static189 Stationary.Environment.TentSmall_UK1 gb 343403.78 134374.89 0.00 
   Static190 Stationary.Environment.TentSmall_UK1 gb 343410.59 134369.56 0.00 
   Static191 Stationary.Environment.TentSmall_UK1 gb 343410.16 134372.53 0.00 
@@ -1010,16 +1006,16 @@
   Static350 Stationary.Bedford_OY_CargoAmmo1 gb 346975.81 134638.91 0.00 
   Static342 Stationary.Environment.TentSmall_UK1 gb 346968.81 134646.67 0.00 
   Static349 Stationary.Bedford_OY_CargoAmmo1 gb 346975.59 134641.02 0.00 
-  Static343 Stationary.Environment.TentSmall_UK1 gb 346968.84 134649.59 0.00 
   Static351 Stationary.Environment.CamoNetAT nn 346976.78 134641.14 0.00 
+  Static343 Stationary.Environment.TentSmall_UK1 gb 346968.84 134649.59 0.00 
   Static348 Stationary.Bedford_OY_CargoAmmo1 gb 346975.41 134643.09 0.00 
   Static344 Stationary.Environment.TentSmall_UK1 gb 346968.75 134652.41 0.00 
   Static345 Stationary.Environment.TentSmall_UK1 gb 346975.56 134647.08 0.00 
   Static346 Stationary.Environment.TentSmall_UK1 gb 346975.13 134650.05 0.00 
   Static347 Stationary.Environment.TentSmall_UK1 gb 346975.06 134653.50 0.00 
   Static340 Stationary.3_inch_20_CWT_QF_Mk_I_Transport gb 347010.38 134629.11 0.00 
-  Static339 Stationary.Scammell_Pioneer_TRMU30 gb 347034.13 134610.06 0.00 
   Static338 Stationary.Scammell_Pioneer_TRMU30 gb 347028.72 134616.84 0.00 
+  Static339 Stationary.Scammell_Pioneer_TRMU30 gb 347034.13 134610.06 0.00 
   Static337 Stationary.Scammell_Pioneer_TRMU30 gb 347022.59 134624.31 0.00 
   Static335 Stationary.Bedford_MW_open gb 347072.41 134685.44 0.00 
   Static352 Stationary.Bedford_MW_open gb 346821.41 134745.66 0.00 
@@ -1040,8 +1036,8 @@
   Static11 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 348687.16 136549.03 535.00 
   Static837 Stationary.Environment.JP3_Generator_15_KW_UK1 de 262282.53 147763.27 0.00 
   Static999 Stationary.Environment.CamoNetCrates nn 156825.97 184881.86 395.00 
-  Static1001 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 156830.80 184877.73 25.00 
   Static1000 Stationary.Environment.TentZeltbahnBig_GER1 de 156830.73 184877.63 393.60 
+  Static1001 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 156830.80 184877.73 25.00 
   Static1003 Stationary.Environment.Anlasswagen_(starter)_GER1 de 156827.80 184881.86 35.00 
   Static1002 Stationary.Environment.Maschinensatz_8_KW_GER1 de 156826.55 184883.55 395.00 
   Static1005 Stationary.Opel_Blitz_radio_transport de 156838.86 184874.19 305.00 
@@ -1054,19 +1050,19 @@
   Static1009 Stationary.Environment.TentStaffSmall_GER1 de 156771.33 184950.86 215.00 
   Static1004 Stationary.Environment.TentZeltbahn_GER1 de 156800.83 184909.66 215.00 
   Static992 Stationary.Environment.FuelDrum_GER1_9 nn 156963.48 184921.31 20.00 
-  Static994 Stationary.Kubelwagen de 156961.44 184927.86 110.00 
   Static993 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 156966.86 184922.09 110.00 
+  Static994 Stationary.Kubelwagen de 156961.44 184927.86 110.00 
   Static995 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 156965.22 184926.22 20.00 
-  Static997 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 156970.23 184923.42 110.00 
   Static996 Stationary.Environment.CamoNetPlane nn 156967.55 184926.58 110.00 
+  Static997 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 156970.23 184923.42 110.00 
   Static998 Stationary.Environment.Gulaschkanone_GER1 de 156971.98 184929.58 110.00 
-  Static967 Stationary.Environment.CamoNetPlane nn 156662.08 185073.08 400.00 
-  Static968 Stationary.Kubelwagen de 156663.58 185072.78 40.00 
   Static966 Stationary.Kubelwagen de 156666.69 185069.22 400.00 
-  Static970 Stationary.Kubelwagen de 156658.97 185078.28 40.00 
-  Static972 Stationary.Kubelwagen de 156660.41 185076.48 40.00 
+  Static968 Stationary.Kubelwagen de 156663.58 185072.78 40.00 
+  Static967 Stationary.Environment.CamoNetPlane nn 156662.08 185073.08 400.00 
   Static971 Stationary.Kubelwagen de 156662.02 185074.69 40.00 
   Static969 Stationary.Kubelwagen de 156665.05 185071.05 400.00 
+  Static970 Stationary.Kubelwagen de 156658.97 185078.28 40.00 
+  Static972 Stationary.Kubelwagen de 156660.41 185076.48 40.00 
   Static962 Stationary.Ford_G917 de 157036.16 185037.22 -180.00 
   Static963 Stationary.Ford_G917 de 157036.19 185039.91 -180.00 
   Static964 Stationary.Opel_Blitz_tent de 157035.86 185043.36 180.00 
@@ -1099,9 +1095,9 @@
   Static988 Stationary.Environment.CamoNetPlane nn 156756.44 185254.72 300.00 
   Static989 Stationary.Ford_G917 de 156758.44 185255.02 -60.00 
   Static990 Stationary.Ford_G917 de 156761.36 185256.81 -60.00 
-  Static953 Stationary.Opel_Blitz_tent de 156977.94 185236.69 220.00 
-  Static950 Stationary.Opel_Blitz_tent de 156984.69 185229.27 220.00 
   Static952 Stationary.Opel_Blitz_tent de 156982.41 185231.94 220.00 
+  Static950 Stationary.Opel_Blitz_tent de 156984.69 185229.27 220.00 
+  Static953 Stationary.Opel_Blitz_tent de 156977.94 185236.69 220.00 
   Static951 Stationary.Opel_Blitz_tent de 156980.27 185234.28 220.00 
   Static954 Stationary.Environment.CamoNetPlane nn 156982.80 185234.31 220.00 
   Static25 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 162750.89 185220.61 535.00 
@@ -1136,8 +1132,8 @@
   Static24 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 158885.06 187133.25 535.00 
   Static878 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158910.19 187120.48 675.00 
   Static855 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158914.77 187110.94 675.00 
-  Static890 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 158913.95 187123.34 820.00 /hstart -4
   Static866 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158922.23 187114.67 675.00 
+  Static890 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 158913.95 187123.34 820.00 /hstart -4
   Static884 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 158859.83 187146.75 820.00 /hstart -4
   Static872 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158852.89 187155.78 675.00 
   Static854 Stationary.Environment.JerryCan_UK1_4-Gallon_20 de 158859.53 187164.50 675.00 
@@ -1178,8 +1174,8 @@
   Static36 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75490.27 225508.27 535.00 
   Static44 Stationary.Environment.JerryCan_UK1_4-Gallon_2 nn 75650.46 225820.83 535.00 
   Static1070 Stationary.Environment.CamoNetCrates nn 31262.53 241850.38 395.00 
-  Static1072 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 31267.37 241846.23 25.00 
   Static1071 Stationary.Environment.TentZeltbahnBig_GER1 de 31267.31 241846.13 393.60 
+  Static1072 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 31267.37 241846.23 25.00 
   Static1074 Stationary.Environment.Anlasswagen_(starter)_GER1 de 31264.37 241850.38 35.00 
   Static1073 Stationary.Environment.Maschinensatz_8_KW_GER1 de 31263.12 241852.05 395.00 
   Static1076 Stationary.Opel_Blitz_radio_transport de 31275.43 241842.69 305.00 
@@ -1192,19 +1188,19 @@
   Static1075 Stationary.Environment.TentZeltbahn_GER1 de 31237.40 241878.16 215.00 
   Static1077 Stationary.Environment.TentTroopLarge_GER1 de 31232.59 241885.13 215.00 
   Static1063 Stationary.Environment.FuelDrum_GER1_9 nn 31400.06 241889.83 20.00 
-  Static1064 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 31403.43 241890.59 110.00 
   Static1065 Stationary.Kubelwagen de 31397.10 241896.38 110.00 
+  Static1064 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 31403.43 241890.59 110.00 
   Static1066 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 31401.78 241894.73 20.00 
   Static1068 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 31406.81 241891.94 110.00 
   Static1067 Stationary.Environment.CamoNetPlane nn 31404.12 241895.09 110.00 
   Static1069 Stationary.Environment.Gulaschkanone_GER1 de 31408.56 241898.09 110.00 
   Static1038 Stationary.Environment.CamoNetPlane nn 31098.65 242041.59 400.00 
-  Static1037 Stationary.Kubelwagen de 31103.25 242037.73 400.00 
-  Static1040 Stationary.Kubelwagen de 31101.62 242039.55 400.00 
   Static1043 Stationary.Kubelwagen de 31096.97 242044.98 40.00 
-  Static1039 Stationary.Kubelwagen de 31100.15 242041.30 40.00 
-  Static1042 Stationary.Kubelwagen de 31098.59 242043.19 40.00 
+  Static1040 Stationary.Kubelwagen de 31101.62 242039.55 400.00 
+  Static1037 Stationary.Kubelwagen de 31103.25 242037.73 400.00 
   Static1041 Stationary.Kubelwagen de 31095.53 242046.80 40.00 
+  Static1042 Stationary.Kubelwagen de 31098.59 242043.19 40.00 
+  Static1039 Stationary.Kubelwagen de 31100.15 242041.30 40.00 
   Static1033 Stationary.Ford_G917 de 31472.72 242005.73 -180.00 
   Static1034 Stationary.Ford_G917 de 31472.75 242008.41 -180.00 
   Static1035 Stationary.Opel_Blitz_tent de 31472.43 242011.88 180.00 
@@ -1221,8 +1217,8 @@
   Static1048 Stationary.Kubelwagen de 31101.15 242175.88 305.00 
   Static1016 Stationary.Opel_Blitz_tent de 31446.84 242161.77 215.00 
   Static1017 Stationary.Opel_Blitz_tent de 31444.56 242164.44 215.00 
-  Static1018 Stationary.Opel_Blitz_tent de 31440.62 242169.66 215.00 
   Static1019 Stationary.Opel_Blitz_tent de 31442.65 242167.09 215.00 
+  Static1018 Stationary.Opel_Blitz_tent de 31440.62 242169.66 215.00 
   Static1020 Stationary.Environment.CamoNetPlane nn 31445.50 242166.83 215.00 
   Static1049 Stationary.Environment.TentZeltbahnBig_GER1 de 31114.47 242184.77 305.00 
   Static1050 Stationary.Opel_Blitz_cargo_med de 31120.09 242187.08 305.00 
@@ -1237,20 +1233,20 @@
   Static1059 Stationary.Environment.CamoNetPlane nn 31192.10 242223.23 300.00 
   Static1060 Stationary.Ford_G917 de 31194.10 242223.52 -60.00 
   Static1061 Stationary.Ford_G917 de 31197.93 242225.33 -60.00 
-  Static1021 Stationary.Opel_Blitz_tent de 31421.25 242197.77 220.00 
-  Static1022 Stationary.Opel_Blitz_tent de 31416.84 242202.80 220.00 
   Static1023 Stationary.Opel_Blitz_tent de 31418.97 242200.44 220.00 
+  Static1022 Stationary.Opel_Blitz_tent de 31416.84 242202.80 220.00 
+  Static1021 Stationary.Opel_Blitz_tent de 31421.25 242197.77 220.00 
   Static1024 Stationary.Opel_Blitz_tent de 31414.50 242205.19 220.00 
   Static1025 Stationary.Environment.CamoNetPlane nn 31419.37 242202.83 220.00 
   Static1152 Stationary.Environment.TentTroopLarge_GER1 de 36411.57 259007.11 215.00 
   Static1141 Stationary.Environment.CamoNetCrates nn 36446.43 258965.45 395.00 
-  Static1142 Stationary.Environment.TentZeltbahnBig_GER1 de 36451.20 258961.22 393.60 
   Static1143 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 36451.27 258961.33 25.00 
+  Static1142 Stationary.Environment.TentZeltbahnBig_GER1 de 36451.20 258961.22 393.60 
   Static1145 Stationary.Environment.Anlasswagen_(starter)_GER1 de 36448.27 258965.45 35.00 
-  Static1144 Stationary.Environment.Maschinensatz_8_KW_GER1 de 36447.02 258967.14 395.00 
   Static1146 Stationary.Environment.TentZeltbahn_GER1 de 36421.29 258993.25 215.00 
-  Static1147 Stationary.Opel_Blitz_radio_transport de 36459.32 258957.78 305.00 
+  Static1144 Stationary.Environment.Maschinensatz_8_KW_GER1 de 36447.02 258967.14 395.00 
   Static1148 Stationary.Environment.TentTroopLarge_GER1 de 36416.48 259000.22 215.00 
+  Static1147 Stationary.Opel_Blitz_radio_transport de 36459.32 258957.78 305.00 
   Static1149 Stationary.Radar.Wotan_II_ADD1 de 36451.20 258969.17 305.00 
   Static1134 Stationary.Environment.FuelDrum_GER1_9 nn 36583.95 259004.91 20.00 
   Static1135 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 36587.32 259005.69 110.00 
@@ -1269,12 +1265,12 @@
   Static1107 Stationary.Environment.CamoNetPlane nn 36657.93 259126.50 180.00 
   Static1086 Stationary.Opel_Blitz_tent de 36656.07 259131.17 180.00 
   Static1109 Stationary.Environment.CamoNetPlane nn 36282.54 259156.67 400.00 
-  Static1111 Stationary.Kubelwagen de 36285.52 259154.64 400.00 
   Static1108 Stationary.Kubelwagen de 36287.14 259152.81 400.00 
-  Static1110 Stationary.Kubelwagen de 36284.04 259156.38 40.00 
-  Static1113 Stationary.Kubelwagen de 36282.48 259158.28 40.00 
+  Static1111 Stationary.Kubelwagen de 36285.52 259154.64 400.00 
   Static1112 Stationary.Kubelwagen de 36279.43 259161.88 40.00 
   Static1114 Stationary.Kubelwagen de 36280.86 259160.08 40.00 
+  Static1110 Stationary.Kubelwagen de 36284.04 259156.38 40.00 
+  Static1113 Stationary.Kubelwagen de 36282.48 259158.28 40.00 
   Static1099 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 36484.68 259184.45 180.00 /hstart -1
   Static1100 Stationary.Environment.Em_4m_R(H)34_GER1 de 36499.57 259172.20 90.00 /hstart -1
   Static1101 Stationary.Environment.Portable_Siren_GER1 de 36497.27 259176.20 180.00 /hstart -1
@@ -1291,15 +1287,15 @@
   Static1124 Stationary.Ford_G917 de 36357.14 259325.56 -60.00 
   Static1125 Stationary.Environment.CamoNetPlane nn 36358.11 259327.34 300.00 
   Static1126 Stationary.Ford_G917 de 36360.23 259327.38 -60.00 
-  Static1094 Stationary.Opel_Blitz_tent de 36602.86 259315.53 220.00 
-  Static1092 Stationary.Opel_Blitz_tent de 36605.14 259312.86 220.00 
   Static1093 Stationary.Opel_Blitz_tent de 36600.73 259317.88 220.00 
+  Static1092 Stationary.Opel_Blitz_tent de 36605.14 259312.86 220.00 
+  Static1094 Stationary.Opel_Blitz_tent de 36602.86 259315.53 220.00 
   Static1095 Stationary.Opel_Blitz_tent de 36598.39 259320.28 220.00 
   Static1096 Stationary.Environment.CamoNetPlane nn 36603.27 259317.91 220.00 
   Static1087 Stationary.Opel_Blitz_tent de 36630.73 259276.86 215.00 
   Static1088 Stationary.Opel_Blitz_tent de 36628.45 259279.53 215.00 
-  Static1090 Stationary.Opel_Blitz_tent de 36626.54 259282.19 215.00 
   Static1089 Stationary.Opel_Blitz_tent de 36624.52 259284.75 215.00 
+  Static1090 Stationary.Opel_Blitz_tent de 36626.54 259282.19 215.00 
   Static1091 Stationary.Environment.CamoNetPlane nn 36629.39 259281.91 215.00 
   Static1127 Stationary.Ford_G917 de 36363.32 259329.28 -60.00 
   Static1128 Stationary.Ford_G917 de 36372.73 259335.00 -60.00 
@@ -1480,8 +1476,6 @@
   Walrus1.5 ASpawnGroup 1 tobruk:Tobruk_SAAF_B_24Sqn.07
 [BirthPlace]
   Sidi_Barrani 1 342085 129234 0 1 1 1 . . . 0
-  Sawani_el_qasn 1 313761 107269 0 1 1 1 . . . 0
-  Alam_Baghut 1 288824 119325 0 1 1 1 . . . 0
   Burj_Aleaqarab 1 365536 22212 0 1 1 1 . . . 0
   Siwi_Town 1 340335 19554 0 1 1 1 . . . 0
   Haqfat_Sha'ban 2 142848 154881 0 1 1 1 . . . 0
@@ -1553,63 +1547,35 @@
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
   tobruk:Aircraft.WellingtonMkIa_trop
+[BirthPlace2]
+  tobruk:Aircraft.BeaufighterMkIC_Trop
+  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
+  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Trop
+  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
+  tobruk:Aircraft.DH82A_Trop
+  tobruk:Aircraft.GladiatorMkII_trop
+  tobruk:Aircraft.HurricaneMkI_FB-Trop
+  tobruk:Aircraft.HurricaneMkIIaTrop
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIbTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop-Late
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIIc-Trop
+  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
+  tobruk:Aircraft.HurricaneMkIId-Trop
+  tobruk:Aircraft.MartletMkIII_Trop
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVb-HF-Trop
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+  tobruk:Aircraft.WellingtonMkIc_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
 [BirthPlace3]
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Trop
-  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
-  tobruk:Aircraft.DH82A_Trop
-  tobruk:Aircraft.GladiatorMkII_trop
-  tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb-Late
-  tobruk:Aircraft.HurricaneMkIIbTrop
-  tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc-Late
-  tobruk:Aircraft.HurricaneMkIIc-Trop
-  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkVb-HF-Late
-  tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
-  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  tobruk:Aircraft.WellingtonMkIc_trop
-  tobruk:Aircraft.WellingtonMkIa_trop
-[BirthPlace4]
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Trop
-  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
-  tobruk:Aircraft.DH82A_Trop
-  tobruk:Aircraft.GladiatorMkII_trop
-  tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIb-Late
-  tobruk:Aircraft.HurricaneMkIIbTrop
-  tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc-Late
-  tobruk:Aircraft.HurricaneMkIIc-Trop
-  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkVb-HF-Late
-  tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo
-  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  tobruk:Aircraft.WellingtonMkIc_trop
-  tobruk:Aircraft.WellingtonMkIa_trop
-[BirthPlace5]
   tobruk:Aircraft.Bf-108B-2_Trop
   tobruk:Aircraft.Bf-109E-7_Trop
   tobruk:Aircraft.Bf-109E-7N_Trop
@@ -1623,7 +1589,7 @@
   tobruk:Aircraft.Bf-110C-7_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1635,6 +1601,58 @@
   tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
   tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace4]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace5]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.BR-20M_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace6]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1648,9 +1666,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1659,9 +1677,7 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
-  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
-  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace7]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1675,9 +1691,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1686,7 +1702,9 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace8]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1700,9 +1718,9 @@
   tobruk:Aircraft.Bf-110C-4N-NJG_Trop
   tobruk:Aircraft.Bf-110C-6_Trop
   tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1711,7 +1729,9 @@
   tobruk:Aircraft.Ju-88C-2_Trop
   tobruk:Aircraft.Ju-88C-4_Trop
   tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
   tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace9]
   tobruk:Aircraft.Bf-108B-2_Trop
@@ -1727,7 +1747,7 @@
   tobruk:Aircraft.Bf-110C-7_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1741,32 +1761,33 @@
   tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace10]
-  tobruk:Aircraft.Bf-108B-2_Trop
-  tobruk:Aircraft.Bf-109E-7_Trop
-  tobruk:Aircraft.Bf-109E-7N_Trop
-  tobruk:Aircraft.Bf-109F-2_Trop
-  tobruk:Aircraft.Bf-109F-4_trop
-  tobruk:Aircraft.Bf-109F-4_trop_Derated
-  tobruk:Aircraft.Bf-109F-4Z_trop
-  tobruk:Aircraft.Bf-110C-4B_Trop
-  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
-  tobruk:Aircraft.Bf-110C-6_Trop
-  tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.CR42_Trop
-  tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
-  tobruk:Aircraft.He-111H-2_Trop
-  tobruk:Aircraft.He-111H-6_Trop
-  tobruk:Aircraft.Ju-87B-2_Trop
-  tobruk:Aircraft.Ju-88A-5_Trop
-  tobruk:Aircraft.Ju-88A-5Late_Trop
-  tobruk:Aircraft.Ju-88C-2_Trop
-  tobruk:Aircraft.Ju-88C-4_Trop
-  tobruk:Aircraft.Ju-88C-4Late_Trop
-  tobruk:Aircraft.Macchi-C202-SeriesIII
-  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
-  tobruk:Aircraft.Macchi-C202-SeriesVII
-  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+  tobruk:Aircraft.BeaufighterMkIC_Trop
+  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
+  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Late_Trop
+  tobruk:Aircraft.BlenheimMkIV_Trop
+  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
+  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.DH82A_Trop
+  tobruk:Aircraft.GladiatorMkII_trop
+  tobruk:Aircraft.HurricaneMkI_FB-Trop
+  tobruk:Aircraft.HurricaneMkIIaTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop
+  tobruk:Aircraft.HurricaneMkIIbTrop-Late
+  tobruk:Aircraft.HurricaneMkIIc-Trop
+  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
+  tobruk:Aircraft.HurricaneMkIId-Trop
+  tobruk:Aircraft.KittyhawkMkIA-Trop
+  tobruk:Aircraft.MartletMkIII_Trop
+  tobruk:Aircraft.SpitfireMkVb-HF-Trop
+  tobruk:Aircraft.SpitfireMkVbTrop
+  tobruk:Aircraft.TomahawkMkII-Late-Trop
+  tobruk:Aircraft.TomahawkMkII-Trop
+  tobruk:Aircraft.WellingtonMkIc_Late_trop
+  tobruk:Aircraft.WellingtonMkIa_trop
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+  tobruk:Aircraft.WellingtonMkIc_trop
 [BirthPlace11]
   tobruk:Aircraft.Bf-108B-2_Trop
   tobruk:Aircraft.Bf-109E-7_Trop
@@ -1781,7 +1802,7 @@
   tobruk:Aircraft.Bf-110C-7_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1795,6 +1816,33 @@
   tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace12]
+  tobruk:Aircraft.Bf-108B-2_Trop
+  tobruk:Aircraft.Bf-109E-7_Trop
+  tobruk:Aircraft.Bf-109E-7N_Trop
+  tobruk:Aircraft.Bf-109F-2_Trop
+  tobruk:Aircraft.Bf-109F-4_trop
+  tobruk:Aircraft.Bf-109F-4_trop_Derated
+  tobruk:Aircraft.Bf-109F-4Z_trop
+  tobruk:Aircraft.Bf-110C-4B_Trop
+  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
+  tobruk:Aircraft.Bf-110C-6_Trop
+  tobruk:Aircraft.Bf-110C-7_Trop
+  tobruk:Aircraft.CR42_Trop
+  tobruk:Aircraft.G50_Trop
+  tobruk:Aircraft.BR-20M_Trop
+  tobruk:Aircraft.He-111H-2_Trop
+  tobruk:Aircraft.He-111H-6_Trop
+  tobruk:Aircraft.Ju-87B-2_Trop
+  tobruk:Aircraft.Ju-88A-5_Trop
+  tobruk:Aircraft.Ju-88A-5Late_Trop
+  tobruk:Aircraft.Ju-88C-2_Trop
+  tobruk:Aircraft.Ju-88C-4_Trop
+  tobruk:Aircraft.Ju-88C-4Late_Trop
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace13]
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop
@@ -1822,33 +1870,6 @@
   tobruk:Aircraft.WellingtonMkIa_trop
   tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
   tobruk:Aircraft.WellingtonMkIc_trop
-[BirthPlace13]
-  tobruk:Aircraft.Bf-108B-2_Trop
-  tobruk:Aircraft.Bf-109E-7_Trop
-  tobruk:Aircraft.Bf-109E-7N_Trop
-  tobruk:Aircraft.Bf-109F-2_Trop
-  tobruk:Aircraft.Bf-109F-4_trop
-  tobruk:Aircraft.Bf-109F-4_trop_Derated
-  tobruk:Aircraft.Bf-109F-4Z_trop
-  tobruk:Aircraft.Bf-110C-4B_Trop
-  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
-  tobruk:Aircraft.Bf-110C-6_Trop
-  tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.CR42_Trop
-  tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
-  tobruk:Aircraft.He-111H-2_Trop
-  tobruk:Aircraft.He-111H-6_Trop
-  tobruk:Aircraft.Ju-87B-2_Trop
-  tobruk:Aircraft.Ju-88A-5_Trop
-  tobruk:Aircraft.Ju-88A-5Late_Trop
-  tobruk:Aircraft.Ju-88C-2_Trop
-  tobruk:Aircraft.Ju-88C-4_Trop
-  tobruk:Aircraft.Ju-88C-4Late_Trop
-  tobruk:Aircraft.Macchi-C202-SeriesIII
-  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
-  tobruk:Aircraft.Macchi-C202-SeriesVII
-  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace14]
   tobruk:Aircraft.Bf-108B-2_Trop
   tobruk:Aircraft.Bf-109E-7_Trop
@@ -1863,7 +1884,7 @@
   tobruk:Aircraft.Bf-110C-7_Trop
   tobruk:Aircraft.CR42_Trop
   tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
+  tobruk:Aircraft.BR-20M_Trop
   tobruk:Aircraft.He-111H-2_Trop
   tobruk:Aircraft.He-111H-6_Trop
   tobruk:Aircraft.Ju-87B-2_Trop
@@ -1877,61 +1898,6 @@
   tobruk:Aircraft.Macchi-C202-SeriesVII
   tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
 [BirthPlace15]
-  tobruk:Aircraft.BeaufighterMkIC_Trop
-  tobruk:Aircraft.BeaufighterMkIF_Late_Trop
-  tobruk:Aircraft.BeaufighterMkINF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  tobruk:Aircraft.BlenheimMkIV_Trop
-  tobruk:Aircraft.BlenheimMkIVF_Late_Trop
-  tobruk:Aircraft.BlenheimMkIVNF_Late_Trop
-  tobruk:Aircraft.D520_Serie1
-  tobruk:Aircraft.DH82A_Trop
-  tobruk:Aircraft.GladiatorMkII_trop
-  tobruk:Aircraft.HurricaneMkI_FB-Trop
-  tobruk:Aircraft.HurricaneMkIIaTrop
-  tobruk:Aircraft.HurricaneMkIIbTrop
-  tobruk:Aircraft.HurricaneMkIIbTrop-Late
-  tobruk:Aircraft.HurricaneMkIIc-Trop
-  tobruk:Aircraft.HurricaneMkIIc-Trop-Late
-  tobruk:Aircraft.HurricaneMkIId-Trop
-  tobruk:Aircraft.KittyhawkMkIA-Trop
-  tobruk:Aircraft.MartletMkIII_Trop
-  tobruk:Aircraft.SpitfireMkVb-HF-Trop
-  tobruk:Aircraft.SpitfireMkVbTrop
-  tobruk:Aircraft.TomahawkMkII-Late-Trop
-  tobruk:Aircraft.TomahawkMkII-Trop
-  tobruk:Aircraft.WellingtonMkIc_Late_trop
-  tobruk:Aircraft.WellingtonMkIa_trop
-  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  tobruk:Aircraft.WellingtonMkIc_trop
-[BirthPlace16]
-  tobruk:Aircraft.Bf-108B-2_Trop
-  tobruk:Aircraft.Bf-109E-7_Trop
-  tobruk:Aircraft.Bf-109E-7N_Trop
-  tobruk:Aircraft.Bf-109F-2_Trop
-  tobruk:Aircraft.Bf-109F-4_trop
-  tobruk:Aircraft.Bf-109F-4_trop_Derated
-  tobruk:Aircraft.Bf-109F-4Z_trop
-  tobruk:Aircraft.Bf-110C-4B_Trop
-  tobruk:Aircraft.Bf-110C-4N-NJG_Trop
-  tobruk:Aircraft.Bf-110C-6_Trop
-  tobruk:Aircraft.Bf-110C-7_Trop
-  tobruk:Aircraft.CR42_Trop
-  tobruk:Aircraft.G50_Trop
-  tobruk:Aircraft.BR-20M_Trop  
-  tobruk:Aircraft.He-111H-2_Trop
-  tobruk:Aircraft.He-111H-6_Trop
-  tobruk:Aircraft.Ju-87B-2_Trop
-  tobruk:Aircraft.Ju-88A-5_Trop
-  tobruk:Aircraft.Ju-88A-5Late_Trop
-  tobruk:Aircraft.Ju-88C-2_Trop
-  tobruk:Aircraft.Ju-88C-4_Trop
-  tobruk:Aircraft.Ju-88C-4Late_Trop
-  tobruk:Aircraft.Macchi-C202-SeriesIII
-  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
-  tobruk:Aircraft.Macchi-C202-SeriesVII
-  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
-[BirthPlace17]
   tobruk:Aircraft.BeaufighterMkIC_Trop
   tobruk:Aircraft.BeaufighterMkIF_Late_Trop
   tobruk:Aircraft.BeaufighterMkINF_Late_Trop

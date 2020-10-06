@@ -438,6 +438,28 @@ public class BattlePos100 : TWCMissionBattles
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Awdyat Fuel Dump", "AwD", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-AwdyatFuel.mis", 1, 5, "BAwdyatFuelDump", 235348, 27829, 150, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
 
 
+        /***************************************
+         * RED & BLUE LANDING GROUND OBJECTIVES
+         * 
+         * This is a little different from the others - it is on FRIENDLY or NEUTRAL territory (never ENEMY territory)
+         * It MUST BE an existing airport or Landing Ground that is on the map but which DOES NOT have a birthplace/spawn point associated with it
+         * The players activate the airport/landing ground/spawn point by taking 3 or more players/planes, landing safely at the new LG, and using chat command <makelg to register it
+         * OwnerArmy and AttackingArmy are BOTH THE SAME for this objective.  They are BOTH set (automatically per your setting for "ownerarmy") to the army that will own the airport.
+         * It is possible to set one LG in neutral territory that is an objective for BOTH SIDES.  Whichever gets it first will own it and the other side will be out of luck.
+         * *************************************/
+
+        // public void addLandingGround(string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 2, int flak_numbinbattery = 2, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "",  string comment = "", bool addNewOnly = false)
+
+        mmo.addLandingGround(objective_id: "RLGAlamBarghut", name: "Alum Barghut LG", pos: new Point3d(288873,119366,0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5, 
+            timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 1, auto_flak: true, auto_flak_ifprimary: true, 
+            flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None, 
+            chief_name: "", comment: "", addNewOnly: false);
+
+        mmo.addLandingGround(objective_id: "BLGBardia", name: "Bardia LG", pos: new Point3d(266311, 146991, 0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5,
+            timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 2, auto_flak: true, auto_flak_ifprimary: true,
+            flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None,
+            chief_name: "", comment: "", addNewOnly: false);
+
 
         if (current_subclass != null)
         {

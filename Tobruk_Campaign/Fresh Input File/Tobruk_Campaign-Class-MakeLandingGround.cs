@@ -88,6 +88,111 @@ public class LandingGroundMission : AMission
         catch (Exception ex) { Console.WriteLine("MakeLandingGround OnMissionLoaded() ERROR: " + ex.ToString()); }
     }
 
+    //Checks if the LG is one of the listed mission objectives; also gives points etc if so (sends to MO_DestroyObjective())
+    public string checkIfTempLandingGroundIsMissionObjective(Point3d pos, int army, HashSet<string> planes)
+    {
+        foreach (Mission.MissionObjective mo in mainmission.MissionObjectivesList.Values)
+        {
+
+            //mainmission.MissionObjective mo
+            if (mo.MOTriggerType != Mission.MO_TriggerType.TemporaryLandingGround) continue;
+
+            double dist_m = Calcs.CalculatePointDistance(pos, mo.Pos);
+
+            if (dist_m > 1500) continue;
+            if (army != mo.OwnerArmy) continue;
+
+            if (mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(DateTime.UtcNow) > 0) continue; //The tempLG has already been made and is still active; can't re-make it
+
+            //It IS on the objectives list!
+            //We'll say temp landing grounds last for 3 days
+            mo.BirthplaceACTypes = planes;
+            mainmission.MO_DestroyObjective(mo.ID); //This will set the OBJECTIVE as 'complete' (=destroyed) and keep the new LG alive for the time amount specified in the creation of the MissionObjective.  Could be a few days, whatever.            
+            return mo.Name;
+
+            //renewTempLandingGround(mo.Pos, mo.OwnerArmy, mo.BirthplaceACTypes, mo.AirfieldName);
+        }
+
+        return "";
+
+    }
+
+    //We can just run all MOs through this routine, say at the start of a mission, and it will re-constitute any LGs that are still alive
+    public void renewTempLandingGround(Mission.MissionObjective mo)
+    {
+        Console.WriteLine("renewTempLandingGround: Starting to renew " + mo.ID + " " + mo.Name);
+        if (mo.MOTriggerType == null ||  mo.MOTriggerType != Mission.MO_TriggerType.TemporaryLandingGround )
+        {
+            Console.WriteLine("renewTempLandingGround PROBLEM: Objective was not triggertype TemporaryLandingGround " + mo.ID);
+            return;
+        }
+
+        //mo.TimeToUndestroy_UTC.HasValue && mo.TimeToUndestroy_UTC.Value.CompareTo(DateTime.UtcNow) > 0
+
+        if (!mo.TimeToUndestroy_UTC.HasValue ||  mo.TimeToUndestroy_UTC.Value.CompareTo(DateTime.UtcNow) <= 0)
+        {
+            Console.WriteLine("renewTempLandingGround: Objective's time has expired, so the Landing Ground was not created, for " + mo.ID);
+            return;
+        }
+
+        if (mo.BirthplaceACTypes != null) Console.WriteLine("TempLG: PLaneset way before {0} " + mo.BirthplaceACTypes.ToString(), mo.BirthplaceACTypes.Count);
+
+        HashSet<string> planeSet = new HashSet<string>(); //The routines below alter planeSet in various ways & we don't necessarily want that to apply to mo.BirthplacACTypes.  So we make a fresh copy.
+                                                                              //(HashSet is a reference type, so anything that happens in the functions changes the original, too)
+
+        if (mo.BirthplaceACTypes != null) planeSet = new HashSet<string>(mo.BirthplaceACTypes); //The routines below alter planeSet in various ways & we don't necessarily8 want that to apply to mo.BirthplacACTypes.  So we make a fresh copy.
+
+        renewTempLandingGround(mo.Pos, mo.OwnerArmy, planeSet, mo.Name);
+
+    }
+
+    //Make a temporary landing ground spawn point
+    /*
+     * TODO:
+     *   * Require 2-3-4 or whatever planes landed in the area
+     *   * Check that planes are un damaged or have less than some threshhold of damage
+     *   * Check that it is at or near an actual LG?
+     *   * Probably need to add airdrome points, runway points or ?  Perhaps  only if not on an LG?
+     *   
+     */
+    public void renewTempLandingGround(Point3d pos, int army, HashSet<string> planeSet, string name)
+    {
+        
+        AiAirport ap = nearestAirportWithNoSpawn(pos, army: 0, isSeaplane: false, checkNoSpawn: false); //Get nearest airport, REGARDLESS of spawn point existing.  Get airports of both armies; we'll have to check that later.
+
+        Point3d apPos = (ap as AiActor).Pos();
+
+        double nearestAirfield_dist_m = Calcs.CalculatePointDistance(pos, (ap as AiActor).Pos());
+
+        int terr = GamePlay.gpFrontArmy(apPos.x, apPos.y);
+
+        if (nearestAirfield_dist_m > 1500  || ( terr != 0 && terr != army) ) //reject if nearest ap is too far away OR the wrong army (neutral ground is OK)
+        {
+            Console.WriteLine("PROBLEM: Couldn't RENEW temporary Landing Ground in sector " + Calcs.correctedSectorName(this, pos) + " distance: {0} ownerarmy: {1} territory army: {2}", new object[] {nearestAirfield_dist_m, army, terr });
+        }        
+
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+
+        f = CreateBirthPlace(f, apPos.x, apPos.y, 0, army, planeSet, name: name);
+
+        GamePlay.gpPostMissionLoad(f);
+
+        Console.WriteLine("RENEWED temporary Landing Ground {0} in sector " + Calcs.correctedSectorName(this, apPos), new object[] { name });
+        string saveName = "makeLG.txt";
+        try
+        {
+            if (saveName != null)
+            {
+                string sn = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/sectionfiles" + "/" + saveName;
+                Console.WriteLine("Saving section file to " + sn);
+                f.save(sn); //testing
+            }
+
+        }
+        catch (Exception ex) { Console.WriteLine("renewTempLandingGround ERROR: " + ex.ToString()); }
+
+    }
+
 
     //Make a temporary landing ground spawn point
     /*
@@ -186,13 +291,26 @@ public class LandingGroundMission : AMission
             return;
         }
 
+        Console.WriteLine("TempLG: PLaneset on creation {0} " + planeSet.ToString(), planeSet.Count);
+        
+
+        string name = checkIfTempLandingGroundIsMissionObjective(pos, player.Army(), planeSet); //Checks if the LG is one of the listed mission objectives; also gives points etc if so
+        
+        name = name.Replace(" ", "_"); //Loading birthplaces, it doesn't seem to like SPACES at all.  So, we won't use any.
+
+        if (name == "")
+        {
+            name = "Landing_Ground_" + ran.Next(1000, 9999).ToString("F0");
+            mainmission.twcLogServer(null, "A new temporary Landing Ground was created by {0} in sector " + Calcs.correctedSectorName(this, pos), new object[] { player.Name() });
+        }
+
         ISectionFile f = GamePlay.gpCreateSectionFile();
 
-        f = CreateBirthPlace(f, pos.x, pos.y, 0, player.Army(), planeSet);
+        f = CreateBirthPlace(f, pos.x, pos.y, 0, player.Army(), planeSet, name: name);
 
-        GamePlay.gpPostMissionLoad(f);
+        GamePlay.gpPostMissionLoad(f);        
 
-        mainmission.twcLogServer(null, "A new temporary Landing Ground was created by {0} in sector " + Calcs.correctedSectorName(this, pos), new object[] { player.Name() });
+        
         string saveName = "makeLG.txt";
         try
         {
@@ -204,7 +322,7 @@ public class LandingGroundMission : AMission
             }
 
         }
-        catch (Exception ex) { Console.WriteLine("nearestGroundGroup ERROR: " + ex.ToString()); }
+        catch (Exception ex) { Console.WriteLine("createTempLandingGround ERROR: " + ex.ToString()); }
 
     }
 
@@ -225,14 +343,20 @@ public class LandingGroundMission : AMission
         //key = "Landing Ground " + ran.Next(1000, 9999).ToString("F0");
         key = "Landing_Ground_" + ran.Next(1000, 9999).ToString("F0");
 
-        if (name != null & name.Length > 0) key = name.Trim();
+        //name = name.Replace(" ", "_").Trim(); //Loading birthplaces, it doesn't seem to like SPACES at all.  So, we won't use any.
 
         int maxLen = 24;
-        if (name.Length < 25) maxLen = name.Length; //cant send substring a value > the actual Length of the string. Boo.
+        
+        if (name != null & name.Length > 0)
+        {
+            name = name.Replace(" ", "_").Trim();
 
-        if (name.Length >= 25) name = name.Substring(0, maxLen); //The name seems to be restricted to 25 chars at most?  Or something?
+            if (name.Length < 25) maxLen = name.Length; //cant send substring a value > the actual Length of the string. Boo.
 
-        if (name.Length > 0) key = name;
+            if (name.Length >= 25) name = name.Substring(0, maxLen); //The name seems to be restricted to 25 chars at most?  Or something?
+
+            if (name.Length > 0) key = name;
+        }
 
         int setOnPark = 0;
 
@@ -276,10 +400,14 @@ public class LandingGroundMission : AMission
         //Console.WriteLine("Creating Birthplace: 1");
         sect = "BirthPlace0";
 
+        Console.WriteLine("TempLG: PLaneset before {0} " + planeSet.ToString(), planeSet.Count);
+            
         //They always get the observation plane.  Also...prevents blank a/c list which would make (by default) ALL aircraft included at the bp
         if (army == 2) planeSet.Add("tobruk:Aircraft.Bf-108B-2_Trop");            
         if (army == 1) planeSet.Add("tobruk:Aircraft.DH82A_Trop");
-                    
+
+        Console.WriteLine("TempLG: PLaneset after {0} " + planeSet.ToString(), planeSet.Count);
+
         foreach (string plane in planeSet)
         {
             //Console.WriteLine("Creating Birthplace: 2");                
@@ -297,7 +425,7 @@ public class LandingGroundMission : AMission
     //army=0 is neutral, meaning found airports of any army
     //otherwise, find only airports matching that army
     //Will return water airports ONLY for seaplane=true, land airports ONLY for seaplane=false and both types for seaplane=null
-    public AiAirport nearestAirportWithNoSpawn(Point3d location, int army = 0, bool? isSeaplane = null)
+    public AiAirport nearestAirportWithNoSpawn(Point3d location, int army = 0, bool? isSeaplane = null, bool checkNoSpawn = true)
     {
         AiAirport NearestAirfield = null;
         if (GamePlay == null) return null;
@@ -318,7 +446,7 @@ public class LandingGroundMission : AMission
                     if (isSeaplane.Value && landType != maddox.game.LandTypes.WATER) continue;
                     if (!isSeaplane.Value && landType == maddox.game.LandTypes.WATER) continue;
                 }
-                if (Calcs.distanceToNearestBirthplace(GamePlay, a.Pos(), army: 0) < 1500 ) continue; //here we're looking for ANY spawnpoint, either army, within 1500m of this ap.  IF there is one, we can't use it.
+                if (checkNoSpawn && Calcs.distanceToNearestBirthplace(GamePlay, a.Pos(), army: 0) < 1500 ) continue; //here we're looking for ANY spawnpoint, either army, within 1500m of this ap.  IF there is one, we can't use it.
                 if (NearestAirfield != null)
                 {
                     if (NearestAirfield.Pos().distanceSquared(ref StartPos) > airport.Pos().distanceSquared(ref StartPos))

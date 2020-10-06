@@ -417,9 +417,9 @@ public class BattlePosZero : TWCMissionBattles
 // British Objectives
 
 
-
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Gazala Fuel", "Gaz2_3", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ZeroGazalaFuel-objective.mis", 2, 5, "RTarGazalaFuel", 97004, 199277, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Marsa Bela Farit Dock Fuel ", "BeLa", po_dir + "Tobruk_Campaign-LOADONCALL-Red-MarsaBelafaritDockFuel2-objective.mis", 2, 5, "MarsaBelaFuelDump", 205707.13, 176739.11, 200, 150, 2800, 7, 200, 48, false, true, 3, 7, "", add);
+        //.mis file for gazala fuel is missing, so removing it for now 2020/10/06
+        //mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Gazala Fuel", "Gaz2_3", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ZeroGazalaFuel-objective.mis", 2, 5, "RTarGazalaFuel", 97004, 199277, 200, 150, 2500, 8, 200, 48, false, true, 3, 7, "", add);
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Marsa Bela Farit Dock Fuel ", "BeLa", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ZeroMarsa BelafaritDockFuel2-objective.mis", 2, 5, "MarsaBelaFuelDump", 205707.13, 176739.11, 200, 150, 2800, 7, 200, 48, false, true, 3, 7, "", add);
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Inland Fuel Dump", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ZeroGermanFuelDump-objective.mis", 2, 5, "GermanFuelDump", 127713, 197435, 200, 350, 2500, 8, 200, 48, false, true, 3, 7, "", add);
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Red-ZeroGermanArmorCamp-objective.mis", 2, 5, "GerArmorCamp", 197355, 60348, 125, 100, 1800, 30, 200, 48, false, true, 3, 7, "", add);
 
@@ -431,23 +431,23 @@ public class BattlePosZero : TWCMissionBattles
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Siwi AAA", "", po_dir + "", 1, 5, "BTargZeroSiwiAAA", 333670, 30053, 350, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Habata Armor Camp", "Habat", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-ZeroBTargHabataBritishArmorCamp-objective.mis", 1, 5, "BTagZeroHabataArmorCamp", 287733, 118539, 350, 125, 1800, 30, 200, 48, false, true, 3, 7, "", add);
         mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Enemy Armor Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-ZeroLG128BritishArmorCamp-objective.mis", 1, 5, "BTargZeroBritishArmorCamp", 231676, 30075, 350, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
-        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Enemy Infantry Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-ZeroNibeiwaTroops-objective.mis", 1, 5, "BTargNibeiwaTroops", 332601, 97335, 250, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);		
-///********************************************************************** *
-/// "RBombaResupplyConvoy" TGroupDestroyed Zero8_Chief_Chief 100                  * Chiefs have no specified area of origin   yet
-/// "RTobrukElAdemResupplyConvoy" TGroupDestroyed Zero7_Chief 100              *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/// "BHabataResupplyConvoy" TGroupDestroyed Zero6_Chief 100                   * the above line will be removed when finished
-/// "BTargZeroSiwiResupplyConvoy" TGroupDestroyed Zero1_Chief 100            *
+        mmo.addPointArea(M.MO_ObjectiveType.MilitaryArea, "Enemy Infantry Camp", "", po_dir + "Tobruk_Campaign-LOADONCALL-Blue-ZeroNibeiwaTroops-objective.mis", 1, 5, "BTargNibeiwaTroops", 332601, 97335, 250, 125, 2800, 8, 200, 48, false, true, 3, 7, "", add);
+            ///********************************************************************** *
+            /// "RBombaResupplyConvoy" TGroupDestroyed Zero8_Chief_Chief 100                  * Chiefs have no specified area of origin   yet
+            /// "RTobrukElAdemResupplyConvoy" TGroupDestroyed Zero7_Chief 100              *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            /// "BHabataResupplyConvoy" TGroupDestroyed Zero6_Chief 100                   * the above line will be removed when finished
+            /// "BTargZeroSiwiResupplyConvoy" TGroupDestroyed Zero1_Chief 100            *
 
-/// "MarsaBelaFuelDump", 205707.13, 176739.11, 200                           *
-/// "GermanFuelDump", 127713, 197435, 200                                    *
-/// "GerArmorCamp", 197355, 60348, 125                                       *
-/// "BTargZeroSofafiReserves", 359414, 98907, 350
-/// "BTargZeroSiwiAAA" 333670, 30053, 350                                    *
-/// "BTagHalfayaPass", 267854, 76291, 350                                    *
-/// "BTagZeroHabataArmorCamp", 287733, 118539, 350                           *
-/// "BTargZeroBritishArmorCamp", 231676, 30075, 350                          *
-/// "BTargNibeiwaTroops", 332601, 97335, 250                                 *
-///************************************************************************
+            /// "MarsaBelaFuelDump", 205707.13, 176739.11, 200                           *
+            /// "GermanFuelDump", 127713, 197435, 200                                    *
+            /// "GerArmorCamp", 197355, 60348, 125                                       *
+            /// "BTargZeroSofafiReserves", 359414, 98907, 350
+            /// "BTargZeroSiwiAAA" 333670, 30053, 350                                    *
+            /// "BTagHalfayaPass", 267854, 76291, 350                                    *
+            /// "BTagZeroHabataArmorCamp", 287733, 118539, 350                           *
+            /// "BTargZeroBritishArmorCamp", 231676, 30075, 350                          *
+            /// "BTargNibeiwaTroops", 332601, 97335, 250                                 *
+            ///************************************************************************
             //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             // n is the DESCRIPTIVE NAME for the target--what the player sees
             //rad is the radius-extent to the object itself.  Say an airfield will have a certain radius, or a general industrial area or military base.
@@ -472,7 +472,38 @@ public class BattlePosZero : TWCMissionBattles
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
             //public void mmo.addPointArea(M.MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
-                    
+
+
+
+            /***************************************
+             * RED & BLUE LANDING GROUND OBJECTIVES
+             * 
+             * This is a little different from the others - it is on FRIENDLY or NEUTRAL territory (never ENEMY territory)
+             * It MUST BE an existing airport or Landing Ground that is on the map but which DOES NOT have a birthplace/spawn point associated with it
+             * You specify the POINT (pos) which must be within 100 meters or so of the airport center.
+             * NOTE: LGs are not working yet; we'll have to tweak the code once LGs are released.
+             * The players activate the airport/landing ground/spawn point by taking 3 or more players/planes, landing safely at the new LG, and using chat command <makelg to register it
+             * OwnerArmy and AttackingArmy are BOTH THE SAME for this objective.  They are BOTH set (automatically per your setting for "ownerarmy") to the army that will own the airport.
+             * It is possible to set one LG in neutral territory that is an objective for BOTH SIDES.  Whichever gets it first will own it and the other side will be out of luck.
+             * *************************************/
+
+            // public void addLandingGround(string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 2, int flak_numbinbattery = 2, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "",  string comment = "", bool addNewOnly = false)
+            //objective_id must but UNIQUE among all objectives in-game.
+            //name is what the players will see & also is used as part of the birthplace name displayed in-game.  It can't be too long or it will be cut off (at 25 characters? or so) when used as the Birthplace name.
+
+            mmo.addLandingGround(objective_id: "RLGSawaniElQasn", name: "Sawani el Qasn LG", pos: new Point3d(313698, 107235, 0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5,
+                timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 1, auto_flak: true, auto_flak_ifprimary: true,
+                flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None,
+                chief_name: "", comment: "", addNewOnly: false);
+
+            mmo.addLandingGround(objective_id: "BLG147", name: "LG 147", pos: new Point3d(212212, 151751, 0), radius_m: 1500, objective_points: 5, primaryobjective_weight: 5,
+                timeToRemainActive_hrs: 84, flak_file: "", ownerarmy: 2, auto_flak: true, auto_flak_ifprimary: true,
+                flak_numbatteries: 2, flak_numberinbattery: 2, MOProdStorType: Mission.MO_ProducerOrStorageType.None,
+                chief_name: "", comment: "Gasr El Arid", addNewOnly: false);
+
+
+
+
         }
         catch (Exception ex) {
             Console.WriteLine();

@@ -1931,7 +1931,7 @@ public class Mission : AMission, IMainMission
         return returnmsg;
     }
 
-    //stamps a rectangular pattern of craters over an airfield to disable it
+    //stamps a pattern of craters over an airfield to disable it, as though a few bomber formations had dropped on it
     public void AirfieldDisable(AiAirport ap, double percent = 1.0)
 
     {
@@ -11391,7 +11391,9 @@ public class Mission : AMission, IMainMission
     public class MissionObjective : IMissionObjective
     {
         //public string TriggerName { get; set; }
-
+        //NOTE!!!! If you ADD in a new variable here, you should also check public void updateMissionObjectivesListOnReload(MissionObjectives m_os) to make sure it is transferred over 
+        //to the new MissionObjectivesList on mission re-load!  Only selected variables are transferred over & they are (or can be) massaged in various ways, etc
+        //
         [DataMember] public string ID { get; set; } //unique name, often the Triggername or static name; note that this can be different from the MissionObjectivesList KEY for various reasons
         [DataMember] public string Name { get; set; } //Name the will be displayed to the [DataMember] public in messages etc
         [DataMember] public int AttackingArmy { get; set; } // Army this is an objective for (ie, whose task is to destroy it); can be 1=red, 2=blue,0=none
@@ -11690,7 +11692,7 @@ public class Mission : AMission, IMainMission
 
         //TEMPORARY LANDING GROUND initiator
         
-        public MissionObjective(Mission m, string objective_id, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
+        public MissionObjective(Mission m, string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
 
         {
 
@@ -11700,9 +11702,9 @@ public class Mission : AMission, IMainMission
             MOTriggerType = MO_TriggerType.TemporaryLandingGround;
             ID = objective_id;
             Console.WriteLine("Creating NEW MissionObjective Temporary Landing Ground: " + ID);
-            Name = objective_id;
+            Name = name;
 
-            AirfieldName = objective_id;//The ID is generally set to "internal airfieldname_spawn" and name is ""internal airfieldname Airfield" (unless the original name includes a word like "Airfield" or "Airbase" or similar.  This saves the actual/original/exact airfield name incase we need to find it again.
+            AirfieldName = name;//The ID is generally set to "internal airfieldname_spawn" and name is ""internal airfieldname Airfield" (unless the original name includes a word like "Airfield" or "Airbase" or similar.  This saves the actual/original/exact airfield name incase we need to find it again.
 
             BirthplaceACTypes = new HashSet<string>(); //For a Landing Ground Objective, which types of aircraft are included in the spawn area/birthplace 
 
@@ -11740,10 +11742,7 @@ public class Mission : AMission, IMainMission
 
             double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
-            Pos = new Point3d(Pos.x, Pos.y, z);
-
-            HUDMessage = ArmiesL[AttackingArmy] + " created a Landing Ground - " + Name;
-            LOGMessage = Name + " created by " + ArmiesL[AttackingArmy] + " - active for" + (this.TimetoRepairIfDestroyed_hr/24.0).ToString("F1") + " days.";
+            Pos = new Point3d(Pos.x, Pos.y, z);            
 
             Points = objective_points;
             string keyp = Calcs.doubleKeypad(Pos);
@@ -11755,6 +11754,9 @@ public class Mission : AMission, IMainMission
             radius = radius_m; //
 
             TimetoRepairIfDestroyed_hr = timeToRemainActive_hrs; //Another strange one; we're reversing the "destroyed" system - this is how long it stays active once established
+
+            HUDMessage = ArmiesL[AttackingArmy] + " created a Landing Ground - " + Name;
+            LOGMessage = "New Landing Ground " + Name + " created by " + ArmiesL[AttackingArmy] + " - active for " + (this.TimetoRepairIfDestroyed_hr / 24.0).ToString("F1") + " days.";
 
             Destroyed = false;
             DestroyedPercent = 0;
@@ -12535,6 +12537,28 @@ public class Mission : AMission, IMainMission
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 Console.WriteLine("Adding pointarea post2 " + tn + n + " " + pts.ToString());
                 msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment));
+            }
+        }
+
+        //public MissionObjective(Mission m, string objective_id, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
+        public void addLandingGround(string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 2, int flak_numberinbattery = 2, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "",  string comment = "", bool addNewOnly = false)
+
+        //public MissionObjective(Mission m, string objective_id, string name, Point3d pos, double radius_m, double objective_points, double primaryobjective_weight, double timeToRemainActive_hrs, string flak_file, int ownerarmy, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
+        {
+            //Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
+
+            //Console.WriteLine("Adding Trigger post1 " + tn + n + " " + pts.ToString());
+            //MissionObjective                                    (Mission m, MO_ObjectiveType mot,  string tn, string n, int ownerarmy, double pts, string t, double p, double x, double y, double d, bool pt, bool ptp, string comment)
+            //Add the item -always when add==false and if it doesn't already exist, when add==true
+            if (!addNewOnly || !msn.MissionObjectivesList.ContainsKey(objective_id))
+            {
+                if (!MO_SanityChecks(objective_id, objective_id, MO_TriggerType.TemporaryLandingGround)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
+                Console.WriteLine("Adding LandingGround post2 " + objective_id + " " + name + " " + objective_points.ToString());
+                msn.MissionObjectivesList.Add(objective_id, new MissionObjective(m: msn, objective_id: objective_id, name: name, pos: pos, radius_m: radius_m, 
+                    objective_points:objective_points, primaryobjective_weight:primaryobjective_weight, 
+                    timeToRemainActive_hrs: timeToRemainActive_hrs, flak_file: flak_file, ownerarmy: ownerarmy, 
+                    auto_flak: auto_flak, auto_flak_ifprimary: auto_flak_ifprimary = true, flak_numbatteries: flak_numbatteries, 
+                    flak_numberinbattery: flak_numberinbattery, MOProdStorType: MOProdStorType, chief_name: chief_name));
             }
         }
         public void addMobile(MO_ObjectiveType mot, string n, string flak, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numberinbattery = 8, MO_MobileObjectiveType MobObjType = MO_MobileObjectiveType.ArmyEncampment,
@@ -16429,6 +16453,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
             MO_HandleMobileObjectivePlacement(mo, startup: true); //place all mobile objectives at start of mission.  We should send all objectives through this, even if disabled as a thing happens even to disabled objectives.
 
+            if (mo.MOTriggerType == MO_TriggerType.TemporaryLandingGround) landinggroundmission.renewTempLandingGround(mo);
+                        
             //Console.WriteLine("Initialize - checking " + mo.ID + " " + mo.Name + " {0} {1} {2}", mo.AutoFlak, mo.AutoFlakIfPrimary, mo.IsPrimaryTarget);
             if (mo.IsEnabled)
             {
@@ -16588,6 +16614,8 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             //So converting these next values over from an old ver. of the save files that didn't have these values is problematic. 
             //ifs below should fix that.
             if (mo.PlayersWhoContributedNames != null) mo.PlayersWhoContributedNames = mo_old.PlayersWhoContributedNames;
+
+            if (mo.BirthplaceACTypes != null) mo.BirthplaceACTypes = mo_old.BirthplaceACTypes;
 
             //This is mostly for a transition from old files to new ones that had these new variables.  They were all just appearing as blank, and it didn't look good.
             mo.Scouted = mo_old.Scouted;
@@ -16968,6 +16996,7 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
 
                 //Soo . . if we have a damage time to add, we EITHER add it to the current time, if there is no time to undestroy OR it is in the past
                 //OR we add it to the current time to undestroy, extending the destruction time by that much (but at at discounted rate, since this is adding destruction to something already destroyed)
+                //Note that this is overridden below in the case that th e object just became destroyed (in that case we use the default timetoundestroy for that objective)
                 if (timetofixFromNow_sec > 0)
                 {
                     if (!OldObj.TimeToUndestroy_UTC.HasValue || OldObj.TimeToUndestroy_UTC.Value.CompareTo(DateTime.UtcNow) < 0) {
@@ -17117,22 +17146,25 @@ addTrigger(MO_ObjectiveType.Building, "Poole South Industrial Port Area", "Pool"
             string mes = ArmiesL[OldObj.AttackingArmy] + " destroyed " + OldObj.Name;
             if (OldObj.HUDMessage != null && OldObj.HUDMessage.Length > 0) mes = OldObj.HUDMessage;
 
-            if (alreadyCounted || alreadyDestroyed) mes = ArmiesL[OldObj.AttackingArmy] + " damaged " + OldObj.Name;
+            if (( alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes = ArmiesL[OldObj.AttackingArmy] + " damaged " + OldObj.Name;
 
             Timeout(messageDelay_sec, () =>
             {
                 GamePlay.gpHUDLogCenter(mes);
             });
 
-            if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) mes = OldObj.LOGMessage;
-            if (alreadyCounted || alreadyDestroyed) mes = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name;
+            string mes1 = "";
+            if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) mes1 = OldObj.LOGMessage;
+            if ((alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes1 = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name;
 
             Timeout(messageDelay_sec, () =>
             {
-                twcLogServer(null, mes, new object[] { });
+                twcLogServer(null, mes1, new object[] { });
                 twcLogServer(null, pom + "All involved have received commendations and promotions.", new object[] { });
-                MissionObjectivesList[ID] = OldObj;
+                
             });
+
+            MissionObjectivesList[ID] = OldObj; //So this line WAS just above ^^^ in the Timeout.  Not sure if there was a reason for that?  Maybe we want the actual MO destruction save to be delayed but just a little bit??? But for TempLGs it was preventing their planeset from being saved properly.  So, changing it.
 
             //now update related player scores
 

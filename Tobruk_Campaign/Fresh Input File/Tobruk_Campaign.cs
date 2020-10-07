@@ -2370,7 +2370,7 @@ public class Mission : AMission, IMainMission
                         prev_percent = (PointsTaken - score) / PointsToKnockOut;
                         if (prev_percent > 1) prev_percent = 1;
                         if ((prev_percent == 1) && (percent > 1)) points_reduction_factor = percent * 2; // So if they keep bombing after the airport is 100% knocked out, they keep getting points but not as many.  The more bombing the less the points per bomb.  So they can keep bombing for strategic reasons if they way (deny use of the AP) but they won't continue to accrue a whole bunch of points for it.
-                        if (prev_percent > 1) firetype = "";  //Once airport is knocked out, no more smoking craters.  TOBRUK, too much smoke leads to many slowdowns; once knocked out it's already smoking plenty.
+                        if (percent > 1) firetype = "";  //Once airport is knocked out, no more smoking craters.  TOBRUK, too much smoke leads to many slowdowns; once knocked out it's already smoking plenty.
                     }
 
                     //twcLogServer(null, "bombe 8", null);
@@ -2495,7 +2495,20 @@ public class Mission : AMission, IMainMission
                         }
                         else
                         {
+                             
                                 MO_DestroyObjective_addTime(mo.ID, percentdestroyed: percent, timetofixFromNow_sec: timeToFixFromNow_sec, TimeLastHit_UTC: DateTime.UtcNow, AirfieldDamagePoints: PointsTaken, AirfieldDamagePointsAdded: score, messageDelay_sec: timeout);
+
+                            //So . . . we have ways to restore spawnpoints now, after they have been knocked out, but it turns out they are easy to knock out again, with any further hit.
+
+                            double prev_percent_exact = (PointsTaken - score) / PointsToKnockOut;
+                            if (ap != null && Math.Floor(prev_percent_exact/10.0) != Math.Floor(percent/10.0)); //We disable any birthplaces again whenever the distroyed % passes a 10% mark, like at 100%, then 110%, 120%, 130%, etc
+                                {
+                                    foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
+                                    {
+                                        Point3d bp_pos = bp.Pos();
+                                        if (ap.Pos().distance(ref bp_pos) <= ap.FieldR()) bp.destroy();//Removes the spawnpoint associated with that airport (ie, if located within the field radius of the airport)
+                                    }
+                                }
                         }
                     }
 

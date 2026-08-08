@@ -4,7 +4,7 @@ Several complete, running multiplayer mission/campaign servers for IL2 Cliffs of
 
 Several of the directories are complete, separate campaign servers: Genghis, Tobruk, Campaign21, M001, M002, and M002 (from most recent to oldest).
 
-Other directories contain ancillary programs, like the radar display, which runs on a separate public-facing server (javascript/HTML/etc).
+Other directories contain ancillary programs, like in _radar_, all files needed to run the radar display, which runs on a separate public-facing server (javascript/HTML/etc). The folder _res_ contains the various css, javascript, etc needed in the directory where stats are uploaded (again this is a public-facing HTML page - the HTML is uploaded by the server, and it expects the items in _res_ to be in the directory where the uploads go).
 
 
 Even if you don't run the any of the mission servers per se, the code has all sorts of examples showing how to do things programmatically within the IL2 Cliffs of Dover - Blitz & Tobruk scripting and mission-building system.

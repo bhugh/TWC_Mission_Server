@@ -1,0 +1,42 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 339217.56 232783.30 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 de 339225.16 232768.11 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 339249.47 232775.70 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 339243.41 232792.42 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.20_mm_Flak_38 de 339228.13 232804.47 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.20_mm_Flak_38 de 339243.72 232758.52 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.4_cm_Flak_28 de 339214.44 232804.73 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.4_cm_Flak_28 de 339266.69 232768.09 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone de 339250.78 232817.47 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone de 339290.03 232768.98 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 339466.47 233526.20 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 339474.06 233511.02 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 339498.38 233518.61 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 339492.28 233535.33 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.20_mm_Flak_38 de 339477.00 233547.38 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.20_mm_Flak_38 de 339492.59 233501.42 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.4_cm_Flak_28 de 339463.34 233547.64 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.4_cm_Flak_28 de 339515.59 233511.00 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Bofors_StandAlone de 339499.69 233560.38 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Bofors_StandAlone de 339538.94 233511.89 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

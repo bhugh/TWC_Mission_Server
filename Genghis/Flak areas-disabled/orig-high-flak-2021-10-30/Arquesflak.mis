@@ -1,0 +1,42 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 315320.69 190636.23 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 de 315326.47 190604.30 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 315338.09 190583.97 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 315334.78 190444.50 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak37 de 315346.81 190537.52 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak37 de 315358.44 190508.48 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak37 de 315375.84 190485.25 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak37 de 315390.34 190470.73 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak37 de 316237.94 189570.42 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 de 316361.13 189507.33 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 316209.09 189547.30 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 316306.56 189472.56 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 316165.88 189529.91 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 316260.81 189449.23 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 de 316122.50 189501.03 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 316214.72 189428.97 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.20_mm_Flak_38 de 315850.06 190189.98 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.20_mm_Flak_38 de 315760.16 190210.42 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.20_mm_Flak_38 de 316151.25 190299.91 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.20_mm_Flak_38 de 316341.50 190916.33 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

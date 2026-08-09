@@ -1,0 +1,46 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.37mm_PaK_35_36 de 164833.13 52039.13 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.37mm_PaK_35_36 de 164901.00 52095.70 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.37mm_PaK_35_36 de 164965.11 52140.95 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.37mm_PaK_35_36 de 165040.53 52189.98 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.37mm_PaK_35_36 de 165832.47 51880.75 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.37mm_PaK_35_36 de 165870.17 51971.25 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.37mm_PaK_35_36 de 165881.48 52046.67 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.37mm_PaK_35_36 de 165885.27 52099.47 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak37 de 164682.28 52174.89 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 de 164727.53 52208.83 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 164772.78 52250.31 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 164810.50 52280.48 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 164738.84 52129.64 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 164829.36 52171.12 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 de 164889.69 52212.60 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 164942.48 52242.77 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak37 de 165662.77 52073.07 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Flak37 de 165715.56 52073.07 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Flak37 de 165775.91 52073.07 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Flak37 de 165821.16 52073.07 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak37 de 165832.47 52129.64 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Flak37 de 165832.47 52171.12 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.Flak37 de 165832.47 52205.06 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Flak37 de 165817.38 52024.05 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

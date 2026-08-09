@@ -1,0 +1,46 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 gb 169795.59 52641.99 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 gb 169795.59 52611.90 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 gb 169814.39 52581.82 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 gb 169818.16 52551.73 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak37 gb 169840.72 52510.36 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak37 gb 169874.56 52544.21 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak37 gb 169904.66 52559.25 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak37 gb 169949.78 52570.54 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak37 gb 169310.44 51419.72 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 gb 169284.11 51472.37 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 gb 169254.03 51528.79 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 gb 169223.94 51570.16 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 gb 169344.30 51449.81 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 gb 169378.14 51498.70 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 gb 169411.98 51540.07 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 gb 169472.16 51581.44 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.37mm_PaK_35_36 gb 169287.88 51716.83 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.37mm_PaK_35_36 gb 169186.33 51769.48 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.37mm_PaK_35_36 gb 168738.80 51859.74 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.37mm_PaK_35_36 gb 168652.30 51901.11 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.37mm_PaK_35_36 gb 169900.89 52066.58 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.37mm_PaK_35_36 gb 169912.17 52194.45 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.37mm_PaK_35_36 gb 169633.88 53021.83 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.37mm_PaK_35_36 gb 169551.14 53044.40 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

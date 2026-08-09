@@ -1,0 +1,103 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 4.15000010048971
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  3001_Chief Ship.tobruk:Type_VIIC_SS de /sleep 0/skill 1/slowfire 1
+  0_Chief Ship.tobruk:Type_VIIC_SS fi /sleep 0/skill 1/slowfire 1
+  1_Chief Ship.tobruk:Type_VIIC_SS hu /sleep 0/skill 1/slowfire 1
+  2_Chief Ship.tobruk:Type_VIIC_SS it /sleep 0/skill 1/slowfire 1
+  3_Chief Ship.tobruk:Type_VIIC_SS ja /sleep 0/skill 1/slowfire 1
+  4_Chief Ship.tobruk:Type_VIIC_SS ro /sleep 0/skill 1/slowfire 1
+  5_Chief Ship.tobruk:Type_VIIC_SS sk /sleep 0/skill 1/slowfire 1
+  7_Chief Ship.tobruk:Type_VIIC_SS fr /sleep 0/skill 1/slowfire 1
+  8_Chief Ship.tobruk:Type_VIIC_SS gb /sleep 0/skill 1/slowfire 1
+  9_Chief Ship.tobruk:Type_VIIC_SS pl /sleep 0/skill 1/slowfire 1
+  10_Chief Ship.tobruk:Type_VIIC_SS ru /sleep 0/skill 1/slowfire 1
+  11_Chief Ship.tobruk:Type_VIIC_SS rz /sleep 0/skill 1/slowfire 1
+  12_Chief Ship.tobruk:Type_VIIC_SS us /sleep 0/skill 1/slowfire 1
+  6_Chief Ship.tobruk:Type_VIIC_SS de /sleep 0/skill 1/slowfire 1
+[3001_Chief_Road]
+  188622.67 180167.03 38.40  0 2 4.44
+  235516.23 205189.16 38.40  0 2 4.44
+  207175.73 200516.42 38.40  0 2 4.58
+  188479.58 182982.28 38.40  0 2 4.58
+  239011.03 208792.97 38.40  0 2 4.58
+  180030.64 175886.83 38.40  0 2 4.58
+  232383.41 206613.22 38.40  0 2 4.58
+  180964.14 179470.39 38.40  0 2 4.58
+  236042.22 204780.77 38.40  0 2 4.58
+  172695.67 181276.98 38.40  0 2 4.58
+  231040.67 202207.64 38.40  0 2 4.58
+  242481.16 208073.30 38.40  0 2 4.58
+  182560.91 187648.22 38.40  0 2 4.58
+  222135.78 202767.13 38.40  0 2 4.58
+  191782.38 191047.55 38.40  0 2 4.58
+  228147.39 204181.55 38.40  0 2 4.58
+  180591.48 182406.94 38.40  0 2 4.58
+  229878.95 201202.45 38.40
+[0_Chief_Road]
+  61824.00 151680.00 38.40  0 2 9.17
+  90432.00 153984.00 38.40
+[1_Chief_Road]
+  60288.00 142848.00 38.40  0 2 9.17
+  90240.00 139200.00 38.40
+[2_Chief_Road]
+  57792.00 129408.00 38.40  0 2 9.17
+  87552.00 128448.00 38.40
+[3_Chief_Road]
+  56640.00 121536.00 38.40  0 2 9.17
+  89088.00 119424.00 38.40
+[4_Chief_Road]
+  51456.00 110208.00 38.40  0 2 9.17
+  95616.00 108864.00 38.40
+[5_Chief_Road]
+  47040.00 100608.00 38.40  0 2 9.17
+  91968.00 102144.00 38.40
+[7_Chief_Road]
+  132096.00 145920.00 38.40  0 2 9.17
+  144192.00 143808.00 38.40
+[8_Chief_Road]
+  129216.00 135168.00 38.40  0 2 9.17
+  145728.00 133248.00 38.40
+[9_Chief_Road]
+  119232.00 119424.00 38.40  0 2 9.17
+  136704.00 116928.00 38.40
+[10_Chief_Road]
+  114432.00 108672.00 38.40  0 2 9.17
+  134592.00 107136.00 38.40
+[11_Chief_Road]
+  186624.00 143808.00 38.40  0 2 9.17
+  206784.00 143040.00 38.40
+[12_Chief_Road]
+  184128.00 132672.00 38.40  0 2 9.17
+  207360.00 131136.00 38.40
+[6_Chief_Road]
+  40896.00 90816.00 38.40  0 2 9.17
+  86208.00 91776.00 38.40
+[Stationary]
+  Static0 tobruk:Artillery.100_17_M14 it 171456.00 215808.00 0.00 /timeout 0/radius_hide 0
+  Static1 tobruk:Artillery.100_17_M14 rz 151872.00 232896.00 0.00 /timeout 0/radius_hide 0
+  Static2 Stationary.Hangars.Single_Plane pl 126336.00 218304.00 0.00 
+  Static3 Stationary.Hangars.Single_Plane ja 132864.00 209280.00 0.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BlueSubmarine1 TGroupDestroyed 3001_Chief 100

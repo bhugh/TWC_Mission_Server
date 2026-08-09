@@ -1,0 +1,52 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 4.15000010048971
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  2001_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
+  0_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
+[2001_Chief_Road]
+  306954.88 136122.23 38.40  0 2 1.11
+  302020.53 136697.30 38.40  0 2 1.11
+  308578.41 136366.72 38.40  0 2 4.58
+  293497.06 125285.04 38.40  0 2 4.72
+  302541.00 149107.77 38.40  0 2 4.58
+  307849.28 147947.58 38.40  0 2 4.58
+  301099.41 141111.09 38.40  0 2 4.58
+  296446.09 135852.70 38.40  0 2 4.58
+  304655.28 137410.86 38.40  0 2 4.58
+  305839.59 137068.97 38.40  0 2 1.11
+  306736.00 136672.48 38.40  0 2 1.11
+  306925.63 136431.16 38.40
+[0_Chief_Road]
+  350911.81 273606.03 38.40  0 2 5.56
+  284089.94 286330.69 38.40  0 2 5.56
+  277662.16 230826.67 38.40  0 2 4.58
+  246163.64 230336.53 38.40  0 2 4.58
+  256913.09 199416.48 38.40  0 2 4.58
+  202971.28 203217.22 38.40  0 2 5.56
+  254604.27 153775.92 38.40  0 2 4.58
+  169388.02 182595.42 38.40  0 2 4.58
+  221561.22 110298.25 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  RedSubmarine1 TGroupDestroyed 2001_Chief 100

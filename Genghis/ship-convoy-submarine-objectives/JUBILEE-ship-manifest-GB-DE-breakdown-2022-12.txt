@@ -1,0 +1,74 @@
+GB German Tanker - ShipUnit.Tanker_Medium2 - medium large
+- Smokestack rear, two masts center & forward
+
+GB British Tanker - ShipUnit.Tanker_Medium1 - medium large
+ - Smokestack rear, two masts center & forward
+
+GB British Tanker, grey skin - ShipUnit.Tanker_Medium1 /skin materialsSummer1_gray - medium large
+ - Smokestack rear, two masts center & forward
+
+GB Small Coastal Freighter - Static3 tobruk:ShipUnit.Albatros  - small
+ - Small smokestack center, no superstructure, small masts front & rear
+
+GB Motor Barge Large - ShipUnit.MotorBarge_Large1 - small
+ - Small, low barge, single mastfront, brownish color, black cargo
+  
+GB Motor Barge Large, red skin - ShipUnit.MotorBarge_Large1 /skin materialSummer1_red - small 
+ - Small, low barge, single mastfront, red superstructure, light tan cargo
+ 
+GB Vosper, tobruk:ShipUnit.Vosper_M_MTB - small 
+ - Small, grey, military (MTB - motor torpedo boat), highly armed, no mast or smokestack, low superstructure 1/3 to front
+
+GB U-Class Submarine, tobruk:ShipUnit.U-class_SS - very small
+ - Two-step conning tower, very short deck span behind conning tower, very rounded, bulbous nose, obvious wings near nose
+
+
+DE WW1 Steamship - tobruk:ShipUnit.Rion - large
+ - Two smokestacks toward center-rear, front & rear mast 
+ 
+DE Freighter - tobruk:ShipUnit.Merchant - medium
+ - One smokestack center with significant superstructure, masts/cranes forward & rear 
+
+DE Coastal Freighter - Static8 tobruk:ShipUnit.Beshtau - medium small
+ - One smokestack rear with some superstructure, one mast/crane forward
+ 
+DE Motor Barge Large, grey skin - ShipUnit.MotorBarge_Large1 /skin materialSummer2_gray - small
+ - Small, low barge, single mastfront, grey superstructure and cargo
+
+DE Schnellboot S38, tobruk:ShipUnit.Schnellboot_38_MTB  (must use /slowfire 100) - small
+ - Small, grey, military (MTB - motor torpedo boat), highly armed, no mast or smokestack, low superstructure 1/3 to front
+
+DE Type VIIC Submarine, tobruk:ShipUnit.Type_VIIC_SS
+ - Sloped conning tower, very long deck span behind conning tower, tapering to a point, slim and pointed nose
+ 
+ Othersizes:
+ 
+ Static24 tobruk:ShipUnit.Zara_CA it 173984.56 181326.22 0.00 /sleep 0/skill 0/slowfire 100 //182m
+  Static16 tobruk:ShipUnit.Leipzig_CL de 174425.55 181322.38 0.00 /sleep 0/skill 2/slowfire 1 //181m
+  Static20 tobruk:ShipUnit.SanGiorgio_ACR it 174807.38 181328.59 0.00 /sleep 0/skill 0/slowfire 100 //140m
+  Static2 tobruk:ShipUnit.1936_DD de 175196.80 181331.55 0.00 /sleep 0/skill 0/slowfire 100 //125m
+  Static21 tobruk:ShipUnit.Spica_TB de 175466.66 181337.72 0.00 /sleep 0/skill 0/slowfire 100 //small, torpedo boat
+  Static17 ShipUnit.Minensuchboote de 175742.14 181336.80 0.00 /sleep 0/skill 0/slowfire 100 //68m
+  Static14 ShipUnit.Hospital_Ship nn 175981.39 181620.39 0.00 /sleep 0/skill 0/slowfire 100
+  Static18 tobruk:ShipUnit.QueenElizabeth_BB gb 176518.30 181373.64 0.00 /sleep 0/skill 0/slowfire 100 //195m
+  Static19 tobruk:ShipUnit.Revenge_BB gb 176945.64 181360.16 0.00 /sleep 0/skill 0/slowfire 100 //190m
+  Static15 tobruk:ShipUnit.Leander_CL gb 177354.97 181352.73 0.00 /sleep 0/skill 2/slowfire 100 //170m
+  Static22 tobruk:ShipUnit.Tribal_DD gb 177691.45 181348.42 0.00 /sleep 0/skill 0/slowfire 100 //115m
+  Static5 ShipUnit.HMS_Flowers_Corvette gb 178076.84 181377.64 0.00 /sleep 0/skill 2/slowfire 100 //62m
+  Static23 tobruk:ShipUnit.Tribal_DD1941 gb 177682.44 181434.02 0.00 /sleep 0/skill 0/slowfire 100 //115m
+
+  0_Static Artillery.Bofors_StandAlone de 0.00 0.00 0.00 
+  Static11 ShipUnit.MotorBarge_Large1 gb 175738.20 180655.95 0.00 /sleep 0/skill 0/slowfire 30
+  Static12 ShipUnit.MotorBarge_Large1 gb 176055.28 180648.55 0.00 /sleep 0/skill 2/slowfire 1/skin materialSummer1_red
+  Static13 ShipUnit.MotorBarge_Large1 gb 176362.13 180655.80 0.00 /sleep 0/skill 2/slowfire 1/skin materialSummer2_gray
+  Static7 tobruk:ShipUnit.Merchant gb 176218.77 180742.14 0.00 /sleep 0/skill 0/slowfire 30
+  Static8 tobruk:ShipUnit.Beshtau gb 176564.56 180755.33 0.00 /sleep 0/skill 0/slowfire 30
+  Static3 tobruk:ShipUnit.Albatros gb 177033.66 180755.97 0.00 /sleep 0/skill 0/slowfire 10
+  Static0 tobruk:ShipUnit.Rion gb 175695.64 180933.92 0.00 /sleep 0/skill 0/slowfire 100
+  Static6 ShipUnit.Tanker_Medium2 gb 176235.05 180925.72 0.00 /sleep 0/skill 0/slowfire 30
+  Static10 ShipUnit.Tanker_Medium1 gb 176605.48 180946.25 0.00 /sleep 0/skill 0/slowfire 30/skin materialsSummer1_gray
+  Static9 ShipUnit.Tanker_Medium1 gb 176982.72 180952.83 0.00 /sleep 0/skill 0/slowfire 30
+  Static5 tobruk:ShipUnit.Schnellboot_30_MTB gb 177261.75 180969.59 0.00 /sleep 0/skill 0/slowfire 100
+  Static4 tobruk:ShipUnit.Schnellboot_38_MTB gb 177364.98 180981.66 0.00 /sleep 0/skill 0/slowfire 100
+  Static1 tobruk:ShipUnit.Vosper_M_MTB gb 177561.50 181001.25 0.00 /sleep 0/skill 0/slowfire 100
+  Static2 tobruk:ShipUnit.Vosper_CH_MTB gb 177808.08 181007.63 0.00 /sleep 0/skill 0/slowfire 100

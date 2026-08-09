@@ -1,0 +1,481 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static296 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160078.66 51006.66 -15.00 /hstart 18
+  Static297 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160094.02 51001.80 -15.00 /hstart 18
+  Static71 Stationary.Environment.JerryCan_GER1_1 nn 160148.83 50981.72 155.00 
+  Static70 Stationary.Environment.JerryCan_GER1_1 nn 159796.86 51034.51 235.00 
+  Static282 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159872.59 51061.29 -15.00 /hstart 18
+  Static284 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159875.02 51069.49 -15.00 /hstart 18
+  Static17 ShipUnit.Boat_42ft_SailingLaunch nn 159900.64 51050.88 -105.00 /sleep 1440/skill 0/slowfire 100
+  Static286 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159901.11 51053.44 -15.00 /hstart 19
+  Static285 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159903.95 51062.06 -15.00 /hstart 19
+  Static18 ShipUnit.Boat_42ft_SailingLaunch nn 159928.45 51045.50 -105.00 /sleep 1440/skill 0/slowfire 100
+  Static287 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159930.05 51045.72 -15.00 /hstart 20
+  Static291 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159907.22 51070.73 -15.00 /hstart 19
+  Static15 tobruk:Stationary.Environment.50meterStonewall nn 159915.61 51064.43 70.00 
+  Static283 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159932.88 51054.35 -15.00 /hstart 20
+  Static38 Stationary.Environment.PortCrane1_FRA1 nn 159946.03 51045.99 260.00 
+  Static294 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159959.03 51037.82 -15.00 /hstart 20
+  Static293 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159936.16 51063.02 -15.00 /hstart 20
+  Static16 tobruk:Stationary.Environment.50meterStonewall nn 159947.34 51054.85 70.00 
+  Static304 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159961.86 51046.43 -15.00 /hstart 20
+  Static292 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159938.98 51071.63 -15.00 /hstart 20
+  Static298 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159988.08 51029.79 -15.00 /hstart 20
+  Static316 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159965.16 51055.12 -15.00 /hstart 20
+  Static305 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159990.91 51038.40 -15.00 /hstart 20
+  Static295 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159967.97 51063.73 -15.00 /hstart 20
+  Static83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159969.31 51069.18 -15.00 /hstart 20
+  Static309 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159994.20 51047.09 -15.00 /hstart 20
+  Static310 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159997.02 51055.69 -15.00 /hstart 20
+  Static86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159998.31 51061.27 -15.00 /hstart 20
+  Static329 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159999.39 51065.05 -15.00 /hstart 20
+  Static299 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160016.94 51022.37 -15.00 /hstart 20
+  Static306 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160019.77 51030.98 -15.00 /hstart 20
+  Static300 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160045.36 51014.54 -15.00 /hstart 20
+  Static311 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160023.03 51039.67 -15.00 /hstart 20
+  Static95 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160001.25 51070.44 -15.00 /hstart 20
+  Static307 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160048.19 51023.15 -15.00 /hstart 20
+  Static314 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160025.86 51048.30 -15.00 /hstart 20
+  Static87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160027.36 51053.24 -15.00 /hstart 20
+  Static312 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160051.47 51031.84 -15.00 /hstart 20
+  Static334 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160028.25 51057.62 -15.00 /hstart 20
+  Static96 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160030.08 51063.02 -15.00 /hstart 20
+  Static315 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160054.30 51040.45 -15.00 /hstart 20
+  Static339 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160031.05 51066.26 -15.00 /hstart 20
+  Static88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160056.22 51045.82 -15.00 /hstart 20
+  Static335 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160056.67 51049.81 -15.00 /hstart 20
+  Static97 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160058.52 51055.19 -15.00 /hstart 20
+  Static340 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160059.50 51058.42 -15.00 /hstart 20
+  Static110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160060.02 51065.30 -15.00 /hstart 20
+  Static301 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160064.73 51010.01 -15.00 /hstart 20
+  Static308 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160067.56 51018.62 -15.00 /hstart 20
+  Static302 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160081.48 51015.27 -15.00 /hstart 18
+  Static313 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160070.84 51027.30 -15.00 /hstart 20
+  Static303 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160096.83 51010.42 -15.00 /hstart 18
+  Static317 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160084.77 51023.94 -15.00 /hstart 18
+  Static318 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160073.67 51035.91 -15.00 /hstart 20
+  Static321 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160100.13 51019.09 -15.00 /hstart 18
+  Static320 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160087.59 51032.56 -15.00 /hstart 18
+  Static89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160084.64 51037.99 -15.00 /hstart 20
+  Static336 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160076.05 51045.26 -15.00 /hstart 20
+  Static98 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160077.86 51050.66 -15.00 /hstart 20
+  Static319 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160102.95 51027.71 -15.00 /hstart 18
+  Static332 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160089.97 51041.90 -15.00 /hstart 18
+  Static341 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160078.86 51053.88 -15.00 /hstart 20
+  Static90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160104.02 51033.47 -15.00 /hstart 20
+  Static100 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160091.78 51047.30 -15.00 /hstart 18
+  Static111 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160079.36 51060.79 -15.00 /hstart 20
+  Static333 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160105.33 51037.07 -15.00 /hstart 18
+  Static337 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160092.78 51050.52 -15.00 /hstart 18
+  Static65 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160088.89 51061.79 255.00 
+  Static101 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160107.13 51042.46 -15.00 /hstart 18
+  Static102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160093.28 51057.43 -15.00 /hstart 18
+  Static121 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160082.19 51069.40 -15.00 /hstart 20
+  Static338 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160108.13 51045.67 -15.00 /hstart 18
+  Static103 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160108.63 51052.58 -15.00 /hstart 18
+  Static112 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160096.11 51066.04 -15.00 /hstart 18
+  Static113 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160111.45 51061.20 -15.00 /hstart 18
+  Static133 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160114.75 51069.87 -15.00 /hstart 18
+  Static20 tobruk:ShipUnit.Schnellboot_30_MTB de 159861.14 51104.02 -195.00 /sleep 1440/skill 0/slowfire 100
+  Static14 tobruk:Stationary.Environment.50meterStonewall nn 159879.78 51074.93 70.00 
+  Static288 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159878.70 51078.59 -15.00 /hstart 18
+  Static36 Stationary.Environment.PortCrane1_FRA1 de 159874.80 51086.74 170.00 
+  Static13 tobruk:Stationary.Environment.50meterStonewall nn 159872.72 51090.62 -15.00 
+  Static289 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159881.13 51086.79 -15.00 /hstart 18
+  Static99 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159882.19 51091.92 -15.00 /hstart 18
+  Static322 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159883.91 51096.55 -15.00 /hstart 18
+  Static91 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159884.50 51101.52 -15.00 /hstart 18
+  Static290 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159910.05 51079.34 -15.00 /hstart 19
+  Static323 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159886.31 51104.75 -15.00 /hstart 18
+  Static12 tobruk:Stationary.Environment.50meterStonewall nn 159877.61 51114.97 -15.00 
+  Static85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159910.63 51084.34 -15.00 /hstart 18
+  Static35 Stationary.Environment.PortCrane1_FRA1 nn 159878.75 51116.68 170.00 
+  Static37 Stationary.Environment.PortCrane1_FRA1 nn 159920.19 51076.44 260.00 
+  Static105 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159887.25 51112.04 -15.00 /hstart 18
+  Static325 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159912.42 51088.70 -15.00 /hstart 19
+  Static92 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159914.27 51094.08 -15.00 /hstart 19
+  Static115 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159889.66 51120.25 -15.00 /hstart 18
+  Static324 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159915.25 51097.31 -15.00 /hstart 19
+  Static106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159915.77 51104.19 -15.00 /hstart 19
+  Static122 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159893.34 51129.37 -15.00 /hstart 18
+  Static116 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159918.59 51112.82 -15.00 /hstart 19
+  Static126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159921.88 51121.49 -15.00 /hstart 19
+  Static125 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159924.69 51130.12 -15.00 /hstart 19
+  Static84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159940.39 51076.89 -15.00 /hstart 19
+  Static326 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159941.34 51080.98 -15.00 /hstart 20
+  Static93 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159943.20 51086.37 -15.00 /hstart 20
+  Static327 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159944.17 51089.61 -15.00 /hstart 20
+  Static68 tobruk:Stationary.Airfield.LawsHangerGravesend nn 159937.11 51101.14 255.00 
+  Static104 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159944.69 51096.48 -15.00 /hstart 20
+  Static328 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159970.34 51073.09 -15.00 /hstart 20
+  Static94 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159972.17 51078.49 -15.00 /hstart 20
+  Static114 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159947.53 51105.11 -15.00 /hstart 20
+  Static330 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159973.17 51081.70 -15.00 /hstart 20
+  Static107 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159973.69 51088.57 -15.00 /hstart 20
+  Static46 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 159944.53 51119.43 70.00 
+  Static127 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159950.80 51113.77 -15.00 /hstart 20
+  Static67 tobruk:Stationary.Airfield.LawsHangerGravesend nn 159984.67 51087.76 255.00 
+  Static117 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159976.48 51097.21 -15.00 /hstart 20
+  Static123 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159953.61 51122.41 -15.00 /hstart 20
+  Static128 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159979.78 51105.90 -15.00 /hstart 20
+  Static53 Stationary.Weapons_.Torpedo_T_F5 nn 159965.91 51122.12 70.00 
+  Static147 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159956.02 51131.75 -15.00 /hstart 20
+  Static130 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159982.61 51114.50 -15.00 /hstart 20
+  Static45 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 159989.63 51117.37 70.00 
+  Static148 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159984.98 51123.86 -15.00 /hstart 20
+  Static150 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159987.81 51132.48 -15.00 /hstart 20
+  Static331 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160002.22 51073.67 -15.00 /hstart 20
+  Static108 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160002.73 51080.54 -15.00 /hstart 20
+  Static118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160005.53 51089.18 -15.00 /hstart 20
+  Static109 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160031.58 51073.14 -15.00 /hstart 20
+  Static129 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160008.83 51097.86 -15.00 /hstart 20
+  Static66 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160035.27 51073.62 255.00 
+  Static119 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160034.41 51081.76 -15.00 /hstart 20
+  Static52 Stationary.Weapons_.Torpedo_T_F5 nn 160018.34 51098.01 70.00 
+  Static131 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160011.66 51106.47 -15.00 /hstart 20
+  Static134 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160037.69 51090.43 -15.00 /hstart 20
+  Static44 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 160036.38 51092.00 70.00 
+  Static149 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160014.05 51115.81 -15.00 /hstart 20
+  Static120 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160062.81 51073.94 -15.00 /hstart 20
+  Static139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160040.52 51099.05 -15.00 /hstart 20
+  Static151 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160016.84 51124.45 -15.00 /hstart 20
+  Static154 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160042.88 51108.41 -15.00 /hstart 20
+  Static178 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160019.95 51133.50 -15.00 /hstart 20
+  Static81 Stationary.Airfield.Fuel_Storage nn 160033.05 51120.70 70.00 
+  Static159 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160045.70 51117.01 -15.00 /hstart 20
+  Static40 Stationary.Industrial.Oxygen_Facility nn 160039.72 51135.39 70.00 
+  Static62 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160049.67 51125.81 255.00 
+  Static179 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160048.78 51126.11 -15.00 /hstart 20
+  Static186 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160051.61 51134.71 -15.00 /hstart 20
+  Static135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160066.11 51082.62 -15.00 /hstart 20
+  Static140 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160068.92 51091.23 -15.00 /hstart 20
+  Static136 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160085.48 51078.08 -15.00 /hstart 20
+  Static155 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160071.30 51100.59 -15.00 /hstart 20
+  Static51 Stationary.Weapons_.Torpedo_T_F5 nn 160085.13 51087.32 70.00 
+  Static132 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160099.39 51074.71 -15.00 /hstart 18
+  Static141 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160088.30 51086.70 -15.00 /hstart 20
+  Static43 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 160097.81 51081.32 70.00 
+  Static160 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160074.13 51109.20 -15.00 /hstart 20
+  Static137 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160102.22 51083.34 -15.00 /hstart 18
+  Static156 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160090.67 51096.04 -15.00 /hstart 20
+  Static80 Stationary.Airfield.Fuel_Storage nn 160092.45 51097.35 70.00 
+  Static180 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160077.22 51118.26 -15.00 /hstart 20
+  Static138 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160117.56 51078.49 -15.00 /hstart 18
+  Static152 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160104.59 51092.70 -15.00 /hstart 18
+  Static161 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160093.48 51104.66 -15.00 /hstart 20
+  Static187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160080.03 51126.91 -15.00 /hstart 20
+  Static153 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160119.95 51087.84 -15.00 /hstart 18
+  Static157 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160107.42 51101.30 -15.00 /hstart 18
+  Static39 Stationary.Industrial.Oxygen_Facility nn 160087.77 51122.05 70.00 
+  Static181 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160096.56 51113.75 -15.00 /hstart 20
+  Static61 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160101.73 51110.04 255.00 
+  Static192 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160083.31 51135.57 -15.00 /hstart 20
+  Static158 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160122.77 51096.46 -15.00 /hstart 18
+  Static176 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160110.48 51110.39 -15.00 /hstart 18
+  Static188 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160099.39 51122.36 -15.00 /hstart 20
+  Static177 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160125.84 51105.54 -15.00 /hstart 18
+  Static182 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160113.31 51119.00 -15.00 /hstart 18
+  Static193 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160102.67 51131.03 -15.00 /hstart 20
+  Static76 Stationary.Weapons_.Torpedo_T_F5 nn 160111.81 51127.40 70.00 
+  Static197 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160116.61 51127.69 -15.00 /hstart 18
+  Static183 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160128.67 51114.16 -15.00 /hstart 18
+  Static201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160131.95 51122.83 -15.00 /hstart 18
+  Static199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160134.78 51131.45 -15.00 /hstart 18
+  Static11 tobruk:Stationary.Environment.50meterStonewall nn 159887.69 51139.97 -15.00 
+  Static34 Stationary.Environment.PortCrane1_FRA1 nn 159888.63 51141.59 170.00 
+  Static124 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159895.75 51137.56 -15.00 /hstart 18
+  Static142 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159898.56 51147.31 -15.00 /hstart 18
+  Static144 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159900.95 51155.53 -15.00 /hstart 18
+  Static10 tobruk:Stationary.Environment.50meterStonewall nn 159894.33 51166.14 -15.00 
+  Static54 Stationary.Weapons_.Torpedo_T_F5 nn 159927.83 51136.13 70.00 
+  Static33 Stationary.Environment.PortCrane1_FRA1 nn 159899.13 51165.12 170.00 
+  Static146 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159927.08 51139.46 -15.00 /hstart 19
+  Static162 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159904.45 51165.00 -15.00 /hstart 18
+  Static145 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159929.88 51148.09 -15.00 /hstart 19
+  Static164 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159906.84 51173.23 -15.00 /hstart 18
+  Static166 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159932.97 51157.15 -15.00 /hstart 19
+  Static168 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159910.55 51182.32 -15.00 /hstart 18
+  Static9 tobruk:Stationary.Environment.50meterStonewall nn 159904.89 51193.37 -15.00 
+  Static32 Stationary.Environment.PortCrane1_FRA1 de 159909.45 51189.41 170.00 
+  Static165 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159935.78 51165.80 -15.00 /hstart 19
+  Static169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159912.97 51190.53 -15.00 /hstart 18
+  Static82 Stationary.Airfield.Fuel_Storage nn 159957.23 51140.14 70.00 
+  Static143 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159958.83 51140.36 -15.00 /hstart 20
+  Static42 Stationary.Industrial.Oxygen_Facility nn 159949.20 51154.86 70.00 
+  Static64 tobruk:Stationary.Airfield.LawsHangerGravesend nn 159951.23 51152.35 255.00 
+  Static167 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159961.89 51149.44 -15.00 /hstart 20
+  Static171 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159939.06 51174.46 -15.00 /hstart 19
+  Static79 Stationary.Weapons_.Torpedo_T_F5 nn 159953.20 51169.56 70.00 
+  Static163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159964.73 51158.06 -15.00 /hstart 20
+  Static170 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159941.89 51183.08 -15.00 /hstart 19
+  Static174 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159990.89 51141.56 -15.00 /hstart 20
+  Static173 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159968.02 51166.74 -15.00 /hstart 20
+  Static63 tobruk:Stationary.Airfield.LawsHangerGravesend nn 159997.64 51139.22 255.00 
+  Static205 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159944.28 51192.42 -15.00 /hstart 19
+  Static47 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 159951.89 51189.60 70.00 
+  Static41 Stationary.Industrial.Oxygen_Facility nn 159996.81 51146.13 70.00 
+  Static184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159993.70 51150.18 -15.00 /hstart 20
+  Static172 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159970.81 51175.37 -15.00 /hstart 20
+  Static196 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159996.98 51158.85 -15.00 /hstart 20
+  Static206 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159973.22 51184.70 -15.00 /hstart 20
+  Static48 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 159994.00 51171.55 70.00 
+  Static175 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159999.83 51167.47 -15.00 /hstart 20
+  Static207 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159976.02 51193.34 -15.00 /hstart 20
+  Static78 Stationary.Weapons_.Torpedo_T_F5 nn 160017.00 51138.09 70.00 
+  Static185 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160022.75 51142.15 -15.00 /hstart 20
+  Static189 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160026.03 51150.82 -15.00 /hstart 20
+  Static208 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160002.19 51176.82 -15.00 /hstart 20
+  Static190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160028.86 51159.45 -15.00 /hstart 20
+  Static210 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160005.00 51185.44 -15.00 /hstart 20
+  Static191 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160054.89 51143.40 -15.00 /hstart 20
+  Static209 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160031.23 51168.79 -15.00 /hstart 20
+  Static234 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160007.13 51194.94 -15.00 /hstart 20
+  Static49 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 160045.73 51158.77 70.00 
+  Static59 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160012.17 51191.13 255.00 
+  Static194 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160057.72 51152.02 -15.00 /hstart 20
+  Static211 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160034.05 51177.41 -15.00 /hstart 20
+  Static214 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160060.08 51161.36 -15.00 /hstart 20
+  Static238 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160036.20 51186.88 -15.00 /hstart 20
+  Static219 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160062.92 51169.98 -15.00 /hstart 20
+  Static245 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160039.00 51195.52 -15.00 /hstart 20
+  Static58 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160063.67 51177.49 255.00 
+  Static74 Stationary.Weapons_.Torpedo_T_F5 nn 160059.09 51192.15 70.00 
+  Static77 Stationary.Weapons_.Torpedo_T_F5 nn 160065.77 51142.74 70.00 
+  Static195 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160086.14 51144.19 -15.00 /hstart 20
+  Static50 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 160102.47 51138.07 70.00 
+  Static215 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160088.50 51153.54 -15.00 /hstart 20
+  Static239 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160065.03 51179.48 -15.00 /hstart 20
+  Static198 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160105.50 51139.66 -15.00 /hstart 20
+  Static220 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160091.33 51162.16 -15.00 /hstart 20
+  Static200 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160119.42 51136.30 -15.00 /hstart 18
+  Static246 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160067.86 51188.10 -15.00 /hstart 20
+  Static216 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160107.88 51149.02 -15.00 /hstart 20
+  Static240 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160093.48 51171.64 -15.00 /hstart 20
+  Static212 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160121.80 51145.65 -15.00 /hstart 18
+  Static221 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160110.70 51157.63 -15.00 /hstart 20
+  Static251 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160071.14 51196.77 -15.00 /hstart 20
+  Static247 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160096.28 51180.28 -15.00 /hstart 20
+  Static217 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160124.63 51154.27 -15.00 /hstart 18
+  Static241 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160112.83 51167.13 -15.00 /hstart 20
+  Static57 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160116.08 51163.27 255.00 
+  Static252 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160099.58 51188.96 -15.00 /hstart 20
+  Static236 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160126.75 51163.77 -15.00 /hstart 18
+  Static248 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160115.66 51175.75 -15.00 /hstart 20
+  Static75 Stationary.Weapons_.Torpedo_T_F5 nn 160116.95 51174.25 70.00 
+  Static255 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160102.39 51197.57 -15.00 /hstart 20
+  Static253 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160118.94 51184.41 -15.00 /hstart 20
+  Static258 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160121.77 51193.04 -15.00 /hstart 20
+  Static213 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160137.16 51140.81 -15.00 /hstart 18
+  Static218 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160139.98 51149.42 -15.00 /hstart 18
+  Static237 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160142.09 51158.92 -15.00 /hstart 18
+  Static242 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160129.58 51172.39 -15.00 /hstart 18
+  Static260 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160135.69 51189.68 -15.00 /hstart 18
+  Static261 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160148.22 51176.21 -15.00 /hstart 18
+  Static259 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160151.03 51184.83 -15.00 /hstart 18
+  Static272 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160138.06 51199.04 -15.00 /hstart 18
+  Static73 tobruk:Stationary.Environment.50meterStonewall nn 160155.31 51190.38 70.00 
+  Static273 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160153.41 51194.20 -15.00 /hstart 18
+  Static202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159915.73 51200.29 -15.00 /hstart 18
+  Static203 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159918.16 51208.49 -15.00 /hstart 18
+  Static31 Stationary.Environment.PortCrane1_FRA1 nn 159909.14 51219.27 170.00 
+  Static222 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159920.72 51218.39 -15.00 /hstart 18
+  Static8 tobruk:Stationary.Environment.50meterStonewall nn 159919.00 51219.23 -15.00 
+  Static21 tobruk:ShipUnit.Schnellboot_30_MTB de 159911.47 51232.75 -195.00 /sleep 1440/skill 0/slowfire 100
+  Static224 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159923.09 51226.61 -15.00 /hstart 18
+  Static30 Stationary.Environment.PortCrane1_FRA1 nn 159917.34 51243.62 170.00 
+  Static228 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159926.81 51235.71 -15.00 /hstart 18
+  Static7 tobruk:Stationary.Environment.50meterStonewall nn 159928.27 51241.76 -15.00 
+  Static229 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159929.22 51243.90 -15.00 /hstart 18
+  Static262 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159932.00 51253.68 -15.00 /hstart 18
+  Static263 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159934.41 51261.87 -15.00 /hstart 18
+  Static204 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159947.08 51201.06 -15.00 /hstart 19
+  Static226 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159949.23 51210.54 -15.00 /hstart 19
+  Static60 tobruk:Stationary.Airfield.LawsHangerGravesend nn 159964.78 51203.77 255.00 
+  Static225 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159952.06 51219.16 -15.00 /hstart 19
+  Static55 Stationary.Weapons_.Torpedo_T_F5 nn 159958.56 51221.67 70.00 
+  Static227 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159978.16 51202.83 -15.00 /hstart 20
+  Static231 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159955.33 51227.85 -15.00 /hstart 19
+  Static6 tobruk:Stationary.Environment.50meterStonewall nn 159937.06 51250.44 70.00 
+  Static223 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159980.98 51211.45 -15.00 /hstart 20
+  Static230 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159958.16 51236.46 -15.00 /hstart 19
+  Static233 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159984.27 51220.12 -15.00 /hstart 20
+  Static265 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159960.55 51245.80 -15.00 /hstart 19
+  Static56 Stationary.Weapons_.Torpedo_T_F5 nn 159999.33 51207.64 70.00 
+  Static5 tobruk:Stationary.Environment.50meterStonewall nn 159966.36 51244.07 70.00 
+  Static232 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159987.08 51228.76 -15.00 /hstart 20
+  Static264 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159963.34 51254.44 -15.00 /hstart 19
+  Static19 ShipUnit.Boat_42ft_SailingLaunch de 159960.64 51262.88 75.00 /sleep 1440/skill 0/slowfire 100
+  Static29 Stationary.Environment.PortCrane1_FRA1 nn 159972.13 51253.45 65.00 
+  Static266 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159989.47 51238.09 -15.00 /hstart 20
+  Static4 tobruk:Stationary.Environment.50meterStonewall nn 159997.30 51241.07 70.00 
+  Static267 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 159992.27 51246.73 -15.00 /hstart 20
+  Static28 Stationary.Environment.PortCrane1_FRA1 nn 159998.38 51245.85 80.00 
+  Static244 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160009.95 51203.55 -15.00 /hstart 20
+  Static256 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160013.25 51212.24 -15.00 /hstart 20
+  Static235 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160016.08 51220.84 -15.00 /hstart 20
+  Static249 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160042.30 51204.21 -15.00 /hstart 20
+  Static268 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160018.45 51230.21 -15.00 /hstart 20
+  Static250 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160045.11 51212.82 -15.00 /hstart 20
+  Static3 tobruk:Stationary.Environment.50meterStonewall nn 160023.11 51234.87 70.00 
+  Static270 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160021.27 51238.83 -15.00 /hstart 20
+  Static27 Stationary.Environment.PortCrane1_FRA1 nn 160023.23 51239.95 110.00 
+  Static269 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160047.50 51222.18 -15.00 /hstart 20
+  Static2 tobruk:Stationary.Environment.50meterStonewall nn 160048.47 51226.68 70.00 
+  Static26 Stationary.Environment.PortCrane1_FRA1 nn 160049.52 51229.05 95.00 
+  Static271 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160050.31 51230.79 -15.00 /hstart 20
+  Static254 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160073.97 51205.39 -15.00 /hstart 20
+  Static274 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160076.34 51214.75 -15.00 /hstart 20
+  Static1 tobruk:Stationary.Environment.50meterStonewall nn 160076.64 51221.67 70.00 
+  Static25 Stationary.Environment.PortCrane1_FRA1 nn 160076.36 51221.45 65.00 
+  Static279 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160079.17 51223.36 -15.00 /hstart 20
+  Static22 ShipUnit.Boat_42ft_SailingLaunch nn 160066.69 51240.20 75.00 /sleep 1440/skill 2/slowfire 100
+  Static275 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160104.77 51206.93 -15.00 /hstart 20
+  Static72 tobruk:Stationary.Environment.50meterStonewall nn 160102.03 51214.31 70.00 
+  Static24 Stationary.Environment.PortCrane1_FRA1 nn 160102.33 51219.20 95.00 
+  Static280 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160107.59 51215.55 -15.00 /hstart 20
+  Static276 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160124.13 51202.39 -15.00 /hstart 20
+  Static281 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160126.95 51211.00 -15.00 /hstart 20
+  Static0 tobruk:Stationary.Environment.50meterStonewall nn 160130.39 51200.69 70.00 
+  Static23 Stationary.Environment.PortCrane1_FRA1 nn 160134.19 51212.09 25.00 
+  Static277 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160140.88 51207.64 -15.00 /hstart 18
+  Static278 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160156.23 51202.80 -15.00 /hstart 18
+  Static69 Stationary.Environment.PortCrane1_FRA1 de 160162.94 51201.29 65.00 
+  Static342 Stationary.Environment.JerryCan_GER1_1 nn 160076.17 51323.96 235.00 
+  Static343 Stationary.Weapons_.Torpedo_T_F5 de 160145.20 51169.71 -65.00 
+  Static243 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160132.86 51181.06 -15.00 /hstart 18
+  Static257 Stationary.Weapons_.Torpedo_T_F5 nn 159997.56 51192.05 -65.00 
+  Static344 Stationary.Weapons_.Torpedo_T_F5 nn 159966.86 51188.78 -65.00 
+  Static345 Stationary.Weapons_.Torpedo_T_F5 nn 159942.20 51198.37 -65.00 
+  Static346 Stationary.Weapons_.Torpedo_T_F5 nn 159940.83 51169.14 -65.00 
+  Static347 Stationary.Weapons_.Torpedo_T_F5 nn 159926.08 51147.34 -65.00 
+  Static348 Stationary.Weapons_.Torpedo_T_F5 nn 159905.95 51115.04 -65.00 
+  Static349 Stationary.Weapons_.Torpedo_T_F5 nn 159902.86 51087.54 -65.00 
+  Static350 Stationary.Weapons_.Torpedo_T_F5 nn 159932.83 51079.04 -65.00 
+  Static351 Stationary.Weapons_.Torpedo_T_F5 nn 159951.06 51096.36 -65.00 
+  Static352 Stationary.Weapons_.Torpedo_T_F5 nn 159973.39 51141.47 -65.00 
+  Static353 Stationary.Weapons_.Torpedo_T_F5 nn 159976.91 51182.84 -65.00 
+  Static354 Stationary.Weapons_.Torpedo_T_F5 nn 159969.59 51227.59 -65.00 
+  Static355 Stationary.Weapons_.Torpedo_T_F5 nn 159998.81 51237.18 -65.00 
+  Static356 Stationary.Weapons_.Torpedo_T_F5 nn 160039.72 51210.71 -65.00 
+  Static357 Stationary.Weapons_.Torpedo_T_F5 nn 160032.17 51184.76 -65.00 
+  Static358 Stationary.Weapons_.Torpedo_T_F5 nn 160012.58 51117.77 -65.00 
+  Static359 Stationary.Weapons_.Torpedo_T_F5 nn 160002.09 51105.47 -65.00 
+  Static360 Stationary.Weapons_.Torpedo_T_F5 nn 159971.11 51094.08 -65.00 
+  Static361 Stationary.Weapons_.Torpedo_T_F5 nn 159952.47 51066.68 -65.00 
+  Static362 Stationary.Weapons_.Torpedo_T_F5 nn 159983.75 51045.41 -65.00 
+  Static363 Stationary.Weapons_.Torpedo_T_F5 nn 159993.13 51059.77 -65.00 
+  Static364 Stationary.Weapons_.Torpedo_T_F5 nn 160002.55 51084.05 -65.00 
+  Static365 Stationary.Weapons_.Torpedo_T_F5 nn 160019.86 51059.45 -65.00 
+  Static366 Stationary.Weapons_.Torpedo_T_F5 nn 160015.13 51035.03 -65.00 
+  Static367 Stationary.Weapons_.Torpedo_T_F5 nn 160020.28 51025.78 -65.00 
+  Static368 Stationary.Weapons_.Torpedo_T_F5 nn 160042.31 51032.00 -65.00 
+  Static369 Stationary.Weapons_.Torpedo_T_F5 nn 160063.61 51087.25 -65.00 
+  Static370 Stationary.Weapons_.Torpedo_T_F5 nn 160063.61 51106.38 -65.00 
+  Static371 Stationary.Weapons_.Torpedo_T_F5 nn 160049.03 51122.33 -65.00 
+  Static372 Stationary.Weapons_.Torpedo_T_F5 nn 160053.59 51172.46 -65.00 
+  Static373 Stationary.Weapons_.Torpedo_T_F5 nn 160073.41 51182.44 -65.00 
+  Static374 Stationary.Weapons_.Torpedo_T_F5 nn 160097.14 51183.35 -65.00 
+  Static375 Stationary.Weapons_.Torpedo_T_F5 nn 160092.31 51157.42 -65.00 
+  Static376 Stationary.Weapons_.Torpedo_T_F5 nn 160080.92 51118.69 -65.00 
+  Static377 Stationary.Weapons_.Torpedo_T_F5 nn 160079.11 51148.76 -65.00 
+  Static378 Stationary.Weapons_.Torpedo_T_F5 nn 160059.52 51071.75 -65.00 
+  Static379 Stationary.Weapons_.Torpedo_T_F5 nn 160049.94 51045.78 -65.00 
+  Static380 Stationary.Weapons_.Torpedo_T_F5 nn 160068.33 51025.14 -65.00 
+  Static381 Stationary.Weapons_.Torpedo_T_F5 nn 160085.94 51061.73 -65.00 
+  Static382 Stationary.Weapons_.Torpedo_T_F5 nn 160088.22 51094.08 -65.00 
+  Static383 Stationary.Weapons_.Torpedo_T_F5 nn 160098.25 51131.90 -65.00 
+  Static384 Stationary.Weapons_.Torpedo_T_F5 nn 160111.00 51148.30 -65.00 
+  Static385 Stationary.Weapons_.Torpedo_T_F5 nn 160128.91 51175.16 -65.00 
+  Static386 Stationary.Weapons_.Torpedo_T_F5 nn 160132.42 51136.00 -65.00 
+  Static387 Stationary.Weapons_.Torpedo_T_F5 nn 160131.50 51103.20 -65.00 
+  Static388 Stationary.Weapons_.Torpedo_T_F5 nn 160120.11 51083.60 -65.00 
+  Static389 Stationary.Weapons_.Torpedo_T_F5 nn 160115.11 51047.14 -65.00 
+  Static390 Stationary.Weapons_.Torpedo_T_F5 nn 160108.27 51030.74 -65.00 
+  Static391 Stationary.Weapons_.Torpedo_T_F5 nn 160090.05 51018.89 -65.00 
+  Static392 Stationary.Weapons_.Torpedo_T_F5 nn 160080.92 51033.02 -65.00 
+  Static393 Stationary.Weapons_.Torpedo_T_F5 nn 160113.73 51027.55 -65.00 
+  Static394 Stationary.Weapons_.Torpedo_T_F5 nn 160144.27 51103.20 -65.00 
+  Static395 Stationary.Weapons_.Torpedo_T_F5 nn 160075.00 51125.52 -65.00 
+  Static396 Stationary.Weapons_.Torpedo_T_F5 nn 160017.59 51114.13 -65.00 
+  Static397 Stationary.Weapons_.Torpedo_T_F5 nn 160022.59 51080.41 -65.00 
+  Static398 Stationary.Weapons_.Torpedo_T_F5 nn 160026.70 51152.86 -65.00 
+  Static399 Stationary.Weapons_.Torpedo_T_F5 nn 160029.89 51175.64 -65.00 
+  Static400 Stationary.Environment.JerryCan_GER1_1 nn 159941.73 51208.41 -65.00 
+  Static401 Stationary.Environment.JerryCan_GER1_1 nn 159927.59 51173.71 -65.00 
+  Static402 Stationary.Environment.JerryCan_GER1_1 nn 159911.94 51147.34 -65.00 
+  Static403 Stationary.Environment.JerryCan_GER1_1 nn 159906.41 51115.04 -65.00 
+  Static404 Stationary.Environment.JerryCan_GER1_1 nn 159910.52 51094.97 -65.00 
+  Static405 Stationary.Environment.JerryCan_GER1_1 nn 159949.23 51096.81 -65.00 
+  Static406 Stationary.Environment.JerryCan_GER1_1 nn 159952.42 51112.31 -65.00 
+  Static407 Stationary.Environment.JerryCan_GER1_1 nn 159956.98 51135.09 -65.00 
+  Static408 Stationary.Environment.JerryCan_GER1_1 nn 159966.39 51168.23 -65.00 
+  Static409 Stationary.Environment.JerryCan_GER1_1 nn 159966.86 51185.12 -65.00 
+  Static410 Stationary.Environment.JerryCan_GER1_1 nn 159973.25 51213.89 -65.00 
+  Static411 Stationary.Environment.JerryCan_GER1_1 nn 160008.64 51213.45 -65.00 
+  Static412 Stationary.Environment.JerryCan_GER1_1 nn 160022.14 51191.59 -65.00 
+  Static413 Stationary.Environment.JerryCan_GER1_1 nn 160023.97 51163.80 -65.00 
+  Static414 Stationary.Environment.JerryCan_GER1_1 nn 160008.02 51138.74 -65.00 
+  Static415 Stationary.Environment.JerryCan_GER1_1 nn 159985.69 51100.91 -65.00 
+  Static416 Stationary.Environment.JerryCan_GER1_1 nn 159972.48 51090.89 -65.00 
+  Static417 Stationary.Environment.JerryCan_GER1_1 nn 159966.66 51062.07 -65.00 
+  Static418 Stationary.Environment.JerryCan_GER1_1 nn 160005.67 51040.84 -65.00 
+  Static419 Stationary.Environment.JerryCan_GER1_1 nn 160016.22 51058.54 -65.00 
+  Static420 Stationary.Environment.JerryCan_GER1_1 nn 160032.63 51094.08 -65.00 
+  Static421 Stationary.Environment.JerryCan_GER1_1 nn 160037.64 51111.39 -65.00 
+  Static422 Stationary.Environment.JerryCan_GER1_1 nn 160046.75 51147.85 -65.00 
+  Static423 Stationary.Environment.JerryCan_GER1_1 nn 160042.19 51183.39 -65.00 
+  Static424 Stationary.Environment.JerryCan_GER1_1 nn 160041.42 51200.23 -65.00 
+  Static425 Stationary.Environment.JerryCan_GER1_1 nn 160065.02 51208.41 -65.00 
+  Static426 Stationary.Environment.JerryCan_GER1_1 nn 160089.67 51199.73 -65.00 
+  Static427 Stationary.Environment.JerryCan_GER1_1 nn 160097.78 51166.08 -65.00 
+  Static428 Stationary.Environment.JerryCan_GER1_1 nn 160082.30 51131.90 -65.00 
+  Static429 Stationary.Environment.JerryCan_GER1_1 nn 160074.55 51115.04 -65.00 
+  Static430 Stationary.Environment.JerryCan_GER1_1 nn 160060.88 51073.57 -65.00 
+  Static431 Stationary.Environment.JerryCan_GER1_1 nn 160054.05 51060.82 -65.00 
+  Static432 Stationary.Environment.JerryCan_GER1_1 nn 160050.59 51026.46 -65.00 
+  Static433 Stationary.Environment.JerryCan_GER1_1 nn 160072.48 51018.26 -65.00 
+  Static434 Stationary.Environment.JerryCan_GER1_1 nn 160091.41 51017.07 -65.00 
+  Static435 Stationary.Environment.JerryCan_GER1_1 nn 160112.83 51030.74 -65.00 
+  Static436 Stationary.Environment.JerryCan_GER1_1 nn 160131.50 51060.36 -65.00 
+  Static437 Stationary.Environment.JerryCan_GER1_1 nn 160129.23 51074.94 -65.00 
+  Static438 Stationary.Environment.JerryCan_GER1_1 nn 160124.22 51094.54 -65.00 
+  Static439 Stationary.Environment.JerryCan_GER1_1 nn 160136.52 51126.43 -65.00 
+  Static440 Stationary.Environment.JerryCan_GER1_1 nn 160146.55 51147.39 -65.00 
+  Static441 Stationary.Environment.JerryCan_GER1_1 nn 160146.55 51162.43 -65.00 
+  Static442 Stationary.Environment.JerryCan_GER1_1 nn 160150.53 51184.26 -65.00 
+  Static443 Stationary.Environment.JerryCan_GER1_1 nn 160131.69 51202.02 -65.00 
+  Static444 Stationary.Environment.JerryCan_GER1_1 nn 160108.19 51188.81 -65.00 
+  Static445 Stationary.Environment.JerryCan_GER1_1 nn 160101.89 51156.51 -65.00 
+  Static446 Stationary.Environment.JerryCan_GER1_1 nn 160101.44 51114.13 -65.00 
+  Static447 Stationary.Environment.JerryCan_GER1_1 nn 160086.39 51062.18 -65.00 
+  Static448 Stationary.Environment.JerryCan_GER1_1 nn 160060.42 51040.31 -65.00 
+  Static449 Stationary.Environment.JerryCan_GER1_1 nn 160034.02 51038.93 -65.00 
+  Static450 Stationary.Environment.JerryCan_GER1_1 nn 159965.30 51060.23 -65.00 
+  Static451 Stationary.Environment.JerryCan_GER1_1 nn 159962.00 51082.69 -65.00 
+  Static452 Stationary.Environment.JerryCan_GER1_1 nn 159944.94 51183.30 -65.00 
+  Static453 Stationary.Environment.JerryCan_GER1_1 nn 159935.81 51239.46 -65.00 
+  Static454 Stationary.Environment.JerryCan_GER1_1 nn 159965.48 51252.70 -65.00 
+  Static455 Stationary.Environment.JerryCan_GER1_1 nn 159947.22 51214.80 -65.00 
+[Buildings]
+[BuildingsLinks]

@@ -1,0 +1,192 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940_Autumn
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 7.98527797113638
+  WeatherIndex 2
+  CloudsHeight 1008
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power -2.719 -0.268 0.000
+  BottomBound 0.00
+  TopBound 240.00
+  GustPower 1
+  GustAngle 0
+[GlobalWind_1]
+  Power -6.124 -1.154 -0.742
+  BottomBound 236.00
+  TopBound 1012.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_2]
+  Power -7.210 -0.399 -0.519
+  BottomBound 1010.00
+  TopBound 2633.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_3]
+  Power -7.353 0.450 -0.707
+  BottomBound 2628.00
+  TopBound 3413.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_4]
+  Power -7.121 2.489 -0.257
+  BottomBound 3411.00
+  TopBound 4951.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_5]
+  Power -6.736 3.852 -0.395
+  BottomBound 4937.00
+  TopBound 6278.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_6]
+  Power -5.526 5.816 -0.664
+  BottomBound 6272.00
+  TopBound 7072.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_7]
+  Power -4.692 6.738 -0.303
+  BottomBound 7049.00
+  TopBound 7481.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_8]
+  Power -3.697 7.387 -0.697
+  BottomBound 7451.00
+  TopBound 9925.00
+  GustPower 0
+  GustAngle 0
+[GlobalWind_9]
+  Power -2.528 8.022 -0.437
+  BottomBound 9918.00
+  TopBound 10000.00
+  GustPower 0
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static_windsock_377 Stationary.Environment.Windsock_Strong nn 284607.69 124897.94 0.00 
+  Static_windsock_376 Stationary.Environment.Polotnische_X_white_1 nn 284607.59 124897.88 0.00 
+  Static_windsock_702 Stationary.Environment.Polotnische_X_white_1 nn 298242.06 126902.75 0.00 
+  Static_windsock_703 Stationary.Environment.Windsock_Strong nn 298242.16 126902.80 0.00 
+  Static_windsock_690 Stationary.Environment.Polotnische_X_white_1 nn 295179.72 130127.49 0.00 
+  Static_windsock_691 tobruk:Stationary.Environment.Windsock_v2 nn 295179.84 130127.55 0.00 
+  Static41 Stationary.Environment.Polotnische_X_white_1 nn 284814.84 139477.61 0.00 
+  Static40 tobruk:Stationary.Environment.Windsock_v2 nn 284814.94 139477.69 0.00 
+  Static_windsock_568 Stationary.Environment.Polotnische_X_white_1 nn 275773.38 155779.47 0.00 
+  Static_windsock_569 tobruk:Stationary.Environment.Windsock_v2 nn 275773.47 155779.53 0.00 
+  Static48 Stationary.Environment.Polotnische_X_white_1 nn 265954.78 156065.13 0.00 
+  Static47 tobruk:Stationary.Environment.Windsock_v2 nn 265954.88 156065.20 0.00 
+  Static_windsock_578 Stationary.Environment.Polotnische_X_white_1 nn 307145.09 160516.41 0.00 
+  Static_windsock_579 Stationary.Environment.Windsock_Strong nn 307145.19 160516.47 0.00 
+  Static_windsock_558 Stationary.Environment.Polotnische_X_white_1 nn 287526.66 162579.02 0.00 
+  Static_windsock_559 tobruk:Stationary.Environment.Windsock_v2 nn 287526.75 162579.06 0.00 
+  Static_windsock_551 tobruk:Stationary.Environment.Windsock_v2 nn 268057.91 166711.78 0.00 
+  Static_windsock_550 Stationary.Environment.Polotnische_X_white_1 nn 268057.81 166711.73 0.00 
+  Static65 tobruk:Stationary.Environment.Windsock_v2 nn 71346.55 176898.98 0.00 
+  Static66 Stationary.Environment.Polotnische_X_white_1 nn 71346.45 176898.92 0.00 
+  Static63 Stationary.Environment.Polotnische_X_white_1 nn 76278.42 179787.86 0.00 
+  Static62 tobruk:Stationary.Environment.Windsock_v2 nn 76278.52 179787.94 0.00 
+  Static33 Stationary.Environment.Windsock_Strong nn 278355.84 181770.09 0.00 
+  Static34 Stationary.Environment.Polotnische_X_white_1 nn 278355.75 181770.03 0.00 
+  Static31 Stationary.Environment.Polotnische_X_white_1 nn 284900.75 182920.94 0.00 
+  Static30 tobruk:Stationary.Environment.Windsock_v2 nn 284900.81 182921.00 0.00 
+  Static37 Stationary.Environment.Polotnische_X_white_1 nn 263829.53 186236.38 0.00 
+  Static36 Stationary.Environment.Windsock_Strong nn 263829.63 186236.45 0.00 
+  Static68 tobruk:Stationary.Environment.Windsock_v2 nn 72132.96 193992.50 0.00 
+  Static69 Stationary.Environment.Polotnische_X_white_1 nn 72132.87 193992.42 0.00 
+  Static28 Stationary.Environment.Polotnische_X_white_1 nn 311442.06 190528.11 0.00 
+  Static27 Stationary.Environment.Windsock_Strong nn 311442.16 190528.19 0.00 
+  Static_windsock_522 Stationary.Environment.Polotnische_X_white_1 nn 318272.56 191075.42 0.00 
+  Static_windsock_523 Stationary.Environment.Windsock_Strong nn 318272.66 191075.47 0.00 
+  Static60 Stationary.Environment.Polotnische_X_white_1 nn 112972.11 195507.75 0.00 
+  Static59 tobruk:Stationary.Environment.Windsock_v2 nn 112972.20 195507.81 0.00 
+  Static_windsock_536 Stationary.Environment.Polotnische_X_white_1 nn 284828.59 193336.20 0.00 
+  Static_windsock_537 tobruk:Stationary.Environment.Windsock_v2 nn 284828.69 193336.25 0.00 
+  Static_windsock_517 Stationary.Environment.Windsock_Strong nn 317853.50 195458.03 0.00 
+  Static_windsock_516 Stationary.Environment.Polotnische_X_white_1 nn 317853.41 195458.00 0.00 
+  Static56 Stationary.Environment.Windsock_Strong nn 133723.91 198573.67 0.00 
+  Static57 Stationary.Environment.Polotnische_X_white_1 nn 133723.83 198573.59 0.00 
+  Static25 Stationary.Environment.Polotnische_X_white_1 nn 167976.06 198307.22 0.00 
+  Static24 tobruk:Stationary.Environment.Windsock_v2 nn 167976.16 198307.30 0.00 
+  Static71 tobruk:Stationary.Environment.Windsock_v2 nn 61055.68 200836.66 0.00 
+  Static72 Stationary.Environment.Polotnische_X_white_1 nn 61055.59 200836.59 0.00 
+  Static_windsock_534 Stationary.Environment.Polotnische_X_white_1 nn 285580.91 199783.50 0.00 
+  Static_windsock_535 Stationary.Environment.Windsock_Strong nn 285581.00 199783.55 0.00 
+  Static_windsock_355 Stationary.Environment.Windsock_Strong nn 272299.31 200743.83 0.00 
+  Static_windsock_354 Stationary.Environment.Polotnische_X_white_1 nn 272299.19 200743.78 0.00 
+  Static_windsock_499 Stationary.Environment.Windsock_Strong nn 276346.41 200909.20 0.00 
+  Static_windsock_498 Stationary.Environment.Polotnische_X_white_1 nn 276346.31 200909.13 0.00 
+  Static_windsock_528 Stationary.Environment.Polotnische_X_white_1 nn 286677.97 201916.52 0.00 
+  Static_windsock_529 tobruk:Stationary.Environment.Windsock_v2 nn 286678.06 201916.58 0.00 
+  Static_windsock_507 Stationary.Environment.Windsock_Strong nn 281559.31 203418.33 0.00 
+  Static_windsock_506 Stationary.Environment.Polotnische_X_white_1 nn 281559.22 203418.27 0.00 
+  Static_windsock_515 tobruk:Stationary.Environment.Windsock_v2 nn 299317.09 203149.06 0.00 
+  Static_windsock_514 Stationary.Environment.Polotnische_X_white_1 nn 299317.00 203149.00 0.00 
+  Static_windsock_308 Stationary.Environment.Polotnische_X_white_1 nn 271737.94 205176.86 0.00 
+  Static39 tobruk:Stationary.Environment.Windsock_v2 nn 271738.03 205176.89 0.00 
+  Static_windsock_510 Stationary.Environment.Polotnische_X_white_1 nn 284056.00 205290.69 0.00 
+  Static_windsock_511 Stationary.Environment.Windsock_Strong nn 284056.16 205290.77 0.00 
+  Static_windsock_303 tobruk:Stationary.Environment.Windsock_v2 nn 269805.78 207385.81 0.00 
+  Static_windsock_316 Stationary.Environment.Polotnische_X_white_1 nn 279432.69 207252.11 0.00 
+  Static_windsock_315 tobruk:Stationary.Environment.Windsock_v2 nn 276550.09 207527.30 0.00 
+  Static_windsock_314 Stationary.Environment.Polotnische_X_white_1 nn 276550.00 207527.23 0.00 
+  Static19 Stationary.Environment.Polotnische_X_white_1 nn 222435.47 209840.33 0.00 
+  Static18 Stationary.Environment.Windsock_Strong nn 222435.56 209840.41 0.00 
+  Static_windsock_325 Stationary.Environment.Windsock_Strong nn 277329.31 209536.91 0.00 
+  Static_windsock_324 Stationary.Environment.Polotnische_X_white_1 nn 277329.22 209536.86 0.00 
+  Static_windsock_332 Stationary.Environment.Polotnische_X_white_1 nn 281793.53 213194.00 0.00 
+  Static_windsock_333 Stationary.Environment.Windsock_Strong nn 281793.59 213194.05 0.00 
+  Static43 Stationary.Environment.Windsock_Strong nn 290513.66 216676.92 0.00 
+  Static_windsock_340 Stationary.Environment.Polotnische_X_white_1 nn 290513.56 216676.86 0.00 
+  Static_windsock_350 Stationary.Environment.Polotnische_X_white_1 nn 296065.84 217345.88 0.00 
+  Static_windsock_351 Stationary.Environment.Windsock_Strong nn 296065.91 217345.94 0.00 
+  Static15 Stationary.Environment.Windsock_Strong nn 221949.92 221151.27 0.00 
+  Static16 Stationary.Environment.Polotnische_X_white_1 nn 221949.83 221151.20 0.00 
+  Static44 tobruk:Stationary.Environment.Windsock_v2 nn 305206.88 223035.34 0.00 
+  Static46 tobruk:Stationary.Environment.Windsock_v2 nn 305206.88 223035.34 0.00 
+  Static12 Stationary.Environment.Windsock_Strong nn 225653.88 228486.64 0.00 
+  Static13 Stationary.Environment.Polotnische_X_white_1 nn 225653.78 228486.56 0.00 
+  Static9 Stationary.Environment.Windsock_Strong nn 235360.97 232133.42 0.00 
+  Static10 Stationary.Environment.Polotnische_X_white_1 nn 235360.89 232133.36 0.00 
+  Static93 Stationary.Environment.Polotnische_X_white_1 nn 141681.70 233890.78 0.00 
+  Static92 tobruk:Stationary.Environment.Windsock_v2 nn 141681.78 233890.86 0.00 
+  Static90 Stationary.Environment.Polotnische_X_white_1 nn 143702.58 241350.47 0.00 
+  Static89 tobruk:Stationary.Environment.Windsock_v2 nn 143702.67 241350.53 0.00 
+  Static6 Stationary.Environment.Windsock_Strong nn 251555.45 244058.42 0.00 
+  Static7 Stationary.Environment.Polotnische_X_white_1 nn 251555.36 244058.36 0.00 
+  Static77 Stationary.Environment.Windsock_Strong nn 181536.52 248894.22 0.00 
+  Static78 Stationary.Environment.Polotnische_X_white_1 nn 181536.44 248894.16 0.00 
+  Static51 Stationary.Environment.Polotnische_X_white_1 nn 234085.97 248758.66 0.00 
+  Static50 tobruk:Stationary.Environment.Windsock_v2 nn 234086.06 248758.72 0.00 
+  Static86 Stationary.Environment.Windsock_Strong nn 155597.83 253705.78 0.00 
+  Static87 Stationary.Environment.Polotnische_X_white_1 nn 155597.75 253705.70 0.00 
+  Static74 tobruk:Stationary.Environment.Windsock_v2 nn 187974.14 257901.61 0.00 
+  Static75 Stationary.Environment.Polotnische_X_white_1 nn 187974.06 257901.55 0.00 
+  Static4 Stationary.Environment.Polotnische_X_white_1 nn 248108.97 258504.73 0.00 
+  Static3 Stationary.Environment.Windsock_Strong nn 248109.06 258504.81 0.00 
+  Static0 tobruk:Stationary.Environment.Windsock_v2 nn 251472.48 261107.86 0.00 
+  Static1 Stationary.Environment.Polotnische_X_white_1 nn 251472.39 261107.78 0.00 
+  Static21 Stationary.Environment.Windsock_Strong nn 212448.86 262830.41 0.00 
+  Static22 Stationary.Environment.Polotnische_X_white_1 nn 212448.77 262830.34 0.00 
+  Static80 tobruk:Stationary.Environment.Windsock_v2 nn 180002.34 264739.78 0.00 
+  Static81 Stationary.Environment.Polotnische_X_white_1 nn 180002.27 264739.72 0.00 
+  Static96 Stationary.Environment.Polotnische_X_white_1 nn 98810.90 272371.88 0.00 
+  Static95 tobruk:Stationary.Environment.Windsock_v2 nn 98810.99 272371.97 0.00 
+  Static84 Stationary.Environment.Polotnische_X_white_1 nn 167145.06 277709.22 0.00 
+  Static83 Stationary.Environment.Windsock_Strong nn 167145.16 277709.31 0.00 
+  Static54 Stationary.Environment.Polotnische_X_white_1 nn 201466.42 282817.66 0.00 
+  Static53 tobruk:Stationary.Environment.Windsock_v2 nn 201466.52 282817.72 0.00 
+  Static2 Stationary.Environment.Windsock_Strong nn 146691.14 250774.58 0.00 
+  Static5 Stationary.Environment.Polotnische_X_white_1 nn 146691.06 250774.50 0.00 
+[Buildings]
+[BuildingsLinks]

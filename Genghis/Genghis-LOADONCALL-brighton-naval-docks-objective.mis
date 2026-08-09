@@ -1,0 +1,260 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static172 Stationary.Environment.CamoNetPlaneBig nn 139636.94 197630.80 -5.00 /hstart 5
+  Static37 Stationary.Environment.CamoNetPlaneBig nn 139659.27 197629.66 -5.00 /hstart 5
+  Static150 Stationary.Weapons_.Destructing_Bomb nn 139662.00 197619.14 -75.00 /hstart 5
+  Static39 Stationary.Environment.CamoNetPlaneBig nn 139680.72 197627.72 -5.00 /hstart 5
+  Static149 Stationary.Weapons_.Destructing_Bomb nn 139688.98 197622.42 -75.00 /hstart 5
+  Static78 Stationary.Environment.CamoNetPlaneBig gb 139700.44 197624.38 -5.00 /hstart 5
+  Static79 Stationary.Environment.CamoNetPlaneBig nn 139720.02 197622.97 -5.00 /hstart 5
+  Static148 Stationary.Weapons_.Destructing_Bomb nn 139729.52 197617.64 -75.00 /hstart 5
+  Static36 Stationary.Environment.CamoNetPlaneBig nn 139738.61 197621.75 -5.00 /hstart 5
+  Static80 Stationary.Environment.CamoNetPlaneBig nn 139753.28 197620.61 -5.00 /hstart 5
+  Static82 Stationary.Environment.CamoNetPlaneBig nn 139769.69 197619.73 -5.00 /hstart 5
+  Static83 Stationary.Environment.CamoNetPlaneBig nn 139789.06 197617.27 -185.00 /hstart 5
+  Static119 Stationary.Environment.CamoNetPlaneBig nn 139789.06 197617.27 -185.00 /hstart 5
+  Static84 Stationary.Environment.CamoNetPlaneBig nn 139789.06 197617.27 -185.00 /hstart 5
+  Static120 Stationary.Environment.CamoNetPlaneBig nn 139789.06 197617.27 -185.00 /hstart 5
+  Static256 Stationary.Environment.CamoNetPlaneBig nn 139447.78 197671.84 -5.00 /hstart 5
+  Static255 Stationary.Weapons_.Destructing_Bomb nn 139461.50 197673.23 -5.00 /hstart 5
+  Static254 Stationary.Environment.CamoNetPlaneBig nn 139469.22 197669.92 -5.00 /hstart 5
+  Static253 Stationary.Environment.CamoNetPlaneBig nn 139488.92 197666.59 -5.00 /hstart 5
+  Static252 Stationary.Environment.CamoNetPlaneBig gb 139508.53 197665.17 -5.00 /hstart 5
+  Static251 Stationary.Weapons_.Destructing_Bomb nn 139518.03 197662.67 -5.00 /hstart 5
+  Static269 Stationary.Environment.CamoNetPlaneBig nn 139527.11 197663.95 0.00 /hstart 5
+  Static270 Stationary.Environment.CamoNetPlaneBig nn 139541.78 197662.78 -5.00 /hstart 5
+  Static271 Stationary.Weapons_.Destructing_Bomb nn 139559.33 197649.45 -5.00 /hstart 5
+  Static272 Stationary.Environment.CamoNetPlaneBig nn 139558.19 197661.92 -5.00 /hstart 5
+  Static277 Stationary.Environment.CamoNetPlaneBig nn 139577.53 197659.48 -185.00 /hstart 5
+  Static275 Stationary.Environment.CamoNetPlaneBig nn 139577.53 197659.48 -185.00 /hstart 5
+  Static276 Stationary.Environment.CamoNetPlaneBig nn 139577.53 197659.48 -185.00 /hstart 5
+  Static274 Stationary.Environment.CamoNetPlaneBig nn 139577.53 197659.48 -185.00 /hstart 5
+  Static4 ShipUnit.MotorBarge_Large1 gb 137647.44 197779.97 35.00 /sleep 0/skill 2/slowfire 1
+  Static154 Stationary.Weapons_.Destructing_Bomb nn 137456.44 197699.25 -120.00 /hstart 5
+  Static20 Stationary.Environment.CamoNetPlaneBig nn 137456.47 197705.00 5.00 /hstart 5
+  Static31 Stationary.Environment.CamoNetPlaneBig nn 137477.91 197706.84 5.00 /hstart 5
+  Static153 Stationary.Weapons_.Destructing_Bomb nn 137494.16 197699.86 -120.00 /hstart 5
+  Static32 Stationary.Environment.CamoNetPlaneBig nn 137497.94 197706.97 5.00 /hstart 5
+  Static10 Stationary.Environment.CamoNetPlaneBig nn 137517.47 197708.97 -10.00 /hstart 5
+  Static11 Stationary.Environment.CamoNetPlaneBig nn 137535.97 197711.00 5.00 /hstart 5
+  Static27 Stationary.Environment.TelegaBallon_UK1 nn 137502.33 197751.11 90.00 /hstart 5
+  Static152 Stationary.Weapons_.Destructing_Bomb nn 137543.11 197705.89 -120.00 /hstart 5
+  Static12 Stationary.Environment.CamoNetPlaneBig nn 137550.61 197712.42 5.00 /hstart 5
+  Static19 Stationary.Environment.CamoNetPlaneBig nn 137568.53 197713.81 5.00 /hstart 5
+  Static151 Stationary.Weapons_.Destructing_Bomb nn 137578.05 197708.78 -120.00 /hstart 5
+  Static196 Stationary.Weapons_.Destructing_Bomb nn 137543.64 197755.47 -35.00 /hstart 5
+  Static0 Stationary.Environment.CamoNetPlaneBig nn 137586.44 197715.36 -175.00 /hstart 5
+  Static181 Stationary.Environment.CamoNetPlaneBig nn 137249.75 197744.16 10.00 /hstart 5
+  Static165 Stationary.Industrial.Railroad.Engine_Shed gb 137258.97 197736.63 10.00 /hstart 5
+  Static166 Stationary.Industrial.Railroad.Engine_Shed nn 137257.84 197742.22 10.00 /hstart 5
+  Static167 Stationary.Industrial.Railroad.Engine_Shed nn 137257.45 197748.44 10.00 /hstart 5
+  Static164 Stationary.Industrial.Railroad.Engine_Shed nn 137256.83 197754.09 10.00 /hstart 5
+  Static182 Stationary.Environment.CamoNetPlaneBig nn 137270.95 197747.83 10.00 /hstart 5
+  Static183 Stationary.Environment.CamoNetPlaneBig nn 137290.89 197749.70 10.00 /hstart 5
+  Static177 Stationary.Environment.CamoNetPlaneBig nn 137309.36 197753.52 10.00 /hstart 5
+  Static33 Stationary.Weapons_.Destructing_Bomb nn 137320.06 197754.73 -25.00 /hstart 5
+  Static178 Stationary.Environment.CamoNetPlaneBig nn 137328.42 197757.06 10.00 /hstart 5
+  Static179 Stationary.Environment.CamoNetPlaneBig nn 137342.89 197759.75 10.00 /hstart 5
+  Static180 Stationary.Environment.CamoNetPlaneBig nn 137360.55 197761.75 10.00 /hstart 5
+  Static176 Stationary.Environment.CamoNetPlaneBig nn 137378.33 197765.78 -170.00 /hstart 5
+  Static125 Stationary.Environment.CamoNetPlaneBig nn 139234.33 197690.63 0.00 /hstart 5
+  Static140 Stationary.Weapons_.Destructing_Bomb nn 139247.89 197693.19 0.00 /hstart 5
+  Static126 Stationary.Environment.CamoNetPlaneBig nn 139255.83 197690.56 0.00 /hstart 3
+  Static127 Stationary.Environment.CamoNetPlaneBig nn 139275.78 197688.98 0.00 /hstart 5
+  Static128 Stationary.Environment.CamoNetPlaneBig nn 139295.41 197689.27 0.00 /hstart 5
+  Static141 Stationary.Weapons_.Destructing_Bomb gb 139305.11 197687.61 0.00 /hstart 5
+  Static118 Stationary.Environment.CamoNetPlaneBig nn 139314.05 197689.66 5.00 /hstart 5
+  Static129 Stationary.Environment.CamoNetPlaneBig nn 139328.75 197689.80 0.00 /hstart 5
+  Static142 Stationary.Weapons_.Destructing_Bomb nn 139347.41 197678.03 0.00 /hstart 5
+  Static130 Stationary.Environment.CamoNetPlaneBig nn 139345.19 197690.34 0.00 /hstart 5
+  Static132 Stationary.Environment.CamoNetPlaneBig nn 139364.66 197689.59 -180.00 /hstart 5
+  Static134 Stationary.Environment.CamoNetPlaneBig nn 139364.66 197689.59 -180.00 /hstart 5
+  Static133 Stationary.Environment.CamoNetPlaneBig nn 139364.66 197689.59 -180.00 /hstart 5
+  Static131 Stationary.Environment.CamoNetPlaneBig nn 139364.66 197689.59 -180.00 /hstart 5
+  Static147 Stationary.Weapons_.Destructing_Bomb nn 139786.84 197623.88 -75.00 /hstart 5
+  Static220 ShipUnit.MotorBarge_Large1 gb 138599.97 197741.67 -30.00 /sleep 0/skill 2/slowfire 1
+  Static259 Stationary.Environment.CamoNetPlaneBig nn 138756.98 197758.94 175.00 /hstart 5
+  Static258 Stationary.Environment.CamoNetPlaneBig nn 138771.66 197757.80 175.00 /hstart 5
+  Static262 Stationary.Weapons_.Destructing_Bomb nn 138780.34 197757.88 140.00 /hstart 5
+  Static261 Stationary.Environment.CamoNetPlaneBig gb 138795.27 197755.27 175.00 /hstart 5
+  Static264 Stationary.Environment.CamoNetPlaneBig nn 138818.66 197750.31 175.00 /hstart 5
+  Static2 Stationary.Industrial.Railroad.Engine_Shed nn 138853.23 197730.11 175.00 /hstart 5
+  Static286 Stationary.Environment.CamoNetPlaneBig nn 138837.00 197747.64 175.00 /hstart 5
+  Static1 Stationary.Industrial.Railroad.Engine_Shed nn 138852.47 197737.09 175.00 /hstart 5
+  Static287 Stationary.Environment.CamoNetPlaneBig nn 138853.98 197744.36 175.00 /hstart 5
+  Static257 Stationary.Industrial.Railroad.Engine_Shed nn 138852.70 197745.09 175.00 /hstart 5
+  Static265 Stationary.Industrial.Railroad.Engine_Shed nn 138853.55 197750.73 175.00 /hstart 5
+  Static266 Stationary.Environment.CamoNetPlaneBig nn 138853.53 197751.03 175.00 /hstart 5
+  Static267 Stationary.Industrial.Railroad.Engine_Shed nn 138854.78 197756.80 175.00 /hstart 5
+  Static273 Stationary.Environment.CamoNetPlaneBig nn 138921.52 197736.50 -5.00 /hstart 5
+  Static279 Stationary.Environment.CamoNetPlaneBig nn 138942.95 197734.58 -5.00 /hstart 5
+  Static278 Stationary.Weapons_.Destructing_Bomb nn 138934.06 197749.47 -50.00 /hstart 5
+  Static280 Stationary.Environment.CamoNetPlaneBig nn 138962.67 197731.23 -5.00 /hstart 5
+  Static282 Stationary.Environment.CamoNetPlaneBig gb 138982.27 197729.83 -5.00 /hstart 5
+  Static281 Stationary.Weapons_.Destructing_Bomb nn 138974.47 197740.47 -5.00 /hstart 5
+  Static221 Stationary.Environment.CamoNetPlaneBig nn 139000.86 197728.59 0.00 /hstart 5
+  Static241 Stationary.Industrial.Railroad.Engine_Shed nn 139012.42 197719.73 175.00 /hstart 5
+  Static240 Stationary.Industrial.Railroad.Engine_Shed nn 139012.42 197719.73 175.00 /hstart 5
+  Static244 Stationary.Industrial.Railroad.Engine_Shed nn 139013.25 197725.36 175.00 /hstart 5
+  Static243 Stationary.Industrial.Railroad.Engine_Shed nn 139013.25 197725.36 175.00 /hstart 5
+  Static242 Stationary.Environment.CamoNetPlaneBig gb 139015.52 197727.44 -5.00 /hstart 5
+  Static239 Stationary.Industrial.Railroad.Engine_Shed nn 139014.48 197731.45 175.00 /hstart 5
+  Static238 Stationary.Industrial.Railroad.Engine_Shed nn 139014.48 197731.45 175.00 /hstart 5
+  Static222 Stationary.Weapons_.Destructing_Bomb nn 139012.06 197738.98 -5.00 /hstart 5
+  Static236 Stationary.Industrial.Railroad.Engine_Shed nn 139014.84 197737.16 175.00 /hstart 5
+  Static237 Stationary.Industrial.Railroad.Engine_Shed nn 139014.84 197737.16 175.00 /hstart 5
+  Static235 Stationary.Industrial.Railroad.Engine_Shed nn 139014.84 197737.16 175.00 /hstart 5
+  Static245 Stationary.Environment.CamoNetPlaneBig nn 139033.39 197725.70 -5.00 /hstart 5
+  Static249 Stationary.Environment.CamoNetPlaneBig nn 139051.28 197724.13 -185.00 /hstart 5
+  Static247 Stationary.Environment.CamoNetPlaneBig nn 139051.28 197724.13 -185.00 /hstart 5
+  Static248 Stationary.Environment.CamoNetPlaneBig nn 139051.28 197724.13 -185.00 /hstart 5
+  Static246 Stationary.Weapons_.Destructing_Bomb nn 139039.20 197736.34 -5.00 /hstart 5
+  Static250 Stationary.Environment.CamoNetPlaneBig nn 139051.28 197724.13 -185.00 /hstart 5
+  Static6 ShipUnit.MotorBarge_Large1 gb 139161.45 197699.19 160.00 /sleep 0/skill 2/slowfire 1
+  Static156 Stationary.Industrial.Railroad.Engine_Shed nn 137462.72 197767.25 0.00 /hstart 5
+  Static88 Stationary.Environment.CamoNetPlaneBig nn 137454.94 197776.25 0.00 /hstart 5
+  Static162 Stationary.Industrial.Railroad.Engine_Shed nn 137462.55 197772.97 0.00 /hstart 5
+  Static163 Stationary.Industrial.Railroad.Engine_Shed nn 137463.28 197779.14 0.00 /hstart 5
+  Static155 Stationary.Industrial.Railroad.Engine_Shed nn 137463.61 197784.81 0.00 /hstart 5
+  Static123 Stationary.Weapons_.Destructing_Bomb nn 137478.44 197761.67 -35.00 /hstart 5
+  Static89 Stationary.Environment.CamoNetPlaneBig nn 137476.47 197776.22 0.00 /hstart 5
+  Static90 Stationary.Environment.CamoNetPlaneBig nn 137496.41 197774.59 0.00 /hstart 5
+  Static124 Stationary.Weapons_.Destructing_Bomb nn 137506.22 197765.19 -45.00 
+  Static91 Stationary.Environment.CamoNetPlaneBig nn 137515.28 197775.11 0.00 /hstart 5
+  Static92 Stationary.Environment.CamoNetPlaneBig nn 137534.69 197775.31 0.00 /hstart 5
+  Static135 Stationary.Weapons_.Destructing_Bomb nn 137546.61 197765.14 -35.00 /hstart 5
+  Static93 Stationary.Environment.CamoNetPlaneBig nn 137549.39 197775.44 0.00 /hstart 5
+  Static161 Stationary.Industrial.Railroad.Engine_Shed nn 137563.11 197763.86 0.00 /hstart 5
+  Static160 Stationary.Industrial.Railroad.Engine_Shed gb 137563.16 197769.56 0.00 /hstart 5
+  Static159 Stationary.Industrial.Railroad.Engine_Shed nn 137563.25 197776.59 0.00 /hstart 5
+  Static195 Stationary.Weapons_.Destructing_Bomb nn 137550.61 197790.78 -35.00 /hstart 5
+  Static94 Stationary.Environment.CamoNetPlaneBig nn 137567.11 197774.34 0.00 /hstart 5
+  Static158 Stationary.Industrial.Railroad.Engine_Shed nn 137563.75 197782.94 0.00 /hstart 5
+  Static157 Stationary.Industrial.Railroad.Engine_Shed nn 137563.75 197789.58 0.00 /hstart 5
+  Static95 Stationary.Environment.CamoNetPlaneBig nn 137585.30 197775.22 -180.00 /hstart 5
+  Static218 Stationary.Weapons_.Destructing_Bomb nn 137707.94 197778.84 -120.00 /hstart 5
+  Static217 Stationary.Environment.CamoNetPlaneBig nn 137707.97 197784.61 5.00 /hstart 5
+  Static219 Stationary.Environment.CamoNetPlaneBig nn 137729.41 197786.44 5.00 /hstart 5
+  Static215 Stationary.Weapons_.Destructing_Bomb nn 137745.66 197779.47 -120.00 /hstart 5
+  Static214 Stationary.Environment.CamoNetPlaneBig nn 137749.41 197786.58 5.00 /hstart 5
+  Static283 Stationary.Environment.CamoNetPlaneBig nn 137771.94 197786.95 5.00 /hstart 5
+  Static284 Stationary.Environment.CamoNetPlaneBig nn 137792.33 197786.95 5.00 /hstart 5
+  Static285 Stationary.Environment.CamoNetPlaneBig nn 137811.44 197785.67 5.00 /hstart 5
+  Static210 Stationary.Weapons_.Destructing_Bomb nn 137825.72 197779.45 -120.00 /hstart 5
+  Static211 Stationary.Environment.CamoNetPlaneBig nn 137831.55 197788.58 -175.00 /hstart 5
+  Static232 Stationary.Environment.CamoNetPlaneBig nn 137902.70 197776.67 0.00 /hstart 5
+  Static233 Stationary.Environment.CamoNetPlaneBig nn 137920.88 197777.58 180.00 /hstart 5
+  Static234 Stationary.Environment.CamoNetPlaneBig nn 137938.59 197776.48 180.00 /hstart 5
+  Static223 Stationary.Environment.CamoNetPlaneBig nn 137953.31 197776.61 180.00 /hstart 5
+  Static224 Stationary.Weapons_.Destructing_Bomb nn 137961.97 197777.47 145.00 /hstart 5
+  Static229 Stationary.Environment.CamoNetPlaneBig nn 137975.83 197776.30 180.00 /hstart 5
+  Static228 Stationary.Environment.CamoNetPlaneBig nn 137998.33 197776.33 180.00 /hstart 5
+  Static3 Stationary.Industrial.Railroad.Engine_Shed nn 138034.41 197766.39 180.00 /hstart 5
+  Static225 Stationary.Industrial.Railroad.Engine_Shed nn 138035.16 197771.03 180.00 /hstart 5
+  Static227 Stationary.Industrial.Railroad.Engine_Shed nn 138035.50 197776.72 180.00 /hstart 5
+  Static231 Stationary.Environment.CamoNetPlaneBig nn 138035.47 197777.03 180.00 /hstart 5
+  Static226 Stationary.Industrial.Railroad.Engine_Shed nn 138036.20 197782.86 180.00 /hstart 5
+  Static230 Stationary.Industrial.Railroad.Engine_Shed gb 138036.05 197788.61 180.00 /hstart 5
+  Static62 Stationary.Environment.CamoNetPlaneBig nn 138092.05 197777.77 0.00 /hstart 5
+  Static136 Stationary.Weapons_.Destructing_Bomb nn 138103.42 197791.80 -45.00 /hstart 5
+  Static108 Stationary.Environment.CamoNetPlaneBig nn 138113.56 197777.73 0.00 /hstart 5
+  Static109 Stationary.Environment.CamoNetPlaneBig nn 138133.52 197776.11 0.00 /hstart 5
+  Static110 Stationary.Environment.CamoNetPlaneBig nn 138153.16 197776.42 0.00 /hstart 5
+  Static137 Stationary.Weapons_.Destructing_Bomb nn 138144.45 197786.34 0.00 /hstart 5
+  Static111 Stationary.Environment.CamoNetPlaneBig nn 138171.78 197776.83 5.00 /hstart 5
+  Static193 Stationary.Industrial.Railroad.Engine_Shed nn 138184.05 197768.98 180.00 /hstart 5
+  Static197 Stationary.Industrial.Railroad.Engine_Shed nn 138184.05 197768.98 180.00 /hstart 5
+  Static192 Stationary.Industrial.Railroad.Engine_Shed nn 138184.41 197774.67 180.00 /hstart 5
+  Static198 Stationary.Industrial.Railroad.Engine_Shed nn 138184.41 197774.67 180.00 /hstart 5
+  Static112 Stationary.Environment.CamoNetPlaneBig nn 138186.48 197776.94 0.00 /hstart 5
+  Static190 Stationary.Industrial.Railroad.Engine_Shed gb 138185.09 197780.84 180.00 /hstart 5
+  Static191 Stationary.Industrial.Railroad.Engine_Shed nn 138185.09 197780.84 180.00 /hstart 5
+  Static216 Stationary.Industrial.Railroad.Engine_Shed nn 138184.97 197786.55 180.00 /hstart 5
+  Static138 Stationary.Weapons_.Destructing_Bomb nn 138182.03 197788.14 0.00 /hstart 5
+  Static199 Stationary.Industrial.Railroad.Engine_Shed nn 138184.97 197786.55 180.00 /hstart 5
+  Static213 Stationary.Industrial.Railroad.Engine_Shed nn 138184.97 197786.55 180.00 /hstart 5
+  Static113 Stationary.Environment.CamoNetPlaneBig nn 138204.45 197776.77 0.00 /hstart 5
+  Static139 Stationary.Weapons_.Destructing_Bomb nn 138209.30 197787.86 0.00 /hstart 5
+  Static115 Stationary.Environment.CamoNetPlaneBig nn 138222.39 197776.75 -180.00 /hstart 5
+  Static116 Stationary.Environment.CamoNetPlaneBig nn 138222.39 197776.75 -180.00 /hstart 5
+  Static114 Stationary.Environment.CamoNetPlaneBig nn 138222.39 197776.75 -180.00 /hstart 5
+  Static117 Stationary.Environment.CamoNetPlaneBig nn 138222.39 197776.75 -180.00 /hstart 5
+  Static209 Stationary.Environment.CamoNetPlaneBig nn 138348.70 197773.05 0.00 /hstart 5
+  Static207 Stationary.Weapons_.Destructing_Bomb nn 138374.66 197763.63 -70.00 /hstart 5
+  Static208 Stationary.Environment.CamoNetPlaneBig nn 138371.03 197773.88 0.00 /hstart 5
+  Static206 Stationary.Environment.CamoNetPlaneBig nn 138392.56 197773.83 0.00 /hstart 5
+  Static205 Stationary.Weapons_.Destructing_Bomb gb 138401.28 197769.25 -70.00 /hstart 5
+  Static204 Stationary.Environment.CamoNetPlaneBig nn 138412.50 197772.20 0.00 /hstart 5
+  Static203 Stationary.Environment.CamoNetPlaneBig nn 138432.13 197772.52 0.00 /hstart 5
+  Static202 Stationary.Weapons_.Destructing_Bomb nn 138442.06 197768.03 -70.00 /hstart 5
+  Static171 Stationary.Environment.CamoNetPlaneBig nn 138450.77 197772.89 0.00 /hstart 5
+  Static201 Stationary.Environment.CamoNetPlaneBig nn 138465.48 197773.05 0.00 /hstart 5
+  Static200 Stationary.Environment.CamoNetPlaneBig nn 138481.89 197773.63 0.00 /hstart 5
+  Static189 Stationary.Environment.CamoNetPlaneBig nn 138501.39 197772.86 -180.00 /hstart 5
+  Static185 Stationary.Environment.CamoNetPlaneBig nn 138501.39 197772.86 -180.00 /hstart 5
+  Static184 Stationary.Environment.CamoNetPlaneBig nn 138501.39 197772.86 -180.00 /hstart 5
+  Static174 Stationary.Environment.CamoNetPlaneBig nn 138501.39 197772.86 -180.00 /hstart 5
+  Static173 Stationary.Weapons_.Destructing_Bomb nn 138498.63 197779.25 -70.00 /hstart 5
+  Static260 Stationary.Environment.CamoNetPlaneBig nn 138721.22 197762.25 -5.00 /hstart 5
+  Static263 Stationary.Environment.CamoNetPlaneBig nn 138739.42 197761.56 175.00 /hstart 5
+  Static268 Stationary.Industrial.Railroad.Engine_Shed gb 138855.13 197762.52 175.00 /hstart 5
+  Static212 ShipUnit.MotorBarge_Large1 gb 137910.97 197907.98 70.00 /sleep 0/skill 2/slowfire 1
+  Static5 ShipUnit.MotorBarge_Large1 gb 138118.09 197903.73 100.00 /sleep 0/skill 2/slowfire 1
+  Static7 Stationary.Environment.CamoNetPlaneBig nn 138017.05 197775.97 180.00 /hstart 5
+  Static8 Stationary.Environment.CamoNetPlaneBig nn 138708.13 197831.52 -5.00 /hstart 9
+  Static9 Stationary.Environment.CamoNetPlaneBig nn 138728.53 197829.38 -5.00 /hstart 9
+  Static13 Stationary.Environment.CamoNetPlaneBig nn 138933.08 197808.11 -5.00 /hstart 9
+  Static14 Stationary.Environment.CamoNetPlaneBig nn 138955.45 197805.38 -5.00 /hstart 9
+  Static15 Stationary.Environment.CamoNetPlaneBig nn 138390.89 197826.66 -5.00 /hstart 9
+  Static16 Stationary.Environment.CamoNetPlaneBig nn 138405.61 197825.02 -5.00 /hstart 9
+  Static17 Stationary.Environment.CamoNetPlaneBig nn 138089.25 197835.39 -5.00 /hstart 9
+  Static18 Stationary.Environment.CamoNetPlaneBig nn 138108.34 197833.75 -5.00 /hstart 9
+  Static21 Stationary.Environment.CamoNetPlaneBig nn 137952.88 197838.66 -5.00 /hstart 9
+  Static22 Stationary.Environment.CamoNetPlaneBig nn 137973.06 197836.47 -5.00 /hstart 9
+  Static23 Stationary.Environment.CamoNetPlaneBig nn 137720.50 197853.94 -5.00 /hstart 9
+  Static24 Stationary.Environment.CamoNetPlaneBig nn 137736.86 197852.84 -5.00 /hstart 9
+  Static25 Stationary.Environment.CamoNetPlaneBig nn 137609.20 197852.84 -5.00 /hstart 9
+  Static26 Stationary.Environment.CamoNetPlaneBig nn 137628.78 197851.20 -5.00 /hstart 9
+  Static28 Stationary.Environment.CamoNetPlaneBig nn 137532.33 197843.56 10.00 /hstart 9
+  Static29 Stationary.Environment.CamoNetPlaneBig nn 137551.42 197846.84 10.00 /hstart 9
+  Static30 Stationary.Environment.CamoNetPlaneBig nn 137445.81 197833.17 10.00 /hstart 9
+  Static34 Stationary.Environment.CamoNetPlaneBig nn 137466.55 197835.89 10.00 /hstart 9
+  Static35 Stationary.Environment.CamoNetPlaneBig nn 137284.02 197808.63 15.00 /hstart 9
+  Static38 Stationary.Environment.CamoNetPlaneBig nn 137293.52 197811.89 15.00 /hstart 9
+[Buildings]
+  0_bld buildings.House$Oil_Bunker-Big 1 138941.09 197804.55 175.00
+  1_bld buildings.House$Oil_Bunker-Big 1 139538.69 197657.97 175.00
+  2_bld buildings.House$Oil_Bunker-Big 1 138721.76 197828.84 175.00
+  3_bld buildings.House$Oil_Bunker-Big 1 138099.96 197829.37 255.00
+  4_bld buildings.House$Oil_Bunker-Big 1 137964.11 197835.22 255.00
+  5_bld buildings.House$Oil_Bunker-Big 1 139315.25 197679.19 255.00
+  6_bld buildings.House$Oil_Bunker-Big 1 138397.50 197822.79 245.00
+  7_bld buildings.House$Oil_Bunker-Big 1 139708.36 197617.64 240.00
+  8_bld buildings.House$Oil_Bunker-Big 1 137452.40 197829.95 225.00
+  9_bld buildings.House$Oil_Bunker-Big 1 137541.89 197841.20 225.00
+  10_bld buildings.House$Oil_Bunker-Big 1 137288.83 197807.81 230.00
+  11_bld buildings.House$Oil_Bunker-Big 1 137726.65 197853.92 225.00
+  12_bld buildings.House$Oil_Bunker-Big 1 137615.65 197852.58 225.00
+[BuildingsLinks]
+[StaticCamera]
+  StaticCamera_1 137913 197736 500
+[Trigger]
+  Brighton TGroundDestroyed 100 138520 197736 1300

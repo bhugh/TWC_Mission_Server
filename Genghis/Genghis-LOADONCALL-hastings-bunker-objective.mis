@@ -1,0 +1,63 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 150000 100000 100000 150000 1000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Airfield.Fuel_Storage gb 196112.17 205854.16 0.00 
+  Static1 Stationary.Environment.GuardTower_UK-GER_1 gb 196099.08 205838.84 0.00 
+  Static2 Stationary.Environment.GuardTower_UK-GER_1 gb 196110.52 205876.94 15.00 
+  Static3 Stationary.Airfield.blister_hangar gb 196108.33 205853.20 0.00 
+  Static4 Stationary.Environment.Roadway_gate_UK-GER_1 nn 196104.03 205879.72 -65.00 
+  Static5 Stationary.Scammell_Pioneer_R100 gb 196102.05 205866.78 -90.00 
+  Static6 Stationary.Opel_Blitz_cargo gb 196105.61 205866.50 -90.00 
+  Static7 Stationary.Morris_CS8_tent gb 196108.75 205865.66 -90.00 
+  Static8 Stationary.Morris_CS8_tent gb 196111.48 205865.67 -90.00 
+  Static9 Stationary.Morris_CS8_tent gb 196114.59 205865.61 -90.00 
+  Static10 Stationary.Airfield.Fuel_Storage gb 196105.42 205853.89 -180.00 
+  Static11 Stationary.Trenches.Trench_direct nn 196100.00 205876.05 -240.00 
+  Static12 Stationary.Trenches.Trench_direct nn 196094.03 205872.47 -240.00 
+  Static13 Stationary.Trenches.Trench_direct nn 196096.88 205874.33 -240.00 
+  Static14 Stationary.Trenches.Trench_direct nn 196109.48 205880.64 -250.00 
+  Static15 Stationary.Trenches.Trench_direct nn 196113.63 205881.73 -260.00 
+  Static16 Stationary.Trenches.Trench_direct nn 196118.33 205882.44 -260.00 
+  Static17 Stationary.Trenches.Trench_direct nn 196125.17 205881.16 -305.00 
+  Static19 Stationary.Trenches.Trench_direct nn 196122.02 205882.45 -280.00 
+  Static20 Stationary.Trenches.Trench_direct nn 196127.61 205878.34 -330.00 
+  Static21 Stationary.Trenches.Trench_direct nn 196128.95 205874.38 -360.00 
+  Static22 Stationary.Trenches.Trench_direct nn 196128.83 205869.92 -360.00 
+  Static23 Stationary.Trenches.Trench_direct nn 196128.75 205861.19 -360.00 
+  Static24 Stationary.Trenches.Trench_direct nn 196128.77 205865.03 -360.00 
+  Static25 Stationary.Trenches.Trench_direct nn 196128.70 205856.63 -360.00 
+  Static26 Stationary.Trenches.Trench_direct nn 196128.73 205852.22 -360.00 
+  Static27 Stationary.Trenches.Trench_direct nn 196128.80 205847.84 -360.00 
+  Static28 Stationary.Trenches.Trench_direct nn 196128.05 205844.36 -390.00 
+  Static29 Stationary.Trenches.Trench_direct nn 196124.94 205840.66 -405.00 
+  Static30 Stationary.Trenches.Trench_direct nn 196121.02 205838.58 -435.00 
+  Static31 Stationary.Trenches.Trench_direct nn 196117.08 205837.73 -450.00 
+  Static32 Stationary.Trenches.Trench_direct nn 196112.92 205837.50 -450.00 
+  Static33 Stationary.Trenches.Trench_direct nn 196108.61 205837.47 -450.00 
+  Static34 Stationary.Trenches.Trench_direct nn 196103.95 205837.44 -450.00 
+  Static35 Stationary.Trenches.Trench_direct nn 196099.09 205837.45 -450.00 
+  Static36 Stationary.Trenches.Trench_direct nn 196094.33 205837.34 -450.00 
+  Static37 Stationary.Trenches.Trench_direct nn 196090.47 205838.48 -480.00 
+  Static38 Stationary.Trenches.Trench_direct nn 196087.91 205841.38 -510.00 
+  Static39 Stationary.Trenches.Trench_direct nn 196087.02 205845.13 -540.00 
+  Static40 Stationary.Trenches.Trench_direct nn 196087.02 205849.73 -540.00 
+  Static41 Stationary.Trenches.Trench_direct nn 196087.08 205853.97 -540.00 
+  Static42 Stationary.Trenches.Trench_direct nn 196087.17 205858.44 -540.00 
+  Static43 Stationary.Trenches.Trench_direct nn 196087.22 205863.13 -540.00 
+  Static44 Stationary.Trenches.Trench_direct nn 196088.34 205867.14 -565.00 
+  Static45 Stationary.Trenches.Trench_direct nn 196090.63 205870.36 -590.00 
+  Static0 Stationary.Environment.JerryCan_GER1_5 nn 196329.05 206193.11 -305.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]

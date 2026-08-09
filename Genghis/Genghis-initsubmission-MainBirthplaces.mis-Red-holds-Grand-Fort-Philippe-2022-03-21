@@ -1,0 +1,4489 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 9.15000022156164
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[AirGroups]
+  BoB_LW_KuFlGr_706.03
+  tobruk:Tobruk_SAAF_R_40Sqn.03
+  BoB_RAF_B_218Sqn.03
+[BoB_LW_KuFlGr_706.03]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.He-115B-2
+  Formation VIC3
+  CallSign 30
+  Fuel 100
+  Weapons 1 1 1
+  Skill0 0.84 0.63 0.79 0.37 0.53 0.63 0.74 0.68
+  Skill10 0.79 0.58 0.74 0.63 0.47 0.53 0.63 0.68
+  Aging 0
+[BoB_LW_KuFlGr_706.03_Way]
+  TAKEOFF 266848.12 150050.29 0 0
+  NORMFLY 261214.29 151562.86 200.00 290.00
+  NORMFLY 260229.12 138883.64 500.00 290.00
+  NORMFLY 263886.26 136282.44 500.00 290.00
+  NORMFLY 271355.05 130873.10 500.00 290.00
+  NORMFLY 260229.12 134222.08 500.00 290.00
+  NORMFLY 255902.37 124229.34 500.00 290.00
+  NORMFLY 251627.12 119181.47 500.00 290.00
+  NORMFLY 240295.15 110167.40 500.00 290.00
+  NORMFLY 227984.51 102647.09 500.00 290.00
+  NORMFLY 239780.06 112305.02 1000.00 290.00
+  NORMFLY 253275.41 124615.66 1000.00 290.00
+  NORMFLY 258735.36 135999.14 1000.00 290.00
+  NORMFLY 270685.44 130487.68 1000.00 290.00
+  NORMFLY 272076.18 132960.11 1000.00 290.00
+  NORMFLY 260177.61 140789.47 1000.00 290.00
+  NORMFLY 260229.80 166136.96 1000.00 290.00
+  NORMFLY 262158.46 188102.23 1000.00 290.00
+  NORMFLY 262372.75 203745.79 1000.00 290.00
+  NORMFLY 265158.59 208245.99 1000.00 290.00
+  HUNTING 272123.19 212746.19 700.00 290.00
+  HUNTING 287123.86 219817.94 500.00 290.00
+  HUNTING 308553.40 225496.77 200.00 290.00
+  HUNTING 330732.97 230961.30 200.00 290.00
+  HUNTING 349782.01 242640.39 200.00 290.00
+  HUNTING 359532.45 248426.37 200.00 290.00
+  HUNTING 319673.51 229782.67 200.00 290.00
+  HUNTING 276600.15 216496.36 200.00 290.00
+  HUNTING 262349.51 206745.92 200.00 290.00
+  HUNTING 263313.84 191745.25 200.00 290.00
+  HUNTING 262242.36 157779.44 200.00 290.00
+  HUNTING 261170.88 153707.83 200.00 290.00
+  HUNTING 258706.49 140850.11 200.00 290.00
+  HUNTING 270385.58 130671.08 200.00 290.00
+  HUNTING 257849.31 132706.88 200.00 290.00
+  HUNTING 256670.68 144171.68 200.00 290.00
+  HUNTING 255599.21 152314.91 200.00 290.00
+  LANDING 265671.09 150064.81 200.00 290.00
+[tobruk:Tobruk_SAAF_R_40Sqn.03]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.WalrusMkI
+  Formation LINEASTERN
+  CallSign 7
+  Fuel 91
+  Weapons 0 0 0 0
+  SetOnPark 1
+  Skill0 0.63 0.42 0.53 0.74 0.53 0.42 0.32 0.42
+  Skill10 0.63 0.42 0.53 0.26 0.53 0.42 0.32 0.42
+  Aging 24
+[tobruk:Tobruk_SAAF_R_40Sqn.03_Way]
+  TAKEOFF 214654.84 258657.86 0 0
+  NORMFLY 222916.73 259560.73 100.00 218.00
+  NORMFLY 226098.12 261593.48 100.00 218.00
+  NORMFLY 236344.71 263425.90 100.00 218.00
+  NORMFLY 250630.12 265520.09 100.00 218.00
+  NORMFLY 255603.83 264921.75 100.00 218.00
+  NORMFLY 253285.26 257629.46 100.00 218.00
+  NORMFLY 248049.77 256058.82 100.00 218.00
+  NORMFLY 252836.50 243755.42 200.00 218.00
+  NORMFLY 251452.84 237248.46 200.00 218.00
+  NORMFLY 246404.33 234107.17 200.00 218.00
+  NORMFLY 252948.69 237809.40 200.00 218.00
+  NORMFLY 253135.67 246111.39 200.00 218.00
+  NORMFLY 250031.78 252281.79 200.00 218.00
+  NORMFLY 248648.11 256432.78 200.00 218.00
+  NORMFLY 255828.21 257928.64 200.00 218.00
+  NORMFLY 254855.90 265407.90 200.00 218.00
+  NORMFLY 247675.81 266006.25 200.00 218.00
+  NORMFLY 236344.71 265781.87 200.00 218.00
+  NORMFLY 228192.31 262827.56 200.00 218.00
+  NORMFLY 224826.64 262191.82 200.00 218.00
+  NORMFLY 220638.25 260396.79 200.00 218.00
+  HUNTING 216786.43 265632.28 200.00 218.00
+  NORMFLY 211176.98 268119.14 100.00 218.00
+  NORMFLY 204557.82 270849.07 100.00 218.00
+  NORMFLY 197714.29 272606.70 100.00 218.00
+  NORMFLY 192890.16 273055.46 100.00 218.00
+  NORMFLY 185934.44 272606.70 100.00 218.00
+  NORMFLY 183765.46 274102.55 100.00 218.00
+  NORMFLY 188626.98 274887.88 100.00 218.00
+  NORMFLY 196779.38 276234.15 100.00 218.00
+  NORMFLY 198611.80 278552.72 100.00 218.00
+  NORMFLY 206577.23 276757.69 100.00 218.00
+  NORMFLY 218768.43 287714.82 100.00 218.00
+  NORMFLY 218469.26 299419.88 100.00 218.00
+  NORMFLY 216300.27 303570.87 100.00 218.00
+  NORMFLY 220638.25 305964.24 100.00 218.00
+  NORMFLY 224041.32 304917.14 100.00 218.00
+  NORMFLY 229725.56 305926.84 100.00 218.00
+  NORMFLY 236082.94 309329.91 100.00 218.00
+  NORMFLY 224116.11 304580.57 100.00 218.00
+  NORMFLY 218506.66 303608.27 100.00 218.00
+  NORMFLY 218469.26 290369.96 100.00 218.00
+  NORMFLY 207399.95 288874.11 100.00 218.00
+  NORMFLY 218506.66 289061.09 100.00 218.00
+  NORMFLY 218095.30 284536.13 100.00 218.00
+  NORMFLY 208110.48 276271.54 100.00 218.00
+  NORMFLY 200107.66 274663.50 100.00 218.00
+  NORMFLY 184251.61 273205.04 100.00 218.00
+  NORMFLY 183017.53 268904.46 100.00 218.00
+  NORMFLY 193338.92 274177.35 100.00 218.00
+  NORMFLY 203772.50 272157.94 100.00 218.00
+  NORMFLY 203772.50 267670.38 100.00 218.00
+  NORMFLY 199958.07 266174.53 100.00 218.00
+  NORMFLY 197041.16 264042.94 400.00 218.00
+  NORMFLY 191880.46 263893.35 400.00 218.00
+  NORMFLY 197976.07 266997.25 400.00 218.00
+  NORMFLY 206539.83 270362.92 400.00 218.00
+  NORMFLY 217122.99 266810.27 400.00 218.00
+  NORMFLY 221535.76 262547.08 400.00 218.00
+  LANDING 215888.92 258433.49 100.00 218.00
+[BoB_RAF_B_218Sqn.03]
+  Flight0  1 2
+  Flight1  11
+  Class Aircraft.SunderlandMkI
+  Formation LINEABREAST
+  CallSign 20
+  Fuel 71
+  Weapons 1 1 1 1 1 1
+  SetOnPark 1
+  SpawnFromScript 1
+  Skill 0.84 0.63 0.68 0.74 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_B_218Sqn.03_Way]
+  TAKEOFF 214748.74 258430.71 0 0
+  NORMFLY 221830.81 260058.77 400.00 218.00
+  NORMFLY 219836.43 263355.60 400.00 218.00
+  NORMFLY 211446.36 269280.00 400.00 218.00
+  NORMFLY 195563.57 272945.26 400.00 218.00
+  NORMFLY 185382.29 273433.96 400.00 218.00
+  NORMFLY 211527.81 280438.68 400.00 218.00
+  NORMFLY 220080.08 290538.51 400.00 218.00
+  NORMFLY 218043.82 303326.19 400.00 218.00
+  NORMFLY 236777.37 308736.57 400.00 218.00
+  NORMFLY 221220.38 300835.90 400.00 218.00
+  NORMFLY 218369.62 284220.06 400.00 218.00
+  NORMFLY 212749.56 269803.38 400.00 218.00
+  NORMFLY 223663.89 261984.16 400.00 218.00
+  NORMFLY 249727.95 267930.02 400.00 218.00
+  NORMFLY 259094.72 265079.26 400.00 218.00
+  NORMFLY 251112.60 251314.18 400.00 218.00
+  NORMFLY 254126.26 237223.29 400.00 218.00
+  NORMFLY 242397.43 230462.93 400.00 218.00
+  NORMFLY 229691.20 226064.62 400.00 218.00
+  NORMFLY 223826.79 220037.30 400.00 218.00
+  NORMFLY 222849.38 210344.73 400.00 218.00
+  NORMFLY 190187.85 197964.30 400.00 218.00
+  NORMFLY 173164.76 185013.71 300.00 218.00
+  NORMFLY 103873.95 184591.07 300.00 218.00
+  NORMFLY 79913.78 181912.29 300.00 218.00
+  NORMFLY 170899.48 183995.79 300.00 218.00
+  NORMFLY 225609.48 206170.11 300.00 218.00
+  NORMFLY 235878.12 225516.83 300.00 218.00
+  NORMFLY 256875.48 237273.68 300.00 218.00
+  NORMFLY 259851.90 263019.70 300.00 218.00
+  NORMFLY 236635.83 305647.65 300.00 218.00
+  NORMFLY 220414.35 299992.46 300.00 218.00
+  NORMFLY 214163.87 279455.17 300.00 218.00
+  NORMFLY 195858.89 274841.72 300.00 218.00
+  NORMFLY 203002.30 270674.73 300.00 218.00
+  NORMFLY 223390.77 263382.51 300.00 218.00
+  LANDING 216573.05 258762.83 0.00 218.00
+[CustomChiefs]
+[Stationary]
+  Static16 Artillery.Bofors_StandAlone gb 222034.38 209727.19 145.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Bofors_StandAlone gb 222026.48 209758.75 145.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Bofors_StandAlone gb 222058.05 209753.48 145.00 /timeout 0/radius_hide 0
+  Static4 Stationary.Airfield.SBA_hat_antena nn 221989.16 209947.36 -5.00 /radioFreq 300
+  Static1 Stationary.Environment.JerryCan_GER1_3 nn 221990.33 209946.22 -5.00 
+  Static3 tobruk:Stationary.Airfield.BritishWatchTower nn 219877.86 210032.36 0.00 
+  Static0 Stationary.Environment.JerryCan_GER1_3 nn 219881.33 210030.27 -5.00 
+  Static18 Artillery.Bofors_StandAlone gb 219365.20 210061.17 145.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Bofors_StandAlone gb 219373.09 210092.72 145.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Bofors_StandAlone gb 219423.06 210053.28 145.00 /timeout 0/radius_hide 0
+  Static2 tobruk:Stationary.Environment.Windsock_v2 nn 219774.59 210194.78 -5.00 
+  Static22 Stationary.Airfield.Fuel_Storage nn 304014.91 221943.53 -330.00 
+  Static10 Artillery.Bofors_StandAlone gb 303844.47 221997.00 145.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors_StandAlone gb 303872.16 222000.69 145.00 /timeout 0/radius_hide 0
+  Static20 Stationary.Airfield.Fuel_Storage nn 303995.13 221977.33 -330.00 
+  Static7 Stationary.Airfield.Fuel_Storage nn 303986.38 221992.50 -330.00 
+  Static23 Stationary.Airfield.Fuel_Storage nn 303975.69 222009.86 -330.00 
+  Static21 Stationary.Airfield.Fuel_Storage nn 304005.66 221958.84 -330.00 
+  Static8 Artillery.Bofors_StandAlone gb 303894.31 222022.84 145.00 /timeout 0/radius_hide 0
+  Static5 Stationary.Airfield.Radio_NDB_Beacon gb 305391.81 222795.92 -145.00 /radioFreq 300
+  Static9 Artillery.Bofors_StandAlone gb 305404.16 222819.41 145.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Bofors_StandAlone gb 305411.34 222815.53 145.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Bofors_StandAlone gb 305411.47 222824.70 145.00 /timeout 0/radius_hide 0
+  Static6 Stationary.Airfield.SBA_hat_antena nn 305420.75 222987.81 -325.00 /radioFreq 300
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  airdrome0 266167.24 150075.43 2 1300 1000 1
+  airdrome1 215576.46 258441.63 1 2000 700 0
+  airdrome2 220768.24 210056.50 1 1100 700 1
+  airdrome4 304657.29 222419.21 0 1000 700 1
+  airdrome3 251689.78 243192.29 1 700 700 1
+  airdrome5 251666.18 243639.60 1 750 700 1
+[airdrome0_Runways]
+  265872.50 150140.17 -15.00 2000.00 40.00 0
+[airdrome0_Points]
+  266917.69 149864.87 9 7 5 3 1
+  267019.39 149865.19 2
+  267064.02 149862.56
+  266781.23 149679.26 4
+  266767.32 149589.75
+  266968.92 149700.53 6
+  266985.41 149610.92
+  267106.20 149780.06 8
+  267210.75 149732.71
+  267171.04 149991.11 10
+  267206.98 149993.73
+[airdrome1_Runways]
+  216252.76 258421.40 5.00 2000.00 40.00 0
+[airdrome1_Points]
+  214976.78 258527.62 7 5 3 1
+  214934.29 258407.07 2
+  214905.63 258321.08
+  214984.45 258650.70 4
+  214962.96 258729.52
+  214848.31 258500.22 6
+  214747.99 258485.89
+  214826.81 258686.53 8
+  214740.82 258779.68
+[airdrome2_Runways]
+  220798.47 210047.03 -5.00 2100.00 60.00 0
+[airdrome2_Points]
+  219917.02 209867.76 11 9 7 5 3 1
+  220008.98 210030.64 2
+  220008.98 210071.24
+  219962.84 210033.68 4
+  219961.00 210073.09
+  219918.11 210033.39 6
+  219915.61 210076.09
+  219784.65 210034.26 8
+  219781.09 210071.66
+  219814.59 210032.13 10
+  219813.83 210077.74
+  219847.05 210030.55 12
+  219848.15 210076.78
+[airdrome4_Runways]
+  304730.06 222497.34 -145.00 1700.00 20.00 0
+[airdrome4_Points]
+  305288.54 222869.77 11 9 7 5 3 1
+  305384.25 222935.59 2
+  305397.46 222947.41
+  305195.82 222821.00 4
+  305221.84 222839.88
+  305272.75 222842.36 6
+  305293.73 222851.35
+  305356.87 222916.24 8
+  305373.86 222930.66
+  305355.37 222936.66 10
+  305369.18 222949.47
+  305382.65 222963.27 12
+  305398.92 222978.50
+[airdrome3_Runways]
+  251681.52 243218.46 -85.00 1400.00 40.00 0
+[airdrome3_Points]
+  251707.39 242596.37 11 9 7 5 3 1
+  251741.57 242542.54 2
+  251747.54 242470.53
+  251655.72 242544.01 4
+  251650.36 242469.67
+  251696.61 242536.59 6
+  251694.58 242461.12
+  251618.54 242665.66 8
+  251598.81 242613.90
+  251605.06 242552.83 10
+  251591.56 242461.08
+  251665.61 242394.77 12
+  251662.59 242318.43
+[airdrome5_Points]
+  251613.67 243839.31 11 9 7 5 3 1
+  251605.87 243955.30 2
+  251608.10 244030.76
+  251574.80 243952.82 4
+  251566.70 244026.88
+  251640.90 243931.48 6
+  251642.75 243977.38
+  251585.31 244047.20 8
+  251586.11 244111.42
+  251607.74 244110.19 10
+  251606.90 244162.24
+  251611.74 244202.97 12
+  251614.19 244247.97
+[Trigger]
+  Walrus4 TTime 30000
+  Sunderland3 TTime 32000
+  HE-150-5 TTime 31000
+  HE-150-4 TTime 21000
+  HE-150-3 TTime 12000
+  HE-150-2 TTime 5000
+  Walrus3 TTime 18000
+  Walrus2 TTime 7000
+  Sunderland2 TTime 23000
+  Sunderland1 TTime 14400
+[Action]
+  HE-150-5 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  HE-150-4 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  HE-150-3 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  HE-150-2 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  Sunderland3 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  Sunderland2 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  Sunderland1 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  Walrus4 ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.03
+  Walrus3 ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.03
+  Walrus2 ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.03
+[AIChiefs]
+  AIChief_0 3 219763 209859/spawn AnimalGroup.Cow_Angus/r 100
+  AIChief_1 3 222013 210151/spawn AnimalGroup.Cow_Holstein/r 100
+  AIChief_2 3 305395 222757/spawn AnimalGroup.Sheep/r 120
+  AIChief_3 3 304792 222386/spawn AnimalGroup.Cow_Holstein/r 100
+[BirthPlace]
+  "Flugplatz Tramecourt Bomber" 2 306582 160664 0 1 1 1 . . . 0
+  "Flugplatz Pihen Fighter" 2 278935 207295 0 1 1 1 de . . 0
+  "Fliegerhorst Calais Marck Fighter / Bomber" 2 291170 216331 0 1 1 1 . . . 0
+  "Caffiers 110" 2 281912 203450 0 1 1 1 de . . 0
+  "RAF Manston Fighters" 1 248241 258962 0 1 1 1 gb . . 0
+  "RAF Gravesend" 1 180364 264832 0 1 1 1 gb . . 0
+  "RAF Eastchurch Spitfires" 1 212286 262830 0 1 1 1 gb . . 0
+  "RAF Lympne Hurricanes" 1 225259 228783 0 1 1 1 gb . . 0
+  "RAF Littlestone" 1 221950 221255 0 3 1 1 gb . . 0
+  "Ramsgate Spitfires" 1 251191 260925 0 1 1 1 gb . . 0
+  "Maidstone Hurricane, SpitIa" 1 181261 248833 0 1 1 1 gb . . 0
+  "Rochester Hurricane, 302 (PL) Sqn" 1 188226 257817 0 1 1 1 gb . . 0
+  "Flughafen Monchy-Brenton" 2 325597 152659 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Coquelles Fighter" 2 281315 213071 0 1 1 1 de . . 0
+  "Willmington Bomber" 1 167710 198455 0 1 1 1 gb . . 0
+  "Fighter Bomber Zutkerque" 2 299430 203053 0 1 1 1 de . . 0
+  "Canterbury Blenheim" 1 234561 248433 0 1 1 1 gb . . 0
+  "Fliegerhorst Yvrench" 2 295277 130601 0 1 0 0 de . . 0
+  "Marquise West" 2 272539 200159 0 1 1 1 de . . 0
+  "Fliegerhorst Oye-Plage" 2 296360 217035 0 1 1 1 . . . 0
+  "Biggin Hill" 1 155087 253697 0 1 1 1 . . . 0
+  "RAF Kenely" 1 146612 250981 0 1 1 1 . . . 0
+  "RAF RedHill" 1 143406 241146 0 1 1 1 . . . 0
+  "RAF Gastwick" 1 141593 233970 0 1 1 1 . . . 0
+  "RAF Shoreham" 1 133989 198600 0 1 1 1 . . . 0
+  "RAF Ford" 1 113105 195906 0 1 1 1 . . . 0
+  "RAF Tangmere" 1 104642 199351 0 1 1 1 . . . 0
+  "RAF Westhampnett" 1 101462 199781 0 1 1 1 . . . 0
+  "RAF West Thorney" 1 89621 196154 0 1 1 1 . . . 0
+  "RAF Portsmouth" 1 80248 196519 0 1 1 1 . . . 0
+  "RAF Gosport" 1 72415 193869 0 1 1 1 . . . 0
+  "RAF Lee on Solent" 1 69070 195409 0 1 1 1 . . . 0
+  "RAF Hamble" 1 61242 200994 0 1 1 1 . . . 0
+  "RAF Southhampton" 1 58666 209817 0 1 1 1 . . . 0
+  "RAF Worthydown" 1 60669 228130 0 1 1 1 . . . 0
+  "RAF Andover" 1 46124 239051 0 1 1 1 . . . 0
+  "Old Sarum" 1 28724 226243 0 1 0 1 . . . 0
+  "RAF Salisbury" 1 28018 230195 0 1 1 1 . . . 0
+  "Boscombe Down" 1 31512 233226 0 1 1 1 . . . 0
+  Larkhill 1 22497 238740 0 1 1 1 . . . 0
+  Netheravon 1 29905 242155 0 1 1 1 . . . 0
+  Upavon 1 28733 247427 0 1 1 1 . . . 0
+  "RAF Watchfield" 1 37892 284932 0 1 1 1 . . . 0
+  "RAF Yatesbury" 1 18565 264189 0 1 1 1 . . . 0
+  "RAF Harwell" 1 61394 280149 0 1 1 1 . . . 0
+  Reading 1 90986 266237 0 1 1 1 . . . 0
+  "White Waltham" 1 98892 272181 0 1 1 1 . . . 0
+  Heathrow 1 121353 269029 0 1 1 1 . . . 0
+  Feltham 1 125330 265519 0 1 1 1 . . . 0
+  Heston 1 125297 271335 0 0 0 0 . . . 0
+  Northolt 1 123492 278220 0 1 1 1 . . . 0
+  Hendon 1 135424 283735 0 1 1 1 . . . 0
+  "RAF Croydon" 1 144284 256450 0 1 1 1 . . . 0
+  "RAF North Weald" 1 162563 297741 0 1 1 1 . . . 0
+  "RAF Hornchurch" 1 166787 277624 0 1 1 1 . . . 0
+  "RAF Rochford" 1 201062 282853 0 1 1 1 . . . 0
+  "Flugplatz Dieppe" 2 229205 96284 0 1 1 1 . . . 0
+  "Flugplatz Abbeville" 2 284039 124814 0 1 1 1 . . . 0
+  "Fliegerhorst Ligescourt - 110s & Macchis" 2 285112 139911 0 1 1 1 . . . 0
+  "Fliegerhorst Wailly Fighters" 2 275847 156104 0 1 1 1 . . . 0
+  "Fliegerhorst Beisjean" 2 278734 157088 0 1 1 1 . . . 0
+  "Fliegerhorst Sempy" 2 287368 163216 0 1 1 1 . . . 0
+  "Fliegerhorst Estree" 2 280263 164216 0 1 1 1 . . . 0
+  "Fliegerhorst Samer" 2 278075 182199 0 1 1 1 . . . 0
+  "Fliegerhorst Desvres" 2 285084 182696 0 1 1 1 . . . 0
+  "Flugplatz Colembert" 2 284917 193073 0 1 1 1 . . . 0
+  "Feldflugplatz Hermelinghen" 2 285642 200028 0 1 1 1 . . . 0
+  Campagne-les-Guines 2 287134 202018 0 1 1 1 . . . 0
+  "Guines Airfield" 2 284084 205076 0 1 1 1 . . . 0
+  "St. Omar Wizemes Fighters" 2 311359 190429 0 1 1 1 . . . 0
+  "St. Omar Arques Zerstoerer" 2 317655 190572 0 1 1 1 . . . 0
+  "St. Omar Claimarais Bombers" 2 317869 195092 0 1 1 1 . . . 0
+  "Fliegerhorst Rely" 2 321400 172374 0 1 1 1 . . . 0
+  "Fliegerhorst Merville Calenne" 2 340747 178423 0 1 1 1 . . . 0
+  "Fliegerhorst Brias" 2 321108 153671 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Fliegerhorst Arras" 2 351335 145343 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Fliegerhorst Archiet-Grevillers" 2 350155 121133 0 2 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Flugplatz Montdidier" 2 335229 72728 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  Carpiquet 2 117918 18146 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Le Havre Bomber" 2 157333 57843 0 1 1 1 de . . 0
+  "RAF Sanddown" 1 71306 177289 0 1 1 1 . . . 0
+  "RAF Bembridge" 1 76331 180210 0 1 1 1 . . . 0
+  Ryde 1 74257 183303 0 1 1 1 . . . 0
+  "Fliegerhorst Theville" 2 43773 70739 0 1 1 1 . . . 0
+  "Flugfeld Querqueville" 2 27848 72588 0 0 0 0 . . . 0
+  "Amberes-Deurne High-Alt" 2 355068 273554 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_II 1
+  "Flugfeld St. Truiden" 2 354345 191778 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG51_II 1
+  "Cambrai High-Alt" 2 353975 116575 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG40_I 1
+  "Paris-Orly High-Alt" 2 235438 19724 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG51_I 1
+  "Flugplatz Tours" 2 66217 19020 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "RAF Colerne" 1 27098 200752 6500 1 1 1 gb RAF_Bomber_1940 . 1
+  "RAF Wittering High-Alt Bombers" 1 203876 309342 6500 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_12Sqn 1
+  "RAF Coltishall High-Alt Bombers" 1 280256 303797 6500 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  "Flugplatz Deauville" 2 162931 39265 0 1 1 1 . . . 0
+  "RAF Horsham St Faith High-Alt" 1 243636 308613 6500 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  "RAF Harrowbeer" 1 19115 140053 6500 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  "Flugfeld Dinard-Pleurtuit" 2 14500 57096 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "RAF Horsham St Faith High-Alt Secondary" 1 344113 308916 10000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  "Fliegerhorst Duesseldorf High-Alt Bombers" 2 356077 253186 6500 1 0 1 . . . 0
+  "Brest High-Alt Bombers" 2 13868 130311 6500 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "Fliegerhorst Creil" 2 331579 26787 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Fliegerhorst Persan Beaumont" 2 317531 17170 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Flugfeld Roye Amy" 2 353062 70207 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Flugfeld Audembert" 2 271964 205372 0 1 1 1 de . . 0
+  "Hawkinge Forward Airbase" 1 234931 232446 0 1 1 1 gb . . 0
+  "Flugfeld Boulogne" 2 264404 186304 0 1 1 1 de . . 0
+  "Flugfeld Wissant" 2 269832 207235 0 1 1 1 de . . 0
+  "RAF Oare (seaplane)" 1 215576 258441 0 0 0 0 gb . . 0
+  "Flugfeld Le Touquet" 2 267810 166641 0 1 1 1 de Luftwaffe_Zerstorer_1940 . 0
+  "RAF Lyydd (provisional)" 1 220772 210090 0 1 1 1 gb RAF_Bomber_1940 . 0
+  "Grand Fort Philippe Forward Airbase" 1 304649 222479 0 1 1 1 . . . 0
+  "Flugfeld Berk" 2 265682 156024 0 1 1 1 . . . 1
+  "Deal Provisional Airstrip (south)" 1 251871 242604 0 1 1 1 gb . . 1
+  "Deal Provisional Airstrip (north)" 1 251649 244084 0 1 1 1 gb . . 1
+  "Seefliegerhorst Berck" 2 266167 150075 0 0 0 0 gb . . 0
+[BirthPlace0]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace1]
+  tobruk:Aircraft.Bf-109E-7
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace2]
+  tobruk:Aircraft.Bf-109E-7
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace3]
+  tobruk:Aircraft.Bf-109E-7
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace4]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace5]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace6]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace7]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace8]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace9]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace10]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace11]
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace12]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace13]
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace14]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace15]
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace16]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace17]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace18]
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace19]
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace20]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace21]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace22]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace23]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace24]
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace25]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace26]
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace27]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace28]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace29]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace30]
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace31]
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace32]
+  tobruk:Aircraft.HurricaneMkIId
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace33]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace34]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace35]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace36]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace37]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace38]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace39]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace40]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace41]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace42]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace43]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace44]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace45]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace46]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace47]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace48]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace49]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace50]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace51]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace52]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace53]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace54]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace55]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace56]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace57]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace58]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace59]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+  tobruk:Aircraft.D520_Serie1
+[BirthPlace60]
+  tobruk:Aircraft.Bf-109F-4
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace61]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace62]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace63]
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace64]
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace65]
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace66]
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace67]
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace68]
+  tobruk:Aircraft.Ju-88C-4Late
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace69]
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.CR42
+  Aircraft.G50
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace70]
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace71]
+  tobruk:Aircraft.Ju-88A-5
+  Aircraft.Ju-88A-1
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace72]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace73]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace74]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace75]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace76]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace77]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace78]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace79]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace80]
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace81]
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace82]
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_FB
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.BeaufighterMkIC
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace83]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace84]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace85]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace86]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace87]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace88]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace89]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace90]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace91]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace92]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace93]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace94]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace95]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace96]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace97]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.HurricaneMkI
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+[BirthPlace98]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace99]
+  Aircraft.BR-20M
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+[BirthPlace100]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace101]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace102]
+  Aircraft.Ju-88A-1
+  tobruk:Aircraft.Bf-109F-1
+  tobruk:Aircraft.Bf-109F-2
+  tobruk:Aircraft.Bf-109F-2_Late
+  tobruk:Aircraft.Bf-109F-4
+  tobruk:Aircraft.Bf-109F-4_Derated
+  tobruk:Aircraft.Bf-109F-4Z
+  Aircraft.Bf-108B-2
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4B
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-4N_Late
+  tobruk:Aircraft.Bf-109E-7
+  tobruk:Aircraft.Bf-109E-7N
+  tobruk:Aircraft.Bf-109E-7Z
+  tobruk:Aircraft.D520_Serie1
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  Aircraft.He-111H-2
+  tobruk:Aircraft.He-111H-6
+  Aircraft.He-111P-2
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88A-5
+  tobruk:Aircraft.Ju-88A-5Late
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+  tobruk:Aircraft.Macchi-C202-SeriesIII
+  tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  tobruk:Aircraft.Macchi-C202-SeriesVII
+  tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+[BirthPlace103]
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  tobruk:Aircraft.He-111H-6
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace104]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace105]
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  tobruk:Aircraft.He-111H-6
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace106]
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  tobruk:Aircraft.He-111H-6
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-4
+[BirthPlace107]
+  Aircraft.HurricaneMkI
+[BirthPlace108]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  Aircraft.BR-20M
+  Aircraft.CR42
+  Aircraft.G50
+  tobruk:Aircraft.He-111H-6
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace109]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.DH82A_1940
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace110]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.DH82A_1940
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace111]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4B
+  tobruk:Aircraft.Bf-109E-7
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-7
+  tobruk:Aircraft.D520_Serie1
+  tobruk:Aircraft.He-111H-6
+  Aircraft.Ju-87B-2
+  tobruk:Aircraft.Ju-88C-1
+  tobruk:Aircraft.Ju-88C-2
+  tobruk:Aircraft.Ju-88C-4
+  tobruk:Aircraft.Ju-88C-4Late
+[BirthPlace112]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+[BirthPlace113]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.DH82A_1940
+  Aircraft.GladiatorMkII
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+  tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+[BirthPlace114]
+  Aircraft.Bf-109E-1

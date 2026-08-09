@@ -1,0 +1,385 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Weapons_.Torpedo_T_F5 nn 247530.66 234810.45 185.00 
+  Static173 Stationary.Weapons_.Destructing_Bomb nn 247522.72 234807.50 185.00 /hstart 5
+  Static49 Stationary.Environment.GuardTower_UK-GER_1 nn 247530.63 234812.20 190.00 /hstart 15
+  Static48 Stationary.Weapons_.Torpedo_T_F5 nn 247526.52 234813.73 185.00 
+  Static128 Stationary.Weapons_.Destructing_Bomb nn 247528.14 234814.16 185.00 /hstart 5
+  Static47 Stationary.Weapons_.Torpedo_T_F5 nn 247516.80 234808.34 185.00 
+  Static134 Stationary.Weapons_.Torpedo_T_F5 de 247511.19 234806.02 185.00 
+  Static56 Stationary.Environment.GuardTower_UK-GER_1 nn 247502.97 234800.92 190.00 /hstart 22
+  Static86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247527.98 234816.73 -80.00 /hstart 19
+  Static85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247519.41 234815.02 -80.00 /hstart 19
+  Static1 Stationary.Weapons_.Torpedo_T_F5 nn 247512.13 234811.83 185.00 
+  Static46 Stationary.Weapons_.Torpedo_T_F5 nn 247502.39 234807.94 185.00 
+  Static21 Stationary.Weapons_.Torpedo_T_F5 nn 247526.92 234822.22 185.00 
+  Static133 Stationary.Weapons_.Destructing_Bomb nn 247518.25 234818.08 185.00 /hstart 5
+  Static84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247509.56 234813.39 -80.00 /hstart 19
+  Static2 Stationary.Weapons_.Torpedo_T_F5 nn 247502.02 234810.17 185.00 
+  Static140 Stationary.Weapons_.Destructing_Bomb nn 247507.50 234813.91 185.00 /hstart 5
+  Static22 Stationary.Weapons_.Torpedo_T_F5 nn 247514.02 234819.50 185.00 
+  Static82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247499.70 234811.89 -80.00 /hstart 19
+  Static129 Stationary.Weapons_.Destructing_Bomb nn 247525.41 234827.06 185.00 /hstart 5
+  Static23 Stationary.Weapons_.Torpedo_T_F5 nn 247508.14 234818.06 185.00 
+  Static174 Stationary.Environment.JerryCan_GER1_1 nn 247526.45 234829.95 185.00 
+  Static35 Stationary.Weapons_.Torpedo_T_F5 nn 247524.66 234829.88 185.00 
+  Static20 Stationary.Weapons_.Torpedo_T_F5 nn 247525.14 234832.08 185.00 
+  Static24 Stationary.Weapons_.Torpedo_T_F5 nn 247501.42 234817.52 185.00 
+  Static19 Stationary.Weapons_.Torpedo_T_F5 nn 247526.33 234836.13 185.00 
+  Static34 Stationary.Weapons_.Torpedo_T_F5 nn 247512.84 234828.52 185.00 
+  Static141 Stationary.Weapons_.Destructing_Bomb nn 247505.95 234825.22 185.00 /hstart 5
+  Static175 Stationary.Environment.JerryCan_GER1_1 nn 247506.28 234826.89 185.00 
+  Static33 Stationary.Weapons_.Torpedo_T_F5 nn 247506.81 234827.45 185.00 
+  Static132 Stationary.Weapons_.Destructing_Bomb nn 247518.11 234834.78 185.00 /hstart 5
+  Static55 Stationary.Environment.GuardTower_UK-GER_1 nn 247498.77 234826.28 190.00 /hstart 22
+  Static53 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247498.81 234825.94 280.00 
+  Static18 Stationary.Weapons_.Torpedo_T_F5 nn 247526.06 234844.33 185.00 
+  Static17 Stationary.Weapons_.Torpedo_T_F5 nn 247521.23 234843.39 185.00 
+  Static90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247523.69 234844.44 -80.00 /hstart 19
+  Static36 Stationary.Weapons_.Torpedo_T_F5 nn 247525.59 234847.20 185.00 
+  Static130 Stationary.Weapons_.Destructing_Bomb nn 247524.67 234847.25 185.00 /hstart 5
+  Static89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247514.58 234842.48 -80.00 /hstart 19
+  Static16 Stationary.Weapons_.Torpedo_T_F5 nn 247512.81 234843.16 185.00 
+  Static50 Stationary.Environment.GuardTower_UK-GER_1 nn 247524.53 234850.23 190.00 /hstart 15
+  Static88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247505.78 234840.86 -80.00 /hstart 19
+  Static15 Stationary.Weapons_.Torpedo_T_F5 nn 247505.67 234840.70 185.00 
+  Static142 Stationary.Weapons_.Destructing_Bomb nn 247503.34 234840.16 185.00 /hstart 5
+  Static131 Stationary.Weapons_.Destructing_Bomb nn 247510.19 234847.47 185.00 /hstart 5
+  Static37 Stationary.Weapons_.Torpedo_T_F5 nn 247512.63 234848.31 185.00 
+  Static52 Stationary.Environment.GuardTower_UK-GER_1 nn 247470.88 234801.84 190.00 /hstart 15
+  Static172 Stationary.Weapons_.Destructing_Bomb nn 247468.19 234802.34 185.00 /hstart 5
+  Static146 Stationary.Weapons_.Destructing_Bomb nn 247491.23 234806.81 185.00 /hstart 5
+  Static3 Stationary.Weapons_.Torpedo_T_F5 nn 247492.78 234809.34 185.00 
+  Static147 Stationary.Weapons_.Destructing_Bomb nn 247482.66 234803.64 185.00 /hstart 5
+  Static45 Stationary.Weapons_.Torpedo_T_F5 nn 247485.69 234806.27 185.00 
+  Static80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247489.98 234810.06 -80.00 /hstart 19
+  Static4 Stationary.Weapons_.Torpedo_T_F5 nn 247485.48 234808.16 185.00 
+  Static79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247480.08 234808.34 -80.00 /hstart 19
+  Static5 Stationary.Weapons_.Torpedo_T_F5 nn 247476.11 234806.23 185.00 
+  Static145 Stationary.Weapons_.Destructing_Bomb nn 247492.59 234817.88 185.00 /hstart 5
+  Static25 Stationary.Weapons_.Torpedo_T_F5 nn 247489.27 234817.75 185.00 
+  Static61 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247470.69 234806.75 -80.00 /hstart 19
+  Static148 Stationary.Weapons_.Destructing_Bomb nn 247480.72 234813.86 185.00 /hstart 5
+  Static26 Stationary.Weapons_.Torpedo_T_F5 nn 247479.11 234814.33 185.00 
+  Static184 Stationary.Environment.JerryCan_GER1_1 nn 247491.39 234823.66 185.00 
+  Static6 Stationary.Weapons_.Torpedo_T_F5 nn 247466.03 234809.61 185.00 
+  Static32 Stationary.Weapons_.Torpedo_T_F5 nn 247497.08 234827.73 185.00 
+  Static27 Stationary.Weapons_.Torpedo_T_F5 nn 247475.17 234815.75 185.00 
+  Static44 Stationary.Weapons_.Torpedo_T_F5 nn 247467.19 234811.83 185.00 
+  Static171 Stationary.Weapons_.Destructing_Bomb nn 247465.78 234812.14 185.00 /hstart 5
+  Static31 Stationary.Weapons_.Torpedo_T_F5 nn 247491.13 234826.89 185.00 
+  Static7 Stationary.Weapons_.Torpedo_T_F5 nn 247466.19 234814.84 185.00 
+  Static144 Stationary.Weapons_.Destructing_Bomb nn 247491.98 234830.91 185.00 /hstart 5
+  Static30 Stationary.Weapons_.Torpedo_T_F5 nn 247485.67 234827.42 185.00 
+  Static149 Stationary.Weapons_.Destructing_Bomb nn 247476.44 234823.45 185.00 /hstart 5
+  Static185 Stationary.Environment.JerryCan_GER1_1 nn 247473.56 234822.13 185.00 
+  Static28 Stationary.Weapons_.Torpedo_T_F5 nn 247473.88 234823.66 185.00 
+  Static29 Stationary.Weapons_.Torpedo_T_F5 nn 247478.64 234828.50 185.00 
+  Static87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247496.70 234838.97 -80.00 /hstart 19
+  Static186 Stationary.Environment.JerryCan_GER1_1 nn 247463.83 234820.59 185.00 
+  Static14 Stationary.Weapons_.Torpedo_T_F5 nn 247498.42 234841.22 185.00 
+  Static83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247494.53 234838.55 -80.00 /hstart 19
+  Static8 Stationary.Weapons_.Torpedo_T_F5 nn 247465.41 234824.06 185.00 
+  Static13 Stationary.Weapons_.Torpedo_T_F5 nn 247494.55 234841.16 185.00 
+  Static43 Stationary.Weapons_.Torpedo_T_F5 nn 247463.00 234823.14 185.00 
+  Static38 Stationary.Weapons_.Torpedo_T_F5 nn 247502.48 234847.52 185.00 
+  Static81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247484.88 234836.92 -80.00 /hstart 19
+  Static150 Stationary.Weapons_.Destructing_Bomb nn 247477.33 234833.23 185.00 /hstart 5
+  Static170 Stationary.Weapons_.Destructing_Bomb nn 247463.50 234826.34 185.00 /hstart 5
+  Static12 Stationary.Weapons_.Torpedo_T_F5 nn 247485.03 234840.47 185.00 
+  Static11 Stationary.Weapons_.Torpedo_T_F5 nn 247481.52 234839.19 185.00 
+  Static60 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247475.11 234835.23 -80.00 /hstart 19
+  Static39 Stationary.Weapons_.Torpedo_T_F5 nn 247490.16 234845.44 185.00 
+  Static9 Stationary.Weapons_.Torpedo_T_F5 nn 247464.38 234832.77 185.00 
+  Static10 Stationary.Weapons_.Torpedo_T_F5 nn 247471.88 234837.23 185.00 
+  Static77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247465.50 234833.80 -80.00 /hstart 19
+  Static54 Stationary.Environment.GuardTower_UK-GER_1 nn 247494.25 234852.20 190.00 /hstart 22
+  Static40 Stationary.Weapons_.Torpedo_T_F5 nn 247479.44 234845.47 185.00 
+  Static41 Stationary.Weapons_.Torpedo_T_F5 nn 247471.05 234842.86 185.00 
+  Static42 Stationary.Weapons_.Torpedo_T_F5 nn 247463.16 234839.19 185.00 
+  Static51 Stationary.Environment.GuardTower_UK-GER_1 nn 247464.38 234839.98 190.00 /hstart 15
+  Static168 Stationary.Weapons_.Destructing_Bomb nn 247473.53 234845.66 185.00 /hstart 5
+  Static169 Stationary.Weapons_.Destructing_Bomb nn 247463.42 234842.48 185.00 /hstart 5
+  Static57 Stationary.Environment.GuardTower_UK-GER_1 nn 247430.73 234813.64 190.00 /hstart 22
+  Static58 Stationary.Weapons_.Destructing_Bomb nn 247454.69 234794.86 185.00 /hstart 5
+  Static59 Stationary.Weapons_.Torpedo_T_F5 nn 247458.48 234801.09 185.00 
+  Static62 Stationary.Weapons_.Torpedo_T_F5 nn 247458.89 234809.59 185.00 
+  Static63 Stationary.Weapons_.Torpedo_T_F5 nn 247448.77 234795.70 185.00 
+  Static64 Stationary.Weapons_.Torpedo_T_F5 de 247443.17 234793.39 185.00 
+  Static65 Stationary.Environment.GuardTower_UK-GER_1 nn 247434.95 234788.28 190.00 /hstart 22
+  Static66 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247451.39 234802.39 -80.00 /hstart 19
+  Static67 Stationary.Weapons_.Torpedo_T_F5 nn 247444.09 234799.20 185.00 
+  Static68 Stationary.Weapons_.Torpedo_T_F5 nn 247434.36 234795.30 185.00 
+  Static69 Stationary.Weapons_.Destructing_Bomb nn 247450.23 234805.44 185.00 /hstart 5
+  Static70 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247441.55 234800.75 -80.00 /hstart 19
+  Static71 Stationary.Weapons_.Torpedo_T_F5 nn 247433.98 234797.53 185.00 
+  Static72 Stationary.Weapons_.Destructing_Bomb nn 247439.47 234801.27 185.00 /hstart 5
+  Static73 Stationary.Weapons_.Torpedo_T_F5 nn 247446.00 234806.86 185.00 
+  Static74 Stationary.Weapons_.Destructing_Bomb nn 247457.38 234814.42 185.00 /hstart 5
+  Static75 Stationary.Weapons_.Torpedo_T_F5 nn 247440.13 234805.44 185.00 
+  Static76 Stationary.Environment.JerryCan_GER1_1 nn 247458.44 234817.33 185.00 
+  Static78 Stationary.Weapons_.Torpedo_T_F5 nn 247456.64 234817.25 185.00 
+  Static91 Stationary.Weapons_.Torpedo_T_F5 nn 247457.11 234819.45 185.00 
+  Static92 Stationary.Weapons_.Torpedo_T_F5 nn 247458.31 234823.50 185.00 
+  Static93 Stationary.Weapons_.Torpedo_T_F5 nn 247444.81 234815.89 185.00 
+  Static94 Stationary.Weapons_.Destructing_Bomb nn 247437.94 234812.59 185.00 /hstart 5
+  Static95 Stationary.Weapons_.Torpedo_T_F5 nn 247438.78 234814.83 185.00 
+  Static96 Stationary.Weapons_.Destructing_Bomb nn 247450.09 234822.14 185.00 /hstart 5
+  Static97 Stationary.Weapons_.Torpedo_T_F5 nn 247458.05 234831.69 185.00 
+  Static98 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247455.67 234831.81 -80.00 /hstart 19
+  Static99 Stationary.Weapons_.Torpedo_T_F5 nn 247453.22 234830.75 185.00 
+  Static100 Stationary.Weapons_.Torpedo_T_F5 nn 247457.56 234834.56 185.00 
+  Static101 Stationary.Weapons_.Destructing_Bomb nn 247456.66 234834.63 185.00 /hstart 5
+  Static102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247446.55 234829.86 -80.00 /hstart 19
+  Static103 Stationary.Weapons_.Torpedo_T_F5 nn 247444.78 234830.52 185.00 
+  Static104 Stationary.Environment.GuardTower_UK-GER_1 nn 247456.50 234837.61 190.00 /hstart 15
+  Static105 Stationary.Weapons_.Torpedo_T_F5 nn 247444.61 234835.67 185.00 
+  Static106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247431.69 234799.25 -80.00 /hstart 19
+  Static107 Stationary.Weapons_.Torpedo_T_F5 nn 247433.39 234804.88 185.00 
+  Static108 Stationary.Environment.JerryCan_GER1_1 nn 247438.25 234814.25 185.00 
+  Static109 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247430.78 234813.30 280.00 
+  Static110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247437.75 234828.23 -80.00 /hstart 19
+  Static111 Stationary.Weapons_.Torpedo_T_F5 nn 247437.64 234828.06 185.00 
+  Static112 Stationary.Weapons_.Destructing_Bomb nn 247435.31 234827.52 185.00 /hstart 5
+  Static113 Stationary.Weapons_.Destructing_Bomb nn 247442.17 234834.84 185.00 /hstart 5
+  Static114 Stationary.Weapons_.Destructing_Bomb nn 247423.22 234794.17 185.00 /hstart 5
+  Static115 Stationary.Weapons_.Destructing_Bomb nn 247414.63 234791.02 185.00 /hstart 5
+  Static116 Stationary.Weapons_.Torpedo_T_F5 nn 247424.75 234796.70 185.00 
+  Static117 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234793.63 185.00 
+  Static118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247421.97 234797.42 -80.00 /hstart 19
+  Static119 Stationary.Weapons_.Torpedo_T_F5 nn 247417.45 234795.53 185.00 
+  Static120 Stationary.Weapons_.Destructing_Bomb nn 247424.58 234805.23 185.00 /hstart 5
+  Static121 Stationary.Weapons_.Torpedo_T_F5 nn 247421.23 234805.13 185.00 
+  Static122 Stationary.Environment.JerryCan_GER1_1 nn 247423.36 234811.03 185.00 
+  Static123 Stationary.Weapons_.Torpedo_T_F5 nn 247429.06 234815.09 180.00 
+  Static124 Stationary.Weapons_.Torpedo_T_F5 nn 247423.11 234814.27 185.00 
+  Static125 Stationary.Weapons_.Destructing_Bomb nn 247423.95 234818.28 185.00 /hstart 5
+  Static126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247428.67 234826.33 -80.00 /hstart 19
+  Static127 Stationary.Weapons_.Torpedo_T_F5 nn 247430.39 234828.58 185.00 
+  Static135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247426.52 234825.91 -80.00 /hstart 19
+  Static136 Stationary.Weapons_.Torpedo_T_F5 nn 247426.53 234828.52 185.00 
+  Static137 Stationary.Weapons_.Torpedo_T_F5 nn 247434.45 234834.88 185.00 
+  Static138 Stationary.Environment.GuardTower_UK-GER_1 nn 247426.23 234839.56 190.00 /hstart 22
+  Static139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247412.06 234795.70 -80.00 /hstart 19
+  Static143 Stationary.Weapons_.Torpedo_T_F5 nn 247408.08 234793.61 185.00 
+  Static151 Stationary.Weapons_.Destructing_Bomb nn 247412.69 234801.23 185.00 /hstart 5
+  Static152 Stationary.Weapons_.Torpedo_T_F5 nn 247411.09 234801.69 185.00 
+  Static153 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234814.80 185.00 
+  Static154 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247416.84 234824.28 -80.00 /hstart 19
+  Static155 Stationary.Weapons_.Torpedo_T_F5 nn 247417.00 234827.83 185.00 
+  Static156 Stationary.Weapons_.Torpedo_T_F5 nn 247422.13 234832.81 185.00 
+  Static157 Stationary.Environment.GuardTower_UK-GER_1 nn 247402.86 234789.20 190.00 /hstart 15
+  Static158 Stationary.Weapons_.Torpedo_T_F5 nn 247407.16 234803.11 185.00 
+  Static159 Stationary.Weapons_.Destructing_Bomb nn 247408.42 234810.83 185.00 /hstart 5
+  Static160 Stationary.Weapons_.Torpedo_T_F5 nn 247410.61 234815.86 185.00 
+  Static161 Stationary.Weapons_.Torpedo_T_F5 nn 247413.48 234826.55 185.00 
+  Static162 Stationary.Weapons_.Destructing_Bomb nn 247400.16 234789.72 185.00 /hstart 5
+  Static163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247402.67 234794.11 -80.00 /hstart 19
+  Static164 Stationary.Environment.JerryCan_GER1_1 nn 247405.55 234809.50 185.00 
+  Static165 Stationary.Weapons_.Torpedo_T_F5 nn 247405.84 234811.03 185.00 
+  Static166 Stationary.Weapons_.Destructing_Bomb nn 247409.31 234820.61 185.00 /hstart 5
+  Static167 Stationary.Weapons_.Torpedo_T_F5 nn 247411.41 234832.83 185.00 
+  Static176 Stationary.Weapons_.Torpedo_T_F5 nn 247398.00 234796.98 185.00 
+  Static177 Stationary.Weapons_.Torpedo_T_F5 nn 247399.16 234799.19 185.00 
+  Static178 Stationary.Weapons_.Destructing_Bomb nn 247397.75 234799.52 185.00 /hstart 5
+  Static179 Stationary.Weapons_.Torpedo_T_F5 nn 247398.17 234802.22 185.00 
+  Static180 Stationary.Environment.JerryCan_GER1_1 nn 247395.80 234807.97 185.00 
+  Static181 Stationary.Weapons_.Torpedo_T_F5 nn 247397.39 234811.42 185.00 
+  Static182 Stationary.Weapons_.Torpedo_T_F5 nn 247394.98 234810.52 185.00 
+  Static183 Stationary.Weapons_.Destructing_Bomb nn 247395.47 234813.70 185.00 /hstart 5
+  Static187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247407.08 234822.61 -80.00 /hstart 19
+  Static188 Stationary.Weapons_.Torpedo_T_F5 nn 247396.36 234820.14 185.00 
+  Static189 Stationary.Weapons_.Torpedo_T_F5 nn 247403.84 234824.59 185.00 
+  Static190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247397.47 234821.16 -80.00 /hstart 19
+  Static191 Stationary.Weapons_.Torpedo_T_F5 nn 247403.03 234830.22 185.00 
+  Static192 Stationary.Weapons_.Destructing_Bomb nn 247405.50 234833.02 185.00 /hstart 5
+  Static193 Stationary.Weapons_.Torpedo_T_F5 nn 247395.14 234826.55 185.00 
+  Static194 Stationary.Environment.GuardTower_UK-GER_1 nn 247396.36 234827.36 190.00 /hstart 15
+  Static195 Stationary.Weapons_.Destructing_Bomb nn 247395.39 234829.84 185.00 /hstart 5
+  Static196 Stationary.Weapons_.Torpedo_T_F5 nn 247462.64 234797.81 185.00 
+  Static197 Stationary.Environment.GuardTower_UK-GER_1 nn 247462.59 234799.56 190.00 /hstart 15
+  Static198 Stationary.Weapons_.Destructing_Bomb nn 247460.13 234801.53 185.00 /hstart 5
+  Static199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247459.97 234804.09 -80.00 /hstart 19
+  Static200 Stationary.Weapons_.Torpedo_T_F5 nn 247312.20 234957.05 185.00 
+  Static201 Stationary.Weapons_.Torpedo_T_F5 nn 247316.47 234806.52 185.00 
+  Static202 Stationary.Weapons_.Torpedo_T_F5 nn 247494.08 234730.81 185.00 
+  Static203 Stationary.Weapons_.Torpedo_T_F5 nn 247592.38 234841.48 185.00 
+[Buildings]
+  0_bld buildings.House$Oil_Bunker-Small 1 247513.27 234828.75 185.00
+  1_bld buildings.House$Oil_Bunker-Small 1 247487.94 234826.22 185.00
+  2_bld buildings.House$EnglandUrbanHouse3_10 1 247524.48 234850.21 -80.00
+  3_bld buildings.House$EnglandUrbanHouse3_10 1 247525.81 234842.65 190.00
+  4_bld buildings.House$EnglandUrbanHouse3_10 1 247527.19 234835.55 190.00
+  5_bld buildings.House$EnglandUrbanHouse3_10 1 247528.47 234828.02 190.00
+  6_bld buildings.House$EnglandUrbanHouse3_10 1 247529.68 234820.43 190.00
+  7_bld buildings.House$EnglandUrbanHouse3_10 1 247530.77 234812.96 190.00
+  8_bld buildings.House$EnglandUrbanHouse3_10 1 247516.93 234849.11 10.00
+  9_bld buildings.House$EnglandUrbanHouse3_10 1 247509.61 234847.91 10.00
+  10_bld buildings.House$EnglandUrbanHouse3_10 1 247501.97 234846.70 10.00
+  11_bld buildings.House$EnglandUrbanHouse3_10 1 247494.49 234845.33 10.00
+  12_bld buildings.House$EnglandUrbanHouse3_10 1 247487.02 234844.14 10.00
+  13_bld buildings.House$EnglandUrbanHouse3_10 1 247479.62 234842.91 10.00
+  14_bld buildings.House$EnglandUrbanHouse3_10 1 247472.08 234841.68 10.00
+  15_bld buildings.House$EnglandUrbanHouse3_10 1 247464.42 234840.48 10.00
+  16_bld buildings.House$EnglandUrbanHouse3_10 1 247465.47 234832.93 10.00
+  17_bld buildings.House$EnglandUrbanHouse3_10 1 247466.82 234825.06 10.00
+  18_bld buildings.House$EnglandUrbanHouse3_10 1 247467.82 234816.65 10.00
+  19_bld buildings.House$EnglandUrbanHouse3_10 1 247469.20 234809.78 10.00
+  20_bld buildings.House$EnglandUrbanHouse3_10 1 247470.47 234802.30 100.00
+  21_bld buildings.House$EnglandUrbanHouse3_10 1 247478.19 234803.54 100.00
+  22_bld buildings.House$EnglandUrbanHouse3_10 1 247485.47 234804.38 185.00
+  23_bld buildings.House$EnglandUrbanHouse3_10 1 247492.56 234805.68 190.00
+  24_bld buildings.House$EnglandUrbanHouse3_10 1 247500.32 234807.04 190.00
+  25_bld buildings.House$EnglandUrbanHouse3_10 1 247507.71 234808.28 190.00
+  26_bld buildings.House$EnglandUrbanHouse3_10 1 247515.53 234809.99 190.00
+  27_bld buildings.House$EnglandUrbanHouse3_10 1 247523.06 234811.62 190.00
+  28_bld buildings.House$EnglandUrbanHouse3_10 1 247520.78 234817.44 185.00
+  29_bld buildings.House$EnglandUrbanHouse3_10 1 247511.67 234818.13 185.00
+  30_bld buildings.House$EnglandUrbanHouse3_10 1 247507.04 234816.97 185.00
+  31_bld buildings.House$EnglandUrbanHouse3_10 1 247501.07 234815.25 185.00
+  32_bld buildings.House$EnglandUrbanHouse3_10 1 247496.72 234813.16 185.00
+  33_bld buildings.House$EnglandUrbanHouse3_10 1 247490.81 234811.94 185.00
+  34_bld buildings.House$EnglandUrbanHouse3_10 1 247486.99 234811.54 185.00
+  35_bld buildings.House$EnglandUrbanHouse3_10 1 247481.86 234811.62 185.00
+  36_bld buildings.House$EnglandUrbanHouse3_10 1 247476.75 234811.17 185.00
+  37_bld buildings.House$EnglandUrbanHouse3_10 1 247469.90 234816.30 185.00
+  38_bld buildings.House$EnglandUrbanHouse3_10 1 247468.79 234820.48 185.00
+  39_bld buildings.House$EnglandUrbanHouse3_10 1 247469.43 234823.40 185.00
+  40_bld buildings.House$EnglandUrbanHouse3_10 1 247470.73 234826.09 185.00
+  41_bld buildings.House$EnglandUrbanHouse3_10 1 247471.34 234830.70 185.00
+  42_bld buildings.House$EnglandUrbanHouse3_10 1 247472.57 234833.72 185.00
+  43_bld buildings.House$EnglandUrbanHouse3_10 1 247484.31 234847.42 185.00
+  44_bld buildings.House$EnglandUrbanHouse3_10 1 247476.38 234829.50 185.00
+  45_bld buildings.House$EnglandUrbanHouse3_10 1 247474.18 234823.47 185.00
+  46_bld buildings.House$EnglandUrbanHouse3_10 1 247476.06 234816.78 185.00
+  47_bld buildings.House$EnglandUrbanHouse3_10 1 247484.07 234819.13 185.00
+  48_bld buildings.House$EnglandUrbanHouse3_10 1 247489.99 234818.65 185.00
+  49_bld buildings.House$EnglandUrbanHouse3_10 1 247494.87 234819.94 185.00
+  50_bld buildings.House$EnglandUrbanHouse3_10 1 247501.15 234821.85 185.00
+  51_bld buildings.House$EnglandUrbanHouse3_10 1 247508.91 234823.55 185.00
+  52_bld buildings.House$EnglandUrbanHouse3_10 1 247516.10 234824.51 185.00
+  53_bld buildings.House$EnglandUrbanHouse3_10 1 247523.38 234825.74 185.00
+  54_bld buildings.House$EnglandUrbanHouse3_10 1 247527.32 234817.48 185.00
+  55_bld buildings.House$EnglandUrbanHouse3_10 1 247518.29 234815.83 185.00
+  56_bld buildings.House$EnglandUrbanHouse3_10 1 247521.96 234833.10 185.00
+  57_bld buildings.House$EnglandUrbanHouse3_10 1 247519.52 234838.52 185.00
+  58_bld buildings.House$EnglandUrbanHouse3_10 1 247516.97 234844.21 185.00
+  59_bld buildings.House$EnglandUrbanHouse3_10 1 247510.32 234839.55 185.00
+  60_bld buildings.House$EnglandUrbanHouse3_10 1 247512.32 234834.93 185.00
+  61_bld buildings.House$EnglandUrbanHouse3_10 1 247518.52 234830.58 185.00
+  62_bld buildings.House$EnglandUrbanHouse3_10 1 247510.23 234829.17 185.00
+  63_bld buildings.House$EnglandUrbanHouse3_10 1 247503.86 234828.43 185.00
+  64_bld buildings.House$EnglandUrbanHouse3_10 1 247496.88 234826.88 185.00
+  65_bld buildings.House$EnglandUrbanHouse3_10 1 247490.84 234826.33 185.00
+  66_bld buildings.House$EnglandUrbanHouse3_10 1 247476.52 234824.09 185.00
+  67_bld buildings.House$EnglandUrbanHouse3_10 1 247481.77 234824.38 185.00
+  68_bld buildings.House$EnglandUrbanHouse3_10 1 247481.87 234832.76 185.00
+  69_bld buildings.House$EnglandUrbanHouse3_10 1 247482.52 234837.68 185.00
+  70_bld buildings.House$EnglandUrbanHouse3_10 1 247488.28 234838.52 185.00
+  71_bld buildings.House$EnglandUrbanHouse3_10 1 247493.46 234839.16 185.00
+  72_bld buildings.House$EnglandUrbanHouse3_10 1 247498.96 234838.11 185.00
+  73_bld buildings.House$EnglandUrbanHouse3_10 1 247504.53 234839.23 185.00
+  74_bld buildings.House$EnglandUrbanHouse3_10 1 247505.23 234835.08 185.00
+  75_bld buildings.House$EnglandUrbanHouse3_10 1 247492.64 234833.46 185.00
+  76_bld buildings.House$EnglandUrbanHouse3_10 1 247484.48 234833.28 185.00
+  77_bld buildings.House$EnglandUrbanHouse3_10 1 247497.80 234832.01 185.00
+  78_bld buildings.House$EnglandUrbanHouse3_10 1 247460.44 234815.39 190.00
+  79_bld buildings.House$EnglandUrbanHouse3_10 1 247455.03 234798.99 190.00
+  80_bld buildings.House$EnglandUrbanHouse3_10 1 247459.29 234804.85 185.00
+  81_bld buildings.House$Oil_Bunker-Small 1 247445.24 234816.12 185.00
+  82_bld buildings.House$EnglandUrbanHouse3_10 1 247456.46 234837.57 -80.00
+  83_bld buildings.House$EnglandUrbanHouse3_10 1 247457.79 234830.01 190.00
+  84_bld buildings.House$EnglandUrbanHouse3_10 1 247459.17 234822.91 190.00
+  85_bld buildings.House$EnglandUrbanHouse3_10 1 247448.91 234836.48 10.00
+  86_bld buildings.House$EnglandUrbanHouse3_10 1 247439.69 234795.65 190.00
+  87_bld buildings.House$EnglandUrbanHouse3_10 1 247447.51 234797.36 190.00
+  88_bld buildings.House$EnglandUrbanHouse3_10 1 247452.76 234804.80 185.00
+  89_bld buildings.House$EnglandUrbanHouse3_10 1 247443.65 234805.50 185.00
+  90_bld buildings.House$EnglandUrbanHouse3_10 1 247439.02 234804.33 185.00
+  91_bld buildings.House$EnglandUrbanHouse3_10 1 247440.89 234810.92 185.00
+  92_bld buildings.House$EnglandUrbanHouse3_10 1 247448.07 234811.88 185.00
+  93_bld buildings.House$EnglandUrbanHouse3_10 1 247455.36 234813.11 185.00
+  94_bld buildings.House$EnglandUrbanHouse3_10 1 247450.27 234803.19 185.00
+  95_bld buildings.House$EnglandUrbanHouse3_10 1 247453.93 234820.46 185.00
+  96_bld buildings.House$EnglandUrbanHouse3_10 1 247451.50 234825.89 185.00
+  97_bld buildings.House$EnglandUrbanHouse3_10 1 247448.95 234831.57 185.00
+  98_bld buildings.House$EnglandUrbanHouse3_10 1 247442.30 234826.92 185.00
+  99_bld buildings.House$EnglandUrbanHouse3_10 1 247444.30 234822.30 185.00
+  100_bld buildings.House$EnglandUrbanHouse3_10 1 247450.50 234817.95 185.00
+  101_bld buildings.House$EnglandUrbanHouse3_10 1 247442.21 234816.54 185.00
+  102_bld buildings.House$EnglandUrbanHouse3_10 1 247430.94 234825.48 185.00
+  103_bld buildings.House$Oil_Bunker-Small 1 247419.91 234813.59 185.00
+  104_bld buildings.House$EnglandUrbanHouse3_10 1 247441.59 234835.28 10.00
+  105_bld buildings.House$EnglandUrbanHouse3_10 1 247433.94 234834.06 10.00
+  106_bld buildings.House$EnglandUrbanHouse3_10 1 247426.47 234832.70 10.00
+  107_bld buildings.House$EnglandUrbanHouse3_10 1 247417.45 234791.75 185.00
+  108_bld buildings.House$EnglandUrbanHouse3_10 1 247424.54 234793.05 190.00
+  109_bld buildings.House$EnglandUrbanHouse3_10 1 247432.29 234794.41 190.00
+  110_bld buildings.House$EnglandUrbanHouse3_10 1 247433.04 234802.61 185.00
+  111_bld buildings.House$EnglandUrbanHouse3_10 1 247428.69 234800.53 185.00
+  112_bld buildings.House$EnglandUrbanHouse3_10 1 247422.79 234799.31 185.00
+  113_bld buildings.House$EnglandUrbanHouse3_10 1 247418.96 234798.91 185.00
+  114_bld buildings.House$EnglandUrbanHouse3_10 1 247421.97 234806.02 185.00
+  115_bld buildings.House$EnglandUrbanHouse3_10 1 247426.85 234807.31 185.00
+  116_bld buildings.House$EnglandUrbanHouse3_10 1 247433.12 234809.22 185.00
+  117_bld buildings.House$EnglandUrbanHouse3_10 1 247435.84 234815.80 185.00
+  118_bld buildings.House$EnglandUrbanHouse3_10 1 247428.86 234814.24 185.00
+  119_bld buildings.House$EnglandUrbanHouse3_10 1 247422.81 234813.70 185.00
+  120_bld buildings.House$EnglandUrbanHouse3_10 1 247425.43 234826.53 185.00
+  121_bld buildings.House$EnglandUrbanHouse3_10 1 247436.51 234826.59 185.00
+  122_bld buildings.House$EnglandUrbanHouse3_10 1 247437.21 234822.45 185.00
+  123_bld buildings.House$EnglandUrbanHouse3_10 1 247424.62 234820.82 185.00
+  124_bld buildings.House$EnglandUrbanHouse3_10 1 247429.78 234819.38 185.00
+  125_bld buildings.House$EnglandUrbanHouse3_10 1 247419.00 234831.50 10.00
+  126_bld buildings.House$EnglandUrbanHouse3_10 1 247410.16 234790.91 100.00
+  127_bld buildings.House$EnglandUrbanHouse3_10 1 247413.84 234798.99 185.00
+  128_bld buildings.House$EnglandUrbanHouse3_10 1 247416.05 234806.49 185.00
+  129_bld buildings.House$EnglandUrbanHouse3_10 1 247413.75 234811.75 185.00
+  130_bld buildings.House$EnglandUrbanHouse3_10 1 247420.26 234825.88 185.00
+  131_bld buildings.House$EnglandUrbanHouse3_10 1 247416.46 234820.65 185.00
+  132_bld buildings.House$EnglandUrbanHouse3_10 1 247408.73 234798.54 185.00
+  133_bld buildings.House$EnglandUrbanHouse3_10 1 247416.29 234834.79 185.00
+  134_bld buildings.House$EnglandUrbanHouse3_10 1 247408.04 234804.15 185.00
+  135_bld buildings.House$EnglandUrbanHouse3_10 1 247413.85 234820.13 185.00
+  136_bld buildings.House$EnglandUrbanHouse3_10 1 247414.50 234825.05 185.00
+  137_bld buildings.House$EnglandUrbanHouse3_10 1 247402.45 234789.67 100.00
+  138_bld buildings.House$EnglandUrbanHouse3_10 1 247408.50 234811.46 185.00
+  139_bld buildings.House$EnglandUrbanHouse3_10 1 247411.60 234830.28 10.00
+  140_bld buildings.House$EnglandUrbanHouse3_10 1 247401.18 234797.14 10.00
+  141_bld buildings.House$EnglandUrbanHouse3_10 1 247408.36 234816.87 185.00
+  142_bld buildings.House$EnglandUrbanHouse3_10 1 247406.15 234810.83 185.00
+  143_bld buildings.House$EnglandUrbanHouse3_10 1 247404.06 234829.05 10.00
+  144_bld buildings.House$EnglandUrbanHouse3_10 1 247397.45 234820.30 10.00
+  145_bld buildings.House$EnglandUrbanHouse3_10 1 247398.79 234812.42 10.00
+  146_bld buildings.House$EnglandUrbanHouse3_10 1 247399.79 234804.02 10.00
+  147_bld buildings.House$EnglandUrbanHouse3_10 1 247401.87 234803.67 185.00
+  148_bld buildings.House$EnglandUrbanHouse3_10 1 247400.77 234807.85 185.00
+  149_bld buildings.House$EnglandUrbanHouse3_10 1 247401.41 234810.77 185.00
+  150_bld buildings.House$EnglandUrbanHouse3_10 1 247402.70 234813.46 185.00
+  151_bld buildings.House$EnglandUrbanHouse3_10 1 247403.32 234818.06 185.00
+  152_bld buildings.House$EnglandUrbanHouse3_10 1 247404.54 234821.09 185.00
+  153_bld buildings.House$EnglandUrbanHouse3_10 1 247396.39 234827.85 10.00
+  154_bld buildings.House$EnglandUrbanHouse3_10 1 247462.74 234800.33 190.00
+  155_bld buildings.House$EnglandUrbanHouse3_10 1 247461.66 234807.79 190.00
+[BuildingsLinks]

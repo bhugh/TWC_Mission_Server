@@ -1,0 +1,164 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 350000 300000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static60 Stationary.Environment.CamoNetPlaneBig nn 194593.47 208112.38 -330.00 
+  Static36 Stationary.Environment.JerryCan_GER1_1 nn 194620.05 208093.55 -330.00 
+  Static6 tobruk:Stationary.Environment.Windsock_v2 nn 194624.69 208094.80 -65.00 
+  Static59 Stationary.Environment.CamoNetPlaneBig nn 194564.20 208159.81 -330.00 
+  Static61 Stationary.Environment.CamoNetPlaneBig nn 194746.89 208173.48 -510.00 
+  Static58 Stationary.Environment.CamoNetPlaneBig nn 194528.03 208214.11 -330.00 
+  Static71 Stationary.Environment.CamoNetPlaneBig nn 194711.30 208226.89 -510.00 
+  Static57 Stationary.Environment.CamoNetPlaneBig nn 194438.67 208315.06 -330.00 
+  Static62 Stationary.Environment.CamoNetPlaneBig nn 194671.80 208291.14 -510.00 
+  Static33 Stationary.Environment.JerryCan_GER1_1 nn 194633.59 208356.13 -330.00 
+  Static23 Stationary.Environment.CamoNetPlaneBig nn 194628.61 208370.05 -150.00 
+  Static56 Stationary.Environment.CamoNetPlaneBig nn 194393.69 208386.55 -330.00 
+  Static34 Stationary.Environment.JerryCan_GER1_1 nn 194604.55 208405.47 -330.00 
+  Static8 Stationary.Environment.CamoNetPlaneBig nn 194598.23 208418.92 -150.00 
+  Static55 Stationary.Environment.CamoNetPlaneBig nn 194343.31 208472.34 -330.00 
+  Static3 Stationary.RacingSigns.RacingSign1 nn 194482.95 208457.59 -330.00 /hstart -15
+  Static2 Stationary.RacingSigns.RacingSign1 nn 194469.80 208479.98 -330.00 /hstart -15
+  Static35 Stationary.Environment.JerryCan_GER1_1 nn 194566.75 208461.84 -330.00 
+  Static9 Stationary.Environment.CamoNetPlaneBig nn 194567.00 208468.97 -150.00 
+  Static54 Stationary.Environment.CamoNetPlaneBig nn 194284.36 208556.58 -330.00 
+  Static53 Stationary.Environment.CamoNetPlaneBig nn 194245.56 208620.84 -330.00 
+  Static52 Stationary.Environment.CamoNetPlaneBig nn 194181.11 208717.03 -330.00 
+  Static50 Stationary.Environment.JerryCan_GER1_1 nn 194466.81 208686.91 -330.00 
+  Static11 Stationary.Environment.TentBell_UK1 nn 194467.42 208686.59 -330.00 
+  Static45 Stationary.Environment.JerryCan_GER1_1 nn 194514.23 208675.89 -330.00 
+  Static46 Stationary.Environment.JerryCan_GER1_1 nn 194513.69 208680.66 -330.00 
+  Static32 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194520.89 208674.30 -330.00 
+  Static29 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194521.22 208673.05 -330.00 
+  Static31 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194523.31 208672.84 -330.00 
+  Static27 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194521.83 208675.14 -330.00 
+  Static28 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194523.61 208673.22 -330.00 
+  Static30 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194522.92 208674.16 -330.00 
+  Static20 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194524.63 208675.53 -330.00 
+  Static47 Stationary.Environment.JerryCan_GER1_1 nn 194519.70 208680.77 -330.00 
+  Static26 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194526.91 208675.73 -330.00 
+  Static19 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194525.94 208677.41 -330.00 
+  Static48 Stationary.Environment.JerryCan_GER1_1 nn 194505.20 208698.30 -330.00 
+  Static12 Stationary.Environment.TentBell_UK1 nn 194506.42 208697.52 -330.00 
+  Static25 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194528.80 208677.00 -330.00 
+  Static18 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194527.64 208678.50 -330.00 
+  Static24 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194530.50 208677.95 -330.00 
+  Static17 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194529.41 208679.59 -330.00 
+  Static22 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194532.08 208678.86 -330.00 
+  Static44 Stationary.Environment.JerryCan_GER1_1 nn 194528.78 208683.14 -330.00 
+  Static16 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194531.08 208680.56 -330.00 
+  Static4 Stationary.Environment.TentBell_UK1 nn 194426.86 208745.67 -330.00 
+  Static41 Stationary.Environment.JerryCan_GER1_1 nn 194429.73 208745.70 -330.00 
+  Static10 Stationary.Environment.TentBell_UK1 nn 194449.47 208710.72 -330.00 
+  Static42 Stationary.Environment.JerryCan_GER1_1 nn 194454.66 208706.31 -330.00 
+  Static5 Stationary.Environment.TentBell_UK1 nn 194437.77 208731.66 -330.00 
+  Static49 Stationary.Environment.JerryCan_GER1_1 nn 194437.61 208731.28 -330.00 
+  Static13 Stationary.Environment.TentBell_UK1 nn 194487.64 208721.58 -330.00 
+  Static43 Stationary.Environment.JerryCan_GER1_1 nn 194490.44 208718.80 -330.00 
+  Static14 Stationary.Environment.TentBell_UK1 nn 194469.70 208739.44 -330.00 
+  Static15 Stationary.Environment.TentBell_UK1 nn 194457.23 208756.58 -330.00 
+  Static51 Stationary.Environment.JerryCan_GER1_1 nn 194457.00 208757.13 -330.00 
+  Static40 Stationary.Environment.JerryCan_GER1_1 nn 194474.91 208742.22 -330.00 
+  Static37 Stationary.Environment.JerryCan_GER1_1 nn 194191.23 208779.97 -330.00 
+  Static1 Stationary.Environment.CamoNetPlaneBig gb 194135.44 208782.75 -330.00 
+  Static63 Stationary.Environment.CamoNetPlaneBig nn 194402.42 208803.73 -510.00 
+  Static38 Stationary.Environment.JerryCan_GER1_1 nn 194148.03 208847.44 -330.00 
+  Static7 Stationary.Environment.CamoNetPlaneBig gb 194089.33 208856.95 -330.00 
+  Static64 Stationary.Environment.CamoNetPlaneBig nn 194361.83 208868.52 -510.00 
+  Static39 Stationary.Environment.JerryCan_GER1_1 nn 194112.16 208916.36 -330.00 
+  Static0 Stationary.Environment.CamoNetPlaneBig gb 194061.39 208938.75 -330.00 
+  Static65 Stationary.Environment.CamoNetPlaneBig nn 194318.50 208945.20 -510.00 
+  Static69 Stationary.Environment.JerryCan_GER1_1 nn 194089.91 208978.22 -330.00 
+  Static70 Stationary.Environment.CamoNetPlaneBig gb 194057.70 209020.02 -330.00 
+  Static66 Stationary.Environment.CamoNetPlaneBig nn 194268.16 209023.86 -510.00 
+  Static21 tobruk:Stationary.Environment.Windsock_v2 nn 194085.64 209051.09 -65.00 
+  Static67 Stationary.Environment.CamoNetPlaneBig nn 194226.28 209085.28 -510.00 
+  Static68 Stationary.Environment.CamoNetPlaneBig nn 194191.91 209141.42 -510.00 
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  HastingsLG 194436.77 208585.03 0 1000 700 1
+[HastingsLG_Runways]
+  194425.34 208607.43 -60.00 800.00 40.00 0
+[HastingsLG_Points]
+  194371.23 208522.87 11 9 7 5 3 1
+  194215.22 208958.74 2
+  194191.92 209003.96
+  194621.35 208248.48 4
+  194653.45 208206.63
+  194171.12 209042.64 6
+  194141.06 209096.46
+  194674.16 208172.20 8
+  194697.83 208136.63
+  194503.30 208550.10 10
+  194540.61 208551.35
+  194474.52 208594.28 12
+  194513.37 208594.95
+[AIChiefs]
+  AIChief_0 3 194282 208629/spawn AnimalGroup.Sheep/r 100
+  AIChief_1 3 194642 208487/spawn AnimalGroup.Cow_Ayrshire/r 100
+[BirthPlace]
+  "Hastings Landing Ground" 1 194441 208590 0 1 1 1 . . . 1 /Heading 0.0 /Type takeoff
+[BirthPlace0]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  Aircraft.Su-26M
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo

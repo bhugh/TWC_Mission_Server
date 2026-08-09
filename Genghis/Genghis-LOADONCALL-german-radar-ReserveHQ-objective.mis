@@ -1,0 +1,85 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static38 Stationary.Opel_Blitz_cargo de 303861.53 42101.06 -65.00 
+  Static39 Stationary.Opel_Blitz_cargo nn 303874.28 42102.25 -65.00 
+  Static40 Stationary.Opel_Blitz_cargo nn 303883.59 42104.64 -65.00 
+  Static41 Stationary.Opel_Blitz_cargo nn 303897.59 42104.80 -65.00 
+  Static42 Stationary.Opel_Blitz_cargo nn 303906.88 42105.97 -65.00 
+  Static43 Stationary.Radar.Wotan_II nn 303921.88 42110.54 -65.00 
+  Static19 Stationary.Opel_Blitz_cargo de 303990.00 42262.70 -65.00 
+  Static47 Stationary.Radar.Wotan_II nn 304013.09 42253.35 -65.00 
+  Static20 Stationary.Opel_Blitz_cargo nn 304006.19 42262.70 -65.00 
+  Static48 Stationary.Radar.Wotan_II nn 304014.09 42254.35 -65.00 
+  Static21 Stationary.Opel_Blitz_cargo nn 304027.03 42262.70 -65.00 
+  Static22 Stationary.Opel_Blitz_cargo nn 304046.69 42262.70 -65.00 
+  Static46 Stationary.Radar.Wotan_II nn 304317.16 42206.89 -65.00 
+  Static28 Stationary.Opel_Blitz_cargo nn 304283.66 42224.34 -65.00 
+  Static29 Stationary.Opel_Blitz_cargo nn 304297.53 42224.34 -65.00 
+  Static30 Stationary.Opel_Blitz_cargo nn 304313.75 42220.87 -65.00 
+  Static31 Stationary.Opel_Blitz_cargo de 304327.63 42220.87 -65.00 
+  Static32 Stationary.Opel_Blitz_cargo nn 304352.06 42218.69 -65.00 
+  Static53 Stationary.Opel_Blitz_cargo nn 303722.81 42387.68 -65.00 
+  Static52 Stationary.Opel_Blitz_cargo nn 303722.59 42411.06 -65.00 
+  Static49 Stationary.Radar.Wotan_II nn 303742.19 42412.84 -65.00 
+  Static54 Stationary.Opel_Blitz_cargo nn 303744.19 42387.68 -65.00 
+  Static6 Stationary.Environment.JerryCan_GER1_1 nn 303956.19 42427.96 25.00 
+  Static4 Stationary.BMW_R71_w_MG_34 nn 303963.38 42431.64 -65.00 
+  Static15 Stationary.Opel_Blitz_cargo nn 303968.66 42431.98 -65.00 
+  Static33 Stationary.Opel_Blitz_cargo nn 304295.16 42418.22 -65.00 
+  Static45 Stationary.Radar.Wotan_II nn 304318.31 42400.86 -65.00 
+  Static34 Stationary.Opel_Blitz_cargo nn 304302.09 42418.22 -65.00 
+  Static35 Stationary.Opel_Blitz_cargo nn 304316.00 42415.90 -65.00 
+  Static36 Stationary.Opel_Blitz_cargo nn 304327.56 42415.90 -65.00 
+  Static37 Stationary.Opel_Blitz_cargo nn 304337.97 42415.90 -65.00 
+  Static51 Stationary.Opel_Blitz_cargo nn 303726.16 42439.59 -65.00 
+  Static50 Stationary.Opel_Blitz_cargo de 303736.72 42457.54 -65.00 
+  Static9 Stationary.Environment.JerryCan_GER1_1 nn 303972.25 42435.27 25.00 
+  Static8 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 303960.91 42447.21 -65.00 
+  Static13 Stationary.Opel_Blitz_cargo de 303978.63 42436.86 -65.00 
+  Static14 Stationary.Opel_Blitz_cargo nn 303984.44 42438.96 -65.00 
+  Static17 Stationary.Radar.EnglishRadar2 nn 303998.28 42435.61 -65.00 
+  Static10 Stationary.Environment.JerryCan_GER1_1 nn 303991.50 42442.21 25.00 
+  Static7 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 303995.22 42463.11 -65.00 
+  Static5 Stationary.BMW_R71_w_MG_34 nn 304005.31 42447.98 -65.00 
+  Static11 Stationary.Environment.JerryCan_GER1_1 nn 304017.25 42457.23 25.00 
+  Static16 Stationary.Radar.EnglishRadar2 nn 304029.50 42450.29 -65.00 
+  Static12 Stationary.BMW_R71_w_MG_34 nn 304032.84 42462.09 -65.00 
+  Static0 Stationary.Environment.JerryCan_GER1_1 nn 304039.13 42463.27 25.00 
+  Static2 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 304027.91 42478.29 -65.00 
+  Static18 Stationary.Radar.EnglishRadar2 nn 304057.09 42462.39 -65.00 
+  Static3 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 304056.94 42492.91 -65.00 
+  Static1 Stationary.Environment.JerryCan_GER1_1 nn 304065.56 42472.25 25.00 
+  Static60 Stationary.Radar.Wotan_II de 303929.97 42612.19 -65.00 
+  Static55 Stationary.Opel_Blitz_cargo nn 303877.81 42625.71 -65.00 
+  Static56 Stationary.Opel_Blitz_cargo de 303901.41 42625.74 -65.00 
+  Static57 Stationary.Opel_Blitz_cargo nn 303933.41 42629.11 -65.00 
+  Static58 Stationary.Opel_Blitz_cargo nn 303956.84 42647.44 -65.00 
+  Static59 Stationary.Opel_Blitz_cargo nn 303982.00 42633.88 -65.00 
+  Static23 Stationary.Opel_Blitz_cargo nn 304200.75 42676.30 -65.00 
+  Static24 Stationary.Opel_Blitz_cargo nn 304214.63 42677.46 -65.00 
+  Static44 Stationary.Radar.Wotan_II de 304237.72 42666.95 -65.00 
+  Static25 Stationary.Opel_Blitz_cargo de 304228.50 42677.46 -65.00 
+  Static26 Stationary.Opel_Blitz_cargo nn 304249.34 42677.46 -65.00 
+  Static27 Stationary.Opel_Blitz_cargo nn 304267.84 42676.30 -65.00 
+[Buildings]
+[BuildingsLinks]

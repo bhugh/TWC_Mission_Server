@@ -1,0 +1,962 @@
+﻿[1]
+<Name>
+TWC Campaign Server - Genghis Khan
+<Description>
+  "All the great struggles of history have been won by superior will-power wresting victory in the teeth of odds or upon the narrowest of margins."
+ 
+  --Winston S. Churchill
+ 
+  "If one bomb reaches the Ruhr, my name is not Göring. You can call me Meyer."
+
+  --Reichsmarschall Hermann Göring
+  
+  >>> In Memoriam TWC_Fatal_Error, 1952-2026 - TWC organizer; mastermind of and inspiration for the vast majority of this campaign <<<
+
+Welcome to the TWC (The Wrecking Crew) Campaign Server. Our discord Channel is https://discord.gg/xKbbQDmqTW please join us! <S> Fatal and Flug
+
+Overall Objective: Over the 113 Days of the Battle of Britain Campaign (Summer-Autumn - the real 1940 BoB time frame), push the enemy across the channel and eliminate them as a threat, by destroying enemy objectives and turning the map repeatedly. Establish a beachhead on the enemy shores--if you can--and then push on FAR into enemy territory, capturing airfields, fuel, military bases, manufacturing capacity, and more. 
+
+Blue Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown. When all of these airfields are (simultaneously) safe behind the Blue frontline and operative as Blue airbases, you are the campaign winner!
+
+Red Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre. When all of these airfields are (simultaneously) safe behind the Red frontline and operative as Red airbases, you are the campaign winner!
+
+When you win a major battle by accomplishing all major objectives, your own destroyed military bases and installations are all repaired--airports, radar, manufacturing capability, etc.--while the enemy's destroyed objectives remain destroyed and nonfunctional until they manage to repair them. When enemy's capabilities are low due to your attacks, they might run short of fuel, aircraft, ammo, and more.
+
+And each map turn pushes the enemy back towards their side of the Channel--or across their land territory--significantly.
+
+Day-to-day: 
+
+**BOMBERS: Attack and destroy the list of important mission objectives given to you by HQ. Also destroy other secondary and important targets of opportunity. Destroy enemy fuel, production, radar, communications equipment, military HQ, etc in order to paralyze the enemy in those areas. You can take a squadron of <cover bombers and fighters (chat command <chelp for more info). 
+
+**STURMOVIK FIGHTERS/STRIKE FIGHTERS/FIGHTER BOMBERS: You can take a small squadron of <cover sturmovik aircraft. Provide close air support, take out convoys, motorcades, AA areas, and more. 
+
+**FIGHTERS: Cover and defend your bomber patrols; prevent enemy bomber formations from destroying your important targets. 
+
+>>>Note that you have separate careers and stats as a Bomber Pilot, Sturmovik Pilot, and Fighter Pilot.  Feel free to try out flying as a Bomber Pilot or Sturmovik Pilot without endangering your Fighter Pilot stats - and vice-versa.
+
+**RECON: Conduct very high-altitude overflights of enemy territory so HQ Photo Intelligence can use the photos & information you gather to identify enemy strengths and weaknesses and provide precise targeting information for high priority targets. 
+
+**REPAIR & RESUPPLY YOUR OBJECTIVES: Fly to <pickup and <deliver repair supplies, which repairs airfields and other objectives, or <ferry aircraft to replenish low aircraft supplies (<phelp). 
+
+**ESTABLISH NEW BASES: When your frontlines are pushed forward, the enemy is cleared from that area.  Your side takes over objectives, military bases, manufacturing, production, fuel, etc., as ground troops push the front forward.  Former enemy airbases are available for you to take over and use as "Landing Grounds". Chat command "<lghelp" for detailed instructions.
+
+**IN-PLANE AERIAL INTERCEPT RADAR AND AIR-TO-SURFACE VESSEL RADAR: Larger aircraft come equipment with these type types of radar, closely modeled on radar available during the Battle of Britain.  Use Aerial Intercept Radar to locate air-to-air targets, especially at dawn, dusk, or in poor weather.  Use ASV radar to locate and destroy (numerous) enemy ships and submarines in the Channel.  
+
+**LIMITED AIRCRAFT SUPPLY - EVERY PLANE COUNTS: Aircraft supply is limited and when you damage or destroy an aircraft, it is lost from your army's supply - either for the time it takes to repair, or forever.  Fly carefully! Winning battles and turning the map gains your army more supplies from HQ - but if those are insufficient, you can fly additional supplies from rear supply bases to forward bases, as well.  Use commands <ferry and <deliver - chat command <phelp for detailed help. 
+
+Also, when you shoot down enemy aircraft - whether live pilots or others - that reduces the enemy's aircraft supply.  So attacking and enemy bomber raid helps in two ways: It interrupts that raid and the destruction it would have done, but it also deprives enemy pilots of key aircraft for their future flights.
+
+**REARM AND REFUEL: As a rule you can use chat command <rr to rearm and refuel at ANY airfield on friendly territory - whether active or not. NOTE that <rr will not work on most bombs - bombs will be loaded by you are unable to arm them (bug in sim code). 
+
+**FIND THE GENERAL: A high-ranking general and his staff is lurking somewhere near one of the mission objectives. The General's location will be identified in recon reports; further recon flights narrow down the position.  Find the General and take a LOW level recon photo (below 150m AGL and within 150m of the camp; use Tab-4-9 to take the photo) - this will yield detailed intel about the enemy's planned flights and objectives that will help your army for the next 24 hours.
+
+**PLANNED (AND LEAKED) BOMBER RAIDS: Periodically, HQ will announce planned bomber raids with planned departure, midpoint, and target.  HQ also shareds intel received about enemy bomber raids.  HQ hopes you will fly in defense of the friendly bomber raids and plan to intercept the enemy raids.  The raids take considerable time to fly from rear air bases to their flight midpoint and target, so note any announcements and plan ahead (you can plot courses and estimate flight time using the General Situation Map).  Bomber mission plans and intel reports are summarized at the bottom of the General Situation Map for your convenience.
+
+**General Situation Map/Online Radar: Check TWCPilots.com for the link to the General Situation Map/online radar.  Radar password for your side is in-sim at Tab-4-4-4-9. The General Situation Map has not only an overview of the battlespace, but vital information such as current campaign status, primary targets destroyed and remaining, coordinates of targets (for Knickebein & Cover Aircraft use), scouting reports & coordinates, weather, intel received about enemy actions and intentions, friendly & enemy bomber target information, and much more.
+
+>>>Note that you can evade or partially evade detection by radar and observer networks by flying low. There is no one definite altitude that guarantees safety--radar and/or observers can sometimes pick up contacts even at the lowest possible altitude.  But pilots report good results flying under 70m/250ft AGL generally, and 35m/125ft AGL when approaching enemy objectives or bases.
+
+**Weather: Clouds, winds, and general weather reflect actual weather and wind as experienced during the Battle of Britain June-October 1940 - with skies ranging from clear to partly cloudy to completely overcast, and winds ranging from light to (occasionally) hurricane force. Winds aloft vary--sometimes dramatically--with altitude, in accordance with historical weather data from this area. Be sure to check the Winds Aloft report daily (Tab-4-4-4-8 or on the General Situation Map.)
+
+**Navigation via the Knickebein System: Recon missions identify objective coordinates. You can navigate to coordinates via the Knickebein system: <ka 243444 128322 to add a coordinate, then Tab-4-4-4-4-1 to start KB and navigate to that location. You can also use Knickebein coordinates to communicate targeting information to your <cover bombers or sturmovik aircraft.  More details about using the Knickebein system below.
+
+In-game, carefully read ALL of the Tab-4 menus (Tab-4-4, Tab-4-4-4, Tab-4-4-4-4, etc) to see vitally important commands and information sources.
+
+Use in-game chat commands <help, <chelp, <khelp, <lghelp, <rrhelp, <aihelp, <asvhelp to see detailed help for cover fighter/bomber, Knickebein navigation systems, rearm/reload, airborne intercept & air-to-surface-vessel radar, and more.
+
+Finally, check TWCPilots.com for forums (Cliffs of Dover Blitz/Campaign Server) and Discord server info for each team, with information about how to log into Discord for your side, link for Radar/General Situation Map web page for your side, lists of mission objectives, general help on any topic, etc. Radar/General Situation Map password is in-sim at Tab-4-4-4-9.
+
+Now--that is all you NEED to know to fly & enjoy the campaign.  Below is more detail for those who want it--a brief User Guide with more info about how the Campaign works and available resources, techniques, and information available.
+
+FINAL NOTE: The server and campaign are complex, with many features.  It may take you days or weeks to become familiar with all of them. BUT YOU DON'T NEED ANY OF THAT TO HAVE A BLAST FLYING IN THE SERVER!  If you can take off in a fighter and patrol your coast or the channel, you'll soon find some exciting action.  Or grab a bomber and cross the Channel to hit an enemy airfield. If you can do either of those, you can fly the server!
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: Campaign & Server Features
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+The Campaign has many advanced features such as:
+
+ - Real Time<=>Campaign Time system (one day server time = one day real time), 5-10-15+ hour continuous sessions, generally from dawn to dusk
+ - Persistent damage and destruction
+ - Real consequences to the enemy when objectives such as radar, airports, Knickebein, and manufacturing capabilities are damaged or destroyed
+ - Your actions move the front line forward, leading to capture of enemy shipping, bases, manufacturing, military assets, and air bases.
+ - Realistic weather and winds
+ - Ever-changing mission objectives as the Campaign progresses
+ - Capture the enemy's assets - and airfields - as the front moves forwards
+ - Limited aircraft supply; destruction or damage of aircraft reduces your supply.
+ - Designed to be fun, challenging, and interesting to fly whether 3 other pilots online, or 33 or 133 - and whether you have 20 minutes to spare, 2 hours, or a whole afternoon.
+ - Individual rank and recognition system for pilots, including privileges accorded to higher ranking pilots--for as long as you can stay alive
+ - Each player has three separate and independent careers--one as a bomber pilot, one as a fighter pilot, and one as a Sturmovik/ground attack pilot
+  - Real consequences for in-game death--game timeout for a (short) period (or come in at a rearward base immediately, if you prefer), and - far more important! - your entire career, rank, and stats are lost
+  - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
+ - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
+ - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
+ - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - In-game radar system and General Situation Map (online)
+ - Detailed scoring and stats for individuals and teams
+ - <rr rearm & reload system
+ - Limited aircraft supply & production--even more limited when the enemy destroys your manufacturing plants & airfields.  And they stay destroyed and out of commission until your Engineering Corps can manage to repair them, which is usually many hours, days, or even weeks later.
+ - Detailed tracking of destroyed & damaged aircraft. Careless endangering or wasting of the team's aircraft supply by any team member will affect available supply levels for your entire team
+ - And MUCH more.
+
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: General Flow of Battle & Useful Commands
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+COMMUNICATE
+Find your teammates on the forums at TWCPilots.com and also join them on the Discord channel listed at TWCPilots.com.  The TWC Campaign also has a special private forum on the ATAG forums - ask the admin there to add you as red or blue.
+
+
+CHOOSE A SIDE
+On first joining the campaign, choose your side wisely--red or blue.  Whichever side you pick on first entering the campaign becomes your permanent team.  (If you accidentally choose the wrong side on first entry, ask on the TWCPilots.com forums for help fixing it.)
+
+Each side has vital national and military secrets that would be extremely damaging if enemy pilots discovered them.  Unfortunately both sides have asked that spies not be allowed to fly with them!
+
+
+FIND OBJECTIVES & SCOUT THEM
+Tab-4-6 - list of current objectives with map coordinates OR map sectors that need to be reconned.
+
+Tab-4-5 - list of completed objectives for each side.
+
+Tab-4-4-4-1 - list of destroyed/damaged objectives that will affect your activities, such as various radar towers or airports out.
+
+Tab-4-9 - take a recon photo so that HQ can identify potential objectives in a given area.  Fly about 20000ft/6000m in an aircraft with no bombs, then Tab-4-9 to take a recon photo.
+
+Recon photos are automatically taken for processing at Photo Intelligence as soon as you land safely on friendly territory with your precious load of recon photos.  If the photos don't process automatically upon landing, you can use chat command <record to alert HQ to process them.
+
+
+ATTACK & DEFEND OBJECTIVES
+Tab-4-1 and Tab-4-2 for enemy/friendly radar listings from HQ. Note that if radar towers are out, radar is not available in that area.
+
+Tab-4-6 for list of Primary Objectives, with map coordinates if they have been scouted.
+
+Tab-4-7 and Tab-4-8 to see lists of Secondary Objectives & other scouted objectives.  
+
+List of objectives, the Recon Report (with objectives, status, and exact coordinates), and helpful information is also available on the Radar/General Situation Map online.  Usually this information is much easier to digest on the General Situation Map page - there is simply to much to easily see in the in-sim Info Windows.
+
+Most targets require a significant amount of accurate bombing to destroy--some more than others.  Some are small point targets requiring high accuracy, some--such as airports--require more of a large amount of ordnance over a fairly large area.  Others are a combination of both accuracy and ordnance amount.
+
+Expect targets, especially important primary objectives, to be heavily defend by flak and AA, as well as local fighter patrols. Low altitude attacks are often suicidal; high altitude runs mean jockeying vs enemy fighters to successfully reach the target.  15000ft/5000m?  20000ft/6000m?  Or maybe higher yet.  Safety for bombers lies in large numbers, well coordinated close formations, altitude, and sufficient well trained cover fighters.
+
+A few daring bomber squadron leaders come in a very low altitude.  If you want to survive, expect to literally be brushing the tree-tops as you approach a well-defended target.  And get in and out of there fast. Unless you want to enjoy the attention of every flak battery in the county . . . 
+
+There are just a few targets that can be taken out by a single bomber or just a few bombs. The majority will take more - sometimes MUCH more. That is why <cover bombers are available to accompany you and multiply your effectiveness.  Cover bombers will attack and bomb any coordinate point that is your currently active Knickebein target. If Knickebein is turned off (Tab-4-4-4-2) the bombers will follow you instead - or target according to other options on your Tab-4-4-4-4-5 menu (target next bomb drop point, target a point where you drop a flare, or choose a specific enemy to target near the point you indicate).
+
+FIGHTER PILOTS: Please fly with bomber pilots and <cover bomber formations and defend them.  The bomber pilots NEED YOUR HELP to get through.  Bomber pilots can call in a few <cover fighter to help them, but they are not nearly as effective as real, well trained fighter pilots such as you.  Coordinate via Discord or in-game chat 
+
+Right click the chat window to select chat targets--all, enemy, friendly, etc.  NOTE: Many chat commands will not work if chat recipients are set to enemy, friendly, or area.  Set recipients to ALL to send chat commands to the server. Unforunately, that means that all pilots in-sim will be able to eavesdrop on some of your commands, and perhaps guess your intentions.  Real WW2 pilots faced the same conundrum, as comms were over open radio channels and the enemy *always* listened in.
+
+Chat command <ka 302432 403054 to add a Knickebein waypoint at the given map coordinate. This can be used for general navigation OR to attack or bomb an objective at that point.
+
+Tab-4-4-4-4-1 to start the Knickebein system and/or select the next Waypoint.  Other Knickebein commands on the Tab-4-4-4-4 menu.  Detailed Knicekbein help with chat command <khelp.
+
+Tab-4-4-4-4-7 to list available cover aircraft.  Other useful commands for the <cover system on the Tab-4-4-4-4 menu.
+
+<cover 12 3 VIC to call in a group of 3 cover aircraft, type #12, in VIC formation.  Get the type # listings with Tab-4-4-4-4-7.
+
+Again, detailed help at chat command <chelp.
+
+
+REARM & RELOAD
+<rr rearms & reloads aircraft.  <rr 50 means load 50% fuel.  <rrf <rrb - load as fighter or bomber (ie bombs/no bombs).  More options at <rrhelp.
+
+<rr is available at ANY friendly airbase whether it is active or not (as a spawn point on the Flag Screen), and whether it is destroyed or repaired or not. As long as you can (safely!) land there and take off again, ground crews will be able to rustle up a few gallons of gas and a few rounds of ammunition to get you back in the air.
+
+This is a great advantage for flying and attacking/defending more distant areas in the map, as you can use ANY airport shown on the in-game map to R&R.
+
+NOTE that bomb craters in airfields are dangerous--roll over one of them and your flight will be over in short order.
+
+NOTE that as CloD Blitz 5.0, <rr is not working correctly for (most?) bombers - the bombs are loaded by not armed and the pilot is unable to arm them.  This is a the result of a complex issue with the sim itself--nothing that can be addressed by us as mission designers.  We are not sure if or when a fix for this will be available.
+
+IN-AIRCRAFT RADAR
+Larger aircraft (generally Sturmovik and Bomber types) have available two in-aircraft radar systems. Both are accessed via the Tab-4-4-5 menu.  Two types of radar are available: Airborne Intercept Radar (AI) and Air-to-Surface-Vessel Radar (ASV).
+
+****Airborne Intercept Radar (AI)
+Access AI radar via Tab-4-4-5.  Press 5 more times to cycle through 1X, 2X, 4x, and 8X magnification.  
+
+The AI radar displays two screens, similar to those seen by actual AI Radar operators in 1940.  The left screen shows distance in front of the aircraft on one axis, and distance left/right of the aircraft on the other.
+
+The right screen shows distance from your aircraft on one axis and height above or below your aircraft on the other.
+
+To determine the location of the aircraft relative to you, you must put together the information on the left and right screens.  If you watch the screens as an aircraft passes you, you will soone get the hang of how it works.
+
+There is no definite distance or height scale. Radar operators learned to estimate relative height and distance based on the screen locations.
+
+As you get closer to your target, you will want to switch to 2X magnification, then 4X, then 8X.  Using this technique, it is possible to hunt, then sneak up on and ambush, bombers or other aircraft at dawn, dusk, in clouds, and even after dark.
+
+****Air-to-Surface Vessel Radar
+ASV radar is more straightforward than AI radar, with just a single screen.  Access the ASV radar via Tab-4-4-5-5-5-5-5.  The radar has two magnification levels.  If you go to the Tab-4-4 screen and then press the 5 key repeatedly, you will cycle through all 4 AI radar modes and both ASV radar modes.
+
+Though it only has a single screen, ASV radar has its own quirks:  The radar sees far to the sides, only a short distance to the front, and is blind in the back (an area shown with this pattern: ~~~~). 
+
+For this reason, the display is distorted and can be misleading to the uninitiated.   If you see a target to your left and turn towards it, it will disappear from the screen!  That is because the radar can see about 20 miles to the sides, but only about 5 miles to the front.
+
+CHECK CAREER, RANK, AND OVERALL CAMPAIGN STATUS
+Tab-4-4-1 - Your current career, rank, and ace summary (fighter & bomber careers tracked & reported separated)
+
+Individual stats summary page showing all players current (and former) careers is online - check TWCPilots.com for the link.
+
+Tab-4-4-2 - Your current session stats (everything you have done this session, regardless of fighter/bomber career, deaths, etc)
+
+Tab-4-4-3 - **REAL** Netstats - Real, accurate reporting on the stats, accomplishments, kills, and target destruction by every player this session.  Please completely disregard in-game Netstats (shown by pressing the "N" key) as they are inaccurate and also very, very incomplete.  The Tab-4-4-4-3 stats are both accurate and far more complete, including air, ground, naval, and AA/artillery kills.
+
+Tab-4-4-4-6 - Current overall status for the Campaign.  Which side is winning?
+
+Note that the online stats page also includes detailed summaries of current in-game netstats, team points and objectives accomplished, which side is currently winning, and a summary of the entire session so far. Additionally, Team Score & Session Summary stats are recorded and stored for each session, a few times midway during the session and when the session ends.  
+
+Click "Team Stats Archive" on the online Campaign Stats Page to see today's history; click the date near the top of each Team Stats page to view the previous day's summary & history.
+
+WEATHER AND WIND
+Weather and winds aloft closely reflect actual weather and wind experienced by pilots during the Battle of Britain. Watch windsocks found at every airport and check the Winds Aloft report carefully every day (Tab-4-4-4-8 or on General Situation Map).
+
+Winds on the Channel are most often from the west or southwest, but can be from any direction, depending on weather patterns.  You may find different wind speed and direction at different altitudes - plan your routes carefully to take advantage of them.
+
+Winds affect bomber aim and accuracy - more so the higher the altitude and the higher the wind speed.  Each bomb sight has techniques for dealing with wind offset - look online for tutorials and help.
+
+<Cover bombers do not deal well with wind.  The best technique is to calculate a different drop point for them that compensates for the wind, based on wind speed, direction, altitude, and direction of approach.  Good accuracy can be achieved by following fairly simple rules of thumb (or by bombing from lower altitudes when winds are high).
+
+Note also that AI bombers do not account for target elevation in their targeting.  For example, if a target is a 200m elevation, AI bombers dropping from altitude will generally hit about 200m short.  They have assumed the target elevation is 0m.  To compensate for this, just move the AI bombers' target about 200m back from the actual target. 
+
+
+MORE INFORMATION AND HELP
+TWCPilots.com - look for the Cliffs of Dover TWC Blitz/Campaign Server forums--a general forum, as well as separate forums for red & blue pilots.
+
+Also look for links to Radar/General Situation Map and Stats pages (Tactical Campaign Server stats) at TWCPilots.com.  Both radar & stats pages have extensive information & detail about stats, rank, careers, radar usage, etc.
+
+ATAG TWC Campaign forum - a private forum at https://theairtacticalassaultgroup.com - ask the forum admin to add you to the TWC Campaign forum and either red or blue sub-forums.
+
+DISCORD server - find the connection details at TWCPilots.com.  Pilots on the server and invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
+
+TWCPILOTS.com
+[Mission]
+<Name>
+TWC Campaign Server - Genghis Khan
+<Description>
+  "All the great struggles of history have been won by superior will-power wresting victory in the teeth of odds or upon the narrowest of margins."
+ 
+  --Winston S. Churchill
+ 
+  "If one bomb reaches the Ruhr, my name is not Göring. You can call me Meyer."
+
+  --Reichsmarschall Hermann Göring
+  
+  >>> In Memoriam TWC_Fatal_Error, 1952-2026 - TWC organizer; mastermind of and inspiration for the vast majority of this campaign <<<
+
+Welcome to the TWC (The Wrecking Crew) Campaign Server. Our discord Channel is https://discord.gg/xKbbQDmqTW please join us! <S> Fatal and Flug
+
+Overall Objective: Over the 113 Days of the Battle of Britain Campaign (Summer-Autumn - the real 1940 BoB time frame), push the enemy across the channel and eliminate them as a threat, by destroying enemy objectives and turning the map repeatedly. Establish a beachhead on the enemy shores--if you can--and then push on FAR into enemy territory, capturing airfields, fuel, military bases, manufacturing capacity, and more.  
+
+Blue Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown. When all of these airfields are (simultaneously) safe behind the Blue frontline and operative as Blue airbases, you are the campaign winner!
+
+Red Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre. When all of these airfields are (simultaneously) safe behind the Red frontline and operative as Red airbases, you are the campaign winner!
+
+When you win a major battle by accomplishing all major objectives, your own destroyed military bases and installations are all repaired--airports, radar, manufacturing capability, etc.--while the enemy's destroyed objectives remain destroyed and nonfunctional until they manage to repair them. When enemy's capabilities are low due to your attacks, they might run short of fuel, aircraft, ammo, and more.
+
+And each map turn pushes the enemy back towards their side of the Channel--or across their land territory--significantly.
+
+Day-to-day: 
+
+**BOMBERS: Attack and destroy the list of important mission objectives given to you by HQ. Also destroy other secondary and important targets of opportunity. Destroy enemy fuel, production, radar, communications equipment, military HQ, etc in order to paralyze the enemy in those areas. You can take a squadron of <cover bombers and fighters (chat command <chelp for more info). 
+
+**STURMOVIK FIGHTERS/STRIKE FIGHTERS/FIGHTER BOMBERS: You can take a small squadron of <cover sturmovik aircraft. Provide close air support, take out convoys, motorcades, AA areas, and more. 
+
+**FIGHTERS: Cover and defend your bomber patrols; prevent enemy bomber formations from destroying your important targets. 
+
+>>>Note that you have separate careers and stats as a Bomber Pilot, Sturmovik Pilot, and Fighter Pilot.  Feel free to try out flying as a Bomber Pilot or Sturmovik Pilot without endangering your Fighter Pilot stats - and vice-versa.
+
+**RECON: Conduct very high-altitude overflights of enemy territory so HQ Photo Intelligence can use the photos & information you gather to identify enemy strengths and weaknesses and provide precise targeting information for high priority targets. 
+
+**REPAIR & RESUPPLY YOUR OBJECTIVES: Fly to <pickup and <deliver repair supplies, which repairs airfields and other objectives, or <ferry aircraft to replenish low aircraft supplies (<phelp). 
+
+**ESTABLISH NEW BASES: When your frontlines are pushed forward, the enemy is cleared from that area.  Your side takes over objectives, military bases, manufacturing, production, fuel, etc., as ground troops push the front forward.  Former enemy airbases are available for you to take over and use as "Landing Grounds". Chat command "<lghelp" for detailed instructions.
+
+**IN-PLANE AERIAL INTERCEPT RADAR AND AIR-TO-SURFACE VESSEL RADAR: Larger aircraft come equipment with these type types of radar, closely modeled on radar available during the Battle of Britain.  Use Aerial Intercept Radar to locate air-to-air targets, especially at dawn, dusk, or in poor weather.  Use ASV radar to locate and destroy (numerous) enemy ships and submarines in the Channel.  
+
+**LIMITED AIRCRAFT SUPPLY - EVERY PLANE COUNTS: Aircraft supply is limited and when you damage or destroy an aircraft, it is lost from your army's supply - either for the time it takes to repair, or forever.  Fly carefully! Winning battles and turning the map gains your army more supplies from HQ - but if those are insufficient, you can fly additional supplies from rear supply bases to forward bases, as well.  Use commands <ferry and <deliver - chat command <phelp for detailed help. 
+
+Also, when you shoot down enemy aircraft - whether live pilots or others - that reduces the enemy's aircraft supply.  So attacking and enemy bomber raid helps in two ways: It interrupts that raid and the destruction it would have done, but it also deprives enemy pilots of key aircraft for their future flights.
+
+**REARM AND REFUEL: As a rule you can use chat command <rr to rearm and refuel at ANY airfield on friendly territory - whether active or not. NOTE that <rr will not work on most bombs - bombs will be loaded by you are unable to arm them (bug in sim code). 
+
+**FIND THE GENERAL: A high-ranking general and his staff is lurking somewhere near one of the mission objectives. The General's location will be identified in recon reports; further recon flights narrow down the position.  Find the General and take a LOW level recon photo (below 150m AGL and within 150m of the camp; use Tab-4-9 to take the photo) - this will yield detailed intel about the enemy's planned flights and objectives that will help your army for the next 24 hours.
+
+**PLANNED (AND LEAKED) BOMBER RAIDS: Periodically, HQ will announce planned bomber raids with planned departure, midpoint, and target.  HQ also shareds intel received about enemy bomber raids.  HQ hopes you will fly in defense of the friendly bomber raids and plan to intercept the enemy raids.  The raids take considerable time to fly from rear air bases to their flight midpoint and target, so note any announcements and plan ahead (you can plot courses and estimate flight time using the General Situation Map).  Bomber mission plans and intel reports are summarized at the bottom of the General Situation Map for your convenience.
+
+**General Situation Map/Online Radar: Check TWCPilots.com for the link to the General Situation Map/online radar.  Radar password for your side is in-sim at Tab-4-4-4-9. The General Situation Map has not only an overview of the battlespace, but vital information such as current campaign status, primary targets destroyed and remaining, coordinates of targets (for Knickebein & Cover Aircraft use), scouting reports & coordinates, weather, intel received about enemy actions and intentions, friendly & enemy bomber target information, and much more.
+
+>>>Note that you can evade or partially evade detection by radar and observer networks by flying low. There is no one definite altitude that guarantees safety--radar and/or observers can sometimes pick up contacts even at the lowest possible altitude.  But pilots report good results flying under 70m/250ft AGL generally, and 35m/125ft AGL when approaching enemy objectives or bases.
+
+**Weather: Clouds, winds, and general weather reflect actual weather and wind as experienced during the Battle of Britain June-October 1940 - with skies ranging from clear to partly cloudy to completely overcast, and winds ranging from light to (occasionally) hurricane force. Winds aloft vary--sometimes dramatically--with altitude, in accordance with historical weather data from this area. Be sure to check the Winds Aloft report daily (Tab-4-4-4-8 or on the General Situation Map.)
+
+**Navigation via the Knickebein System: Recon missions identify objective coordinates. You can navigate to coordinates via the Knickebein system: <ka 243444 128322 to add a coordinate, then Tab-4-4-4-4-1 to start KB and navigate to that location. You can also use Knickebein coordinates to communicate targeting information to your <cover bombers or sturmovik aircraft.  More details about using the Knickebein system below.
+
+In-game, carefully read ALL of the Tab-4 menus (Tab-4-4, Tab-4-4-4, Tab-4-4-4-4, etc) to see vitally important commands and information sources.
+
+Use in-game chat commands <help, <chelp, <khelp, <lghelp, <rrhelp, <aihelp, <asvhelp to see detailed help for cover fighter/bomber, Knickebein navigation systems, rearm/reload, airborne intercept & air-to-surface-vessel radar, and more.
+
+Finally, check TWCPilots.com for forums (Cliffs of Dover Blitz/Campaign Server) and Discord server info for each team, with information about how to log into Discord for your side, link for Radar/General Situation Map web page for your side, lists of mission objectives, general help on any topic, etc. Radar/General Situation Map password is in-sim at Tab-4-4-4-9.
+
+Now--that is all you NEED to know to fly & enjoy the campaign.  Below is more detail for those who want it--a brief User Guide with more info about how the Campaign works and available resources, techniques, and information available.
+
+FINAL NOTE: The server and campaign are complex, with many features.  It may take you days or weeks to become familiar with all of them. BUT YOU DON'T NEED ANY OF THAT TO HAVE A BLAST FLYING IN THE SERVER!  If you can take off in a fighter and patrol your coast or the channel, you'll soon find some exciting action.  Or grab a bomber and cross the Channel to hit an enemy airfield. If you can do either of those, you can fly the server!
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: Campaign & Server Features
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+The Campaign has many advanced features such as:
+
+ - Real Time<=>Campaign Time system (one day server time = one day real time), 5-10-15+ hour continuous sessions, generally from dawn to dusk
+ - Persistent damage and destruction
+ - Real consequences to the enemy when objectives such as radar, airports, Knickebein, and manufacturing capabilities are damaged or destroyed
+ - Your actions move the front line forward, leading to capture of enemy shipping, bases, manufacturing, military assets, and air bases.
+ - Realistic weather and winds
+ - Ever-changing mission objectives as the Campaign progresses
+ - Capture the enemy's assets - and airfields - as the front moves forwards
+ - Limited aircraft supply; destruction or damage of aircraft reduces your supply.
+ - Designed to be fun, challenging, and interesting to fly whether 3 other pilots online, or 33 or 133 - and whether you have 20 minutes to spare, 2 hours, or a whole afternoon.
+ - Individual rank and recognition system for pilots, including privileges accorded to higher ranking pilots--for as long as you can stay alive
+ - Each player has three separate and independent careers--one as a bomber pilot, one as a fighter pilot, and one as a Sturmovik/ground attack pilot
+  - Real consequences for in-game death--game timeout for a (short) period (or come in at a rearward base immediately, if you prefer), and - far more important! - your entire career, rank, and stats are lost
+  - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
+ - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
+ - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
+ - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - In-game radar system and General Situation Map (online)
+ - Detailed scoring and stats for individuals and teams
+ - <rr rearm & reload system
+ - Limited aircraft supply & production--even more limited when the enemy destroys your manufacturing plants & airfields.  And they stay destroyed and out of commission until your Engineering Corps can manage to repair them, which is usually many hours, days, or even weeks later.
+ - Detailed tracking of destroyed & damaged aircraft. Careless endangering or wasting of the team's aircraft supply by any team member will affect available supply levels for your entire team
+ - And MUCH more.
+
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: General Flow of Battle & Useful Commands
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+COMMUNICATE
+Find your teammates on the forums at TWCPilots.com and also join them on the Discord channel listed at TWCPilots.com.  The TWC Campaign also has a special private forum on the ATAG forums - ask the admin there to add you as red or blue.
+
+
+CHOOSE A SIDE
+On first joining the campaign, choose your side wisely--red or blue.  Whichever side you pick on first entering the campaign becomes your permanent team.  (If you accidentally choose the wrong side on first entry, ask on the TWCPilots.com forums for help fixing it.)
+
+Each side has vital national and military secrets that would be extremely damaging if enemy pilots discovered them.  Unfortunately both sides have asked that spies not be allowed to fly with them!
+
+
+FIND OBJECTIVES & SCOUT THEM
+Tab-4-6 - list of current objectives with map coordinates OR map sectors that need to be reconned.
+
+Tab-4-5 - list of completed objectives for each side.
+
+Tab-4-4-4-1 - list of destroyed/damaged objectives that will affect your activities, such as various radar towers or airports out.
+
+Tab-4-9 - take a recon photo so that HQ can identify potential objectives in a given area.  Fly about 20000ft/6000m in an aircraft with no bombs, then Tab-4-9 to take a recon photo.
+
+Recon photos are automatically taken for processing at Photo Intelligence as soon as you land safely on friendly territory with your precious load of recon photos.  If the photos don't process automatically upon landing, you can use chat command <record to alert HQ to process them.
+
+
+ATTACK & DEFEND OBJECTIVES
+Tab-4-1 and Tab-4-2 for enemy/friendly radar listings from HQ. Note that if radar towers are out, radar is not available in that area.
+
+Tab-4-6 for list of Primary Objectives, with map coordinates if they have been scouted.
+
+Tab-4-7 and Tab-4-8 to see lists of Secondary Objectives & other scouted objectives.  
+
+List of objectives, the Recon Report (with objectives, status, and exact coordinates), and helpful information is also available on the Radar/General Situation Map online.  Usually this information is much easier to digest on the General Situation Map page - there is simply to much to easily see in the in-sim Info Windows.
+
+Most targets require a significant amount of accurate bombing to destroy--some more than others.  Some are small point targets requiring high accuracy, some--such as airports--require more of a large amount of ordnance over a fairly large area.  Others are a combination of both accuracy and ordnance amount.
+
+Expect targets, especially important primary objectives, to be heavily defend by flak and AA, as well as local fighter patrols. Low altitude attacks are often suicidal; high altitude runs mean jockeying vs enemy fighters to successfully reach the target.  15000ft/5000m?  20000ft/6000m?  Or maybe higher yet.  Safety for bombers lies in large numbers, well coordinated close formations, altitude, and sufficient well trained cover fighters.
+
+A few daring bomber squadron leaders come in a very low altitude.  If you want to survive, expect to literally be brushing the tree-tops as you approach a well-defended target.  And get in and out of there fast. Unless you want to enjoy the attention of every flak battery in the county . . . 
+
+There are just a few targets that can be taken out by a single bomber or just a few bombs. The majority will take more - sometimes MUCH more. That is why <cover bombers are available to accompany you and multiply your effectiveness.  Cover bombers will attack and bomb any coordinate point that is your currently active Knickebein target. If Knickebein is turned off (Tab-4-4-4-2) the bombers will follow you instead - or target according to other options on your Tab-4-4-4-4-5 menu (target next bomb drop point, target a point where you drop a flare, or choose a specific enemy to target near the point you indicate).
+
+FIGHTER PILOTS: Please fly with bomber pilots and <cover bomber formations and defend them.  The bomber pilots NEED YOUR HELP to get through.  Bomber pilots can call in a few <cover fighter to help them, but they are not nearly as effective as real, well trained fighter pilots such as you.  Coordinate via Discord or in-game chat 
+
+Right click the chat window to select chat targets--all, enemy, friendly, etc.  NOTE: Many chat commands will not work if chat recipients are set to enemy, friendly, or area.  Set recipients to ALL to send chat commands to the server. Unforunately, that means that all pilots in-sim will be able to eavesdrop on some of your commands, and perhaps guess your intentions.  Real WW2 pilots faced the same conundrum, as comms were over open radio channels and the enemy *always* listened in.
+
+Chat command <ka 302432 403054 to add a Knickebein waypoint at the given map coordinate. This can be used for general navigation OR to attack or bomb an objective at that point.
+
+Tab-4-4-4-4-1 to start the Knickebein system and/or select the next Waypoint.  Other Knickebein commands on the Tab-4-4-4-4 menu.  Detailed Knicekbein help with chat command <khelp.
+
+Tab-4-4-4-4-7 to list available cover aircraft.  Other useful commands for the <cover system on the Tab-4-4-4-4 menu.
+
+<cover 12 3 VIC to call in a group of 3 cover aircraft, type #12, in VIC formation.  Get the type # listings with Tab-4-4-4-4-7.
+
+Again, detailed help at chat command <chelp.
+
+
+REARM & RELOAD
+<rr rearms & reloads aircraft.  <rr 50 means load 50% fuel.  <rrf <rrb - load as fighter or bomber (ie bombs/no bombs).  More options at <rrhelp.
+
+<rr is available at ANY friendly airbase whether it is active or not (as a spawn point on the Flag Screen), and whether it is destroyed or repaired or not. As long as you can (safely!) land there and take off again, ground crews will be able to rustle up a few gallons of gas and a few rounds of ammunition to get you back in the air.
+
+This is a great advantage for flying and attacking/defending more distant areas in the map, as you can use ANY airport shown on the in-game map to R&R.
+
+NOTE that bomb craters in airfields are dangerous--roll over one of them and your flight will be over in short order.
+
+NOTE that as CloD Blitz 5.0, <rr is not working correctly for (most?) bombers - the bombs are loaded by not armed and the pilot is unable to arm them.  This is a the result of a complex issue with the sim itself--nothing that can be addressed by us as mission designers.  We are not sure if or when a fix for this will be available.
+
+IN-AIRCRAFT RADAR
+Larger aircraft (generally Sturmovik and Bomber types) have available two in-aircraft radar systems. Both are accessed via the Tab-4-4-5 menu.  Two types of radar are available: Airborne Intercept Radar (AI) and Air-to-Surface-Vessel Radar (ASV).
+
+****Airborne Intercept Radar (AI)
+Access AI radar via Tab-4-4-5.  Press 5 more times to cycle through 1X, 2X, 4x, and 8X magnification.  
+
+The AI radar displays two screens, similar to those seen by actual AI Radar operators in 1940.  The left screen shows distance in front of the aircraft on one axis, and distance left/right of the aircraft on the other.
+
+The right screen shows distance from your aircraft on one axis and height above or below your aircraft on the other.
+
+To determine the location of the aircraft relative to you, you must put together the information on the left and right screens.  If you watch the screens as an aircraft passes you, you will soone get the hang of how it works.
+
+There is no definite distance or height scale. Radar operators learned to estimate relative height and distance based on the screen locations.
+
+As you get closer to your target, you will want to switch to 2X magnification, then 4X, then 8X.  Using this technique, it is possible to hunt, then sneak up on and ambush, bombers or other aircraft at dawn, dusk, in clouds, and even after dark.
+
+****Air-to-Surface Vessel Radar
+ASV radar is more straightforward than AI radar, with just a single screen.  Access the ASV radar via Tab-4-4-5-5-5-5-5.  The radar has two magnification levels.  If you go to the Tab-4-4 screen and then press the 5 key repeatedly, you will cycle through all 4 AI radar modes and both ASV radar modes.
+
+Though it only has a single screen, ASV radar has its own quirks:  The radar sees far to the sides, only a short distance to the front, and is blind in the back (an area shown with this pattern: ~~~~). 
+
+For this reason, the display is distorted and can be misleading to the uninitiated.   If you see a target to your left and turn towards it, it will disappear from the screen!  That is because the radar can see about 20 miles to the sides, but only about 5 miles to the front.
+
+CHECK CAREER, RANK, AND OVERALL CAMPAIGN STATUS
+Tab-4-4-1 - Your current career, rank, and ace summary (fighter & bomber careers tracked & reported separated)
+
+Individual stats summary page showing all players current (and former) careers is online - check TWCPilots.com for the link.
+
+Tab-4-4-2 - Your current session stats (everything you have done this session, regardless of fighter/bomber career, deaths, etc)
+
+Tab-4-4-3 - **REAL** Netstats - Real, accurate reporting on the stats, accomplishments, kills, and target destruction by every player this session.  Please completely disregard in-game Netstats (shown by pressing the "N" key) as they are inaccurate and also very, very incomplete.  The Tab-4-4-4-3 stats are both accurate and far more complete, including air, ground, naval, and AA/artillery kills.
+
+Tab-4-4-4-6 - Current overall status for the Campaign.  Which side is winning?
+
+Note that the online stats page also includes detailed summaries of current in-game netstats, team points and objectives accomplished, which side is currently winning, and a summary of the entire session so far. Additionally, Team Score & Session Summary stats are recorded and stored for each session, a few times midway during the session and when the session ends.  
+
+Click "Team Stats Archive" on the online Campaign Stats Page to see today's history; click the date near the top of each Team Stats page to view the previous day's summary & history.
+
+WEATHER AND WIND
+Weather and winds aloft closely reflect actual weather and wind experienced by pilots during the Battle of Britain. Watch windsocks found at every airport and check the Winds Aloft report carefully every day (Tab-4-4-4-8 or on General Situation Map).
+
+Winds on the Channel are most often from the west or southwest, but can be from any direction, depending on weather patterns.  You may find different wind speed and direction at different altitudes - plan your routes carefully to take advantage of them.
+
+Winds affect bomber aim and accuracy - more so the higher the altitude and the higher the wind speed.  Each bomb sight has techniques for dealing with wind offset - look online for tutorials and help.
+
+<Cover bombers do not deal well with wind.  The best technique is to calculate a different drop point for them that compensates for the wind, based on wind speed, direction, altitude, and direction of approach.  Good accuracy can be achieved by following fairly simple rules of thumb (or by bombing from lower altitudes when winds are high).
+
+Note also that AI bombers do not account for target elevation in their targeting.  For example, if a target is a 200m elevation, AI bombers dropping from altitude will generally hit about 200m short.  They have assumed the target elevation is 0m.  To compensate for this, just move the AI bombers' target about 200m back from the actual target. 
+
+
+MORE INFORMATION AND HELP
+TWCPilots.com - look for the Cliffs of Dover TWC Blitz/Campaign Server forums--a general forum, as well as separate forums for red & blue pilots.
+
+Also look for links to Radar/General Situation Map and Stats pages (Tactical Campaign Server stats) at TWCPilots.com.  Both radar & stats pages have extensive information & detail about stats, rank, careers, radar usage, etc.
+
+ATAG TWC Campaign forum - a private forum at https://theairtacticalassaultgroup.com - ask the forum admin to add you to the TWC Campaign forum and either red or blue sub-forums.
+
+DISCORD server - find the connection details at TWCPilots.com.  Pilots on the server and invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
+
+TWCPILOTS.com
+[Army Red]
+<Name>
+TWC Campaign Server - Genghis Khan
+<Description>
+  "All the great struggles of history have been won by superior will-power wresting victory in the teeth of odds or upon the narrowest of margins."
+ 
+  --Winston S. Churchill
+ 
+  "If one bomb reaches the Ruhr, my name is not Göring. You can call me Meyer."
+
+  --Reichsmarschall Hermann Göring
+  
+  >>> In Memoriam TWC_Fatal_Error, 1952-2026 - TWC organizer; mastermind of and inspiration for the vast majority of this campaign <<<
+
+Welcome to the TWC (The Wrecking Crew) Campaign Server. Our discord Channel is https://discord.gg/xKbbQDmqTW please join us! <S> Fatal and Flug
+
+Overall Objective: Over the 113 Days of the Battle of Britain Campaign (Summer-Autumn - the real 1940 BoB time frame), push the enemy across the channel and eliminate them as a threat, by destroying enemy objectives and turning the map repeatedly. Establish a beachhead on the enemy shores--if you can--and then push on FAR into enemy territory, capturing airfields, fuel, military bases, manufacturing capacity, and more.  
+
+Blue Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown. When all of these airfields are (simultaneously) safe behind the Blue frontline and operative as Blue airbases, you are the campaign winner!
+
+Red Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre. When all of these airfields are (simultaneously) safe behind the Red frontline and operative as Red airbases, you are the campaign winner!
+
+When you win a major battle by accomplishing all major objectives, your own destroyed military bases and installations are all repaired--airports, radar, manufacturing capability, etc.--while the enemy's destroyed objectives remain destroyed and nonfunctional until they manage to repair them. When enemy's capabilities are low due to your attacks, they might run short of fuel, aircraft, ammo, and more.
+
+And each map turn pushes the enemy back towards their side of the Channel--or across their land territory--significantly.
+
+Day-to-day: 
+
+**BOMBERS: Attack and destroy the list of important mission objectives given to you by HQ. Also destroy other secondary and important targets of opportunity. Destroy enemy fuel, production, radar, communications equipment, military HQ, etc in order to paralyze the enemy in those areas. You can take a squadron of <cover bombers and fighters (chat command <chelp for more info). 
+
+**STURMOVIK FIGHTERS/STRIKE FIGHTERS/FIGHTER BOMBERS: You can take a small squadron of <cover sturmovik aircraft. Provide close air support, take out convoys, motorcades, AA areas, and more. 
+
+**FIGHTERS: Cover and defend your bomber patrols; prevent enemy bomber formations from destroying your important targets. 
+
+>>>Note that you have separate careers and stats as a Bomber Pilot, Sturmovik Pilot, and Fighter Pilot.  Feel free to try out flying as a Bomber Pilot or Sturmovik Pilot without endangering your Fighter Pilot stats - and vice-versa.
+
+**RECON: Conduct very high-altitude overflights of enemy territory so HQ Photo Intelligence can use the photos & information you gather to identify enemy strengths and weaknesses and provide precise targeting information for high priority targets. 
+
+**REPAIR & RESUPPLY YOUR OBJECTIVES: Fly to <pickup and <deliver repair supplies, which repairs airfields and other objectives, or <ferry aircraft to replenish low aircraft supplies (<phelp). 
+
+**ESTABLISH NEW BASES: When your frontlines are pushed forward, the enemy is cleared from that area.  Your side takes over objectives, military bases, manufacturing, production, fuel, etc., as ground troops push the front forward.  Former enemy airbases are available for you to take over and use as "Landing Grounds". Chat command "<lghelp" for detailed instructions.
+
+**IN-PLANE AERIAL INTERCEPT RADAR AND AIR-TO-SURFACE VESSEL RADAR: Larger aircraft come equipment with these type types of radar, closely modeled on radar available during the Battle of Britain.  Use Aerial Intercept Radar to locate air-to-air targets, especially at dawn, dusk, or in poor weather.  Use ASV radar to locate and destroy (numerous) enemy ships and submarines in the Channel.  
+
+**LIMITED AIRCRAFT SUPPLY - EVERY PLANE COUNTS: Aircraft supply is limited and when you damage or destroy an aircraft, it is lost from your army's supply - either for the time it takes to repair, or forever.  Fly carefully! Winning battles and turning the map gains your army more supplies from HQ - but if those are insufficient, you can fly additional supplies from rear supply bases to forward bases, as well.  Use commands <ferry and <deliver - chat command <phelp for detailed help. 
+
+Also, when you shoot down enemy aircraft - whether live pilots or others - that reduces the enemy's aircraft supply.  So attacking and enemy bomber raid helps in two ways: It interrupts that raid and the destruction it would have done, but it also deprives enemy pilots of key aircraft for their future flights.
+
+**REARM AND REFUEL: As a rule you can use chat command <rr to rearm and refuel at ANY airfield on friendly territory - whether active or not. NOTE that <rr will not work on most bombs - bombs will be loaded by you are unable to arm them (bug in sim code). 
+
+**FIND THE GENERAL: A high-ranking general and his staff is lurking somewhere near one of the mission objectives. The General's location will be identified in recon reports; further recon flights narrow down the position.  Find the General and take a LOW level recon photo (below 150m AGL and within 150m of the camp; use Tab-4-9 to take the photo) - this will yield detailed intel about the enemy's planned flights and objectives that will help your army for the next 24 hours.
+
+**PLANNED (AND LEAKED) BOMBER RAIDS: Periodically, HQ will announce planned bomber raids with planned departure, midpoint, and target.  HQ also shareds intel received about enemy bomber raids.  HQ hopes you will fly in defense of the friendly bomber raids and plan to intercept the enemy raids.  The raids take considerable time to fly from rear air bases to their flight midpoint and target, so note any announcements and plan ahead (you can plot courses and estimate flight time using the General Situation Map).  Bomber mission plans and intel reports are summarized at the bottom of the General Situation Map for your convenience.
+
+**General Situation Map/Online Radar: Check TWCPilots.com for the link to the General Situation Map/online radar.  Radar password for your side is in-sim at Tab-4-4-4-9. The General Situation Map has not only an overview of the battlespace, but vital information such as current campaign status, primary targets destroyed and remaining, coordinates of targets (for Knickebein & Cover Aircraft use), scouting reports & coordinates, weather, intel received about enemy actions and intentions, friendly & enemy bomber target information, and much more.
+
+>>>Note that you can evade or partially evade detection by radar and observer networks by flying low. There is no one definite altitude that guarantees safety--radar and/or observers can sometimes pick up contacts even at the lowest possible altitude.  But pilots report good results flying under 70m/250ft AGL generally, and 35m/125ft AGL when approaching enemy objectives or bases.
+
+**Weather: Clouds, winds, and general weather reflect actual weather and wind as experienced during the Battle of Britain June-October 1940 - with skies ranging from clear to partly cloudy to completely overcast, and winds ranging from light to (occasionally) hurricane force. Winds aloft vary--sometimes dramatically--with altitude, in accordance with historical weather data from this area. Be sure to check the Winds Aloft report daily (Tab-4-4-4-8 or on the General Situation Map.)
+
+**Navigation via the Knickebein System: Recon missions identify objective coordinates. You can navigate to coordinates via the Knickebein system: <ka 243444 128322 to add a coordinate, then Tab-4-4-4-4-1 to start KB and navigate to that location. You can also use Knickebein coordinates to communicate targeting information to your <cover bombers or sturmovik aircraft.  More details about using the Knickebein system below.
+
+In-game, carefully read ALL of the Tab-4 menus (Tab-4-4, Tab-4-4-4, Tab-4-4-4-4, etc) to see vitally important commands and information sources.
+
+Use in-game chat commands <help, <chelp, <khelp, <lghelp, <rrhelp, <aihelp, <asvhelp to see detailed help for cover fighter/bomber, Knickebein navigation systems, rearm/reload, airborne intercept & air-to-surface-vessel radar, and more.
+
+Finally, check TWCPilots.com for forums (Cliffs of Dover Blitz/Campaign Server) and Discord server info for each team, with information about how to log into Discord for your side, link for Radar/General Situation Map web page for your side, lists of mission objectives, general help on any topic, etc. Radar/General Situation Map password is in-sim at Tab-4-4-4-9.
+
+Now--that is all you NEED to know to fly & enjoy the campaign.  Below is more detail for those who want it--a brief User Guide with more info about how the Campaign works and available resources, techniques, and information available.
+
+FINAL NOTE: The server and campaign are complex, with many features.  It may take you days or weeks to become familiar with all of them. BUT YOU DON'T NEED ANY OF THAT TO HAVE A BLAST FLYING IN THE SERVER!  If you can take off in a fighter and patrol your coast or the channel, you'll soon find some exciting action.  Or grab a bomber and cross the Channel to hit an enemy airfield. If you can do either of those, you can fly the server!
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: Campaign & Server Features
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+The Campaign has many advanced features such as:
+
+ - Real Time<=>Campaign Time system (one day server time = one day real time), 5-10-15+ hour continuous sessions, generally from dawn to dusk
+ - Persistent damage and destruction
+ - Real consequences to the enemy when objectives such as radar, airports, Knickebein, and manufacturing capabilities are damaged or destroyed
+ - Your actions move the front line forward, leading to capture of enemy shipping, bases, manufacturing, military assets, and air bases.
+ - Realistic weather and winds
+ - Ever-changing mission objectives as the Campaign progresses
+ - Capture the enemy's assets - and airfields - as the front moves forwards
+ - Limited aircraft supply; destruction or damage of aircraft reduces your supply.
+ - Designed to be fun, challenging, and interesting to fly whether 3 other pilots online, or 33 or 133 - and whether you have 20 minutes to spare, 2 hours, or a whole afternoon.
+ - Individual rank and recognition system for pilots, including privileges accorded to higher ranking pilots--for as long as you can stay alive
+ - Each player has three separate and independent careers--one as a bomber pilot, one as a fighter pilot, and one as a Sturmovik/ground attack pilot
+  - Real consequences for in-game death--game timeout for a (short) period (or come in at a rearward base immediately, if you prefer), and - far more important! - your entire career, rank, and stats are lost
+  - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
+ - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
+ - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
+ - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - In-game radar system and General Situation Map (online)
+ - Detailed scoring and stats for individuals and teams
+ - <rr rearm & reload system
+ - Limited aircraft supply & production--even more limited when the enemy destroys your manufacturing plants & airfields.  And they stay destroyed and out of commission until your Engineering Corps can manage to repair them, which is usually many hours, days, or even weeks later.
+ - Detailed tracking of destroyed & damaged aircraft. Careless endangering or wasting of the team's aircraft supply by any team member will affect available supply levels for your entire team
+ - And MUCH more.
+
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: General Flow of Battle & Useful Commands
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+COMMUNICATE
+Find your teammates on the forums at TWCPilots.com and also join them on the Discord channel listed at TWCPilots.com.  The TWC Campaign also has a special private forum on the ATAG forums - ask the admin there to add you as red or blue.
+
+
+CHOOSE A SIDE
+On first joining the campaign, choose your side wisely--red or blue.  Whichever side you pick on first entering the campaign becomes your permanent team.  (If you accidentally choose the wrong side on first entry, ask on the TWCPilots.com forums for help fixing it.)
+
+Each side has vital national and military secrets that would be extremely damaging if enemy pilots discovered them.  Unfortunately both sides have asked that spies not be allowed to fly with them!
+
+
+FIND OBJECTIVES & SCOUT THEM
+Tab-4-6 - list of current objectives with map coordinates OR map sectors that need to be reconned.
+
+Tab-4-5 - list of completed objectives for each side.
+
+Tab-4-4-4-1 - list of destroyed/damaged objectives that will affect your activities, such as various radar towers or airports out.
+
+Tab-4-9 - take a recon photo so that HQ can identify potential objectives in a given area.  Fly about 20000ft/6000m in an aircraft with no bombs, then Tab-4-9 to take a recon photo.
+
+Recon photos are automatically taken for processing at Photo Intelligence as soon as you land safely on friendly territory with your precious load of recon photos.  If the photos don't process automatically upon landing, you can use chat command <record to alert HQ to process them.
+
+
+ATTACK & DEFEND OBJECTIVES
+Tab-4-1 and Tab-4-2 for enemy/friendly radar listings from HQ. Note that if radar towers are out, radar is not available in that area.
+
+Tab-4-6 for list of Primary Objectives, with map coordinates if they have been scouted.
+
+Tab-4-7 and Tab-4-8 to see lists of Secondary Objectives & other scouted objectives.  
+
+List of objectives, the Recon Report (with objectives, status, and exact coordinates), and helpful information is also available on the Radar/General Situation Map online.  Usually this information is much easier to digest on the General Situation Map page - there is simply to much to easily see in the in-sim Info Windows.
+
+Most targets require a significant amount of accurate bombing to destroy--some more than others.  Some are small point targets requiring high accuracy, some--such as airports--require more of a large amount of ordnance over a fairly large area.  Others are a combination of both accuracy and ordnance amount.
+
+Expect targets, especially important primary objectives, to be heavily defend by flak and AA, as well as local fighter patrols. Low altitude attacks are often suicidal; high altitude runs mean jockeying vs enemy fighters to successfully reach the target.  15000ft/5000m?  20000ft/6000m?  Or maybe higher yet.  Safety for bombers lies in large numbers, well coordinated close formations, altitude, and sufficient well trained cover fighters.
+
+A few daring bomber squadron leaders come in a very low altitude.  If you want to survive, expect to literally be brushing the tree-tops as you approach a well-defended target.  And get in and out of there fast. Unless you want to enjoy the attention of every flak battery in the county . . . 
+
+There are just a few targets that can be taken out by a single bomber or just a few bombs. The majority will take more - sometimes MUCH more. That is why <cover bombers are available to accompany you and multiply your effectiveness.  Cover bombers will attack and bomb any coordinate point that is your currently active Knickebein target. If Knickebein is turned off (Tab-4-4-4-2) the bombers will follow you instead - or target according to other options on your Tab-4-4-4-4-5 menu (target next bomb drop point, target a point where you drop a flare, or choose a specific enemy to target near the point you indicate).
+
+FIGHTER PILOTS: Please fly with bomber pilots and <cover bomber formations and defend them.  The bomber pilots NEED YOUR HELP to get through.  Bomber pilots can call in a few <cover fighter to help them, but they are not nearly as effective as real, well trained fighter pilots such as you.  Coordinate via Discord or in-game chat 
+
+Right click the chat window to select chat targets--all, enemy, friendly, etc.  NOTE: Many chat commands will not work if chat recipients are set to enemy, friendly, or area.  Set recipients to ALL to send chat commands to the server. Unforunately, that means that all pilots in-sim will be able to eavesdrop on some of your commands, and perhaps guess your intentions.  Real WW2 pilots faced the same conundrum, as comms were over open radio channels and the enemy *always* listened in.
+
+Chat command <ka 302432 403054 to add a Knickebein waypoint at the given map coordinate. This can be used for general navigation OR to attack or bomb an objective at that point.
+
+Tab-4-4-4-4-1 to start the Knickebein system and/or select the next Waypoint.  Other Knickebein commands on the Tab-4-4-4-4 menu.  Detailed Knicekbein help with chat command <khelp.
+
+Tab-4-4-4-4-7 to list available cover aircraft.  Other useful commands for the <cover system on the Tab-4-4-4-4 menu.
+
+<cover 12 3 VIC to call in a group of 3 cover aircraft, type #12, in VIC formation.  Get the type # listings with Tab-4-4-4-4-7.
+
+Again, detailed help at chat command <chelp.
+
+
+REARM & RELOAD
+<rr rearms & reloads aircraft.  <rr 50 means load 50% fuel.  <rrf <rrb - load as fighter or bomber (ie bombs/no bombs).  More options at <rrhelp.
+
+<rr is available at ANY friendly airbase whether it is active or not (as a spawn point on the Flag Screen), and whether it is destroyed or repaired or not. As long as you can (safely!) land there and take off again, ground crews will be able to rustle up a few gallons of gas and a few rounds of ammunition to get you back in the air.
+
+This is a great advantage for flying and attacking/defending more distant areas in the map, as you can use ANY airport shown on the in-game map to R&R.
+
+NOTE that bomb craters in airfields are dangerous--roll over one of them and your flight will be over in short order.
+
+NOTE that as CloD Blitz 5.0, <rr is not working correctly for (most?) bombers - the bombs are loaded by not armed and the pilot is unable to arm them.  This is a the result of a complex issue with the sim itself--nothing that can be addressed by us as mission designers.  We are not sure if or when a fix for this will be available.
+
+IN-AIRCRAFT RADAR
+Larger aircraft (generally Sturmovik and Bomber types) have available two in-aircraft radar systems. Both are accessed via the Tab-4-4-5 menu.  Two types of radar are available: Airborne Intercept Radar (AI) and Air-to-Surface-Vessel Radar (ASV).
+
+****Airborne Intercept Radar (AI)
+Access AI radar via Tab-4-4-5.  Press 5 more times to cycle through 1X, 2X, 4x, and 8X magnification.  
+
+The AI radar displays two screens, similar to those seen by actual AI Radar operators in 1940.  The left screen shows distance in front of the aircraft on one axis, and distance left/right of the aircraft on the other.
+
+The right screen shows distance from your aircraft on one axis and height above or below your aircraft on the other.
+
+To determine the location of the aircraft relative to you, you must put together the information on the left and right screens.  If you watch the screens as an aircraft passes you, you will soone get the hang of how it works.
+
+There is no definite distance or height scale. Radar operators learned to estimate relative height and distance based on the screen locations.
+
+As you get closer to your target, you will want to switch to 2X magnification, then 4X, then 8X.  Using this technique, it is possible to hunt, then sneak up on and ambush, bombers or other aircraft at dawn, dusk, in clouds, and even after dark.
+
+****Air-to-Surface Vessel Radar
+ASV radar is more straightforward than AI radar, with just a single screen.  Access the ASV radar via Tab-4-4-5-5-5-5-5.  The radar has two magnification levels.  If you go to the Tab-4-4 screen and then press the 5 key repeatedly, you will cycle through all 4 AI radar modes and both ASV radar modes.
+
+Though it only has a single screen, ASV radar has its own quirks:  The radar sees far to the sides, only a short distance to the front, and is blind in the back (an area shown with this pattern: ~~~~). 
+
+For this reason, the display is distorted and can be misleading to the uninitiated.   If you see a target to your left and turn towards it, it will disappear from the screen!  That is because the radar can see about 20 miles to the sides, but only about 5 miles to the front.
+
+CHECK CAREER, RANK, AND OVERALL CAMPAIGN STATUS
+Tab-4-4-1 - Your current career, rank, and ace summary (fighter & bomber careers tracked & reported separated)
+
+Individual stats summary page showing all players current (and former) careers is online - check TWCPilots.com for the link.
+
+Tab-4-4-2 - Your current session stats (everything you have done this session, regardless of fighter/bomber career, deaths, etc)
+
+Tab-4-4-3 - **REAL** Netstats - Real, accurate reporting on the stats, accomplishments, kills, and target destruction by every player this session.  Please completely disregard in-game Netstats (shown by pressing the "N" key) as they are inaccurate and also very, very incomplete.  The Tab-4-4-4-3 stats are both accurate and far more complete, including air, ground, naval, and AA/artillery kills.
+
+Tab-4-4-4-6 - Current overall status for the Campaign.  Which side is winning?
+
+Note that the online stats page also includes detailed summaries of current in-game netstats, team points and objectives accomplished, which side is currently winning, and a summary of the entire session so far. Additionally, Team Score & Session Summary stats are recorded and stored for each session, a few times midway during the session and when the session ends.  
+
+Click "Team Stats Archive" on the online Campaign Stats Page to see today's history; click the date near the top of each Team Stats page to view the previous day's summary & history.
+
+WEATHER AND WIND
+Weather and winds aloft closely reflect actual weather and wind experienced by pilots during the Battle of Britain. Watch windsocks found at every airport and check the Winds Aloft report carefully every day (Tab-4-4-4-8 or on General Situation Map).
+
+Winds on the Channel are most often from the west or southwest, but can be from any direction, depending on weather patterns.  You may find different wind speed and direction at different altitudes - plan your routes carefully to take advantage of them.
+
+Winds affect bomber aim and accuracy - more so the higher the altitude and the higher the wind speed.  Each bomb sight has techniques for dealing with wind offset - look online for tutorials and help.
+
+<Cover bombers do not deal well with wind.  The best technique is to calculate a different drop point for them that compensates for the wind, based on wind speed, direction, altitude, and direction of approach.  Good accuracy can be achieved by following fairly simple rules of thumb (or by bombing from lower altitudes when winds are high).
+
+Note also that AI bombers do not account for target elevation in their targeting.  For example, if a target is a 200m elevation, AI bombers dropping from altitude will generally hit about 200m short.  They have assumed the target elevation is 0m.  To compensate for this, just move the AI bombers' target about 200m back from the actual target. 
+
+
+MORE INFORMATION AND HELP
+TWCPilots.com - look for the Cliffs of Dover TWC Blitz/Campaign Server forums--a general forum, as well as separate forums for red & blue pilots.
+
+Also look for links to Radar/General Situation Map and Stats pages (Tactical Campaign Server stats) at TWCPilots.com.  Both radar & stats pages have extensive information & detail about stats, rank, careers, radar usage, etc.
+
+ATAG TWC Campaign forum - a private forum at https://theairtacticalassaultgroup.com - ask the forum admin to add you to the TWC Campaign forum and either red or blue sub-forums.
+
+DISCORD server - find the connection details at TWCPilots.com.  Pilots on the server and invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
+
+TWCPILOTS.com
+[Army Blue]
+<Name>
+TWC Campaign Server - Genghis Khan
+<Description>
+  "All the great struggles of history have been won by superior will-power wresting victory in the teeth of odds or upon the narrowest of margins."
+ 
+  --Winston S. Churchill
+ 
+  "If one bomb reaches the Ruhr, my name is not Göring. You can call me Meyer."
+
+  --Reichsmarschall Hermann Göring
+  
+  >>> In Memoriam TWC_Fatal_Error, 1952-2026 - TWC organizer; mastermind of and inspiration for the vast majority of this campaign <<<
+
+Welcome to the TWC (The Wrecking Crew) Campaign Server. Our discord Channel is https://discord.gg/xKbbQDmqTW please join us! <S> Fatal and Flug
+
+Overall Objective: Over the 113 Days of the Battle of Britain Campaign (Summer-Autumn - the real 1940 BoB time frame), push the enemy across the channel and eliminate them as a threat, by destroying enemy objectives and turning the map repeatedly. Establish a beachhead on the enemy shores--if you can--and then push on FAR into enemy territory, capturing airfields, fuel, military bases, manufacturing capacity, and more. 
+
+Blue Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown. When all of these airfields are (simultaneously) safe behind the Blue frontline and operative as Blue airbases, you are the campaign winner!
+
+Red Objective: Push the front line all the way past, and capture/claim ALL of these airfields using <makelg: Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre. When all of these airfields are (simultaneously) safe behind the Red frontline and operative as Red airbases, you are the campaign winner!
+
+When you win a major battle by accomplishing all major objectives, your own destroyed military bases and installations are all repaired--airports, radar, manufacturing capability, etc.--while the enemy's destroyed objectives remain destroyed and nonfunctional until they manage to repair them. When enemy's capabilities are low due to your attacks, they might run short of fuel, aircraft, ammo, and more.
+
+And each map turn pushes the enemy back towards their side of the Channel--or across their land territory--significantly.
+
+Day-to-day: 
+
+**BOMBERS: Attack and destroy the list of important mission objectives given to you by HQ. Also destroy other secondary and important targets of opportunity. Destroy enemy fuel, production, radar, communications equipment, military HQ, etc in order to paralyze the enemy in those areas. You can take a squadron of <cover bombers and fighters (chat command <chelp for more info). 
+
+**STURMOVIK FIGHTERS/STRIKE FIGHTERS/FIGHTER BOMBERS: You can take a small squadron of <cover sturmovik aircraft. Provide close air support, take out convoys, motorcades, AA areas, and more. 
+
+**FIGHTERS: Cover and defend your bomber patrols; prevent enemy bomber formations from destroying your important targets. 
+
+>>>Note that you have separate careers and stats as a Bomber Pilot, Sturmovik Pilot, and Fighter Pilot.  Feel free to try out flying as a Bomber Pilot or Sturmovik Pilot without endangering your Fighter Pilot stats - and vice-versa.
+
+**RECON: Conduct very high-altitude overflights of enemy territory so HQ Photo Intelligence can use the photos & information you gather to identify enemy strengths and weaknesses and provide precise targeting information for high priority targets. 
+
+**REPAIR & RESUPPLY YOUR OBJECTIVES: Fly to <pickup and <deliver repair supplies, which repairs airfields and other objectives, or <ferry aircraft to replenish low aircraft supplies (<phelp). 
+
+**ESTABLISH NEW BASES: When your frontlines are pushed forward, the enemy is cleared from that area.  Your side takes over objectives, military bases, manufacturing, production, fuel, etc., as ground troops push the front forward.  Former enemy airbases are available for you to take over and use as "Landing Grounds". Chat command "<lghelp" for detailed instructions.
+
+**IN-PLANE AERIAL INTERCEPT RADAR AND AIR-TO-SURFACE VESSEL RADAR: Larger aircraft come equipment with these type types of radar, closely modeled on radar available during the Battle of Britain.  Use Aerial Intercept Radar to locate air-to-air targets, especially at dawn, dusk, or in poor weather.  Use ASV radar to locate and destroy (numerous) enemy ships and submarines in the Channel.  
+
+**LIMITED AIRCRAFT SUPPLY - EVERY PLANE COUNTS: Aircraft supply is limited and when you damage or destroy an aircraft, it is lost from your army's supply - either for the time it takes to repair, or forever.  Fly carefully! Winning battles and turning the map gains your army more supplies from HQ - but if those are insufficient, you can fly additional supplies from rear supply bases to forward bases, as well.  Use commands <ferry and <deliver - chat command <phelp for detailed help. 
+
+Also, when you shoot down enemy aircraft - whether live pilots or others - that reduces the enemy's aircraft supply.  So attacking and enemy bomber raid helps in two ways: It interrupts that raid and the destruction it would have done, but it also deprives enemy pilots of key aircraft for their future flights.
+
+**REARM AND REFUEL: As a rule you can use chat command <rr to rearm and refuel at ANY airfield on friendly territory - whether active or not. NOTE that <rr will not work on most bombs - bombs will be loaded by you are unable to arm them (bug in sim code). 
+
+**FIND THE GENERAL: A high-ranking general and his staff is lurking somewhere near one of the mission objectives. The General's location will be identified in recon reports; further recon flights narrow down the position.  Find the General and take a LOW level recon photo (below 150m AGL and within 150m of the camp; use Tab-4-9 to take the photo) - this will yield detailed intel about the enemy's planned flights and objectives that will help your army for the next 24 hours.
+
+**PLANNED (AND LEAKED) BOMBER RAIDS: Periodically, HQ will announce planned bomber raids with planned departure, midpoint, and target.  HQ also shareds intel received about enemy bomber raids.  HQ hopes you will fly in defense of the friendly bomber raids and plan to intercept the enemy raids.  The raids take considerable time to fly from rear air bases to their flight midpoint and target, so note any announcements and plan ahead (you can plot courses and estimate flight time using the General Situation Map).  Bomber mission plans and intel reports are summarized at the bottom of the General Situation Map for your convenience.
+
+**General Situation Map/Online Radar: Check TWCPilots.com for the link to the General Situation Map/online radar.  Radar password for your side is in-sim at Tab-4-4-4-9. The General Situation Map has not only an overview of the battlespace, but vital information such as current campaign status, primary targets destroyed and remaining, coordinates of targets (for Knickebein & Cover Aircraft use), scouting reports & coordinates, weather, intel received about enemy actions and intentions, friendly & enemy bomber target information, and much more.
+
+>>>Note that you can evade or partially evade detection by radar and observer networks by flying low. There is no one definite altitude that guarantees safety--radar and/or observers can sometimes pick up contacts even at the lowest possible altitude.  But pilots report good results flying under 70m/250ft AGL generally, and 35m/125ft AGL when approaching enemy objectives or bases.
+
+**Weather: Clouds, winds, and general weather reflect actual weather and wind as experienced during the Battle of Britain June-October 1940 - with skies ranging from clear to partly cloudy to completely overcast, and winds ranging from light to (occasionally) hurricane force. Winds aloft vary--sometimes dramatically--with altitude, in accordance with historical weather data from this area. Be sure to check the Winds Aloft report daily (Tab-4-4-4-8 or on the General Situation Map.)
+
+**Navigation via the Knickebein System: Recon missions identify objective coordinates. You can navigate to coordinates via the Knickebein system: <ka 243444 128322 to add a coordinate, then Tab-4-4-4-4-1 to start KB and navigate to that location. You can also use Knickebein coordinates to communicate targeting information to your <cover bombers or sturmovik aircraft.  More details about using the Knickebein system below.
+
+In-game, carefully read ALL of the Tab-4 menus (Tab-4-4, Tab-4-4-4, Tab-4-4-4-4, etc) to see vitally important commands and information sources.
+
+Use in-game chat commands <help, <chelp, <khelp, <lghelp, <rrhelp, <aihelp, <asvhelp to see detailed help for cover fighter/bomber, Knickebein navigation systems, rearm/reload, airborne intercept & air-to-surface-vessel radar, and more.
+
+Finally, check TWCPilots.com for forums (Cliffs of Dover Blitz/Campaign Server) and Discord server info for each team, with information about how to log into Discord for your side, link for Radar/General Situation Map web page for your side, lists of mission objectives, general help on any topic, etc. Radar/General Situation Map password is in-sim at Tab-4-4-4-9.
+
+Now--that is all you NEED to know to fly & enjoy the campaign.  Below is more detail for those who want it--a brief User Guide with more info about how the Campaign works and available resources, techniques, and information available.
+
+FINAL NOTE: The server and campaign are complex, with many features.  It may take you days or weeks to become familiar with all of them. BUT YOU DON'T NEED ANY OF THAT TO HAVE A BLAST FLYING IN THE SERVER!  If you can take off in a fighter and patrol your coast or the channel, you'll soon find some exciting action.  Or grab a bomber and cross the Channel to hit an enemy airfield. If you can do either of those, you can fly the server!
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: Campaign & Server Features
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+The Campaign has many advanced features such as:
+
+ - Real Time<=>Campaign Time system (one day server time = one day real time), 5-10-15+ hour continuous sessions, generally from dawn to dusk
+ - Persistent damage and destruction
+ - Real consequences to the enemy when objectives such as radar, airports, Knickebein, and manufacturing capabilities are damaged or destroyed
+ - Your actions move the front line forward, leading to capture of enemy shipping, bases, manufacturing, military assets, and air bases.
+ - Realistic weather and winds
+ - Ever-changing mission objectives as the Campaign progresses
+ - Capture the enemy's assets - and airfields - as the front moves forwards
+ - Limited aircraft supply; destruction or damage of aircraft reduces your supply.
+ - Designed to be fun, challenging, and interesting to fly whether 3 other pilots online, or 33 or 133 - and whether you have 20 minutes to spare, 2 hours, or a whole afternoon.
+ - Individual rank and recognition system for pilots, including privileges accorded to higher ranking pilots--for as long as you can stay alive
+ - Each player has three separate and independent careers--one as a bomber pilot, one as a fighter pilot, and one as a Sturmovik/ground attack pilot
+  - Real consequences for in-game death--game timeout for a (short) period (or come in at a rearward base immediately, if you prefer), and - far more important! - your entire career, rank, and stats are lost
+  - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
+ - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
+ - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
+ - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - In-game radar system and General Situation Map (online)
+ - Detailed scoring and stats for individuals and teams
+ - <rr rearm & reload system
+ - Limited aircraft supply & production--even more limited when the enemy destroys your manufacturing plants & airfields.  And they stay destroyed and out of commission until your Engineering Corps can manage to repair them, which is usually many hours, days, or even weeks later.
+ - Detailed tracking of destroyed & damaged aircraft. Careless endangering or wasting of the team's aircraft supply by any team member will affect available supply levels for your entire team
+ - And MUCH more.
+
+
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+MORE DETAIL: General Flow of Battle & Useful Commands
+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+COMMUNICATE
+Find your teammates on the forums at TWCPilots.com and also join them on the Discord channel listed at TWCPilots.com.  The TWC Campaign also has a special private forum on the ATAG forums - ask the admin there to add you as red or blue.
+
+
+CHOOSE A SIDE
+On first joining the campaign, choose your side wisely--red or blue.  Whichever side you pick on first entering the campaign becomes your permanent team.  (If you accidentally choose the wrong side on first entry, ask on the TWCPilots.com forums for help fixing it.)
+
+Each side has vital national and military secrets that would be extremely damaging if enemy pilots discovered them.  Unfortunately both sides have asked that spies not be allowed to fly with them!
+
+
+FIND OBJECTIVES & SCOUT THEM
+Tab-4-6 - list of current objectives with map coordinates OR map sectors that need to be reconned.
+
+Tab-4-5 - list of completed objectives for each side.
+
+Tab-4-4-4-1 - list of destroyed/damaged objectives that will affect your activities, such as various radar towers or airports out.
+
+Tab-4-9 - take a recon photo so that HQ can identify potential objectives in a given area.  Fly about 20000ft/6000m in an aircraft with no bombs, then Tab-4-9 to take a recon photo.
+
+Recon photos are automatically taken for processing at Photo Intelligence as soon as you land safely on friendly territory with your precious load of recon photos.  If the photos don't process automatically upon landing, you can use chat command <record to alert HQ to process them.
+
+
+ATTACK & DEFEND OBJECTIVES
+Tab-4-1 and Tab-4-2 for enemy/friendly radar listings from HQ. Note that if radar towers are out, radar is not available in that area.
+
+Tab-4-6 for list of Primary Objectives, with map coordinates if they have been scouted.
+
+Tab-4-7 and Tab-4-8 to see lists of Secondary Objectives & other scouted objectives.  
+
+List of objectives, the Recon Report (with objectives, status, and exact coordinates), and helpful information is also available on the Radar/General Situation Map online.  Usually this information is much easier to digest on the General Situation Map page - there is simply to much to easily see in the in-sim Info Windows.
+
+Most targets require a significant amount of accurate bombing to destroy--some more than others.  Some are small point targets requiring high accuracy, some--such as airports--require more of a large amount of ordnance over a fairly large area.  Others are a combination of both accuracy and ordnance amount.
+
+Expect targets, especially important primary objectives, to be heavily defend by flak and AA, as well as local fighter patrols. Low altitude attacks are often suicidal; high altitude runs mean jockeying vs enemy fighters to successfully reach the target.  15000ft/5000m?  20000ft/6000m?  Or maybe higher yet.  Safety for bombers lies in large numbers, well coordinated close formations, altitude, and sufficient well trained cover fighters.
+
+A few daring bomber squadron leaders come in a very low altitude.  If you want to survive, expect to literally be brushing the tree-tops as you approach a well-defended target.  And get in and out of there fast. Unless you want to enjoy the attention of every flak battery in the county . . . 
+
+There are just a few targets that can be taken out by a single bomber or just a few bombs. The majority will take more - sometimes MUCH more. That is why <cover bombers are available to accompany you and multiply your effectiveness.  Cover bombers will attack and bomb any coordinate point that is your currently active Knickebein target. If Knickebein is turned off (Tab-4-4-4-2) the bombers will follow you instead - or target according to other options on your Tab-4-4-4-4-5 menu (target next bomb drop point, target a point where you drop a flare, or choose a specific enemy to target near the point you indicate).
+
+FIGHTER PILOTS: Please fly with bomber pilots and <cover bomber formations and defend them.  The bomber pilots NEED YOUR HELP to get through.  Bomber pilots can call in a few <cover fighter to help them, but they are not nearly as effective as real, well trained fighter pilots such as you.  Coordinate via Discord or in-game chat 
+
+Right click the chat window to select chat targets--all, enemy, friendly, etc.  NOTE: Many chat commands will not work if chat recipients are set to enemy, friendly, or area.  Set recipients to ALL to send chat commands to the server. Unforunately, that means that all pilots in-sim will be able to eavesdrop on some of your commands, and perhaps guess your intentions.  Real WW2 pilots faced the same conundrum, as comms were over open radio channels and the enemy *always* listened in.
+
+Chat command <ka 302432 403054 to add a Knickebein waypoint at the given map coordinate. This can be used for general navigation OR to attack or bomb an objective at that point.
+
+Tab-4-4-4-4-1 to start the Knickebein system and/or select the next Waypoint.  Other Knickebein commands on the Tab-4-4-4-4 menu.  Detailed Knicekbein help with chat command <khelp.
+
+Tab-4-4-4-4-7 to list available cover aircraft.  Other useful commands for the <cover system on the Tab-4-4-4-4 menu.
+
+<cover 12 3 VIC to call in a group of 3 cover aircraft, type #12, in VIC formation.  Get the type # listings with Tab-4-4-4-4-7.
+
+Again, detailed help at chat command <chelp.
+
+
+REARM & RELOAD
+<rr rearms & reloads aircraft.  <rr 50 means load 50% fuel.  <rrf <rrb - load as fighter or bomber (ie bombs/no bombs).  More options at <rrhelp.
+
+<rr is available at ANY friendly airbase whether it is active or not (as a spawn point on the Flag Screen), and whether it is destroyed or repaired or not. As long as you can (safely!) land there and take off again, ground crews will be able to rustle up a few gallons of gas and a few rounds of ammunition to get you back in the air.
+
+This is a great advantage for flying and attacking/defending more distant areas in the map, as you can use ANY airport shown on the in-game map to R&R.
+
+NOTE that bomb craters in airfields are dangerous--roll over one of them and your flight will be over in short order.
+
+NOTE that as CloD Blitz 5.0, <rr is not working correctly for (most?) bombers - the bombs are loaded by not armed and the pilot is unable to arm them.  This is a the result of a complex issue with the sim itself--nothing that can be addressed by us as mission designers.  We are not sure if or when a fix for this will be available.
+
+IN-AIRCRAFT RADAR
+Larger aircraft (generally Sturmovik and Bomber types) have available two in-aircraft radar systems. Both are accessed via the Tab-4-4-5 menu.  Two types of radar are available: Airborne Intercept Radar (AI) and Air-to-Surface-Vessel Radar (ASV).
+
+****Airborne Intercept Radar (AI)
+Access AI radar via Tab-4-4-5.  Press 5 more times to cycle through 1X, 2X, 4x, and 8X magnification.  
+
+The AI radar displays two screens, similar to those seen by actual AI Radar operators in 1940.  The left screen shows distance in front of the aircraft on one axis, and distance left/right of the aircraft on the other.
+
+The right screen shows distance from your aircraft on one axis and height above or below your aircraft on the other.
+
+To determine the location of the aircraft relative to you, you must put together the information on the left and right screens.  If you watch the screens as an aircraft passes you, you will soone get the hang of how it works.
+
+There is no definite distance or height scale. Radar operators learned to estimate relative height and distance based on the screen locations.
+
+As you get closer to your target, you will want to switch to 2X magnification, then 4X, then 8X.  Using this technique, it is possible to hunt, then sneak up on and ambush, bombers or other aircraft at dawn, dusk, in clouds, and even after dark.
+
+****Air-to-Surface Vessel Radar
+ASV radar is more straightforward than AI radar, with just a single screen.  Access the ASV radar via Tab-4-4-5-5-5-5-5.  The radar has two magnification levels.  If you go to the Tab-4-4 screen and then press the 5 key repeatedly, you will cycle through all 4 AI radar modes and both ASV radar modes.
+
+Though it only has a single screen, ASV radar has its own quirks:  The radar sees far to the sides, only a short distance to the front, and is blind in the back (an area shown with this pattern: ~~~~). 
+
+For this reason, the display is distorted and can be misleading to the uninitiated.   If you see a target to your left and turn towards it, it will disappear from the screen!  That is because the radar can see about 20 miles to the sides, but only about 5 miles to the front.
+
+CHECK CAREER, RANK, AND OVERALL CAMPAIGN STATUS
+Tab-4-4-1 - Your current career, rank, and ace summary (fighter & bomber careers tracked & reported separated)
+
+Individual stats summary page showing all players current (and former) careers is online - check TWCPilots.com for the link.
+
+Tab-4-4-2 - Your current session stats (everything you have done this session, regardless of fighter/bomber career, deaths, etc)
+
+Tab-4-4-3 - **REAL** Netstats - Real, accurate reporting on the stats, accomplishments, kills, and target destruction by every player this session.  Please completely disregard in-game Netstats (shown by pressing the "N" key) as they are inaccurate and also very, very incomplete.  The Tab-4-4-4-3 stats are both accurate and far more complete, including air, ground, naval, and AA/artillery kills.
+
+Tab-4-4-4-6 - Current overall status for the Campaign.  Which side is winning?
+
+Note that the online stats page also includes detailed summaries of current in-game netstats, team points and objectives accomplished, which side is currently winning, and a summary of the entire session so far. Additionally, Team Score & Session Summary stats are recorded and stored for each session, a few times midway during the session and when the session ends.  
+
+Click "Team Stats Archive" on the online Campaign Stats Page to see today's history; click the date near the top of each Team Stats page to view the previous day's summary & history.
+
+WEATHER AND WIND
+Weather and winds aloft closely reflect actual weather and wind experienced by pilots during the Battle of Britain. Watch windsocks found at every airport and check the Winds Aloft report carefully every day (Tab-4-4-4-8 or on General Situation Map).
+
+Winds on the Channel are most often from the west or southwest, but can be from any direction, depending on weather patterns.  You may find different wind speed and direction at different altitudes - plan your routes carefully to take advantage of them.
+
+Winds affect bomber aim and accuracy - more so the higher the altitude and the higher the wind speed.  Each bomb sight has techniques for dealing with wind offset - look online for tutorials and help.
+
+<Cover bombers do not deal well with wind.  The best technique is to calculate a different drop point for them that compensates for the wind, based on wind speed, direction, altitude, and direction of approach.  Good accuracy can be achieved by following fairly simple rules of thumb (or by bombing from lower altitudes when winds are high).
+
+Note also that AI bombers do not account for target elevation in their targeting.  For example, if a target is a 200m elevation, AI bombers dropping from altitude will generally hit about 200m short.  They have assumed the target elevation is 0m.  To compensate for this, just move the AI bombers' target about 200m back from the actual target. 
+
+
+MORE INFORMATION AND HELP
+TWCPilots.com - look for the Cliffs of Dover TWC Blitz/Campaign Server forums--a general forum, as well as separate forums for red & blue pilots.
+
+Also look for links to Radar/General Situation Map and Stats pages (Tactical Campaign Server stats) at TWCPilots.com.  Both radar & stats pages have extensive information & detail about stats, rank, careers, radar usage, etc.
+
+ATAG TWC Campaign forum - a private forum at https://theairtacticalassaultgroup.com - ask the forum admin to add you to the TWC Campaign forum and either red or blue sub-forums.
+
+DISCORD server - find the connection details at TWCPilots.com.  Pilots on the server and invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
+
+TWCPILOTS.com
+[Info]
+<Name>
+Info
+<Slide>
+
+<Caption>
+Server
+<Slide>
+
+<Caption>
+TWC Campaign Server. Visit us at www.TWCPilots.com
+
+
+
+
+
+
+
+ 
+  
+ 
+   
+
+  
+
+
+
+
+
+
+
+
+ 
+  
+ 
+   
+
+  

@@ -1,0 +1,43 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Bofors de 74288.81 11244.31 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Bofors de 74069.22 11533.83 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.3_7_inch_QF_Mk_I de 74927.09 11568.77 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.3_7_inch_QF_Mk_I de 74860.24 11628.19 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.3_7_inch_QF_Mk_I de 74812.70 11687.05 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.3_7_inch_QF_Mk_I de 74748.77 11733.50 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.3_7_inch_QF_Mk_I de 74847.67 11561.57 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.3_7_inch_QF_Mk_I de 74787.13 11632.47 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.3_7_inch_QF_Mk_I de 74736.20 11681.40 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.3_7_inch_QF_Mk_I de 74894.46 11511.23 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.3_7_inch_QF_Mk_I de 68202.82 12037.05 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.3_7_inch_QF_Mk_I de 68151.25 12014.95 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.3_7_inch_QF_Mk_I de 68096.00 11992.85 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.3_7_inch_QF_Mk_I de 68029.70 11970.75 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.3_7_inch_QF_Mk_I de 67967.04 12106.92 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.3_7_inch_QF_Mk_I de 68018.76 12121.69 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.3_7_inch_QF_Mk_I de 68077.91 12147.55 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.3_7_inch_QF_Mk_I de 68155.46 12173.42 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Bofors de 68503.22 11195.09 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Bofors de 67699.46 11365.72 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors de 67681.66 11441.06 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

@@ -6,3 +6,5 @@ So with a lot of AI aircraft and a lot of flak in the server, the flak was just 
 So now we auto-place flak near objectives, via scripting, only when breather pilots are nearby and headed towards the objective.  
 
 Still these are good flak emplacements for various areas and may be useful for that reason.
+
+In the orig-high-flak-2021-10-03 subdirectory are older flak .mis files that have even MORE flak in each location, and thus MORE impact on server CPU.

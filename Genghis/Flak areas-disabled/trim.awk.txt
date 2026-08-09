@@ -1,0 +1,1 @@
+{ if ((!/,*Artillery.*/) || (rand() < 0.33))  print > "awked\\"FILENAME }

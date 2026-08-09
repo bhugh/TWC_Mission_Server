@@ -1,0 +1,47 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static6 Artillery.Flak30_Shield de 301271.75 41868.30 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak30_Shield de 301208.31 42047.72 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak30_Shield de 301301.31 42047.22 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.Bofors_StandAlone de 301522.19 42035.16 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak30_Shield de 301555.56 42079.97 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors_StandAlone de 301233.97 42150.44 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Flak30_Shield de 301297.88 42259.08 0.00 /timeout 0/radius_hide 0
+  Static0 Artillery.Flak30_Shield de 306395.69 42118.53 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak30_Shield de 306521.97 42118.53 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak30_Shield de 306736.69 42080.64 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak30_Shield de 305246.47 40161.05 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak30_Shield de 305296.97 40022.13 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak30_Shield de 305309.59 39895.84 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak30_Shield de 304034.09 43785.54 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak30_Shield de 304109.88 43836.05 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak30_Shield de 304261.41 43911.83 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak30_Shield de 302215.53 39365.43 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak30_Shield de 302316.56 39327.54 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak30_Shield de 302468.09 39289.66 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak30_Shield de 303824.59 41284.94 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Flak30_Shield de 303849.78 41282.42 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Flak30_Shield de 304650.34 42879.28 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Flak30_Shield de 304681.13 42882.24 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

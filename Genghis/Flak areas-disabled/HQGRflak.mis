@@ -1,0 +1,31 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static6 Artillery.Flak30_Shield de 347194.94 124691.76 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak30_Shield de 347131.47 124871.18 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak30_Shield de 347224.47 124870.68 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.Bofors_StandAlone de 347445.38 124858.63 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak30_Shield de 347478.72 124903.43 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors_StandAlone de 347157.16 124973.90 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Flak30_Shield de 347221.03 125082.54 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

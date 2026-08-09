@@ -1,0 +1,26 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static1 Artillery.Bofors gb 100963.62 28434.46 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.3_7_inch_QF_Mk_I gb 101880.50 29178.48 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.3_7_inch_QF_Mk_I gb 98320.84 29640.78 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.3_7_inch_QF_Mk_I gb 98280.29 29790.76 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

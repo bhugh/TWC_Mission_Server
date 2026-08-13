@@ -9,66 +9,66 @@
   BattleArea 10000 10000 360000 310000 10000
   TIME 9.79056
   WeatherIndex 2
-  CloudsHeight 723
+  CloudsHeight 1438
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]
-  Power 3.272 1.741 0.000
+  Power 0.312 1.123 0.000
   BottomBound 0
   TopBound 240
   GustPower 1
   GustAngle 0
 [GlobalWind_1]
-  Power 6.290 3.517 -0.318
-  BottomBound 199
-  TopBound 741
+  Power 1.708 4.342 0.095
+  BottomBound 197
+  TopBound 1438
   GustPower 0.000
   GustAngle 0
 [GlobalWind_2]
-  Power 15.078 6.023 -0.088
-  BottomBound 711
-  TopBound 2612
+  Power 1.498 9.932 -0.091
+  BottomBound 1406
+  TopBound 2317
   GustPower 0.000
   GustAngle 0
 [GlobalWind_3]
-  Power 16.691 10.505 -0.692
-  BottomBound 2572
-  TopBound 3578
+  Power 7.250 11.027 -0.035
+  BottomBound 2308
+  TopBound 3568
   GustPower 0.000
   GustAngle 0
 [GlobalWind_4]
-  Power 22.544 5.908 -0.668
-  BottomBound 3559
-  TopBound 4944
+  Power 10.257 12.554 0.168
+  BottomBound 3525
+  TopBound 4572
   GustPower 0.000
   GustAngle 0
 [GlobalWind_5]
-  Power 25.736 6.781 -0.609
-  BottomBound 4896
-  TopBound 5424
+  Power 10.890 16.266 -0.246
+  BottomBound 4564
+  TopBound 6252
   GustPower 0.000
   GustAngle 0
 [GlobalWind_6]
-  Power 29.938 4.790 -0.491
-  BottomBound 5413
-  TopBound 7021
+  Power 17.639 14.231 -0.653
+  BottomBound 6225
+  TopBound 7502
   GustPower 0.000
   GustAngle 0
 [GlobalWind_7]
-  Power 33.476 4.865 -0.497
-  BottomBound 7004
-  TopBound 7716
+  Power 21.732 14.097 0.329
+  BottomBound 7493
+  TopBound 7693
   GustPower 0.000
   GustAngle 0
 [GlobalWind_8]
-  Power 37.300 1.518 -0.161
-  BottomBound 7691
-  TopBound 10120
+  Power 25.671 13.104 -0.334
+  BottomBound 7654
+  TopBound 9177
   GustPower 0.000
   GustAngle 0
 [GlobalWind_9]
-  Power 40.793 -1.410 -0.394
-  BottomBound 10101
+  Power 30.097 11.623 -0.646
+  BottomBound 9143
   TopBound 16000
   GustPower 0.000
   GustAngle 0
@@ -406,7 +406,7 @@
   LANDING 285562.30 169253.52 200.00 250.00
 [BoB_LW_LG2_I.12]
   Flight1  1 2  
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 31
   Fuel 100
@@ -430,7 +430,7 @@
   LANDING 271849.24 205528.69 300.00 330.00
 [BoB_LW_LG2_I.24]  
   Flight2  21 22 23 24
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 15
   Fuel 100
@@ -466,7 +466,7 @@
 [gb01.13]
   Flight0  1 2
   Flight1 11
-  Class Aircraft.BeaufighterMkIF
+  Class tobruk:Aircraft.GladiatorMkII_trop
   Formation VIC3
   CallSign 35
   Fuel 35
@@ -484,7 +484,7 @@
   Flight0  1 2 3
   Flight1  11 12
   Flight2  21 22
-  Class Aircraft.Ju-88A-1
+  Class Aircraft.He-111P-2
   Formation VIC
   CallSign 25
   BombSpacing 20
@@ -518,7 +518,7 @@
   Flight0  1
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-110C-4
+  Class Aircraft.Bf-110C-6
   Formation FINGERFOUR
   CallSign 15
   Fuel 70
@@ -555,7 +555,7 @@
 [BoB_RAF_F_249Sqn_Late.13]
   Flight0  1 2
   Flight1  11 12
-  Class Aircraft.BlenheimMkIVF_Late
+  Class Aircraft.BlenheimMkIVF
   Formation VIC
   CallSign 33
   Fuel 35
@@ -573,7 +573,7 @@
 [BoB_LW_StG1_I.03]
   Flight0  1 2 3 4
   Flight1  11 12
-  Class Aircraft.Do-215B-1
+  Class Aircraft.BR-20M
   Formation VIC
   CallSign 31
   BombSpacing 20
@@ -590,7 +590,7 @@
 [BoB_LW_JG3_Stab.03]
   Flight0  1 2
   Flight1  13 12
-  Class Aircraft.Bf-109E-4_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 32
   Fuel 100
@@ -607,7 +607,7 @@
 [BoB_LW_LG2_I.23]
   Flight0  1 2  
   Flight1  11
-  Class Aircraft.Bf-110C-2
+  Class Aircraft.Bf-110C-6
   Formation FINGERFOUR
   CallSign 1
   Fuel 70
@@ -640,7 +640,7 @@
   LANDING 188324.12 257871.78 200.00 250.00
 [BoB_RAF_F_FatCat_Late.21]
   Flight0  1 2
-  Class Aircraft.SpitfireMkI_100oct
+  Class tobruk:Aircraft.HurricaneMkIId
   Formation VIC3
   CallSign 23
   Fuel 100
@@ -658,7 +658,7 @@
   Flight0  1 2 3 4
   Flight1  11 12 13
   Flight2  21 22 23 24
-  Class Aircraft.He-111H-2
+  Class Aircraft.He-111H-6
   Formation ECHELONLEFT
   CallSign 11
   BombSpacing 20
@@ -673,7 +673,7 @@
   LANDING 284879.54 171240.97 300.00 240.00
 [BoB_LW_LG2_I.04]
   Flight2  21 22 23
-  Class tobruk:Aircraft.Bf-109E-7Z
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 1
   Fuel 100
@@ -706,7 +706,7 @@
   LANDING 188312.02 257634.08 200.00 260.00
 [BoB_RAF_B_35Sqn.08]
   Flight3  31 32
-  Class Aircraft.BlenheimMkIF
+  Class Aircraft.BlenheimMkIVF
   Formation VIC
   CallSign 33
   Fuel 35
@@ -722,7 +722,7 @@
 [BoB_LW_JG54_Stab.03]
   Flight0  1 2 3 4
   Flight1  11 12 13
-  Class Aircraft.Ju-87B-2
+  Class Aircraft.BR-20M
   Formation VIC
   CallSign 4
   BombSpacing 20
@@ -739,7 +739,7 @@
   LANDING 285862.56 171013.93 100.00 230.00
 [BoB_LW_JG26_I.31]
   Flight0  1 2 3
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 15
   Fuel 100
@@ -756,7 +756,7 @@
   LANDING 340686.74 178745.74 500.00 330.00  
 [BoB_LW_LG2_I.11]
   Flight0  1 2
-  Class Aircraft.Bf-110C-4
+  Class Aircraft.Bf-110C-2
   Formation FINGERFOUR
   CallSign 3
   Fuel 70
@@ -775,7 +775,7 @@
 [BoB_LW_LG2_I.36]
   Flight1  11 12
   Flight2  21
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-4_Late
   Formation FINGERFOUR
   CallSign 16
   Fuel 100
@@ -790,7 +790,7 @@
   LANDING 311562.78 190387.62 100.00 330.00 
 [BoB_LW_LG2_I.31]
   Flight0  1 2 3 4  
-  Class tobruk:Aircraft.Ju-88A-5
+  Class Aircraft.He-111H-2
   Formation FINGERFOUR
   CallSign 16
   BombSpacing 20
@@ -806,7 +806,7 @@
 [BoB_LW_JG26_I.36]
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 32
   Fuel 100
@@ -826,7 +826,7 @@
   HUNTING 361944.61 187617.14 3100.00 300.00
 [BoB_LW_JG51_I.31]
   Flight0  1 2  
-  Class Aircraft.Bf-110C-4
+  Class Aircraft.Bf-110C-2
   Formation FINGERFOUR
   CallSign 1
   Fuel 70
@@ -846,7 +846,7 @@
   LANDING 314574.70 130706.30 2900.00 300.00
 [BoB_RAF_F_FatCat_Early.21]
   Flight0  1 2 3 
-  Class tobruk:Aircraft.HurricaneMkIIc
+  Class tobruk:Aircraft.MartletMkIII
   Formation VIC3
   CallSign 25
   Fuel 100
@@ -867,7 +867,7 @@
   LANDING 201087.80 283342.22 3500.00 300.00
 [BoB_RAF_F_FatCat_Early.31]
   Flight0  1
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20_100oct
   Formation VIC3
   CallSign 16
   Fuel 98
@@ -890,7 +890,7 @@
   LANDING 166606.53 277818.52 500.00 310.00
 [BoB_LW_LG2_I.01]
   Flight0  1
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -941,7 +941,7 @@
   LANDING 284074.15 205047.13 2000.00 300.00
 [BoB_LW_JG2_I.04]
   Flight2  21 22
-  Class Aircraft.Bf-109E-4_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -972,7 +972,7 @@
   LANDING 317850.29 195082.87 2000.00 300.00
 [BoB_RAF_F_FatCat_Early.01]
   Flight0  9
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 33
   Fuel 100
@@ -996,7 +996,7 @@
   LANDING 155392.40 253698.09 2000.00 300.00
 [BoB_LW_JG26_I.01]
   Flight0  13 2
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 0
   Fuel 100
@@ -1053,7 +1053,7 @@
 [BoB_RAF_F_FatCat_Early.13]
   Flight0  1
   Flight1  11 12
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 25
   Fuel 100
@@ -1080,7 +1080,7 @@
   LANDING 181479.78 248720.71 400.00 300.00
 [BoB_LW_JG2_I.02]
   Flight1  11
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 0
   Fuel 100
@@ -1108,7 +1108,7 @@
   LANDING 280112.52 164321.62 1500.00 300.00
 [BoB_LW_JG2_I.01]
   Flight0  1
-  Class Aircraft.Bf-110C-4
+  Class Aircraft.Bf-110C-2
   Formation FINGERFOUR
   CallSign 21
   Fuel 100
@@ -1138,7 +1138,7 @@
   LANDING 317660.62 190603.07 1500.00 300.00
 [BoB_LW_JG2_I.11]
   Flight0  1 2
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 3
   Fuel 100
@@ -1159,7 +1159,7 @@
   LANDING 278800.13 207038.14 2000.00 300.00
 [BoB_LW_JG2_I.12]
   Flight1  11 12
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 9
   Fuel 100
@@ -1177,7 +1177,7 @@
 [BoB_RAF_F_1Sqn_Early.03]
   Flight0  1 2
   Flight1  11
-  Class Aircraft.HurricaneMkI
+  Class tobruk:Aircraft.SpitfireMkVa
   Formation VIC3
   CallSign 30
   Fuel 100
@@ -1209,7 +1209,7 @@
   Flight0  1
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-109E-3
+  Class Aircraft.Bf-109E-1
   Formation ECHELONRIGHT
   CallSign 16
   Fuel 100
@@ -1232,7 +1232,7 @@
   LANDING 291517.02 216418.82 500.00 300.00
 [BoB_LW_JG2_I.14]
   Flight2  21
-  Class Aircraft.Bf-110C-4N
+  Class Aircraft.Bf-110C-4
   Formation FINGERFOUR
   CallSign 18
   Fuel 100
@@ -1268,7 +1268,7 @@
   LANDING 299469.40 203028.84 3200.00 220.00
 [BoB_LW_JG2_I.21]
   Flight0  1
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation FINGERFOUR
   CallSign 36
   Fuel 100
@@ -1297,7 +1297,7 @@
 [BoB_LW_JG2_I.26]
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-4_Late
   Formation FINGERFOUR
   CallSign 0
   Fuel 100
@@ -1320,7 +1320,7 @@
   NORMFLY 297528.30 221579.69 2700.00 300.00
 [BoB_LW_JG26_I.02]
   Flight1  11
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 29
   Fuel 100
@@ -1344,7 +1344,7 @@
   LANDING 284851.87 182622.85 2700.00 250.00
 [BoB_LW_JG26_I.04]
   Flight2  21 22
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -1363,7 +1363,7 @@
   LANDING 321450.77 172279.99 300.00 240.00
 [BoB_LW_JG26_I.21]
   Flight0  1 2  
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-1
   Formation LINEASTERN
   CallSign 17
   Fuel 100
@@ -1382,7 +1382,7 @@
   LANDING 317906.02 195553.39 1000.00 250.00
 [gb01.01]
   Flight0  1 2
-  Class Aircraft.SpitfireMkI
+  Class tobruk:Aircraft.TomahawkMkII
   Formation VIC3
   CallSign 23
   Fuel 100
@@ -1404,7 +1404,7 @@
   LANDING 162340.93 297647.78 300.00 250.00
 [gb01.02]
   Flight1  11 12 13
-  Class tobruk:Aircraft.HurricaneMkIIc
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 31
   Fuel 100
@@ -1430,7 +1430,7 @@
   LANDING 166837.83 277544.22 7300.00 300.00
 [gb01.21]
   Flight0  1 2
-  Class tobruk:Aircraft.SpitfireMkIIb
+  Class Aircraft.BeaufighterMkINF
   Formation VIC3
   CallSign 35
   Fuel 35
@@ -1454,7 +1454,7 @@
   LANDING 144232.80 257001.04 300.00 220.00
 [BoB_RAF_F_1Sqn_Early.12]
   Flight1  11 12
-  Class Aircraft.AnsonMkI
+  Class Aircraft.BeaufighterMkINF
   Formation VIC3
   CallSign 26
   Fuel 35
@@ -1484,7 +1484,7 @@
 [gb01.22]
   Flight0  1
   Flight1  11 12
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 12
   Fuel 100
@@ -1514,7 +1514,7 @@
   Flight0  1 2 3
   Flight1  11 12 13
   Flight2  21 22 23
-  Class Aircraft.WellingtonMkIc
+  Class tobruk:Aircraft.BeaufighterMkIC
   Formation VIC
   CallSign 20
   BombSpacing 20
@@ -1530,7 +1530,7 @@
 [gb01.33]
   Flight0  1
   Flight1  11 12
-  Class Aircraft.SpitfireMkIa_100oct
+  Class Aircraft.HurricaneMkI_100oct
   Formation VIC3
   CallSign 33
   Fuel 100
@@ -1546,7 +1546,7 @@
   LANDING 146524.18 251099.07 3000.00 250.00
 [LONDON.01]
   Flight0  1 2
-  Class tobruk:Aircraft.SpitfireMkVa
+  Class Aircraft.HurricaneMkI_100oct
   Formation VIC3
   CallSign 1
   Fuel 100
@@ -1584,7 +1584,7 @@
   LANDING 143363.39 241261.92 250.00 300.00
 [LONDON.02]
   Flight1  11 12
-  Class Aircraft.BlenheimMkIVF_Late
+  Class Aircraft.BlenheimMkIVF
   Formation VIC3
   CallSign 33
   Fuel 35
@@ -1628,7 +1628,7 @@
   LANDING 225452.22 229360.04 200.00 270.00
 [BoB_RAF_F_141Sqn_Early.02]
   Flight1  3 12
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 25
   Fuel 100
@@ -1650,7 +1650,7 @@
   LANDING 225452.22 229360.04 200.00 276.00
 [BoB_RAF_F_92Sqn_Early.02]
   Flight1  11 12
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.HurricaneMkI_dH5-20
   Formation VIC3
   CallSign 8
   Fuel 100
@@ -1667,7 +1667,7 @@
   LANDING 4452.22 182000.04 2000.00 256.00
 [BoB_LW_JG26_I.22]
   Flight1  11 12
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 33
   Fuel 100
@@ -1681,7 +1681,7 @@
   LANDING 43180.01 70329.67 500.00 250.00
 [BoB_LW_JG27_I.01]
   Flight0  1 2
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Bf-109E-7Z
   Formation FINGERFOUR
   CallSign 10
   Fuel 100
@@ -1697,7 +1697,7 @@
 [gb01_Late.03]
   Flight0  1 2 3 4
   Flight1  11 12 13 14
-  Class tobruk:Aircraft.BeaufighterMkIC
+  Class Aircraft.WellingtonMkIc
   Formation DIAMOND
   CallSign 0
   BombSpacing 20
@@ -1783,7 +1783,7 @@
 [BoB_LW_JG27_I.06]
   Flight1  11 12
   Flight2  21
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Bf-109E-7Z
   Formation FINGERFOUR
   CallSign 33
   Fuel 100
@@ -1803,7 +1803,7 @@
 [BoB_LW_JG51_Stab.03]
   Flight0  1
   Flight1  11 12
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.Bf-109E-3
   Formation FINGERFOUR
   CallSign 11
   Fuel 100
@@ -6434,624 +6434,601 @@
   Thems1 TPassThrough 5 2 224551 274305 23850
   Beau1 TPassThrough 5 2 208566 240164 21550
   trigger TGroupDestroyed BoB_RAF_F_302_PL_Early.12 36
-  000300_BBomber TTime 00300
-  000313_BCover TTime 00313
-  000330_RBomber TTime 00330
-  000343_RCover TTime 00343
-  000600_BFighter TTime 00600
-  000630_RFighter TTime 00630
-  001200_BBomber TTime 01200
-  001213_BCover TTime 01213
-  001240_RBomber TTime 01240
-  001253_RCover TTime 01253
-  001800_BFighter TTime 01800
-  001813_RFighter TTime 01813
-  001820_RBomber TTime 01820
-  001833_RCover TTime 01833
-  001850_BBomber TTime 01850
-  001863_BCover TTime 01863
-  002120_RFighter TTime 02120
-  002220_BFighter TTime 02220
-  002400_RBomber TTime 02400
-  002413_RCover TTime 02413
-  002700_BBomber TTime 02700
-  002713_BCover TTime 02713
-  002726_BCover_B TTime 02726
-  003050_RFighter TTime 03050
-  003060_BFighter TTime 03060
-  003600_RBomber TTime 03600
-  003613_RCover TTime 03613
-  003900_BBomber TTime 03900
-  003913_BCover TTime 03913
-  003926_BCover_B TTime 03926
-  004100_RFighter TTime 04100
-  004200_BFighter TTime 04200
-  004300_RBomber TTime 04300
-  004313_RCover TTime 04313
-  004800_BBomber TTime 04800
-  004813_BCover TTime 04813
-  005200_RFighter TTime 05200
-  005300_BFighter TTime 05300
-  005600_RBomber TTime 05600
-  005613_RCover TTime 05613
-  005900_BBomber TTime 05900
-  005913_BCover TTime 05913
-  006200_RFighter TTime 06200
-  006500_BFighter TTime 06500
-  006800_RBomber TTime 06800
-  006813_RCover TTime 06813
-  006826_RCover_B TTime 06826
-  006839_BBomber TTime 06839
-  007100_BCover TTime 07100
-  007113_BCover_B TTime 07113
-  007340_RFighter TTime 07340
-  007500_BFighter TTime 07500
-  007700_RBomber TTime 07700
-  007713_RCover TTime 07713
-  008000_BBomber TTime 08000
-  008013_BCover TTime 08013
-  008300_RFighter TTime 08300
-  008600_BFighter TTime 08600
-  008900_RBomber TTime 08900
-  008913_RCover TTime 08913
-  008926_BBomber TTime 08926
-  009200_BCover TTime 09200
-  009213_BCover_B TTime 09213
-  009400_RFighter TTime 09400
-  009600_BFighter TTime 09600
-  009900_RBomber TTime 09900
-  009913_RCover TTime 09913
-  010200_BBomber TTime 10200
-  010213_BCover TTime 10213
-  010400_RFighter TTime 10400
-  010600_BFighter TTime 10600
-  010900_RBomber TTime 10900
-  010913_RCover TTime 10913
-  011200_BBomber TTime 11200
-  011213_BCover TTime 11213
-  011400_RFighter TTime 11400
-  011500_BFighter TTime 11500
-  011800_RBomber TTime 11800
-  011813_RCover TTime 11813
-  012000_BBomber TTime 12000
-  012013_BCover TTime 12013
-  012200_RFighter TTime 12200
-  012400_BFighter TTime 12400
-  012600_RBomber TTime 12600
-  012613_RCover TTime 12613
-  012700_BBomber TTime 12700
-  012713_BCover TTime 12713
-  012726_BCover_B TTime 12726
-  012900_RFighter TTime 12900
-  013100_BFighter TTime 13100
-  013200_RBomber TTime 13200
-  013213_RCover TTime 13213
-  013400_BBomber TTime 13400
-  013413_BCover TTime 13413
-  013600_RFighter TTime 13600
-  013800_BFighter TTime 13800
-  014000_RBomber TTime 14000
-  014013_RCover TTime 14013
-  014200_BBomber TTime 14200
-  014213_BCover TTime 14213
-  014226_BCover_B TTime 14226
-  014400_RFighter TTime 14400
-  014500_BFighter TTime 14500
-  014800_RBomber TTime 14800
-  014813_RCover TTime 14813
-  014900_BBomber TTime 14900
-  014913_BCover TTime 14913
-  015000_RFighter TTime 15000
-  015100_BFighter TTime 15100
-  015200_RBomber TTime 15200
-  015213_RCover TTime 15213
-  015300_BBomber TTime 15300
-  015313_BCover TTime 15313
-  015500_RFighter TTime 15500
-  015700_BFighter TTime 15700
-  015900_RBomber TTime 15900
-  015913_RCover TTime 15913
-  015926_RCover_B TTime 15926
-  016100_BBomber TTime 16100
-  016113_BCover TTime 16113
-  016300_RFighter TTime 16300
-  016500_BFighter TTime 16500
-  016800_RBomber TTime 16800
-  016813_RCover TTime 16813
-  017000_BBomber TTime 17000
-  017013_BCover TTime 17013
-  017200_RFighter TTime 17200
-  017400_BFighter TTime 17400
-  017500_RBomber TTime 17500
-  017513_RCover TTime 17513
-  017600_BBomber TTime 17600
-  017613_BCover TTime 17613
-  017626_BCover_B TTime 17626
-  017900_RFighter TTime 17900
-  018000_BFighter TTime 18000
-  018300_RBomber TTime 18300
-  018313_RCover TTime 18313
-  018600_BBomber TTime 18600
-  018613_BCover TTime 18613
-  018626_BCover_B TTime 18626
-  018800_RFighter TTime 18800
-  018900_BFighter TTime 18900
-  019100_RBomber TTime 19100
-  019113_RCover TTime 19113
-  019200_BBomber TTime 19200
-  019213_BCover TTime 19213
-  019400_RFighter TTime 19400
-  019413_BFighter TTime 19413
-  019500_RBomber TTime 19500
-  019513_RCover TTime 19513
-  019600_BBomber TTime 19600
-  019613_BCover TTime 19613
-  019626_BCover_B TTime 19626
-  019900_RFighter TTime 19900
-  020000_BFighter TTime 20000
-  020300_RBomber TTime 20300
-  020313_RCover TTime 20313
-  020600_BBomber TTime 20600
-  020613_BCover TTime 20613
-  020900_RFighter TTime 20900
-  021000_BFighter TTime 21000
-  021300_RBomber TTime 21300
-  021313_RCover TTime 21313
-  021326_RCover_B TTime 21326
-  021600_BBomber TTime 21600
-  021613_BCover TTime 21613
-  021900_RFighter TTime 21900
-  022000_BFighter TTime 22000
-  022300_RBomber TTime 22300
-  022313_RCover TTime 22313
-  022600_BBomber TTime 22600
-  022613_BCover TTime 22613
-  022900_RFighter TTime 22900
-  023000_BFighter TTime 23000
-  023300_RBomber TTime 23300
-  023313_RCover TTime 23313
-  023900_BBomber TTime 23900
-  023913_BCover TTime 23913
-  023926_BCover_B TTime 23926
-  024200_RFighter TTime 24200
-  024300_BFighter TTime 24300
-  024600_RBomber TTime 24600
-  024613_RCover TTime 24613
-  024900_BBomber TTime 24900
-  024913_BCover TTime 24913
-  024926_BCover_B TTime 24926
-  025200_RFighter TTime 25200
-  025300_BFighter TTime 25300
-  025700_RBomber TTime 25700
-  025713_RCover TTime 25713
-  026000_BBomber TTime 26000
-  026013_BCover TTime 26013
-  026500_RFighter TTime 26500
-  026700_BFighter TTime 26700
-  026900_RBomber TTime 26900
-  026913_RCover TTime 26913
-  027100_BBomber TTime 27100
-  027113_BCover TTime 27113
-  027126_RFighter TTime 27126
-  027300_BFighter TTime 27300
-  027500_RBomber TTime 27500
-  027513_RCover TTime 27513
-  027800_BBomber TTime 27800
-  027813_BCover TTime 27813
-  028000_RFighter TTime 28000
-  028200_BFighter TTime 28200
-  028400_RBomber TTime 28400
-  028413_RCover TTime 28413
-  028500_BBomber TTime 28500
-  028513_BCover TTime 28513
-  028600_RFighter TTime 28600
-  028613_BFighter TTime 28613
-  028900_RBomber TTime 28900
-  028913_RCover TTime 28913
-  029300_BBomber TTime 29300
-  029313_BCover TTime 29313
-  029600_RFighter TTime 29600
-  029613_BFighter TTime 29613
-  029626_RBomber TTime 29626
-  029639_RCover TTime 29639
-  029900_BBomber TTime 29900
-  029913_BCover TTime 29913
-  030100_RFighter TTime 30100
-  030200_BFighter TTime 30200
-  030213_RBomber TTime 30213
-  030226_RCover TTime 30226
-  030400_BBomber TTime 30400
-  030413_BCover TTime 30413
-  030500_RFighter TTime 30500
-  030600_BFighter TTime 30600
-  030613_RBomber TTime 30613
-  030626_RCover TTime 30626
-  030639_RCover_B TTime 30639
-  031000_BBomber TTime 31000
-  031013_BCover TTime 31013
-  031300_RFighter TTime 31300
-  031600_BFighter TTime 31600
-  031613_RBomber TTime 31613
-  031626_RCover TTime 31626
-  032000_BBomber TTime 32000
-  032013_BCover TTime 32013
-  032026_BCover_B TTime 32026
-  032300_RFighter TTime 32300
-  032600_BFighter TTime 32600
-  032613_RBomber TTime 32613
-  032626_RCover TTime 32626
-  033000_BBomber TTime 33000
-  033013_BCover TTime 33013
-  033300_RFighter TTime 33300
-  033600_BFighter TTime 33600
-  033613_RBomber TTime 33613
-  033626_RCover TTime 33626
-  034000_BBomber TTime 34000
-  034013_BCover TTime 34013
-  034300_RFighter TTime 34300
-  034900_BFighter TTime 34900
-  034913_RBomber TTime 34913
-  034926_RCover TTime 34926
-  035200_BBomber TTime 35200
-  035213_BCover TTime 35213
-  035600_RFighter TTime 35600
-  035613_BFighter TTime 35613
-  035900_RBomber TTime 35900
-  035913_RCover TTime 35913
-  035926_BBomber TTime 35926
-  035939_BCover TTime 35939
-  035952_BCover_B TTime 35952
-  036700_RFighter TTime 36700
-  036713_BFighter TTime 36713
-  037000_RBomber TTime 37000
-  037013_RCover TTime 37013
-  037500_BBomber TTime 37500
-  037513_BCover TTime 37513
-  037900_RFighter TTime 37900
-  037913_BFighter TTime 37913
-  038100_RBomber TTime 38100
-  038113_RCover TTime 38113
-  038126_BBomber TTime 38126
-  038139_BCover TTime 38139
-  038500_RFighter TTime 38500
-  038513_BFighter TTime 38513
-  038800_RBomber TTime 38800
-  038813_RCover TTime 38813
-  039000_BBomber TTime 39000
-  039013_BCover TTime 39013
-  039400_RFighter TTime 39400
-  039413_BFighter TTime 39413
-  039500_RBomber TTime 39500
-  039513_RCover TTime 39513
-  039600_BBomber TTime 39600
-  039613_BCover TTime 39613
-  039900_RFighter TTime 39900
-  039913_BFighter TTime 39913
-  040300_RBomber TTime 40300
-  040313_RCover TTime 40313
-  040600_BBomber TTime 40600
-  040613_BCover TTime 40613
-  040626_RFighter TTime 40626
-  040639_BFighter TTime 40639
-  040900_RBomber TTime 40900
-  040913_RCover TTime 40913
-  041100_BBomber TTime 41100
-  041113_BCover TTime 41113
-  041200_RFighter TTime 41200
-  041213_BFighter TTime 41213
-  041400_RBomber TTime 41400
-  041413_RCover TTime 41413
-  041500_BBomber TTime 41500
-  041513_BCover TTime 41513
-  041526_BCover_B TTime 41526
-[Action]  
-  000300_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  000313_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  000330_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  000343_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  000600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.04
-  000630_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21
-  001200_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  001213_BCover ASpawnGroup 1 BoB_LW_JG26_I.31
-  001240_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  001253_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  001800_BFighter ASpawnGroup 1 BoB_LW_JG2_I.14
-  001813_RFighter ASpawnGroup 1 LONDON.12
-  001820_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  001833_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  001850_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  001863_BCover ASpawnGroup 1 BoB_LW_JG26_I.13
-  002120_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
-  002220_BFighter ASpawnGroup 1 BoB_LW_LG2_I.02
-  002400_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  002413_RCover ASpawnGroup 1 gb01.13
-  002700_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  002713_BCover ASpawnGroup 1 BoB_LW_LG2_I.12
-  002726_BCover_B ASpawnGroup 1 BoB_LW_LG2_I.24
-  003050_RFighter ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
-  003060_BFighter ASpawnGroup 1 BoB_LW_JG26_I.04
-  003600_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  003613_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  003900_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  003913_BCover ASpawnGroup 1 BoB_LW_JG3_Stab.03
-  003926_BCover_B ASpawnGroup 1 BoB_LW_LG2_I.23
-  004100_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
-  004200_BFighter ASpawnGroup 1 BoB_LW_JG2_I.12
-  004300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  004313_RCover ASpawnGroup 1 LONDON.02
-  004800_BBomber ASpawnGroup 1 BoB_LW_LG2_I.31
-  004813_BCover ASpawnGroup 1 BoB_LW_LG2_I.36
-  005200_RFighter ASpawnGroup 1 gb01.02
-  005300_BFighter ASpawnGroup 1 BoB_LW_JG2_I.11
-  005600_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  005613_RCover ASpawnGroup 1 LONDON.02
-  005900_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  005913_BCover ASpawnGroup 1 BoB_LW_LG2_I.23
-  006200_RFighter ASpawnGroup 1 LONDON.12
-  006500_BFighter ASpawnGroup 1 BoB_LW_JG27_I.01
-  006800_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  006813_RCover ASpawnGroup 1 LONDON.01
-  006826_RCover_B ASpawnGroup 1 gb01.33
-  006839_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  007100_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  007113_BCover_B ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  007340_RFighter ASpawnGroup 1 gb01.22
-  007500_BFighter ASpawnGroup 1 BoB_LW_JG26_I.21
-  007700_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  007713_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  008000_BBomber ASpawnGroup 1 BoB_LW_LG2_I.31
-  008013_BCover ASpawnGroup 1 BoB_LW_LG2_I.36
-  008300_RFighter ASpawnGroup 1 gb01.22
-  008600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.02
-  008900_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  008913_RCover ASpawnGroup 1 LONDON.02
-  008926_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  009200_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  009213_BCover_B ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  009400_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  009600_BFighter ASpawnGroup 1 BoB_LW_JG26_I.36
-  009900_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  009913_RCover ASpawnGroup 1 LONDON.01
-  010200_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  010213_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  010400_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
-  010600_BFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
-  010900_RBomber ASpawnGroup 1 gb01_Late.03
-  010913_RCover ASpawnGroup 1 gb01_Late.04
-  011200_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  011213_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  011400_RFighter ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
-  011500_BFighter ASpawnGroup 1 BoB_LW_JG27_I.01
-  011800_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  011813_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  012000_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  012013_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  012200_RFighter ASpawnGroup 1 gb01.02
-  012400_BFighter ASpawnGroup 1 BoB_LW_JG2_I.04
-  012600_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  012613_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  012700_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  012713_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  012726_BCover_B ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  012900_RFighter ASpawnGroup 1 gb01.21
-  013100_BFighter ASpawnGroup 1 BoB_LW_JG2_I.12
-  013200_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  013213_RCover ASpawnGroup 1 gb01.13
-  013400_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  013413_BCover ASpawnGroup 1 BoB_LW_LG2_I.12
-  013600_RFighter ASpawnGroup 1 gb01.21
-  013800_BFighter ASpawnGroup 1 BoB_LW_JG26_I.36
-  014000_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  014013_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  014200_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  014213_BCover ASpawnGroup 1 BoB_LW_JG26_I.13
-  014226_BCover_B ASpawnGroup 1 BoB_LW_JG51_I.07
-  014400_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
-  014500_BFighter ASpawnGroup 1 BoB_LW_LG2_I.01
-  014800_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  014813_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  014900_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  014913_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  015000_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  015100_BFighter ASpawnGroup 1 BoB_LW_JG26_I.22
-  015200_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  015213_RCover ASpawnGroup 1 LONDON.02
-  015300_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  015313_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  015500_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  015700_BFighter ASpawnGroup 1 BoB_LW_JG26_I.22
-  015900_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  015913_RCover ASpawnGroup 1 LONDON.01
-  015926_RCover_B ASpawnGroup 1 gb01.33
-  016100_BBomber ASpawnGroup 1 BoB_LW_LG2_I.31
-  016113_BCover ASpawnGroup 1 BoB_LW_LG2_I.36
-  016300_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
-  016500_BFighter ASpawnGroup 1 BoB_LW_JG26_I.21
-  016800_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  016813_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  017000_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  017013_BCover ASpawnGroup 1 BoB_LW_LG2_I.23
-  017200_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  017400_BFighter ASpawnGroup 1 BoB_LW_JG26_I.04
-  017500_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  017513_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  017600_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  017613_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
-  017626_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
-  017900_RFighter ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
-  018000_BFighter ASpawnGroup 1 BoB_LW_JG2_I.21
-  018300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  018313_RCover ASpawnGroup 1 LONDON.02
-  018600_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  018613_BCover ASpawnGroup 1 BoB_LW_JG3_Stab.03
-  018626_BCover_B ASpawnGroup 1 BoB_LW_LG2_I.23
-  018800_RFighter ASpawnGroup 1 LONDON.12
-  018900_BFighter ASpawnGroup 1 BoB_LW_JG2_I.01
-  019100_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  019113_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  019200_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  019213_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  019400_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  019413_BFighter ASpawnGroup 1 BoB_LW_JG26_I.22
-  019500_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  019513_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  019600_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  019613_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
-  019626_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
-  019900_RFighter ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
-  020000_BFighter ASpawnGroup 1 BoB_LW_JG2_I.01
-  020300_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  020313_RCover ASpawnGroup 1 gb01.13
-  020600_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  020613_BCover ASpawnGroup 1 BoB_LW_JG51_I.07
-  020900_RFighter ASpawnGroup 1 gb01.02
-  021000_BFighter ASpawnGroup 1 BoB_LW_JG27_I.01
-  021300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  021313_RCover ASpawnGroup 1 LONDON.01
-  021326_RCover_B ASpawnGroup 1 gb01.33
-  021600_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  021613_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  021900_RFighter ASpawnGroup 1 gb01.02
-  022000_BFighter ASpawnGroup 1 BoB_LW_JG51_I.31
-  022300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  022313_RCover ASpawnGroup 1 gb01.33
-  022600_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  022613_BCover ASpawnGroup 1 BoB_LW_LG2_I.24
-  022900_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
-  023000_BFighter ASpawnGroup 1 BoB_LW_LG2_I.01
-  023300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  023313_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  023900_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  023913_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
-  023926_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
-  024200_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
-  024300_BFighter ASpawnGroup 1 BoB_LW_JG2_I.37
-  024600_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  024613_RCover ASpawnGroup 1 LONDON.02
-  024900_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  024913_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  024926_BCover_B ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  025200_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  025300_BFighter ASpawnGroup 1 BoB_LW_LG2_I.02
-  025700_RBomber ASpawnGroup 1 gb01_Late.03
-  025713_RCover ASpawnGroup 1 gb01_Late.04
-  026000_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  026013_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  026500_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
-  026700_BFighter ASpawnGroup 1 BoB_LW_JG2_I.11
-  026900_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  026913_RCover ASpawnGroup 1 gb01.13
-  027100_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  027113_BCover ASpawnGroup 1 BoB_LW_JG26_I.13
-  027126_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
-  027300_BFighter ASpawnGroup 1 BoB_LW_JG2_I.04
-  027500_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  027513_RCover ASpawnGroup 1 LONDON.02
-  027800_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  027813_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  028000_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
-  028200_BFighter ASpawnGroup 1 BoB_LW_JG26_I.01
-  028400_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  028413_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  028500_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  028513_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  028600_RFighter ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
-  028613_BFighter ASpawnGroup 1 BoB_LW_JG2_I.02
-  028900_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  028913_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  029300_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
-  029313_BCover ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
-  029600_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.01
-  029613_BFighter ASpawnGroup 1 BoB_LW_LG2_I.01
-  029626_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  029639_RCover ASpawnGroup 1 LONDON.02
-  029900_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  029913_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  030100_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
-  030200_BFighter ASpawnGroup 1 BoB_LW_JG2_I.01
-  030213_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  030226_RCover ASpawnGroup 1 gb01.13
-  030400_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  030413_BCover ASpawnGroup 1 BoB_LW_LG2_I.23
-  030500_RFighter ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
-  030600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.26
-  030613_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  030626_RCover ASpawnGroup 1 gb01.33
-  030639_RCover_B ASpawnGroup 1 LONDON.01
-  031000_BBomber ASpawnGroup 1 BoB_LW_StG1_I.03
-  031013_BCover ASpawnGroup 1 BoB_LW_LG2_I.23
-  031300_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21
-  031600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.11
-  031613_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  031626_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  032000_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  032013_BCover ASpawnGroup 1 BoB_LW_LG2_I.12
-  032026_BCover_B ASpawnGroup 1 BoB_LW_LG2_I.24
-  032300_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
-  032600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.02
-  032613_RBomber ASpawnGroup 1 gb01_Late.03
-  032626_RCover ASpawnGroup 1 gb01_Late.04
-  033000_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  033013_BCover ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  033300_RFighter ASpawnGroup 1 gb01.01
-  033600_BFighter ASpawnGroup 1 BoB_LW_JG2_I.21
-  033613_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.26
-  033626_RCover ASpawnGroup 1 LONDON.02
-  034000_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  034013_BCover ASpawnGroup 1 BoB_LW_JG26_I.31
-  034300_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21
-  034900_BFighter ASpawnGroup 1 BoB_LW_JG2_I.37
-  034913_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
-  034926_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
-  035200_BBomber ASpawnGroup 1 BoB_LW_JG51_Stab.03
-  035213_BCover ASpawnGroup 1 BoB_LW_StG1_I.17
-  035600_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
-  035613_BFighter ASpawnGroup 1 BoB_LW_JG2_I.14
-  035900_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  035913_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  035926_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  035939_BCover ASpawnGroup 1 BoB_LW_JG51_I.07
-  035952_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.13
-  036700_RFighter ASpawnGroup 1 gb01.22
-  036713_BFighter ASpawnGroup 1 BoB_LW_JG2_I.21
-  037000_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
-  037013_RCover ASpawnGroup 1 LONDON.01
-  037500_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  037513_BCover ASpawnGroup 1 BoB_LW_LG2_I.12
-  037900_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
-  037913_BFighter ASpawnGroup 1 BoB_LW_JG2_I.26
-  038100_RBomber ASpawnGroup 1 gb01_Late.03
-  038113_RCover ASpawnGroup 1 gb01_Late.04
-  038126_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  038139_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  038500_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.01
-  038513_BFighter ASpawnGroup 1 BoB_LW_JG51_I.31
-  038800_RBomber ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.07
-  038813_RCover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.13
-  039000_BBomber ASpawnGroup 1 BoB_LW_StG3_I.07
-  039013_BCover ASpawnGroup 1 BoB_LW_LG2_I.04
-  039400_RFighter ASpawnGroup 1 gb01.01
-  039413_BFighter ASpawnGroup 1 BoB_LW_JG26_I.04
-  039500_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
-  039513_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
-  039600_BBomber ASpawnGroup 1 BoB_LW_StG1_I.17
-  039613_BCover ASpawnGroup 1 BoB_LW_JG27_I.06
-  039900_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.01
-  039913_BFighter ASpawnGroup 1 BoB_LW_JG26_I.21
-  040300_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  040313_RCover ASpawnGroup 1 gb01.13
-  040600_BBomber ASpawnGroup 1 BoB_LW_KuFlGr_706.03
-  040613_BCover ASpawnGroup 1 BoB_LW_LG2_I.12
-  040626_RFighter ASpawnGroup 1 BoB_RAF_F_FatCat_Early.01
-  040639_BFighter ASpawnGroup 1 BoB_LW_JG2_I.37
-  040900_RBomber ASpawnGroup 1 gb01_Late.03
-  040913_RCover ASpawnGroup 1 gb01_Late.04
-  041100_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  041113_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
-  041200_RFighter ASpawnGroup 1 gb01.21
-  041213_BFighter ASpawnGroup 1 BoB_LW_JG51_I.31
-  041400_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03
-  041413_RCover ASpawnGroup 1 gb01.13
-  041500_BBomber ASpawnGroup 1 BoB_LW_StG2_II.07
-  041513_BCover ASpawnGroup 1 BoB_LW_JG26_I.13
-  041526_BCover_B ASpawnGroup 1 BoB_LW_JG51_I.07
+  F1 TTime 1200
+  F1e TTime 1200
+  F1c TTime 1200
+  F2 TTime 2400
+  F3 TTime 1200
+  F4 TTime 4800
+  F5 TTime 5000
+  F5e TTime 5000
+  F6 TTime 6200
+  F7 TTime 7400
+  F7e TTime 7400
+  F8 TTime 8600
+  F9 TTime 9800
+  F10 TTime 10000
+  F11 TTime 11200
+  F12 TTime 12400
+  F13 TTime 13600
+  F13e TTime 13600
+  F13cc TTime 13600
+  F13c TTime 13600
+  F14 TTime 14800
+  F15 TTime 16000
+  F16 TTime 17200
+  F17 TTime 18400
+  F18 TTime 19600
+  STOmar2 TTime 3600
+  escort2 TTime 7200
+  escort3 TTime 9800
+  BluePatrol1 TTime 1800
+  BluePatrol2 TTime 5400
+  BluePatrol3 TTime 9000
+  BluePatrol4 TTime 12600
+  BluePatrol5 TTime 16200
+  Fatal1 TTime 1850
+  Fatal2 TTime 5450
+  Fatal3 TTime 9050
+  Fatal4 TTime 14450
+  Fatal5 TTime 18050
+  redhurrycover1 TTime 1800
+  redhurrycover2 TTime 7200
+  redspitcover1 TTime 3600  
+  SouthernCover1 TTime 1800  
+  SouthernCover3 TTime 9000
+  SouthernCover5 TTime 16200
+  action4 TTime 1820
+  action4cover TTime 1820
+  action12 TTime 17820
+  action12cover TTime 17820
+  action4_X2 TTime 24820
+  action4cover_X2 TTime 24820
+  action12_X2 TTime 39820
+  action12cover_X2 TTime 39820
+  action4_X3 TTime 50820
+  action4cover_X3 TTime 50820
+  action12_X3 TTime 63820
+  action12cover_X3 TTime 63820
+  action6 TTime 5820
+  action6cover TTime 5820
+  action14 TTime 21820
+  action14cover TTime 21820
+  action6_X2 TTime 31820
+  action6cover_X2 TTime 31820
+  action14_X2 TTime 39820
+  action14cover_X2 TTime 39820
+  action6_X3 TTime 44820
+  action6cover_X3 TTime 44820
+  action14_X3 TTime 51820
+  action14cover_X3 TTime 51820
+  action16 TTime 2120
+  action16cover TTime 2120
+  action16_X2 TTime 30820
+  action16cover_X2 TTime 30820
+  action16_X3 TTime 40820
+  action16cover_X3 TTime 40820
+  Bomb1 TTime 2820
+  BombCover1 TTime 2820
+  Bomb2 TTime 8220
+  BombCover2 TTime 8220
+  Bomb3 TTime 18220
+  BombCover3 TTime 18220
+  RBomb1 TTime 1820
+  RBombCover1 TTime 1820
+  RBomb2 TTime 10220
+  RBombCover2 TTime 10220
+  RBomb3 TTime 17220
+  BombCover3 TTime 17220
+  Bomb1_X2 TTime 24820
+  BombCover1_X2 TTime 24820
+  Bomb2_X2 TTime 31220
+  BombCover2_X2 TTime 31220
+  Bomb3_X2 TTime 40220
+  BombCover3_X2 TTime 40220
+  RBomb1_X2 TTime 23820
+  RBombCover1_X2 TTime 23820
+  RBomb2_X2 TTime 33220
+  RBombCover2_X2 TTime 33220
+  RBomb3_X2 TTime 40220
+  BombCover3_X2 TTime 40220
+  Bomb1_X3 TTime 48820
+  BombCover1_X3 TTime 48820
+  Bomb2_X3 TTime 53220
+  BombCover2_X3 TTime 53220
+  Bomb3_X3 TTime 65220
+  BombCover3_X3 TTime 65220
+  RBomb1_X3 TTime 46820
+  RBombCover1_X3 TTime 46820
+  RBomb2_X3 TTime 55220
+  RBombCover2_X3 TTime 55220
+  RBomb3_X3 TTime 63220
+  BombCover3_X3 TTime 63220
+  109Cover1 TTime 3600
+  109Cover2 TTime 3600
+  109Cover3 TTime 9800
+  109Cover4 TTime 13400
+  110cover1 TTime 3600
+  110cover2 TTime 7200
+  110Cover3 TTime 9800
+  110Cover4 TTime 13400
+  109Cover4 TTime 13400
+  Pegwelldefense1 TTime 1800
+  Pegwelldefense2 TTime 5400
+  Pegwelldefense3 TTime 9000
+  Pegwelldefense4 TTime 14400
+  Pegwelldefense5 TTime 18000
+  Gladiatorintercept TTime 3600
+  Gladiatorintercept2 TTime 7200
+  Rely1 TTime 600
+  Rely2 TTime 4200
+  Rely3 TTime 7800
+  Rely4 TTime 11400
+  Rely5 TTime 15000
+  Rely6 TTime 18600
+  Jabored TTime 3900
+  MQWest TTime 7806
+  MQWestCover TTime 7806  
+  45mincover2 TTime 2710
+  45minraidCover TTime 2700
+  45minraidB TTime 2700
+  2hrraid TTime 7200
+  2hrraidcover TTime 7200
+  4hrraid TTime 14400
+  4hrraidcover2 TTime 14400
+  4hrraidcover TTime 14400
+  testbomber TTime 300
+  testcover1 TTime 300
+  testcover2 TTime 300
+  F1_X2 TTime 22800
+  F1e_X2 TTime 22800
+  F1c_X2 TTime 22800
+  F2_X2 TTime 24000
+  F3_X2 TTime 22800
+  F4_X2 TTime 26400
+  F5_X2 TTime 26600
+  F5e_X2 TTime 26600
+  F6_X2 TTime 27800
+  F7_X2 TTime 29000
+  F7e_X2 TTime 29000
+  F8_X2 TTime 30200
+  F9_X2 TTime 31400
+  F10_X2 TTime 31600
+  F11_X2 TTime 32800
+  F12_X2 TTime 34000
+  F13_X2 TTime 35200
+  F13e_X2 TTime 35200
+  F13cc_X2 TTime 35200
+  F13c_X2 TTime 35200
+  F14_X2 TTime 36400
+  F15_X2 TTime 37600
+  F16_X2 TTime 38800
+  F17_X2 TTime 40000
+  F18_X2 TTime 41200
+  StOmar2_X2 TTime 25200
+  escort2_X2 TTime 28800
+  escort3_X2 TTime 31400
+  BluePatrol1_X2 TTime 23400
+  BluePatrol2_X2 TTime 27000
+  BluePatrol3_X2 TTime 30600
+  BluePatrol4_X2 TTime 34200
+  BluePatrol5_X2 TTime 37800
+  Fatal1_X2 TTime 23450
+  Fatal2_X2 TTime 27050
+  Fatal3_X2 TTime 30650
+  Fatal4_X2 TTime 36050
+  Fatal5_X2 TTime 39650  
+  redhurrycover2_X2 TTime 28800  
+  redspitcover2_X2 TTime 28800
+  SouthernCover2_X2 TTime 27000  
+  SouthernCover4_X2 TTime 34200  
+  Bomb1 TTime 23820
+  BombCover1 TTime 23820
+  109Cover1_X2 TTime 25200
+  109Cover2_X2 TTime 25200
+  109Cover3_X2 TTime 31400
+  109Cover4_X2 TTime 35000
+  110cover1_X2 TTime 25200
+  110cover2_X2 TTime 28800
+  110Cover3_X2 TTime 31400
+  110Cover4_X2 TTime 35000
+  109Cover4_X2 TTime 35000
+  Pegwelldefense1_X2 TTime 23400
+  Pegwelldefense2_X2 TTime 27000
+  Pegwelldefense3_X2 TTime 30600
+  Pegwelldefense4_X2 TTime 36000
+  Pegwelldefense5_X2 TTime 39600
+  Gladiatorintercept_X2 TTime 25200
+  Gladiatorintercept2_X2 TTime 28800
+  Rely1_X2 TTime 22200
+  Rely2_X2 TTime 25800
+  Rely3_X2 TTime 29400
+  Rely4_X2 TTime 33000
+  Rely5_X2 TTime 36600
+  Rely6_X2 TTime 40200
+  MQWest_X2 TTime 29406
+  MQWestCover_X2 TTime 29406
+  45mincover2_X2 TTime 24310
+  45minraidCover_X2 TTime 24300
+  45minraidB_X2 TTime 24300
+  2hrraid_X2 TTime 28800
+  2hrraidcover_X2 TTime 28800
+  4hrraid_X2 TTime 36000
+  4hrraidcover_X2 TTime 36000
+  testbomber_X2 TTime 21900
+  testcover1_X2 TTime 21900
+  testcover2_X2 TTime 21900
+  F1_X3 TTime 44400
+  F1e_X3 TTime 44400
+  F1c_X3 TTime 44400
+  F2_X3 TTime 45600
+  F3_X3 TTime 44400
+  F4_X3 TTime 48000
+  F5_X3 TTime 48200
+  F5e_X3 TTime 48200
+  F6_X3 TTime 49400
+  F7_X3 TTime 50600
+  F7e_X3 TTime 50600
+  F8_X3 TTime 51800
+  F9_X3 TTime 53000
+  F10_X3 TTime 53200
+  F11_X3 TTime 54400
+  F12_X3 TTime 55600
+  F13_X3 TTime 56800
+  F13e_X3 TTime 56800
+  F13cc_X3 TTime 56800
+  F13c_X3 TTime 56800
+  F14_X3 TTime 58000
+  F15_X3 TTime 59200
+  F16_X3 TTime 60400
+  F17_X3 TTime 61600
+  F18_X3 TTime 62800
+  StOmar2_X3 TTime 46800
+  escort2_X3 TTime 50400
+  escort3_X3 TTime 53000
+  BluePatrol1_X3 TTime 45000
+  BluePatrol2_X3 TTime 48600
+  BluePatrol3_X3 TTime 52200
+  BluePatrol4_X3 TTime 55800
+  BluePatrol5_X3 TTime 59400
+  Fatal1_X3 TTime 45050
+  Fatal2_X3 TTime 48650
+  Fatal3_X3 TTime 52250
+  Fatal4_X3 TTime 57650
+  Fatal5_X3 TTime 61250
+  redhurrycover1_X3 TTime 45000
+  redhurrycover2_X3 TTime 50400
+  redspitcover1_X3 TTime 46800  
+  SouthernCover2_X3 TTime 48600  
+  SouthernCover5_X3 TTime 59400
+  Bomb1 TTime 48820
+  BombCover1 TTime 48820
+  109Cover1_X3 TTime 46800
+  109Cover2_X3 TTime 46800
+  109Cover3_X3 TTime 53000
+  109Cover4_X3 TTime 56600
+  110cover1_X3 TTime 46800
+  110cover2_X3 TTime 50400
+  110Cover3_X3 TTime 53000
+  110Cover4_X3 TTime 56600
+  109Cover4_X3 TTime 56600
+  Pegwelldefense1_X3 TTime 45000
+  Pegwelldefense2_X3 TTime 48600
+  Pegwelldefense3_X3 TTime 52200
+  Pegwelldefense4_X3 TTime 57600
+  Pegwelldefense5_X3 TTime 61200
+  Gladiatorintercept_X3 TTime 46800
+  Gladiatorintercept2_X3 TTime 50400
+  Rely1_X3 TTime 43800
+  Rely2_X3 TTime 47400
+  Rely3_X3 TTime 51000
+  Rely4_X3 TTime 54600
+  Rely5_X3 TTime 58200
+  Rely6_X3 TTime 61800
+  MQWest_X3 TTime 51006
+  MQWestCover_X3 TTime 51006
+  45mincover2_X3 TTime 45910
+  45minraidCover_X3 TTime 45900
+  45minraidB_X3 TTime 45900
+  2hrraid_X3 TTime 50400
+  2hrraidcover_X3 TTime 50400
+  4hrraid_X3 TTime 57600
+  4hrraidcover2_X3 TTime 57600
+  testbomber_X3 TTime 43500
+  testcover1_X3 TTime 43500
+  testcover2_X3 TTime 43500
+  newBomb TTime 7340
+  newBomb2 TTime 26254
+  newBomb3 TTime 50342
+[Action]
+  London1air_X2 ASpawnGroup 1 gb01.01
+  London2air_X2 ASpawnGroup 1 gb01.02  
+  action1 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action1c ASpawnGroup 1 BoB_LW_LG2_I.23
+  action1e ASpawnGroup 1 BoB_LW_LG2_I.12
+  action2 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  action3 ASpawnGroup 1 BoB_LW_StG2_II.07  
+  action4cover ASpawnGroup 1 gb01.01
+  action4_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  action4_X3 ASpawnGroup 1 gb01.22  
+  action5 ASpawnGroup 1 BoB_LW_JG54_Stab.03
+  action5e ASpawnGroup 1 BoB_LW_JG26_I.31
+  action6 ASpawnGroup 1 LONDON.02
+  action6cover ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action6_X2 ASpawnGroup 1 LONDON.02
+  action6cover_X2 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action6_X3 ASpawnGroup 1 LONDON.02
+  action6cover_X3 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action7 ASpawnGroup 1 BoB_LW_StG3_I.07
+  action7e ASpawnGroup 1 BoB_LW_LG2_I.04
+  action8 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  action8cover ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  action9 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action10 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  action11 ASpawnGroup 1 BoB_LW_StG2_II.07
+  action12 ASpawnGroup 1 gb01.21
+  action12cover ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  action12_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  action12cover_X2 ASpawnGroup 1 gb01.01
+  action12_X3 ASpawnGroup 1 gb01.22
+  action12cover_X3 ASpawnGroup 1 gb01.01
+  action13 ASpawnGroup 1 BoB_LW_StG1_I.02
+  action13e ASpawnGroup 1 BoB_LW_JG51_I.07
+  action13c ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  action13cc ASpawnGroup 1 BoB_LW_LG2_I.11
+  action14 ASpawnGroup 1 LONDON.02
+  action14cover ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action14_X2 ASpawnGroup 1 LONDON.02
+  action14cover_X2 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action14_X3 ASpawnGroup 1 LONDON.02
+  action14cover_X3 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  action15 ASpawnGroup 1 BoB_LW_StG3_I.07
+  action16 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  action16_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  action16cover_X2 ASpawnGroup 1 gb01.21
+  action16_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  action16cover_X2 ASpawnGroup 1 gb01.22
+  action17 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action18 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  StOmar2 ASpawnGroup 1 BoB_LW_LG2_I.34  
+  escort3 ASpawnGroup 1 BoB_LW_LG2_I.12
+  redspitcover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31  
+  redhurrycover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21  
+  SouthernCover1 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  SouthernCover3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  SouthernCover5 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  Bomb1 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1 ASpawnGroup 1 gb01_Late.03
+  RBombCover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  Bomb2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb2 ASpawnGroup 1 gb01_Late.03
+  RBombCover2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  Bomb3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb3 ASpawnGroup 1 gb01_Late.03
+  RBombCover3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  109Cover1 ASpawnGroup 1 BoB_LW_JG26_I.36  
+  109Cover3 ASpawnGroup 1 BoB_LW_JG26_I.36  
+  110cover1 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  110cover3 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  CalaisAAA1 ASpawnGroup 1 Empty
+  CalaisAAA2 ASpawnGroup 1 Empty
+  CalaisAAA3 ASpawnGroup 1 Empty
+  CalaisPropeller ASpawnGroup 1 Empty
+  CalaisDiesel ASpawnGroup 1 Empty
+  CalaisTorpedo ASpawnGroup 1 Empty
+  CalaisLox ASpawnGroup 1 Empty
+  CalaisMainFuel ASpawnGroup 1 Empty
+  CalaisHydrogen ASpawnGroup 1 Empty
+  CalaisTrainStation ASpawnGroup 1 Empty  
+  BluePatrol2 ASpawnGroup 1 BoB_LW_JG2_I.12  
+  BluePatrol4 ASpawnGroup 1 BoB_LW_JG2_I.12  
+  BluePatrol3 ASpawnGroup 1 BoB_LW_JG27_I.01
+  Fatal1 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  Fatal3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  Fatal5 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Pegwelldefense1 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
+  Gladiatorintercept ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar ASpawnGroup 1 BoB_LW_LG2_I.34  
+  zonedefenseblue2 ASpawnGroup 1 BoB_LW_JG2_I.04
+  zonedefenseblue4 ASpawnGroup 1 BoB_LW_LG2_I.31  
+  Rely2 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  Rely4 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  Rely6 ASpawnGroup 1 BoB_LW_LG2_I.01
+  Jabored ASpawnGroup 1 LONDON.12
+  Thems1 ASpawnGroup 1 gb01.22  
+  London3air ASpawnGroup 1 gb01.21
+  Beau1 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  MQWest ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  MQWestCover ASpawnGroup 1 gb01_Late.14
+  loneglad ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB ASpawnGroup 1 BoB_LW_StG1_I.03
+  2hrraid ASpawnGroup 1 BoB_LW_StG1_I.03
+  2hrraidcover ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0C
+  4hrraidcover ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0C  
+  escort3_X2 ASpawnGroup 1 BoB_LW_LG2_I.12  
+  redspitcover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31  
+  redhurrycover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21  
+  SouthernCover2_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  SouthernCover4_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  Bomb1_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1_X2 ASpawnGroup 1 gb01_Late.03
+  RBombCover1_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  Bomb2_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb2_X2 ASpawnGroup 1 gb01_Late.03
+  RBombCover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  Bomb3_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb3_X2 ASpawnGroup 1 gb01_Late.03
+  RBombCover3_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  109Cover1_X2 ASpawnGroup 1 BoB_LW_JG26_I.36  
+  109Cover3_X2 ASpawnGroup 1 BoB_LW_JG26_I.36  
+  110cover1_X2 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  110cover3_X2 ASpawnGroup 1 BoB_LW_JG51_I.31
+  CalaisAAA1_X2 ASpawnGroup 1 Empty
+  CalaisAAA2_X2 ASpawnGroup 1 Empty
+  CalaisAAA3_X2 ASpawnGroup 1 Empty
+  CalaisPropeller_X2 ASpawnGroup 1 Empty
+  CalaisDiesel_X2 ASpawnGroup 1 Empty
+  CalaisTorpedo_X2 ASpawnGroup 1 Empty
+  CalaisLox_X2 ASpawnGroup 1 Empty
+  CalaisMainFuel_X2 ASpawnGroup 1 Empty
+  CalaisHydrogen_X2 ASpawnGroup 1 Empty
+  CalaisTrainStation_X2 ASpawnGroup 1 Empty  
+  BluePatrol2_X2 ASpawnGroup 1 BoB_LW_JG2_I.12  
+  BluePatrol4_X2 ASpawnGroup 1 BoB_LW_JG2_I.12  
+  BluePatrol3_X2 ASpawnGroup 1 BoB_LW_JG27_I.01  
+  Fatal2_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  Fatal4_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  Pegwelldefense1_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
+  Gladiatorintercept_X2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2_X2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh_X2 ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar_X2 ASpawnGroup 1 BoB_LW_LG2_I.34
+  zonedefenseblue1_X2 ASpawnGroup 1 BoB_LW_JG51_I.31
+  zonedefenseblue3_X2 ASpawnGroup 1 BoB_LW_LG2_I.32
+  Rely1_X2 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  Rely3_X2 ASpawnGroup 1 BoB_LW_JG2_I.01  
+  Rely5_X2 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  Jabored_X2 ASpawnGroup 1 LONDON.12
+  Thems1_X2 ASpawnGroup 1 gb01.22  
+  Beau1_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  MQWest_X2 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  MQWestCover_X2 ASpawnGroup 1 gb01_Late.14
+  loneglad_X2 ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2_X2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover_X2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB_X2 ASpawnGroup 1 BoB_LW_StG1_I.03
+  2hrraidcover_X2 ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2_X2 ASpawnGroup 1 BoB_LW_JG51_Stab.0C  
+  4hrraid_X2 ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber_X2 ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1_X2 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2_X2 ASpawnGroup 1 BoB_LW_JG51_Stab.0C
+  StOmar2_X3 ASpawnGroup 1 BoB_LW_LG2_I.34  
+  escort3_X3 ASpawnGroup 1 BoB_LW_LG2_I.12
+  redspitcover1_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
+  redhurrycover2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.21
+  SouthernCover1_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover4_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover5_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  Bomb1_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  Bomb2_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  Bomb3_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1_X3 ASpawnGroup 1 gb01_Late.03
+  RBombCover1_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  RBomb2_X3 ASpawnGroup 1 gb01_Late.03
+  RBombCover2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  RBomb3_X3 ASpawnGroup 1 gb01_Late.03
+  RBombCover3_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21  
+  109Cover2_X3 ASpawnGroup 1 BoB_LW_JG2_I.26  
+  109Cover4_X3 ASpawnGroup 1 BoB_LW_JG2_I.26  
+  110cover2_X3 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  110cover4_X3 ASpawnGroup 1 BoB_LW_JG51_I.31
+  CalaisAAA1_X3 ASpawnGroup 1 Empty
+  CalaisAAA2_X3 ASpawnGroup 1 Empty
+  CalaisAAA3_X3 ASpawnGroup 1 Empty
+  CalaisPropeller_X3 ASpawnGroup 1 Empty
+  CalaisDiesel_X3 ASpawnGroup 1 Empty
+  CalaisTorpedo_X3 ASpawnGroup 1 Empty
+  CalaisLox_X3 ASpawnGroup 1 Empty
+  CalaisMainFuel_X3 ASpawnGroup 1 Empty
+  CalaisHydrogen_X3 ASpawnGroup 1 Empty
+  CalaisTrainStation_X3 ASpawnGroup 1 Empty
+  BluePatrol3_X3 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol4_X3 ASpawnGroup 1 BoB_LW_JG2_I.12  
+  BluePatrol3_X3 ASpawnGroup 1 BoB_LW_JG27_I.01
+  Fatal2_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02  
+  Fatal5_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Pegwelldefense1_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.31
+  Gladiatorintercept_X3 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2_X3 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh_X3 ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar_X3 ASpawnGroup 1 BoB_LW_LG2_I.34  
+  zonedefenseblue2_X3 ASpawnGroup 1 BoB_LW_JG2_I.04  
+  zonedefenseblue4_X3 ASpawnGroup 1 BoB_LW_LG2_I.31  
+  Rely2_X3 ASpawnGroup 1 BoB_LW_LG2_I.01  
+  Rely4_X3 ASpawnGroup 1 BoB_LW_JG51_I.31  
+  Rely6_X3 ASpawnGroup 1 BoB_LW_JG51_I.31
+  Jabored_X3 ASpawnGroup 1 LONDON.12
+  Thems1_X3 ASpawnGroup 1 gb01.22  
+  London2air_X3 ASpawnGroup 1 gb01.02
+  London3air_X3 ASpawnGroup 1 gb01.21  
+  MQWest_X3 ASpawnGroup 1 gb01_Late.04
+  MQWestCover_X3 ASpawnGroup 1 gb01_Late.14
+  loneglad_X3 ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2_X3 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover_X3 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB_X3 ASpawnGroup 1 BoB_LW_StG1_I.03
+  2hrraid_X3 ASpawnGroup 1 BoB_LW_StG1_I.03  
+  4hrraidcover2_X3 ASpawnGroup 1 BoB_LW_JG51_Stab.0C
+  4hrraidcover_X3 ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid_X3 ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber_X3 ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1_X3 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2_X3 ASpawnGroup 1 BoB_LW_JG51_Stab.0C
+  F1 ASpawnGroup 1 gb01_Late.03
+  F1e ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  F2 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  F3 ASpawnGroup 1 gb01.01
+  F7 ASpawnGroup 1 gb01.22
+  F11 ASpawnGroup 1 gb01.01    
+  F18 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  F1_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.07
+  F1e_X2 ASpawnGroup 1 gb01.33
+  F7_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  F13_X2 ASpawnGroup 1 gb01_Late.04
+  F13e_X2 ASpawnGroup 1 gb01_Late.14
+  F17_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02  
+  F1_X3 ASpawnGroup 1 gb01_Late.03
+  F1e_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
+  F2_X3 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  F3_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  F6_X3 ASpawnGroup 1 gb01.01  
+  F13_X3 ASpawnGroup 1 gb01_Late.04
+  F13e_X3 ASpawnGroup 1 gb01_Late.14
+  F17_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  F18_X3 ASpawnGroup 1 gb01.21
+  newBomb ASpawnGroup 1 BoB_LW_StG1_I.04
+  newBomb2 ASpawnGroup 1 BoB_LW_StG1_I.04
+  newBomb3 ASpawnGroup 1 BoB_LW_StG1_I.04
+  F5 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.24
+  F5e ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  F5_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.24
+  F5e_X2 ASpawnGroup 1 BoB_RAF_B_103Sqn.07
+  F5_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.24
+  F5e_X3 ASpawnGroup 1 BoB_RAF_B_103Sqn.07

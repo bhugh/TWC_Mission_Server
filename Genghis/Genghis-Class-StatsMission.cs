@@ -181,9 +181,10 @@ public class StatsMission : AMission, IStatsMission
 
 
     #region DEFAULTS
+	//STATS.INI default values
     //Note: initial @ (ie @"missions\Multi\Fatal\") allows you to incorporate backslashes into the file or directory name easily. Normally c# considers \ an escape character.  Instead of using @ You could just type \\ every time you want \ but that is confusing. If you need a double-quote character " in your @string, just type "" - like @"<img src=""\mydirectory\myfile.png"">"
-    
-    //***********************************************************************
+	
+	//***********************************************************************
 	//***********************************************************************
 	//***********************************************************************
 	//NOTE: ALL values below are usually set in STATS.INI, not  here.  These are simply default
@@ -192,7 +193,6 @@ public class StatsMission : AMission, IStatsMission
 	//***********************************************************************
 	//***********************************************************************
 	
-    
     public bool stb_Debug = false;
     public string stb_ServerName_Public = "My Server"; //The name used publicly ie on the stats web pages & in "Welcome to the XXX" type messages.
     public string stb_ServerFilenameIdentifier = "MyServer"; //The "private" name of the server used as part of filenames. Will be combined with various suffixes to create filenames for e.g. stats files, log files for this server. Best to avoid using spaces or any strange characters that will cause trouble if part of a filename.
@@ -312,31 +312,40 @@ public class StatsMission : AMission, IStatsMission
 
     //TODO: All these should be added to .ini file.
     //public readonly string [] PARACHUTE_LAND_FRIENDLY_MSG = {  };
-    public readonly string[] stb_LANDED_OK_MSG = { ">>>{0} landed in friendly territory. " };
-    public readonly string[] stb_LANDED_ENEMY_MSG = { ">>>{0} landed in enemy territory. " };
-    public readonly string[] stb_LANDED_NEUTRAL_MSG = { ">>>{0} landed in neutral territory - and not near a friendly airport. " };
-    public readonly string[] stb_ASR_FAIL_DROWNED = { ">>>{0} drowned! ", ">>>{0} tried to swim for shore, but drowned! ", ">>>{0} drowned when the life raft deflated! " };
-    public readonly string[] stb_ASR_RESCUE_MSG = { ">>>{0} was rescued by local fishermen! ", ">>>{0} was rescued by friendly fishermen!", ">>>{0} was rescued by ASR ", ">>>{0} was rescued by a passing ship! ", ">>>{0} was rescued after hanging onto a life raft for 28 hours! ", ">>>{0} was rescued. Now {0} can join the Goldfish Club! " };
+    public readonly string[] stb_LANDED_OK_MSG = { ">>>{0} landed in friendly territory. ", ">>>{0} landed on the friendly side of the front line. " };
+    public readonly string[] stb_LANDED_ENEMY_MSG = { ">>>{0} landed in enemy territory. ", ">>>{0} landed on the enemy side of the front line. " };
+    public readonly string[] stb_LANDED_NEUTRAL_MSG = { ">>>{0} landed in neutral territory - and not near a friendly airport. ", ">>>{0} landed in no man's land - with no friendlies nearby. " };
+    public readonly string[] stb_ASR_FAIL_DROWNED = { ">>>{0} drowned! ", ">>>{0} tried to swim for shore, but drowned! ", ">>>{0} drowned when the life raft deflated! " , ">>>{0} was unable to exit the damaged plane, and drowned. ", ">>>{0} was knocked unconcious during the landing, and drowned. ", ">>>{0} drowned when the life raft deflated! ", ">>>{0} survived the landing but soon succumbed to hypothermia. " };
+    public readonly string[] stb_ASR_RESCUE_MSG = { ">>>{0} was rescued by local fishermen! ", ">>>{0} was rescued by friendly fishermen!", ">>>{0} was rescued by ASR ", ">>>{0} was rescued by a passing ship! ", ">>>{0} was rescued after hanging onto a life raft for 28 hours! ", ">>>{0} was rescued. Now {0} can join the Goldfish Club! ", ">>>{0} got a ride home in a seaplane! " };
     public readonly string[] stb_ASR_CAPTURE_MSG = { ">>>{0} was captured by enemy forces! ", ">>>{0} was captured. ", ">>>{0} was captured and sent to a POW camp. " };
     public readonly string[] stb_CAPTURED_MSG = { ">>>{0} was captured. ", ">>>{0} was captured by enemy forces! ", ">>>{0} was captured and sent to a POW camp. ", };
     public readonly string[] stb_CAPTURED_NEUTRAL_MSG = { ">>>{0} was captured while trying to return home across neutral territory. ", ">>>{0} was captured by enemy forces who were patrolling the neutral zone! ", ">>>{0} was captured by an enemy patrol in the neutral zone, and sent to a POW camp. ", ">>>{0} got lost while trying to find a way home across neutral territory, and was captured by an enemy patrol. ", };
-    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", ">>>{0} tried to escape, but was captured again and shot.", ">>>{0} was shot while attempting escape.", ">>>{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", ">>>{0} led a POW escape attempt but was caught in the act and shot on sight.", ">>>{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
-    public readonly string[] stb_ESCAPED_MSG = { ">>>But {0} escaped capture and is hiding in a resistance fighter's hayloft! ", ">>>{0} escaped and is hiding the forest. ", ">>>But {0} escaped and is hiding in a resistance fighter's barn! ", ">>>But {0} escaped--now has to find the way home!", ">>>But {0} was helped by a network of friendly resistance fighters and escaped!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
+    public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", ">>>{0} tried to escape, but was captured again and shot.", ">>>{0} was shot while attempting escape.", ">>>{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", ">>>{0} led a POW escape attempt but was caught in the act and shot on sight.", ">>>{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "", "", "",
+	">>>{0} later wrote a best-selling book about his experiences as a POW."	}; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
+    public readonly string[] stb_ESCAPED_MSG = { ">>>But {0} escaped capture and is hiding in a resistance fighter's hayloft! ", ">>>{0} escaped and is hiding the forest. ", ">>>But {0} escaped and is hiding in a resistance fighter's barn! ", ">>>But {0} escaped--now has to find the way home!", ">>>But {0} was helped by a network of friendly resistance fighters and escaped!", ">>>But {0} managed to avoid capture by hiding under a haystack!" , ">>>But {0} managed to avoid capture by hiding in a ditch!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
 
     public readonly string[] stb_ESCAPED_NEUTRAL_MSG = { ">>>But {0} was able to return to friendly territory! ", ">>>{0} was able to escape the neutral zone and return to friendly territory. ", ">>>But {0} made way across the neutral zone and returned to base! ", ">>>But {0} carefully crossed neutral territory and made it back to base.", ">>>But {0} trekked across enemy territory, avoiding enemy patrols, until finding the friendly lines!" };
     /*
     //TUBROK
         public readonly string[] stb_ESCAPED_MSG = { ">>>{0} escaped capture and is hiding in the desert! ", ">>>{0} escaped and is hiding in the mountains. ", ">>>{0} escaped and is living with a herd of wild goats! ", ">>>{0} escaped--now has to find the way home!", ">>>{0} was helped by local Tuareg fighters and escaped!", ">>>{0} was helped by desert nomads and escaped!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
     */
-    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { ">>>{0} crash landed in enemy territory. " };
-    public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { ">>>{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! " };
+    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { ">>>{0} crash landed in enemy territory. ", ">>>{0} crashed enemy territory. ", ">>>{0} crash landed behind enemy lines. " };
+    public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { ">>>{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! ", ">>>{0} crash landed in friendly territory - your plane was scrapped. ", ">>>{0} crash landed in friendly territory. Nearby citizens soon arrived to help! ", ">>>{0} crash landed in friendly territory. You'll need to catch a ride back to base! " };
 
-    public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG = { ">>>{0} landed in friendly territory away from an airport. To avoid having your aircraft written off, you must return it to an airport. " };
+    public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG_NOTATAIRPORT = { ">>>{0} landed in friendly territory away from an airport, with moderate injuries. Medical care was late arriving, worsening them. And your plane was written off. ",
+	 ">>>{0} landed in friendly territory away from an airport, with moderate injuries. Medical care took hours to arrive, worsening them. Your aircraft was written off. ",
+	 ">>>{0} landed in friendly territory away from an airport, with moderate injuries. Fortunately a nurse in a nearby village was able to treat you. Your aircraft was scrapped. ",
+	">>>{0} landed in friendly territory away from an airport, with moderate injuries. Neighbors have sent for a doctor - who may take an hour to arrive. Your beautiful aircraft was scrapped.  ",	 };
+	
+	public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG_ATAIRPORT = { ">>>{0} landed in friendly territory at an airport, with moderate injuries. You received prompt medical treatment from the medics.",
+	">>>{0} landed in friendly territory at an airfield, with moderate injuries. Medics were soon on the spot to treat your injuries.",
+	">>>{0} landed in friendly territory at an airport, with moderate injuries. You should be ready to go again in a few days!"	};
 
     public readonly string[] stb_PARACHUTED_FRIENDLY_MSG = { ">>>{0} parachuted into friendly territory. ", ">>>{0} parachuted, landing in friendly territory." };
-    public readonly string[] stb_PARACHUTED_ENEMY_MSG = { ">>>{0} parachuted into enemy territory. " };
+    public readonly string[] stb_PARACHUTED_ENEMY_MSG = { ">>>{0} parachuted into enemy territory. ", ">>>{0} parachuted, landing in enemy territory. " };
 
     //Setting the probability of surviving quite high, mostly bec. we haven't previously had any consequence or death for landing in water etc.
+	//NOTE: Most of these are actually sent in stats.ini - these are merely the defaults
     double stb_POW_EscapeChanceRed = 0.90;      // probability (0-1) of allied pilot escaping after landing in enemy territory
     double stb_POW_EscapeChanceBlue = 0.90;     // probability (0-1) of LW pilot escaping after landing in enemy territory
     double stb_Neutral_EscapeChanceRed = 0.95; //landed in neutral territory, what is chance of making it back to friendly territory
@@ -8266,7 +8275,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Stb_killActor(actor); //Also dead; counts as a kill
 
                 }
-                else if (Z_AltitudeAGL < 5 && mainmission.Stb_distanceToNearestAirport(actor) > 2000)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
+                else if (Z_AltitudeAGL < 5 && mainmission.Stb_distanceToNearestAirport(actor) > 3000)  // crash landed in friendly or neutral territory, on land, not w/i 3000 meters of an airport
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
@@ -9960,6 +9969,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             if (actor != null) pos = actor.Pos();
             else pos = player.Pos(); */
             Console.WriteLine("OACL not recentlyPCL: " + PlayerNameM);
+			
+			double dist = mainmission.Stb_distanceToNearestAirport(actor);
 
             if (player != null) // human pilot
             {
@@ -10055,12 +10066,17 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     }
                     else
                     {
-                        gpLogServerAndLog(null, StatCalcs.randSTR(stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG), new object[] { PlayerNameM });
+						if (dist > 3000) {
+							gpLogServerAndLog(null, StatCalcs.randSTR(stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG_NOTATAIRPORT), new object[] { PlayerNameM }); 
+						} else {
+							
+							gpLogServerAndLog(null, StatCalcs.randSTR(stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG_ATAIRPORT), new object[] { PlayerNameM }); 
+						}
                     }
 
                 }
 
-                double dist = mainmission.Stb_distanceToNearestAirport(actor);
+                
                 if (injuries >= 0.5 || stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
                 {
 

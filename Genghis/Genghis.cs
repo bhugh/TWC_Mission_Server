@@ -640,10 +640,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "secret1"}, //Red army #1
-                    { -2, "secret1"}, //Blue, army #2
-                    { -3, "secret1"}, //admin
-                    { -4, "secret1"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -651,10 +651,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "secret1"}, //Red army #1
-                    { -2, "secret1"}, //Blue, army #2
-                    { -3, "secret1"}, //admin
-                    { -4, "secret1"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -695,10 +695,10 @@ public class Mission : AMission, IMainMission
                 ON_JUBILEE = false;
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "secret1"}, //Red army #1
-                    { -2, "secret1"}, //Blue, army #2
-                    { -3, "secret1"}, //admin
-                    { -4, "secret1"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                   //note that passwords are CASEINSENSITIVE
                  };
             }
@@ -8294,6 +8294,7 @@ public class Mission : AMission, IMainMission
 
 
             CheckAndChangeStartTimeAndWeather(map); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
+			//Also changes plane types for those that can be smoothly exchanged
             //HOW TO ADD TRIGGERS FROM A SUBMISSION TO THE MAIN MISSION
             //by  ATAG_Oskar
             //2020-08-24
@@ -9213,482 +9214,525 @@ public class Mission : AMission, IMainMission
 
 
     List<List<string>> redBomberActions = new List<List<string>>() {
-      new List<string>() {"RBomb1", "RBombCover1"},
-      new List<string>() {"RBomb2", "RBombCover2"},
-      new List<string>() {"RBomb3", "RBombCover3"},
-      new List<string>() {"RBomb1_X2", "RBombCover1_X2"},
-      new List<string>() { "RBomb2_X2", "RBombCover2_X2"},
-      new List<string>() { "RBomb3_X2", "RBombCover3_X2"},
-      new List<string>() {"RBomb1_X3", "RBombCover1_X3"},
-      new List<string>() { "RBomb2_X3", "RBombCover2_X3"},
-      new List<string>() { "RBomb3_X3", "RBombCover3_X3"},
-      new List<string>() {"Jabored"},
-      new List<string>() {"Jabored_X2"},
-      new List<string>() {"Jabored_X3"},
-      new List<string>() {"MQWest", "MQWestCover"},
-      new List<string>() {"action4", "action4cover"},
-      new List<string>() {"action6", "action6cover"},
-      new List<string>() {"action14", "action14cover"},
-      new List<string>() {"action16", "action16cover"},
-      new List<string>() { "MQWest_X2", "MQWestCover_X2"},
-      new List<string>() { "action4_X2", "action4cover_X2"},
-      new List<string>() { "action6_X2", "action6cover_X2"},
-      new List<string>() { "action14_X2", "action14cover_X2"},
-      new List<string>() { "action16_X2", "action16cover_X2"},
-      new List<string>() { "MQWest_X3", "MQWestCover_X3"},
-      new List<string>() { "action4_X3", "action4cover_X3"},
-      new List<string>() { "action6_X3", "action6cover_X3"},
-      new List<string>() { "action14_X3", "action14cover_X3"},
-      new List<string>() { "action16_X3", "action16cover_X3"},
-      new List<string>() {"F1", "F1e"},
-	  new List<string>() {"F1_X2", "F1e_X2"},
-	  new List<string>() {"F1_X3", "F1e_X3"},
-	  new List<string>() {"F5", "F5e"},
-	  new List<string>() {"F5_X2", "F5e_X2"},
-	  new List<string>() {"F5_X3", "F5e_X3"},
-	  new List<string>() {"F7", "F7e"},
-      new List<string>() {"F7_X2", "F7e_X2"},
-	  new List<string>() {"F7_X3", "F7e_X3"},
-	  new List<string>() {"F13", "F13e"},
-      new List<string>() {"F13_X2", "F13e_X2"},
-      new List<string>() {"F13_X3", "F13e_X3"},
-	  new List<string>() { "F17", "F18"},
-      new List<string>() { "F17_X2", "F18_X2"},
-      new List<string>() { "F17_X3", "F18_X3"},
-      new List<string>() {"F6", "F7"},
-      new List<string>() {"F13", "F13e"},
-      new List<string>() {"F17", "F18"},
-	  new List<string>() {"F13_X2", "F13e_X2"},
-      new List<string>() {"F17_X2", "F18_X2"},
-	  new List<string>() {"F13_X3", "F13e_X3"},
-      new List<string>() {"F17_X3", "F18_X3"},
-	  
+		new List<string>() {"000330_RBomber", "000343_RCover"},
+		new List<string>() {"001240_RBomber", "001253_RCover"},
+		new List<string>() {"001820_RBomber", "001833_RCover"}, 
+		new List<string>() {"002400_RBomber", "002413_RCover"}, 
+		new List<string>() {"003600_RBomber", "003613_RCover"}, 
+		new List<string>() {"004300_RBomber", "004313_RCover"}, 
+		new List<string>() {"005600_RBomber", "005613_RCover"}, 
+		new List<string>() {"006800_RBomber", "006813_RCover", "006826_RCover_B"}, 
+		new List<string>() {"007700_RBomber", "007713_RCover"}, 
+		new List<string>() {"008900_RBomber", "008913_RCover"}, 
+		new List<string>() {"009900_RBomber", "009913_RCover"}, 
+		new List<string>() {"010900_RBomber", "010913_RCover"}, 
+		new List<string>() {"011800_RBomber", "011813_RCover"}, 
+		new List<string>() {"012600_RBomber", "012613_RCover"}, 
+		new List<string>() {"013200_RBomber", "013213_RCover"}, 
+		new List<string>() {"014000_RBomber", "014013_RCover"}, 
+		new List<string>() {"014800_RBomber", "014813_RCover"}, 
+		new List<string>() {"015200_RBomber", "015213_RCover"}, 
+		new List<string>() {"015900_RBomber", "015913_RCover", "015926_RCover_B"}, 
+		new List<string>() {"016800_RBomber", "016813_RCover"}, 
+		new List<string>() {"017500_RBomber", "017513_RCover"}, 
+		new List<string>() {"018300_RBomber", "018313_RCover"}, 
+		new List<string>() {"019100_RBomber", "019113_RCover"}, 
+		new List<string>() {"019500_RBomber", "019513_RCover"}, 
+		new List<string>() {"020300_RBomber", "020313_RCover"}, 
+		new List<string>() {"021300_RBomber", "021313_RCover", "021326_RCover_B"}, 
+		new List<string>() {"022300_RBomber", "022313_RCover"}, 
+		new List<string>() {"023300_RBomber", "023313_RCover"}, 
+		new List<string>() {"024600_RBomber", "024613_RCover"}, 
+		new List<string>() {"025700_RBomber", "025713_RCover"}, 
+		new List<string>() {"026900_RBomber", "026913_RCover"}, 
+		new List<string>() {"027500_RBomber", "027513_RCover"}, 
+		new List<string>() {"028400_RBomber", "028413_RCover"}, 
+		new List<string>() {"028900_RBomber", "028913_RCover"}, 
+		new List<string>() {"029626_RBomber", "029639_RCover"}, 
+		new List<string>() {"030213_RBomber", "030226_RCover"}, 
+		new List<string>() {"030613_RBomber", "030626_RCover", "030639_RCover_B"}, 
+		new List<string>() {"031613_RBomber", "031626_RCover"}, 
+		new List<string>() {"032613_RBomber", "032626_RCover"}, 
+		new List<string>() {"033613_RBomber", "033626_RCover"}, 
+		new List<string>() {"034913_RBomber", "034926_RCover"}, 
+		new List<string>() {"035900_RBomber", "035913_RCover"}, 
+		new List<string>() {"037000_RBomber", "037013_RCover"}, 
+		new List<string>() {"038100_RBomber", "038113_RCover"}, 
+		new List<string>() {"038800_RBomber", "038813_RCover"}, 
+		new List<string>() {"039500_RBomber", "039513_RCover"}, 
+		new List<string>() {"040300_RBomber", "040313_RCover"}, 
+		new List<string>() {"040900_RBomber", "040913_RCover"}, 
+		new List<string>() {"041400_RBomber", "041413_RCover"},	  
       };
 
     List<List<string>> blueBomberActions = new List<List<string>>() {
-      new List<string>() {"Bomb1", "BombCover1"},
-      new List<string>() {"Bomb2", "BombCover2"},
-      new List<string>() {"Bomb3", "BombCover3"},
-      new List<string>() { "Bomb1_X2", "BombCover1_X2"},
-      new List<string>() { "Bomb2_X2", "BombCover2_X2"},
-      new List<string>() { "Bomb3_X2", "BombCover3_X2"},
-      new List<string>() { "Bomb1_X3", "BombCover1_X3"},
-      new List<string>() { "Bomb2_X3", "BombCover2_X3"},
-      new List<string>() { "Bomb3_X3", "BombCover3_X3"},
-      new List<string>() {"45mincover2", "45minraidCover", "45minraidB"},
-      new List<string>() {"2hrraid", "2hrraidcover"},
-      new List<string>() {"4hrraidcover2", "4hrraidcover", "4hrraid"},
-      new List<string>() {"testbomber", "testcover1", "testcover2"},
-      new List<string>() {"action5", "action5e"},
-      new List<string>() {"action7", "action7e"},
-      new List<string>() {"action13", "action13e", "action13c", "action13cc"},
-      new List<string>() {"45mincover2_X2", "45minraidCover_X2", "45minraidB_X2",},
-      new List<string>() {"2hrraid_X2", "2hrraidcover_X2",},
-      new List<string>() {"4hrraidcover2_X2", "4hrraidcover_X2", "4hrraid_X2",},
-      new List<string>() {"testbomber_X2", "testcover1_X2", "testcover2_X2",},
-      new List<string>() {"action5_X2", "action5e_X2",},
-      new List<string>() {"action7_X2", "action7e_X2",},
-      new List<string>() {"action13_X2", "action13e_X2", "action13c_X2", "action13cc_X2",},
-      new List<string>() {"45mincover2_X3", "45minraidCover_X3", "45minraidB_X3",},
-      new List<string>() {"2hrraid_X3", "2hrraidcover_X3",},
-      new List<string>() {"4hrraidcover2_X3", "4hrraidcover_X3", "4hrraid_X3",},
-      new List<string>() {"testbomber_X3", "testcover1_X3", "testcover2_X3",},
-      new List<string>() {"action5_X3", "action5e_X3",},
-      new List<string>() {"action7_X3", "action7e_X3",},
-      new List<string>() {"action13_X3", "action13e_X3", "action13c_X3", "action13cc_X3",},
-	  new List<string>() {"newBomb1"},
-	  new List<string>() {"newBomb2"},
-	  new List<string>() {"newBomb3"},
+		new List<string>() {"000300_BBomber", "000313_BCover"},
+		new List<string>() {"001200_BBomber", "001213_BCover"}, 
+		new List<string>() {"001850_BBomber", "001863_BCover"}, 
+		new List<string>() {"002700_BBomber", "002713_BCover", "002726_BCover_B"}, 
+		new List<string>() {"003900_BBomber", "003913_BCover", "003926_BCover_B"}, 
+		new List<string>() {"004800_BBomber", "004813_BCover"}, 
+		new List<string>() {"005900_BBomber", "005913_BCover"}, 
+		new List<string>() {"006839_BBomber", "007100_BCover", "007113_BCover_B"}, 
+		new List<string>() {"008000_BBomber", "008013_BCover"}, 
+		new List<string>() {"008926_BBomber", "009200_BCover", "009213_BCover_B"}, 
+		new List<string>() {"010200_BBomber", "010213_BCover"}, 
+		new List<string>() {"011200_BBomber", "011213_BCover"}, 
+		new List<string>() {"012000_BBomber", "012013_BCover"}, 
+		new List<string>() {"012700_BBomber", "012713_BCover", "012726_BCover_B"}, 
+		new List<string>() {"013400_BBomber", "013413_BCover"}, 
+		new List<string>() {"014200_BBomber", "014213_BCover", "014226_BCover_B"}, 
+		new List<string>() {"014900_BBomber", "014913_BCover"}, 
+		new List<string>() {"015300_BBomber", "015313_BCover"}, 
+		new List<string>() {"016100_BBomber", "016113_BCover"}, 
+		new List<string>() {"017000_BBomber", "017013_BCover"}, 
+		new List<string>() {"017600_BBomber", "017613_BCover", "017626_BCover_B"}, 
+		new List<string>() {"018600_BBomber", "018613_BCover", "018626_BCover_B"}, 
+		new List<string>() {"019200_BBomber", "019213_BCover"}, 
+		new List<string>() {"019600_BBomber", "019613_BCover", "019626_BCover_B"}, 
+		new List<string>() {"020600_BBomber", "020613_BCover"},  
+		new List<string>() {"021600_BBomber", "021613_BCover"}, 
+		new List<string>() {"022600_BBomber", "022613_BCover"}, 
+		new List<string>() {"023900_BBomber", "023913_BCover", "023926_BCover_B"}, 
+		new List<string>() {"024900_BBomber", "024913_BCover", "024926_BCover_B"}, 
+		new List<string>() {"026000_BBomber", "026013_BCover"}, 
+		new List<string>() {"027100_BBomber", "027113_BCover"}, 
+		new List<string>() {"027800_BBomber", "027813_BCover"}, 
+		new List<string>() {"028500_BBomber", "028513_BCover"}, 
+		new List<string>() {"029300_BBomber", "029313_BCover"}, 
+		new List<string>() {"029900_BBomber", "029913_BCover"}, 
+		new List<string>() {"030400_BBomber", "030413_BCover"},  
+		new List<string>() {"031000_BBomber", "031013_BCover"}, 
+		new List<string>() {"032000_BBomber", "032013_BCover", "032026_BCover_B"}, 
+		new List<string>() {"033000_BBomber", "033013_BCover"}, 
+		new List<string>() {"034000_BBomber", "034013_BCover"}, 
+		new List<string>() {"035200_BBomber", "035213_BCover"}, 
+		new List<string>() {"035926_BBomber", "035939_BCover", "035952_BCover_B"}, 
+		new List<string>() {"037500_BBomber", "037513_BCover"}, 
+		new List<string>() {"038126_BBomber", "038139_BCover"}, 
+		new List<string>() {"039000_BBomber", "039013_BCover"}, 
+		new List<string>() {"039600_BBomber", "039613_BCover"}, 
+		new List<string>() {"040600_BBomber", "040613_BCover"}, 
+		new List<string>() {"041100_BBomber", "041113_BCover"}, 
+		new List<string>() {"041500_BBomber", "041513_BCover", "041526_BCover_B"},
       };
 
     List<List<string>> blueFighterActions = new List<List<string>>() {
-      new List<string>() {"BlueShorePatrol1"},
-      new List<string>() {"BlueShorePatrol2"},
+		new List<string>() {"000600_BFighter"},
+		new List<string>() {"001800_BFighter"},
+		new List<string>() {"002220_BFighter"},
+		new List<string>() {"003060_BFighter"},
+		new List<string>() {"004200_BFighter"},
+		new List<string>() {"005300_BFighter"},
+		new List<string>() {"006500_BFighter"},
+		new List<string>() {"007500_BFighter"},
+		new List<string>() {"008600_BFighter"},
+		new List<string>() {"009600_BFighter"},
+		new List<string>() {"010600_BFighter"},
+		new List<string>() {"011500_BFighter"},
+		new List<string>() {"012400_BFighter"},
+		new List<string>() {"013100_BFighter"},
+		new List<string>() {"013800_BFighter"},
+		new List<string>() {"014500_BFighter"},
+		new List<string>() {"015100_BFighter"},
+		new List<string>() {"015700_BFighter"},
+		new List<string>() {"016500_BFighter"},
+		new List<string>() {"017400_BFighter"},
+		new List<string>() {"018000_BFighter"},
+		new List<string>() {"018900_BFighter"},
+		new List<string>() {"019413_BFighter"},
+		new List<string>() {"020000_BFighter"},
+		new List<string>() {"021000_BFighter"},
+		new List<string>() {"022000_BFighter"},
+		new List<string>() {"023000_BFighter"},
+		new List<string>() {"024300_BFighter"},
+		new List<string>() {"025300_BFighter"},
+		new List<string>() {"026700_BFighter"},
+		new List<string>() {"027300_BFighter"},
+		new List<string>() {"028200_BFighter"},
+		new List<string>() {"028613_BFighter"},
+		new List<string>() {"029613_BFighter"},
+		new List<string>() {"030200_BFighter"},
+		new List<string>() {"030600_BFighter"},
+		new List<string>() {"031600_BFighter"},
+		new List<string>() {"032600_BFighter"},
+		new List<string>() {"033600_BFighter"},
+		new List<string>() {"034900_BFighter"},
+		new List<string>() {"035613_BFighter"},
+		new List<string>() {"036713_BFighter"},
+		new List<string>() {"037913_BFighter"},
+		new List<string>() {"038513_BFighter"},
+		new List<string>() {"039413_BFighter"},
+		new List<string>() {"039913_BFighter"},
+		new List<string>() {"040639_BFighter"},
+		new List<string>() {"041213_BFighter"},
       };
     List<List<string>> redFighterActions = new List<List<string>>() {
-      new List<string>() {"RedShorePatrol1"},
-      new List<string>() {"RedShorePatrol2"},
+		new List<string>() {"000630_RFighter"},
+		new List<string>() {"001813_RFighter"},
+		new List<string>() {"002120_RFighter"},
+		new List<string>() {"003050_RFighter"},
+		new List<string>() {"004100_RFighter"},
+		new List<string>() {"005200_RFighter"},
+		new List<string>() {"006200_RFighter"},
+		new List<string>() {"007340_RFighter"},
+		new List<string>() {"008300_RFighter"},
+		new List<string>() {"009400_RFighter"},
+		new List<string>() {"010400_RFighter"},
+		new List<string>() {"011400_RFighter"},
+		new List<string>() {"012200_RFighter"},
+		new List<string>() {"012900_RFighter"},
+		new List<string>() {"013600_RFighter"},
+		new List<string>() {"014400_RFighter"},
+		new List<string>() {"015000_RFighter"},
+		new List<string>() {"015500_RFighter"},
+		new List<string>() {"016300_RFighter"},
+		new List<string>() {"017200_RFighter"},
+		new List<string>() {"017900_RFighter"},
+		new List<string>() {"018800_RFighter"},
+		new List<string>() {"019400_RFighter"},
+		new List<string>() {"019900_RFighter"},
+		new List<string>() {"020900_RFighter"},
+		new List<string>() {"021900_RFighter"},
+		new List<string>() {"022900_RFighter"},
+		new List<string>() {"024200_RFighter"},
+		new List<string>() {"025200_RFighter"},
+		new List<string>() {"026500_RFighter"},
+		new List<string>() {"027126_RFighter"},
+		new List<string>() {"028000_RFighter"},
+		new List<string>() {"028600_RFighter"},
+		new List<string>() {"029600_RFighter"},
+		new List<string>() {"030100_RFighter"},
+		new List<string>() {"030500_RFighter"},
+		new List<string>() {"031300_RFighter"},
+		new List<string>() {"032300_RFighter"},
+		new List<string>() {"033300_RFighter"},
+		new List<string>() {"034300_RFighter"},
+		new List<string>() {"035600_RFighter"},
+		new List<string>() {"036700_RFighter"},
+		new List<string>() {"037900_RFighter"},
+		new List<string>() {"038500_RFighter"},
+		new List<string>() {"039400_RFighter"},
+		new List<string>() {"039900_RFighter"},
+		new List<string>() {"040626_RFighter"},
+		new List<string>() {"041200_RFighter"},
       };
     List<string> blueAllActions = new List<string>
     {
-        "action1",
-        "action1c",
-        "action1e",
-        "action3",
-        "action5",
-        "action5e",
-        "action7",
-        "action7e",
-        "action9",
-        "action11",
-        "action13",
-        "action13e",
-        "action13c",
-        "action13cc",
-        "action15",
-        "action17",
-        "escort2",
-        "escort3",
-        "Bomb1",
-        "BombCover1",
-        "Bomb2",
-        "BombCover2",
-        "Bomb3",
-        "BombCover3",
-        "109Cover1",
-        "109Cover2",
-        "109Cover3",
-        "109Cover4",
-        "110cover1",
-        "110cover2",
-        "110cover3",
-        "110cover4",
-        "CalaisAAA1",
-        "CalaisAAA2",
-        "CalaisAAA3",
-        "CalaisPropeller",
-        "CalaisDiesel",
-        "CalaisTorpedo",
-        "CalaisLox",
-        "CalaisMainFuel",
-        "CalaisHydrogen",
-        "CalaisTrainStation",
-        "BluePatrol1",
-        "BluePatrol2",
-        "BluePatrol3",
-        "BluePatrol4",
-        "BluePatrol5",
-        "BluePatrol3",
-        "Newhigh",
-        "StOmar",
-        "zonedefenseblue1",
-        "zonedefenseblue2",
-        "zonedefenseblue3",
-        "zonedefenseblue4",
-        "Rely1",
-        "Rely2",
-        "Rely3",
-        "Rely4",
-        "Rely5",
-        "Rely6",
-        "45mincover2",
-        "45minraidCover",
-        "45minraidB",
-        "2hrraid",
-        "2hrraidcover",
-        "4hrraidcover2",
-        "4hrraidcover",
-        "4hrraid",
-        "testbomber",
-        "testcover1",
-        "testcover2",
-        "StOmar2_X2",
-        "escort2_X2",
-        "escort3_X2",
-        "Bomb1_X2",
-        "BombCover1_X2",
-        "Bomb2_X2",
-        "BombCover2_X2",
-        "Bomb3_X2",
-        "BombCover3_X2",
-        "109Cover1_X2",
-        "109Cover2_X2",
-        "109Cover3_X2",
-        "109Cover4_X2",
-        "110cover1_X2",
-        "110cover2_X2",
-        "110cover3_X2",
-        "110cover4_X2",
-        "CalaisAAA1_X2",
-        "CalaisAAA2_X2",
-        "CalaisAAA3_X2",
-        "CalaisPropeller_X2",
-        "CalaisDiesel_X2",
-        "CalaisTorpedo_X2",
-        "CalaisLox_X2",
-        "CalaisMainFuel_X2",
-        "CalaisHydrogen_X2",
-        "CalaisTrainStation_X2",
-        "BluePatrol1_X2",
-        "BluePatrol2_X2",
-        "BluePatrol3_X2",
-        "BluePatrol4_X2",
-        "BluePatrol5_X2",
-        "BluePatrol3_X2",
-        "Newhigh_X2",
-        "StOmar_X2",
-        "zonedefenseblue1_X2",
-        "zonedefenseblue2_X2",
-        "zonedefenseblue3_X2",
-        "zonedefenseblue4_X2",
-        "Rely1_X2",
-        "Rely2_X2",
-        "Rely3_X2",
-        "Rely4_X2",
-        "Rely5_X2",
-        "Rely6_X2",
-        "45mincover2_X2",
-        "45minraidCover_X2",
-        "45minraidB_X2",
-        "2hrraid_X2",
-        "2hrraidcover_X2",
-        "4hrraidcover2_X2",
-        "4hrraidcover_X2",
-        "4hrraid_X2",
-        "testbomber_X2",
-        "testcover1_X2",
-        "testcover2_X2",
-        "StOmar2_X3",
-        "escort2_X3",
-        "escort3_X3",
-        "Bomb1_X3",
-        "BombCover1_X3",
-        "Bomb2_X3",
-        "BombCover2_X3",
-        "Bomb3_X3",
-        "BombCover3_X3",
-        "109Cover1_X3",
-        "109Cover2_X3",
-        "109Cover3_X3",
-        "109Cover4_X3",
-        "110cover1_X3",
-        "110cover2_X3",
-        "110cover3_X3",
-        "110cover4_X3",
-        "CalaisAAA1_X3",
-        "CalaisAAA2_X3",
-        "CalaisAAA3_X3",
-        "CalaisPropeller_X3",
-        "CalaisDiesel_X3",
-        "CalaisTorpedo_X3",
-        "CalaisLox_X3",
-        "CalaisMainFuel_X3",
-        "CalaisHydrogen_X3",
-        "CalaisTrainStation_X3",
-        "BluePatrol1_X3",
-        "BluePatrol2_X3",
-        "BluePatrol3_X3",
-        "BluePatrol4_X3",
-        "BluePatrol5_X3",
-        "BluePatrol3_X3",
-        "Newhigh_X3",
-        "StOmar_X3",
-        "zonedefenseblue1_X3",
-        "zonedefenseblue2_X3",
-        "zonedefenseblue3_X3",
-        "zonedefenseblue4_X3",
-        "Rely1_X3",
-        "Rely2_X3",
-        "Rely3_X3",
-        "Rely4_X3",
-        "Rely5_X3",
-        "Rely6_X3",
-        "45mincover2_X3",
-        "45minraidCover_X3",
-        "45minraidB_X3",
-        "2hrraid_X3",
-        "2hrraidcover_X3",
-        "4hrraidcover2_X3",
-        "4hrraidcover_X3",
-        "4hrraid_X3",
-        "testbomber_X3",
-        "testcover1_X3",
-        "testcover2_X3",
-        "BlueShorePatrol2",
-        "BlueShorePatrol1",
-		"newBomb1",
-		"newBomb2",
-		"newBomb3",
+		    "000300_BBomber",
+			"000313_BCover",
+			"000600_BFighter",
+			"001200_BBomber",
+			"001213_BCover",
+			"001800_BFighter",
+			"001850_BBomber",
+			"001863_BCover",
+			"002220_BFighter",
+			"002700_BBomber",
+			"002713_BCover",
+			"002726_BCover_B",
+			"003060_BFighter",
+			"003900_BBomber",
+			"003913_BCover",
+			"003926_BCover_B",
+			"004200_BFighter",
+			"004800_BBomber",
+			"004813_BCover",
+			"005300_BFighter",
+			"005900_BBomber",
+			"005913_BCover",
+			"006500_BFighter",
+			"006826_RCover_B",
+			"006839_BBomber",
+			"007100_BCover",
+			"007113_BCover_B",
+			"007500_BFighter",
+			"008000_BBomber",
+			"008013_BCover",
+			"008600_BFighter",
+			"008926_BBomber",
+			"009200_BCover",
+			"009213_BCover_B",
+			"009600_BFighter",
+			"010200_BBomber",
+			"010213_BCover",
+			"010600_BFighter",
+			"011200_BBomber",
+			"011213_BCover",
+			"011500_BFighter",
+			"012000_BBomber",
+			"012013_BCover",
+			"012400_BFighter",
+			"012700_BBomber",
+			"012713_BCover",
+			"012726_BCover_B",
+			"013100_BFighter",
+			"013400_BBomber",
+			"013413_BCover",
+			"013800_BFighter",
+			"014200_BBomber",
+			"014213_BCover",
+			"014226_BCover_B",
+			"014500_BFighter",
+			"014900_BBomber",
+			"014913_BCover",
+			"015100_BFighter",
+			"015300_BBomber",
+			"015313_BCover",
+			"015700_BFighter",
+			"015926_RCover_B",
+			"016100_BBomber",
+			"016113_BCover",
+			"016500_BFighter",
+			"017000_BBomber",
+			"017013_BCover",
+			"017400_BFighter",
+			"017600_BBomber",
+			"017613_BCover",
+			"017626_BCover_B",
+			"018000_BFighter",
+			"018600_BBomber",
+			"018613_BCover",
+			"018626_BCover_B",
+			"018900_BFighter",
+			"019200_BBomber",
+			"019213_BCover",
+			"019413_BFighter",
+			"019600_BBomber",
+			"019613_BCover",
+			"019626_BCover_B",
+			"020000_BFighter",
+			"020600_BBomber",
+			"020613_BCover",
+			"021000_BFighter",
+			"021326_RCover_B",
+			"021600_BBomber",
+			"021613_BCover",
+			"022000_BFighter",
+			"022600_BBomber",
+			"022613_BCover",
+			"023000_BFighter",
+			"023900_BBomber",
+			"023913_BCover",
+			"023926_BCover_B",
+			"024300_BFighter",
+			"024900_BBomber",
+			"024913_BCover",
+			"024926_BCover_B",
+			"025300_BFighter",
+			"026000_BBomber",
+			"026013_BCover",
+			"026700_BFighter",
+			"027100_BBomber",
+			"027113_BCover",
+			"027300_BFighter",
+			"027800_BBomber",
+			"027813_BCover",
+			"028200_BFighter",
+			"028500_BBomber",
+			"028513_BCover",
+			"028613_BFighter",
+			"029300_BBomber",
+			"029313_BCover",
+			"029613_BFighter",
+			"029900_BBomber",
+			"029913_BCover",
+			"030200_BFighter",
+			"030400_BBomber",
+			"030413_BCover",
+			"030600_BFighter",
+			"030639_RCover_B",
+			"031000_BBomber",
+			"031013_BCover",
+			"031600_BFighter",
+			"032000_BBomber",
+			"032013_BCover",
+			"032026_BCover_B",
+			"032600_BFighter",
+			"033000_BBomber",
+			"033013_BCover",
+			"033600_BFighter",
+			"034000_BBomber",
+			"034013_BCover",
+			"034900_BFighter",
+			"035200_BBomber",
+			"035213_BCover",
+			"035613_BFighter",
+			"035926_BBomber",
+			"035939_BCover",
+			"035952_BCover_B",
+			"036713_BFighter",
+			"037500_BBomber",
+			"037513_BCover",
+			"037913_BFighter",
+			"038126_BBomber",
+			"038139_BCover",
+			"038513_BFighter",
+			"039000_BBomber",
+			"039013_BCover",
+			"039413_BFighter",
+			"039600_BBomber",
+			"039613_BCover",
+			"039913_BFighter",
+			"040600_BBomber",
+			"040613_BCover",
+			"040639_BFighter",
+			"041100_BBomber",
+			"041113_BCover",
+			"041213_BFighter",
+			"041500_BBomber",
+			"041513_BCover",
+			"041526_BCover_B",
     };
 
     List<string> redAllActions = new List<string>
     {
-        "action2",
-        "action4",
-        "action4cover",
-        "action4_X2",
-        "action4cover_X2",
-        "action4_X3",
-        "action4cover_X3",
-        "action6",
-        "action6cover",
-        "action6_X2",
-        "action6cover_X2",
-        "action6_X3",
-        "action6cover_X3",
-        "action10",
-        "action8",
-        "action8cover",
-        "action12",
-        "action12cover",
-        "action12_X2",
-        "action12cover_X2",
-        "action12_X3",
-        "action12cover_X3",
-        "action14cover",
-        "action14_X2",
-        "action14cover_X2",
-        "action14_X3",
-        "action14cover_X3",
-        "action16",
-        "action16cover",
-        "action16_X2",
-        "action16cover_X2",
-        "action16_X2",
-        "action16cover_X2",
-        "StOmar2",
-        "action14",
-        "action18",
-        "redspitcover1",
-        "redspitcover2",
-        "redhurrycover1",
-        "redhurrycover2",
-        "SouthernCover1",
-        "SouthernCover2",
-        "SouthernCover3",
-        "SouthernCover4",
-        "SouthernCover5",
-        "RBomb1",
-        "RBombCover1",
-        "RBomb2",
-        "RBombCover2",
-        "RBomb3",
-        "RBombCover3",
-        "Fatal1",
-        "Fatal2",
-        "Fatal3",
-        "Fatal4",
-        "Fatal5",
-        "Pegwelldefense1",
-        "Pegwelldefense2",
-        "Pegwelldefense3",
-        "Pegwelldefense4",
-        "Pegwelldefense5",
-        "Willmingtondefensered",
-        "Gladiatorintercept",
-        "Gladiatorintercept2",
-        "Redhilldefensered2",
-        "Beau1",
-        "MQWest",
-        "MQWestCover",
-        "loneglad",
-        "redspitcover1_X2",
-        "redspitcover2_X2",
-        "redhurrycover1_X2",
-        "redhurrycover2_X2",
-        "SouthernCover1_X2",
-        "SouthernCover2_X2",
-        "SouthernCover3_X2",
-        "SouthernCover4_X2",
-        "SouthernCover5_X2",
-        "RBomb1_X2",
-        "RBombCover1_X2",
-        "RBomb2_X2",
-        "RBombCover2_X2",
-        "RBomb3_X2",
-        "RBombCover3_X2",
-        "Fatal1_X2",
-        "Fatal2_X2",
-        "Fatal3_X2",
-        "Fatal4_X2",
-        "Fatal5_X2",
-        "Pegwelldefense1_X2",
-        "Pegwelldefense2_X2",
-        "Pegwelldefense3_X2",
-        "Pegwelldefense4_X2",
-        "Pegwelldefense5_X2",
-        "Willmingtondefensered_X2",
-        "Gladiatorintercept_X2",
-        "Gladiatorintercept2_X2",
-        "Redhilldefensered2_X2",
-        "Beau1_X2",
-        "MQWest_X2",
-        "MQWestCover_X2",
-        "loneglad_X2",
-        "redspitcover1_X3",
-        "redspitcover2_X3",
-        "redhurrycover1_X3",
-        "redhurrycover2_X3",
-        "SouthernCover1_X3",
-        "SouthernCover2_X3",
-        "SouthernCover3_X3",
-        "SouthernCover4_X3",
-        "SouthernCover5_X3",
-        "RBomb1_X3",
-        "RBombCover1_X3",
-        "RBomb2_X3",
-        "RBombCover2_X3",
-        "RBomb3_X3",
-        "RBombCover3_X3",
-        "Fatal1_X3",
-        "Fatal2_X3",
-        "Fatal3_X3",
-        "Fatal4_X3",
-        "Fatal5_X3",
-        "Pegwelldefense1_X3",
-        "Pegwelldefense2_X3",
-        "Pegwelldefense3_X3",
-        "Pegwelldefense4_X3",
-        "Pegwelldefense5_X3",
-        "Willmingtondefensered_X3",
-        "Gladiatorintercept_X3",
-        "Gladiatorintercept2_X3",
-        "Redhilldefensered2_X3",
-        "Beau1_X3",
-        "MQWest_X3",
-        "MQWestCover_X3",
-        "loneglad_X3",
-        "RedShorePatrol2",
-        "RedShorePatrol1",
-        "Jabored",
-        "Thems1",
-        "London1air",
-        "London2air",
-        "London3air",
-        "Jabored_X2",
-        "Thems1_X2",
-        "London1air_X2",
-        "London2air_X2",
-        "London3air_X2",
-        "Jabored_X3",
-        "Thems1_X3",
-        "London1air_X3",
-        "London2air_X3",
-        "London3air_X3",
-        "F1",
-        "F1e",
-        "F2",
-        "F3",
-		"F5",
-		"F5e",
-		"F5_X2",
-		"F5e_X2",
-		"F5_X3",
-		"F5e_X3",
-        "F6",
-        "F7",
-        "F11",
-        "F12",
-        "F15",
-        "F18",
-        "F1_X2",
-        "F1e_X2",
-        "F7_X2",
-        "F7e_X2",
-        "F13_X2",
-        "F13e_X2",
-        "F17_X2",
-        "F18_X2",
-        "F1_X3",
-        "F1e_X3",
-        "F2_X3",
-        "F3_X3",
-        "F6_X3",
-        "F7_X3",
-        "F13_X3",
-        "F13e_X3",
-        "F17_X3",
-        "F18_X3",
+        "000330_RBomber",
+		"000343_RCover",
+		"000630_RFighter",
+		"001240_RBomber",
+		"001253_RCover",
+		"001813_RFighter",
+		"001820_RBomber",
+		"001833_RCover",
+		"002120_RFighter",
+		"002400_RBomber",
+		"002413_RCover",
+		"003050_RFighter",
+		"003600_RBomber",
+		"003613_RCover",
+		"004100_RFighter",
+		"004300_RBomber",
+		"004313_RCover",
+		"005200_RFighter",
+		"005600_RBomber",
+		"005613_RCover",
+		"006200_RFighter",
+		"006800_RBomber",
+		"006813_RCover",
+		"007340_RFighter",
+		"007700_RBomber",
+		"007713_RCover",
+		"008300_RFighter",
+		"008900_RBomber",
+		"008913_RCover",
+		"009400_RFighter",
+		"009900_RBomber",
+		"009913_RCover",
+		"010400_RFighter",
+		"010900_RBomber",
+		"010913_RCover",
+		"011400_RFighter",
+		"011800_RBomber",
+		"011813_RCover",
+		"012200_RFighter",
+		"012600_RBomber",
+		"012613_RCover",
+		"012900_RFighter",
+		"013200_RBomber",
+		"013213_RCover",
+		"013600_RFighter",
+		"014000_RBomber",
+		"014013_RCover",
+		"014400_RFighter",
+		"014800_RBomber",
+		"014813_RCover",
+		"015000_RFighter",
+		"015200_RBomber",
+		"015213_RCover",
+		"015500_RFighter",
+		"015900_RBomber",
+		"015913_RCover",
+		"016300_RFighter",
+		"016800_RBomber",
+		"016813_RCover",
+		"017200_RFighter",
+		"017500_RBomber",
+		"017513_RCover",
+		"017900_RFighter",
+		"018300_RBomber",
+		"018313_RCover",
+		"018800_RFighter",
+		"019100_RBomber",
+		"019113_RCover",
+		"019400_RFighter",
+		"019500_RBomber",
+		"019513_RCover",
+		"019900_RFighter",
+		"020300_RBomber",
+		"020313_RCover",
+		"020900_RFighter",
+		"021300_RBomber",
+		"021313_RCover",
+		"021900_RFighter",
+		"022300_RBomber",
+		"022313_RCover",
+		"022900_RFighter",
+		"023300_RBomber",
+		"023313_RCover",
+		"024200_RFighter",
+		"024600_RBomber",
+		"024613_RCover",
+		"025200_RFighter",
+		"025700_RBomber",
+		"025713_RCover",
+		"026500_RFighter",
+		"026900_RBomber",
+		"026913_RCover",
+		"027126_RFighter",
+		"027500_RBomber",
+		"027513_RCover",
+		"028000_RFighter",
+		"028400_RBomber",
+		"028413_RCover",
+		"028600_RFighter",
+		"028900_RBomber",
+		"028913_RCover",
+		"029600_RFighter",
+		"029626_RBomber",
+		"029639_RCover",
+		"030100_RFighter",
+		"030213_RBomber",
+		"030226_RCover",
+		"030500_RFighter",
+		"030613_RBomber",
+		"030626_RCover",
+		"031300_RFighter",
+		"031613_RBomber",
+		"031626_RCover",
+		"032300_RFighter",
+		"032613_RBomber",
+		"032626_RCover",
+		"033300_RFighter",
+		"033613_RBomber",
+		"033626_RCover",
+		"034300_RFighter",
+		"034913_RBomber",
+		"034926_RCover",
+		"035600_RFighter",
+		"035900_RBomber",
+		"035913_RCover",
+		"036700_RFighter",
+		"037000_RBomber",
+		"037013_RCover",
+		"037900_RFighter",
+		"038100_RBomber",
+		"038113_RCover",
+		"038500_RFighter",
+		"038800_RBomber",
+		"038813_RCover",
+		"039400_RFighter",
+		"039500_RBomber",
+		"039513_RCover",
+		"039900_RFighter",
+		"040300_RBomber",
+		"040313_RCover",
+		"040626_RFighter",
+		"040900_RBomber",
+		"040913_RCover",
+		"041200_RFighter",
+		"041400_RBomber",
+		"041413_RCover",
     };
 	
 
@@ -12841,44 +12885,44 @@ public class Mission : AMission, IMainMission
     //And it turns out we can only replace/changes bombers IF their weapons setup string exactly matches.  So the switchouts are NOT very exciting. Oh well.
     //Updated 2021/07 with new Tobruk aircraft etc. 
     //Went through just about every a/c and check loadout etc
-    static Dictionary<string, int> RedBombers = new Dictionary<string, int>() { { "bob:Aircraft.BlenheimMkIV", 10 }, { "bob:Aircraft.BlenheimMkIV_Late", 10 } };
-    static Dictionary<string, int> RedBombers2 = new Dictionary<string, int>() { { "tobruk:Aircraft.WellingtonMkIc_Late", 30 }, { "tobruk:Aircraft.WellingtonMkIc_t", 30 }, { "tobruk:Aircraft.BeaufighterMkIC", 5 }, { "bob:Aircraft.WellingtonMkIc", 30 } }; //Can do welly Ic_torp also but it drops a torpedo...
+    static Dictionary<string, int> RedBombers = new Dictionary<string, int>() { { "Aircraft.BlenheimMkIV", 10 }, { "Aircraft.BlenheimMkIV_Late", 10 } };
+    static Dictionary<string, int> RedBombers2 = new Dictionary<string, int>() { { "tobruk:Aircraft.WellingtonMkIc_Late", 30 }, { "tobruk:Aircraft.WellingtonMkIc_t", 30 }, { "tobruk:Aircraft.BeaufighterMkIC", 5 }, { "Aircraft.WellingtonMkIc", 30 } }; //Can do welly Ic_torp also but it drops a torpedo...
 
     static Dictionary<string, int> RedBombers3 = new Dictionary<string, int>() {
-        {"bob:Aircraft.HurricaneMkI_FB", 30},
-        { "tobruk:Aircraft.HurricaneMkIIb", 20 },
-        { "tobruk:Aircraft.HurricaneMkIIb-Late", 10 },
-        { "tobruk:Aircraft.HurricaneMkIIc", 15 },
-        { "tobruk:Aircraft.HurricaneMkIIc-Late", 5 },
+        {"Aircraft.HurricaneMkI_FB", 30},  //Should be Weapons 1 1 but Weapons 1 3 seems to work OK and gives better bombs to IIb/IIc variants
+        { "tobruk:Aircraft.HurricaneMkIIb", 20 }, //Hurri IIb & late, IIc & late, have bombs with Weapons 1 3 best
+        { "tobruk:Aircraft.HurricaneMkIIb-Late", 10 }, // They can also be Weapons 1 and compatible w/ later spits
+        { "tobruk:Aircraft.HurricaneMkIIc", 17 }, //
+        { "tobruk:Aircraft.HurricaneMkIIc-Late", 8 },
     };
 
     static Dictionary<string, int> BlueBombers = new Dictionary<string, int>() {
 
-        { "bob:Aircraft.He-111H-2", 10 },
-        { "bob:Aircraft.He-111H-6", 10 },
+        { "Aircraft.He-111H-2", 10 },
+        { "Aircraft.He-111H-6", 10 },
         {"tobruk:Aircraft.Ju-88A-5",6},
         {"tobruk:Aircraft.Ju-88A-5Late",4},
     };
 
     static Dictionary<string, int> BlueBombers2 = new Dictionary<string, int>() {
 
-        { "bob:Aircraft.He-111P-2", 10 },
-        {"bob:Aircraft.Ju-88A-1", 12 },
+        { "Aircraft.He-111P-2", 10 },
+        {"Aircraft.Ju-88A-1", 12 },
     };
 
     static Dictionary<string, int> BlueDO215_BR20 = new Dictionary<string, int>() {
-        { "bob:Aircraft.Do-215B-1", 10 },
-        { "bob:Aircraft.BR-20M", 10 },
-        {"bob:Aircraft.Ju-87B-2", 7},
+        { "Aircraft.Do-215B-1", 10 },
+        { "Aircraft.BR-20M", 10 },
+        {"Aircraft.Ju-87B-2", 7},
     }; //Both need to be WEAPONS 1 1 1 2  or 1111 or 1113 etc
 
     static Dictionary<string, int> BlueE4s = new Dictionary<string, int>() {
-        { "bob:Aircraft.Bf-109E-4N_Late", 30 },
-        { "bob:Aircraft.Bf-109E-4N", 20 },
-        { "bob:Aircraft.Bf-109E-4_Late", 20 },
-        { "bob:Aircraft.Bf-109E-4", 35 },
-        { "bob:Aircraft.Bf-109E-3", 40 },
-        { "bob:Aircraft.Bf-109E-1", 25 },
+        { "Aircraft.Bf-109E-4N_Late", 30 },
+        { "Aircraft.Bf-109E-4N", 20 },
+        { "Aircraft.Bf-109E-4_Late", 20 },
+        { "Aircraft.Bf-109E-4", 35 },
+        { "Aircraft.Bf-109E-3", 40 },
+        { "Aircraft.Bf-109E-1", 25 },
         {"tobruk:Aircraft.Bf-109E-7",25},
 
         {"tobruk:Aircraft.Bf-109E-7N",20},
@@ -12890,58 +12934,66 @@ public class Mission : AMission, IMainMission
         {"tobruk:Aircraft.Macchi-C202-SeriesVII",10},
         {"tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota",5},
         {"tobruk:Aircraft.D520_Serie1", 25},
-        {"bob:Aircraft.DH82A-2", 4 },
+        {"Aircraft.DH82A-2", 4 },
 
     };
 
     static Dictionary<string, int> BlueItalians = new Dictionary<string, int>() {
-        { "bob:Aircraft.G50", 10 },
+        { "Aircraft.G50", 10 },
         { "tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota", 6 },
         { "tobruk:Aircraft.Macchi-C202-SeriesIII", 3 },
         };
 
 
     static Dictionary<string, int> Blue110s = new Dictionary<string, int>() {
-        { "bob:Aircraft.Bf-110C-2", 10 },
-        { "bob:Aircraft.Bf-110C-4", 10 },
-        { "bob:Aircraft.Bf-110C-4-NJG", 10 },
-        { "bob:Aircraft.Bf-110C-6", 5 },
-        { "bob:Aircraft.Bf-110C-4N", 8 },
+        { "Aircraft.Bf-110C-2", 10 },
+        { "Aircraft.Bf-110C-4", 10 },
+        { "Aircraft.Bf-110C-4-NJG", 10 },
+        { "Aircraft.Bf-110C-6", 5 },
+        { "Aircraft.Bf-110C-4N", 8 },
     };
 
-    static Dictionary<string, int> RedBlenheimFs = new Dictionary<string, int>() { { "bob:Aircraft.BlenheimMkIF", 10 }, { "bob:Aircraft.BlenheimMkINF", 10 },
-      { "bob:Aircraft.BlenheimMkIVF", 10 },
-        { "bob:Aircraft.BlenheimMkIVNF", 10 },
-        { "bob:Aircraft.BlenheimMkIVF_Late", 10 },
-        { "bob:Aircraft.BlenheimMkIVNF_Late", 10 } };
+    static Dictionary<string, int> RedBlenheimFs = new Dictionary<string, int>() { { "Aircraft.BlenheimMkIF", 10 }, { "Aircraft.BlenheimMkINF", 10 },
+      { "Aircraft.BlenheimMkIVF", 10 },
+        { "Aircraft.BlenheimMkIVNF", 10 },
+        { "Aircraft.BlenheimMkIVF_Late", 10 },
+        { "Aircraft.BlenheimMkIVNF_Late", 10 } };
 
-    static Dictionary<string, int> RedFighters = new Dictionary<string, int>() { { "bob:Aircraft.HurricaneMkI_100oct-NF", 20 }, { "bob:Aircraft.HurricaneMkI_100oct", 20 },
-        { "bob:Aircraft.HurricaneMkI", 15 },
-        { "bob:Aircraft.HurricaneMkI_dH5-20_100oct", 15 },
-        { "bob:Aircraft.HurricaneMkI_dH5-20", 10 },
-        { "bob:Aircraft.SpitfireMkIa_100oct", 20 },
-        { "bob:Aircraft.SpitfireMkIa", 10 },
-        { "bob:Aircraft.SpitfireMkI", 10 },
-        { "bob:Aircraft.SpitfireMkI_100oct", 35 },
-        { "bob:Aircraft.SpitfireMkIIa", 25 },
+    static Dictionary<string, int> RedFighters = new Dictionary<string, int>() { { "Aircraft.HurricaneMkI_100oct-NF", 20 }, { "Aircraft.HurricaneMkI_100oct", 20 },
+        { "Aircraft.HurricaneMkI", 15 },
+        { "Aircraft.HurricaneMkI_dH5-20_100oct", 15 },
+        { "Aircraft.HurricaneMkI_dH5-20", 10 },			
+        { "Aircraft.SpitfireMkIa_100oct", 20 },
+        { "Aircraft.SpitfireMkIa", 10 },
+        { "Aircraft.SpitfireMkI", 10 },
+        { "Aircraft.SpitfireMkI_100oct", 35 },
+        { "Aircraft.SpitfireMkIIa", 25 },
         { "tobruk:Aircraft.HurricaneMkIIa", 45 },
-        { "tobruk:Aircraft.HurricaneMkIIb", 45 },
-        { "tobruk:Aircraft.HurricaneMkIIb-Late", 35 },
+		
+		//so Hurri IIB & late, and IIC & late CAN fit into this category with
+		//"Weapons 1".
+		//However ,then they get mixed with the Hurri_FB category, which they can ALSO do 
+		//with "Weapons 1 1" or "Weapons 1 3" or whatever.
+		//Trouble is, if they are in BOTH they categories get mixed and e.g.
+		//Spit 1a does NOT mix with Hurri_FB (with bombs)
+		//If we wanted to includ them here we'd have to check/match weapons as well, not worth the bother for now
+        //{ "tobruk:Aircraft.HurricaneMkIIb", 45 }, ///CHECKE!!!!!!
+        //{ "tobruk:Aircraft.HurricaneMkIIb-Late", 35 }, ///CHECKE!!!!!!
 
         { "tobruk:Aircraft.HurricaneMkIId", 25 },
         { "tobruk:Aircraft.SpitfireMkVa", 15 },
-        { "tobruk:Aircraft.KittyhawkMkIA", 5 },
-        { "tobruk:Aircraft.MartletMkIII", 5 },
-        { "tobruk:Aircraft.TomahawkMkII", 5 },
+        { "tobruk:Aircraft.KittyhawkMkIA", 10 },
+        { "tobruk:Aircraft.MartletMkIII", 10 },
+        { "tobruk:Aircraft.TomahawkMkII", 10 },
         { "tobruk:Aircraft.TomahawkMkII-Late", 5 },
-        { "bob:Aircraft.DefiantMkI", 25 },
-        { "bob:Aircraft.SpitfireMkIIb", 45 },
+        { "Aircraft.DefiantMkI", 25 },
+        { "Aircraft.SpitfireMkIIb", 45 },
     };
 
     static Dictionary<string, int> RedFighters2 = new Dictionary<string, int>() {
-        { "bob:Aircraft.AnsonMkI", 35 },
-        { "bob:Aircraft.BeaufighterMkIF", 15 }, //peple complaining about Beaufighters being to hard, so reducing them
-        { "bob:Aircraft.BeaufighterMkINF",10},
+        { "Aircraft.AnsonMkI", 35 },
+        { "Aircraft.BeaufighterMkIF", 15 }, //peple complaining about Beaufighters being to hard, so reducing them
+        { "Aircraft.BeaufighterMkINF",10},
         { "tobruk:Aircraft.BeaufighterMkIF_Late", 7},
         { "tobruk:Aircraft.BeaufighterMkINF_Late", 5},
         { "tobruk:Aircraft.GladiatorMkII_trop", 13 },
@@ -12975,14 +13027,26 @@ public class Mission : AMission, IMainMission
         //missionFile = missionFile.Replace("HUNTING", "PUNTING");
         foreach (string key in replacements.Keys)
         {
-            missionFile = missionFile.Replace(key + newline, replacements[key] + newline);
-            Console.WriteLine("Replacing: {0} : {1}", key, replacements[key]);
+			 
+            //missionFile = missionFile.Replace(key + newline, replacements[key] + newline);
+			
+			Regex regexPattern = new Regex(Regex.Escape(key) + newline);
+			
+			string result = regexPattern.Replace(missionFile, m =>
+			{
+				//replace just half the values
+				//Keeps one of the a/c in each group "taking over" the entire group - from all turning into the same one 
+				return (Calcs.clc_random.Next(2) == 1) ? replacements[key] + newline : m.Value;
+			});
+			
+			missionFile = result;
+            Console.WriteLine("updatePlanes - replacing: {0} : {1}", key, replacements[key]);
         }
 
         return missionFile;
     }
 
-    public Dictionary<string, string> makePlaneExchangeDictionary(Dictionary<string, int> dict, string prefix = "Class Aircraft.")
+    public Dictionary<string, string> makePlaneExchangeDictionary(Dictionary<string, int> dict, string prefix = "Class ")
     {
         var ret = new Dictionary<string, string>();
         var chooseList = new List<string>();
@@ -13080,10 +13144,12 @@ public class Mission : AMission, IMainMission
             string replacementFile_weather = getSection(weatherReplacementFile, weatherSUBMISSIONsec) + Environment.NewLine + "[splines]";
 
             string windLayersMAINMISSIONsec = @"\[GlobalWind_0\].*\[splines\]";
-            string desiredWindLayersString = generateWindLayers() + Environment.NewLine + "[WeatherFront]" +Environment.NewLine + "[splines]";
+            string desiredWindLayersString = generateWindLayers() + "[WeatherFront]" +Environment.NewLine + "[splines]";
 
-            missionFile = replaceSection(missionFile, replacementFile_airgroups, airgroupssec);
-            missionFile = replaceSection(missionFile, replacementFile_triggers, triggerssec);
+			//2026-08 - skipping replacement of airgroups & triggers for now, with new 
+			//AG & triggers that are fixed in various ways
+            //missionFile = replaceSection(missionFile, replacementFile_airgroups, airgroupssec);
+            //missionFile = replaceSection(missionFile, replacementFile_triggers, triggerssec);
 
             //If we do windlayers first, it replaces everything globalwind->splines but then leaves
             //[WeatherFront] and [splines] to be replaced by any weather
@@ -13222,6 +13288,9 @@ public class Mission : AMission, IMainMission
             bool restartToChangeTime = true;
             if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 || ON_TESTSERVER) restartToChangeTime = false;
 			//if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 ) restartToChangeTime = false;
+			
+			//FOR TESTING< always change 2026-08
+			//if (ON_TESTSERVER) restartToChangeTime = true;
 
             Console.WriteLine("MIS 4, restartToChangeTime: {0}", restartToChangeTime);
             //DECISION POINT - change things & restart or not
@@ -13752,7 +13821,7 @@ public class Mission : AMission, IMainMission
         //to OnActorCreated at all . . . But they are in fact created
 
 
-        int destroyminutes = 300;//Destroy AI a/c this many minutes after they are spawned in.
+        int destroyminutes = 360;//Destroy AI a/c this many minutes after they are spawned in.
         //Note that MoveBombTarget-.cs takes care of destroying aircraft when their task is set to "LANDING" and no live players
         //are nearby.  Plus, a/c are destroyed when they fly off the map & MoveBombTarget-.cs will make them do that at 
         //the end of any planned WAYPOINTS they have been given.
@@ -15395,7 +15464,7 @@ public class Mission : AMission, IMainMission
         }
 
         DateTime duLastAttackResponseTime_dt = new DateTime();
-        Dictionary<int, List<string>> defenders = new Dictionary<int, List<string>>() { {1,new List<string>() {"bob:Aircraft.SpitfireMkIa_100oct","bob:Aircraft.SpitfireMkIa_100oct","bob:Aircraft.SpitfireMkIa_100oct",    "tobruk:Aircraft.KittyhawkMkIA","tobruk:Aircraft.HurricaneMkIIc", "tobruk:Aircraft.HurricaneMkIId","bob:Aircraft.BlenheimMkIVF",
+        Dictionary<int, List<string>> defenders= new Dictionary<int, List<string>>() { {1,new List<string>() {"bob:Aircraft.SpitfireMkIa_100oct","bob:Aircraft.SpitfireMkIa_100oct","bob:Aircraft.SpitfireMkIa_100oct",    "tobruk:Aircraft.KittyhawkMkIA","tobruk:Aircraft.HurricaneMkIIc", "tobruk:Aircraft.HurricaneMkIId","bob:Aircraft.BlenheimMkIVF",
           "bob:Aircraft.BeaufighterMkINF","tobruk:Aircraft.HurricaneMkIIc", "tobruk:Aircraft.HurricaneMkIId","bob:Aircraft.BlenheimMkIVF",
           "bob:Aircraft.BeaufighterMkINF","bob:Aircraft.BeaufighterMkIF"} },
             { 2, new List<string> {
@@ -16409,10 +16478,10 @@ public class Mission : AMission, IMainMission
 			///BLUE military train 
 			//Genghis-LOADONCALL-GerTrain17-BoulogneBerck.mis
 			
-			addPointArea(MO_ObjectiveType.Military_Train, "Neufchatel Hardelot-Etaples-Hesdin Military Supply Traintrack Convoy", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerTrain17-BoulogneBerck.mis", 2, 12, "Boulogne_Berck_Train", 267868, 185389, 1, 0, 0, 0, 2, 180, 4, false, false, 0, 0, "", add, chief: "2101_Chief", canBeDisabled: false);			
+			addPointArea(MO_ObjectiveType.Military_Train, "Neufchatel Hardelot-Etaples-Hesdin Military Supply Traintrack Convoy", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerTrain17-BoulogneBerck.mis", 2, 25, "Boulogne_Berck_Train", 267868, 185389, 1, 0, 0, 0, 2, 180, 4, false, false, 0, 0, "", add, chief: "2101_Chief", canBeDisabled: false);			
 
 			//Genghis-LOADONCALL-BritTrain17-HastingsTunbridge.mis
-			addPointArea(MO_ObjectiveType.Military_Train, "Rye-Hastings-Battle Military Supply Traintrack Convoy", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-BritTrain17-HastingsTunbridge.mis", 1, 12, "Hastings_Tunbridge_Train", 195043, 202751, 1, 0, 0, 0, 2, 180, 4, false, false, 0, 0, "", add, chief: "2102_Chief", canBeDisabled: false);			
+			addPointArea(MO_ObjectiveType.Military_Train, "Rye-Hastings-Battle Military Supply Traintrack Convoy", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-BritTrain17-HastingsTunbridge.mis", 1, 25, "Hastings_Tunbridge_Train", 195043, 202751, 1, 0, 0, 0, 2, 180, 4, false, false, 0, 0, "", add, chief: "2102_Chief", canBeDisabled: false);			
 
             addPointArea(MO_ObjectiveType.Military_Convoy, "Hastings-Rye Shore Patrol Convoy", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Red-Hastings_Rye_Convoy.mis", 1,25, "Hastings_Rye_Convoy", 198944, 206194, 1, 0, 0, 0, 5, 180, 4, false, false, 0, 0, "", add, chief: "2002_Chief");
 
@@ -16468,7 +16537,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Peroxide Storage @ Beckton", "Lond", "", "", 1, 4, "BTarget13S", "TGroundDestroyed", 43, 160567, 275749, 50, false, 4, 600, "", add);
             addTrigger(MO_ObjectiveType.Naval_Dock_Area, "Vehicle Departure Docks", "Lond", "", "", 1, 3, "BTarget14A", "TGroundDestroyed", 29, 160025, 273824, 100, false, 4, 450, "", add);
 			
-			addPointArea(MO_ObjectiveType.Military_Airfield, "RAF Oare (Seeplane Base)", "", "", 1, 10, "BTargRAFOare", 215394, 257852, 120, 100, 1000, 8, 0, 160, 222, true, false, 2, 8, "", add)
+			addPointArea(MO_ObjectiveType.Military_Airfield, "RAF Oare (Seeplane Base)", "", "", 1, 10, "BTargRAFOare", 215394, 257852, 120, 100, 1000, 8, 0, 160, 222, true, false, 2, 8, "", add);
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelProduction, "Ditton Fuel Refinery", "Ditt", "", "", 1, 4, "BTarget24", "TGroundDestroyed", 70, 185027, 252619, 100, false, 15, 520, "", add);// fixed triggers missing
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Ditton Fuel Dump", "Ditt", "", "", 1, 4, "BTarget25", "TGroundDestroyed", 38, 186057, 251745, 100, false, 15, 270, "", add);
@@ -16489,9 +16558,9 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Portsmouth Hydrogen Storage", "Port", "", "", 1, 4, "BTarget40", "TGroundDestroyed", 9, 77317, 193860, 50, false, 15, 570, "", add); //This is in Portsmouth    .  
             addTrigger(MO_ObjectiveType.Military_Building, "Portsmouth Torpedo Facility", "Port", "", "", 1, 4, "BTarget41", "TGroundDestroyed", 8, 76855, 194410, 50, false, 15, 396, "", add); //This is in Portsmouth.fixed 9/19 fatal
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Hornet MTB Pens, Gosport", "Port", "Genghis-LOADONCALL-gosport-mtb-pens.mis", 2, 18, "RTargGosportMTBPens", 75658, 192316, 125, 100, 5000, 45, 0, 160, 222, true, false, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Hornet MTB Pens, Gosport", "Port", "Genghis-LOADONCALL-gosport-mtb-pens.mis", 2, 18, "RTargGosportMTBPens", 75658, 192316, 125, 100, 5000, 45, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Dolphin Submarine Pens, Gosport", "Port", "Genghis-LOADONCALL-gosport-submarine-pens.mis", 2, 19, "RTargGosportSubmarinePens", 75905, 192212, 135, 110, 6000, 50, 0, 160, 222, true, false, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Dolphin Submarine Pens, Gosport", "Port", "Genghis-LOADONCALL-gosport-submarine-pens.mis", 2, 19, "RTargGosportSubmarinePens", 75905, 192212, 135, 110, 6000, 50, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
 			
 			
@@ -16564,21 +16633,21 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "Propeller Repair Boulogne", "Boul", "", "", 2, 3, "6B", "TGroundDestroyed", 77, 265932, 189324, 50, false, 110, 222, "", add);
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "E-boat Factory Boulogne", "Boul", "", "", 2, 3, "7B", "TGroundDestroyed", 53, 264849, 189190, 50, false, 110, 222, "", add);			
 			
-			addPointArea(MO_ObjectiveType.Military_Airfield, "Seefliegerhorst Boulogne-See (Seaplane Base)", "Boul", "", 2, 10, "BTargBoulogneSee", 265900, 190289, 100, 80, 1000, 8, 0, 160, 222, true, false, 2, 8, "", add);												
+			addPointArea(MO_ObjectiveType.Military_Airfield, "Seefliegerhorst Boulogne-See (Seaplane Base)", "Boul", "", 2, 10, "BTargBoulogneSee", 265900, 190289, 100, 80, 1000, 8, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
-			addPointArea(MO_ObjectiveType.Railroad_Yard, "Gare de Boulogne-Maritime", "Boul", "", 2, 10, "BTargBoulogneMaritimeRailroadStation", 265953, 190169, 120, 100, 1000, 8, 0, 160, 222, true, false, 2, 8, "", add);						
+			addPointArea(MO_ObjectiveType.Railroad_Yard, "Gare de Boulogne-Maritime", "Boul", "", 2, 10, "BTargBoulogneMaritimeRailroadStation", 265953, 190169, 120, 100, 1000, 8, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false );						
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest 288 SK Torpedo Boulogne", "Boul", "Genghis-LOADONCALL-boulogne-Widerstandsnest-228-SK-Torpedo.mis", 2, 10, "BTargBoulogneWiderstandsnest", 265402, 190285, 75, 50, 2000, 20, 0, 160, 222, true, false, 2, 8, "", add);						
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest 288 SK Torpedo Boulogne", "Boul", "Genghis-LOADONCALL-boulogne-Widerstandsnest-228-SK-Torpedo.mis", 2, 10, "BTargBoulogneWiderstandsnest", 265402, 190285, 75, 50, 2000, 20, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);						
 			//S-Boot-Basis			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Boulogne", "Boul", "Genghis-LOADONCALL-boulogne-S-Boot-Basis.mis", 2, 18, "BTargBoulogneSBootBasis", 265525, 190380, 175, 150, 10000, 80, 0, 160, 222, true, false, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Boulogne", "Boul", "Genghis-LOADONCALL-boulogne-S-Boot-Basis.mis", 2, 18, "BTargBoulogneSBootBasis", 265525, 190380, 175, 150, 10000, 80, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "U-Boot-Bunker Boulogne", "Boul", "Genghis-LOADONCALL-boulognesurmer-submarine-base-objective.mis", 2, 8, "BTargBoulSubmarine", 265859, 192867, 250, 150, 20000, 80, 0, 160, 222, true, true, 2, 9, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "U-Boot-Bunker Boulogne", "Boul", "Genghis-LOADONCALL-boulognesurmer-submarine-base-objective.mis", 2, 8, "BTargBoulSubmarine", 265859, 192867, 250, 150, 20000, 80, 0, 160, 222, true, true, 2, 9, "", add, canBeDisabled: false);
 
             //addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective.mis", 2, 8, "BTargBoulogneNavyDocks", 265531, 190133, 750, 650, 16000, 60, 0, 160, 222, true, true, 2, 8, "", add);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area West", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-WEST.mis", 2, 8, "BTargBoulogneNavyDocksW", 265133, 189969, 350, 325, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area West", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-WEST.mis", 2, 8, "BTargBoulogneNavyDocksW", 265133, 189969, 350, 325, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Luftwaffe Hauptbenzinlager Arras", "Arra", "", "", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 100, false, 2, 600, "", add);  //g
@@ -16634,8 +16703,8 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Le Havre Kriegsmarine LOX", "Havr", "", "", 2, 5, "LehavNavalLOX", "TGroundDestroyed", 41, 162099, 50034, 50, false, 2, 350, "", add);
             addTrigger(MO_ObjectiveType.Railroad, "Le Havre Train Station", "Havr", "", "", 2, 5, "LehavTrainStation", "TGroundDestroyed", 37, 159918, 53120, 100, false, 2, 300, "", add);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-S-Boot-Basis.mis", 2, 25, "BTargLeHavreSBootBasis", 160005, 51130, 175, 150, 10000, 80, 0, 160, 222, true, false, 2, 8, "", add);			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest Torpedo Storage Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-Widerstandsnest.mis", 2, 14, "BTargLeHavreWiderstandsnest", 160246, 51060, 75, 50, 2000, 20, 0, 160, 222, true, false, 2, 8, "", add);	
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-S-Boot-Basis.mis", 2, 25, "BTargLeHavreSBootBasis", 160005, 51130, 175, 150, 10000, 80, 0, 160, 222, true, false, 2, 8, "", add, canBeDisabled: false);			
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest Torpedo Storage Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-Widerstandsnest.mis", 2, 14, "BTargLeHavreWiderstandsnest", 160246, 51060, 75, 50, 2000, 20, 0, 160, 222, true, false, 2, 8, "", add, canBeDisabled: false);	
 			
 			
 			
@@ -16692,9 +16761,9 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Dover Navy Operations Fuel", "Dove", "", 1, 3, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 0, 125, 222, true, true, 3, 7, "", add);
 			
 			//246653, 233348, 800, 750, 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Dover Navy Docks Area", "Dove", "Genghis-LOADONCALL-dover-naval-docks-objective5.mis", 1, 7, "BTargDoverNavyDocks", 246653, 233348, 800, 750, 7000, 40, 0, 160, 222, true, false, 2, 8, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Dover Navy Docks Area", "Dove", "Genghis-LOADONCALL-dover-naval-docks-objective5.mis", 1, 7, "BTargDoverNavyDocks", 246653, 233348, 800, 750, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Submarine MTB Pens, Dover", "Dove", "Genghis-LOADONCALL-dover-submarine-pens.mis", 2, 16, "RTargDoverMTBPens", 247425, 234769, 125, 100, 8000, 65, 0, 160, 222, true, false, 2, 8, "", add);
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Submarine MTB Pens, Dover", "Dove", "Genghis-LOADONCALL-dover-submarine-pens.mis", 2, 16, "RTargDoverMTBPens", 247425, 234769, 125, 100, 8000, 65, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
 			
             //addTrigger(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", "", 1, 3, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, 196, "", add);
@@ -16707,19 +16776,19 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Portsmouth Small Military Manufacturing Area SW", "Port", "", 1, 8, "BTargPortsmouthSmallIndustrialArea", 75235, 193676, 350, 350, 8000, 10, 0, 15, 310, true, true, 1, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Portsmouth Large Military Manufacturing Area NE", "Port", "", 1, 9, "BTargPortsmouthLargeIndustrialArea", 77048, 193985, 850, 850, 10000, 15, 0, 10, 400, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole North Navy Port Area", "Pool", "", 1, 10, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 550, 400, 10000, 9, 0, 15, 410, true, true, 3, 6, "", add);
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole North Navy Port Area", "Pool", "", 1, 10, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 550, 400, 10000, 9, 0, 15, 410, true, true, 3, 6, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Crowborough Air High Command Bunker", "", "Genghis-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 0, 120, 210, true, true, 2, 10, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Genghis-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 0, 120, 222, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Folkestone Navy Docks Area", "Folk", "Genghis-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 7, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Folkestone Navy Docks Area", "Folk", "Genghis-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 7, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 80, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
             
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Brighton Navy Docks Area", "Dove", "Genghis-LOADONCALL-brighton-naval-docks-objective.mis", 1, 8, "BTargBrightonNavyDocks", 138520, 197736, 1300, 750, 10000, 40, 0, 120, 168, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Brighton Navy Docks Area", "Dove", "Genghis-LOADONCALL-brighton-naval-docks-objective.mis", 1, 8, "BTargBrightonNavyDocks", 138520, 197736, 1300, 750, 10000, 40, 0, 120, 168, true, true, 2, 8, "", add, canBeDisabled: false);
             //This one has a lot of land area, thus no worries about not enough KG
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Dunkirk Kriegsmarine Docks Area", "Dunk", "Genghis-LOADONCALL-dunkirk-naval-docks-objective.mis", 2, 8, "BTargDunkirkNavyDocks", 314227, 225610, 1150, 850, 10000, 40, 0, 160, 222, true, true, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Dunkirk Kriegsmarine Docks Area", "Dunk", "Genghis-LOADONCALL-dunkirk-naval-docks-objective.mis", 2, 8, "BTargDunkirkNavyDocks", 314227, 225610, 1150, 850, 10000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 
 
 			
@@ -16754,7 +16823,7 @@ public class Mission : AMission, IMainMission
 			
 						
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Calais Kriegsmarine Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 15, 0, 120, 196, true, false, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Calais Kriegsmarine Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 15, 0, 120, 196, true, false, 2, 8, "", add, canBeDisabled: false);
 
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Veurne Wehrmacht Manufacturing Area", "", "", 2, 8, "RTargVeurneMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 0, 90, 246, true, false, 2, 10, "", add);
 
@@ -25575,7 +25644,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
                     bool chiefHit = mo.hasChief() && (shortName.ToLower()).Contains(mo.ChiefName.ToLower());
                     if (Calcs.IsNaN(actor.Pos()) && !chiefHit) continue;
-                    mo.fixDestructionValues();
+                    mo.fixDestructionValues();					
 
                     //If this has finished off the last Chief, but the objective has not yet been  destroyed
                     //this will reload the initsubmission in 10-20 minutes, which keeps the objective alive, on the board &
@@ -27046,7 +27115,7 @@ public bool WriteResults_Out_File(string result = "3")
 public static class Calcs
 {
 
-    private static Random clc_random = new Random();
+    public static Random clc_random = new Random();
 
     public static double distance(double a, double b)
     {

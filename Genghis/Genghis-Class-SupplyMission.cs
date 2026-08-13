@@ -1804,17 +1804,27 @@ private int NumberPlayerInActor(AiActor actor)
 
                 Console.WriteLine("NumPlayerInPlane: {0} AltAGL: {1} AltAGL(alt): {5} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0), OverEnemyTerritory(actor),
                     forceDamage, altAGL_m_alt);
+					
+				bool loa = LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0);
+				bool recoverOffAirfield = false;
+				if (!loa && (new Random().Next() > forceDamage)) recoverOffAirfield = true; 
 
-                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0) && !OverEnemyTerritory(actor)
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && (loa || recoverOffAirfield) && !OverEnemyTerritory(actor)
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
                     if (forceDamage > 0 && forceDamage < 1)
                     {
                         Console.WriteLine("SupOPL: Check-in but with damage");
                         double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage); //-1 if this damage already added
+						
+						if (recoverOffAirfield) {
+							(GamePlay as GameDef).gameInterface.CmdExec("chat + Good luck! A Maintenance Unit was able to recover your aircraft for repair. TO " + player.Name());
+						}								
+						
                         AiCart cart = actor as AiCart;
                         if (hoursToRepair > 0 && player != null)
                         {
+							
                             string line1 = ParseTypeName(cart.InternalTypeName()) + " returned damaged; ";
                             string line2 = hoursToRepair.ToString("F1") + " hours required for repair and re-stock";
 

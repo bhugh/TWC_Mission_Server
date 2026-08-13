@@ -161,7 +161,7 @@ public class MoveBombTargetMission : AMission
         return true;
     }
 
-    public AiWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY)
+    public AiWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY, double offset_x = 0, double offset_y = 0, double alt_m = 0)
     {
         try
         {
@@ -174,6 +174,9 @@ public class MoveBombTargetMission : AMission
             if (vel_mps > 160) vel_mps = 160;
 
             Point3d CurrentPos = airGroup.Pos();
+			CurrentPos.x += offset_x;
+			CurrentPos.y += offset_y;
+			if (alt_m > 0) CurrentPos.z = alt_m;
 
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
@@ -185,6 +188,44 @@ public class MoveBombTargetMission : AMission
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
     }
+    public AiWayPoint offMapWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY, int army = 0)
+    {
+        try
+        {
+            AiAirWayPoint aaWP = null;
+            //double speed = (airGroup.GetItems()[0] as AiAircraft).getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
+
+            Vector3d Vwld = airGroup.Vwld();
+            double vel_mps = MoveBombCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+            if (vel_mps < 70) vel_mps = 70;
+            if (vel_mps > 160) vel_mps = 160;
+
+            Point3d CurrentPos = airGroup.Pos();
+			Point3d NewPos = CurrentPos;
+			
+			NewPos.x += ran.Next(100000) - 50000.0;
+			if (army == 2) NewPos.y = -50000.0;
+			else if (army == 1) NewPos.y = 380000.0;
+			
+			if (army ==0  || army > 2) {
+				NewPos.x = -50000;
+				NewPos.y += ran.Next(50000) - 25000.0;
+				
+			}
+			NewPos.z = 25; //low, try to keep off the radar
+			
+			
+
+            aaWP = new AiAirWayPoint(ref NewPos, vel_mps);
+            //aaWP.Action = AiAirWayPointType.NORMFLY;
+            aaWP.Action = aawpt;
+
+            //Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+
+            return aaWP;
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
+    }	
 
 
     public AiWayPoint GetLandingWaypoint(AiAirport landingAirfield, double ApproachHeight)
@@ -1205,13 +1246,26 @@ public class MoveBombTargetMission : AMission
         return NewPos;
 
     }
+	
+	//.ESCORT follows path of target closely (REGARDLESS of the escorting a/c's own path)
+			//.COVER ranges more widely and follows on path as set, (presumably coming ot rescue of target if needed?)
+			//.FOLLOW is more similar to .COVER and follows OWN PATH not TARGET PATH
+			//SO if ESCORTS are set to actually waypoint ESCORT with proper target
+			//we can pretty much move bomber waypoints at will and escorts will follow them
+			//As long as ESCORTS start at same place as bombers and have a km/h on the so they can keep up
 
     public bool updateAirWaypoints(AiAirGroup airGroup)
     {
         try
-        {
-            if (airGroup == null || airGroup.GetWay() == null || !isAiControlledAirGroup(airGroup)) return false;
+        {   
+		 
+            if (airGroup == null || !isAiControlledAirGroup(airGroup)) return false;					
+			
             AiActor[] acs = airGroup.GetItems();
+			
+			/*
+			//FOR TESTING - just delete all ai a/c as soon as spawned in...
+			//ON_TESTSERVER
 			
 			if (mainmission.ON_TESTSERVER) {
 				 List<AiActor> items = new List<AiActor>(airGroup.GetItems());
@@ -1222,10 +1276,21 @@ public class MoveBombTargetMission : AMission
 				{
 					AiAircraft aircraft = actor as AiAircraft;
 					
-					if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
+					if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(5, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
 				}
 				return false;
 				
+			}
+			*/
+			
+			//So the "lost" a/c in the server that just circle endlessly, seem to be disattached or lost
+			//<cover aircraft.  So we are putting this check here in hopes of catching them.			
+			AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+			
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return false;
 			}
 
             //So, to make aircraft (in say a submission) AVOID being reprogrammed by movebomb here
@@ -1244,14 +1309,14 @@ public class MoveBombTargetMission : AMission
 
             if (mainmission.ON_TESTSERVER) Console.WriteLine("Movebomb MBTITG: acs[0].Name() does not include NOCHANGE so changing this airgroup: {0}", acs[0].Name());
 
-            //bhugh, temp, XX2021-10 - elminating this TEMPORARILY due to end of campaign route/situation
-            if (ran.Next(10) == 1)
+            //Sometimes, just leave the route as-is
+            if (ran.Next(20) == 1)
             {
                 fixWayPoints(airGroup); //fix any problems, particularly add the two endpoints that will take the a/c off the map @ the end
                 return false; //Just leave it as originally written sometimes
             }
 
-            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+
 
             //for testing
             /*
@@ -1284,7 +1349,7 @@ public class MoveBombTargetMission : AMission
             Point3d CurrentPos = airGroup.Pos();
 
             bool underRadar = false;
-            if (isBomber && ran.Next(0, 20) == 0) underRadar = true; //One in 20 or so bomber groups fly under the radar
+            if (isBomber && ran.Next(0, 15) == 0) underRadar = true; //One in 15 or so bomber groups fly under the radar
             //Console.WriteLine("Movebomb: Under radar: {0}", underRadar);
 
             bool update = false;
@@ -1324,8 +1389,8 @@ public class MoveBombTargetMission : AMission
                     //Because of announcing the bomber group targets, which happens via ChangeObjectives,
                     //we don't want to run this in case the target is an airfield.
                     //Also, sometimes we'll switch from attacking an airfield to attacking a target.
-                    double targetObjectiveChance = 0.50;
-                    if (army==2) targetObjectiveChance = 0.50; //blues are a bit pathetic so we are helping them with disabling objectives/primaries
+                    double targetObjectiveChance = 0.60;
+                    if (army==2) targetObjectiveChance = 0.60; //blues are a bit pathetic so we are helping them with disabling objectives/primaries
                     if (newAirport == null || ran.NextDouble() > targetObjectiveChance)
                     {
                         newAirportPosition = null; //Make sure there is no new airport position; this forces the newObjectivePosition to be used
@@ -1763,11 +1828,17 @@ public class MoveBombTargetMission : AMission
             if (!AirgroupsWayPointProcessed.Contains(airGroup) || airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0 || !isAiControlledPlane2(airGroup.GetItems()[0] as AiAircraft)) return; //only process groups that have been in place a while, have actual aircraft in the air, and ARE ai
             AiAirGroupTask task = airGroup.getTask();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+			
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return;
+			}
             int currWay = airGroup.GetCurrentWayPoint();
             bool landingWaypoint = false;
             //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
 
-            if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
+            if (CurrentWaypoints.Length >= currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
             //if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
             if (!landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, loosening this up to try to get rid of useless/finished airgroups more quickly.
@@ -1790,7 +1861,11 @@ public class MoveBombTargetMission : AMission
                 if (altAGL_m > 800) continue; //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
                 //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
                 if (MoveBombCalcs.CalculatePointDistance(aircraft.Pos(), pos) > 6000) continue; //don't disapparate if it's too far from the main group.  It MIGHT be near a person or whatever
-                if (aircraft != null && isAiControlledPlane2(aircraft)) Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
+                if (aircraft != null && isAiControlledPlane2(aircraft))  {
+					Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
+					
+					Console.WriteLine("MoveBomb: REMOVING AIRCRAFT (should be landing & far from players, at {0} {1} {2} {3} {4} ", aircraft.Pos().x, aircraft.Pos().y, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
+				}
             }
             //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
         }
@@ -1938,6 +2013,7 @@ public class MoveBombTargetMission : AMission
                 //Console.WriteLine("MoveBomb: Checking airgroups intercept for airgroup " + airGroup.Name());
                 intcp = interceptNearestEnemyOnRadar(airGroup);
                 //if (!intcp) avoidAttackingAIEnemy(airGroup);
+				fixStuckPlanes(airGroup);
             } else
             {
                 //Console.WriteLine("MoveBomb: Skipping airgroup" + airGroup.Name());
@@ -1997,6 +2073,7 @@ public class MoveBombTargetMission : AMission
         try
         {
             //Console.WriteLine("MoveBomb: #1, Avoid attacking AI, starting " + airGroup.Name());                
+			
             if (airGroup == null || !isAiControlledAirGroup(airGroup) || airGroup.GetItems().Length == 0)
             {
                 //Console.WriteLine("MoveBomb:airGroup is null, has no aircraft, or not AI, exiting");
@@ -2009,16 +2086,26 @@ public class MoveBombTargetMission : AMission
             if (agAircraft == null) return false;
             AiAirGroupTask task = airGroup.getTask();
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+				
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return false;
+			}
+			
             int currWay = airGroup.GetCurrentWayPoint();
             int AiAirGroupArmy = airGroup.getArmy();
             AiWayPoint currWP = CurrentWaypoints[currWay];
 
-            if (task == null || CurrentWaypoints == null || currWP == null) return false;
+            if (task == null || currWP == null) return false;
 
             //one way we ID cover airgroups and any others we want to leave unchanged
             if (airGroup.Name().ToLower().Contains("cover")  || airGroup.Name().ToLower().Contains("nochange")) return false;
 
             //Don't do this if it's a cover airgroup, or bombers, fighters covering bombers, etc
+			//.ESCORT follows path of target closely (REGARDLESS of the escorting a/c's own path)
+			//.COVER ranges more widely and follows on path as set, (presumably coming ot rescue of target if needed?)
+			//.FOLLOW is more similar to .COVER and follows OWN PATH not TARGET PATH
             var aawpt_list = new List<AiAirWayPointType> {
                         AiAirWayPointType.GATTACK_TARG,
                             AiAirWayPointType.GATTACK_POINT,
@@ -2026,28 +2113,30 @@ public class MoveBombTargetMission : AMission
                             AiAirWayPointType.ESCORT,
                             AiAirWayPointType.FOLLOW};
         
-            if (CurrentWaypoints == null || currWP == null || aawpt_list.Contains((currWP as AiAirWayPoint).Action)) return false;
+            if (currWP == null || aawpt_list.Contains((currWP as AiAirWayPoint).Action)) return false;
 
-            if (MoveBombCalcs.isDiveBomber(airGroup) || MoveBombCalcs.isHeavyBomber(airGroup)) return false;
+            if ((MoveBombCalcs.isDiveBomber(airGroup) && airGroup.hasBombs()) || MoveBombCalcs.isHeavyBomber(airGroup)) return false;
             
-            if (task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING || task == AiAirGroupTask.ATTACK_GROUND) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
+            if (task != null && ( task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING || task == AiAirGroupTask.ATTACK_GROUND)) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
                 return false;
 
             double distToNearestEnemyBreather_m = getDistanceToNearestLivePilot(airGroup, AiAirGroupArmy).Item1;
             if (distToNearestEnemyBreather_m <0) distToNearestEnemyBreather_m = 10000000; //returns -1 if nothing at all found
             //If there are breather enemy close & we are just "fly_waypoint" set them to attack.
-            if ( task == AiAirGroupTask.FLY_WAYPOINT && distToNearestEnemyBreather_m < 25000)
+						//Don't do this if it's a cover airgroup, or bombers, fighters covering bombers, etc            
+			
+            if ( ( task == AiAirGroupTask.FLY_WAYPOINT || task == AiAirGroupTask.DO_NOTHING || task == AiAirGroupTask.UNKNOWN ) && distToNearestEnemyBreather_m < 25000)
             {
                 //airGroup.setTask(AiAirGroupTask.ATTACK_AIR, airGroup); //OK. aha! attack_air your or airGroup makes the planes attack  themselves !!! Rather than anyone else.  Thus all the reports of groups getting into dogfights with themselves.  Hopefully attack_air, null will do better!
                 try
                 {
-                    AiAirGroup newAG = mainmission.statsmission.getRandomNearbyEnemyAirGroup(airGroup, 5000, 1000, 1000);
+                    AiAirGroup newAG = mainmission.statsmission.getRandomNearbyEnemyAirGroup(airGroup, 12000, 4000, 2000);
 
                     //So start attacking nearby stuff if a player is near, but ONLY if the thing we were going to attack
                     //is the player OR something very near the player
                     double newAG_dist_m = getDistanceToNearestLivePilot(newAG, 0).Item1;
-                    if (newAG_dist_m < 0) newAG_dist_m = 1000000000; //-1 means, noithing found
-                    if (newAG !=null && ( !isAiControlledAirGroup(newAG) ||  newAG_dist_m < 6000)) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG); // we think ATTACK_AIR, null causes problems as we need an airgroup, not null  Mayhbe DEFENDING is better but maybe not
+                    if (newAG_dist_m < 0) newAG_dist_m = 1000000000; //-1 means, nothing found
+                    if (newAG !=null && ( !isAiControlledAirGroup(newAG) ||  newAG_dist_m < 10000)) airGroup.setTask(AiAirGroupTask.ATTACK_AIR, newAG); // we think ATTACK_AIR, null causes problems as we need an airgroup, not null  Mayhbe DEFENDING is better but maybe not
                 }
                 catch (Exception ex) { Console.WriteLine("MoveBomb avoidAttackingAIEnemy ERROR2: " + ex.ToString()); return true; }
 
@@ -2058,13 +2147,15 @@ public class MoveBombTargetMission : AMission
 
 
             Tuple<double?, double?> dist_altdiff = getDistanceToNearestFriendlyBombergroup(airGroup); //item1 = distance(meters), item2=altdiff(meters) + if this group is higher than bombers
+			
 
-            if (dist_altdiff.Item1 != null && dist_altdiff.Item1 < 9000 && dist_altdiff.Item2 > -1050 && dist_altdiff.Item2 < 1750)
+             if (task == AiAirGroupTask.DEFENDING  && dist_altdiff.Item1 != null && dist_altdiff.Item1 < 10000 && dist_altdiff.Item2 > -1050 && dist_altdiff.Item2 < 1750)
             {
-                //Console.WriteLine("MoveBomb: Near bombers, should be escorting them--not chasing things {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
+                //Console.WriteLine("MoveBomb: Near bombers && task == .COVER or .ESCORT, should be escorting them--not chasing things {0} {1} ", agActor.Name(), agAircraft.InternalTypeName());
                 return false;
 
-            }
+            } 
+			
             
             //If there aren't enemy breathers near set them to just fly_waypoint instead of attacking things
         try{
@@ -2090,13 +2181,36 @@ public class MoveBombTargetMission : AMission
             }
             
             AiActor agActor = airGroup.GetItems()[0];
+			if (agActor == null) return false;
             AiAircraft agAircraft = agActor as AiAircraft;
+			if (agAircraft == null) return false;
+            AiAirGroupTask task = airGroup.getTask();
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+				
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return false;
+			}
+			
+            int currWay = airGroup.GetCurrentWayPoint();
+            int AiAirGroupArmy = airGroup.getArmy();
+            AiWayPoint currWP = CurrentWaypoints[currWay];
 
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("MoveBomb: Should we check radar returns for airGroup? " + agActor.Name() + " " + agAircraft.InternalTypeName() + " airGroup Name: " + airGroup.Name() + " task: " + task.ToString());
+			
+			//Don't do this if it's a cover airgroup, or bombers, fighters covering bombers, etc
+            var aawpt_list = new List<AiAirWayPointType> {
+                        AiAirWayPointType.GATTACK_TARG,
+                            AiAirWayPointType.GATTACK_POINT,
+                            AiAirWayPointType.COVER,
+                            AiAirWayPointType.ESCORT,
+                            AiAirWayPointType.FOLLOW};
+        
+            if (aawpt_list.Contains((currWP as AiAirWayPoint).Action)) return false; 
 
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("MoveBomb: Should we check radar returns for airGroup? " + agActor.Name() + " " + agAircraft.InternalTypeName() + " airGroup Name: " + airGroup.Name());
-
-            //usually we don't do this with heavy bombers...
-            bool isBomber = MoveBombCalcs.isHeavyBomber(airGroup) || MoveBombCalcs.isDiveBomber(airGroup);
+            //usually we don't do this with heavy bombers (unless a small group and already dropped bombs); or Stukas if they still have their bombs
+            bool isBomber = ( MoveBombCalcs.isHeavyBomber(airGroup) && airGroup.hasBombs() && airGroup.GetItems().Length > 4 ) || ( MoveBombCalcs.isDiveBomber(airGroup) && airGroup.hasBombs() );
             if (isBomber) return false;
             
             //The "cover" or "nochange" is in the AIRGROUP name, not the actor/aircraft name
@@ -2107,15 +2221,7 @@ public class MoveBombTargetMission : AMission
             ConcurrentDictionary<AiAirGroup, SortedDictionary<string, IAiAirGroupRadarInfo>> aris;
             double interceptTime_sec = 0;
 
-                //TODO: In case of any of these as current task/airway point then we should skip chasing things altogether
-                /*
 
-                        case AiAirWayPointType.GATTACK_TARG:
-                            case AiAirWayPointType.GATTACK_POINT:
-                            case AiAirWayPointType.COVER:
-                            case AiAirWayPointType.ESCORT:
-                            case AiAirWayPointType.FOLLOW:
-                */
 
                 //reportAircraftFuel(agAircraft);
 
@@ -2161,7 +2267,7 @@ public class MoveBombTargetMission : AMission
                     //Console.WriteLine("MoveBomb: Skipping, low fuel: {0:N0} kg ", fuel);
                     return false;
                 }
-                AiAirGroupTask task = airGroup.getTask();
+                //AiAirGroupTask task = airGroup.getTask();
                 if (task == AiAirGroupTask.DEFENDING || task == AiAirGroupTask.LANDING) //Note that task LANDING is our clue that the a/g is at end of mission & just needs to be retired gracefully.  Shouldn't be attacking etc.  Probably low on fuel, ammo etc.
                 {
                     //Console.WriteLine("MoveBomb: Busy because {2}, can't attack {0} {1} ", agActor.Name(), agAircraft.InternalTypeName(), task);
@@ -2176,12 +2282,18 @@ public class MoveBombTargetMission : AMission
 
                 }
 
-                AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+                
+				if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+				{ 
+					fixNullWayPoints(airGroup);
+					return false;
+				}
+				
                 if (CurrentWaypoints != null || CurrentWaypoints.Length > 0) {
 
-                    int currWay = airGroup.GetCurrentWayPoint();
+                    int currWay2 = airGroup.GetCurrentWayPoint();
                     AiAirWayPointType aawp = new AiAirWayPointType();
-                    if (currWay <= CurrentWaypoints.Length) aawp = (CurrentWaypoints[currWay] as AiAirWayPoint).Action;
+                    if (currWay2 <= CurrentWaypoints.Length) aawp = (CurrentWaypoints[currWay2] as AiAirWayPoint).Action;
                     if (aawp != null && aawp == AiAirWayPointType.GATTACK_TARG ||
                             aawp == AiAirWayPointType.GATTACK_POINT ||
                             aawp == AiAirWayPointType.COVER ||
@@ -2460,12 +2572,12 @@ public class MoveBombTargetMission : AMission
                 */
 
 
-                int currWay = airGroup.GetCurrentWayPoint();
+                int currWay3 = airGroup.GetCurrentWayPoint();
                 double speedDiff = 0;
                 double altDiff_m = 0;
 
                 //Console.WriteLine("MBTITG: 2");
-                if (currWay < CurrentWaypoints.Length) Console.WriteLine("IntcpCalc: {0}", new object[] { CurrentWaypoints[currWay] });
+                if (currWay3 < CurrentWaypoints.Length) Console.WriteLine("IntcpCalc: {0}", new object[] { CurrentWaypoints[currWay3] });
                 //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { CurrentWaypoints[currWay].Speed });
                 //if (currWay < CurrentWaypoints.Length) Console.WriteLine( "WP: {0}", new object[] { (CurrentWaypoints[currWay] as AiAirWayPoint).Action });
 
@@ -2475,7 +2587,7 @@ public class MoveBombTargetMission : AMission
 
                 bool update = false;
 
-                NewWaypoints.Add(CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay] as AiAirWayPoint).Action)); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+                NewWaypoints.Add(CurrentPosWaypoint(airGroup, (CurrentWaypoints[currWay3] as AiAirWayPoint).Action)); //Always have to add current pos/speed as first point or things go w-r-o-n-g
 
                 foreach (AiWayPoint wp in CurrentWaypoints)
                 {
@@ -2485,7 +2597,7 @@ public class MoveBombTargetMission : AMission
                     if ((wp as AiAirWayPoint).Action == null) return false;
 
 
-                    if (count == currWay)
+                    if (count == currWay3)
                     {
                         Point3d pos;
                         double speed;
@@ -2533,7 +2645,7 @@ public class MoveBombTargetMission : AMission
                         }
                         */
                     }
-                    if (count >= currWay)
+                    if (count >= currWay3)
                     {
                         NewWaypoints.Add(nextWP);
 
@@ -2592,7 +2704,12 @@ public class MoveBombTargetMission : AMission
         {
             //AiAirGroup airGroup = intc.attackingAirGroup;
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
-            if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+            //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return;
+			}
 
             //for testing
             /*
@@ -2670,17 +2787,23 @@ public class MoveBombTargetMission : AMission
         try
         {
 
-            if (airGroup == null || airGroup.GetWay() == null) return; //Not sure what else to do?
+            if (airGroup == null ) return; //Not sure what else to do?
+			 
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
             //Maybe just exit?
+			
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{ 
+				fixNullWayPoints(airGroup);
+				return;
+			}
 
             double offMapBufferForLeavingMap = 25000; //How far off the map to drive a/c to make them disappear/get rid of them.
             double offMapBufferForAvoidingLeaveMap = -1000; //Max off map amount to allow as part of a normal flight plan
 
 
             //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
-            if (!isAiControlledAirGroup(airGroup)) return;
-            if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
+            if (!isAiControlledAirGroup(airGroup)) return;            
             AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
 
             //for testing
@@ -2977,6 +3100,146 @@ public class MoveBombTargetMission : AMission
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb FixWayPoints: " + ex.ToString()); }
     }
+	
+	//***********************************************
+	//TODO: Keep track of planes each time intcp is called, every 2-3 minutes
+	//Check if plane is on its last waypoint, or doesn't have a waypoint, and if so
+	//save the plane & current waypoint in a dictionary
+	//If the plane stays stuck on that same waypoint for say 15-20 minutes, then
+	//Give it a path to fly off the map
+	
+	public class finalWaypointRecord
+    {
+
+        // Instance Variables 
+        public AiWayPoint lastAiWayPoint { get; set; }
+        public int lastWayPoint_index  { get; set; }
+        public Point3d lastPlanePos { get; set; }
+        public int planeStuckCount { get; set; }        
+        //MoveBombTargetMission mission;
+
+
+        // Constructor Declaration of Class 
+		public finalWaypointRecord (  
+			AiWayPoint lastAiWayPoint,
+			int lastWayPoint_index,
+			Point3d lastPlanePos,
+			int planeStuckCount
+			//MoveBombTargetMission mission 
+			)
+        {
+            this.lastAiWayPoint = lastAiWayPoint;
+			this.lastWayPoint_index = lastWayPoint_index;
+			this.lastPlanePos = lastPlanePos;
+			this.planeStuckCount = planeStuckCount;
+			//s.mission = mission;
+        }
+
+    }
+	
+	Dictionary<AiAirGroup, finalWaypointRecord> finalWayPointRecords = new Dictionary<AiAirGroup, finalWaypointRecord>();
+	
+	public void fixStuckPlanes(AiAirGroup airGroup)
+	{
+		 if (airGroup == null || !isAiControlledAirGroup(airGroup)) return;
+		 
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+			AiWayPoint lastWayPoint = null;
+			int currWay = 0;
+			Point3d currPos = airGroup.Pos();
+			if (CurrentWaypoints == null  || CurrentWaypoints.Length == 0)
+			{
+				lastWayPoint = null;
+		    } else {
+				
+				currWay = airGroup.GetCurrentWayPoint();
+				lastWayPoint = CurrentWaypoints[currWay];
+				
+			}
+			
+			if (finalWayPointRecords.ContainsKey(airGroup) || currWay == CurrentWaypoints.Length) {
+				if (!finalWayPointRecords.ContainsKey(airGroup)) {
+					finalWayPointRecords[airGroup] = new finalWaypointRecord (lastWayPoint, currWay, currPos, 0);
+					return;
+				}
+				var fwpr = finalWayPointRecords[airGroup];
+				if (fwpr.lastAiWayPoint.P.x != lastWayPoint.P.x ||
+					fwpr.lastAiWayPoint.P.y != lastWayPoint.P.y ||
+					fwpr.lastAiWayPoint.P.z != lastWayPoint.P.z ||
+					fwpr.lastAiWayPoint.P.z != lastWayPoint.P.z ||
+					fwpr.lastAiWayPoint.Speed != lastWayPoint.Speed ||
+			
+					fwpr.lastWayPoint_index != currWay || 
+					fwpr.lastPlanePos.distance(ref currPos) > 40000) {
+						finalWayPointRecords.Remove(airGroup);
+						return;
+				}
+				fwpr.planeStuckCount ++;
+				
+				if (fwpr.planeStuckCount<7) return;
+				
+				Console.WriteLine("fixStuckPlanes: {0} appears to be stuck circling its last waypoint. Sending it off the map. Waypoint: {1:N0} {2:N0} {3:N0} CurrPos: {4:N0} {5:N0} {6:N0}", airGroup.Name(), lastWayPoint.P.x, lastWayPoint.P.y, lastWayPoint.P.z, currPos.x, currPos.y, currPos.z );
+				
+				fixNullWayPoints(airGroup);								
+					
+					
+			}
+			
+	}
+	
+	
+    public void fixNullWayPoints(AiAirGroup airGroup)
+    {
+        try
+        {
+
+            if (airGroup == null) return; //Not sure what else to do?
+            AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); 
+			
+
+            double offMapBufferForLeavingMap = 25000; //How far off the map to drive a/c to make them disappear/get rid of them.
+            double offMapBufferForAvoidingLeaveMap = -1000; //Max off map amount to allow as part of a normal flight plan
+
+
+            //if (CurrentWaypoints == null || CurrentWaypoints.Length == 0) return;
+            if (!isAiControlledAirGroup(airGroup)) return;
+            if (airGroup.GetItems().Length == 0) return; //no a/c, no need to do anything
+            AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;	
+			
+			
+			List<AiWayPoint> NewWaypoints = new List<AiWayPoint>();
+            int count = 0;
+
+            bool update = false;
+
+            AiWayPoint firstWP = CurrentPosWaypoint(airGroup, AiAirWayPointType.NORMFLY);
+
+            NewWaypoints.Add(firstWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
+			
+			//Get it down on the ground, under radar
+			NewWaypoints.Add( CurrentPosWaypoint(airGroup,offset_x: 10000, offset_y: 10000, alt_m: 25));
+
+            AiWayPoint lastWP = offMapWaypoint(airGroup, AiAirWayPointType.NORMFLY, airGroup.Army());
+			
+			NewWaypoints.Add(lastWP);
+			
+			
+			Console.WriteLine("fixNullWayPoints: {0} has a null or stuck waypoing.  Sending it off the map via CurrPos: {1:N0} {2:N0} {3:N0} OffMapPos: {4:N0} {5:N0} {6:N0}", airGroup.Name(), lastWP.P.x, lastWP.P.y, lastWP.P.z, firstWP.P.x, firstWP.P.y, firstWP.P.z );
+				
+			
+			
+			
+			airGroup.SetWay(NewWaypoints.ToArray());
+			
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb FixNullWayPoints: " + ex.ToString()); }
+    }			
+	
+	  /* { 
+				fixNullWayPoints(airGroup);
+				return false;
+			}
+			*/
     
 
 

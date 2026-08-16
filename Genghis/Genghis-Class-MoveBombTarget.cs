@@ -1985,6 +1985,21 @@ public class MoveBombTargetMission : AMission
 
     public void checkNewAirgroups()
     {
+		//2026/08: So sometimes airgroups get splintered.  YOu can find this out by looking for
+		//airgroup name becomes NONAME and it has a MOTHERGROUP pointing to the old airgroup
+		//So right now these get reprocessed with new targets etc.  This OK  most of hte time probably?
+		//
+		//One problem is that _COVER or _NOCHANGE groups lose that information (it can be retrieved from
+		//mother group name if that exists, but . . .
+		//
+		//Also sometimes they get a NONAME but there is no mother group.  So then the waypoints
+		//are  reprocessed regardless of _COVER and _NOCHANGE.
+		//
+		//WE COULD fix that by keeping a database of AIRCRAFT name instead of just airgroup name.  IF the aircraft
+		//has already been processed we could skip that maybe (though maybe it is OK to not do that for most
+		//AC), but also we could track more precisely _COVER and _NOCHANGE a/c and not change them
+		//if they turn into NONAMEs
+		
          
         GetCurrentAiAirGroups();
         foreach (AiAirGroup airGroup in airGroups)
@@ -2900,12 +2915,15 @@ public class MoveBombTargetMission : AMission
             AiWayPoint nextWP = prevWP;
 
             bool landing = false; //keep track of whether or not the last waypoint is "landing".
+			
+			//int count = 0;
 
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
                 try
                 {
                     nextWP = wp;
+					if (count < currWay) continue;
 
                     //eliminate any exact duplicate points
                     if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1

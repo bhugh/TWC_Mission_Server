@@ -1801,15 +1801,20 @@ private int NumberPlayerInActor(AiActor actor)
                 //We could add in some scheme for damage later
 
                 double altAGL_m_alt = Calcs.AltitudeAGL_m(actor);
+				
+				bool onWater = GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER ;
+				double airport_distance = 3000;
+				if (onWater) airport_distance = 7000;
 
-                Console.WriteLine("NumPlayerInPlane: {0} AltAGL: {1} AltAGL(alt): {5} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0), OverEnemyTerritory(actor),
-                    forceDamage, altAGL_m_alt);
+                Console.WriteLine("Supply: NumPlayerInPlane: {0} AltAGL: {1} AltAGL(alt): {5} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} OnWater: {5} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), airport_distance), OverEnemyTerritory(actor),
+                    forceDamage, altAGL_m_alt, onWater);
 					
 				bool loa = LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0);
 				bool recoverOffAirfield = false;
 				if (!loa && (new Random().Next() > forceDamage)) recoverOffAirfield = true; 
 
-                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 && (loa || recoverOffAirfield) && !OverEnemyTerritory(actor)
+                if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 
+					&& (loa || recoverOffAirfield) && !OverEnemyTerritory(actor)
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
                     if (forceDamage > 0 && forceDamage < 1)
@@ -1855,11 +1860,15 @@ private int NumberPlayerInActor(AiActor actor)
                     else
                     {
 
-                        Console.WriteLine("SupOPL: Check-in");
+                        Console.WriteLine("SupOPL: Check-in, no damage");
                         CheckActorIn(actor, player);
                     }
                 }
                 else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
+				else {
+					Console.WriteLine("Supply: Actor .destroyed and no damage reported; presumably because MoveBomb has .destroyed it in lieu of landing, so returning to supply. However other reasons are possible so we need to fix this maybe.)");
+					CheckActorIn(actor, player);
+				}
 
                 //DisplayNumberOfAvailablePlanes(actor);
 

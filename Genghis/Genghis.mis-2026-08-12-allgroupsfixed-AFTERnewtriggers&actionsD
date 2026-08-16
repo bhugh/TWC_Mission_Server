@@ -755,7 +755,16 @@
   ESCORT 229870.34 218513.17 4200.00 280.00 BoB_LW_JG54_Stab.03 3
   ESCORT 285862.56 171013.93 500.00 280.00 BoB_LW_JG54_Stab.03 4
   LANDING 340686.74 178745.74 500.00 330.00  
-[BoB_LW_LG2_I.11]
+[BoB_LW_LG2_I.11]  //this one gives error FOR SOME REASON:
+*************************************************************************
+  System.Exception: Mission: No aircraft class defined for group [BoB_LW_JG51_I.11].
+   at 
+TkzmJudJyGMgyLqVkzhEUT6Y8h6H_1mA5pixYsgAaprs.0rHKjt7Y3E9kSMKE6PmcO0w(LRH7_65UV7hEzFHWbEPg3ygGrcrdXwAjZ7$f9O9vBhF8
+ , String , String )
+   at B5VYimkIlxP1cAEHN00WuAimOcig5kBjVkGGBqMSnUaU.B3q0uqKY5D0Bca_jGjDGQMk()
+   at 
+4aYlmFjtPDh0xhaOo0oCHYfrEqiv0RaPINSHcAN7hwIh.jlQnLIOioVAWgmzZUV$5z$I(KlNi8HkHCAddkVKa5U9TpxX6B0js9EBy4ZsA3dpWtBtYIJs$3T9NWtUx7b32Yya1beeNMdF4nJPUxu5DczivJkw
+ )
   Flight0  1 2
   Class Aircraft.Bf-110C-4
   Formation FINGERFOUR
@@ -7053,7 +7062,7 @@
   017500_RBomber ASpawnGroup 1 BoB_RAF_B_35Sqn.07
   017513_RCover ASpawnGroup 1 BoB_RAF_B_35Sqn.08
   017600_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  017613_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
+  017613_BCover ASpawnGroup 1 BoB_LW_LG2_I.11
   017626_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
   017900_RFighter ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
   018000_BFighter ASpawnGroup 1 BoB_LW_JG2_I.21
@@ -7073,7 +7082,7 @@
   019500_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
   019513_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
   019600_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  019613_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
+  019613_BCover ASpawnGroup 1 BoB_LW_LG2_I.11
   019626_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
   019900_RFighter ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
   020000_BFighter ASpawnGroup 1 BoB_LW_JG2_I.01
@@ -7099,7 +7108,7 @@
   023300_RBomber ASpawnGroup 1 BoB_RAF_F_FatCat_Late.17
   023313_RCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.21
   023900_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  023913_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
+  023913_BCover ASpawnGroup 1 BoB_LW_LG2_I.11
   023926_BCover_B ASpawnGroup 1 BoB_LW_JG26_I.31
   024200_RFighter ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
   024300_BFighter ASpawnGroup 1 BoB_LW_JG2_I.37
@@ -7224,7 +7233,7 @@
   040900_RBomber ASpawnGroup 1 gb01_Late.03
   040913_RCover ASpawnGroup 1 gb01_Late.04
   041100_BBomber ASpawnGroup 1 BoB_LW_JG54_Stab.03
-  041113_BCover ASpawnGroup 1 BoB_LW_JG51_I.11
+  041113_BCover ASpawnGroup 1 BoB_LW_LG2_I.11
   041200_RFighter ASpawnGroup 1 gb01.21
   041213_BFighter ASpawnGroup 1 BoB_LW_JG51_I.31
   041400_RBomber ASpawnGroup 1 BoB_RAF_B_218Sqn.03

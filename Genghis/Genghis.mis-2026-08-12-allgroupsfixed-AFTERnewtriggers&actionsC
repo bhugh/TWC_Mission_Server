@@ -407,7 +407,7 @@
   NORMFLY 230789.18 236714.16 4000.00 250.00
   LANDING 285562.30 169253.52 200.00 250.00
 [BoB_LW_LG2_I.12]
-  Flight1  1  
+  Flight1  1 2  
   Class Aircraft.Bf-109E-4N_Late
   Formation FINGERFOUR
   CallSign 31
@@ -431,13 +431,12 @@
   HUNTING 218873.63 218175.12 4000.00 330.00
   LANDING 271849.24 205528.69 300.00 330.00
 [BoB_LW_LG2_I.24]  
-  Flight2  21 22 
+  Flight2  21 22 23 24
   Class Aircraft.Bf-109E-4N_Late
   Formation FINGERFOUR
   CallSign 15
   Fuel 100
   Weapons 1 1
-  SpawnFromScript 1
   Skill 0.7 0.8 0.7 0.5 0.8 0.7 0.7 0.7
 [BoB_LW_LG2_I.24_Way]
   ESCORT 328738.88 179508.23 4500.00 300.00 BoB_LW_KuFlGr_706.03 0
@@ -502,7 +501,7 @@
   LANDING 285025.84 171450.26 500.00 270.00
 [BoB_LW_JG26_I.13]
   Flight0  1
-  Flight1  11
+  Flight1  11 12
   Class Aircraft.Bf-109E-4_Late
   Formation FINGERFOUR
   CallSign 14
@@ -556,7 +555,7 @@
   LANDING 180412.88 264830.42 300.00 260.00
 [BoB_RAF_F_249Sqn_Late.13]
   Flight0  1 2
-  Flight1  11
+  Flight1  11 12
   Class Aircraft.BlenheimMkIVF_Late
   Formation VIC
   CallSign 33
@@ -590,8 +589,8 @@
   GATTACK_POINT 233779.62 247258.14 4000.00 260.00
   LANDING 287309.68 174281.95 200.00 260.00
 [BoB_LW_JG3_Stab.03]
-  Flight0  1
-  Flight1  13
+  Flight0  1 2
+  Flight1  13 12
   Class Aircraft.Bf-109E-4_Late
   Formation FINGERFOUR
   CallSign 32
@@ -607,7 +606,8 @@
   ESCORT 287309.68 174281.95 400.00 310.00 BoB_LW_StG1_I.03 4
   LANDING 306483.21 160658.39 400.00 300.00  
 [BoB_LW_LG2_I.23]
-  Flight0  1 2
+  Flight0  1 2  
+  Flight1  11
   Class Aircraft.Bf-110C-2
   Formation FINGERFOUR
   CallSign 1
@@ -739,7 +739,7 @@
   NORMFLY 229870.34 218513.17 4000.00 230.00
   LANDING 285862.56 171013.93 100.00 230.00
 [BoB_LW_JG26_I.31]
-  Flight0  1 2
+  Flight0  1 2 3
   Class Aircraft.Bf-109E-4N_Late
   Formation FINGERFOUR
   CallSign 15
@@ -1529,7 +1529,8 @@
   GATTACK_POINT 276934.90 196741.64 6000.00 270.00
   LANDING 143363.39 241261.92 2000.00 290.00
 [gb01.33]
-  Flight0  1 2
+  Flight0  1
+  Flight1  11 12
   Class Aircraft.HurricaneMkI_100oct-NF
   Formation VIC3
   CallSign 33
@@ -1545,7 +1546,7 @@
   HUNTING 202912.88 224265.93 6000.00 320.00
   LANDING 146524.18 251099.07 3000.00 250.00
 [LONDON.01]
-  Flight0  1 
+  Flight0  1 2
   Class Aircraft.HurricaneMkI_100oct-NF
   Formation VIC3
   CallSign 1
@@ -1589,7 +1590,6 @@
   CallSign 33
   Fuel 35
   Weapons 1 1 1 0 0 0
-  SpawnFromScript 1
   Skill 0.9 0.96 0.9 0.79 0.9 0.95 0.86 0.97
 [LONDON.02_Way]
   ESCORT 73087.00 194149.00 200.00 380.00 BoB_RAF_F_FatCat_Late.26 0
@@ -1980,7 +1980,8 @@
   NORMFLY 221535.76 262547.08 400.00 220.00
   LANDING 215888.92 258433.49 100.00 220.00
 [BoB_RAF_B_218Sqn.01_NOCHANGE]
-  Flight0  1  
+  Flight0  1 2
+  Flight1  11
   Class Aircraft.SunderlandMkI
   Formation LINEABREAST
   CallSign 20

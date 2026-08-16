@@ -25,15 +25,15 @@ public class ThreadLoadMission : AMission
     public double allTimeCPUPercent = 0;//%, ie 0-100 not 0-1
     public double timeSinceStart_s = 0; // in seconds
 	
-	private TimeSpan oneIntervalTickLength; //
-    private TimeSpan allTimeTickLength;//
-	private TimeSpan allTimeMaxTickLength;//
-	private TimeSpan currentTickLength;
+	public TimeSpan oneIntervalTickLength; //
+    public TimeSpan allTimeTickLength;//
+	public TimeSpan allTimeMaxTickLength;//
+	public TimeSpan currentTickLength;
 	private long initTick;
 	private long lastSingleTick;
 	private long lastOneIntervalTick;
-	private TimeSpan lastSingleTickTime;
-	private TimeSpan lastOneIntTickTime;
+	public TimeSpan lastSingleTickTime;
+	public TimeSpan lastOneIntTickTime;
 
 	
 	public double oneIntAveTick_ms; //************* average tick length over past interval (10 seconds)
@@ -156,9 +156,9 @@ public class ThreadLoadMission : AMission
 			//TimeSpan tickOneIntLength = thisTime.Subtract(lastOneIntTickTime);
 			long deltaTicks = Time.tickCounter() - lastOneIntervalTick;
 			
-			double oneIntAveTick_ms = safeDivide(deltaTime.TotalMilliseconds, (double)deltaTicks);
+			oneIntAveTick_ms = safeDivide(deltaTime.TotalMilliseconds, (double)deltaTicks);
 			
-			double allTimeAveTick_ms = safeDivide(thisTime.TotalMilliseconds, (double)Time.tickCounter());
+			allTimeAveTick_ms = safeDivide(thisTime.TotalMilliseconds, (double)Time.tickCounter());
 						
 			
 			TickTime_stack.Push(oneIntAveTick_ms);

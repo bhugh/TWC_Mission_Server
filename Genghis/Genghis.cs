@@ -1153,6 +1153,36 @@ public class Mission : AMission, IMainMission
             twcLogServer(null, options[optionCode], new object[] { });			
 		}
 		
+		/***************
+		//Add MANY AI a/c to sim (for testing)
+		
+		 if (tickSinceStarted % 8000 == 0 && tickSinceStarted > 8000) 
+        
+        {
+			 List<string> newActions = Calcs.randSTR(blueFighterActions);
+			 foreach (string act in newActions) execAction(act, "testActions");			 
+		}
+		if (tickSinceStarted % 8000 ==  2000 && tickSinceStarted > 8000) 
+        
+        {
+			 List<string> newActions = Calcs.randSTR(redFighterActions);
+			 foreach (string act in newActions) execAction(act, "testActions");			 
+		}
+		if (tickSinceStarted % 8000 == 4000 && tickSinceStarted > 8000) 
+        
+        {
+			 List<string> newActions = Calcs.randSTR(redBomberActions);
+			 foreach (string act in newActions) execAction(act, "testActions");			 
+		}
+		if (tickSinceStarted % 8000 == 6000 && tickSinceStarted > 8000) 
+        
+        {
+			 List<string> newActions = Calcs.randSTR(blueBomberActions);
+			 foreach (string act in newActions) execAction(act, "testActions");			 
+			 			
+		}
+		*/
+		
 
         if (false && tickSinceStarted % 53500 == 1000) //turn this off entirely for now - no automated mission/objective updates
         //if (tickSinceStarted % 1100 == 1000)  //for testing
@@ -1460,7 +1490,7 @@ public class Mission : AMission, IMainMission
                 int owner_army = mo.OwnerArmy;
                 int pointstoknockout = 300; //was 180 - needs to match # set in MO_MissionObjectiveAirfieldsSetup 2023/10/28
 
-                double radius = mo.radius;
+					double radius = mo.radius;
                 Point3d center = mo.Pos;
 
                 Point3d pos = mo.Pos;
@@ -2126,6 +2156,7 @@ public class Mission : AMission, IMainMission
         { "Do-17", new Bomberdata( cap_kg: 1000, bbs_num:20) },
         { "Do-215", new Bomberdata( cap_kg: 500, bbs_num:10) },
         { "Sunderland", new Bomberdata( cap_lb: 1000, bbs_num:8) },
+		{ "Walrus", new Bomberdata( cap_lb: 1000, bbs_num:8) },
     };
 
     public double bomberCorrectionFactor(string acName)
@@ -2135,11 +2166,11 @@ public class Mission : AMission, IMainMission
         {
             if (acName.ToLower().Contains(key.ToLower()))
             {
-                if (ON_TESTSERVER) Console.WriteLine("bomberCorrectionFactor: {0} matched {1}, BCF: {2:F3}", key, acName, Bombers_data[key].Correction_Factor);
+                //if (ON_TESTSERVER) Console.WriteLine("bomberCorrectionFactor: {0} matched {1}, BCF: {2:F3}", key, acName, Bombers_data[key].Correction_Factor);
                 return Bombers_data[key].Correction_Factor;
             }
         }
-        if (ON_TESTSERVER) Console.WriteLine("bomberCorrectionFactor: NO match for {0}, BCF: {1:F3}",  acName, 1);
+        //if (ON_TESTSERVER) Console.WriteLine("bomberCorrectionFactor: NO match for {0}, BCF: {1:F3}",  acName, 1);
 
         return 1;
     }
@@ -5060,7 +5091,7 @@ public class Mission : AMission, IMainMission
                 if (isAI)
                 {
                     playerNames = actor.Name();
-                    AGGplayerNames = actor.Name();
+                    AGGplayerNames = airGroup.Name() + " "  + actor.Name();
                 }
                 else
                 {
@@ -5269,6 +5300,18 @@ public class Mission : AMission, IMainMission
         );
         //groupAllAircraft();  //trying as not task.run as it's already done via a timeout?  2020/04/04
     }
+	
+	//public enum ACType {fighter,sturmovik,bomber};
+	Dictionary <int, int []> numAircraftByType = new Dictionary <int, int[]>{
+		{1, new int[] {0,0,0}},  //Red a/c: fighters, sturmovik, bomber
+		{2, new int[] {0,0,0}}, //Blue a/c: fighters, sturmovik, bomber
+	};
+	
+	Dictionary <int, int []> numAirGroupsByType = new Dictionary <int, int[]>{
+		{1, new int[] {0,0,0}},  //Red a/c: fighters, sturmovik, bomber
+		{2, new int[] {0,0,0}}, //Blue a/c: fighters, sturmovik, bomber
+	};
+	
 
 
     //This is called via Task.Run so no need to re-do that here/
@@ -5279,10 +5322,23 @@ public class Mission : AMission, IMainMission
             numBlueAircraft = 0;
             numRedAircraft = 0;
             numTotalAircraft = 0;
+			numAircraftByType = new Dictionary <int, int[]>{
+				{1, new int[] {0,0,0}},  //Red a/c: fighters, sturmovik, bomber
+				{2, new int[] {0,0,0}}, //Blue a/c: fighters, sturmovik, bomber
+			};
+	
+			numAirGroupsByType = new Dictionary <int, int[]>{
+				{1, new int[] {0,0,0}},  //Red a/c: fighters, sturmovik, bomber
+				{2, new int[] {0,0,0}}, //Blue a/c: fighters, sturmovik, bomber
+			};
+						
             int numBlueAircraft_length = 0;
             int numRedAircraft_length = 0;
             int numTotalAircraft_length = 0;
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("GPAAXX2-1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+			
+			
+            //Console.WriteLine("GPAA-1 " + DateTime.UtcNow.ToString("T"));
 
             Dictionary<AiAirGroup, AirGroupInfo> airGroupInfoDict = new Dictionary<AiAirGroup, AirGroupInfo>();
 
@@ -5294,6 +5350,7 @@ public class Mission : AMission, IMainMission
                 //Console.WriteLine("groupallaircraft: gpArmies " + string.Join(",", GamePlay.gpArmies().Select(x => x.ToString()).ToArray()));
                 foreach (int army in GamePlay.gpArmies())
                 {
+					//nsole.WriteLine("GPAA-2 " + DateTime.UtcNow.ToString("T"));
                     //Console.WriteLine("groupAllAircraft: 0");
                     CurrentAG[army] = new HashSet<AiAirGroup>();
 
@@ -5308,6 +5365,7 @@ public class Mission : AMission, IMainMission
                         //Console.WriteLine("groupAllAircraft: 0.5");
                         foreach (AiAirGroup airGroup in aGa)
                         {
+							//nsole.WriteLine("GPAA-3 " + DateTime.UtcNow.ToString("T"));
                             if (airGroup == null) continue;
                             doneAG.Add(airGroup);
                             //aigroup_count++;
@@ -5322,25 +5380,58 @@ public class Mission : AMission, IMainMission
                                     //Console.WriteLine("groupAllAircraft: 1.1");
                                     if (actor != null && actor is AiAircraft)
                                     {
+										Console.WriteLine("GPAA-4 " + DateTime.UtcNow.ToString("T") + " " + army.ToString());
+										AiAircraft aircraft = actor as AiAircraft;
                                         //Keep a tally of the total number  of a/c altogether and for each side.
                                         //We do it by AIRGROUP so we really only need to do this for the first one in the group
-                                        if (first)
-                                        {
+										
+										//There are 3 exceptions - Ju-87 is a dive bomb but also considered strumovike.  So we peel of bombers/divebombers first
+										//#2. He-115, Walrus, & Sunderland are "coastal patrol" aircraft here, and not really bombers.  Sunderland is usually counted as a bomber.  But if just 1 or 2 flying alone, they become ASR instead...
+										//#3. Sometimes Beaufighter 1C fly in bomber formation & attack targets.  So groups of 5 or more etc.....
+										
+										try {
+											if (first && (army == 1 || army == 2))
+											{
+												if ((Calcs.isHeavyBomber  (aircraft) || Calcs.isDiveBomber(aircraft) ||
+												( airGroup.NOfAirc > 4 && (Calcs.GetAircraftType(aircraft).ToLower()).Contains("beaufightermk1c") )) 
+												&& 
+												!( airGroup.NOfAirc < 3  && (Calcs.GetAircraftType(aircraft).ToLower()).Contains("sunderland"))
+												) {
+													numAircraftByType[army][2] += airGroup.NOfAirc;
+													numAirGroupsByType[army][2] ++ ;
+													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found bomber {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+																								
+												} else if (Calcs.isStrikeAC(aircraft)) {
+													//Need STrikeAC after DiveBomber to classify Ju-87 as bomber here..
+													numAircraftByType[army][1] += airGroup.NOfAirc;
+													numAirGroupsByType[army][1] ++ ;
+													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found Sturmovik {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+													
+												} else if (!Calcs.isAsrAC(aircraft)) { //counting fighters - ASR (HE-115 & Walrus) are ignored
+													numAircraftByType[army][0] += airGroup.NOfAirc;
+													numAirGroupsByType[army][0] ++;
+													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found fighter {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+												}
+												
+												if (ON_TESTSERVER & Calcs.isAsrAC(aircraft) ) {
+													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found ASR AC {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+												}
 
-                                            //int num = airGroup.GetItems().Length;
-                                            if (army == 1) numRedAircraft += airGroup.NOfAirc;  //I THINK*** that NOfAirc will be more accurate as AC get killed etc over the course of the mission.  We'll see
-                                            else if (army == 2) numBlueAircraft += airGroup.NOfAirc;
-                                            numTotalAircraft += airGroup.NOfAirc;
+												//int num = airGroup.GetItems().Length;
+												if (army == 1) numRedAircraft += airGroup.NOfAirc;  //I THINK*** that NOfAirc will be more accurate as AC get killed etc over the course of the mission.  We'll see
+													
+												else if (army == 2) numBlueAircraft += airGroup.NOfAirc;									
+												numTotalAircraft += airGroup.NOfAirc;
 
-                                            int num = airGroup.GetItems().Length;
-                                            if (army == 1) numRedAircraft_length += num;
-                                            else if (army == 2) numBlueAircraft_length += num;
-                                            numTotalAircraft_length += num;
+												int num = airGroup.GetItems().Length;
+												if (army == 1) numRedAircraft_length += num;
+												else if (army == 2) numBlueAircraft_length += num;
+												numTotalAircraft_length += num;
 
-                                            //Console.WriteLine("groupAllAircraft: 1.2 getitems count:{0} red:{1} blue:{2} total:{3} NOfAirc:{4}", num, numRedAircraft, numBlueAircraft, numTotalAircraft, airGroup.NOfAirc);
-                                            first = false;
-                                        }
-
+												//Console.WriteLine("groupAllAircraft: 1.2 getitems count:{0} red:{1} blue:{2} total:{3} NOfAirc:{4}", num, numRedAircraft, numBlueAircraft, numTotalAircraft, airGroup.NOfAirc);
+												first = false;
+											}
+										} catch (Exception ex) { Console.WriteLine("ERROR!!!! GroupAllAC numAircraftByType Tallies - ERROR: " + ex.ToString());}
 
                                         CurrentAG[army].Add(airGroup);
                                         //Console.WriteLine("groupAllAircraft: 1.3");
@@ -5806,11 +5897,12 @@ public class Mission : AMission, IMainMission
 
 
                 }
-                AiAirGroup[] empty = Array.Empty<AiAirGroup>();
-                Console.WriteLine("groupAllAircraft: Number of aircraft NOfAc: red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
-                Console.WriteLine("groupAllAircraft: Number of aircraft .length: red:{0} blue:{1} total:{2}", numRedAircraft_length, numBlueAircraft_length, numTotalAircraft_length);
-                Console.WriteLine("groupAllAircraft: Number of airgroups: red:{0} blue:{1} total:{2}", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length);
-
+				try {
+					AiAirGroup[] empty = Array.Empty<AiAirGroup>();
+					Console.WriteLine("groupAllAircraft: Number of aircraft NOfAc (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", numRedAircraft, numBlueAircraft, numTotalAircraft, numAircraftByType[1][0],numAircraftByType[1][1],numAircraftByType[1][2], numAircraftByType[2][0],numAircraftByType[2][1],numAircraftByType[2][2],numAircraftByType[1][0]+numAircraftByType[2][0],numAircraftByType[1][1]+numAircraftByType[2][1],numAircraftByType[1][2]+numAircraftByType[2][2]);
+					Console.WriteLine("groupAllAircraft: Number of aircraft .length: red:{0} blue:{1} total:{2}", numRedAircraft_length, numBlueAircraft_length, numTotalAircraft_length);
+					Console.WriteLine("groupAllAircraft: Number of airgroups (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length, numAirGroupsByType[1][0],numAirGroupsByType[1][1],numAirGroupsByType[1][2], numAirGroupsByType[2][0],numAirGroupsByType[2][1],numAirGroupsByType[2][2],numAirGroupsByType[1][0]+numAirGroupsByType[2][0],numAirGroupsByType[1][1]+numAirGroupsByType[2][1],numAirGroupsByType[1][2]+numAirGroupsByType[2][2]);
+				} catch (Exception ex) { Console.WriteLine("GroupAirgroups CONSOLE REPORTS ERROR: {0}", ex); }
 
             }
             //Console.WriteLine("groupAllAircraft: 7");
@@ -5819,7 +5911,8 @@ public class Mission : AMission, IMainMission
             }
 
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("GPAAXX2-2 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-        } catch (Exception ex) { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
+        } 
+		catch (Exception ex) { Console.WriteLine("GroupAirgroups ERROR: {0}", ex); }
     }
 
     public string showGiantSectorOverview(Player player = null, int army = 0, bool display = true, bool html = false)
@@ -6621,20 +6714,20 @@ public class Mission : AMission, IMainMission
 
 
                                                     posmessage =
-                                                    a.Pos().x.ToString()
-                                                    + "," + a.Pos().y.ToString() + "," +
-                                                    longlat.y.ToString()
-                                                    + "," + longlat.x.ToString() + "," +
-                                                    army.ToString() + "," +
-                                                    type + "," +
-                                                    he + "," +
-                                                    vel + "," +
-                                                    alt + "," +
-                                                    sector.ToString() + "," +
-                                                    numContacts + "," +
-                                                    aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
-                                                    + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
-                                                    + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
+														a.Pos().x.ToString()
+														+ "," + a.Pos().y.ToString() + "," +
+														longlat.y.ToString()
+														+ "," + longlat.x.ToString() + "," +
+														army.ToString() + "," +
+														type + "," +
+														he + "," +
+														vel + "," +
+														alt + "," +
+														sector.ToString() + "," +
+														numContacts + "," +
+														aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
+														+ a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
+														+ aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
 
                                                     //-radar.txt data file structure is:
                                                     //First line header info - just ignore it
@@ -7013,20 +7106,20 @@ public class Mission : AMission, IMainMission
 
                                                 //Console.Write("LPAA 13");
                                                 posmessage =
-                                                agid.AGGavePos.x.ToString()
-                                                + "," + agid.AGGavePos.y.ToString() + "," +
-                                                longlat.y.ToString()
-                                                + "," + longlat.x.ToString() + "," +
-                                                army.ToString() + "," +
-                                                agid.AGGmixupType + "," + //We use this to keep the (possibly mixed-up) a/c type standard among all types of radar, it is set once for all in agid instead of randomly set here for each individual radar sweep
-                                                he + "," +
-                                                vel + "," +
-                                                alt + "," +
-                                                sector.ToString() + "," +
-                                                numContacts + "," +
-                                                aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
-                                                + a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
-                                                + aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
+													agid.AGGavePos.x.ToString()
+													+ "," + agid.AGGavePos.y.ToString() + "," +
+													longlat.y.ToString()
+													+ "," + longlat.x.ToString() + "," +
+													army.ToString() + "," +
+													agid.AGGmixupType + "," + //We use this to keep the (possibly mixed-up) a/c type standard among all types of radar, it is set once for all in agid instead of randomly set here for each individual radar sweep
+													he + "," +
+													vel + "," +
+													alt + "," +
+													sector.ToString() + "," +
+													numContacts + "," +
+													aircraftType.Replace(',', '_') + "," //Replace any commas since we are using comma as a delimiter here
+													+ a.Name().GetHashCode().ToString() + "," //unique hashcode for each actor that will allow us to be able to identify it uniquely on the other end, without giving away anything about what type of actor it is (what type of aircraft, whether AI or live player, etc)
+													+ aplayername.Replace(',', '_'); //Replace any commas since we are using comma as a delimiter here
 
                                                 try
                                                 {
@@ -7912,11 +8005,11 @@ public class Mission : AMission, IMainMission
                                 {
                                     int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
                                     int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
-                                    bigMess += string.Format("Number of aircraft red:{0} blue:{1} total:{2}", numRedAircraft, numBlueAircraft, numTotalAircraft);
+                                    bigMess += string.Format("Number of aircraft (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", numRedAircraft, numBlueAircraft, numTotalAircraft, numAircraftByType[1][0],numAircraftByType[1][1],numAircraftByType[1][2], numAircraftByType[2][0],numAircraftByType[2][1],numAircraftByType[2][2],numAircraftByType[1][0]+numAircraftByType[2][0],numAircraftByType[1][1]+numAircraftByType[2][1],numAircraftByType[1][2]+numAircraftByType[2][2]);
                                     AiAirGroup[] empty = Array.Empty<AiAirGroup>();
-                                    bigMess += string.Format(" Number of airgroups: red:{0} blue:{1} total:{2}", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length);
-                                    bigMess += string.Format(" Number of Players: red: {0} blue: {1} total: {2}", numRedPlayers, numBluePlayers, numRedPlayers + numBluePlayers);
-									bigMess += string.Format(" Threadload: {0} Rolling ave: {1}", threadloadmission.recentCPUPercent, threadloadmission.rollingAverageCPUPercent );
+                                    bigMess += string.Format(" Number of airgroups: (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length, numAirGroupsByType[1][0],numAirGroupsByType[1][1],numAirGroupsByType[1][2], numAirGroupsByType[2][0],numAirGroupsByType[2][1],numAirGroupsByType[2][2],numAirGroupsByType[1][0]+numAirGroupsByType[2][0],numAirGroupsByType[1][1]+numAirGroupsByType[2][1],numAirGroupsByType[1][2]+numAirGroupsByType[2][2])+ Environment.NewLine;
+                                    bigMess += string.Format("Number of Players: red: {0} blue: {1} total: {2}", numRedPlayers, numBluePlayers, numRedPlayers + numBluePlayers) + Environment.NewLine;
+									bigMess += string.Format(" Threadload: {0:N0} Rolling ave: {1:N0} Current tick: {2:N1}ms, Max Tick {3:N1}ms, Ave tick: {4:N1}ms, Rolling ave: {5:N1}ms", threadloadmission.recentCPUPercent, threadloadmission.rollingAverageCPUPercent,  threadloadmission.currentTickLength.TotalMilliseconds, threadloadmission.allTimeMaxTickLength.TotalMilliseconds, threadloadmission.oneIntAveTick_ms, threadloadmission.rollingAverageTickTime_ms);
                                 }
                                 bigMess += Environment.NewLine;
 
@@ -8721,6 +8814,14 @@ public class Mission : AMission, IMainMission
             //(For now this is unnecessary but in future we might load things in initial submissions & then mission_objectives potentially affected by them afterwards)
             //Timeout(30, () => { mission_objectives = new MissionObjectives(this); });
             //Timeout(1, () => { mission_objectives = new MissionObjectives(this); }); //testing
+			
+			//Also!
+			//you can get the next Missionnumber with GamePlay.gpNextMissionNumber()
+			//So : 
+			// int missNum_f = GamePlay.gpNextMissionNumber();
+			// GamePlay.gpPostMissionLoad(f);
+			// Now missNum_f is the mission number assigned to f when loaded as a mission!
+			
 
 
             //For testing
@@ -9417,6 +9518,19 @@ public class Mission : AMission, IMainMission
 		new List<string>() {"040626_RFighter"},
 		new List<string>() {"041200_RFighter"},
       };
+	
+	List<List<string>> redCoastalPatrolActions = new List<List<string>>() {
+		new List<string>() {"Sunderland_coastal"},
+		//new List<string>() {"Walrus_coastal"},		 //REMOVED temporarily just to test sunderland 2026-08
+	};
+		
+	
+	List<List<string>> blueCoastalPatrolActions = new List<List<string>>() {
+		new List<string>() {"HE-115_coastal"},		
+	};
+	
+	  
+	  
     List<string> blueAllActions = new List<string>
     {
 		    "000300_BBomber",
@@ -9749,13 +9863,18 @@ public class Mission : AMission, IMainMission
     //BALANCEAILOAD and STOPAI are the two main ways we control how many
     //AI groups come into the game.  
     //BALANCEAILOAD will load bomber groups periodically
-    //if the action gets too low/boring.  They are loaded from the ACTION lists up above, 
+    //if the action gets too low/boring. Also, fighter group/border patrol 1x per hour.  Also
+	//a fighter patrol instead of bomber patrol once in a while.
+	//They are loaded from the ACTION lists up above, 
     //which MUST match what is going on in the .mis file.  (Action names, to be precise)
     //STOPAI stops the AI group loads when there are too many breathers online
     //HOWEVER it does take into consideration whether there are just a few players on one side
     //And if so, continues to send bomber missions from the understaffed side
-    private DateTime timeLastFighterGroupLoaded = DateTime.UtcNow;
-    private double fighterGroupLoadInterval_min = 62;
+    private DateTime timeLastCoastalPatrolGroupLoaded = DateTime.UtcNow.AddHours(-12);
+    private double coastalPatrolGroupLoadInterval_min = 153;
+	private bool missionStart = true;
+	public bool bomberFormationSpawning = false;  //used "in the future" when the triggers are actually pulled
+	public bool bomberRecentlySpawned = false; //used now to allow balanceAILoad to also call in the cover when a bomber is called
 
     static object balanceAILoad_locker = new object();
     public void balanceAILoad(object o)
@@ -9767,35 +9886,42 @@ public class Mission : AMission, IMainMission
             {
                 int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
                 int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
+				
+				
+				if (ON_TESTSERVER) {numRedPlayers = 7; numBluePlayers = 7;}
                 Console.WriteLine("balanceAILoad: Blue ac/players {0} {1} Red ac/players  {2} {3} " + DateTime.UtcNow.ToString("T") + ". Send group?", numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers);
 
                 //return; //stop buggy behavior for now
 
                 //First off we load a new shore patrol/border patrol fighter group every hour or so
-                if (DateTime.UtcNow > timeLastFighterGroupLoaded.AddMinutes(fighterGroupLoadInterval_min))
+                if (DateTime.UtcNow > timeLastCoastalPatrolGroupLoaded.AddMinutes(	coastalPatrolGroupLoadInterval_min))
                 {
+					timeLastCoastalPatrolGroupLoaded = DateTime.UtcNow;
 
                     //double wait = random.Next(0, 90);
-                    Timeout(random.Next(0, 240), () =>
+                    Timeout(random.Next(0, 900), () =>
                     {
-                        int randIndex = random.Next(redFighterActions.Count);
-                        foreach (string act in redFighterActions[randIndex])
+                        int randIndex = random.Next(redCoastalPatrolActions.Count);
+                        foreach (string act in redCoastalPatrolActions[randIndex])
                         {
-                            execAction(act, "BalanceAILoad - fighter patrols - Red");
+                            execAction(act, "BalanceAILoad - coastal patrols - Red", override_stopai: true);
                             Console.WriteLine("balanceAILoad: Loading " + act);
                         }
                     });
 
-                    Timeout(random.Next(0, 240), () =>
+                    Timeout(random.Next(0, 900), () =>
                     {
-                        int randIndex = random.Next(blueFighterActions.Count);
-                        foreach (string act in blueFighterActions[randIndex])
+                        int randIndex = random.Next(blueCoastalPatrolActions.Count);
+                        foreach (string act in blueCoastalPatrolActions[randIndex])
                         {
-                            execAction(act, "BalanceAILoad - fighter patrols - Blue");
+                            execAction(act, "BalanceAILoad - coastal patrols - Blue", override_stopai: true);
                             Console.WriteLine("balanceAILoad: Loading " + act);
                         }
                     });
                 }
+				
+				int numToAdd = 1;
+				if (missionStart) numToAdd =2;			
 
                 //2021/07 - was <70 but with the server seeming a bit overloaded at times, 
                 //make it <55 instead
@@ -9806,11 +9932,31 @@ public class Mission : AMission, IMainMission
                     (numBlueAircraft < 47 && numRedPlayers > 0)
                     ) 
                 */
-                //2022/12 - increasing them all by a bit now
+
+				//HERE we decide to send more a/c on the opposing team, if there 
+				//are more players on the opposite team. 
+				//This is to ensure there is plenty to do for those players
+				// (To have a busy server it doesn't really matter how many AI a/c of THEIR Team are
+				//online - what counts is how many of the OPPOSING team.)
+                //2022/12 - increasing them all by a bit now				
+				
+				//On the other side, stopAI, we do the opposite: REMOVE a/c if there are too many
+				//players online.  Because at that point, fighting actual real pilots replaces the AI.
+				bool sendBlue = false;
+
                 if ((numBlueAircraft < 70 && numRedPlayers > 9) ||
                     (numBlueAircraft < 56 && numRedPlayers > 5) ||
-                    (numBlueAircraft < 51 && numRedPlayers > 0)
-                    )
+                    (numBlueAircraft < 51 && numRedPlayers > 0 ) ||
+					(numRedAircraft < 22)  //Keep A FEW a/c going no matter what
+                    ) sendBlue = true;
+					
+				bool sendRed = false;
+				if ((numRedAircraft < 70 && numBluePlayers > 9) ||
+					(numRedAircraft < 56 && numBluePlayers > 5) ||
+					(numRedAircraft < 51 && numBluePlayers > 0) ||					
+					(numRedAircraft < 22)
+					
+					) sendRed = true;
 
                 /*if ((numBlueAircraft < 28 && numRedPlayers > 9) ||
                 (numBlueAircraft < 26 && numRedPlayers > 5) ||
@@ -9821,59 +9967,55 @@ public class Mission : AMission, IMainMission
                 //2021-11 - leaving it this way, we'll see how it works.
                 //2023-01 - moving back to 8%, both R&B, because for some reason
                 //blue bombers missions outnumber Red by a massive percentage
-                {
-                    double wait = random.Next(0, 90);
-                    List<List<string>> blueActions = blueBomberActions;
-                    if (random.Next(100) < 8) blueActions = blueFighterActions;
-                    Timeout(wait, () =>
-                    {
-                        int randIndex = random.Next(blueActions.Count);
-                        foreach (string act in blueActions[randIndex])
-                        {
-                            execAction(act, "BalanceAILoad Blue");
-                            Console.WriteLine("balanceAILoad: Loading " + act);
-                        }
-                    });
+				
+					//List<List<List<string>>> actionsLists = new List<List<List<string>>>{blueBomberActions, blueFighterActions, redBomberActions, redFighterActions};
+					List<List<string>>[] actionsLists = new List<List<string>> [] {blueBomberActions, blueFighterActions, redBomberActions, redFighterActions};
+					
+					Calcs.Randomize(actionsLists);
+					
+					
+					int addTime_sec = 0;
+					foreach (List<List<string>> actions in actionsLists) {
+						for (int i = 0; i<numToAdd; i++) {
+							double wait = random.Next(0, 240);
+							if (ON_TESTSERVER) wait = random.Next(0,25);
+							
+							if (!missionStart && (actions == blueFighterActions || actions == blueBomberActions)
+								&& !sendBlue) continue;
+							
+							if (!missionStart && (actions == redFighterActions || actions == redBomberActions) 
+								&& !sendRed) continue;
+							
+							//Skip adding fighters 2 out of 3 runs
+							//(so 3X the bomber groups as fighter groups)
+							if (!missionStart && (actions == blueFighterActions || actions == redFighterActions)
+							&& random.Next(3) != 0 ) continue;
+						
+							Timeout(wait, () =>
+							{								
+								
+								List<string> pickedActions = Calcs.randSTR(actions);
+								if (pickedActions[0].ToLower().Contains("bomber")) bomberFormationSpawning = true;
+								foreach (string act in pickedActions)
+								{
+									
+									
+									execAction(act, "BalanceAILoad - bomber & fighter actions");
+									Console.WriteLine("balanceAILoad: Loading " + act + " {0} {1} ", actions.Count, pickedActions[0]);
+								
+											
+								}
+								if (pickedActions[0].ToLower().Contains("bomber")) bomberFormationSpawning = false;
+		
+							});
+							
+						}
+					}
 
-                }
-                /*    
-                if ((numRedAircraft < 55 & numBluePlayers > 9) ||
-                    (numRedAircraft < 51 & numBluePlayers > 5) ||
-
-                    (numRedAircraft < 47 & numBluePlayers > 0)
-                    )
-                */
-                //2022-12 - now making this match/be equal for Red & Blue
-                if ((numRedAircraft < 70 & numBluePlayers > 9) ||
-                (numRedAircraft < 56 & numBluePlayers > 5) ||
-
-                (numRedAircraft < 51 & numBluePlayers > 0)
-                )
-
-                /*if ((numRedAircraft < 28 & numBluePlayers > 9) ||
-                (numRedAircraft < 26 & numBluePlayers > 5) ||
-
-                (numRedAircraft < 24 & numBluePlayers > 0)
-                )*/
-
-                //bhugh, temp XX2021-10, cutting bomber missions way down to raise stakes
-                //2021-11 - leaving it this way for now - 2021-12, putting it back to 65 etc
-                //2022-12 - raising % of fighter missions to 20% from 5%, just to give the bombers
-                //a little more challenge.  Also we have raised the total # of AI missions at this time, too.
-                {
-                    List<List<string>> redActions = redBomberActions;
-                    if (random.Next(100) < 8) redActions = redFighterActions;
-                    double wait = random.Next(0, 90);
-                    Timeout(wait, () =>
-                    {
-                        int randIndex = random.Next(redActions.Count);
-                        foreach (string act in redActions[randIndex])
-                        {
-                            execAction(act, "BalanceAILoad Red");
-                            Console.WriteLine("balanceAILoad: Loading " + act);
-                        }
-                    });
-                }
+                
+					
+				
+			missionStart = false;
             }
             catch (Exception ex) { Console.WriteLine("BalanceAILoad ERROR: " + ex.ToString()); }
             finally
@@ -9888,11 +10030,15 @@ public class Mission : AMission, IMainMission
     public void balanceAILoadTimer_recurs()
     {
         //Console.WriteLine("balanceAILoad: Starting timer! " + DateTime.UtcNow.ToString("T"));
+		
+		int period = 232453;
+		if(ON_TESTSERVER) period = 30000; //speed things up a lot on testserver
+		
         balanceAILoadTimer = new System.Threading.Timer(
             new TimerCallback(balanceAILoad),
             null,
-            dueTime: 30000, //wait time @ startup
-            period: 232453); //periodically call the callback at this interval, every 4-6 minutes say
+            dueTime: 60000, //wait time @ startup (ms)
+            period: period); //periodically call the callback at this interval, every 4-6 minutes say
 
     }
 
@@ -13735,6 +13881,7 @@ public class Mission : AMission, IMainMission
                 if (ON_TESTSERVER && missionNumber > 20 )
                 {
                     if (actor != null && (actor as AiCart) != null ) Console.WriteLine("New Actor Created: {0} {1} {2} {3}", missionNumber, shortName, actor.Name(), (actor as AiCart).InternalTypeName());
+					if (actor != null && (actor as AiCart) != null && actor.Group() != null) Console.WriteLine("New Actor Created: {0} {1} {2} {3} Group: {4}", missionNumber, shortName, actor.Name(), (actor as AiCart).InternalTypeName(), (actor.Group() as AiActor).Name());
                     else Console.WriteLine("New Actor Created: {0} {1}", missionNumber, shortName);
                 }
             }
@@ -19740,7 +19887,7 @@ added Rouen Flak
                  if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: PlaceDetritus");
                  GamePlay.gpPostMissionLoad(f);
 
-                 if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/detritusobj_" + mo.ID); //testing)
+                 if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/detritusobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
              }
 
              Point3d smokePos = new Point3d(mo.Pos.x + (random.NextDouble() * 2.0 - 1.0) * searchRadius_m, mo.Pos.y + (random.NextDouble() * 2.0 - 1.0) * searchRadius_m, -15); //try -z position to see if it will make a diff effect
@@ -19793,7 +19940,7 @@ added Rouen Flak
                 Timeout(random.Next(5, 120), () =>
                 {
                     GamePlay.gpPostMissionLoad(f);
-                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_" + mo.ID +random.Next(1, 10).ToString());
+                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_" + Calcs.GetSafeFileName(mo.ID) +random.Next(1, 10).ToString());
 
                 });
             }
@@ -19832,7 +19979,7 @@ added Rouen Flak
                         Timeout(random.Next(5, 120), () =>
                         {
                             GamePlay.gpPostMissionLoad(f2);
-                            f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_"+mo.ID + random.Next(1, 10).ToString());
+                            f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_"+Calcs.GetSafeFileName(mo.ID) + random.Next(1, 10).ToString());
 
                         });
                     }
@@ -20121,7 +20268,7 @@ added Rouen Flak
                     if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: TriggerObjectiveRefresh");
                     GamePlay.gpPostMissionLoad(f);
 
-                    if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_objective_refresh_" + mo.ID); //testing)
+                    if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_objective_refresh_" + Calcs.GetSafeFileName(mo.ID)); //testing)
 
                 });
             }
@@ -20490,14 +20637,14 @@ added Rouen Flak
         GamePlay.gpPostMissionLoad(f);
 
 
-        f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/mobileobj_" + mo.ID); //testing)
+        f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/mobileobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
 
         Console.WriteLine("The mobile objective {0} ({3}) is at ({1:F0},{2:F0})", new object[] { mo.Name, mo.Pos.x, mo.Pos.y, ArmiesL[mo.OwnerArmy] });
 
     }
 
     double panicRating = 0;
-    public bool panic()
+    public bool panic() 
     {
         if (random.Next(100) < panicRating) return true;
         return false;
@@ -20787,7 +20934,8 @@ added Rouen Flak
 
                                     double rating = 0;
 
-                                    if (!ON_TESTSERVER && (isAiControlledPlane(aircraft) || !aircraft.IsAirborne())) break; //for testserver we count AI planes the same as breathers, for testing purposes.  On the real server, this only spawns in AA for real/breather pilots
+                                    //if (!ON_TESTSERVER && (isAiControlledPlane(aircraft) || !aircraft.IsAirborne())) break; //for testserver we count AI planes the same as breathers, for testing purposes.  On the real server, this only spawns in AA for real/breather pilots
+									if (isAiControlledPlane(aircraft) || !aircraft.IsAirborne()) break;
                                     if (actor.Pos().z < 10 || actor.Pos().z > max_altitude_m) continue; //skip very high alt ppl as flak doesn't help
                                     
                                     //getParameter seems like a lighter-weight way to get the AGL?
@@ -21151,7 +21299,7 @@ added Rouen Flak
                     {
                         GamePlay.gpPostMissionLoad(autoFlakF);
                         reset_count = true;
-                        if (nump < 5 && !panic() || ON_TESTSERVER) autoFlakF.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "tempflakfile-" + mo.ID.Replace(' ', '_').Replace('\\', '_').Replace('/','_') + ".mis"); //testing
+                        if (nump < 5 && !panic() || ON_TESTSERVER) autoFlakF.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "tempflakfile-" + Calcs.GetSafeFileName(mo.ID) + ".mis"); //testing
 
                     }
                     //);
@@ -23103,7 +23251,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                             f = Calcs.changeArmy_Waypoints_SectionFile(f, GamePlay, this, changeToArmy: mo.OwnerArmy, maxWaypoints_remove: 0, maxPercentWaypoints_remove: 0);
                             if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Load objective flak file");
                             GamePlay.gpPostMissionLoad(f);
-                            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "printSectionFile-" + flakMission + ".mis"); //testing
+                            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "printSectionFile-" + Calcs.GetSafeFileName(flakMission) + ".mis"); //testing
                                                                                                                           //msn.GamePlay.gpPostMissionLoad(s);
                             //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "/" + flakMission);
                             DebugAndLog(flakMission + " flak file loaded");
@@ -23177,7 +23325,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Placeappropriate jerrycan");
                 GamePlay.gpPostMissionLoad(f);
 
-                if (!panic() && ON_TESTSERVER) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_" + mo.ID); //testing)
+                if (!panic() && ON_TESTSERVER) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
             });
         }
     }
@@ -23211,7 +23359,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Place some Jerrycans");
             GamePlay.gpPostMissionLoad(f);
 
-            if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_" + mo.ID); //testing)
+            if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
             });
 
     }
@@ -23403,7 +23551,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
                     if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Initialize all objectives - update blue radars");
                     GamePlay.gpPostMissionLoad(f);
-                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE_" + mo.ID + "msn.txt"); //testing
+                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE_" + Calcs.GetSafeFileName(mo.ID) + "msn.txt"); //testing
 
                     //TESTING BIRTHPLACES                  
                     /*  
@@ -24702,7 +24850,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                         f2 = Calcs.CreateBirthPlace(this,f2, bname, Pos.x, Pos.y, 0, OwnerArmy);
                         if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Restore airfield");
                         GamePlay.gpPostMissionLoad(f2);
-                        f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname + ".mis");
+                        f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + Calcs.GetSafeFileName(bname) + ".mis");
                     });
                 }
                 MO_MissionObjectiveAirfieldsArmyReset(this, GamePlay, OwnerArmy, apID: ID);
@@ -25807,14 +25955,14 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     }
                     catch (Exception ex) { }
 
-                    Console.WriteLine("BSD: 1");
+                    //Console.WriteLine("BSD: 1");
                     mo.LastHitTime_UTC = DateTime.UtcNow;
 
                     double oldOONT_num = mo.ObjectsDestroyed_num;
-                    Console.WriteLine("BSD: 2");
+                    //Console.WriteLine("BSD: 2");
                     double damageCount = 1;
                     if (title !=null && (title.Contains("Barge") || title.Contains("Tanker") || title.Contains("Cruiser"))) damageCount = 10;
-                    Console.WriteLine("BSD: 4");
+                    //Console.WriteLine("BSD: 4");
 
                     if (dist > mo.TriggerDestroyRadius) damageCount *= 0.5; //less damage effectiveness if inside radius but outside triggerradius
                     if (mo.MOTriggerType == MO_TriggerType.PointArea)
@@ -25822,21 +25970,21 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     else if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         mo.ObjectsDestroyed_num ++;
 
-                    Console.WriteLine("BSD: 3");
+                    //Console.WriteLine("BSD: 3");
 
 
                     MO_addInitiatorToListOfPlayersWhoContributed(initiator, mo);
 
                     if (MissionObjectivesTimes[(ArmiesE)mo.OwnerArmy].ContainsKey("RepairCrewEndTime_dt") && MissionObjectivesTimes[(ArmiesE)mo.OwnerArmy]["RepairCrewEndTime_dt"] > currTime_dt) repairSpeedupFactor = 4;
 
-                    Console.WriteLine("BSD: 5");
+                    //Console.WriteLine("BSD: 5");
 
                     if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         MO_CalculateAndRecordTriggerObjectivesDamagePercent(mo);
                     //double oldDestroyedPercent = mo.DestroyedPercent;
                     else if (mo.MOTriggerType == MO_TriggerType.PointArea) MO_CalculateAndRecordPointareaObjectivesDamagePercent(mo);
 
-                    Console.WriteLine("BSD: 6");
+                    //Console.WriteLine("BSD: 6");
                     if (st != null) Console.WriteLine("AreaPoint Stationary: {0}, {1}, {2}, {3}", st.Category, st.Name, st.Type, st.Title);
                     else Console.WriteLine("AreaPoint Building: {0}", name);
 
@@ -25989,32 +26137,105 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
     //STOPAI stops the AI group loads when there are too many breathers online
     //HOWEVER it does take into consideration whether there are just a few players on one side
     //And if so, continues to send bomber missions from the understaffed side
+	
+	private bool stopAISpawnedABomber = false;
+	
     public bool stopAI(string actionName = "")
     {
+		//ON TESTSERVER we ignore CPU here, but can simulate it using panic()
+		//on regular server, we use CPU ave, but can raise it if we like, using panic()
+		double tlpan = threadloadmission.rollingAverageCPUPercent;
+		if (ON_TESTSERVER) tlpan = panicRating;
+		else if (panicRating > tlpan) tlpan = panicRating;
+		
         try
         {
-            if (panic()) return true;
+            if (tlpan > 98) {
+				Console.WriteLine("STOPAI: Stopping all AI aircraft spawns due to panic/threadload. Panic: {0} Rolling ave CPU: (1:n1) action: {2}", panicRating, threadloadmission.rollingAverageCPUPercent, actionName);
+				stopAISpawnedABomber = false;
+				return true;
+			}
 
-            if (actionName.Length == 0) return false;
+			
+
+            if (actionName.Length == 0) return false; //anything lacking the actionname isn't affected; this is used up & down ontrigger a lot
 
             double nump = (double)Calcs.gpNumberOfPlayers(GamePlay);
             int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
             int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
+			
+			if (ON_TESTSERVER) {numRedPlayers = 5; numBluePlayers = 5; nump = 10;}
+			
+			bool redFighter = false;
+			bool blueFighter = false;
+			bool redBomber = false;
+			bool blueBomber = false;
+			
+			redFighter =doesNestedListContain(redFighterActions, actionName);
+			blueFighter =doesNestedListContain(blueFighterActions, actionName);
+			redBomber =doesNestedListContain(redBomberActions, actionName);
+			blueBomber =doesNestedListContain(blueBomberActions, actionName);
+			
 
-            //Console.WriteLine("stopAI 1");
+			Console.WriteLine("stopAI 1 {0} Red: {1} {2} BlueF/B: {3} {4} nump: {5} Red: {6} Blue: {7}", actionName, redFighter, redBomber, blueFighter, blueBomber, nump, numRedPlayers, numBluePlayers);
+			
+			//always allow through the cover groups that follow the main bomber spawn-in
+			if ( (redBomber || blueBomber) && stopAISpawnedABomber && bomberFormationSpawning && actionName.ToLower().Contains("cover")) {
+				Console.WriteLine("stopAI: Allowing _cover because bomber was allowed: " + actionName);
+				Timeout(10, () => { stopAISpawnedABomber = false;});
+				return false;
+			}
+			
+			//flip side: If the bomber WASN'T allowed through, then also don't allow its associated _Cover
+			if ( (redBomber || blueBomber) && !stopAISpawnedABomber && actionName.ToLower().Contains("cover")) {
+				Console.WriteLine("stopAI: Stopping _cover because bomber was stopped: " + actionName);
+				return true;
+			}
+			
+			AiAirGroup[] empty = Array.Empty<AiAirGroup>();
+			
+			Console.WriteLine("stopAI: Number of aircraft NOfAc (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", numRedAircraft, numBlueAircraft, numTotalAircraft, numAircraftByType[1][0],numAircraftByType[1][1],numAircraftByType[1][2], numAircraftByType[2][0],numAircraftByType[2][1],numAircraftByType[2][2],numAircraftByType[1][0]+numAircraftByType[2][0],numAircraftByType[1][1]+numAircraftByType[2][1],numAircraftByType[1][2]+numAircraftByType[2][2]);
+        
+			Console.WriteLine("stopAI: Number of airgroups (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length, numAirGroupsByType[1][0],numAirGroupsByType[1][1],numAirGroupsByType[1][2], numAirGroupsByType[2][0],numAirGroupsByType[2][1],numAirGroupsByType[2][2],numAirGroupsByType[1][0]+numAirGroupsByType[2][0],numAirGroupsByType[1][1]+numAirGroupsByType[2][1],numAirGroupsByType[1][2]+numAirGroupsByType[2][2]);
+			
+			//##### STEP 1 #######
+			//First are baselines: max overall planes in sim, max # fighters on each side, max # bombers on each side.  
+			//If it doesn't meet those, we just stop right here, don't send it.
+			//# fighter groups allowed phases out as players on that side =4 to 8 (all gone). <4 players, they still load
 
-            bool letFighterPatrolGo = (doesNestedListContain(redFighterActions, actionName) || doesNestedListContain(blueFighterActions, actionName)) && (numBlueAircraft + numRedAircraft < 140) && nump < 16;
-            if (doesNestedListContain(redFighterActions, actionName) && numRedPlayers > 8) letFighterPatrolGo = false;
-            if (doesNestedListContain(blueFighterActions, actionName) && numBluePlayers > 8) letFighterPatrolGo = false;
+			//If fighter & total a/c < 140 & total num players < 16, let it go.
+            bool letFighterPatrolGo = (redFighter || blueFighter) && (numBlueAircraft + numRedAircraft < 140) && nump < 16;
+			
+			//But don't let RED fighters go if too many RED players; or Blue if too many BLUE.
+			//<4 always go, >=8 always stop, 4-8 phase out
+            if (redFighter && 				
+				(random.Next(4,8) < numRedPlayers)  
+				) letFighterPatrolGo = false;
+            if (blueFighter && 				
+				(random.Next(4,8) < numBluePlayers)  
+				) letFighterPatrolGo = false;
             Console.WriteLine("stopAI 2");
+			
+			
+			
+			//We ALSO don't let FIGHTERS go if that side already has a lot of fighters in the game
+			//max fighter groups == number of bomber groups on that side +3
+			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 3 )  letFighterPatrolGo = false;
+			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 3 )  letFighterPatrolGo = false;
+			
+			//If more fighters than 60% of the bombers on a side, then don't sent more fighters
+			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.7 * numAircraftByType[1][2])  letFighterPatrolGo = false;
+			if (blueFighter && numAircraftByType[2][0] + numAircraftByType[2][1] > 0.7 * numAircraftByType[2][2])  letFighterPatrolGo = false;
+			
+			Console.WriteLine("stopAI 3");
+			
+			if ((redFighter || blueFighter ) && !letFighterPatrolGo) return true;
+			
 
-            bool letBlueBomberGo = false;
-            if ((numBlueAircraft <= 60) && doesNestedListContain(blueBomberActions, actionName)) letBlueBomberGo = true;
+			//##### END STEP 1 #######
 
-            bool letRedBomberGo = false;
-            if ((numRedAircraft <= 60) && doesNestedListContain(redBomberActions, actionName)) letRedBomberGo = true;
-
-            if (!letFighterPatrolGo && !letRedBomberGo && !letBlueBomberGo)
+			/*
+            if (!letFighterPatrolGo && !letRedBomberGo && !letBlueBomberGo && !letRedBomberGo)
             {
                 //bhugh, temp, XX2021-10, cutting ai by 20% to heat up action a little
                 //2021-11 leaving it be for now
@@ -26023,6 +26244,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 //if (random.NextDouble() < 0.2) return true;
 
                 if ((numBlueAircraft + numRedAircraft > 90)) return true;
+				
                 //this puts a minimum on the # of aircraft on one side or the other
                 //Even if we "want" to stop this sortie, if there are a pathetically
                 //low # of a/c on one side or the other we still let it go regardless
@@ -26030,8 +26252,9 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 if (numBlueAircraft > 45 && blueAllActions.Contains(actionName)) return true;
                 if (numRedAircraft > 45 && redAllActions.Contains(actionName)) return true;
             }
+			*/
 
-            //Console.WriteLine("stopAI 4");
+            Console.WriteLine("stopAI 4");
 
 
             //if (nump > 80 || (nump > 60 && random.NextDouble() > 0.65) || (nump > 40 && random.NextDouble() > 0.2))
@@ -26045,56 +26268,84 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             //2022-12 - was 5 & 15, now raising to 10 & 20
             //2023-1 - now 8 & 12
             //2023-01 - now 9 & 15;
-            double maxPlayers = 15;  //This number of players or more, and no AI will spawn
-            double minPlayers = 9;  //At this number of players, the number of AI starts to decrease a bit, until fully phased out at maxPlayers
+			//2026-08 - now 9 & 20;
+			double maxAircraftPerSide = 70;
+			double minAircraftPerSide = 50; //Keep in mind this counts breathers & their cover AI
+			double diffAircraft = maxAircraftPerSide - minAircraftPerSide;
+			if (diffAircraft == 0) diffAircraft = 1;
+			
+            double maxPlayers = 20;  //This number of players or more, and no AI will spawn
+            double minPlayers = 12;  //At this number of players, the number of AI starts to decrease a bit, until fully phased out at maxPlayers
 
             double diffPlayers = maxPlayers - minPlayers;
-
             if (diffPlayers == 0) diffPlayers = 1;
+			
+			double player_pct = (1- (nump - minPlayers) / diffPlayers).Clamp(0,1); //1 at minPlayers & 0 at maxPlayers
+			double bluePlayer_pct = (1 - (numBluePlayers - minPlayers/2.0) / (diffPlayers/2.0) ).Clamp(0,1);
+			double redPlayer_pct = (1 - (numRedPlayers - minPlayers/2.0) / (diffPlayers/2.0)).Clamp(0,1);
 
-            Console.WriteLine("stopAI: Blue ac/players {0} {1}; Red ac/players  {2} {3}; Stop AI group " + actionName + "? " + DateTime.UtcNow.ToString("T"), numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers);
 
-            //Console.WriteLine("stopAI 5");
+            Console.WriteLine("stopAI: Blue ac/players {0} {1}; Red ac/players  {2} {3}; Stop AI group. Percents (All R B): {4:N2} {5:N2} {6:N2} Cutoffs (R/B): {7:N0} {8:N0}" + actionName + "? " + DateTime.UtcNow.ToString("T"), numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers, player_pct, bluePlayer_pct, redPlayer_pct, diffAircraft * bluePlayer_pct + minAircraftPerSide, diffAircraft * redPlayer_pct + minAircraftPerSide);
+			
+			
+            //Never let bombers OR fighters go if num Blue a/c > 60
+			//M-i-g-h-t try increasing this to 70, we'll see 2026/08
+			//bool letBlueBomberGo = false;
+			if ( ((numBlueAircraft > diffAircraft * bluePlayer_pct + minAircraftPerSide) && (blueBomber || blueFighter))  ||
+				 ((numRedAircraft > diffAircraft * redPlayer_pct + minAircraftPerSide) && (redBomber || redFighter))){
+				stopAISpawnedABomber = false;	 
+				return true;
+			}
+			
+			
+
+            Console.WriteLine("stopAI 5");
 
             //Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
+			//Don't let ANYTHING through if no players online
             if (nump == 0 && !ON_TESTSERVER)
             {
                 Console.WriteLine("stopAI: Stopping AI Trigger NO players online");
+				stopAISpawnedABomber = false;
                 return true;
             }
 
-            //Console.WriteLine("stopAI 6");
+            Console.WriteLine("stopAI 6");
 
             //So regardless of phase-out of AI groups, if one side has just a few players
             //we continue to send AI bomber raids from their side, just to keep things active/interesting
-            if (actionName.Length > 0 && (
-                    doesNestedListContain(redBomberActions, actionName) || doesNestedListContain(blueBomberActions, actionName)))
+            if (redBomber || blueBomber)
             {
 
-                //Console.WriteLine("stopAI 7");
+                Console.WriteLine("stopAI 7");
 
-                //hard limit of a/c to 60 each side.
-                //bhugh, temp, XX2021-10, making it just 30 for this endgame
-                //2021-11 this doesnt really seem to work but leaving it be for now. 2021-12, moving it back to 60
-                //because bombers seem in short supply
-                if ((numBlueAircraft > 60) && doesNestedListContain(blueBomberActions, actionName)) return true;
-                if ((numRedAircraft > 60) && doesNestedListContain(redBomberActions, actionName)) return true;
 
 
                 //One side has just a few players online, we continue to send AI bomber raids from their side
-                if (numBluePlayers < 5 && doesNestedListContain(blueBomberActions, actionName)) return false;
-                if (numRedPlayers < 5 && doesNestedListContain(redBomberActions, actionName)) return false;
+                if ((numBluePlayers < 5 && blueBomber) || (numRedPlayers < 5 && redBomber)) {
+					if (actionName.ToLower().Contains("bomber")) {
+						stopAISpawnedABomber = true;
+						Timeout(10, () => { stopAISpawnedABomber = false;});
+					}
+					return false;
+				}
                 //bhugh, XX2021-10, was 8 but now reducing to 1 to heat up action
                 //2021-12, moving it from 1 to 5
                 //2021-11 this doesnt really seem to work but leaving it be for now
 
-                //Console.WriteLine("stopAI 8");
+                Console.WriteLine("stopAI 8");
 
                 //One side is vastly outnumbered by the other side (counting breathers only), say 33% or less of the breather total, we continue to send AI bomber raids from their side
                 if (nump < (minPlayers + maxPlayers) / 2 && nump > 0)
                 {
-                    if (numRedPlayers / nump < 0.33 && doesNestedListContain(redBomberActions, actionName)) return false;
-                    if (numBluePlayers / nump < 0.33 && doesNestedListContain(blueBomberActions, actionName)) return false;
+                    if ((numRedPlayers / nump < 0.33 && redBomber) ||  (numBluePlayers / nump < 0.33 && blueBomber))
+					{			
+						if (actionName.ToLower().Contains("bomber")) {
+							stopAISpawnedABomber = true;
+							Timeout(10, () => { stopAISpawnedABomber = false;});
+						}
+						return false;
+					}
                 }
             }
 
@@ -26108,14 +26359,19 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             * ****************************/
 
             //Console.WriteLine("stopAI 10");
-            if (nump > maxPlayers || (nump <= maxPlayers && minPlayers >= minPlayers && random.NextDouble() < (nump - minPlayers) / diffPlayers))
+            if (nump > maxPlayers || (nump <= maxPlayers && nump >= minPlayers && random.NextDouble() < (nump - minPlayers) / diffPlayers) || (tlpan > 93 && random.NextDouble() > (98 - tlpan)/5.0))
             //    if (nump > 50 || (nump > 40 && random.NextDouble() > 0.65) || (nump > 30 && random.NextDouble() > 0.2))
             {
-                Console.WriteLine("stopAI: Stopping AI Trigger/too many players online");
+                Console.WriteLine("stopAI: Stopping AI Trigger/too many players online ({0}) OR high threadload ({1})", nump, tlpan);
+				stopAISpawnedABomber = false;
                 return true;
             }
             else
             {
+				if (actionName.ToLower().Contains("bomber") ) {				
+					stopAISpawnedABomber = true;
+					Timeout(10, () => { stopAISpawnedABomber = false;});					
+				}
                 Console.WriteLine("stopAI: No, NOT stopping AI Trigger/too few players online");
                 return false;
             }
@@ -27058,6 +27314,13 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             Console.WriteLine("OnTrigger: Received trigger " + shortName + " mission#: " + missionNumber);
             //AiAction action = GamePlay.gpGetAction(ActorName.Full(missionNumber, shortName));
+			
+			//OK, we are going to disable ALL built-in timing triggers for fighter & bomber missions in the main mission.  They are loaded via balanceAILoad instead.
+			//2026-08-14
+			if (redAllActions.Contains(shortName) || blueAllActions.Contains(shortName) ){
+				Console.WriteLine("OnTrigger: Skipping trigger " + shortName + " mission#: " + missionNumber);
+				return;
+			}
             if (active) execAction(shortName, "OnTrigger");
 
         }
@@ -27066,17 +27329,37 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
     }  //End OnTrigger
 
-    public void execAction(string shortName, string origin = "") {
-        Console.WriteLine("execAction 1");
-        AiAction action = GamePlay.gpGetAction(shortName);
+    public void execAction(string shortName, string origin = "", bool override_stopai = false) {
+        Console.WriteLine("execAction 1:" + shortName);
+        string origName = shortName;
         Console.WriteLine("execAction 2");
-        bool stopai = stopAI(shortName);
+		
+        bool stopai = stopAI(shortName);		
         bool tcull = false; //tobrukCullAI(shortName);
         bool rcall = false; //recentlyCalled(shortName, 60);
+		
+		if (override_stopai) stopai = false;
+		
+		
+		//Replace red or blue fighter actions with another random action from the list,
+		//to mix things up
+		bool redFighter =doesNestedListContain(redFighterActions, shortName);
+		bool blueFighter =doesNestedListContain(blueFighterActions, shortName);
+		
+		List<string> newAction  = new List<string>{shortName};
+		
+		if (blueFighter) newAction = Calcs.randSTR(blueFighterActions);
+		if (redFighter) newAction = Calcs.randSTR(redFighterActions);
+		
+		shortName = newAction[0];
+		
+		Console.WriteLine("execAction 3: {0} stopAI: {1}", shortName, stopai);
         
+		AiAction action = GamePlay.gpGetAction(shortName);
+		
         if (action != null && !stopai && !tcull && !rcall)
         {
-            Console.WriteLine(origin +": Activating action " + action.Name + " from trigger " + shortName);
+            Console.WriteLine(origin +": Activating action " + action.Name + " from trigger " + shortName + ": origName: " + origName + " origin: " + origin + "Override StopAI: {0}", override_stopai);
             action.Do();
         }  else
         {
@@ -28152,7 +28435,7 @@ public static class Calcs
         bool ret = false;
         if (acType.Contains("Ju-88A") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
           || acType.Contains("Do-215B")
-          || acType.Contains("Sunderland") || acType.Contains("Walrus") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+          || acType.Contains("`") || acType.Contains("HurricaneMkI_FB")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
         return ret;
     }
@@ -28220,6 +28503,41 @@ public static class Calcs
             || acType.Contains("HurricaneMkIId")) ret = true; //Zerstorer, ground attack, Schlachtflugzeug, sturmovik, ground attack type a/c that DO NOT have bombs available
         return ret;
     }
+	
+	//Walrus & He-115 are mostly used for ASR for CLOD, so we are 
+	//ignoring them for many purposes/counting here.
+	//There are usually a couple of them on the  map at least
+    public static bool isAsrAC(Player player)
+    {
+
+        if (player == null) return false;        
+        return isAsrAC(player.Place() as AiAircraft);
+    }
+
+    public static bool isAsrAC(AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = GetAircraftType(aircraft);
+        return isAsrAC(acType);
+    }
+    public static bool isAsrAC(AiAirGroup airGroup)
+    {
+        if (airGroup == null) return false;
+        AiAircraft aircraft = null;
+        if (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isAsrAC(aircraft);
+
+    }
+    public static bool isAsrAC(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        //2022-07-31 - added all Hurri types with boms to list, also hurri iid
+        if (acType.Contains("He-115") || acType.Contains("Walrus")) ret = true;
+        return ret;
+    }	
+	
+	
     /// <summary>
     /// Returns a MD5 hash as a string
     /// </summary>
@@ -30643,7 +30961,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 				
 			Console.WriteLine ("Saving section file birthplace: " + msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles" + "/" + "birthplace_create_"+birthPlaceName +"_"+name+".mis");	
 
-			f.save(msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles" + "/" + "birthplace_create_"+birthPlaceName +"_"+name+".mis"); //testing
+			f.save(msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles" + "/" + "birthplace_create_"+ Calcs.GetSafeFileName(birthPlaceName +"_"+name)+".mis"); //testing
             return f;
         }
         catch (Exception ex) { Console.WriteLine("ERROR CALCS.CreateBirthPlace! " + ex.ToString()); return f; }
@@ -31132,6 +31450,13 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //Random clc_random = new Random();
         return strings[clc_random.Next(strings.Count)];
     }
+	public static List<string> randSTR(List<List<string>> strings)
+    {
+        //Random clc_random = new Random();
+		int choice = clc_random.Next(strings.Count);
+		Console.WriteLine("randSTR: {0} {1} {2}", strings.Count, choice, strings[choice][0]); 
+        return strings[choice];
+    }
     public static void Randomize<T>(T[] items)
     {
         Random rand = new Random();
@@ -31163,6 +31488,12 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         seed = seed % int.MaxValue; //probably paranoid, but using ulong to avoid overflows & then modding by int's maxvalue & returning by int, which is what we need.
         return Convert.ToInt32(seed);
     }
+
+	//makes a string safe to use as a filename
+	public static string GetSafeFileName(string name, char replace = '_') {
+	  char[] invalids = Path.GetInvalidFileNameChars();
+	  return new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
+	}
 } //end class Calcs
 
 

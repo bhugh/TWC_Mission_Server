@@ -8256,8 +8256,10 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
 
                 double Z_AltitudeAGL = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+				
+				bool isSeaplane = mainmission.covermission.isSeaplane(actor as AiAircraft);
 
-                if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
+                if (Z_AltitudeAGL < 5 && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER && !isSeaplane) // ON GROUND & IN THE WATER = DEAD    
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
@@ -8275,7 +8277,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Stb_killActor(actor); //Also dead; counts as a kill
 
                 }
-                else if (Z_AltitudeAGL < 5 && mainmission.Stb_distanceToNearestAirport(actor) > 3000)  // crash landed in friendly or neutral territory, on land, not w/i 3000 meters of an airport
+                else if (Z_AltitudeAGL < 5 && mainmission.Stb_distanceToNearestAirport(actor) > 3000)  // crash landed in friendly or neutral territory, on land (or ISSEAPLANE), not w/i 3000 meters of an airport
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");

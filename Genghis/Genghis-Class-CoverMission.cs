@@ -35,6 +35,7 @@ using System.Media;
  *   Right now they are just split off from the airgroup we are keeping track off and then we lose control of it.
  *   
  *      --->>  Except, this line might help with this situation: if (airGroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airGroup.motherGroup()))
+ *  	--->> And, this routine: CheckSplits
  * 
  *   Doesn't auto-send all aircraft back to stock when battle ends.  (Because of delay after player leaves game to allow bombing runs to continue. OnBattleStoped doesn't do it because it comes along too late.)
  *   Needs to register function landAllCoverAircraft(); with TWCComs and then call it in SaveMapState somewhere before:
@@ -351,6 +352,8 @@ public class CoverMission : AMission, ICoverMission
             foreach (Player player in COVER_ListPositionTimer.Keys) if (COVER_ListPositionTimer[player] != null) COVER_ListPositionTimer[player].Dispose();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped2: " + ex.ToString()); }
+		
+		if (COVER_CheckSplits_Timer != null) COVER_CheckSplits_Timer.Dispose();
 
         if (GamePlay != null && GamePlay is GameDef)
         {
@@ -2845,20 +2848,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         return ret;
     }
 
-    private bool isSeaplane(AiAircraft aircraft)
+    public bool isSeaplane(AiAircraft aircraft)
     {
         if (aircraft == null) return false;
         string acType = CoverCalcs.GetAircraftType(aircraft);
         return isDiveBomber(acType);
     }
-    private bool isSeaplane(AiAirGroup airGroup)
+    public bool isSeaplane(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
         if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
         return isDiveBomber(aircraft);
 
     }
-    private bool isSeaplane(string acType)
+    public bool isSeaplane(string acType)
     {
         if (acType == "") return false;
         bool ret = false;
@@ -7392,6 +7395,80 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
         }
         catch (Exception ex) { Console.WriteLine("Cover/MoveBomb FixWayPoints: " + ex.ToString()); }
     }
+	
+	
+	public System.Threading.Timer COVER_CheckSplits_Timer;
+    public readonly int COVER_CheckSplits_TimerPeriod_ms = 120164; //2 minutes
+
+    //returns false if it's been turned off or true if turned on.
+    public void CheckSplits_Timer_init ()
+    {
+		Console.WriteLine("COVERMISSION COVER_CheckSplits_Timer: Starting timer! " + DateTime.UtcNow.ToString("T"));
+        
+        COVER_CheckSplits_Timer = new System.Threading.Timer(
+           new TimerCallback(CheckSplits),
+		   null,           
+           dueTime: 240000, //wait time @ first startup (ms).  
+           period: COVER_CheckSplits_TimerPeriod_ms);        
+    }
+	
+	//Checks periodically to see if any new "daughter" groups have been created, split off from previous cover groups
+	//If so, adds in the newly created "daughter" group as a <cover aircraft for that pilot, just
+	//as before, but now there is a new group add.
+	
+	private void CheckSplits(object obj) {
+	  for (int army =1; army<3; army ++) 	
+		if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+		{
+			foreach (AiAirGroup airgroup in GamePlay.gpAirGroups(army))
+			{
+				if (airgroup != null && airgroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airgroup.motherGroup()))
+				{
+					Console.WriteLine("COVER: airgroup has a mothergroup, and the mothergroup is one of the <cover airgroups, so we add the daughter group to that pilot's controlled <cover groups");
+					//If the airgroup is a split-off, and if it hasn't already transferred the 
+					//orders over from its motherGroup, we do it now
+					if (!coverAircraftAirGroupsActive.ContainsKey(airgroup) && !coverAircraftAirGroupsOrders.ContainsKey(airgroup) && coverAircraftAirGroupsOrders.ContainsKey(airgroup.motherGroup())) 
+					{ 
+						coverAircraftAirGroupsOrders[airgroup] = coverAircraftAirGroupsOrders[airgroup.motherGroup()];
+						Console.WriteLine("COVER: airgroup has a mothergroup, the mother group has AirGroupsOrders, and they haven't been transferred to the daughter group yet, os doing that now");
+					}
+					Player player = coverAircraftAirGroupsActive[airgroup.motherGroup()];
+					
+					//And we also add it to the active airgroups for this player
+					coverAircraftAirGroupsActive.Add(airgroup, player);
+					
+
+                    addToIndexes(player, airgroup);
+                    
+					bool heavyBomber = false;
+                    if (isHeavyBomber(airgroup) || isDiveBomber(airgroup)) heavyBomber = true;
+					bool isStrikeAC = Calcs.isStrikeAC(airgroup);
+
+					bool playerIsStrikeAC = false;
+					if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
+						playerIsStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
+
+					CoverACInfo acInfo = new CoverACInfo();
+					acInfo.PlaneType ="(unknown)";
+					if (airgroup.GetItems().Length > 0 && (airgroup.GetItems()[0] as AiAircraft) != null)  acInfo.PlaneType = CoverCalcs.GetAircraftType(airgroup.GetItems()[0] as AiAircraft);
+					acInfo.IsHeavyBomber = heavyBomber;
+					acInfo.IsDiveBomber = isDiveBomber(airgroup);
+					acInfo.IsStrikeAC = isStrikeAC;
+					acInfo.IsPlayerStrikeAC = playerIsStrikeAC;
+					coverACInfo[airgroup] = acInfo;
+
+					double delay = 11.2354 + ran.NextDouble() * 2;
+					//Console.WriteLine("1Heavybomber init: {0} {1} " + airgroup.Name() + " to " + player.Name(), heavyBomber, delay);
+					//if (heavyBomber) delay = 2 * delay; //don't think we really need this
+					//try
+					
+						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+                              
+					
+				}
+			}
+		}
+	}
 
 } //end class
 

@@ -2912,9 +2912,10 @@ public class Mission : AMission, IMainMission
              }
          });
     }
-    private void destroyPlayerPlane(AiAircraft aircraft)
+    private void destroyPlayerPlane(AiAircraft aircraft, string reason = "destroyPlayerPlane")
     {
         if (aircraft != null)
+			AircraftDestroyedList[aircraft] = reason;
             aircraft.Destroy();
     }
     private void damagePlayerGroup(AiActor actorMain)
@@ -3020,7 +3021,7 @@ public class Mission : AMission, IMainMission
                         {
                             if (isAiControlledPlane2(actor as AiAircraft))
                             {
-                                damageAiControlledPlane(actor);
+                                damageAiControlledPlane(actor, "DEPENDS_main_OnPlaceLeave"); //Damages AND eventually kills the plane
                                 //Console.WriteLine("Player has left plane; damaged aircraft so that AI cannot assume control " + pName + " " + (actor as AiAircraft).Type());
                                 //check limited aircraft
 
@@ -4682,7 +4683,7 @@ public class Mission : AMission, IMainMission
                         Timeout(0.5, () =>
                         {
                             //Console.WriteLine("Destroyed dead aircraft " + pName + " " + aircraft.Type());
-                            destroyPlane(aircraft);  //Destroy completely when dead, after a reasonable time period.
+                            destroyPlane(aircraft, "DEAD_main_OnActorDead_aircraft");  //Destroy completely when dead, after a reasonable time period.
 
                         });
 
@@ -4786,7 +4787,7 @@ public class Mission : AMission, IMainMission
         Timeout(300, () =>
         //{ destroyPlane(aircraft); } //Not sure why to destory all planes just bec. crash landed?  Best to check if a pilot is still in it & just destroy aicontrolled planes, like this:
 
-        { destroyAiControlledPlane(aircraft); }
+        { destroyAiControlledPlane(aircraft, "DEAD_main_OnAircraftCrashLanded_NoPlayer"); }
             );
     }
     public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
@@ -4798,7 +4799,7 @@ public class Mission : AMission, IMainMission
         Timeout(300, () =>
         //{ destroyPlane(aircraft); } //Not sure why to destory **ALL** planes just bec. landed?  Best to check if a pilot is still in it & just destroy aicontrolled planes, like this:
 
-        { destroyAiControlledPlane(aircraft); }
+        { destroyAiControlledPlane(aircraft, "SAFE_main_OnAircraftLanded_300s_NoPlayer"); }
             );
 
         try
@@ -4831,7 +4832,7 @@ public class Mission : AMission, IMainMission
     }
 
     //this will destroy ALL ai controlled aircraft on the server
-    public void destroyAIAircraft(Player player)
+    public void destroyAIAircraft(Player player, string reason="SAFE_destroyAllAIAircraft")
     {
         //Task.Run(() =>
         {
@@ -4872,6 +4873,7 @@ public class Mission : AMission, IMainMission
                                             */
                                             Timeout(random.NextDouble() * 10, () =>
                                             {
+												AircraftDestroyedList[a as AiAircraft] = reason;
                                                 a.Destroy();
                                             });
 
@@ -9521,7 +9523,7 @@ public class Mission : AMission, IMainMission
 	
 	List<List<string>> redCoastalPatrolActions = new List<List<string>>() {
 		new List<string>() {"Sunderland_coastal"},
-		//new List<string>() {"Walrus_coastal"},		 //REMOVED temporarily just to test sunderland 2026-08
+		new List<string>() {"Walrus_coastal"},
 	};
 		
 	
@@ -9871,7 +9873,7 @@ public class Mission : AMission, IMainMission
     //HOWEVER it does take into consideration whether there are just a few players on one side
     //And if so, continues to send bomber missions from the understaffed side
     private DateTime timeLastCoastalPatrolGroupLoaded = DateTime.UtcNow.AddHours(-12);
-    private double coastalPatrolGroupLoadInterval_min = 153;
+    private double coastalPatrolGroupLoadInterval_min = 60;
 	private bool missionStart = true;
 	public bool bomberFormationSpawning = false;  //used "in the future" when the triggers are actually pulled
 	public bool bomberRecentlySpawned = false; //used now to allow balanceAILoad to also call in the cover when a bomber is called
@@ -9899,7 +9901,7 @@ public class Mission : AMission, IMainMission
 					timeLastCoastalPatrolGroupLoaded = DateTime.UtcNow;
 
                     //double wait = random.Next(0, 90);
-                    Timeout(random.Next(0, 900), () =>
+                    Timeout(random.Next(0, 180), () =>
                     {
                         int randIndex = random.Next(redCoastalPatrolActions.Count);
                         foreach (string act in redCoastalPatrolActions[randIndex])
@@ -9909,7 +9911,7 @@ public class Mission : AMission, IMainMission
                         }
                     });
 
-                    Timeout(random.Next(0, 900), () =>
+                    Timeout(random.Next(0, 180), () =>
                     {
                         int randIndex = random.Next(blueCoastalPatrolActions.Count);
                         foreach (string act in blueCoastalPatrolActions[randIndex])
@@ -12472,10 +12474,11 @@ public class Mission : AMission, IMainMission
         return true;
     }
 
-    private void destroyPlane(AiAircraft aircraft)
+    private void destroyPlane(AiAircraft aircraft, string reason = "DestroyPlane")
     {
         if (aircraft != null)
         {
+			AircraftDestroyedList[aircraft] = reason;
             Timeout (0.1, () => aircraft.Destroy());
         }
     }
@@ -12488,15 +12491,16 @@ public class Mission : AMission, IMainMission
         }
     }
 
-    private void destroyAiControlledPlane(AiAircraft aircraft)
+    private void destroyAiControlledPlane(AiAircraft aircraft, string reason = "destroyAiControlledPlane")
     {
         if (isAiControlledPlane2(aircraft))
         {
-            destroyPlane(aircraft);
+			AircraftDestroyedList[aircraft] = reason;
+            destroyPlane(aircraft, reason);
         }
     }
 
-    private void damageAiControlledPlane(AiActor actor)
+    private void damageAiControlledPlane(AiActor actor, string reason="damageAiControlledPlane")
     {
         if (actor == null || !(actor is AiAircraft))
         {
@@ -12543,7 +12547,11 @@ public class Mission : AMission, IMainMission
          * ***/
 
         Timeout(300, () =>
-        { destroyPlane(aircraft); }
+		
+        {  
+			AircraftDestroyedList[aircraft] = reason;
+		    destroyPlane(aircraft, reason);
+		}
             );
     }
 
@@ -13865,6 +13873,10 @@ public class Mission : AMission, IMainMission
     //#2. AI aircraft tend to become useless after a certain amount of time anyway, they will just fly straight, be completely unresponsive, etc
     //#3. You should use a variety of strategies to eliminate AI aircraft when their useful life is done (check when they are crashed and de-spawn, fly them off the 
     //map at the end of their mission and then de-spawn them, etc) but this is sort of a last resort if all other methods fail
+	
+	//Dictionary to register whenever we kill an aircraft, with source/reason
+	//So supply & stats can figure out what to do with them - kill, "landing", or just what
+	public Dictionary <AiActor, string> AircraftDestroyedList = new Dictionary <AiActor, string>();
 
     public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
     {
@@ -14051,14 +14063,16 @@ public class Mission : AMission, IMainMission
                 //Timeout(75, () =>  //75 sec - 1.5 minutes for testing
                 //spread this out a bit so there is not some HUGE burst of a/c deletions
                 //when a huge group of a/c happened to spawn in all at onces
-                Timeout(ot + random.Next(150), () =>  //960 sec - 16 minutes for real use
+                Timeout(ot + random.Next(150), () =>  //
                 {
                     Console.WriteLine("DEBUG: Removing old spawned-in aircraft: " + a.AirGroup() + " "
                         + a.Type() + " "
                         + a.TypedName() + " "
                         + a.AirGroup().ID() + " timeout: " + ot);
-                    if (actor != null && isAiControlledPlane2(actor as AiAircraft))
-                    { (actor as AiAircraft).Destroy(); }
+                    //if (actor != null && isAiControlledPlane2(actor as AiAircraft))
+                    //{ (actor as AiAircraft).Destroy(); }
+				
+					movebombtargetmission.safeDestroyOldAircraft( actor as AiAircraft, "SAFE_MainMission_AutoRemoveOldAI", true);
                 }
                 );
             }
@@ -14143,10 +14157,7 @@ public class Mission : AMission, IMainMission
         //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
         //Also below a "grace area" of approx 1 square off the map is added
         if (GamePlay == null) return;
-        double minX = 6666;
-        double minY = 6666;
-        double maxX = 362000;
-        double maxY = 312000;
+
         //////////////Comment this out as we don`t have Your Debug mode  
         //DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
         /*
@@ -14193,35 +14204,48 @@ public class Mission : AMission, IMainMission
                                         double Z_AltitudeAGL = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                                         double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
                                         AiAirGroupTask aagt = airGroup.getTask();
+										AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+										int currWay = airGroup.GetCurrentWayPoint();
+										
+										AiAirWayPointType aawpt = AiAirWayPointType.TAKEOFF;
+										if (CurrentWaypoints.Length >= currWay)  aawpt = (CurrentWaypoints[currWay] as AiAirWayPoint).Action;
 
                                         //so, lots of ai aircraft velocity is negative.  For some reason.  So if checking for stopped, must make it ==0 or maybe >-5 <5 or whatever
-                                        /*if (Z_VelocityTAS < 0) 
+                                        /* if (Z_VelocityTAS < 10) 
                                             Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "                                                    
                                                 + a.Type() + " "
                                                 + a.TypedName() + " "
-                                                + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
+                                                + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} {3} ",
                                                 Z_AltitudeAGL, Z_VelocityTAS, aagt
                                                );
                                                */
 
                                         if
                                       (
-                                        (Z_AltitudeAGL < 5 && Z_VelocityTAS < 10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not landing
-                                        a.Pos().x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
+                                        (Z_AltitudeAGL < 5 && Z_VelocityTAS < 10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF && aagt != AiAirGroupTask.UNKNOWN && aawpt != AiAirWayPointType.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not landing
+                                        /* a.Pos().x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
                                         a.Pos().x >= maxX + 12500 ||
                                         a.Pos().y <= minY - 12500 ||
-                                        a.Pos().y >= maxY + 12500
+                                        a.Pos().y >= maxY + 12500 */
+										Calcs.isOffMap(a.Pos())
                                       )
                                         // ai aircraft only
                                         {
                                             Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType(a) + " "
                                             + a.Type() + " "
                                             + a.TypedName() + " "
-                                            + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} ",
-                                            Z_AltitudeAGL, Z_VelocityTAS, aagt
+                                            + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
+                                            Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt
                                            );
                                             numremoved++;
-                                            Timeout(numremoved * 10, () => { a.Destroy(); }); //Destroy the a/c, but space it out a bit so there is no giant stutter 
+											
+											string reason = "SAFE_MainMission_AI_LandedOrOnGround";
+											if (Calcs.isOffMap(a.Pos())) reason = "SAFE_MainMission_AI_LeftMap";
+											
+                                            Timeout(numremoved * 10, () => { 
+											//a.Destroy(); 
+											movebombtargetmission.safeDestroyOldAircraft( a as AiAircraft, reason, true);
+											}); //Destroy the a/c, but space it out a bit so there is no giant stutter 
 
                                         }
                                     }
@@ -14252,13 +14276,14 @@ public class Mission : AMission, IMainMission
         return false;
     }
 
-    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
+    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft, string reason = "Stb_DestroyPlaneUnsafe")
     {
         try
         {
             if (aircraft != null)
             {
                 //Console.WriteLine("Destroying aircraft -stats.cs DPU");
+				AircraftDestroyedList[aircraft] = reason;
                 aircraft.Destroy();
             }
         }
@@ -14302,7 +14327,7 @@ public class Mission : AMission, IMainMission
             Stb_RemoveAllPlayersFromAircraft(aircraft, 0); //remove any other players
             Timeout(timetoDestroy_sec, () =>
         {
-            if (isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);  //destroy if AI controlled, which SHOULD be the case all of the time now
+            if (isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft, "SAFE_RemoveAll_COOP");  //destroy if AI controlled, which SHOULD be the case all of the time now
         }); //Destroy it a bit later
         });
     }
@@ -26220,12 +26245,12 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			
 			//We ALSO don't let FIGHTERS go if that side already has a lot of fighters in the game
 			//max fighter groups == number of bomber groups on that side +3
-			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 3 )  letFighterPatrolGo = false;
-			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 3 )  letFighterPatrolGo = false;
+			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 4 )  letFighterPatrolGo = false;
+			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 4 )  letFighterPatrolGo = false;
 			
-			//If more fighters than 60% of the bombers on a side, then don't sent more fighters
-			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.7 * numAircraftByType[1][2])  letFighterPatrolGo = false;
-			if (blueFighter && numAircraftByType[2][0] + numAircraftByType[2][1] > 0.7 * numAircraftByType[2][2])  letFighterPatrolGo = false;
+			//If more fighters than 80% of the bombers on a side, then don't sent more fighters
+			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.8 * numAircraftByType[1][2])  letFighterPatrolGo = false;
+			if (blueFighter && numAircraftByType[2][0] + numAircraftByType[2][1] > 0.8 * numAircraftByType[2][2])  letFighterPatrolGo = false;
 			
 			Console.WriteLine("stopAI 3");
 			
@@ -28245,6 +28270,21 @@ public static class Calcs
         if (ret < 0) ret = 0;
         return ret;
     }
+	
+	public static double minX = 6666;  //min-max x-y values allowed on map - boundaries of the map territory
+    public static double minY = 6666;
+    public static double maxX = 362000;
+    public static double maxY = 312000;
+	
+	public static bool isOffMap(Point3d p){
+		if (p.x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
+			p.y >= maxY + 12500 ||
+			p.x >= maxX + 12500 ||
+			p.y <= minY - 12500 ) 
+			return true;
+		return false;
+			
+	}
 
     //returns 2 if 1-2-3, 5 if 4-5-6, or the actual number +/-1 for all others
     //for radar returns etc

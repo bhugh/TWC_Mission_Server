@@ -2852,13 +2852,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         if (aircraft == null) return false;
         string acType = CoverCalcs.GetAircraftType(aircraft);
-        return isDiveBomber(acType);
+        return isSeaplane(acType);
     }
     public bool isSeaplane(AiAirGroup airGroup)
     {
         AiAircraft aircraft = null;
         if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
-        return isDiveBomber(aircraft);
+        return isSeaplane(aircraft);
 
     }
     public bool isSeaplane(string acType)
@@ -3420,6 +3420,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                     GamePlay.gpLogServer(new Player[] { player }, s + " escorting you--the maximum allowed at this time.", new object[] { numCheckedOut_spawncount });
                                     GamePlay.gpLogServer(new Player[] { player }, ">>>Tab-4-4-4-4-7 to check how many Cover aircraft in use and remaining.", new object[] { });
                                     
+									mainmission.AircraftDestroyedList[a] = "SAFE_cover_exceededAllowed";
                                     (a as AiCart).Destroy();
                                     continue;
                                 }
@@ -3429,6 +3430,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 {
 
                                     GamePlay.gpLogServer(new Player[] { player }, "Supply limit reached for " + CoverCalcs.ParseTypeName((a as AiCart).InternalTypeName()) + "; no aircraft available. Please try again to find an available aircraft.", new object[] { });
+									mainmission.AircraftDestroyedList[a] = "SAFE_cover_exceededAllowed";
                                     (a as AiCart).Destroy();
                                     continue;
                                 }
@@ -3903,7 +3905,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //if a heavy bomber with bombs, then don't go on the 
                 //the attack against enemy fighters etc
                 //Otherwise, attack it!
-                if (heavyBomber && isBomberArmed(airGroup))
+				
+				//OK, people are complaining their bombers are flying off and attacking
+				//instead of returning to base with them, so trying keep on .follow instead 2026/08
+				//We COULD make "escort" vs "follow" an option in the menu
+                //if (heavyBomber || dive && isBomberArmed(airGroup))
+				if (heavyBomber)
                 {
 
                     airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
@@ -3957,6 +3964,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //Console.WriteLine("5ChangeGoalTarget: {0} hasBombs: {1} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), isBomberArmed(airGroup));
             //for just plain fighters we want .escort to be the default
             //it keeps getting switched to something else for some reason?
+			//switching ju-87 off of .escort
             if (!heavyBomber && !isBomberArmed(airGroup) && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
             {
                 aawpt = AiAirWayPointType.ESCORT;
@@ -5500,11 +5508,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             try
             {
                 List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-                NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING));
-                NewWaypoints.Add(EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe));
+                NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, AiAirWayPointType.NORMFLY));
+				
+				var landingWP = EscortLandingWaypoint(airGroup, targetAirGroup, AiAirWayPointType.LANDING, 0, 0, nodupe);
+				
+				var newWP = landingWP;
+				newWP.P.x = landingWP.P.x + (ran.Next(0,1)*2-1)*ran.Next(5000,10000);
+				newWP.P.y = landingWP.P.y + (ran.Next(0,1)*2-1)*ran.Next(5000,10000);
+				(newWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
+				NewWaypoints.Add(newWP);
+				
+                NewWaypoints.Add(landingWP);
                 airGroup.SetWay(NewWaypoints.ToArray());
                 fixWayPoints(airGroup);
-                airGroup.setTask(AiAirGroupTask.LANDING, null); //try to force it . . . .
+                airGroup.setTask(AiAirGroupTask.FLY_WAYPOINT, null); //try to force it . . . .
                 Timeout(60, () =>
                {
                    //Console.WriteLine("Forcing LANDING: Current task: {0} " + airGroup.Name(), airGroup.getTask());
@@ -5570,6 +5587,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         Timeout(10 + ran.Next(25), () =>
                         {
                             //for repair aircraft, just disappear them, to keep them from crashing, getting shot down etc
+							mainmission.AircraftDestroyedList[a] = "SAFE_cover_repairDelivered";
                             (a as AiCart).Destroy();
                         });
                     }
@@ -7093,10 +7111,21 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
     }
 
 
+	
+
+    //*************************************
+	//2026-08 - for now just using movebombtarget fixway points, we'll see how it goes.  They are largely duplicative.
+	//*************************************
+	
     //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
     //the aircraft down low and off the map north (Red) or south (Blue)
     public void fixWayPoints(AiAirGroup airGroup)
     {
+		if (mainmission.movebombtargetmission != null) {
+            mainmission.movebombtargetmission.fixWayPoints(airGroup);
+			return;
+		}
+		
         try
         {
             //AiAirGroup airGroup = intc.attackingAirGroup;
@@ -7131,16 +7160,16 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 
             bool update = false;
 
-            AiWayPoint prevWP = CurrentPosWaypoint(airGroup, null, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
+            AiAirWayPoint prevWP = CurrentPosWaypoint(airGroup, null, (CurrentWaypoints[currWay] as AiAirWayPoint).Action);
 
             NewWaypoints.Add(prevWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
 
-            AiWayPoint nextWP = prevWP;
+            AiAirWayPoint nextWP = mainmission.movebombtargetmission.makeNewAiAirWaypointFromOld(prevWP as AiAirWayPoint); //NOTE THIS DOESN"T WORK - just a new name for same object...
 
             bool landing = false; //keep track of whether or not the last waypoint is "landing".
 
 
-            foreach (AiWayPoint wp in CurrentWaypoints)
+            foreach (AiAirWayPoint wp in CurrentWaypoints)
             {
 
                 if ((wp as AiAirWayPoint).Action == AiAirWayPointType.LANDING)
@@ -7347,7 +7376,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 
                     //.Escort stops MoveBombTarget from re-programming the a/c, so it should just fly off the map no problem.
                     //we could also try .LANDING .FOLLOW .TAKEOFF etc per MoveBombTarget line ~1209
-                    AiAirWayPointType aawpt = AiAirWayPointType.ESCORT;
+                    AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY;
 
                     //add the mid Point
                     midaaWP = new AiAirWayPoint(ref midPos, speed);

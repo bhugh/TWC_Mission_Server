@@ -711,7 +711,7 @@ public class SupplyMission : AMission, ISupplyMission
 
                     if (act as AiAircraft != null)
                     {
-                        SupplyOnPlaceLeave(py, act,0,true);
+                        SupplyOnPlaceLeave(py, act,0, true, reason: "SAFE_Supply: End of mission shutdown");
                         Console.WriteLine("SupplyEnd: Returning to stock " + py.Name() +
                             " " + pl);
                     }
@@ -732,7 +732,7 @@ public class SupplyMission : AMission, ISupplyMission
             {
                 Player py = damagedAircraft[act].Item1;
                 string pl = act.Name();
-                SupplyOnPlaceLeave(py, act, 0, true);
+                SupplyOnPlaceLeave(py, act, 0, true, reason:"DEPENDS_Supply: Aircraft damaged during mission & not yet fully repaired.");
                 Console.WriteLine("SupplyEnd: Returning to stock " + py.Name() +
                     " " + pl);
             }
@@ -1750,9 +1750,13 @@ private int NumberPlayerInActor(AiActor actor)
         // DebugPrintNumberOfAvailablePlanes(); // for testing
         //DisplayNumberOfAvailablePlanes(0, player, true);
     }
+	
+	//This version required for ISupplyMission interface
+	public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0) {
+		SupplyOnPlaceLeave(player, actor, placeIndex, softExit, forceDamage, reason: ""	);
+	}
 
-
-    public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0)
+    public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0, string reason = "")
     {
         //base.OnPlaceLeave(player, actor, placeIndex);
         try
@@ -1779,7 +1783,8 @@ private int NumberPlayerInActor(AiActor actor)
 
             
             {
-                Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName());
+			Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName() + " {0} ", reason);
+			
                 DisplayNumberOfAvailablePlanes(actor);
                 AiAircraft aircraft = actor as AiAircraft;
 
@@ -1806,7 +1811,7 @@ private int NumberPlayerInActor(AiActor actor)
 				double airport_distance = 3000;
 				if (onWater) airport_distance = 7000;
 
-                Console.WriteLine("Supply: NumPlayerInPlane: {0} AltAGL: {1} AltAGL(alt): {5} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} OnWater: {5} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), airport_distance), OverEnemyTerritory(actor),
+                Console.WriteLine("Supply: NumPlayerInPlane: {0} AltAGL: {1:N2} AltAGL(alt): {5:N2} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} OnWater: {6} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), airport_distance), OverEnemyTerritory(actor),
                     forceDamage, altAGL_m_alt, onWater);
 					
 				bool loa = LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0);

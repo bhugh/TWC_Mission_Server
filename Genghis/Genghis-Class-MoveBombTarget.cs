@@ -161,7 +161,7 @@ public class MoveBombTargetMission : AMission
         return true;
     }
 
-    public AiWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY, double offset_x = 0, double offset_y = 0, double alt_m = 0)
+    public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY, double offset_x = 0, double offset_y = 0, double alt_m = 0)
     {
         try
         {
@@ -188,6 +188,28 @@ public class MoveBombTargetMission : AMission
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypoint: " + ex.ToString()); return null; }
     }
+	
+	public AiAirWayPoint makeNewAiAirWaypointFromOld(AiAirWayPoint currWP)
+    {
+        try
+        {
+            AiAirWayPoint aaWP = new AiAirWayPoint(ref currWP.P, currWP.Speed);
+
+            aaWP.Action = currWP.Action;
+			aaWP.Formation = currWP.Formation;
+			aaWP.GAttackPasses = currWP.GAttackPasses;
+			aaWP.GAttackType = currWP.GAttackType;
+			aaWP.Target = currWP.Target;
+			aaWP.m_CirclebackTimeout = currWP.m_CirclebackTimeout;
+			aaWP.m_idxCirclebackTo = currWP.m_idxCirclebackTo;			
+
+            //Console.WriteLine("CurrentPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z });
+
+            return aaWP;
+        }
+        catch (Exception ex) { Console.WriteLine("MoveBomb makeNewAiAirWaypointFromOld: " + ex.ToString()); return null; }
+    }
+	
     public AiWayPoint offMapWaypoint(AiAirGroup airGroup, AiAirWayPointType aawpt = AiAirWayPointType.NORMFLY, int army = 0)
     {
         try
@@ -1266,6 +1288,13 @@ public class MoveBombTargetMission : AMission
 			//SO if ESCORTS are set to actually waypoint ESCORT with proper target
 			//we can pretty much move bomber waypoints at will and escorts will follow them
 			//As long as ESCORTS start at same place as bombers and have a km/h on the so they can keep up
+			
+			//.ESCORT - several .ESCORT waypoints in a row are kind of ignored - the currWay just skips to the last one and stays there as long as it is escorting the client.
+			//That is why .ESCORT a/c currWay is often like 3 or 4 or even 5 or 6 or whatever when you would expect it to be 1
+			
+			//.NORMFLY - ALSO ###!!!!!! shows this same kind of behavior, at least sometimes.  Like Sunderland on pure ".NORMFLY" points just skips to currWay 37 and lands.  Instead of flying its whole route.
+			
+			//Maybe some of the others do this also?
 
     public bool updateAirWaypoints(AiAirGroup airGroup)
     {
@@ -1323,13 +1352,21 @@ public class MoveBombTargetMission : AMission
 			//they are mostly for scenery purposes, not actively bombing etc
 			
 			int currWay = airGroup.GetCurrentWayPoint();
+			
+			//Sunderland without bombs is ASR for movebomb purposes...
+			bool isASR = Calcs.isAsrAC(airGroup) || (Calcs.GetAircraftType(airGroup).ToLower().Contains("sunderland") && !airGroup.hasBombs() );
+			
+			if (acs == null || acs.Length == 0 ) { 
+				Console.WriteLine("Movebomb MBTITG1: AIRGROUP HAS NO AIRCRAFT!!!! airgroup: {0} aircraft list & #: {1} {8} Mother: {2} Leader: {3} Daughters: {4} Clients: {5} Current Waypt: {6} isASR? {7}", airGroup.Name(), acs, airGroup.motherGroup()==null?"(no mother)":airGroup.motherGroup().Name(), airGroup.leaderGroup()==null?"(no leader)":airGroup.leaderGroup().Name(), airGroup.daughterGroups()==null?0:airGroup.daughterGroups().Length, airGroup.clientGroup()==null?"(no client)":airGroup.clientGroup().Name(), currWay, isASR, acs.Length );
+				return false;
+			}
 
-            if (acs == null || acs.Length == 0 || airGroupName.ToLower().Contains("cover")  || airGroupName.ToLower().Contains("nochange") || Calcs.isAsrAC(airGroup)) {
-                if (acs != null && acs.Length > 0) Console.WriteLine("Movebomb MBTITG: airGroup.Name() includes NOCHANGE so not changing this airgroup: {0} : {1} Mother: {2} Leader: {3} Daughters: {4} Clients: {5} Current Waypt: {6}", acs[0].Name(), airGroup.Name(), airGroup.motherGroup()==null?"(no mother)":airGroup.motherGroup().Name(), airGroup.leaderGroup()==null?"(no leader)":airGroup.leaderGroup().Name(), airGroup.daughterGroups()==null?0:airGroup.daughterGroups().Length, airGroup.clientGroup()==null?"(no client)":airGroup.clientGroup().Name(), currWay );
+            if (airGroupName.ToLower().Contains("cover")  || airGroupName.ToLower().Contains("nochange") || isASR ) {
+                if (acs != null && acs.Length > 0) Console.WriteLine("Movebomb MBTITG2: airGroup.Name() includes NOCHANGE/COVER or isASR so not changing this airgroup: {0} : {1} Mother: {2} Leader: {3} Daughters: {4} Clients: {5} Current Waypt: {6} isASR? {7}", acs[0].Name(), airGroup.Name(), airGroup.motherGroup()==null?"(no mother)":airGroup.motherGroup().Name(), airGroup.leaderGroup()==null?"(no leader)":airGroup.leaderGroup().Name(), airGroup.daughterGroups()==null?0:airGroup.daughterGroups().Length, airGroup.clientGroup()==null?"(no client)":airGroup.clientGroup().Name(), currWay, isASR );
                 return false;
             }
 
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("Movebomb MBTITG: airGroup.Name() does not include NOCHANGE so changing this airgroup: {0} : {1} Mother: {2} Leader: {3} Daughters: {4} Clients: {5} Current Waypt: {6}", acs[0].Name(), airGroup.Name(), airGroup.motherGroup()==null?"(no mother)":airGroup.motherGroup().Name(), airGroup.leaderGroup()==null?"(no leader)":airGroup.leaderGroup().Name(), airGroup.daughterGroups()==null?0:airGroup.daughterGroups().Length, airGroup.clientGroup()==null?"(no client)":airGroup.clientGroup().Name(), currWay );
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("Movebomb MBTITG3: airGroup.Name() does not include NOCHANGE so changing this airgroup: {0} : {1} Mother: {2} Leader: {3} Daughters: {4} Clients: {5} Current Waypt: {6} isASR? {7}", acs[0].Name(), airGroup.Name(), airGroup.motherGroup()==null?"(no mother)":airGroup.motherGroup().Name(), airGroup.leaderGroup()==null?"(no leader)":airGroup.leaderGroup().Name(), airGroup.daughterGroups()==null?0:airGroup.daughterGroups().Length, airGroup.clientGroup()==null?"(no client)":airGroup.clientGroup().Name(), currWay, isASR );
 
             //Sometimes, just leave the route as-is
             if (ran.Next(20) == 1)
@@ -1339,6 +1376,7 @@ public class MoveBombTargetMission : AMission
             }
 			
 			bool noAttacks =  true; //if the route includes NO attack points we'll just leave it alone.
+			bool hasLanding = false; //if it lacks a landing we'll send to fixpoints to fix that up
 
 
 
@@ -1347,7 +1385,7 @@ public class MoveBombTargetMission : AMission
             Console.WriteLine("MBT: Updating waypoints for {0} : {1} : {2} : {3}",  acs[0].Name(), (acs[0] as AiCart).InternalTypeName(), airGroup.Name(), airGroupName);
             foreach (AiWayPoint wp in CurrentWaypoints)
             {
-                //AiWayPoint nextWP = wp;
+                //AiWayPoint nextWP = wp; //NOITE: don't do this, doesn't make a new copy of the object
                 Console.WriteLine("MBT: Target before: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
 
             }
@@ -1388,7 +1426,7 @@ public class MoveBombTargetMission : AMission
             {
                 try
                 {
-                    AiWayPoint nextWP = wp;
+                    AiAirWayPoint nextWP = makeNewAiAirWaypointFromOld( wp as AiAirWayPoint);
                     bool defendUltimate = false; //bhugh, 2021-10, final battle temp fix
                     //Console.WriteLine( "Target: {0}", new object[] { wp });
 
@@ -1435,9 +1473,10 @@ public class MoveBombTargetMission : AMission
                         double speed;
 
                         changeL = changeLimits[(wp as AiAirWayPoint).Action];
-                        if (count == 1 && (isBomber)) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
+                        //if (count == 1 && (isBomber)) //for heavy/dive bombers the 2nd waypoint is more of a dogleg than a giant cross-map trip.
+						if ( isBomber && (wp as AiAirWayPoint).Action == AiAirWayPointType.NORMFLY) //for heavy/dive bombers legs except for bomb drop are more of a dogleg than a giant cross-map trip.
                         {
-                            changeL.XY_m = changeL.XY_m / 8;
+                            changeL.XY_m = changeL.XY_m / 5;
                         }
 
                         //TODO: We could have higher/lower altitude & speed apply to the entire mission for this airgroup rather than varying waypoint by waypoint. 
@@ -1578,6 +1617,11 @@ public class MoveBombTargetMission : AMission
 
                                 update = true;
                                 break;
+								
+							case AiAirWayPointType.LANDING:
+								hasLanding = true;
+								break;
+								
                             case AiAirWayPointType.GATTACK_POINT:
                             case AiAirWayPointType.HUNTING:
                             case AiAirWayPointType.NORMFLY:
@@ -1790,7 +1834,7 @@ public class MoveBombTargetMission : AMission
                         }
                         catch (Exception ex) { Console.WriteLine("MoveBomb CurrentPosWaypointLOOP MESSAGES ERROR: " + ex.ToString()); }
 
-                        lastWP = nextWP;
+                        lastWP = makeNewAiAirWaypointFromOld( nextWP);
 
                         /*
                         if (update)
@@ -1809,7 +1853,10 @@ public class MoveBombTargetMission : AMission
 
             }
 			
-			if (noAttacks) {
+			if (!hasLanding) {
+				Console.WriteLine( "MBT: The plane's route had no LANDING anywhere so we will update it & fixwaypoints.");
+				update = true;
+			} else if (noAttacks) {
 				 Console.WriteLine( "MBT: The plane's route had no ATTACKS so we are leaving it unchanged");
 				 return false;
 				
@@ -1861,7 +1908,7 @@ public class MoveBombTargetMission : AMission
 
     //So setting AI airgroups to LANDING is our clue that we are free to despawn them at any time. We first check there
     //are no live players nearby to see the despawn
-    public void checkToDespawnOldAirgroups(AiAirGroup airGroup) {
+    public void checkToDespawnOldAirgroups(AiAirGroup airGroup, bool timeout = false) {
         try
         {
             //Console.WriteLine("MoveBomb: Checking AI airgroups whose mission is complete with task LANDING: " + airGroup.Name() + " {0} {1} {2} ",
@@ -1881,7 +1928,7 @@ public class MoveBombTargetMission : AMission
 			}
             int currWay = airGroup.GetCurrentWayPoint();
             bool landingWaypoint = false;
-            Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
+            Console.WriteLine("MoveBomb-checkToDespawnOldAirgroups: {5} {6} {0} {1} {2} {3} {4} ", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airGroup.Name(), Calcs.GetAircraftType(airGroup) );
 
             if (CurrentWaypoints.Length >= currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
@@ -1901,23 +1948,40 @@ public class MoveBombTargetMission : AMission
 
             if (items != null) foreach (AiActor actor in items.ToList())
             {
-                AiAircraft aircraft = actor as AiAircraft;
-                double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-                if (altAGL_m > 800) continue; //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
-                //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
-                //if (MoveBombCalcs.CalculatePointDistance(aircraft.Pos(), pos) > 6000) continue; //don't disapparate if it's too far from the main group.  It MIGHT be near a person or whatever
-				if (playersNearby(aircraft, 14000)) continue; //if this happens to be far from its group, could be near a player; we'll check
+				AiAircraft aircraft = actor as AiAircraft;
+				Console.WriteLine("MoveBomb-checkToDespawnOldAirgroups: REMOVING AIRCRAFT (should be landing & far from players OR timed out at {0:N0} {1:N0} Action: {2} Task: {3} Players nearby? {4} : {5} {6} ", aircraft.Pos().x, aircraft.Pos().y, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airGroup.Name(), Calcs.GetAircraftType(airGroup) );
 				
-                if (aircraft != null && isAiControlledPlane2(aircraft))  {
-					Timeout(1, ()=> aircraft.Destroy()); //trying timeout as a way to get around changing/deleting the items on the list while stepping through the list.
-					
-					Console.WriteLine("MoveBomb: REMOVING AIRCRAFT (should be landing & far from players, at {0} {1} {2} {3} {4} ", aircraft.Pos().x, aircraft.Pos().y, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)));
-				}
+				safeDestroyOldAircraft( aircraft, "SAFE_MoveBomb_Landing");
+               
             }
             //Console.WriteLine("MoveBomb: Checking {0} {1} {2} {3} {4} {5:N0}", CurrentWaypoints.Length, currWay, (CurrentWaypoints[currWay] as AiAirWayPoint).Action, task, (playersNearby(airGroup)), airportDistance_m);
         }
         catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
     }
+	
+	public void safeDestroyOldAircraft(AiAircraft aircraft, string reason = "", bool force = false, int count = 0) {			
+				
+			if (count < 10 && !Calcs.isOffMap(aircraft.Pos())) {
+                double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
+                if (!force && altAGL_m > 800) 
+					Timeout(30.0, () => {safeDestroyOldAircraft(aircraft, reason, force,  count + 1);}); //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
+                //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
+                //if (MoveBombCalcs.CalculatePointDistance(aircraft.Pos(), pos) > 6000) continue; //don't disapparate if it's too far from the main group.  It MIGHT be near a person or whatever
+				if (playersNearby(aircraft, 14000) ||  !isAiControlledPlane2(aircraft)) 
+					Timeout(30.0, () => {safeDestroyOldAircraft(aircraft, reason, force,  count + 1);});					//if this happens to be far from its group, could be near a player; we'll check
+			} else {
+				if (!force && !Calcs.isOffMap(aircraft.Pos())) return;
+			}
+				
+                if (aircraft != null && isAiControlledPlane2(aircraft))  {
+					mainmission.AircraftDestroyedList[aircraft] = reason;
+					Timeout(1, ()=> aircraft.Destroy()); 
+					Console.WriteLine("MoveBomb-checkToDespawnOldAirgroups: Just destroyed {0} {1}  ", airGroup.Name(), Calcs.GetAircraftType(airGroup) );
+					
+					
+				}
+	}
+	
     public void printAirgroupNames(AiAirGroup[] airGroups)
     {
         foreach (AiAirGroup airGroup in airGroups)
@@ -2850,7 +2914,6 @@ public class MoveBombTargetMission : AMission
         catch (Exception ex) { Console.WriteLine("MoveBomb RemoveIntercept: " + ex.ToString()); }
     }
 
-
     
     //So, various fixes to WayPoints, including removing any dupes, close dupes, any w-a-y off the map, and adding two points at the end of the route to take
     //the aircraft down low and off the map north (Red) or south (Blue)
@@ -2858,10 +2921,11 @@ public class MoveBombTargetMission : AMission
     //and probably several other functions similar/identical in both classes.
     public void fixWayPoints(AiAirGroup airGroup)
     {
+
         try
         {
 
-            if (airGroup == null ) return; //Not sure what else to do?
+            if (airGroup == null || airGroup.GetWay() == null || airGroup.GetCurrentWayPoint() == null) return; //Not sure what else to do?
 			 
             AiWayPoint[] CurrentWaypoints = airGroup.GetWay(); //So there is a problem if GetWay is null or doesn't return anything. Not sure what to do in that case!
             //Maybe just exit?
@@ -2912,9 +2976,11 @@ public class MoveBombTargetMission : AMission
 
             NewWaypoints.Add(prevWP); //Always have to add current pos/speed as first point or things go w-r-o-n-g
 
-            AiWayPoint nextWP = prevWP;
+            AiAirWayPoint nextWP = makeNewAiAirWaypointFromOld(prevWP as AiAirWayPoint);
 
             bool landing = false; //keep track of whether or not the last waypoint is "landing".
+			bool firstLanding = true; //we end up with several "landing" WPs at the end, keep track of which is first so we can add another "fly waypoint" close to it, to avoid long periods of RTB/docile behavior
+			bool secondLanding = false;
 			
 			//int count = 0;
 
@@ -2922,8 +2988,11 @@ public class MoveBombTargetMission : AMission
             {
                 try
                 {
-                    nextWP = wp;
-					if (count < currWay) continue;
+                    nextWP = makeNewAiAirWaypointFromOld(wp as AiAirWayPoint); //NOTE: DOESN'T WORK!!!! just new name for same object
+					if (count < currWay) {
+						count ++;
+						continue;
+					}
 
                     //eliminate any exact duplicate points
                     if (Math.Abs(nextWP.P.x - prevWP.P.x) < 1 && Math.Abs(nextWP.P.y - prevWP.P.y) < 1 && Math.Abs(nextWP.P.z - prevWP.P.z) < 1
@@ -2932,6 +3001,7 @@ public class MoveBombTargetMission : AMission
                         //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
                         update = true;
                         //Console.WriteLine("FixWayPoints - eliminating identical WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+						count ++;
                         continue;
                     }
                     //eliminate any  close duplicates, except in the hopefully rare case the 2nd .Action is some kind of ground attack                 
@@ -2941,6 +3011,7 @@ public class MoveBombTargetMission : AMission
                         //if the Task is different for the 2nd point, it will only be operative for 50 meters . So skipping it?
                         update = true;
                         //Console.WriteLine("FixWayPoints - eliminating close match WP: {0} {1:n0} {2:n0} {3:n0} {4:n0}", new object[] { (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z });
+						count++;
                         continue;
                     }
 
@@ -2963,14 +3034,37 @@ public class MoveBombTargetMission : AMission
                         }
                     }
                     catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2A: " + ex.ToString()); }
+					
+					try {
 
-                    if ((nextWP as AiAirWayPoint).Action == AiAirWayPointType.LANDING)
-                    {
-                        nextWP.P.z = 175; //if landing set the altitude very low.  Lowest ap is about 155m thought.
-                        nextWP.Speed = 50; //around 100mph speed for landing
-                        landing = true;
-                    }
-                    else landing = false;
+						if ((nextWP as AiAirWayPoint).Action == AiAirWayPointType.LANDING)
+						{
+							if (firstLanding || secondLanding) {  //add a new WP just near the landing point, and it will have task "fly waypoint" to avoid RTB type behavior until actually landing
+							
+							//Do this for the first LP AND the second LP.  So they have a chance to actually land in these places (does the currWay slip to the last of listed landing points as well, like ESCORT?)
+							
+							//After that it is all task=landing and heading off the map (though also past airports where it COULD land if it can, and also will be low & task=landing which gives them a chance to be removed by checkToDespawnOldAirgroups )
+								
+								//AiAirWayPoint newWP = nextWP as AiAirWayPoint; //doesn't work!!!! same obj, just 2 names now
+								AiAirWayPoint newWP = makeNewAiAirWaypointFromOld(nextWP as AiAirWayPoint);
+								newWP.P.x = nextWP.P.x + (ran.Next(0,1)*2-1)*ran.Next(5000,10000);
+								newWP.P.y = nextWP.P.y + (ran.Next(0,1)*2-1)*ran.Next(5000,10000);
+								(newWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
+								NewWaypoints.Add(newWP);
+								update = true;
+								//don't increment count here bec count is for waypoints of OLD waypoint list
+								if (firstLanding) secondLanding = true;
+								else secondLanding = false;
+							}
+							firstLanding = false;
+							nextWP.P.z = 175; //if landing set the altitude very low.  Lowest ap is about 155m thought.
+							nextWP.Speed = 50; //around 100mph speed for landing
+							landing = true;
+						}
+						else landing = false;
+					
+					}
+                    catch (Exception ex) { Console.WriteLine("MoveBomb FixWay ERROR2B: " + ex.ToString()); }
 
 
                     NewWaypoints.Add(nextWP); //do add

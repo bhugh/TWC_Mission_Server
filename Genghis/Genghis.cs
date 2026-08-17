@@ -640,10 +640,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "lion"}, //Red army #1
-                    { -2, "france"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -651,10 +651,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "manston3"}, //Red army #1
-                    { -2, "oye21"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -695,10 +695,10 @@ public class Mission : AMission, IMainMission
                 ON_JUBILEE = false;
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "twc"}, //Red army #1
-                    { -2, "twc"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
+                    { -1, "SECRET"}, //Red army #1
+                    { -2, "SECRET"}, //Blue, army #2
+                    { -3, "SECRET"}, //admin
+                    { -4, "SECRET"}, //admingrouped
                                   //note that passwords are CASEINSENSITIVE
                  };
             }
@@ -9521,7 +9521,7 @@ public class Mission : AMission, IMainMission
 	
 	List<List<string>> redCoastalPatrolActions = new List<List<string>>() {
 		new List<string>() {"Sunderland_coastal"},
-		new List<string>() {"Walrus_coastal"},		 //REMOVED temporarily just to test sunderland 2026-08
+		//new List<string>() {"Walrus_coastal"},		 //REMOVED temporarily just to test sunderland 2026-08
 	};
 		
 	
@@ -9871,7 +9871,7 @@ public class Mission : AMission, IMainMission
     //HOWEVER it does take into consideration whether there are just a few players on one side
     //And if so, continues to send bomber missions from the understaffed side
     private DateTime timeLastCoastalPatrolGroupLoaded = DateTime.UtcNow.AddHours(-12);
-    private double coastalPatrolGroupLoadInterval_min = 60;
+    private double coastalPatrolGroupLoadInterval_min = 153;
 	private bool missionStart = true;
 	public bool bomberFormationSpawning = false;  //used "in the future" when the triggers are actually pulled
 	public bool bomberRecentlySpawned = false; //used now to allow balanceAILoad to also call in the cover when a bomber is called

@@ -402,6 +402,7 @@ public class StatsMission : AMission, IStatsMission
     public StbSaveIPlayerStat stb_SaveIPlayerStat { get; set; }
     public IStbSaveIPlayerStat stb_ISaveIPlayerStat { get; set; }
     public Mission mainmission;
+	public SupplyMission supplymission;
 
 
 
@@ -410,6 +411,7 @@ public class StatsMission : AMission, IStatsMission
     public StatsMission(Mission msn)
     {
         mainmission = msn;
+		supplymission = mainmission.supplymission;
         stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
         TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
@@ -3433,7 +3435,7 @@ struct
                             AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
                             if (aiAircraft != null)
                             {
-                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft, "SAFE_Stb_SpawnBombers_timer"); });
                                 willBreak = true;
                             }
                         }
@@ -3446,7 +3448,7 @@ struct
                             AiAircraft aiAircraft = GamePlay.gpActorByName(fullActorName) as AiAircraft;
                             if (aiAircraft != null)
                             {
-                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft); });
+                                Timeout(456.0, () => { Stb_DestroyPlaneUnsafe(aiAircraft, "SAFE_Stb_SpawnBombers_timer"); });
                                 willBreak = true;
                             }
                         }
@@ -3757,13 +3759,17 @@ struct
     {
         AiActor actor = aircraft as AiActor;
         stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
-        if (!fromSupply) if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
-        Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, timeToRemove_sec, timetoDestroy_sec);
+        if (!fromSupply) supplymission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), reason: "SAFE_Stats_NoPenaltyDestroy"); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+        Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, timeToRemove_sec, timetoDestroy_sec, "SAFE_Stats_NoPenaltyDestroy");
         Console.WriteLine("Remove player from aircraft safely & destroy, " + player.Name());
     }
 
+	public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0) {
+		Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, timeToRemove_sec, timetoDestroy_sec, "");
+	}
+	
     //First removes the player from the aircraft (after 1 second), ALL POSITIONS, then destroys the aircraft itself (IF it is AI controlled), after 3 more seconds
-    public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0)
+    public void Stb_RemovePlayerFromAircraftandDestroy(AiAircraft aircraft, Player player, double timeToRemove_sec = 1.0, double timetoDestroy_sec = 3.0, string reason = "Stb_RemovePlayerFromAircraftandDestroy")
     {
         Timeout(timeToRemove_sec, () =>
         {
@@ -3772,7 +3778,7 @@ struct
             Stb_RemovePlayerFromCart(aircraft as AiCart, player);
             Timeout(timetoDestroy_sec, () =>
             {
-                if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft);
+                if (Stb_isAiControlledPlane(aircraft)) Stb_DestroyPlaneUnsafe(aircraft, reason);
             }); //Destroy it a bit later--but only if no other players are in it
 
             //Stb_DestroyPlaneUnsafe(actor as AiAircraft);  //OK, this approach seems to cause some problems when a player gets kicked out here &  then tries to click on the flags to change armies etc.
@@ -3805,7 +3811,7 @@ struct
         });
     }
 
-    private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI = true, int timeToWait = 300)
+    private void Stb_destroyAnyPlane(AiActor actor, bool checkForAI = true, int timeToWait = 300, string reason = "Stb_destroyAnyPlane")
     {
         try
         {
@@ -3854,7 +3860,7 @@ struct
                 * ***/
 
             Timeout(timeToWait, () =>
-            { Stb_DestroyPlaneUnsafe(aircraft); }
+            { Stb_DestroyPlaneUnsafe(aircraft,reason); }
                 );
 
         }
@@ -3867,7 +3873,7 @@ struct
 
 
 
-    private void Stb_DestroyPlaneSafe(AiAircraft aircraft)
+    private void Stb_DestroyPlaneSafe(AiAircraft aircraft, string reason="Stb_DestroyPlaneSafe")
     {
         try
         {
@@ -3883,7 +3889,9 @@ struct
                 if ((aircraft.Pos().distance(ref af2) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
                 if ((aircraft.Pos().distance(ref af3) < 500.0) && (aircraft.Pos().z < 40.0)) { insideAf = true; }
                 if ((aircraft.Pos().distance(ref af4) < 500.0) && (aircraft.Pos().z < 70.0)) { insideAf = true; }
-                if (insideAf && stb_Debug) { Console.WriteLine("Destroying aircraft -stats.cs DPS1"); aircraft.Destroy(); }
+                if (insideAf && stb_Debug) { Console.WriteLine("Destroying aircraft -stats.cs DPS1");
+				mainmission.AircraftDestroyedList[aircraft] = reason;
+				aircraft.Destroy(); }
                 else
                 {
                     Stb_DamagePlane(aircraft, NamedDamageTypes.ControlsElevatorDisabled);
@@ -3900,19 +3908,21 @@ struct
             else
             {
                 //Console.WriteLine("Destroying aircraft -stats.cs DPS");
+				mainmission.AircraftDestroyedList[aircraft] = reason;
                 aircraft.Destroy();
             }
         }
         catch (Exception ex) { Stb_PrepareErrorMessage(ex); }
     }
 
-    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft)
+    private void Stb_DestroyPlaneUnsafe(AiAircraft aircraft, string reason = "Stb_DestroyPlaneUnsafe")
     {
         try
         {
             if (aircraft != null)
             {
                 //Console.WriteLine("Destroying aircraft -stats.cs DPU");
+				mainmission.AircraftDestroyedList[aircraft] = reason;
                 aircraft.Destroy();
             }
         }
@@ -3964,7 +3974,12 @@ struct
     }
 
     //Kill the player/aircraft/whatever after a specified amount of time
-    private bool Stb_killActor(AiActor actor, int waitTime = 0)
+	//
+	//!!!!!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//NOT THE SAME as actor.destroy() AT ALL - this records the actor's death/being kill FOR STATS PURPOSES
+	//Whereas .destroy() removes the whole object from the sim altogether; different thing altogether
+	//*!!!!!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private bool Stb_killActor(AiActor actor, int waitTime = 0, string reason = "Stb_killActor")
     {
         if (actor != null)
         {
@@ -3972,6 +3987,9 @@ struct
             {
                 //Console.WriteLine("KillActor: " + actor.Name() );
                 //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
+				
+				//if(actor as AiAircraft != null) mainmission.AircraftDestroyList[(actor as AiAircraft)] = reason;
+				Console.WriteLine("Stb_killActor: Name {0} Reason: {1}", actor.Name(), reason);
                 Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0);
             });
 
@@ -3989,7 +4007,8 @@ struct
         if (aircraft != null && (aircraft as AiActor) != null && stb_aircraftKilled.Contains((aircraft as AiActor).Name()))
         {  //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
             Stb_RemoveAllPlayersFromAircraft(aircraft, 5); //remove all players 5 sec
-            Stb_killActor((aircraft as AiActor), 7); //kill this a/c 6 sec
+            Stb_killActor((aircraft as AiActor), 7, "Dead_stats_fromKillACNowIfInAircraftKilled"); //kill this a/c 6 sec
+			//Timeout(7, () => Stb_DestroyPlaneUnsafe(aircraft, "KillACNowIfInAircraftKilled");});
             stb_aircraftKilled.Remove((aircraft as AiActor).Name());
         }
 
@@ -4025,7 +4044,7 @@ struct
                                     AiAircraft a = actor as AiAircraft;
                                     if (a != null)
                                     {
-                                        Stb_DestroyPlaneSafe(a);
+                                        Stb_DestroyPlaneSafe(a, "SAFE_Stats_DestroyAllAircraft");
                                         if (stb_Debug) Console.WriteLine("Destroy All AI A/C: " + actor.Name());
                                     }
                                 }
@@ -4341,7 +4360,7 @@ struct
                                                                 stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
                                                                                                                                         //stbSr_PlayerDeath_penaltylist[playername]
                                                                 stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true, forceDeath: true);
-                                                                Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0);
+                                                                Stb_RemovePlayerFromAircraftandDestroy(a, player, 1.0, 3.0, "SAFE_Stats_OffMap");
 
                                                                 string Hud_message = "You have left the map.  Aircraft destroyed. Rank stripped. Court martial ordered.";
                                                                 GamePlay.gpHUDLogCenter(players.ToArray(), Hud_message, null);
@@ -5221,7 +5240,7 @@ struct
                     //we can do this multiple times per aircraft bec. only the first one counts, but we're still going to save by only doing it for the first position encountered
                     AiActor actor = player.Place();
                     if (actor != null && Stb_isPlayerFirstInAircraft(actor as AiAircraft, player))
-                       if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                       if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary(), true, reason: "SAFE_Stats_EndOfBattleAutoCheckin"); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 }
             }
 
@@ -6257,7 +6276,7 @@ struct
                 GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null);
                 Timeout(10.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
                 Timeout(20.0, () => { GamePlay.gpHUDLogCenter(new Player[] { player }, peHud_message, null); });
-                if (player.Place() != null && player.Place() as AiAircraft != null) Stb_RemovePlayerFromAircraftandDestroy(player.Place() as AiAircraft, player, 1.0, 3.0);
+                if (player.Place() != null && player.Place() as AiAircraft != null) Stb_RemovePlayerFromAircraftandDestroy(player.Place() as AiAircraft, player, 1.0, 3.0, "DEAD_Stats_ExcessCivilianBombings");
 
             });
         }
@@ -7385,7 +7404,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             stb_setPilotType(player, actor);
 
             //We can send the a/c to -supply.cs as often as we like, it will only register a given a/c once and sending it whenever someone enters a Place ensures we don't accidently overlook it
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, actor);
+            if (supplymission != null) supplymission.SupplyOnPlaceEnter(player, actor);
         }
         //Console.WriteLine("OnPlaceEnter: Setting pilot type of " + player.Name() + " " + placeIndex.ToString());
 
@@ -7429,7 +7448,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                                                                                                                                                                                                                                                                                                                   // and: Player.PlaceLeave(int indxPlace)
             stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
             //if (TWCSupplyMision != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply //Ok, seems at this point the plane hasn't been checked out yet, so no worries about doing this.
-            Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+            Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0, "DEAD_SAFE_Stats_PlayerTriedSpawnWhenBanned");
             //Timeout(1.1, () => { stb_ContinueMissionRecorder.StbCmr_ClearIsForcedPlaceMove(player.Name()); }); //don't really need to remove it as onpositionleave does that already
 
             string peHud_message = stb_StatRecorder.StbSr_RankFromName(player.Name(), actor) + player.Name() + " restricted from forward bases for " + StatCalcs.SecondsToFormattedString(TimedOut_seconds) + " due to recent death";
@@ -7478,7 +7497,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             stb_ContinueMissionRecorder.StbCmr_SetIsForcedPlaceMove(player.Name());
             //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, player.PlacePrimary()); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply //Ok, seems at this point the plane hasn't been checked out yet, so no worries about doing this.
-            Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+            Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0, "SAFE_Stats_NotAllowedAC_rank");
 
 
             string pe2Hud_message = "Sorry, you are restricted from " + aircraft_type + ". Read Chat Msg & Mission Briefing for details";
@@ -7523,11 +7542,11 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Console.WriteLine("AI jump-in - CAUGHT ONE!: {0} {1} {2} {3} {4} {5} {6} {7} {8}", isEnteringAIAircraft, realPosLeave, onlyPlayer, sameActor, sortieStart, altAGL_m, vel_mph, dist, deltaAlt_m);
 
 
-                    Stb_killActor(actor, 1); //they are killed - not parachuted, etc, just dead
+                    Stb_killActor(actor, 1, "DEAD_stats_Tried to jump into AI aircraft when not allowed"); //they are killed - not parachuted, etc, just dead
                                              //2 = self-kill
 
                     stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, ignoreDeathLimit: true, forceDeath: true);
-                    Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0);
+                    Stb_RemovePlayerFromAircraftandDestroy(aircraft, player, 1.0, 3.0, "DEAD_Stats_UnauthorizedJumpIntoAI");
                     stb_StatRecorder.stbSr_PlayerDeath_penaltylist[player.Name()] = 5 * 60; //adds an additional 5 mins timeout on death for the rest of this mission
 
                     string pe3Hud_message = "Jumping into AI aircraft is not allowed; Career & Aircraft lost";
@@ -7715,7 +7734,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             if (player != null && player.Name() != null && stb_ContinueMissionRecorder.StbCmr_IsForcedPlaceMove(player.Name()))
             {
                 Console.WriteLine("OnPlaceLeave: Forced place move; returning aircraft to supply " + player.Name());
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor); //Being kicked out/forced out of plane, -supply.cs handles the details of returning the a/c to supply                
+                if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, reason: "SAFE_Stats_PlayerForcedOutOfPlane"); //Being kicked out/forced out of plane, -supply.cs handles the details of returning the a/c to supply                
                 return; //In case of forced plane move such as a/c unavailable or not allowed to fly bec. recent death etc, then just don't process anything here.  And . . . trying it again, might help in some cases.
             }
             StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 788 }, actor);
@@ -7873,7 +7892,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                         //a real aircraft abandon.
                         //Below, we will also force destruction of the aircraft in certain situations such as big crash.  But this will be our 'main' 
                         //place to say, "Yes, the final pilot has left the aircraft"
-                        if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, forceDamage: aircraftDamage); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
+                        if (isLastPlayer && supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, forceDamage: aircraftDamage, reason: "DEPENDS_Stats_PlayerLeftPlane"); //Since this is a real position leave, -supply.cs handles the details of returning the a/c to supply
                 }
 
                     /*
@@ -7976,7 +7995,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
                             //Here we are forcing aircraft loss in case of severe injuries.
                             //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                            if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1, reason: "DEAD_Stats_FatalCrash"); //the final "1" forced 100% damage of aircraft/write-off
                         }
                     }
 
@@ -8001,7 +8020,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                         Stb_Chat(line2, player);
                         OnPersonParachuteLanded(actor, player);
                         Console.WriteLine("Forcing exit 3");
-                        if (isLastPlayer && TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off, in case they were the last person on board AND they have just parachuted out
+                        if (isLastPlayer && supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1, reason: "DEAD_Stats_LastPlayerLeftPlane"); //the final "1" forced 100% damage of aircraft/write-off, in case they were the last person on board AND they have just parachuted out
 
                     }
 
@@ -8020,8 +8039,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 AiAircraft aircraft = actor as AiAircraft;
                 if (aircraft != null)
                 {
-                    Timeout(60.0, () => { Stb_DestroyPlaneSafe(aircraft); });//works fine if you havent take off or flying in neutral zone
-                    Timeout(70.0, () => { Stb_DestroyPlaneSafe(aircraft); });//second call for cleanup
+                    Timeout(60.0, () => { Stb_DestroyPlaneSafe(aircraft, "DEPENDS_stb_OnPlaceLeave"); });//works fine if you havent take off or flying in neutral zone
+                    Timeout(70.0, () => { Stb_DestroyPlaneSafe(aircraft, "DEPENDS_stb_OnPlaceLeave"); });//second call for cleanup
                                                                              //game thinks that you are still airborne after you landed inside an airfield perimeter
                                                                              //because we havent set landing waypoints & airfields properly
                                                                              //this is why we call Stb_DestroyPlaneSafe again, we could do the same by adding an ai with airport.cpp
@@ -8118,7 +8137,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     {
                         if (aircraft.Player(i) is Player && aircraft.Player(i) != null)
                         {
-                            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(aircraft.Player(i), actor);
+                            if (supplymission != null) supplymission.SupplyOnPlaceEnter(aircraft.Player(i), actor);
                                 //we send it multiple times without concern; -supply.cs makes sure a single a/c is never checked out more than once.
                                 //break; //only do this ONCE although the player will probably be in two places in a multi-player
                             }
@@ -8229,7 +8248,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         base.OnAircraftKilled(missionNumber, shortName, aircraft);
 
         //if it's ai controlled we consider it "killed" at this point, so go ahead & assign points.
-        if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30);
+        if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30, "DEAD_stats_OnAircraftKilled");
+		//if (Stb_isAiControlledPlane(aircraft)) Timeout(30, () => Stb_DestroyPlaneUnsafe(aircraft, "stb_aircraftKilled");});
         else
         { //if it is player-controlled then we let nature take its course for now.  But we save the actor on a list & if it turns it it wasn't recorded later on then we record it later.
 
@@ -8242,6 +8262,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
     {
         base.OnActorDestroyed(missionNumber, shortName, actor);
+		
+		string reason = "";
 
         try
         {
@@ -8249,9 +8271,16 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             Console.WriteLine("StatsOnDestroy: " + shortName + " was destroyed");
             AiAircraft aircraft = actor as AiAircraft;
+			
+			
 
             if (aircraft != null)
             {
+				if(mainmission.AircraftDestroyedList.ContainsKey(aircraft))  {
+					reason = mainmission.AircraftDestroyedList[aircraft];
+					Console.WriteLine("StatsOnDestroy: Reason for " + shortName + ": " + reason);
+				}
+				
                 Stb_KillACNowIfInAircraftKilled(aircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
 
 
@@ -8268,8 +8297,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
-                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
-                    Stb_killActor(actor); //it's dead, Jim
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    Stb_killActor(actor, 0, "DEAD_Stats_OnActorDestroyed_killActor: Landed/crashed on water"); //it's dead, Jim
 
                 }
                 // crash landing in solid ground
@@ -8278,21 +8307,28 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
-                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
-                    Stb_killActor(actor); //Also dead; counts as a kill
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    Stb_killActor(actor, 0, "DEAD_OnActorDestroyed_Stb_killActor: Landed enemy territory"); //Also dead; counts as a kill
 
                 }
                 else if (Z_AltitudeAGL < 5 && mainmission.Stb_distanceToNearestAirport(actor) > airport_distance)  // crash landed in friendly or neutral territory, on land (or ISSEAPLANE), not w/i 3000 meters of an airport
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
-                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1);
-                    Stb_killActor(actor); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    Stb_killActor(actor,0, "DEAD_OnActorDestroyed_Stb_killActor: Crashlanded friendly/neutral territory"); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
 
                 } else
                 {
-					Console.WriteLine("OnDestroy: " + actor.Name() + "'s is being considered as a good landing or something like MoveBomb .destroying planes when near landing sites etc");
-                    TWCSupplyMission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 0); //presumably a good landing of some sort.  UPDATE - not really, there could be lots of reasons to exit here.
+					Console.WriteLine("OnDestroy: Depending on REASON for " + actor.Name() + "'s destruction: "  + reason);
+					
+					if (reason.ToLower().StartsWith ("dead")) {
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason); //dead for SOME reason
+					} else if (reason.ToLower().StartsWith ("safe")) {
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: true, forceDamage: 1, reason: reason); //dead for SOME reason
+					} else { //"DEPENDS" or don't know reason
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason); //dead for SOME reason.  We do the same as we did before when we didn't know the reason (injuries 0 but no softexit)
+					}
                 }
             }
 
@@ -8410,7 +8446,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             }
 
             Console.WriteLine("Forcing exit 4");
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
             Console.WriteLine("Forcing exit 4a");
         }
 
@@ -8832,7 +8868,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     stb_StatRecorder.StbSr_EnqueueTask(sst1);
                     stb_PlayerDeathAndTime[playerName] = currTime;
                     Console.WriteLine("Forcing exit 6");
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                     if (stb_Debug) Console.WriteLine("OnPlayerDead: Player " + stb_StatRecorder.StbSr_MassagePlayername(playerName) + " death WAS recorded because previous death recorded " + (currTime - oldDeathTime).ToString() + " seconds ago & injuries were severe & both positions were dead");
 
                 }
@@ -8856,7 +8892,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     Console.WriteLine("Stats, both positions dead AND ( injuries greater than 50% OR dist from airport > 2000, so writing off aircraft - " + stb_StatRecorder.StbSr_MassagePlayername(playerName));
                     stb_recordAircraftWrittenOff(player, actor, recordedInjuries, dist);
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forces 100% damage of aircraft/write-off
                 }
 
             }
@@ -9466,7 +9502,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                           if (!RPCL && stb_PlayerTimeoutWhenKilled && stb_PlayerTimeoutWhenKilled_OverrideAllowed) Timeout(2.0, () => { Stb_Message(new Player[] { aiAircraft.Player(i) }, "If you are philosophically opposed to the idea of a timeout, enter the chat command <override to continue immediately.", null); });
 
                           Console.WriteLine("Forcing exit 7");
-                          if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
+                          if (supplymission != null) supplymission.SupplyOnPlaceLeave(aiAircraft.Player(i), actor, 0, false, 1); //the final "1" forced 100% damage/death of aircraft
 
                           makeCraterOnAirplaneCrash(aiAircraft, actor);
 
@@ -9993,7 +10029,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
                     //Loss of a/c, even if life saved
                     Console.WriteLine("Forcing exit 8");
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                     double Luck = stb_random.NextDouble();
                     double Luck2 = stb_random.NextDouble();
@@ -10045,7 +10081,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
                     //Loss of a/c, even if life saved
                     Console.WriteLine("Forcing exit 8");
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                     //Only give consequences if the player leaves the a/c here, OR is injured on landing OR the a/c was killed
                     //Otherwise the pilot might just take off again & escape.
@@ -10093,7 +10129,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
                     //SUPPLY: Loss of a/c, even if life saved
                     Console.WriteLine("Forcing exit 8");
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                 }
                 else if (dist > 2000 && aircraft == null) //this is the case where we are more than 2000 m from airport AND player has left  the a/c (aircraft == null) so we are being sent through this routine with no a/c attached
@@ -10135,7 +10171,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 if (playerDied == true)
                 {
                     if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 2, player as AiActor, player, false, forceDeath: true); //They are dead, so kill immediately (ie, before players are removed from a/c)
-                    else Stb_killActor((aircraft as AiActor), 0);
+                    else Stb_killActor((aircraft as AiActor), 0, "OnActorDestroyed_Stb_killActor");
                     if (aircraft != null) Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
                 }
                 else if (aircraft != null && (injuries > 0.35 || stb_aircraftKilled.Contains((aircraft as AiActor).Name())))
@@ -10152,7 +10188,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             { //So if a "good" crash landing then it seems that the person isn't really killed.  So . . . this does it.
 
                 if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false, forceDeath: true);
-                else Stb_killActor(actor, 0);
+                else Stb_killActor(actor, 0, "DEAD_stats_playerDied");
 
             }
 
@@ -10184,7 +10220,9 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             //if it's ai controlled we consider it "killed" at this point, so go ahead & assign points.
             //This may have a bug in that it kills live pilots as well as ai aircraft; needs testing.
-            if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30);
+            if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30, "DEAD_stats_OnAircraftCrashLanded");
+			//if (Stb_isAiControlledPlane(aircraft)) 
+			//	Timeout(30, () => {Stb_DestroyPlaneUnsafe(aircraft, "OnAircraftCrashLanded_AI");});
 
             /* else
             { //if it is player-controlled then we kick them out rather quickly, then the aircraft is counted as killed
@@ -10195,10 +10233,12 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             }
             */
 
+			/* //NOW DOING THIS via onPlaceLeave, if not AI
             Timeout(300, () =>
             { Stb_DestroyPlaneUnsafe(aircraft); }
 
             );
+			*/
 
         }
 
@@ -10248,7 +10288,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 Console.WriteLine("On aircraft landed (stats), enemy land.");
                 //Here we are forcing aircraft loss in case of landing in enemy territory.
                 //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                 Console.WriteLine("On aircraft landed (stats), enemy land2.");
                 //gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
@@ -10267,7 +10307,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Console.WriteLine("On aircraft landed (stats), enemy land4.");
                     gpLogServerAndLog(null, StatCalcs.randSTR(stb_LANDED_ENEMY_MSG) + StatCalcs.randSTR(stb_CAPTURED_MSG) + StatCalcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                     if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false, forceDeath: true);
-                    else Stb_killActor(actor, 0);
+                    else Stb_killActor(actor, 0, "DEAD_stats_Player Captured");
                     Console.WriteLine("On aircraft landed (stats), enemy land4a.");
                     //prevent double-counting/messages for a player who landed etc.
                     if (recentlyParachutedOrCrashedOrLanded(PlayerName))
@@ -10285,7 +10325,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 Console.WriteLine("On aircraft landed (stats), neutral territory, not at a friendly airport.");
                 //Here we are forcing aircraft loss in case of landing in enemy territory.
                 //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
                 Console.WriteLine("On aircraft landed (stats),, neutral territory, not at a friendly airport2.");
                 //gpLogServerAndLog(null, Calcs.randSTR(stb_LANDED_ENEMY_MSG) + Calcs.randSTR(stb_CAPTURED_MSG), new object[] { PlayerNameM });
@@ -10304,7 +10344,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Console.WriteLine("On aircraft landed (stats), enemy land4.");
                     gpLogServerAndLog(null, StatCalcs.randSTR(stb_LANDED_NEUTRAL_MSG) + StatCalcs.randSTR(stb_CAPTURED_NEUTRAL_MSG) + StatCalcs.randSTR(stb_FINAL_CAPTURED_MSG), new object[] { PlayerNameM });
                     if (aircraft == null) stb_RecordStatsForKilledPlayerOnActorDead(PlayerName, 2, player as AiActor, player, false, forceDeath: true);
-                    else Stb_killActor(actor, 0);
+                    else Stb_killActor(actor, 0, "DEAD_stats_Player Captured");
                     Console.WriteLine("On aircraft landed (stats), enemy land4a.");
                     //prevent double-counting/messages for a player who landed etc.
                     if (recentlyParachutedOrCrashedOrLanded(PlayerName))
@@ -10333,7 +10373,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 //Here we are forcing aircraft loss in case of moderate to severe injuires OR landing away from airport
                 //We'll usually pick this up elsewhere, but in this case we KNOW this airport is written off, so we're forcing it
                 //This MIGHT duplicate the 'leaving aircraft' call above but will carry additional info of "and the plane was destroyed"
-                //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                //if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                 Console.WriteLine("On aircraft landed (stats), injuries or far from friendly a/p2");
                 recentlyParachutedOrCrashedOrLanded(PlayerName);
                 Console.WriteLine("On aircraft landed (stats), injuries or far from friendly a/p3");
@@ -10375,14 +10415,17 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     //OnAircraftLanded(aircraft as AiActor, player, aircraft);
 
                     Stb_KillACNowIfInAircraftKilled(aircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
+					
+					/*
                     Timeout(300, () =>
                     //{ destroyPlane(aircraft); } //Not sure why to destroy **ALL** planes just bec. landed?  Best to check if a pilot is still in it & just destroy aicontrolled planes, like this:
 
                     {
                     //destroyAiControlledPlane(aircraft);
-                    Stb_DestroyPlaneSafe(aircraft);
+                    Stb_DestroyPlaneSafe(aircraft,"Stats_PlayerAircraftLanded);
                     }
                     );
+					*/
                 }
                 catch (NullReferenceException n)
                 {
@@ -10533,7 +10576,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             //All these result in loss of a/c, even if life saved
             Console.WriteLine("Forcing exit 1");
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
 
             bool playerDied = false;
             if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // landed in water
@@ -10616,7 +10659,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 //2=self-kill, 1 = regular kill; we're going to say parachuting death is never a self-kill as you were
                 //intending to parachute and survive, but got killed SOMEHOW regardless.
                 res = stb_RecordStatsForKilledPlayerOnActorDead(player.Name(), 1, player as AiActor, player, false, forceDeath: true); //They are dead, so kill immediately (ie, before players are removed from a/
-                if (person != null) Stb_killActor(person as AiActor, 0);
+                if (person != null) Stb_killActor(person as AiActor, 0, "DEAD_stats_Player Died");
                 //Give an indication we're supposed to be killing this player
                 gpLogServerAndLog(null, "{0} has been killed or captured - the end of a glorious career!  (" + res.ToString() + ")", new object[] { PlayerNameM });
             }
@@ -11513,6 +11556,8 @@ public class StbStatRecorder : IStbStatRecorder
     public double stbSr_PlayerTimeoutWhenKilledDuration_hours;
     private StatsMission mission;
     private Random stbSr_random;
+	public Mission mainmission;
+	public SupplyMission supplymission;
 
     public int stbSr_numStats; //# of fields recorded in the stats Dictionary/File etc      
 
@@ -11559,6 +11604,8 @@ public class StbStatRecorder : IStbStatRecorder
         stbSr_PlayerTimeoutWhenKilledDuration_hours = PlayerTimeoutWhenKilledDuration_hours;
 
         this.mission = mission; //gets current instance of Mission for use later
+		mainmission = mission.mainmission;
+		supplymission = mission.supplymission;
 
         stbSr_LogErrors = logErrors;
         stbSr_ErrorLogPath = errorLogPath;
@@ -14283,7 +14330,7 @@ public class StbStatRecorder : IStbStatRecorder
                     {
                         ms += "<br>" + "<br>" + StbSr_Display_SessionStatsAll(null, 0, false);
 
-                        if (mission.TWCSupplyMission != null) ms += "<br>" + "<br>" + mission.TWCSupplyMission.ListAircraftLost(0, null, false, true);
+                        ms += "<br>" + "<br>" + supplymission.ListAircraftLost(0, null, false, true);
 
                     }
 

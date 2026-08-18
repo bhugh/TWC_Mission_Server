@@ -410,8 +410,8 @@ public class StatsMission : AMission, IStatsMission
     //initializer method
     public StatsMission(Mission msn)
     {
-        mainmission = msn;
-		supplymission = mainmission.supplymission;
+        mainmission = msn;		
+		
         stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the Cliffs of Dover documents directory, ie C:\Users\XXXXXXXX\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\
         TWCComms.Communicator.Instance.Stats = (IStatsMission)this; //allows -stats.cs to access this instance of Mission
         TWCMainMission = TWCComms.Communicator.Instance.Main;
@@ -5167,6 +5167,7 @@ struct
             //Console.WriteLine("starting chat2");
             (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
         }
+		supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
         Console.WriteLine("-stats inited");
     }
 
@@ -5175,6 +5176,7 @@ struct
     {
         #region stb
         base.OnBattleStarted();
+
         #endregion
 
 
@@ -8264,6 +8266,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         base.OnActorDestroyed(missionNumber, shortName, actor);
 		
 		string reason = "";
+		string saveReason = "";
 
         try
         {
@@ -8281,6 +8284,12 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 					Console.WriteLine("StatsOnDestroy: Reason for " + shortName + ": " + reason);
 				}
 				
+				if (reason.ToLower().StartsWith("depends")) {
+					saveReason = reason;
+					reason = "";
+				}
+				
+				
                 Stb_KillACNowIfInAircraftKilled(aircraft); //In case this aircraft was listed as "killed" earlier it will count as a victory for the damagers but not a death for the player(s) in the a/c
 
 
@@ -8297,7 +8306,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on water.");
-                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason + "DEAD_stats_LandOnWater" + saveReason);
                     Stb_killActor(actor, 0, "DEAD_Stats_OnActorDestroyed_killActor: Landed/crashed on water"); //it's dead, Jim
 
                 }
@@ -8307,7 +8316,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because ground in enemy territory.");
-                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason + "DEAD_stats_LandOnEnemyTerritory" + saveReason);
                     Stb_killActor(actor, 0, "DEAD_OnActorDestroyed_Stb_killActor: Landed enemy territory"); //Also dead; counts as a kill
 
                 }
@@ -8315,7 +8324,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 {
                     //if (stb_Debug) 
                     Console.WriteLine("OnDestroy: " + actor.Name() + "'s destruction counts as a kill because on ground in friendly territory but not near an airport.");
-                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason);
+                    supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason+ "DEAD_stats_LandFriendlyOrNeutralAwayFromAirport" + saveReason);
                     Stb_killActor(actor,0, "DEAD_OnActorDestroyed_Stb_killActor: Crashlanded friendly/neutral territory"); //Also dead, or at least, counts as a kill for anyone who contributed to the crash landing?  That's how we're playing it for now . . . 
 
                 } else
@@ -8323,11 +8332,11 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 					Console.WriteLine("OnDestroy: Depending on REASON for " + actor.Name() + "'s destruction: "  + reason);
 					
 					if (reason.ToLower().StartsWith ("dead")) {
-						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason); //dead for SOME reason
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason+saveReason); //dead for SOME reason
 					} else if (reason.ToLower().StartsWith ("safe")) {
-						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: true, forceDamage: 1, reason: reason); //dead for SOME reason
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: true, forceDamage: 1, reason: reason+saveReason); //safe for SOME reason
 					} else { //"DEPENDS" or don't know reason
-						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 1, reason: reason); //dead for SOME reason.  We do the same as we did before when we didn't know the reason (injuries 0 but no softexit)
+						supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: false, forceDamage: 0, reason: reason+saveReason); //dead for SOME reason.  We do the same as we did before when we didn't know the reason (injuries 0 but no softexit)
 					}
                 }
             }
@@ -11605,7 +11614,7 @@ public class StbStatRecorder : IStbStatRecorder
 
         this.mission = mission; //gets current instance of Mission for use later
 		mainmission = mission.mainmission;
-		supplymission = mission.supplymission;
+		supplymission = mission.mainmission.supplymission;
 
         stbSr_LogErrors = logErrors;
         stbSr_ErrorLogPath = errorLogPath;

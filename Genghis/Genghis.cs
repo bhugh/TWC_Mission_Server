@@ -12445,7 +12445,7 @@ public class Mission : AMission, IMainMission
             maddox.game.LandTypes landType = GamePlay.gpLandType(pos.x, pos.y);
 
         }
-        double timediff_s = DateTime.UtcNow.Subtract(currTime).Seconds;
+        double timediff_s = DateTime.UtcNow.Subtract(currTime).TotalSeconds;
         Console.Write("Finished stress test - {0:n6} seconds...", timediff_s);
     }
     /****************************************
@@ -14072,7 +14072,7 @@ public class Mission : AMission, IMainMission
                     //if (actor != null && isAiControlledPlane2(actor as AiAircraft))
                     //{ (actor as AiAircraft).Destroy(); }
 				
-					movebombtargetmission.safeDestroyOldAircraft( actor as AiAircraft, "SAFE_MainMission_AutoRemoveOldAI", true);
+					movebombtargetmission.safeDestroyOldAircraft( actor as AiAircraft, "SAFE_MainMission_AutoRemoveOldAI", false); //force means, force to exit even if a player  nearby.  In this case, no.
                 }
                 );
             }
@@ -14143,123 +14143,163 @@ public class Mission : AMission, IMainMission
     }
 
 
+	private Dictionary <AiAircraft, DateTime> stoppedAircraft = new Dictionary <AiAircraft, DateTime> ();
 
     //Removes AIAircraft if they are off the map. Convenient way to get rid of
     //old a/c - just send them off the map
     //This is called via Task.Run so don't need to implement that here.
     public void RemoveOffMapAIAircraft()
     {
-        int numremoved = 0;
-        //The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
-        //This should match the values in your .mis file, like
-        //BattleArea 10000 10000 360000 310000 10000
-        //TODO: There is probably some way to access the size of the battle area programmatically
-        //The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
-        //Also below a "grace area" of approx 1 square off the map is added
-        if (GamePlay == null) return;
+		try 
+		{
+			int numremoved = 0;
+			//The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
+			//This should match the values in your .mis file, like
+			//BattleArea 10000 10000 360000 310000 10000
+			//TODO: There is probably some way to access the size of the battle area programmatically
+			//The size below is expanded just slightly from that, as the map shown to players and on the radar map is just slightly larger.
+			//Also below a "grace area" of approx 1 square off the map is added
+			if (GamePlay == null) return;
 
-        //////////////Comment this out as we don`t have Your Debug mode  
-        //DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
-        /*
-        if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
-        {
-            foreach (int army in GamePlay.gpArmies())
-            {
-                if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-                    foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
-                    {*/
-        var arms = new List<int>() { 1, 2 };
+			//////////////Comment this out as we don`t have Your Debug mode  
+			//DebugAndLog("Checking for AI Aircraft off map OR stopped on ground, to despawn");
+			/*
+			if (GamePlay != null && GamePlay.gpArmies() != null && GamePlay.gpArmies().Length > 0)
+			{
+				foreach (int army in GamePlay.gpArmies())
+				{
+					if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
+						foreach (AiAirGroup airGroup in GamePlay.gpAirGroups(army))
+						{*/
+			var arms = new List<int>() { 1, 2 };
 
-        if (GamePlay != null) foreach (int army in arms)
-            {
-                var airGroups = GamePlay.gpAirGroups(army);
+			if (GamePlay != null) foreach (int army in arms)
+				{
+					var airGroups = GamePlay.gpAirGroups(army);
 
-                if (airGroups != null && airGroups.Length > 0)
-                    foreach (AiAirGroup airGroup in airGroups)
-                    {
+					if (airGroups != null && airGroups.Length > 0)
+						foreach (AiAirGroup airGroup in airGroups)
+						{
 
-                        //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
-                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
-                            foreach (AiActor actor in airGroup.GetItems())
-                            {
-                                if (actor != null && actor is AiAircraft)
-                                {
-                                    AiAircraft a = actor as AiAircraft;
-                                    /* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
-                                       //+ a.Type() + " " 
-                                       //+ a.TypedName() + " " 
-                                       +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
-                                      );
-                                    */
+							//if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+							if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+								foreach (AiActor actor in airGroup.GetItems())
+								{
+									if (actor != null && actor is AiAircraft)
+									{
+										AiAircraft a = actor as AiAircraft;
+										/* if (DEBUG) DebugAndLog ("DEBUG: Checking for off map: " + Calcs.GetAircraftType (a) + " "                                            
+										   //+ a.Type() + " " 
+										   //+ a.TypedName() + " " 
+										   +  a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0")
+										  );
+										*/
 
-                                    //for testing
-                                    //string name = actor.Name();
-                                    //if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
-                                    //for testing
+										//for testing
+										//string name = actor.Name();
+										//if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
+										//for testing
 
 
-                                    if (a != null && isAiControlledPlane2(a))
-                                    {
+										if (a != null && isAiControlledPlane2(a))
+										{
 
-                                        double Z_AltitudeAGL = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
-                                        double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
-                                        AiAirGroupTask aagt = airGroup.getTask();
-										AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
-										int currWay = airGroup.GetCurrentWayPoint();
-										
-										AiAirWayPointType aawpt = AiAirWayPointType.TAKEOFF;
-										if (CurrentWaypoints.Length >= currWay)  aawpt = (CurrentWaypoints[currWay] as AiAirWayPoint).Action;
-
-                                        //so, lots of ai aircraft velocity is negative.  For some reason.  So if checking for stopped, must make it ==0 or maybe >-5 <5 or whatever
-                                        /* if (Z_VelocityTAS < 10) 
-                                            Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "                                                    
-                                                + a.Type() + " "
-                                                + a.TypedName() + " "
-                                                + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} {3} ",
-                                                Z_AltitudeAGL, Z_VelocityTAS, aagt
-                                               );
-                                               */
-
-                                        if
-                                      (
-                                        (Z_AltitudeAGL < 5 && Z_VelocityTAS < 10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF && aagt != AiAirGroupTask.UNKNOWN && aawpt != AiAirWayPointType.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not landing
-                                        /* a.Pos().x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
-                                        a.Pos().x >= maxX + 12500 ||
-                                        a.Pos().y <= minY - 12500 ||
-                                        a.Pos().y >= maxY + 12500 */
-										Calcs.isOffMap(a.Pos())
-                                      )
-                                        // ai aircraft only
-                                        {
-                                            Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType(a) + " "
-                                            + a.Type() + " "
-                                            + a.TypedName() + " "
-                                            + a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
-                                            Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt
-                                           );
-                                            numremoved++;
+											double Z_AltitudeAGL = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
+											double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+											AiAirGroupTask aagt = airGroup.getTask();
+											AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
+											int currWay = airGroup.GetCurrentWayPoint();
 											
-											string reason = "SAFE_MainMission_AI_LandedOrOnGround";
-											if (Calcs.isOffMap(a.Pos())) reason = "SAFE_MainMission_AI_LeftMap";
-											
-                                            Timeout(numremoved * 10, () => { 
-											//a.Destroy(); 
-											movebombtargetmission.safeDestroyOldAircraft( a as AiAircraft, reason, true);
-											}); //Destroy the a/c, but space it out a bit so there is no giant stutter 
+											AiAirWayPointType aawpt = AiAirWayPointType.TAKEOFF;
+											if (CurrentWaypoints.Length >= currWay)  aawpt = (CurrentWaypoints[currWay] as AiAirWayPoint).Action;
 
-                                        }
-                                    }
+											//so, lots of ai aircraft velocity is negative.  For some reason.  So if checking for stopped, must make it ==0 or maybe >-5 <5 or whatever
+											/* if (Z_VelocityTAS < 10) 
+												Console.WriteLine("DEBUG: Off Map or landed/Checking: " + Calcs.GetAircraftType(a) + " "                                                    
+													+ a.Type() + " "
+													+ a.TypedName() + " "
+													+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " {0:N0} {1:N0} {2} {3} ",
+													Z_AltitudeAGL, Z_VelocityTAS, aagt
+												   );
+												   */
+										  
+										  if (
+											(Z_AltitudeAGL < 5 && Z_VelocityTAS < 10 && Z_VelocityTAS > -1 && aagt != AiAirGroupTask.TAKEOFF && aagt != AiAirGroupTask.UNKNOWN && aawpt != AiAirWayPointType.TAKEOFF) ||  //is stopped on ground //not sure why we get negative velocity sometimes?  AND not taking off
+											/* a.Pos().x <= minX - 12500 ||  //Same as players, 12500 'grace area', this is set in statsmission Stb_RemoveOffMapPlayers()
+											a.Pos().x >= maxX + 12500 ||
+											a.Pos().y <= minY - 12500 ||
+											a.Pos().y >= maxY + 12500 */
+											Calcs.isOffMap(a.Pos())
+										  )
+											// ai aircraft only
+										  {
+												Console.WriteLine("DEBUG: Off Map or landed/Destroying: " + Calcs.GetAircraftType(a) + " "
+												+ a.Type() + " "
+												+ a.TypedName() + " "
+												+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
+												Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt
+											   );
+												numremoved++;
+												
+												string reason = "DEPENDS_MainMission_AI_LandedOrOnGround";
+												if (Calcs.isOffMap(a.Pos())) reason = "SAFE_MainMission_AI_LeftMap";
+												
+												Timeout(numremoved * 10, () => { 
+												//a.Destroy(); 
+												movebombtargetmission.safeDestroyOldAircraft( a as AiAircraft, reason, true);
+												}); //Destroy the a/c, but space it out a bit so there is no giant stutter 
+
+										  } else if (Z_VelocityTAS < 5 && Z_VelocityTAS > -1) {
+											  //Now remove any that have been stopped for  more than say 5 mins
+											  
+											  var now = DateTime.UtcNow;
+											  
+											  if (!stoppedAircraft.ContainsKey(a)) {
+												  stoppedAircraft[a] = now;
+													Console.WriteLine("DEBUG: Stopped AI Aircraft - adding to stoppedAircraft list: " + Calcs.GetAircraftType(a) + " "
+												+ a.Type() + " "
+												+ a.TypedName() + " "
+												+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
+												Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt
+											   );
+											  } else {
+												  
+													double timeStopped_s = now.Subtract(stoppedAircraft[a]).TotalSeconds;
+													
+													Console.WriteLine("DEBUG: Stopped AI Aircraft - now stopped {4}s: " + Calcs.GetAircraftType(a) + " "
+													+ a.Type() + " "
+													+ a.TypedName() + " "
+													+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
+														Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt, timeStopped_s
+													);
+													if (timeStopped_s > 300) {
+														Console.WriteLine("DEBUG: Stopped AI Aircraft > 300s, now removing");
+														numremoved++;
+														stoppedAircraft.Remove(a);
+														
+														string reason = "DEPENDS_MainMission_AI_Stopped5mins";
+														
+														Timeout(numremoved * 10, () => { 
+														//a.Destroy(); 
+														movebombtargetmission.safeDestroyOldAircraft( a as AiAircraft, reason, true);
+														}); //Destroy the a/c, but space it out a bit so there is no giant stutter
+													}
+												
+											  }											
+											  
+										  }
+										}
 
 
-                                }
-                            }
+									}
+								}
 
 
-                    }
-            }
+						}
+				}
 
-
-
+		}
+		catch (Exception ex) { Console.WriteLine("RemoveOffMapAIAircraft() ERROR: " + ex.ToString()); }
         // if (DEBUG && numremoved >= 1) DebugAndLog (numremoved.ToString() + " AI Aircraft were off the map and de-spawned");
     } //method removeoffmapaiaircraft
 

@@ -1465,7 +1465,8 @@ public class MoveBombTargetMission : AMission
 
                         }
                     }
-
+					
+					if ((wp as AiAirWayPoint).Action ==AiAirWayPointType.LANDING) 	hasLanding = true;								
                     changeLimit changeL = new changeLimit();
                     if (changeLimits.ContainsKey((wp as AiAirWayPoint).Action))
                     {
@@ -1505,7 +1506,7 @@ public class MoveBombTargetMission : AMission
                                 */
                             case AiAirWayPointType.GATTACK_TARG:
                                 //Console.WriteLine( "Updating, current TASK: {0}", new object[] { airGroup.getTask() });
-                                //Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
+                                Console.WriteLine( "Target before: {0}", new object[] { (wp as AiAirWayPoint).Action });
 								noAttacks = false;
                                 pos = wp.P;
                                 if (newAirport != null && newAirportPosition.HasValue)
@@ -1618,9 +1619,7 @@ public class MoveBombTargetMission : AMission
                                 update = true;
                                 break;
 								
-							case AiAirWayPointType.LANDING:
-								hasLanding = true;
-								break;
+
 								
                             case AiAirWayPointType.GATTACK_POINT:
                             case AiAirWayPointType.HUNTING:
@@ -1856,6 +1855,19 @@ public class MoveBombTargetMission : AMission
 			if (!hasLanding) {
 				Console.WriteLine( "MBT: The plane's route had no LANDING anywhere so we will update it & fixwaypoints.");
 				update = true;
+				AiAirport ap = CoverCalcs.GetRandomAirfieldNear(GamePlay, lastWP.P, 32000);
+                        if (ap != null)
+                        {
+                            Point3d landPos = ap.Pos();
+                            
+							landPos.x +=50;
+                            landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
+                            AiAirWayPointType landaawpt = AiAirWayPointType.LANDING;
+                            AiAirWayPoint landaaWP = new AiAirWayPoint(ref landPos, 50); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
+                            landaaWP.Action = landaawpt;
+                            NewWaypoints.Add(landaaWP); //do add
+                        }
+				
 			} else if (noAttacks) {
 				 Console.WriteLine( "MBT: The plane's route had no ATTACKS so we are leaving it unchanged");
 				 return false;
@@ -1905,6 +1917,7 @@ public class MoveBombTargetMission : AMission
         if (dist.Item1 == -1 || (double)(dist.Item1) > dist_m) return false; //no players nearby, at least 10km away  OR the airGroup doesn't even exist, whatever
         return true; //Players nearby
     }
+	
 
     //So setting AI airgroups to LANDING is our clue that we are free to despawn them at any time. We first check there
     //are no live players nearby to see the despawn
@@ -1937,7 +1950,7 @@ public class MoveBombTargetMission : AMission
 
             //if (task != AiAirGroupTask.LANDING || !landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, accepting EITHER task landing OR LANDING is current Waypoint action caused trouble (because waypoing "landing" can be set many hundreds of miles from the actual landing spot), so we require BOTH of these set to LANDING before actually disapparating them.
             if (!landingWaypoint) return; //Task LANDING is our clue these are ready to get out of here, loosening this up to try to get rid of useless/finished airgroups more quickly.
-            if (playersNearby(airGroup, 14000)) return; //Don't dis-apparate them if there are any players nearby to see it happen
+            //if (playersNearby(airGroup, 14000)) return; //Don't dis-apparate them if there are any players nearby to see it happen. Checking this in safeDestroy routine now.
 
             double airportDistance_m = DistanceToNearestAirport(airGroup as AiActor);
 
@@ -1962,43 +1975,52 @@ public class MoveBombTargetMission : AMission
         catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
     }
 	
-	public void safeDestroyOldAircraft(AiAircraft aircraft, string reason = "", bool force = false, int count = 0, string name = "", string type = "") {			
+	Dictionary<AiAircraft,DateTime> safeDestroyOldAircraft_list = new Dictionary<AiAircraft,DateTime> ();
+	
+	public void safeDestroyOldAircraft (AiAircraft aircraft, string reason = "", bool force = false, int count = 0, string name = "", string type = "", bool recursive = false) {			
 		try {	
+			bool newPlane = false;
 			Console.WriteLine("MoveBomb SDOA: 1");
-			if (count < 10 && !Calcs.isOffMap(aircraft.Pos())) {
-                double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0); // Z_AltitudeAGL is in meters
-				Console.WriteLine("MoveBomb SDOA: 2");
-                if (!force && altAGL_m > 800) { 
-					Timeout(30.0, () => {safeDestroyOldAircraft(aircraft, reason, force,  count + 1, name, type);}); //only dis-apparate if they are somewhat close to ground and "landing".  They hover at about 2000 ft AGL while waiting to land
-					return;
-				}
-                //Console.WriteLine("MoveBomb: Destroying AI group item with mission complete & task&waypoint LANDING: " + actor.Name() + " " + aircraft.TypedName() + " ");
-                //if (MoveBombCalcs.CalculatePointDistance(aircraft.Pos(), pos) > 6000) continue; //don't disapparate if it's too far from the main group.  It MIGHT be near a person or whatever
-				Console.WriteLine("MoveBomb SDOA: 3");
-				if (playersNearby(aircraft, 14000) ||  !isAiControlledPlane2(aircraft)) {
-					Timeout(30.0, () => {safeDestroyOldAircraft(aircraft, reason, force,  count + 1, name, type);});					//if this happens to be far from its group, could be near a player; we'll check
-					return;
-				}
-				Console.WriteLine("MoveBomb SDOA: 4");
-			} else {
-				Console.WriteLine("MoveBomb SDOA: 5");
-				if (!force && !Calcs.isOffMap(aircraft.Pos())) return;
-				Console.WriteLine("MoveBomb SDOA: 6");
+			mainmission.AircraftDestroyedList[aircraft] = reason; //add this early in case a/c is somehow .destroy() before we get to it
+			
+			if (!safeDestroyOldAircraft_list.ContainsKey(aircraft)) {
+				newPlane = true;
+				safeDestroyOldAircraft_list[aircraft] = DateTime.UtcNow;
+				Console.WriteLine("safeDestroyOldAircraft: New aircraft to destroy: {0} {1} {2})",name, type, reason);
+			} else if (!recursive) {
+				Console.WriteLine("safeDestroyOldAircraft: Aircraft to destroy but already in queue, dropping: {0} {1} {2}",name, type, reason);
+				return;				
 			}
+			
+			double timeDiff_s = DateTime.UtcNow.Subtract(safeDestroyOldAircraft_list[aircraft]).TotalSeconds;
+			
+			Console.WriteLine("MoveBomb SDOA: 2 Time waiting {0}s", timeDiff_s);
+			if ((playersNearby(aircraft, 10000) && !force) ||  !isAiControlledPlane2(aircraft)) {
+					Timeout(30.0, () => {safeDestroyOldAircraft(aircraft, reason, force,  count + 1, name, type, recursive: true);});					//if this happens to be far from its group, could be near a player; we'll check
+					Console.WriteLine("MoveBomb SDOA: 3 - Not .destroying {0} {1} because players nearby or not AI controlled. Time waiting {2}s. {3} recursive calls.", name, type, count, timeDiff_s);
+					return;
+			}
+			
+			if (aircraft == null) { 
+				Console.WriteLine("MoveBom SDOA: ERROR: Aircraft is NULL - this should never happen! {0} {1}", name, type);
+				return;
+			}
+
 				
-			if (aircraft != null && isAiControlledPlane2(aircraft))  {
-				Console.WriteLine("MoveBomb SDOA: 6");
-				mainmission.AircraftDestroyedList[aircraft] = reason;
-				Console.WriteLine("MoveBomb SDOA: 7");			
-				Timeout(1, ()=> aircraft.Destroy()); 
-				Console.WriteLine("MoveBomb SDOA: 8");
-				Console.WriteLine("MoveBomb-safeDestroyOldAircraft: Just destroyed {0} {1}  ", name, type );				
-				Console.WriteLine("MoveBomb SDOA: 9");
+
+			Console.WriteLine("MoveBomb SDOA: 6");
+
+			mainmission.AircraftDestroyedList[aircraft] = reason;
+			Console.WriteLine("MoveBomb SDOA: 7");			
+			Timeout(1, ()=> aircraft.Destroy()); 
+			Console.WriteLine("MoveBomb SDOA: 8");
+			Console.WriteLine("MoveBomb-safeDestroyOldAircraft: Just destroyed {0} {1} after waiting {2}s  ", name, type, timeDiff_s );				
+			Console.WriteLine("MoveBomb SDOA: 9");
 					
 					
-			}
+			
 		}
-        catch (Exception ex) { Console.WriteLine("MoveBomb Check LANDING ERROR: " + ex.ToString()); }
+        catch (Exception ex) { Console.WriteLine("MoveBomb Check SDOA LANDING ERROR: " + ex.ToString()); }
 	}
 	
     public void printAirgroupNames(AiAirGroup[] airGroups)

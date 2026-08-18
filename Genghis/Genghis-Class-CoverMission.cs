@@ -95,6 +95,7 @@ public class CoverMission : AMission, ICoverMission
 {
     public IMainMission TWCMainMission;
     public Mission mainmission;
+	public SupplyMission supplymission;
     public ISupplyMission TWCSupplyMission;
     public IStatsMission TWCStatsMission;
     public IStbStatRecorder TWCStbStatRecorder;
@@ -156,6 +157,7 @@ public class CoverMission : AMission, ICoverMission
 
             Console.WriteLine("-cover.cs starting . . . ");
             mainmission = msn; //getting instance of mainmission via constructor
+			//Timeout(10, () => {supplymission = mainmission.supplymission;}); //if supplymission is initialized a bit after statsmission then this would be null, so wait a bit...
             TWCMainMission = TWCComms.Communicator.Instance.Main;
             TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission                        
 
@@ -197,6 +199,7 @@ public class CoverMission : AMission, ICoverMission
             base.Init(b, missionNumber);
 
             MissionNumberListener = -1;
+			supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
             Console.WriteLine("-cover.cs successfully inited");
 
         }
@@ -700,7 +703,7 @@ public class CoverMission : AMission, ICoverMission
         if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
             Console.WriteLine("OnAircraftLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
+            if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason: "SAFE_cover_LandedAtAirport");
             numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
             coverAircraftActorsCheckedOut.Remove(actor);
         }
@@ -714,7 +717,7 @@ public class CoverMission : AMission, ICoverMission
         if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
             Console.WriteLine("OnAircraftCrashLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                          //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
             coverAircraftActorsCheckedOut.Remove(actor);
         }
@@ -727,7 +730,7 @@ public class CoverMission : AMission, ICoverMission
         if (coverAircraftActorsCheckedOut.ContainsKey(actor))
         {
             Console.WriteLine("OnAircraftKilled: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
-            if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+            if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftKilled"); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                          //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
             coverAircraftActorsCheckedOut.Remove(actor);
         }
@@ -755,6 +758,9 @@ public class CoverMission : AMission, ICoverMission
                 Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was checked out by Cover");
 
                 AiAircraft aircraft = actor as AiAircraft;
+				
+				string reason = "";
+				if (mainmission.AircraftDestroyedList.ContainsKey(aircraft)) reason = mainmission.AircraftDestroyedList[aircraft];
 
                 if (aircraft != null)
                 {
@@ -787,7 +793,7 @@ public class CoverMission : AMission, ICoverMission
 
                     )
                     {
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //valid return; the final true is softexit & forces return of a/c even though it is still flying.
+                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_CoverAircraftOffMap: "+reason); //valid return; the final true is softexit & forces return of a/c even though it is still flying.
                         numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                         coverAircraftActorsCheckedOut.Remove(actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because left map OK.");
@@ -795,7 +801,7 @@ public class CoverMission : AMission, ICoverMission
                     }
                     else if (Z_AltitudeAGL < 5 && GamePlay != null && GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // ON GROUND & IN THE WATER = DEAD    
                     {
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1,reason: "DEAD_cover_Landed/CrashedOnWater: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died on water.");
@@ -804,7 +810,7 @@ public class CoverMission : AMission, ICoverMission
 
                     else if (Z_AltitudeAGL < 5 && GamePlay != null && GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) != aircraft.Army())    // landed in enemy territory
                     {
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftLanded/CrashedOnEnemyTerritory: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died in enemy territory.");
@@ -812,7 +818,7 @@ public class CoverMission : AMission, ICoverMission
                     }
                     else if (Z_AltitudeAGL < 5 && Stb_distanceToNearestFriendlyAirport(actor).Item1 > 3500)  // crash landed in friendly or neutral territory, on land, not w/i 2000 meters of an airport
                     {
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
+                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftLanded/CrashedAwayFromAirport: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
                         coverAircraftActorsCheckedOut.Remove(actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died away from airport.");
@@ -837,7 +843,7 @@ public class CoverMission : AMission, ICoverMission
                         if (task != AiAirGroupTask.LANDING && !landingWaypoint) return;
 
 
-                        if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
+                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_LandedOrDisapparatedNearAirport"); //true is softexit & forces return of plane even though it is in the air etc.
                         numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                         coverAircraftActorsCheckedOut.Remove(actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because disapparated during or after LANDING.");
@@ -1054,9 +1060,9 @@ public class CoverMission : AMission, ICoverMission
                 //Console.WriteLine("Cover: Setting cover aircraft currently available for {0} {1} {2}", army, acName, CoverAircraftInitiallyAvailable[army][acName]);
                 if (CoverAircraftInitiallyAvailable[army][acName])
                 {
-                    if (TWCSupplyMission != null)
+                    if (supplymission != null)
                     {
-                        int numRemaining = TWCSupplyMission.AircraftStockRemaining(acName, (int)army);
+                        int numRemaining = supplymission.AircraftStockRemaining(acName, (int)army);
                         //Console.WriteLine("Cover: Setting cover aircraft currently available for {0} {1} {2} {3}", army, acName, CoverAircraftInitiallyAvailable[army][acName], numRemaining);
                         if (numRemaining > minimumAircraftRequiredForCoverDuty) CoverAircraftCurrentlyAvailable[army][acName] = numRemaining;
 
@@ -1920,17 +1926,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
 
             //aircraftCheckedOutInfo { get; set; } //Info about each a/c that is checked out <Army, Pilot name(s), Aircraft Type, time checked out>
-            if (TWCSupplyMission == null) return 0;
+            if (supplymission == null) return 0;
             if (player == null || player.Name() == null) return 0;
             string playerName = player.Name();
             int numret = 0;
-            HashSet<AiActor> actorsNotCheckedIn = new HashSet<AiActor>(TWCSupplyMission.aircraftCheckedOut);
+            HashSet<AiActor> actorsNotCheckedIn = new HashSet<AiActor>(supplymission.aircraftCheckedOut);
 
-            actorsNotCheckedIn.ExceptWith(TWCSupplyMission.aircraftCheckedIn); //remove all a/c that have been checked in
+            actorsNotCheckedIn.ExceptWith(supplymission.aircraftCheckedIn); //remove all a/c that have been checked in
 
             foreach (AiActor actor in actorsNotCheckedIn) //Can't use aircraftCheckedOutInfo.Keys bec it includes ALL ac, even those already checked in
             {
-                Tuple<int, string, string, DateTime> item = TWCSupplyMission.aircraftCheckedOutInfo[actor];
+                Tuple<int, string, string, DateTime> item = supplymission.aircraftCheckedOutInfo[actor];
                 //Console.WriteLine("Cover, numberAircraftCurrentlyCheckedOutFromSupply, item: {0} {1} {2}", item.Item2, item.Item3, item.Item4);
                 //if (!item.Item2.Contains(playerName)) continue;     //playernames item could include stuff like TWC_Flug - TWC_Fatal_Error - TWC_Fark if there are multiple ppl in the a/c // but for this purpose we're only counting a/c against them if they are the only/primary piloft.  Thinking about bombers without multiple positions, etc
                 if (item.Item2 != playerName) continue;
@@ -1972,7 +1978,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (coverAircraftActorsCheckedOut.ContainsKey(actor))
                 {
                     if (player != null & player.Name() != null) Console.WriteLine("PlayerCheck, actor doesn't exist: " + player.Name());
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
+                    if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason:"SAFE_cover_Player/LeaderIsGone-ReturningCoverAircraft"
+				);
                     numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                     coverAircraftActorsCheckedOut.Remove(actor);
                 }
@@ -2039,7 +2046,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             if (actor != null)
             {
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor);
+                if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason:"SAFE_cover_AircraftReturned");
                 numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
                 coverAircraftActorsCheckedOut.Remove(actor);
             }
@@ -3425,7 +3432,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                     continue;
                                 }
                                     bool supplyLimitReached = false;
-                                if (TWCSupplyMission != null) supplyLimitReached = TWCSupplyMission.IsLimitReached(newActor);
+                                if (supplymission != null) supplyLimitReached = supplymission.IsLimitReached(newActor);
                                 if (supplyLimitReached && !isOnRepairMission(player))
                                 {
 
@@ -3437,8 +3444,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 itemsmade++;
                                 aircrafttype = CoverCalcs.ParseTypeName((a as AiCart).InternalTypeName());
                                 GamePlay.gpLogServer(new Player[] { player }, "Cover assigned: " + aircrafttype + " (" + (a as AiActor).Name() + ")", new object[] { });
-                                //if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceEnter(player, (a as AiActor));
-                                if (TWCSupplyMission != null && !isOnRepairMission(player)) TWCSupplyMission.SupplyAICheckout(player, a as AiActor); //we're saying that repair mission a/c come from a different supply, not our regular limited supply
+                                //if (supplymission != null) supplymission.SupplyOnPlaceEnter(player, (a as AiActor));
+                                if (supplymission != null && !isOnRepairMission(player)) supplymission.SupplyAICheckout(player, a as AiActor); //we're saying that repair mission a/c come from a different supply, not our regular limited supply
                                 coverAircraftActorsCheckedOut.Add((a as AiActor), player);
 
                                 int nac = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
@@ -3716,7 +3723,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             bool aircraftChangeDisband = false;
             if (((!isBomberAllowedCover(player) && !isFighterAllowedCover(player)) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player)) && !bombersContinuingFinalRun)
             {
-                // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = TWCSupplyMission.aircraftCheckedOutInfo[actor];
+                // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = supplymission.aircraftCheckedOutInfo[actor];
                 //This could be made tighter . . . right now they can still jump in a bomber, grab cover, then switch to fighter-bomber to fly them.
                 if (isPlayerInPlane(player))
                 {
@@ -5572,7 +5579,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 foreach (AiAircraft a in airGroup.GetItems())
                 {
 
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
+                    supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true, reason: "SAFE_cover_CoverAircraftReturnedOverFriendlyTerritory"); //true is softexit & forces return of plane even though it is in the air etc.
                     AiActor actor = a as AiActor;
                     if (actor == null) continue;
 
@@ -5612,7 +5619,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (airGroup != null) foreach (AiAircraft a in airGroup.GetItems())
             {
 
-                if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true); //true is softexit & forces return of plane even though it is in the air etc.
+                if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[a as AiActor], a as AiActor, 0, true, reason:"SAFE_cover_CoverAircraftReturnedSafely(butError)"); //true is softexit & forces return of plane even though it is in the air etc.
                 AiActor actor = a as AiActor;
                 if (actor == null) continue;
 
@@ -6861,7 +6868,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
                     EscortMakeLand(a.AirGroup(), null); //fixing bug - cover aircraft flew off map & were 'returned' but they were actually still in the air & following the main a/c.                    
 
                     numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                    if (TWCSupplyMission != null) TWCSupplyMission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
+                    supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_CoverAircraftOffMap"); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
                                                                                                                                              //Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
                     Timeout(0.1, () => { coverAircraftActorsCheckedOut.Remove(actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
                 }

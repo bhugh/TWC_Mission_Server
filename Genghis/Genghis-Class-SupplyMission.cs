@@ -1433,7 +1433,7 @@ public class SupplyMission : AMission, ISupplyMission
 
             if (!aircraftCheckedOut.Contains(actor))
             {
-                Console.WriteLine("Supply: This aircraft has never been checked OUT but someone is trying to check it IN: " + cart.InternalTypeName());
+                Console.WriteLine("Supply: This aircraft has never been checked OUT but someone is trying to check it IN (common with AI aircraft): " + cart.InternalTypeName());
                 return;
             }
 
@@ -1753,7 +1753,9 @@ private int NumberPlayerInActor(AiActor actor)
 	
 	//This version required for ISupplyMission interface
 	public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0) {
-		SupplyOnPlaceLeave(player, actor, placeIndex, softExit, forceDamage, reason: ""	);
+		try {
+			SupplyOnPlaceLeave(player, actor, placeIndex, softExit, forceDamage, reason: ""	);
+		} catch (Exception ex) { Console.WriteLine("SupplyOnPlaceLeave1 ERROR: " + ex.ToString()); }
 	}
 
     public void SupplyOnPlaceLeave(Player player, AiActor actor, int placeIndex = 0, bool softExit = false, double forceDamage = 0, string reason = "")
@@ -1780,13 +1782,23 @@ private int NumberPlayerInActor(AiActor actor)
                 return;
             }
 
+			
+	
 
             
-            {
-			Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName() + " {0} ", reason);
+          
+		
+			DisplayNumberOfAvailablePlanes(actor);
+			AiAircraft aircraft = actor as AiAircraft;
 			
-                DisplayNumberOfAvailablePlanes(actor);
-                AiAircraft aircraft = actor as AiAircraft;
+			string destroyReason = "";
+			
+			if(mainmission.AircraftDestroyedList.ContainsKey(aircraft))  {
+				destroyReason = mainmission.AircraftDestroyedList[aircraft];				
+			}
+			Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName() + " {0} destroyReason: {1} ", reason, destroyReason);
+
+
 
                 //So, sometimes we get an "all clear" onplaceleave but then a moment or two later realize, oh yeah the person actually died a horrible death.
                 //-stats.cs figures things like that out and sends us a message.  We want to allow this "takeback" of the Check-in, but obviously
@@ -1824,7 +1836,8 @@ private int NumberPlayerInActor(AiActor actor)
                 {
                     if (forceDamage > 0 && forceDamage < 1)
                     {
-                        Console.WriteLine("SupOPL: Check-in but with damage");
+                        Console.WriteLine("SupOPL: Check-in but with damage.  Reason: {0} destroyReason: {1}", reason, destroyReason);
+						
                         double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage); //-1 if this damage already added
 						
 						if (recoverOffAirfield) {
@@ -1865,14 +1878,35 @@ private int NumberPlayerInActor(AiActor actor)
                     else
                     {
 
-                        Console.WriteLine("SupOPL: Check-in, no damage");
+                        Console.WriteLine("SupOPL: Check-in, no damage.  Reason: {0} destroyReason: {1}", reason, destroyReason);
                         CheckActorIn(actor, player);
                     }
                 }
-                else if (softExit) CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
-				else {
-					Console.WriteLine("Supply: Actor .destroyed and no damage reported; presumably because MoveBomb has .destroyed it in lieu of landing, so returning to supply. However other reasons are possible so we need to fix this maybe.)");
-					CheckActorIn(actor, player);
+                else if (softExit) {
+					Console.WriteLine("SupOPL: Check-in, softExit, checking aircraft in. Reason: {0} destroyReason: {1}", reason, destroyReason);
+					CheckActorIn(actor, player); //softExit is ie when the mission ends.  In that case we don't penalize players if they are not back at airport, in enemy territory, high in the air, etc.
+				} else {
+					
+					Console.WriteLine("Supply: Actor .destroyed, 100% damage reported. Will destroy unless 'reasons' indicate otherwise. Reason: {0} destroyReason: {1}", reason, destroyReason);
+					
+					if (reason.ToLower().StartsWith ("dead")) {
+						//don't check-in
+					} else if (reason.ToLower().StartsWith ("safe")) {
+						CheckActorIn(actor, player);
+					} else { //"DEPENDS" or don't know reason
+					
+						if (destroyReason.ToLower().StartsWith ("dead")) {
+
+						//don't check-in
+						} else if (destroyReason.ToLower().StartsWith ("safe")) {
+							CheckActorIn(actor, player);
+							
+						} else {
+							
+						}
+					}
+					
+					
 				}
 
                 //DisplayNumberOfAvailablePlanes(actor);
@@ -1887,8 +1921,9 @@ private int NumberPlayerInActor(AiActor actor)
                                 (actor as AiCart).Destroy();
                         });
                 */
-            }
-        } catch (Exception ex) { Console.WriteLine("SupplyOnPlaceLeave: " + ex.ToString()); }
+            
+        } 
+		catch (Exception ex) { Console.WriteLine("SupplyOnPlaceLeave ERROR: " + ex.ToString()); }
     }
 
 

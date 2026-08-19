@@ -740,11 +740,12 @@ public class SupplyMission : AMission, ISupplyMission
     }
 
     //stores the aircraft in the Damaged list & returns the hours to repair
-    public double AddAircraftToDamagedSupply(Player player, AiActor actor, double forceDamage = 0)
+    public double AddAircraftToDamagedSupply(Player player, AiActor actor, double forceDamage = 0, bool offAirfield = false, double nearestAirfield_distance_m = 0)
     {
         if (actor == null || actor as AiAircraft == null) return 0;
         DateTime timeDamaged = DateTime.UtcNow;
         double hoursToRepair = forceDamage * 96;
+		if (offAirfield) hoursToRepair += 24 * 3 + nearestAirfield_distance_m/10000*24; //several days say to retrieve & transport to repair place
         DateTime timeRepaired = timeDamaged.AddHours(hoursToRepair);
         if (damagedAircraft.ContainsKey(actor) && damagedAircraft[actor].Item3 <= forceDamage + 0.01) return -1; //redundant entry, maybe because 2 positions reporting same aircraft.  However if it is greater damage this time, we'll take it!                
 
@@ -1719,9 +1720,16 @@ private int NumberPlayerInActor(AiActor actor)
         if (actor == null || GamePlay == null ) return false;
         if (!GamePlay.gpFrontExist()) return false;
 
-        if (GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army())
-            return true;
-        return false;
+        return GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) != actor.Army();
+            
+    }
+	
+	private bool OverFriendlyTerritory(AiActor actor)
+    {
+        if (actor == null || GamePlay == null ) return false;
+        if (!GamePlay.gpFrontExist()) return false;
+
+        return GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y) == actor.Army();
     }
 
 
@@ -1796,8 +1804,12 @@ private int NumberPlayerInActor(AiActor actor)
 			if(mainmission.AircraftDestroyedList.ContainsKey(aircraft))  {
 				destroyReason = mainmission.AircraftDestroyedList[aircraft];				
 			}
+			
+			
+			
 			Console.WriteLine("Supply: PlaceLeave " + playername + " " + (actor as AiCart).InternalTypeName() + " {0} destroyReason: {1} ", reason, destroyReason);
 
+			
 
 
                 //So, sometimes we get an "all clear" onplaceleave but then a moment or two later realize, oh yeah the person actually died a horrible death.
@@ -1820,28 +1832,33 @@ private int NumberPlayerInActor(AiActor actor)
                 double altAGL_m_alt = Calcs.AltitudeAGL_m(actor);
 				
 				bool onWater = GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER ;
+				bool onEnemy = OverEnemyTerritory(actor);
+				bool onFriendly = OverFriendlyTerritory(actor);
 				double airport_distance = 3000;
 				if (onWater) airport_distance = 7000;
 
-                Console.WriteLine("Supply: NumPlayerInPlane: {0} AltAGL: {1:N2} AltAGL(alt): {5:N2} LandedonAirfield: {2} OverEnemyTerritory: {3} Damage: {4} OnWater: {6} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), airport_distance), OverEnemyTerritory(actor),
+                Console.WriteLine("Supply: NumPlayerInPlane: {0} AltAGL: {1:N2} AltAGL(alt): {6:N2} LandedonAirfield: {2} OverEnemyTerritory: {3} {4} Damage: {5} OnWater: {7} ", NumberPlayerInActor(actor), Z_AltitudeAGL, LandedOnAirfield(actor, GetNearestAirfield(actor), airport_distance), onEnemy, onFriendly,
                     forceDamage, altAGL_m_alt, onWater);
 					
-				bool loa = LandedOnAirfield(actor, GetNearestAirfield(actor), 3000.0);
+				AiAirport nearestAirfield = GetNearestAirfield(actor);	
+				double nearestAirfield_distance_m = mainmission.Stb_distanceToNearestAirport(actor);
+					
+				bool loa = LandedOnAirfield(actor, nearestAirfield, 3000.0);
 				bool recoverOffAirfield = false;
-				if (!loa && (new Random().Next() > forceDamage)) recoverOffAirfield = true; 
+				if (!loa && !onWater && onFriendly && (new Random().Next() > forceDamage)) recoverOffAirfield = true; 
 
                 if (NumberPlayerInActor(actor) == 0 && Z_AltitudeAGL < 15 
-					&& (loa || recoverOffAirfield) && !OverEnemyTerritory(actor)
+					&& (loa || recoverOffAirfield) && !onEnemy
                     && forceDamage < 1 /*&& !IsActorDamaged(actor)*/)
                 {
                     if (forceDamage > 0 && forceDamage < 1)
                     {
                         Console.WriteLine("SupOPL: Check-in but with damage.  Reason: {0} destroyReason: {1}", reason, destroyReason);
 						
-                        double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage); //-1 if this damage already added
+                        double hoursToRepair = AddAircraftToDamagedSupply(player, actor, forceDamage, recoverOffAirfield, nearestAirfield_distance_m); //-1 if this damage already added
 						
 						if (recoverOffAirfield) {
-							(GamePlay as GameDef).gameInterface.CmdExec("chat + Good luck! A Maintenance Unit was able to recover your aircraft for repair. TO " + player.Name());
+							(GamePlay as GameDef).gameInterface.CmdExec("chat >>>Astonishing luck! A Maintenance Unit was able to recover your aircraft for repair. TO " + player.Name());
 						}								
 						
                         AiCart cart = actor as AiCart;
@@ -1850,6 +1867,7 @@ private int NumberPlayerInActor(AiActor actor)
 							
                             string line1 = ParseTypeName(cart.InternalTypeName()) + " returned damaged; ";
                             string line2 = hoursToRepair.ToString("F1") + " hours required for repair and re-stock";
+							if (recoverOffAirfield) line2 = hoursToRepair.ToString("F1") + " hours required for recovery, transport, repair and re-stock";
 
                             //Stb_Chat(line, player); //Sending this to stb_chat insures the player will see it on the flag screen (usual place they'll be after exiting an a/c); also it will be broadcast to all players...
                             //GamePlay.gpLogServer(new Player[] { player }, line, null);

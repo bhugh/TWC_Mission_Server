@@ -9319,7 +9319,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                       if (contributingPlayers.ContainsKey(ds.initiator.Player)) contributingPlayers[ds.initiator.Player] += ds.score;
                       else contributingPlayers[ds.initiator.Player] = ds.score;
                   }
-                  //stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
+                  if (mainmission.ON_TESTSERVER) stb_StatRecorder.StbSr_WriteLine("Actor {0} killed; Damager {1} {2} {3} {4} {5} | {6} {7} {8}", shortName, iName, ds.score, ds.time, typename, armyI, armyV, actor.Name(), ds.initiator.Tool.Type);
               }
               //if (totalscore == 0) totalscore = 1; //putting 1 instead of .0001 to avoid strange multipliers in edge cases, since we later divide by this number, causing problems, potentially, if it is very small
               if (totalscore == 0) totalscore = 0.00001; //avoid division by zero errors.  If totalscore==0 then the individual scores must all be 0 also, so it doesn't really matter what its value is, but we don't want it to be zero since we divide by totalscore later . . . 
@@ -9974,6 +9974,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             //Console.WriteLine("OSK_dw 6");
             if (player != null) Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
 
+			if (mainmission.ON_TESTSERVER) Console.WriteLine(msg);
             //Stb_LogError(msg);
             //if (willReportDead) 
             Console.WriteLine(msg);

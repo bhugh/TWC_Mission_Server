@@ -159,7 +159,9 @@ public class CoverMission : AMission, ICoverMission
             mainmission = msn; //getting instance of mainmission via constructor
 			//Timeout(10, () => {supplymission = mainmission.supplymission;}); //if supplymission is initialized a bit after statsmission then this would be null, so wait a bit...
             TWCMainMission = TWCComms.Communicator.Instance.Main;
-            TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission                        
+            TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission     
+
+			CheckSplits_Timer_init();
 
             //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
             ran = new Random();
@@ -841,13 +843,23 @@ public class CoverMission : AMission, ICoverMission
                         if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay && (CurrentWaypoints[currWay] as AiAirWayPoint).Action == AiAirWayPointType.LANDING) landingWaypoint = true;
 
                         if (task != AiAirGroupTask.LANDING && !landingWaypoint) return;
+						
+						
+						if (reason.ToLower().StartsWith("dead")) {
+							if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 1, false, reason: reason); //true is softexit & forces return of plane even though it is in the air etc.
+							//numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
+							coverAircraftActorsCheckedOut.Remove(actor);
+							
+						} else {
 
 
-                        if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_LandedOrDisapparatedNearAirport"); //true is softexit & forces return of plane even though it is in the air etc.
-                        numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                        coverAircraftActorsCheckedOut.Remove(actor);
-                        //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because disapparated during or after LANDING.");
+							if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_LandedOrDisapparatedNearAirport"); //true is softexit & forces return of plane even though it is in the air etc.
+							numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
+							coverAircraftActorsCheckedOut.Remove(actor);
+							//Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because disapparated during or after LANDING.");
+						}
                     }
+					
                     else
                     {
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " didn't match anything, no action taken.");
@@ -2128,6 +2140,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (msg.StartsWith("<lactors") && (admin_privilege_level(player) > 1))
         {
             Console.WriteLine("Actor list - starting...");
+			mainmission.twcLogServer(new Player[] { player }, "Actor list - starting...");
             Point3d p = new Point3d(284703, 125257, 0);
             double r = 9000;
 
@@ -2142,7 +2155,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(allStaticActors, p, r).ToList()); //1000?
             }
             //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
-            foreach (AiActor act in closeStaticActors) Console.WriteLine("Actor: {0} {1}", act.Name(), (act as AiCart).InternalTypeName());
+            foreach (AiActor act in closeStaticActors) {
+				mainmission.twcLogServer(new Player[] { player }, string.Format("Actor: {0} {1} {5} {2:N0} {3:N0} army: {4}", act.Name(), (act as AiCart).InternalTypeName(), act.Pos().x, act.Pos().y, act.Army() , Calcs.correctedSectorNameDoubleKeypad(mainmission, act.Pos())));
+				//Console.WriteLine("Actor: {0} {1}", act.Name(), (act as AiCart).InternalTypeName());
+			}
 
         }
 
@@ -3629,7 +3645,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //In this case the name of the motherGroup is split off from is in airGroup.motherGroup()
             //This little exercise ensures that we still keep control off the aircraft, and they continue to support & cover the main aircraft, even if their airGroups happen to split up.
             //Not exactly sure how often this happens or when !?
-            if (airGroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airGroup.motherGroup()))
+            if (airGroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airGroup.motherGroup()) && !coverAircraftAirGroupsActive.ContainsKey(airGroup))
             {
                 Console.WriteLine("COVER: Airgroup has a mothergroup, and the mothergroup is one of the <cover airgroups, so we add the daughter group to that pilot's controlled <cover groups");
                 //If the airGroup is a split-off, and if it hasn't already transferred the 
@@ -3793,7 +3809,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //aawpt = AiAirWayPointType.GATTACK_POINT;
                 AltDiffPassed_m = AltDiffBomber_m;
                 AltDiffPassed_range_m = AltDiffBomber_range_m;
-                if (player != null && (isFighterAllowedCover(player) || Calcs.isStrikeAC(player) && !isDiveBomber(player)))
+				
+				//If a fighter a/c then it is escorting e.g. bombers & they stay below the player (escorting a/c)
+				//But if it is a strike AC flying with other strike AC then no, it is more like flying
+				//with a bomber formation @ the same altitude
+				//| ((isPlayerStrikeAC && !isDiveBomber(player)) && !isStrikeAC))
+                if (player != null && isFighterAllowedCover(player)  && !(isPlayerStrikeAC && isStrikeAC))
                 {
                     AltDiffPassed_m = AltDiffPlayerEscort_m;
                     AltDiffPassed_range_m = AltDiffPlayerEscort_range_m;
@@ -3895,6 +3916,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirGroup playerAirGroup = (player.Place() as AiAircraft).AirGroup();
 
             //Bombers will somewhat act as escorts and attack things, but not to the degree fighters will (which .ESCORT makes them do)
+			//
+			// Also, .ESCORT makes planes IGNORE THEIR GIVEN WAYPOINTS and just follow the escorted
+			//aircraft wherever it goes (presumably unless engaged with enemies) and generally follow
+			//pre-programmed ESCORT logic and not just fly in formation as usually done for e.g. bombers
+			//By contrast .COVER will defend the main ac but ALSO follows the given pre-programmed path
+			//
             //Also, bombers will jettison their bombs if they are .ESCORT and must move to defend
             //
             //with .AATACK_FIGHTERS they are pretty aggressive & attack things, which is good in a way
@@ -3964,15 +3991,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 AltDiffPassed_range_m = 4;
                 //aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //aawpt = AiAirWayPointType.COVER seems to work better in general but the cover aircraft stay up above the a/c they are covering and thus are seen by radar even if the main a/c is below radar. Trying AATACK_FIGHTERS to see if they will stay below radar better.
 
-                if ((heavyBomber && isBomberArmed(airGroup)) || !isOnRepairMission(player)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without
-                else aawpt = AiAirWayPointType.ESCORT;
-            }
+                if ((heavyBomber && isBomberArmed(airGroup)) || !isOnRepairMission(player) || (isPlayerStrikeAC && isStrikeAC)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without
+                else aawpt = AiAirWayPointType.COVER;
+            } else if (!heavyBomber && !isBomberArmed(airGroup) && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
 
             //Console.WriteLine("5ChangeGoalTarget: {0} hasBombs: {1} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), isBomberArmed(airGroup));
             //for just plain fighters we want .escort to be the default
             //it keeps getting switched to something else for some reason?
 			//switching ju-87 off of .escort
-            if (!heavyBomber && !isBomberArmed(airGroup) && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
+
             {
                 aawpt = AiAirWayPointType.ESCORT;
             }
@@ -3997,6 +4024,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //2021/07, we switched to .ESCORT here & the cove r a/c seemed to not follow too well. So trying .FOLLOW again
                 aawpt = AiAirWayPointType.FOLLOW; //SEtting to Escort seems to make them drop their bombs?  Maybe?
                                                   //aawpt = AiAirWayPointType.ESCORT; //SEtting to Escort seems to make them drop their bombs?  Maybe?
+				tasktarget = playerAirGroup;								  
 
                 //2021/07 - also we tried setting the task below, the a/c are not behaving, trying to remove the task
                 //and see how it goes
@@ -6329,11 +6357,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         NewWaypoints.Add(aawp3);
 
         airGroup.SetWay(NewWaypoints.ToArray());
-        /*
-        try {
-            Console.WriteLine("Escort - newwaypoints set to: #1: {0:n0} {1:n0} {2:n0} {3} {4} {5:n0} \n #2: {6:n0} {7:n0} {8:n0} {9} {10} {11:n0} \n #3: {12:n0} {13:n0} {14:n0} {15} {16} {17:n0}", new object[] { aawp33.P.x, aawp33.P.y, aawp33.P.z, (aawp33 as AiAirWayPoint).Action, (aawp33 as AiAirWayPoint).Target, (aawp33 as AiAirWayPoint).Speed, aawp2.P.x, aawp2.P.y, aawp2.P.z, (aawp2 as AiAirWayPoint).Action, (aawp2 as AiAirWayPoint).Target, (aawp2 as AiAirWayPoint).Speed, aawp3.P.x, aawp3.P.y, aawp3.P.z, (aawp3 as AiAirWayPoint).Action, (aawp3 as AiAirWayPoint).Target, (aawp3 as AiAirWayPoint).Speed });
-        } catch (Exception ex) { Console.WriteLine("EscortUpdateWaypoints console writeline ERROR: " + ex.ToString()); }
-        */
+        
+		if (mainmission.ON_TESTSERVER) {
+			try {
+				Console.WriteLine("Escort - newwaypoints set to: #1: {0:n0} {1:n0} {2:n0} {3} {4} {5:n0} \n #2: {6:n0} {7:n0} {8:n0} {9} {10} {11:n0} \n #3: {12:n0} {13:n0} {14:n0} {15} {16} {17:n0}", new object[] { aawp33.P.x, aawp33.P.y, aawp33.P.z, (aawp33 as AiAirWayPoint).Action, (aawp33 as AiAirWayPoint).Target.Name(), (aawp33 as AiAirWayPoint).Speed, aawp2.P.x, aawp2.P.y, aawp2.P.z, (aawp2 as AiAirWayPoint).Action, (aawp2 as AiAirWayPoint).Target.Name(), (aawp2 as AiAirWayPoint).Speed, aawp3.P.x, aawp3.P.y, aawp3.P.z, (aawp3 as AiAirWayPoint).Action, (aawp3 as AiAirWayPoint).Target.Name(), (aawp3 as AiAirWayPoint).Speed });
+			} catch (Exception ex) { Console.WriteLine("EscortUpdateWaypoints console writeline ERROR: " + ex.ToString()); }
+		}
+        
     }
     public Tuple<AiAirWayPoint, AiAirWayPoint, double> EscortPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000, double AltDiff_range_m = 700, bool nodupe = true)
     {
@@ -6521,11 +6551,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             //The trick of ESCORT is to set the target to the main aircraft (the player aircraft in this case)
             //Even better, make one group escort the first a/c (live pilot) and the second escort airgroup escorts the first escort ai airgroup.
-            if (!heavyBomber)
+			/*
+            if (!heavyBomber)  //should change this in the sending routine, not here...
             {
                 aawpt = AiAirWayPointType.ESCORT; //EXPERIMENTAL !! 
                 if (targetDist_m > 7000) aawpt = AiAirWayPointType.FOLLOW; //EXPERIMENTAL !! 
             }
+			*/
             aaWP.Action = aawpt;
             aaWP2.Action = aawpt;
             if ((aawpt == AiAirWayPointType.ESCORT || aawpt == AiAirWayPointType.FOLLOW) && targetAirGroup.GetItems().Length > 0)
@@ -6535,16 +6567,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
 
-            /*
-            try
-            {
-                Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " at {12:n0}/{13:n0} {14:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z });
-            } catch (Exception ex) { Console.WriteLine("Cover: EscortPosWaypoint ERROR printing to console - " + ex.ToString()); }
-            */
+            if(mainmission.ON_TESTSERVER) {
+				try
+				{
+					Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " at {12:n0}/{13:n0} {14:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z });
+				} catch (Exception ex) { Console.WriteLine("Cover: EscortPosWaypoint ERROR printing to console - " + ex.ToString()); }
+			}
+            
 
             return new Tuple<AiAirWayPoint, AiAirWayPoint, double>(aaWP, aaWP2, vel_mps);
         }
-        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb EscortPosWaypoint: " + ex.ToString()); return null; }
+        catch (Exception ex) { Console.WriteLine("Cover/MoveBomb EscortPosWaypoint: " + ex.ToString()); return null;}
     }
 
     //Instead of landing at nearest friendly airport, we send the a/c off map & find a nearby friendly airport along the way off map

@@ -7,68 +7,68 @@
   MAP Land$English_Channel_1940_Autumn
   DespawnAfterLandingTimeout 600
   BattleArea 10000 10000 360000 310000 10000
-  TIME 7.04534
-  WeatherIndex 2
-  CloudsHeight 1035
+  TIME 11.60453
+  WeatherIndex 0
+  CloudsHeight 1291
   BreezeActivity 0
   ThermalActivity 0
 [GlobalWind_0]
-  Power 1.903 -0.689 0.000
+  Power 2.346 -1.906 0.000
   BottomBound 0
   TopBound 240
   GustPower 1
   GustAngle 0
 [GlobalWind_1]
-  Power 5.070 -2.194 -0.744
-  BottomBound 218
-  TopBound 1062
+  Power 6.387 -1.324 -0.309
+  BottomBound 192
+  TopBound 1313
   GustPower 0.000
   GustAngle 0
 [GlobalWind_2]
-  Power 9.000 -4.566 -0.749
-  BottomBound 1058
-  TopBound 2423
+  Power 10.624 -3.496 0.193
+  BottomBound 1283
+  TopBound 2440
   GustPower 0.000
   GustAngle 0
 [GlobalWind_3]
-  Power 10.634 -6.240 0.158
-  BottomBound 2406
-  TopBound 3291
+  Power 11.573 -5.893 -0.600
+  BottomBound 2419
+  TopBound 3511
   GustPower 0.000
   GustAngle 0
 [GlobalWind_4]
-  Power 13.708 -4.451 -0.407
-  BottomBound 3281
-  TopBound 5041
+  Power 9.706 -11.175 -0.738
+  BottomBound 3481
+  TopBound 4851
   GustPower 0.000
   GustAngle 0
 [GlobalWind_5]
-  Power 13.293 -10.165 -0.747
-  BottomBound 5000
-  TopBound 5939
+  Power 10.489 -13.190 0.019
+  BottomBound 4835
+  TopBound 5681
   GustPower 0.000
   GustAngle 0
 [GlobalWind_6]
-  Power 14.467 -12.534 0.190
-  BottomBound 5937
-  TopBound 6727
+  Power 13.161 -13.195 -0.684
+  BottomBound 5676
+  TopBound 7106
   GustPower 0.000
   GustAngle 0
 [GlobalWind_7]
-  Power 15.346 -15.032 -0.739
-  BottomBound 6726
-  TopBound 7738
+  Power 12.404 -16.102 -0.730
+  BottomBound 7092
+  TopBound 7954
   GustPower 0.000
   GustAngle 0
 [GlobalWind_8]
-  Power 15.852 -17.549 -0.402
-  BottomBound 7689
-  TopBound 9299
+  Power 11.389 -18.924 -0.716
+  BottomBound 7936
+  TopBound 10127
   GustPower 0.000
   GustAngle 0
 [GlobalWind_9]
-  Power 16.224 -20.330 -0.515
-  BottomBound 9267
+  Power 11.514 -21.154 -0.549
+  BottomBound 10109
   TopBound 16000
   GustPower 0.000
   GustAngle 0
@@ -387,8 +387,11 @@
   BoB_LW_KuFlGr_706.04
   BoB_RA_56St_20Gruppo_353Sq.01
   BoB_LW_KG26_Stab.03_NOCHANGE
+  BoB_LW_KG26_Stab.04_NOCHANGE
   tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE
+  tobruk:Tobruk_SAAF_R_40Sqn.04_NOCHANGE
   BoB_RAF_B_218Sqn.04_NOCHANGE
+  BoB_RAF_B_218Sqn.02_NOCHANGE
 [BoB_LW_KuFlGr_706.03]
   Flight0  1 2 3
   Flight1  11 12 13
@@ -409,7 +412,7 @@
   LANDING 285562.30 169253.52 200.00 250.00
 [BoB_LW_LG2_I.12]
   Flight1  1  
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.DH82A-2
   Formation FINGERFOUR
   CallSign 31
   Fuel 100
@@ -433,7 +436,7 @@
   LANDING 271849.24 205528.69 300.00 330.00
 [BoB_LW_LG2_I.24]  
   Flight2  21 22 
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 15
   Fuel 100
@@ -470,7 +473,7 @@
 [gb01.13]
   Flight0  1 2
   Flight1 11
-  Class Aircraft.BeaufighterMkIF
+  Class tobruk:Aircraft.BeaufighterMkIF_Late
   Formation VIC3
   CallSign 35
   Fuel 35
@@ -504,7 +507,7 @@
 [BoB_LW_JG26_I.13]
   Flight0  1
   Flight1  11
-  Class tobruk:Aircraft.Bf-109E-7
+  Class Aircraft.Bf-109E-4N
   Formation FINGERFOUR
   CallSign 14
   Fuel 100
@@ -593,7 +596,7 @@
 [BoB_LW_JG3_Stab.03]
   Flight0  1
   Flight1  13
-  Class tobruk:Aircraft.Bf-109E-7
+  Class Aircraft.Bf-109E-4N
   Formation FINGERFOUR
   CallSign 32
   Fuel 100
@@ -609,7 +612,7 @@
   LANDING 306483.21 160658.39 400.00 300.00  
 [BoB_LW_LG2_I.21]
   Flight0  1 2
-  Class Aircraft.Bf-110C-2
+  Class Aircraft.Bf-110C-6
   Formation FINGERFOUR
   CallSign 1
   Fuel 70
@@ -642,7 +645,7 @@
   LANDING 188324.12 257871.78 200.00 250.00
 [BoB_RAF_F_FatCat_Late.21]
   Flight0  1 2
-  Class tobruk:Aircraft.TomahawkMkII-Late
+  Class Aircraft.SpitfireMkI
   Formation VIC3
   CallSign 23
   Fuel 100
@@ -708,7 +711,7 @@
   LANDING 188312.02 257634.08 200.00 260.00
 [BoB_RAF_B_35Sqn.08]
   Flight3  31 32
-  Class Aircraft.BlenheimMkIF
+  Class Aircraft.BlenheimMkIVF
   Formation VIC
   CallSign 33
   Fuel 35
@@ -724,7 +727,7 @@
 [BoB_LW_JG54_Stab.03]
   Flight0  1 2 3 4
   Flight1  11 12 13
-  Class Aircraft.Ju-87B-2
+  Class Aircraft.BR-20M
   Formation VIC
   CallSign 4
   BombSpacing 20
@@ -792,7 +795,7 @@
   LANDING 311562.78 190387.62 100.00 330.00 
 [BoB_LW_LG2_I.31]
   Flight0  1 2 3 4  
-  Class Aircraft.He-111H-2
+  Class Aircraft.He-111H-6
   Formation FINGERFOUR
   CallSign 16
   BombSpacing 20
@@ -808,7 +811,7 @@
 [BoB_LW_JG26_I.36]
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.DH82A-2
   Formation FINGERFOUR
   CallSign 32
   Fuel 100
@@ -828,7 +831,7 @@
   HUNTING 361944.61 187617.14 3100.00 300.00
 [BoB_LW_JG51_I.31]
   Flight0  1 2  
-  Class Aircraft.Bf-110C-2
+  Class Aircraft.Bf-110C-6
   Formation FINGERFOUR
   CallSign 1
   Fuel 70
@@ -892,7 +895,7 @@
   LANDING 166606.53 277818.52 500.00 310.00
 [BoB_LW_LG2_I.01]
   Flight0  1
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.DH82A-2
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -918,7 +921,7 @@
   LANDING 275946.21 207455.42 2000.00 300.00
 [BoB_LW_LG2_I.02]
   Flight1  11 12 13
-  Class Aircraft.G50
+  Class tobruk:Aircraft.Macchi-C202-SeriesIII
   Formation FINGERFOUR
   CallSign 15
   Fuel 100
@@ -943,7 +946,7 @@
   LANDING 284074.15 205047.13 2000.00 300.00
 [BoB_LW_JG2_I.04]
   Flight2  21 22
-  Class tobruk:Aircraft.Bf-109E-7
+  Class Aircraft.Bf-109E-4_Late
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -974,7 +977,7 @@
   LANDING 317850.29 195082.87 2000.00 300.00
 [BoB_RAF_F_FatCat_Early.01]
   Flight0  9
-  Class Aircraft.SpitfireMkI
+  Class Aircraft.SpitfireMkIa_100oct
   Formation VIC3
   CallSign 33
   Fuel 100
@@ -1082,7 +1085,7 @@
   LANDING 181479.78 248720.71 400.00 300.00
 [BoB_LW_JG2_I.02]
   Flight1  11
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 0
   Fuel 100
@@ -1110,7 +1113,7 @@
   LANDING 280112.52 164321.62 1500.00 300.00
 [BoB_LW_JG2_I.01]
   Flight0  1
-  Class Aircraft.Bf-110C-2
+  Class Aircraft.Bf-110C-4-NJG
   Formation FINGERFOUR
   CallSign 21
   Fuel 100
@@ -1140,7 +1143,7 @@
   LANDING 317660.62 190603.07 1500.00 300.00
 [BoB_LW_JG2_I.11]
   Flight0  1 2
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 3
   Fuel 100
@@ -1161,7 +1164,7 @@
   LANDING 278800.13 207038.14 2000.00 300.00
 [BoB_LW_JG2_I.12]
   Flight1  11 12
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.DH82A-2
   Formation FINGERFOUR
   CallSign 9
   Fuel 100
@@ -1179,7 +1182,7 @@
 [BoB_RAF_F_1Sqn_Early.03]
   Flight0  1 2
   Flight1  11
-  Class Aircraft.HurricaneMkI
+  Class Aircraft.HurricaneMkI_100oct-NF
   Formation VIC3
   CallSign 30
   Fuel 100
@@ -1211,7 +1214,7 @@
   Flight0  1
   Flight1  11
   Flight2  21
-  Class Aircraft.Bf-109E-3
+  Class Aircraft.Bf-109E-4N
   Formation ECHELONRIGHT
   CallSign 16
   Fuel 100
@@ -1234,7 +1237,7 @@
   LANDING 291517.02 216418.82 500.00 300.00
 [BoB_LW_JG2_I.14]
   Flight2  21
-  Class Aircraft.Bf-110C-4N
+  Class Aircraft.Bf-110C-2
   Formation FINGERFOUR
   CallSign 18
   Fuel 100
@@ -1270,7 +1273,7 @@
   LANDING 299469.40 203028.84 3200.00 220.00
 [BoB_LW_JG2_I.21]
   Flight0  1
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 36
   Fuel 100
@@ -1322,7 +1325,7 @@
   NORMFLY 297528.30 221579.69 2700.00 300.00
 [BoB_LW_JG26_I.02]
   Flight1  11
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 29
   Fuel 100
@@ -1346,7 +1349,7 @@
   LANDING 284851.87 182622.85 2700.00 250.00
 [BoB_LW_JG26_I.04]
   Flight2  21 22
-  Class Aircraft.Bf-109E-4N_Late
+  Class Aircraft.DH82A-2
   Formation FINGERFOUR
   CallSign 30
   Fuel 100
@@ -1384,7 +1387,7 @@
   LANDING 317906.02 195553.39 1000.00 250.00
 [gb01.01]
   Flight0  1 2
-  Class Aircraft.SpitfireMkIIb
+  Class Aircraft.SpitfireMkIa_100oct
   Formation VIC3
   CallSign 23
   Fuel 100
@@ -1432,7 +1435,7 @@
   LANDING 166837.83 277544.22 7300.00 300.00
 [gb01.21]
   Flight0  1 2
-  Class tobruk:Aircraft.SpitfireMkVb
+  Class Aircraft.BeaufighterMkIF
   Formation VIC3
   CallSign 35
   Fuel 35
@@ -1456,7 +1459,7 @@
   LANDING 144232.80 257001.04 300.00 220.00
 [BoB_RAF_F_1Sqn_Early.12]
   Flight1  11 12
-  Class Aircraft.BeaufighterMkIF
+  Class tobruk:Aircraft.BeaufighterMkIF_Late
   Formation VIC3
   CallSign 26
   Fuel 35
@@ -1531,7 +1534,7 @@
   LANDING 143363.39 241261.92 2000.00 290.00
 [gb01.33]
   Flight0  1 2
-  Class Aircraft.HurricaneMkI_100oct-NF
+  Class tobruk:Aircraft.TomahawkMkII
   Formation VIC3
   CallSign 33
   Fuel 100
@@ -1547,7 +1550,7 @@
   LANDING 146524.18 251099.07 3000.00 250.00
 [LONDON.01]
   Flight0  1 
-  Class Aircraft.HurricaneMkI_100oct-NF
+  Class tobruk:Aircraft.MartletMkIII
   Formation VIC3
   CallSign 1
   Fuel 100
@@ -1585,7 +1588,7 @@
   LANDING 143363.39 241261.92 250.00 300.00
 [LONDON.02]
   Flight1  11 12
-  Class Aircraft.BlenheimMkIVF_Late
+  Class Aircraft.BlenheimMkINF
   Formation VIC3
   CallSign 33
   Fuel 35
@@ -1601,7 +1604,7 @@
   LANDING 146524.18 251099.07 300.00 300.00
 [LONDON.12]
   Flight1  11 12 13
-  Class tobruk:Aircraft.HurricaneMkIIb-Late
+  Class tobruk:Aircraft.HurricaneMkIIb
   Formation VIC3
   CallSign 27
   BombSpacing 20
@@ -1630,7 +1633,7 @@
   LANDING 225452.22 229360.04 200.00 270.00
 [BoB_RAF_F_141Sqn_Early.02]
   Flight1  3 12
-  Class tobruk:Aircraft.TomahawkMkII-Late
+  Class Aircraft.SpitfireMkI
   Formation VIC3
   CallSign 25
   Fuel 100
@@ -1652,7 +1655,7 @@
   LANDING 225452.22 229360.04 200.00 276.00
 [BoB_RAF_F_92Sqn_Early.02]
   Flight1  11 12
-  Class tobruk:Aircraft.TomahawkMkII-Late
+  Class Aircraft.SpitfireMkI
   Formation VIC3
   CallSign 8
   Fuel 100
@@ -1699,7 +1702,7 @@
 [gb01_Late.03]
   Flight0  1 2 3 4
   Flight1  11 12 13 14
-  Class tobruk:Aircraft.BeaufighterMkIC
+  Class Aircraft.WellingtonMkIc
   Formation DIAMOND
   CallSign 0
   BombSpacing 20
@@ -1714,7 +1717,7 @@
   LANDING 141558.36 233939.01 500.00 260.00
 [gb01_Late.04]
   Flight2  21 22 23
-  Class Aircraft.BlenheimMkIVNF
+  Class Aircraft.BlenheimMkIVF
   Formation VIC
   CallSign 33
   Fuel 40
@@ -1805,7 +1808,7 @@
 [BoB_LW_JG51_Stab.03]
   Flight0  1
   Flight1  11 12
-  Class Aircraft.Bf-109E-4N_Late
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
   Formation FINGERFOUR
   CallSign 11
   Fuel 100
@@ -1823,7 +1826,7 @@
   LANDING 284099.82 124761.52 200.00 300.00
 [BoB_LW_KuFlGr_706.04]
   Flight2  21 22 23
-  Class Aircraft.He-111H-2
+  Class Aircraft.He-111H-6
   Formation VIC3
   CallSign 33
   BombSpacing 20
@@ -1840,7 +1843,7 @@
   LANDING 229247.65 96191.24 500.00 250.00
 [BoB_RA_56St_20Gruppo_353Sq.01]
   Flight0  1 2 3
-  Class tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota
+  Class Aircraft.G50
   Formation VIC3
   CallSign 0
   Fuel 100
@@ -1867,25 +1870,39 @@
   Skill10 0.79 0.58 0.74 0.63 0.47 0.53 0.63 1
   Aging 0
   Serial0 TWC
-  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
   Serial10 TWC
-  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
 [BoB_LW_KG26_Stab.03_NOCHANGE_Way]
-  TAKEOFF 266848.12 150050.29 0.00 0.00
-  NORMFLY 261214.29 151562.86 200.00 295.00
+  NORMFLY 266848.12 150050.29 200.00 250.00
+  NORMFLY 261214.29 151562.86 200.00 250.00
   NORMFLY 271355.05 130873.10 300.00 290.00
-  NORMFLY 227408.51 103607.09 300.00 295.00
-  NORMFLY 178916.06 91761.02 300.00 305.00
-  RECON 152064.00 60864.00 300.00 290.00
-  NORMFLY 155520.00 104064.00 650.00 290.00
-  NORMFLY 243857.61 138485.47 1000.00 305.00
-  NORMFLY 262372.75 203745.79 1000.00 305.00
-  HUNTING 287123.86 219817.94 500.00 295.00
-  RECON 357036.45 248810.37 200.00 290.00
-  HUNTING 254119.34 214270.78 200.00 295.00
-  HUNTING 256816.64 157619.44 200.00 295.00
-  LANDING 265671.09 150064.81 200.00 295.00
-[tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE]
+  NORMFLY 227408.51 103607.09 300.00 250.00
+  NORMFLY 178916.06 91761.02 300.00 250.00
+  NORMFLY 152064.00 60864.00 300.00 250.00
+  NORMFLY 155520.00 104064.00 300.00 250.00
+  NORMFLY 243857.61 138485.47 300.00 250.00
+  LANDING 265671.09 150064.81 200.00 250.00
+[BoB_LW_KG26_Stab.04_NOCHANGE]
+  Flight0  1
+  Class Aircraft.He-115B-2
+  Formation VIC3
+  CallSign 30
+  Fuel 100
+  Weapons 1 1 2
+  SpawnFromScript 1
+  Skill0 0.84 0.63 0.79 0.37 0.53 0.63 0.74 1  
+  Aging 0
+  Serial0 TWC
+  Serial10 TWC
+[BoB_LW_KG26_Stab.04_NOCHANGE_Way]
+  NORMFLY 266848.12 150050.29 200.00 250.00
+  NORMFLY 243857.61 138485.47 300.00 250.00
+  NORMFLY 262372.75 203745.79 300.00 250.00
+  HUNTING 287123.86 219817.94 300.00 250.00
+  NORMFLY 357036.45 248810.37 200.00 290.00
+  HUNTING 254119.34 214270.78 200.00 250.00
+  HUNTING 256816.64 157619.44 200.00 250.00
+  LANDING 265671.09 150064.81 200.00 250.00  
+[tobruk:Tobruk_SAAF_R_40Sqn.04_NOCHANGE]
   Flight0  1
   Flight1  11
   Class Aircraft.WalrusMkI
@@ -1899,23 +1916,56 @@
   Skill10 0.63 0.42 0.53 0.26 0.53 0.42 0.32 1
   Aging 24
   Serial0 TWC
-  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
   Serial10 TWC
-  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+[tobruk:Tobruk_SAAF_R_40Sqn.04_NOCHANGE_Way]
+  NORMFLY 216178.13 258152.69 60.00 150.00  
+  NORMFLY 254569.53 267128.26 100.00 150.00
+  NORMFLY 251452.84 237248.46 100.00 150.00
+  NORMFLY 224856.33 220971.51 100.00 150.00
+  NORMFLY 223539.99 208228.31 100.00 150.00
+  LANDING 215822.86 258410.17 100.00 150.00
+[tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE]
+  Flight0  1
+  Class Aircraft.WalrusMkI
+  Formation LINEASTERN
+  CallSign 7
+  Fuel 100
+  Weapons 1 1 0 0
+  SetOnPark 1
+  SpawnFromScript 1
+  Skill0 0.63 0.42 0.53 0.74 0.53 0.42 0.32 1
+  Aging 24
+  Serial0 TWC
+  Serial10 TWC
 [tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE_Way]
-  TAKEOFF 216178.13 258152.69 0.00 0.00
-  NORMFLY 254569.53 267128.26 100.00 220.00
-  NORMFLY 251452.84 237248.46 200.00 220.00
-  NORMFLY 224856.33 220971.51 200.00 220.00
-  RECON 223539.99 208228.31 200.00 218.00
-  NORMFLY 255790.38 237147.42 200.00 220.00
-  NORMFLY 257682.10 270303.60 200.00 220.00
-  RECON 183765.46 274102.55 100.00 218.00
-  NORMFLY 217730.54 280876.93 100.00 220.00
-  RECON 227535.58 311100.43 100.00 218.00
-  NORMFLY 239088.44 269645.49 100.00 220.00
-  LANDING 215822.86 258410.17 100.00 220.00
+  NORMFLY 216178.13 258152.69 60.00 150.00
+  NORMFLY 255790.38 237147.42 100.00 150.00
+  NORMFLY 257682.10 270303.60 100.00 150.00
+  NORMFLY 183765.46 274102.55 100.00 150.00
+  NORMFLY 217730.54 280876.93 100.00 150.00
+  HUNTING 227535.58 311100.43 100.00 150.00
+  NORMFLY 239088.44 269645.49 100.00 150.00
+  LANDING 215822.86 258410.17 100.00 150.00  
 [BoB_RAF_B_218Sqn.04_NOCHANGE]
+  Flight2  21 22
+  Class Aircraft.SunderlandMkI
+  Formation LINEABREAST
+  CallSign 20
+  Fuel 80
+  Weapons 1 1 1 1 1 1
+  SetOnPark 1
+  SpawnFromScript 1
+  Skill 0.84 0.63 0.68 0.74 0.37 0.53 0.53 1
+  Aging 0
+  Serial20 TWC
+[BoB_RAF_B_218Sqn.04_NOCHANGE_Way]
+  NORMFLY 216182.65 258080.98 100.00 220.00
+  NORMFLY 185382.29 273433.96 200.00 220.00
+  NORMFLY 244531.05 309408.15 200.00 220.00
+  NORMFLY 214134.30 272386.86 200.00 220.00
+  NORMFLY 262147.35 268559.26 200.00 220.00
+  LANDING 215865.81 258323.72 0.00 220.00
+[BoB_RAF_B_218Sqn.02_NOCHANGE]
   Flight2  21
   Class Aircraft.SunderlandMkI
   Formation LINEABREAST
@@ -1927,21 +1977,16 @@
   Skill 0.84 0.63 0.68 0.74 0.37 0.53 0.53 1
   Aging 0
   Serial20 TWC
-  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-[BoB_RAF_B_218Sqn.04_NOCHANGE_Way]
-  TAKEOFF 216182.65 258080.98 0.00 0.00
-  NORMFLY 185382.29 273433.96 400.00 220.00
-  RECON 244531.05 309408.15 400.00 220.00
-  NORMFLY 214134.30 272386.86 400.00 220.00
-  RECON 262147.35 268559.26 400.00 220.00
+[BoB_RAF_B_218Sqn.02_NOCHANGE_Way]
+  NORMFLY 216182.65 258080.98 400.00 220.00 
+  NORMFLY 256539.00 268120.00 400.00 220.00
   NORMFLY 254126.26 237223.29 400.00 220.00
   NORMFLY 190187.85 197964.30 400.00 220.00
-  RECON 79913.78 181912.29 300.00 220.00
+  NORMFLY 79913.78 181912.29 300.00 220.00
   NORMFLY 226830.53 199698.54 300.00 220.00
-  RECON 264629.16 237151.57 300.00 220.00
+  NORMFLY 264629.16 237151.57 300.00 220.00
   NORMFLY 251121.38 263813.38 300.00 220.00
-  LANDING 215865.81 258323.72 0.00 220.00
-
+  LANDING 215865.81 258323.72 0.00 220.00  
 [Stationary]
   Static2382 Stationary.AEC_Regent_II nn 125720.20 16220.58 659.10 
   Static2383 Stationary.AEC_Regent_II nn 120533.07 17156.48 659.10 
@@ -7146,5 +7191,8 @@
   041513_BCover ASpawnGroup 1 BoB_LW_JG26_I.13
   041526_BCover_B ASpawnGroup 1 BoB_LW_JG51_I.07
   HE-115_coastal ASpawnGroup 1 BoB_LW_KG26_Stab.03_NOCHANGE
+  HE-115B_coastal ASpawnGroup 1 BoB_LW_KG26_Stab.04_NOCHANGE
   Sunderland_coastal ASpawnGroup 1 BoB_RAF_B_218Sqn.04_NOCHANGE
-  Walrus_coastal ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE
+  SunderlandB_coastal ASpawnGroup 1 BoB_RAF_B_218Sqn.02_NOCHANGE
+  Walrus_coastal ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.04_NOCHANGE
+  WalrusB_coastal ASpawnGroup 1 tobruk:Tobruk_SAAF_R_40Sqn.03_NOCHANGE

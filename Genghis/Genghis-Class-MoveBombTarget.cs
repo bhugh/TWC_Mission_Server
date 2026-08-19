@@ -3220,9 +3220,17 @@ public class MoveBombTargetMission : AMission
                                     landPos.x += ran.Next(200, 600); //Just in case the previous landing point is at this same airport, prevent the double/exact repeat point.
                                     landPos.y += ran.Next(200, 600);
                                 }
-                                landPos.z += 70; //trying to keep them from ground crashing near airports . . . 
+                                landPos.z += 150; //trying to keep them from ground crashing near airports . . . 
+								
+								//Add a point just before the landing that is NORMFLY
+								Point3d ptlPos = new Point3d (landPos.x + ran.Next (5000, 15000), 
+									landPos.y + ran.Next (5000, 15000), landPos.z + 50);
+								AiAirWayPoint priorToLandWPT = new AiAirWayPoint(ref ptlPos, 80);
+								priorToLandWPT.Action = AiAirWayPointType.NORMFLY;
+								NewWaypoints.Add(priorToLandWPT);								
+								
                                 AiAirWayPointType landaawpt = AiAirWayPointType.LANDING;
-                                landaaWP = new AiAirWayPoint(ref landPos, 55); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
+                                landaaWP = new AiAirWayPoint(ref landPos, 70); // 50 mps ~= 100 mph, so reasonable pre-landing speed.                    
                                 landaaWP.Action = landaawpt;
                                 NewWaypoints.Add(landaaWP); //do add
                                 count++;

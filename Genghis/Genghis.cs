@@ -1078,8 +1078,8 @@ public class Mission : AMission, IMainMission
         if ((tickSinceStarted) % 2100 == 0 && tickSinceStarted > 0)
         {
 
-            Task.Run(() => RemoveOffMapAIAircraft());
-            //RemoveOffMapAIAircraft();
+            //Task.Run(() => RemoveOffMapAIAircraft());
+            RemoveOffMapAIAircraft();
 
 
         }
@@ -1377,7 +1377,7 @@ public class Mission : AMission, IMainMission
 				}
 				//if (level > 5) level = 5;
 				//if (level <0) level = 0;	
-				level.Clamp(0,5);
+				level = level.Clamp(0,5);
 				
 				Console.WriteLine ("Making Birthplace {0} army: {6} alt: {1:n0} level: {2:n0} terr: {3} planetypes: {4} clamptest: {5}", bp.Name()+ "_("+ArmiesL[newarmy] + ")", alt, level, terr, planetypes, 7.342.Clamp(0,5), newarmy);
 				
@@ -1410,6 +1410,8 @@ public class Mission : AMission, IMainMission
             double radius_m = mo.radius;
             if (mo.TriggerDestroyRadius > radius_m) radius_m = mo.TriggerDestroyRadius;
             radius_m *= 1.2;  //clear a slightly larger area
+			radius_m.Clamp(6000,15000); //2026-08 - making this MUCH bigger as we've seen AA destroying objectives from AT LEAST 5k in not maybe 10k.
+			
             for (int i = 1; i <= 2; i++)
             {
                 //i is the army to remove.  For temp landing gnd we want to remove anything NOT owner army
@@ -5401,22 +5403,22 @@ public class Mission : AMission, IMainMission
 												) {
 													numAircraftByType[army][2] += airGroup.NOfAirc;
 													numAirGroupsByType[army][2] ++ ;
-													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found bomber {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found bomber {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 																								
 												} else if (Calcs.isStrikeAC(aircraft)) {
 													//Need STrikeAC after DiveBomber to classify Ju-87 as bomber here..
 													numAircraftByType[army][1] += airGroup.NOfAirc;
 													numAirGroupsByType[army][1] ++ ;
-													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found Sturmovik {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found Sturmovik {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 													
 												} else if (!Calcs.isAsrAC(aircraft)) { //counting fighters - ASR (HE-115 & Walrus) are ignored
 													numAircraftByType[army][0] += airGroup.NOfAirc;
 													numAirGroupsByType[army][0] ++;
-													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found fighter {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found fighter {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 												}
 												
 												if (ON_TESTSERVER & Calcs.isAsrAC(aircraft) ) {
-													if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found ASR AC {0} army {1}", Calcs.GetAircraftType(aircraft), army );
+													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found ASR AC {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 												}
 
 												//int num = airGroup.GetItems().Length;
@@ -8457,7 +8459,7 @@ public class Mission : AMission, IMainMission
                 */
 
 
-                Console.Write("campaign21: pre-sleep... |");
+             //Console.Write("campaign21: pre-sleep... |");
             //Thread.Sleep(25000);
 
             //we have to wait until initial submissions load because they do things like load spawn points
@@ -8632,6 +8634,26 @@ public class Mission : AMission, IMainMission
                 //clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
             });
             Timeout(205, () => {
+                //removeGroundActorsAndStationariesInEnemyTerritory();
+                clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
+            });
+			
+			//2026-08: Do it again as it seems some still survive, maybe some items are being loaded later?
+			Timeout(400, () => { 
+                removeGroundActorsAndStationariesInEnemyTerritory();
+                //clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
+            });
+            Timeout(430, () => {
+                //removeGroundActorsAndStationariesInEnemyTerritory();
+                clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
+            });
+			
+			//2026-08: Do it again as it seems some still survive, maybe some items are being loaded later?
+			Timeout(800, () => { 
+                removeGroundActorsAndStationariesInEnemyTerritory();
+                //clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
+            });
+            Timeout(830, () => {
                 //removeGroundActorsAndStationariesInEnemyTerritory();
                 clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
             });
@@ -9524,11 +9546,14 @@ public class Mission : AMission, IMainMission
 	List<List<string>> redCoastalPatrolActions = new List<List<string>>() {
 		new List<string>() {"Sunderland_coastal"},
 		new List<string>() {"Walrus_coastal"},
+		new List<string>() {"SunderlandB_coastal"},
+		new List<string>() {"WalrusB_coastal"},
 	};
 		
 	
 	List<List<string>> blueCoastalPatrolActions = new List<List<string>>() {
 		new List<string>() {"HE-115_coastal"},		
+		new List<string>() {"HE-115B_coastal"},		
 	};
 	
 	  
@@ -9890,7 +9915,7 @@ public class Mission : AMission, IMainMission
                 int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
 				
 				
-				if (ON_TESTSERVER) {numRedPlayers = 7; numBluePlayers = 7;}
+				if (ON_TESTSERVER) {numRedPlayers = 6; numBluePlayers = 6;}
                 Console.WriteLine("balanceAILoad: Blue ac/players {0} {1} Red ac/players  {2} {3} " + DateTime.UtcNow.ToString("T") + ". Send group?", numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers);
 
                 //return; //stop buggy behavior for now
@@ -9980,7 +10005,7 @@ public class Mission : AMission, IMainMission
 					foreach (List<List<string>> actions in actionsLists) {
 						for (int i = 0; i<numToAdd; i++) {
 							double wait = random.Next(0, 240);
-							if (ON_TESTSERVER) wait = random.Next(0,25);
+							//if (ON_TESTSERVER) wait = random.Next(0,25);
 							
 							if (!missionStart && (actions == blueFighterActions || actions == blueBomberActions)
 								&& !sendBlue) continue;
@@ -10033,8 +10058,9 @@ public class Mission : AMission, IMainMission
     {
         //Console.WriteLine("balanceAILoad: Starting timer! " + DateTime.UtcNow.ToString("T"));
 		
-		int period = 232453;
-		if(ON_TESTSERVER) period = 30000; //speed things up a lot on testserver
+		//int period = 232453; //4-ish minutes
+		int period = 312592; //5-ish minutes
+		if(ON_TESTSERVER) period =700000; //speed things up a lot on testserver
 		
         balanceAILoadTimer = new System.Threading.Timer(
             new TimerCallback(balanceAILoad),
@@ -11553,7 +11579,7 @@ public class Mission : AMission, IMainMission
 
                 Point3d pos = mo.returnCurrentPosWithChief();
                 twcLogServer(new Player[] { player }, "Creating airspawn 2800m NE of the target" + bname, new object[] { });
-                f2 = Calcs.CreateBirthPlace(this, f2, bname, pos.x + 2000, pos.y + 2000, 1000, ar);
+                f2 = Calcs.CreateBirthPlace(this, f2, bname, pos.x + 2000, pos.y + 2000, 1000, ar, planeset_num: 5);
                 GamePlay.gpPostMissionLoad(f2);
                 f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname);
             }
@@ -13784,6 +13810,9 @@ public class Mission : AMission, IMainMission
         if (player == null) plAr = null;
         twcLogServer(plAr, data, third);
     }
+	
+	DateTime msgDelayStartTime = DateTime.UtcNow;
+	double delay = 0.01;
 
 
     //Should replace ALL twcLogServer usage with twcLogServer instead to avoid line overflow etc.
@@ -13792,6 +13821,14 @@ public class Mission : AMission, IMainMission
     {
         //this is already logged to logs.txt so no need for this: if (LOG) logToFile (data, LOG_FULL_PATH);
         //gpLogServerWithDelay(to, (string)data, third);
+		
+		DateTime currentDate = DateTime.UtcNow;
+		
+		if (currentDate.Subtract(msgDelayStartTime).TotalSeconds + delay > 0.5) {
+			delay = 0.01;
+			msgDelayStartTime = DateTime.UtcNow;
+		}
+			
 
         //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
         string str = (string)data;
@@ -13800,7 +13837,7 @@ public class Mission : AMission, IMainMission
         IEnumerable<string> lines = Calcs.SplitToLines(str, maxChunkSize);
         //for (int i = 0; i < str.Length; i += maxChunkSize)
         //for (int i=0; i<lines.GetLength(); i++) gpLogServerWithDelay(to, lines[i], third);
-        double delay = 0.01;
+        //double delay = 0.01;
 
         //foreach (string line in lines) gpLogServerWithDelay(to, line, third);
         foreach (string line in lines)
@@ -14152,6 +14189,7 @@ public class Mission : AMission, IMainMission
     {
 		try 
 		{
+			if (ON_TESTSERVER) Console.WriteLine("Starting RemoveOffMapAIAircraft");
 			int numremoved = 0;
 			//The map parameters - if an ai a/c goes outside of these, it will be de-spawned.  You need to just figure these out based on the map you are using.  Set up some airgroups in yoru mission file along the n, s, e & w boundaries of the map & note where the waypoints are.
 			//This should match the values in your .mis file, like
@@ -14199,6 +14237,15 @@ public class Mission : AMission, IMainMission
 										//string name = actor.Name();
 										//if (actor.Army() == 1 && !name.Contains("gb01") && isAiControlledPlane2(a)) a.Destroy();
 										//for testing
+										
+										if (a != null) {
+											bool isAirborne = a.IsAirborne();
+											double vel_mps = Calcs.CalculatePointDistance(a.AirGroup().Vwld());
+											
+											if (stoppedAircraft.ContainsKey(a) && isAirborne || vel_mps>=3) { 		stoppedAircraft.Remove(a);
+												   //if (ON_TESTSERVER) Console.WriteLine("Stopped AI Aircraft: Moving or airborne {0} {1} vel: {2} airborne: {3}", a.Type(), a.TypedName(), vel_mps, isAirborne);
+											}
+										}
 
 
 										if (a != null && isAiControlledPlane2(a))
@@ -14206,6 +14253,14 @@ public class Mission : AMission, IMainMission
 
 											double Z_AltitudeAGL = a.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
 											double Z_VelocityTAS = a.getParameter(part.ParameterTypes.Z_VelocityTAS, 0);
+											
+											//DON'T use Z_VelocityTAS as reliable speed as it is just
+											//a gauge and can be malfunctioning
+											//Can't really get individual a/c velocity but only AirGroup
+											//Which again might be  inaccurate for each individual a/c, who knows?
+											bool isAirborne = a.IsAirborne();
+											double vel_mps = Calcs.CalculatePointDistance(a.AirGroup().Vwld());
+											
 											AiAirGroupTask aagt = airGroup.getTask();
 											AiWayPoint[] CurrentWaypoints = airGroup.GetWay();
 											int currWay = airGroup.GetCurrentWayPoint();
@@ -14249,18 +14304,18 @@ public class Mission : AMission, IMainMission
 												movebombtargetmission.safeDestroyOldAircraft( a as AiAircraft, reason, true);
 												}); //Destroy the a/c, but space it out a bit so there is no giant stutter 
 
-										  } else if (Z_VelocityTAS < 5 && Z_VelocityTAS > -1) {
+										  } else if (!isAirborne || vel_mps < 3) {
 											  //Now remove any that have been stopped for  more than say 5 mins
 											  
 											  var now = DateTime.UtcNow;
 											  
 											  if (!stoppedAircraft.ContainsKey(a)) {
 												  stoppedAircraft[a] = now;
-													Console.WriteLine("DEBUG: Stopped AI Aircraft - adding to stoppedAircraft list: " + Calcs.GetAircraftType(a) + " "
+													Console.WriteLine("DEBUG: Stopped AI Aircraft - now stopped & adding to stoppedAircraft list: " + Calcs.GetAircraftType(a) + " "
 												+ a.Type() + " "
 												+ a.TypedName() + " "
-												+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
-												Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt
+												+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} Z_Vel: {1:N0} Vwld_vel: {2:N0} isAirborne: {3} task: {4} action: {5}",
+												Z_AltitudeAGL, Z_VelocityTAS, vel_mps, isAirborne, aagt, aawpt
 											   );
 											  } else {
 												  
@@ -14272,7 +14327,7 @@ public class Mission : AMission, IMainMission
 													+ a.AirGroup().ID() + " Pos: " + a.Pos().x.ToString("F0") + "," + a.Pos().y.ToString("F0") + " alt: {0:N0} vel: {1:N0} task: {2} action: {3}",
 														Z_AltitudeAGL, Z_VelocityTAS, aagt, aawpt, timeStopped_s
 													);
-													if (timeStopped_s > 300) {
+													if (timeStopped_s > 400) {
 														Console.WriteLine("DEBUG: Stopped AI Aircraft > 300s, now removing");
 														numremoved++;
 														stoppedAircraft.Remove(a);
@@ -20450,7 +20505,7 @@ added Rouen Flak
                     newPos.x = mopos.x + (random.NextDouble() * 3*mo.MobileMaxMoveDist_km + mo.MobileMaxMoveDist_km) * 1000 * (random.Next(2) * 2 - 1);
                     newPos.y = mopos.y + (random.NextDouble() *3 * mo.MobileMaxMoveDist_km + mo.MobileMaxMoveDist_km) * 1000 * (random.Next(2) * 2 - 1);
 
-                    Console.WriteLine("MoBileObj: Find Pos 3X {0:F2} {1:F2}", newPos.x, newPos.y);
+                    //Console.WriteLine("MoBileObj: Find Pos 3X {0:F2} {1:F2}", newPos.x, newPos.y);
                     if (newPos.x < swPos.x) newPos.x = swPos.x;
                     if (newPos.y < swPos.y) newPos.y = swPos.y;
                     if (newPos.x > nePos.x) newPos.x = nePos.x;
@@ -20473,10 +20528,11 @@ added Rouen Flak
 
                 int terr = GamePlay.gpFrontArmy(newPos.x, newPos.y);
                 bool onEnemyTerritory = (mo.AttackingArmy == terr); //We can place these on friend OR neutral territory but not enemy.  Unless there is NO other choice.  Or, it's a ship - they can go anywhere.
+				//Or if the entire region is on enemy territory, the OBJ will just switch sides.
 
                 if (mobileShipObjective) onEnemyTerritory = false; //ships can be on enemy territory no prob.
 
-                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0}  OnEnemyTerr: {6}", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i});
+                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT1 trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0}  OnEnemyTerr: {6}", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i});
 
 
                 if (onEnemyTerritory && i < 9 * maxSearchNum / 10) continue;
@@ -20499,7 +20555,7 @@ added Rouen Flak
                     wrongLandOrWaterinObjectiveArea = MO_LandInRadius(newPos, sr);
                 else wrongLandOrWaterinObjectiveArea = MO_WaterInRadius(newPos, searchRadius_m);
 
-                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0} OldPos: {9:n0} {10:n0} OnEnemyTerr: {6} flags: wrong land/water - {8}  ", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i, wrongLandOrWaterinObjectiveArea, mopos.x, mopos.y });
+                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT2 trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0} OldPos: {9:n0} {10:n0} OnEnemyTerr: {6} flags: wrong land/water - {8}  ", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i, wrongLandOrWaterinObjectiveArea, mopos.x, mopos.y });
 
 
                 if (wrongLandOrWaterinObjectiveArea && onEnemyTerritory && i < 19 * maxSearchNum / 20) continue;
@@ -20534,11 +20590,20 @@ added Rouen Flak
 
 
 
-                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0} OldPos: {12:n0} {13:n0} OnEnemyTerr: {6} flags: wrong land/water- {8} farenoughfromairport- {9} withinminmax- {10} too near another-  {11}", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i, wrongLandOrWaterinObjectiveArea, farEnoughFromAirport, withinMinMax, tooNearAnotherObjective, mopos.x, mopos.y });
+                if (i % 500 == 0) Console.WriteLine("Battle begins! \nMOBILE OBJECTIVE PLACEMENT3 trial #{7} - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4:n0} {5:n0} OldPos: {12:n0} {13:n0} OnEnemyTerr: {6} flags: wrong land/water {8} farenoughfromairport {9} withinminmax {10} too near another  {11}", new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory, i, wrongLandOrWaterinObjectiveArea, farEnoughFromAirport, withinMinMax, tooNearAnotherObjective, mopos.x, mopos.y });
 
                 //if (!wrongLandOrWaterinObjectiveArea && farEnoughFromAirport && withinMinMax && !tooNearAnotherObjective) Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - {0} terr: {1} attacking: {2} Owner: {3} Pos: {4} {5} OnEnemyTerr: {6}",new object[] { mo.Name, terr, mo.AttackingArmy, mo.OwnerArmy, newPos.x, newPos.y, onEnemyTerritory});
 
                 if (!wrongLandOrWaterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && withinMinMax && !tooNearAnotherObjective) break;
+				
+				if (!wrongLandOrWaterinObjectiveArea && farEnoughFromAirport && !tooNearAnotherObjective && onEnemyTerritory && i >= maxSearchNum / 5.0 ) {
+					Console.WriteLine("MOBILE OBJECTIVE PLACEMENT - PROBLEM!  Found a good position but within enemy territory.  So switching sides.");
+					mo.OwnerArmy = 3 - mo.OwnerArmy;
+					mo.AttackingArmy = 3 - mo.OwnerArmy;
+					mo.Scouted = false;
+					
+					break;
+				}
 
                 if (!wrongLandOrWaterinObjectiveArea && farEnoughFromAirport && !onEnemyTerritory && !tooNearAnotherObjective && i >= maxSearchNum / 3.0)
                 {
@@ -20767,7 +20832,9 @@ added Rouen Flak
      * 
      * 
      * ******************************************************************************/
-    public string tempFlakPrefix = "tempflak";
+    public string tempFlakPrefix = "tflak";
+	public string autoFlakPrefix = "aflak";
+	
     public double tempFlak_Lifetime_s = 115; //was 125, but seems like they fired a while then sat for a long time, typically.  This was with 15 sec runs
     public int tempFlak_currentArmy = 1;
     //int tempflaktoAllocatePerRound = 80; //number to hand out each time tempFlakPlacement runs.
@@ -21140,7 +21207,14 @@ added Rouen Flak
                     ) rating *= 1.3;
                 else rating *= 0.4;
 
-                if (mo.Destroyed) rating *= 0.2;
+				//gets very weak if destroyed
+				//and proportionally weaker if partially destroyed, 
+				//sqrts mean most decrease comes 0-100%, a little more 100-200%
+                if (mo.Destroyed) rating *= 0.1;
+				else if (mo.DestroyedPercent> 0.05) {
+					double desFact = Math.Sqrt(Math.Sqrt( (2.0-mo.DestroyedPercent).Clamp (0,2) / 2.0));
+					rating *= desFact;
+				}
 
                 //Each 10 defenseunits adds ~ 100% to defense rating here, further 10s have diminishing returns however
                 double defenseUnits_factor = mo.defenseUnitsHelpFactor();
@@ -21353,7 +21427,8 @@ added Rouen Flak
                 totalInSectionFile += num_aa_forobj;
 
 
-                autoFlakF = MO_AutoFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.IDtoCleanChiefName().Substring(1) + "_");
+				//was Substring(1), not sure why. 2026/08
+                autoFlakF = MO_AutoFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.IDtoCleanChiefName().Substring(0) + "_");
 
                 reset_count = false;
 
@@ -21418,15 +21493,7 @@ added Rouen Flak
             //Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy);
             Point3d newPos = mo.Pos;
             newPos.z = Math.Round(newPos.z);
-            double radiusHide = 6000;
-
-            double distanceToEnemyFront = GamePlay.gpFrontDistance(mo.AttackingArmy, mo.Pos.x, mo.Pos.y);
-            double distanceToNeutralFront = GamePlay.gpFrontDistance(0, mo.Pos.x, mo.Pos.y);
-
-
-            if (distanceToEnemyFront < 8000 && distanceToEnemyFront > 1000) radiusHide = distanceToEnemyFront * 0.75;
-            else if (distanceToEnemyFront <= 1000) radiusHide = 750;
-            if (radiusHide > 1000 && distanceToNeutralFront < 4000) radiusHide = 1000;
+			
 
             //Console.WriteLine("Auto/TempFlak Radiushide: {0:n0} Distenemy: {1:n0} Dist Neutral {2:n0}", radiusHide, distanceToEnemyFront, distanceToNeutralFront);
 
@@ -21561,12 +21628,35 @@ added Rouen Flak
                 //slightly randomize the position
                 newPos.x += random.Next(12) - 6;
                 newPos.y += random.Next(12) - 6;
+				
+				int terr = GamePlay.gpFrontArmy(newPos.x, newPos.y);
+				double radiusHide = 6000;
+
+				double distanceToEnemyFront = GamePlay.gpFrontDistance(mo.AttackingArmy, newPos.x, newPos.y);
+				double distanceToNeutralFront = GamePlay.gpFrontDistance(0, newPos.x, newPos.y);
+
+
+				if (distanceToEnemyFront < 8000 && distanceToEnemyFront > 1000) radiusHide = distanceToEnemyFront * 0.75;
+				else if (distanceToEnemyFront <= 1000) radiusHide = radiusHide = distanceToEnemyFront * 0.6;
+				if (radiusHide > 1000 && distanceToNeutralFront < 4000) {
+					radiusHide = distanceToNeutralFront * 0.6; //we pretty much need to do this to avoid killing any enemy objectives in the neutral zone
+				}
+				if (terr == 0 && radiusHide > 250 ) radiusHide = 250; //It's neutral ground, perhaps there should be NO flak at all... 2026/08 - see below.
+				
+				if(ON_TESTSERVER) Console.WriteLine("Autoflak/tempflak placement: {0} {1:N0} {2:N0} {3:N0}", Calcs.correctedSectorNameDoubleKeypad(this,newPos), radiusHide, newPos.x, newPos.y  );
 
 
                 string owner = "nn";
                 if (mo.OwnerArmy == 1) owner = "gb";
                 else if (mo.OwnerArmy == 2) owner = "de";
-                else Console.WriteLine("Autoflak Placement ARMY ERROR for {0} objective - Owner Army was not 1 or 2", new object[] { mo.Name });
+                else { 
+					Console.WriteLine("Autoflak Placement ARMY ERROR for {0} objective - Owner Army was not 1 or 2", new object[] { mo.Name });					
+				}
+				
+				if (owner == "nn" || terr == 0) {
+					Console.WriteLine("Autoflak Placement - no army for OBJ OR flak location in NEUTRAL ZONE.  Not placing any flak here.", new object[] { mo.Name });					
+					return GamePlay.gpCreateSectionFile();
+				}
 
                 //Bofors_StandAlone is very good.
                 //37mm_PaK_35_36 doesn't seem to work at all?
@@ -21590,7 +21680,7 @@ added Rouen Flak
 
                 //if (mo.IsPrimaryTarget) //experimentally making Chiefs only for primary target artillery.
 
-                string staticprefix = "autoflak_" + mo.ID.Substring(1).Replace(' ', '_');
+                string staticprefix = autoFlakPrefix + "_" + owner + "_" + mo.ID.Substring(1).Replace(' ', '_')+"_";
                 if (tempFlak) staticprefix = tempFlakPrefix;
                 if (prefix_replace != null) staticprefix = prefix_replace;
                 staticprefix += "_" + autoFlakRun.ToString() + "_"; //prevent dup staticXX #s plus traceable.
@@ -21632,7 +21722,7 @@ added Rouen Flak
                     double head = Math.Round(hdg + random.Next(15));
 
                     //Radius_Hide 6000 means (I ASSUME) that the flak gun won't look away further than 6000.  Or ???.
-                    if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} at ({0} {1} {2}) heading: {3}, formation: {5})", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation);
+                    if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5})", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side);
                     //Update - I THINK radius_hide is how far away the object is VISIBLE.
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
                     resetCount = false;
@@ -23312,15 +23402,20 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                         Timeout(48, () =>
                         {
                             string s = CLOD_PATH + FILE_PATH + "/" + flakMission;
-                            ISectionFile f = GamePlay.gpLoadSectionFile(s);
-                            f = Calcs.changeArmy_Waypoints_SectionFile(f, GamePlay, this, changeToArmy: mo.OwnerArmy, maxWaypoints_remove: 0, maxPercentWaypoints_remove: 0);
-                            if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Load objective flak file");
-                            GamePlay.gpPostMissionLoad(f);
-                            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "printSectionFile-" + Calcs.GetSafeFileName(flakMission) + ".mis"); //testing
-                                                                                                                          //msn.GamePlay.gpPostMissionLoad(s);
-                            //GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "/" + flakMission);
-                            DebugAndLog(flakMission + " flak file loaded");
-                            Console.WriteLine(flakMission + " flak file loaded");
+								if (File.Exists(s)) {
+								ISectionFile f = GamePlay.gpLoadSectionFile(s);
+								f = Calcs.changeArmy_Waypoints_SectionFile(f, GamePlay, this, changeToArmy: mo.OwnerArmy, maxWaypoints_remove: 0, maxPercentWaypoints_remove: 0);
+								if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Load objective flak file");
+								GamePlay.gpPostMissionLoad(f);
+								f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "printSectionFile-" + Calcs.GetSafeFileName(flakMission) + ".mis"); //testing
+								
+																															  //msn.GamePlay.gpPostMissionLoad(s);
+								//GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "/" + flakMission);
+								DebugAndLog(flakMission + " flak file loaded");
+								Console.WriteLine(flakMission + " flak file loaded");
+							} else {
+								Console.WriteLine(flakMission + " flak file " + s + " didn't exist");
+							}
                         });
 
                     }
@@ -25980,6 +26075,27 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             DateTime currTime_dt = DateTime.UtcNow;
             double repairSpeedupFactor = 1;
+			
+			bool destroyedByCannon = false; 
+			string initiatorName = "unknown";
+			string tName = "";
+			if (initiator.Tool != null) {
+				
+				if (initiator.Actor != null) initiatorName = initiator.Actor.Name();
+				AiDamageTool tool = initiator.Tool;
+				tName = tool.Name;
+				AiDamageToolType tType = tool.Type;
+				if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {0}", tName, tType);
+				if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
+				if (ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
+			}
+
+			//We're just going to stop counting damage by bofors/AA
+			if (initiatorName.ToLower().Contains(":static") || initiatorName.ToLower().Contains(autoFlakPrefix.ToLower()) ||
+				initiatorName.ToLower().Contains(tempFlakPrefix.ToLower())) {
+					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by flak/AA: {0}. Discarding/not counting towards Objective Destruction.", initiatorName);
+					return;
+			}
 
             foreach (string ID in MissionObjectivesList.Keys.ToList())
             {
@@ -26030,6 +26146,9 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     //Console.WriteLine("BSD: 4");
 
                     if (dist > mo.TriggerDestroyRadius) damageCount *= 0.5; //less damage effectiveness if inside radius but outside triggerradius
+					
+					if (destroyedByCannon) damageCount *= 3; //triple credit for strafing damage
+					
                     if (mo.MOTriggerType == MO_TriggerType.PointArea)
                         mo.ObjectsDestroyed_num += damageCount;
                     else if (mo.MOTriggerType == MO_TriggerType.Trigger)
@@ -26229,7 +26348,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
             int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
 			
-			if (ON_TESTSERVER) {numRedPlayers = 5; numBluePlayers = 5; nump = 10;}
+			if (ON_TESTSERVER) {numRedPlayers = 6; numBluePlayers = 6; nump = 12;}
 			
 			bool redFighter = false;
 			bool blueFighter = false;
@@ -26285,8 +26404,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			
 			//We ALSO don't let FIGHTERS go if that side already has a lot of fighters in the game
 			//max fighter groups == number of bomber groups on that side +3
-			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 4 )  letFighterPatrolGo = false;
-			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 4 )  letFighterPatrolGo = false;
+			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 5 )  letFighterPatrolGo = false;
+			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 5 )  letFighterPatrolGo = false;
 			
 			//If more fighters than 80% of the bombers on a side, then don't sent more fighters
 			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.8 * numAircraftByType[1][2])  letFighterPatrolGo = false;
@@ -26336,6 +26455,12 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			//2026-08 - now 9 & 20;
 			double maxAircraftPerSide = 70;
 			double minAircraftPerSide = 50; //Keep in mind this counts breathers & their cover AI
+			
+			if (ON_TESTSERVER) {
+				maxAircraftPerSide = 25;
+				minAircraftPerSide = 15; //Keep in mind this counts breathers & their cover AI
+			}
+			
 			double diffAircraft = maxAircraftPerSide - minAircraftPerSide;
 			if (diffAircraft == 0) diffAircraft = 1;
 			

@@ -6420,6 +6420,7 @@ struct
                 }
 
             }
+			
 
             //TODO: Should collect these over a 5-10 sec time frame & print summary, bec. many bombs often hit very close to same time
             ////TESTING: turning off ground target  hit messages to see if that helps our warping problem 9/28/2018
@@ -9960,6 +9961,40 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             int score = 1;
 
             if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
+			
+			List<string> higherScores = new List<string>() { "ship", "truck", "tank", "spg", "car", "plane", "balloon", "ammo", "fuel" };
+			
+			string types = (stationary.Title + stationary.Type).ToLower();
+			
+			foreach (string s in higherScores)
+                        {
+                            if (types.Contains(s.ToLower()))
+                            {
+                                score = 2;
+                                break;
+                            }
+                        }
+			if (types.Contains("artillery")) score = 6;
+			
+			
+			
+			
+			bool destroyedByCannon = false; 
+			string initiatorName = "unknown";
+			string tName = "";
+			if (initiator.Tool != null) {
+				
+				if (initiator.Actor != null) initiatorName = initiator.Actor.Name();
+				AiDamageTool tool = initiator.Tool;
+				tName = tool.Name;
+				AiDamageToolType tType = tool.Type;
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {0}", tName, tType);
+				if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
+			}
+			
+			if (destroyedByCannon) score *= 3; //triple score for ground strafing victories
+			
             //Console.WriteLine("OSK_dw 5");
             if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type, deadStationary: stationary); //type 4 is any other ground type
                                                                                                          //for actor deaths we get a score & we can total scores of various damage initiators to get at total kill
@@ -9972,7 +10007,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             //Report ground kills but spread them out a bit in case many die @ once
             //TESTING: turning off ground target  hit messages to see if that helps our warping problem  9/28/2018
             //Console.WriteLine("OSK_dw 6");
-            if (player != null) Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points", new object[] { }); });
+            if (player != null) Timeout(1 + stb_random.NextDouble() * 25, () => { if (score > 0) GamePlay.gpLogServer(new Player[] { player }, "Ground Target Destroyed: " + score.ToString("n1") + " points to your stats", new object[] { }); });
 
 			if (mainmission.ON_TESTSERVER) Console.WriteLine(msg);
             //Stb_LogError(msg);

@@ -26094,6 +26094,12 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			if (initiatorName.ToLower().Contains(":static") || initiatorName.ToLower().Contains(autoFlakPrefix.ToLower()) ||
 				initiatorName.ToLower().Contains(tempFlakPrefix.ToLower())) {
 					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by flak/AA: {0}. Discarding/not counting towards Objective Destruction.", initiatorName);
+					
+					//And..just destroy these problem AA/flak
+					try {
+						(initiator.Actor as AiCart).Destroy();
+					} catch (Exception ex) { Console.WriteLine("HandlePointAreaObjectives - remove FLAK ERROR: " + ex.Message); }
+					
 					return;
 			}
 
@@ -26147,12 +26153,23 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
                     if (dist > mo.TriggerDestroyRadius) damageCount *= 0.5; //less damage effectiveness if inside radius but outside triggerradius
 					
-					if (destroyedByCannon) damageCount *= 3; //triple credit for strafing damage
+					if (destroyedByCannon) {
+						//Soo, strafing hits that killed an actual object, 
+						//also count as much as 500lb bomb hitting the  OBJ
+						Timeout(random.Next(3,30), () => {
+							MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
+						});
+						damageCount *= 3; //triple credit for strafing damage of ground objects
+					}
 					
                     if (mo.MOTriggerType == MO_TriggerType.PointArea)
                         mo.ObjectsDestroyed_num += damageCount;
                     else if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         mo.ObjectsDestroyed_num ++;
+					
+					if (destroyedByCannon) {
+						
+					}
 
                     //Console.WriteLine("BSD: 3");
 
@@ -26167,6 +26184,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                         MO_CalculateAndRecordTriggerObjectivesDamagePercent(mo);
                     //double oldDestroyedPercent = mo.DestroyedPercent;
                     else if (mo.MOTriggerType == MO_TriggerType.PointArea) MO_CalculateAndRecordPointareaObjectivesDamagePercent(mo);
+					
 
                     //Console.WriteLine("BSD: 6");
                     if (st != null) Console.WriteLine("AreaPoint Stationary: {0}, {1}, {2}, {3}", st.Category, st.Name, st.Type, st.Title);

@@ -5402,18 +5402,21 @@ public class Mission : AMission, IMainMission
 												!( airGroup.NOfAirc < 3  && (Calcs.GetAircraftType(aircraft).ToLower()).Contains("sunderland"))
 												) {
 													numAircraftByType[army][2] += airGroup.NOfAirc;
-													numAirGroupsByType[army][2] ++ ;
+													//count airGroups but don't double-count daughter groups
+													if (airGroup.motherGroup() != null) numAirGroupsByType[army][2] ++ ;
 													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found bomber {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 																								
 												} else if (Calcs.isStrikeAC(aircraft)) {
 													//Need STrikeAC after DiveBomber to classify Ju-87 as bomber here..
 													numAircraftByType[army][1] += airGroup.NOfAirc;
-													numAirGroupsByType[army][1] ++ ;
+													//count airGroups but don't double-count daughter groups
+													if (airGroup.motherGroup() != null) numAirGroupsByType[army][1] ++ ;
 													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found Sturmovik {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 													
 												} else if (!Calcs.isAsrAC(aircraft)) { //counting fighters - ASR (HE-115 & Walrus) are ignored
 													numAircraftByType[army][0] += airGroup.NOfAirc;
-													numAirGroupsByType[army][0] ++;
+													//count airGroups but don't double-count daughter groups
+													if (airGroup.motherGroup() != null)	numAirGroupsByType[army][0] ++;
 													//if (ON_TESTSERVER) Console.WriteLine("groupAllAircraft: Found fighter {0} army {1}", Calcs.GetAircraftType(aircraft), army );
 												}
 												
@@ -10059,8 +10062,8 @@ public class Mission : AMission, IMainMission
         //Console.WriteLine("balanceAILoad: Starting timer! " + DateTime.UtcNow.ToString("T"));
 		
 		//int period = 232453; //4-ish minutes
-		int period = 312592; //5-ish minutes
-		if(ON_TESTSERVER) period =700000; //speed things up a lot on testserver
+		int period = 332592; //5-ish minutes
+		if(ON_TESTSERVER) period =700000; //speed things up OR slow down a lot on testserver
 		
         balanceAILoadTimer = new System.Threading.Timer(
             new TimerCallback(balanceAILoad),
@@ -14809,7 +14812,7 @@ public class Mission : AMission, IMainMission
         [DataMember] public string TriggerName { get; set; }
         [DataMember] public string TriggerType { get; set; }
         [DataMember] public double TriggerPercent { get; set; }
-        [DataMember] public double TriggerDestroyRadius { get; set; } //What is set in the .mis file as the effective radius for this trigger object.  This is slightly different from "radius" in that it is a number used only internally to determine if the destroy objects are within the effective area of the trigger.
+        [DataMember] public double TriggerDestroyRadius { get; set; } //What is set in the .mis file as the effective radius for this trigger object.  This is slightly different from "radius" in that it is a number used only internally to determine if the destroyed objects are within the effective area of the trigger.
 
         [DataMember] public double OrdnanceRequiredToTrigger_kg { get; set; } //For type PointArea
         [DataMember] public double OrdnanceOnTarget_kg { get; set; } //For PointArea & similar - how many KG ordnance have hit this target already
@@ -16650,57 +16653,61 @@ public class Mission : AMission, IMainMission
 
             //Abt 33 total AA in the radius (plus possibly more auto-placed)
             //addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA", "", "Flak areas/DovRflak.mis", 1, 8, "Dover_Radar_AA", 246633, 235904, 1000, 1000, 2000, 20, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+			
+			//*******OK, for these *****Artillery_and_AA***** we are going to use autoflak/tempflak rather than the pre-set .mis files
+			//The .mis files are all disabled by renaming the Flak areas/ directory to something else
+			//This way we can ADD Artillery_and_AA objectives anywhere we like, easily
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #1", "", "Flak areas/DovRflak1.mis", 1, 5, "Dover_Radar_AA1", 245821, 236004, 900, 900, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #1", "", "Flak areas/DovRflak1.mis", 1, 5, "Dover_Radar_AA1", 245821, 236004, 900, 900, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #2", "", "Flak areas/DovRflak2.mis", 1, 5, "Dover_Radar_AA2", 246902, 236314, 550, 550, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false); //was 246802, 236214 - changed a little to reduce conflict with location of Dover Radar, which is 246777, 235751.
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #2", "", "Flak areas/DovRflak2.mis", 1, 5, "Dover_Radar_AA2", 246902, 236314, 550, 550, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false); //was 246802, 236214 - changed a little to reduce conflict with location of Dover Radar, which is 246777, 235751.
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #3", "", "Flak areas/DovRflak3.mis", 1, 5, "Dover_Radar_AA3", 247398, 235557, 800, 800, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #3", "", "Flak areas/DovRflak3.mis", 1, 5, "Dover_Radar_AA3", 247398, 235557, 800, 800, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
 
             //Abt 28 total AA
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #1", "", "Flak areas/SanRflak1.mis", 1, 5, "Sandwich_Radar_AA1", 247229, 251864, 1200, 1200, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #1", "", "Flak areas/SanRflak1.mis", 1, 5, "Sandwich_Radar_AA1", 247229, 251864, 1200, 1200, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #2", "", "Flak areas/SanRflak2.mis", 1, 5, "Sandwich_Radar_AA2", 249328, 252080, 1000, 1000, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #2", "", "Flak areas/SanRflak2.mis", 1, 5, "Sandwich_Radar_AA2", 249328, 252080, 1000, 1000, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #3", "", "Flak areas/SanRflak3.mis", 1, 5, "Sandwich_Radar_AA3", 249084, 251476, 1000, 1000, 1000, 4, 0, 150, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #3", "", "Flak areas/SanRflak3.mis", 1, 5, "Sandwich_Radar_AA3", 249084, 251476, 1000, 1000, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
             //Abt 31 total AA
-            //addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA", "", "Flak areas/DunRflak.mis", 1, 8, "Dungeness_Radar_AA", 221500, 214604, 750, 7500, 2000, 20, 150, 96, false, false, 0, 0, "", add, canBeDisabled: false);
+            //addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA", "", "Flak areas/DunRflak.mis", 1, 8, "Dungeness_Radar_AA", 221500, 214604, 750, 7500, 2000, 20, 150, 96, true, true, 2, 4, "", add, canBeDisabled: false);
 
             //we make the radius larger than just this AA group because we're hoping to catch any autoflak in the area
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #1", "", "Flak areas/DunRflak1.mis", 1, 5, "Dungeness_Radar_AA1", 221234, 214067, 500, 500, 1000, 4, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #1", "", "Flak areas/DunRflak1.mis", 1, 5, "Dungeness_Radar_AA1", 221234, 214067, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #2", "", "Flak areas/DunRflak2.mis", 1, 5, "Dungeness_Radar_AA2", 221902, 214280, 500, 500, 1000, 4, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #2", "", "Flak areas/DunRflak2.mis", 1, 5, "Dungeness_Radar_AA2", 221902, 214280, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #3", "", "Flak areas/DunRflak3.mis", 1, 5, "Dungeness_Radar_AA3", 221448, 215209, 500, 500, 1000, 4, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #3", "", "Flak areas/DunRflak3.mis", 1, 5, "Dungeness_Radar_AA3", 221448, 215209, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Boulogne Radar AA", "", "Flak areas/BlgRflak.mis", 2, 4, "Boulogne_Radar_AA", 264469, 188601, 500, 500, 1000, 5, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Boulogne Radar AA", "", "Flak areas/BlgRflak.mis", 2, 4, "Boulogne_Radar_AA", 264469, 188601, 500, 500, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Ambeteuse Radar AA", "", "Flak areas/AmbRflak.mis", 2, 4, "Ambetuse_Radar_AA", 266865, 197854, 500, 500, 500, 5, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Ambeteuse Radar AA", "", "Flak areas/AmbRflak.mis", 2, 4, "Ambetuse_Radar_AA", 266865, 197854, 500, 500, 500, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #1", "", "Flak areas/OypRflak1.mis", 2, 4, "OyePlage_Radar_AA1", 293354, 219098, 550, 550, 1000, 5, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #1", "", "Flak areas/OypRflak1.mis", 2, 4, "OyePlage_Radar_AA1", 293354, 219098, 550, 550, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #2", "", "Flak areas/OypRflak2.mis", 2, 4, "OyePlage_Radar_AA2", 295396, 219665, 600, 600, 1000, 5, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #2", "", "Flak areas/OypRflak2.mis", 2, 4, "OyePlage_Radar_AA2", 295396, 219665, 600, 600, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Coquelles Radar AA", "", "Flak areas/CoqRflak.mis", 2, 5, "Coquelles_Radar_AA", 276168, 214104, 750, 750, 1000, 7, 0, 140, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Coquelles Radar AA", "", "Flak areas/CoqRflak.mis", 2, 5, "Coquelles_Radar_AA", 276168, 214104, 750, 750, 1000, 7, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA", "", "Flak areas/HQGRRflak.mis", 2, 5, "ReserveGHQ_AA", 304020, 42462, 300, 300, 10000, 10, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA", "", "Flak areas/HQGRRflak.mis", 2, 5, "ReserveGHQ_AA", 304020, 42462, 300, 300, 10000, 10, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA2", "", "Flak areas/HQGRRflak2.mis", 2, 5, "ReserveGHQ_AA2", 301509, 40930, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA2", "", "Flak areas/HQGRRflak2.mis", 2, 5, "ReserveGHQ_AA2", 301509, 40930, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA3", "", "Flak areas/HQGRRflak3.mis", 2, 5, "ReserveGHQ_AA3", 305757, 41811, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA3", "", "Flak areas/HQGRRflak3.mis", 2, 5, "ReserveGHQ_AA3", 305757, 41811, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA4", "", "Flak areas/HQGRRflak4.mis", 2, 5, "ReserveGHQ_AA4", 305087, 42362, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA4", "", "Flak areas/HQGRRflak4.mis", 2, 5, "ReserveGHQ_AA4", 305087, 42362, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA", "", "Flak areas/HQBRRflak.mis", 2, 5, "ReserveBHQ_AA", 150588, 253363, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA", "", "Flak areas/HQBRRflak.mis", 2, 5, "ReserveBHQ_AA", 150588, 253363, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA2", "", "Flak areas/HQBRRflak2.mis", 2, 5, "ReserveBHQ_AA2", 149648, 253659, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA2", "", "Flak areas/HQBRRflak2.mis", 2, 5, "ReserveBHQ_AA2", 149648, 253659, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA3", "", "Flak areas/HQBRRflak3.mis", 2, 5, "ReserveBHQ_AA3", 151102, 255638, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA3", "", "Flak areas/HQBRRflak3.mis", 2, 5, "ReserveBHQ_AA3", 151102, 255638, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA4", "", "Flak areas/HQBRRflak4.mis", 2, 5, "ReserveBHQ_AA4", 153623, 253557, 125, 125, 1000, 4, 0, 5, 120, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "RAF Reserve Communications HQ Radar AA4", "", "Flak areas/HQBRRflak4.mis", 2, 5, "ReserveBHQ_AA4", 153623, 253557, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
             //So the objective points required, have to been figured according to the scale in MO_HandlePointAreaObjectives(AiActor actor, List<DamagerScore> damages)
             //Where most ships are 9 points, Cruiser or destroyer 20, Battleship & Carrier 30, etc
@@ -16728,8 +16735,8 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Deal Military Fuel Transfer Station", "Dove", "", "", 1, 3, "Deal_Fuel_Transfer", "TGroundDestroyed", 22, 251135, 245891, 100, false, 150, 200, "", add);
             */
 
-            addPointArea(MO_ObjectiveType.Railroad_Yard, "Deal Military Railyard", "Dove", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Red-Deal_Military_Train_Station.mis", 1, 3, "Deal_Military_Train_Station", 250541, 247155, 150, 175, 5000, 20, 0, 150, 220, true, false, 2, 2, "", add, canBeDisabled: false);
-            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Deal Military Fuel Transfer Station", "Dove", "", 1, 3, "Deal_Fuel_Transfer", 251135, 245891, 100, 150, 5000, 20, 0, 150, 200, true, false, 2, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Railroad_Yard, "Deal Military Railyard", "Dove", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Red-Deal_Military_Train_Station.mis", 1, 3, "Deal_Military_Train_Station", 250541, 247155, 150, 175, 5000, 20, 0, 150, 220, true, true, 2, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Deal Military Fuel Transfer Station", "Dove", "", 1, 3, "Deal_Fuel_Transfer", 251135, 245891, 100, 150, 5000, 20, 0, 150, 200, true, true, 2, 2, "", add, canBeDisabled: false);
 
 
             //FOUR convoys seems to freak out the server???  Maybe 2 is OK????
@@ -16785,7 +16792,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.Submarine, "Submarine - East Sussex Coast", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerSubmarine-objective.mis", 2,20, "BlueSubmarine1", 9168, 162087, 1, 0, 0, 0, 1, 180, 4, false, false, 0, 0, "", add, true, chief: "3001_Chief");
             //addTrigger(MO_ObjectiveType.Military_Armored_Vehicles, "Ashford Train Depot Armour", "Ashf", "", "", 1, 3, "BTarget3", "TGroundDestroyed", 18, 214639, 235604, 250, false, 100, 196, "", add);
-            addPointArea(MO_ObjectiveType.Military_Armored_Vehicles, "Ashford Train Depot Armour", "Ashf", "", 1, 4, "BTarget3", 214639, 235604, 250, 300, 4000, 14, 0, 150, 196, false, true, 2, 2, "", add, true, "");
+            addPointArea(MO_ObjectiveType.Military_Armored_Vehicles, "Ashford Train Depot Armour", "Ashf", "", 1, 4, "BTarget3", 214639, 235604, 250, 300, 4000, 14, 0, 150, 196, true, true, 2, 2, "", add, true, "");
 
             addTrigger(MO_ObjectiveType.Ground_Aircraft, "Littlestone Bomber Squadron Aircraft", "Litt", "", "", 1, 3, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, 196, "", add);
             addTrigger(MO_ObjectiveType.Airfield_Complex, "Redhill Bomber Squadron Aircraft ", "Redh", "", "", 1, 5, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 5, 196, "", add);
@@ -16847,18 +16854,18 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "Minster Synthetic Case Oil Manufacture", "Mans", "", "", 1, 3, "BTargMinsterCaseOilManufacturing", "TGroundDestroyed", 10, 240203, 256964, 100, false, 120, 196, "", add);
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Battle Commando Training Center Shoreham", "Shor", "", "", 1, 3, "BTargBattleCommandoTrainingCenter", "TGroundDestroyed", 5, 185093, 219403, 50, false, 40, 240, "", add);
             //addTrigger(MO_ObjectiveType.MilitaryFuelProduction, "Wehrmacht Kohleverflüssigungsfabrik Normandy", "Quer", 2, 5, "RTargNormandyMiningCenter", "TGroundDestroyed", 50, 67510, 26083, 50, false, 100, 24, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Wehrmacht Benzin Raffinerie Normandy", "Caen", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerOilRefineryCaen-objective.mis", 2, 6, "RTargCaenOilRefinery", 128016, 14843, 450, 500, 16000, 20, 0, 15, 240, true, false, 1, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Wehrmacht Benzin Raffinerie Normandy", "Caen", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerOilRefineryCaen-objective.mis", 2, 6, "RTargCaenOilRefinery", 128016, 14843, 450, 500, 16000, 20, 0, 15, 240, true, true, 2, 2, "", add, canBeDisabled: false);
             
 
-            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Wehrmacht Kohleverflüssigungsfabrik Hazebrouck", "Haze", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerHazebrouckCoalLiquifaction-objective.mis", 2, 10, "RTargHazebrouckCoalLiquifactionFacility", 338117, 188023, 500, 500, 20000, 29, 0, 15, 300, true, false, 1, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Wehrmacht Kohleverflüssigungsfabrik Hazebrouck", "Haze", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-GerHazebrouckCoalLiquifaction-objective.mis", 2, 10, "RTargHazebrouckCoalLiquifactionFacility", 338117, 188023, 500, 500, 20000, 29, 0, 15, 300, true, true, 3, 2, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Gourney-en-Bray Oil Field", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Gournay-en-Bray-OilFields-objective.mis", 2, 10, "GourneyenBrayGrainOilFields", 277697, 60896, 650, 650, 20000, 0, 0, 15, 300, false, false, 0, 0, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Gourney-en-Bray Oil Field", "", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Gournay-en-Bray-OilFields-objective.mis", 2, 10, "GourneyenBrayGrainOilFields", 277697, 60896, 650, 650, 20000, 0, 0, 15, 300, true, true, 2, 4, "", add, canBeDisabled: false);
 
             ////addTrigger(MO_ObjectiveType.Railroad_Yard, "Billicaray Military Train Station", "RaHQ", 1, 2, "BillicarayStation", "TGroundDestroyed", 85, 180141, 288423, 150, false, 100, 24, "", add); //So in the .mis file BTarget27 is 180xxx / 288xxx which is the Billicaray area.  I don't know if we have flak for that?  Flak 'Tunb' is definitely noit going to work. Flug 2018/10/08       
-            addPointArea(MO_ObjectiveType.Railroad_Yard, "Billicaray Military Train Station", "RaHQ", "", 1, 4, "BillicarayStation", 181289, 288265, 80, 80, 4500, 1, 0, 80, 200, true, false, 1, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Railroad_Yard, "Billicaray Military Train Station", "RaHQ", "", 1, 4, "BillicarayStation", 181289, 288265, 80, 80, 4500, 1, 0, 80, 200, true, true, 1, 2, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.RadioCommunications, "Faversham Long Range Military Communications Antennas", "", "", 1, 4, "FavershamRadioAntenna",217610,252167, 200, 175, 2500, 1, 0, 120, 300, true, true, 1, 2, "", add, canBeDisabled: false); //items in main .mis file
 
-            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Isle of Grain Oil Field", "Quee", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-BritOilFields-objective.mis", 1, 10, "BTargIsleGrainOilFields", 202147, 269152, 650, 650, 20000, 29, 0, 15, 300, true, false, 1, 2, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.MilitaryFuelProduction, "Isle of Grain Oil Field", "Quee", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-BritOilFields-objective.mis", 1, 10, "BTargIsleGrainOilFields", 202147, 269152, 650, 650, 20000, 29, 0, 15, 300, true, true, 1, 2, "", add, canBeDisabled: false);
             //addTrigger(MO_ObjectiveType.Building, "Shoreham Submarine Base", "", 1, 3, "BTargShorehamSubmarineBase", "TGroundDestroyed", 10, 137054, 198034, 50, false, 120, 24, "", add);           
 
 
@@ -16926,16 +16933,16 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Le Treport Fuel", "LeTr", "", "", 2, 4, "RTarget21", "TGroundDestroyed", 50, 250477, 116082, 100, false, 80, 230, "", add);  //g
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Poix Nord Fuel Trucks", "Poix", "", "", 2, 5, "RTarget22", "TGroundDestroyed", 12, 293827, 84983, 150, false, 15, 450, "", add);  //g
             //addTrigger(MO_ObjectiveType.Military_Building, "Calais Chemical Research Facility", "Cala", "",  "", 2, 3, "RTarget23", "TGroundDestroyed", 75, 285254, 216717, 50, false, 110, 200, "", add);  //g
-            addPointArea(MO_ObjectiveType.Military_Building, "Calais Luftwaffe Signals School", "Cala", "", 2, 3, "RTarget23", 285254, 216717, 75, 50, 3000, 4, 0, 110, 200, false, true, 1, 2, "", add);  //g
+            addPointArea(MO_ObjectiveType.Military_Building, "Calais Luftwaffe Signals School", "Cala", "", 2, 3, "RTarget23", 285254, 216717, 75, 50, 3000, 4, 0, 110, 200, true, true, 1, 2, "", add);  //g
 
             //addTrigger(MO_ObjectiveType.Military_Building, "Calais Optical Research Facility", "Cala", "", "",  2, 3, "RTarget24", "TGroundDestroyed", 100, 285547, 216579, 50, false, 110, 200, "", add);  //g
-            addPointArea(MO_ObjectiveType.Military_Building, "Calais Munitions Research", "Cala", "", 2, 3, "RTarget24", 285547, 216579, 75, 50, 3000, 4, 0, 110, 200, false, true, 1, 2, "", add);  //g
+            addPointArea(MO_ObjectiveType.Military_Building, "Calais Munitions Research", "Cala", "", 2, 3, "RTarget24", 285547, 216579, 75, 50, 3000, 4, 0, 110, 200, true, true, 1, 2, "", add);  //g
             //addTrigger(MO_ObjectiveType.MilitaryStorageFacility, "Calais Chemical Storage", "Cala", "", "",  2, 3, "RTarget25", "TGroundDestroyed", 75, 285131, 216913, 50, false, 110, 210, "", add);  //g
-            addPointArea(MO_ObjectiveType.MilitaryStorageFacility, "Calais Nitroglycerin Storage", "Cala", "", 2, 3, "RTarget25", 285131, 216913, 75, 50, 3000, 4, 0, 110, 210, false, true, 1, 2, "", add);  //g
+            addPointArea(MO_ObjectiveType.MilitaryStorageFacility, "Calais Nitroglycerin Storage", "Cala", "", 2, 3, "RTarget25", 285131, 216913, 75, 50, 3000, 4, 0, 110, 210, true, true, 1, 2, "", add);  //g
             //addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Calais Gestapo Headquarters", "Cala", "", "",  2, 3, "RTarget26", "TGroundDestroyed", 78, 284522, 216339, 50, false, 110, 200, "", add);  //g
-            addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Calais SS Headquarters", "Cala", "", 2, 3, "RTarget26", 284522, 216339, 75, 50, 3000, 4, 0, 110, 200, false, true, 1, 2, "", add);  //g
+            addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Calais SS Headquarters", "Cala", "", 2, 3, "RTarget26", 284522, 216339, 75, 50, 3000, 4, 0, 110, 200, true, true, 1, 2, "", add);  //g
             //addTrigger(MO_ObjectiveType.AmmunitionStorage, "Calais Gunpowder Facility", "Cala", "", "",  2, 3, "RTarget27", "TGroundDestroyed", 50, 284898, 216552, 50, false, 110, 250, "", add);  //g  
-            addPointArea(MO_ObjectiveType.AmmunitionStorage, "Calais Freya Radar Repair & Maintenance Facility", "Cala", "", 2, 3, "RTarget27", 284898, 216552, 75, 50, 8000, 4, 0, 110, 250, false, true, 1, 2, "", add);  //g  
+            addPointArea(MO_ObjectiveType.AmmunitionStorage, "Calais Freya Radar Repair & Maintenance Facility", "Cala", "", 2, 3, "RTarget27", 284898, 216552, 75, 50, 8000, 4, 0, 110, 250, true, true, 1, 2, "", add);  //g  
 
             //addTrigger(MO_ObjectiveType.Ship, "Minensuchboote", "Abbe",  "", "",  2, 2, "RTarget30S", "TGroupDestroyed", 90, 263443, 181488, 0, false, 100, "0_Chief  Minensuchtboot");   //removed from the mission
 
@@ -16970,8 +16977,8 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Le Havre Kriegsmarine LOX", "Havr", "", "", 2, 5, "LehavNavalLOX", "TGroundDestroyed", 41, 162099, 50034, 50, false, 2, 350, "", add);
             addTrigger(MO_ObjectiveType.Railroad, "Le Havre Train Station", "Havr", "", "", 2, 5, "LehavTrainStation", "TGroundDestroyed", 37, 159918, 53120, 100, false, 2, 300, "", add);
 			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-S-Boot-Basis.mis", 2, 25, "BTargLeHavreSBootBasis", 160005, 51130, 175, 150, 10000, 80, 0, 160, 222, true, false, 2, 8, "", add, canBeDisabled: false);			
-			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest Torpedo Storage Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-Widerstandsnest.mis", 2, 14, "BTargLeHavreWiderstandsnest", 160246, 51060, 75, 50, 2000, 20, 0, 160, 222, true, false, 2, 8, "", add, canBeDisabled: false);	
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-S-Boot-Basis.mis", 2, 25, "BTargLeHavreSBootBasis", 160005, 51130, 175, 150, 10000, 80, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);			
+			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest Torpedo Storage Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-Widerstandsnest.mis", 2, 14, "BTargLeHavreWiderstandsnest", 160246, 51060, 75, 50, 2000, 20, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);	
 			
 			
 			
@@ -16997,7 +17004,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.Railroad_Bridge, "Maromme Rail Bridge", "", "", 2, 6, "RTargMarommeRailBridge", 220000, 59260, 125, 100, 3000, 5, 0, 2, 450, true, false, 1, 2, "", add);
             //addTrigger(MO_ObjectiveType.Building, "Maromme Industrial Park", "", 2, 4, "RTargMarommeManufacturing", "TGroundDestroyed", 20, 226019, 50996, 650, false, 120, 24, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Waffen- und Rüstungsfabrik Maromme", "", "", 2, 6, "RTargMarommeRailMunitionsFactory", 226019, 50952, 400, 350, 9000, 10, 0, 2, 550, true, false, 1, 2, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Waffen- und Rüstungsfabrik Maromme", "", "", 2, 6, "RTargMarommeRailMunitionsFactory", 226019, 50952, 400, 350, 9000, 10, 0, 2, 550, true, true, 2, 2, "", add);
 
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad=80, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             // n is the DESCRIPTIVE NAME for the target--what the player sees
@@ -17024,8 +17031,8 @@ public class Mission : AMission, IMainMission
             //That's because too many flak installations seems to bring the server to its knees.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=80, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Dover Navy HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 0, 125, 200, true, true, 3, 7, "", add);
-            addPointArea(MO_ObjectiveType.AmmunitionStorage, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 0, 125, 200, true, true, 3, 7, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Dover Navy Operations Fuel", "Dove", "", 1, 3, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 0, 125, 222, true, true, 3, 7, "", add);
+            addPointArea(MO_ObjectiveType.AmmunitionStorage, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 0, 125, 200, true, true, 3, 5, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Dover Navy Operations Fuel", "Dove", "", 1, 3, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 0, 125, 222, true, true, 3, 6, "", add);
 			
 			//246653, 233348, 800, 750, 
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Dover Navy Docks Area", "Dove", "Genghis-LOADONCALL-dover-naval-docks-objective5.mis", 1, 7, "BTargDoverNavyDocks", 246653, 233348, 800, 750, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
@@ -17036,8 +17043,8 @@ public class Mission : AMission, IMainMission
             //addTrigger(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", "", 1, 3, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, 196, "", add);
             addPointArea(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", 1, 4, "BTarget4", 247462, 259157, 320, 320, 4500, 25, 0, 100, 196, true, true, 1, 3, "", add, false);
             //addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "", "", 1, 4, "littlestonehang", "TGroundDestroyed", 66, 221988, 221642, 90, false, 100, 210, "", add); //  "Littlestone research facility"
-            addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Littlestone-Research.mis", 1, 2, "littlestonehang", 223570, 224582, 270, 270, 4000, 10, 0, 80, 96, true, true, 1, 4, "", add, false); //  "Littlestone research facility"
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Southhampton Navy Docks Area", "Sout", "", 1, 8, "BTargSouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 0, 5, 200, true, true, 2, 10, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Littlestone-Research.mis", 1, 2, "littlestonehang", 223570, 224582, 270, 270, 4000, 10, 0, 80, 96, true, true, 2, 4, "", add, false); //  "Littlestone research facility"
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Southhampton Navy Docks Area", "Sout", "", 1, 8, "BTargSouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 0, 5, 200, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Shoreham Artillery Assembly Factory", "", "Genghis-LOADONCALL-shoreham-artillery-assembly-objective.mis", 1, 6, "BTargShorehamArtilleryFactory", 137046, 200038, 150, 90, 3000, 5, 0, 70, 300, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Navy Submarine Base", "", "", 1, 6, "BTargShorehamSubmarineBase", 137054, 198034, 150, 90, 3000, 3, 0, 70, 310, true, true, 3, 8, "", add);
 
@@ -17070,7 +17077,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Dunkirk Southwest Wehrmacht Manufacturing Area", "Dunk", "", 2, 8, "BTargDunkirkSouthwestIndustrialArea", 313146, 222107, 500, 450, 10000, 6, 0, 140, 222, true, false, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Dunkirk Northeast Wehrmacht Manufacturing Area", "Dunk", "", 2, 8, "BTargDunkirkSoutheastIndustrialArea", 318506, 225750, 500, 450, 10000, 6, 0, 140, 222, true, false, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Dunkirk Central-West Wehrmacht Manufacturing Area", "Dunk", "", 2, 8, "BTargDunkirkCentralWestIndustrialArea", 314753, 224055, 1200, 1300, 10000, 15, 0, 130, 222, true, false, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Dunkirk East Kriegsmarine Docks Area", "Dunk", "", 2, 8, "BTargDunkirkEastDocksArea", 320103, 225534, 1250, 1200, 10000, 1, 0, 130, 222, true, false, 2, 8, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Dunkirk East Kriegsmarine Docks Area", "Dunk", "", 2, 8, "BTargDunkirkEastDocksArea", 320103, 225534, 1250, 1200, 10000, 1, 0, 130, 222, true, true, 2, 8, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Oostende Wehrmacht Manufacturing Area", "Dunk", "", 2, 8, "BTargOostendeIndustrialArea", 358758, 242945, 800, 700, 10000, 1, 0, 100, 270, true, false, 2, 8, "", add);
 
@@ -17080,17 +17087,17 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Boulogne West Wehrmacht Manufacturing Area", "Boul", "", 2, 8, "BTargBoulogneWestIndustrialArea", 264576, 189495, 650, 700, 11000, 4, 0, 140, 222, true, false, 2, 8, "", add);
 
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 6, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 0, 100, 270, true, false, 2, 6, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Estree Amphibious Landing Training Center", "Estr", "", 2, 6, "RTargEstreeAmphib", 279617, 163616, 250, 200, 3000, 6, 0, 100, 270, true, true, 2, 6, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Etaples Landing Craft Assembly Site", "", "Genghis-LOADONCALL-etaples-landingcraft-objective.mis", 2, 4, "RTargEtaplesLandingCraft", 269447, 166097, 250, 200, 3000, 3, 0, 100, 349, true, true, 2, 6, "", add);
 
             addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Berck Unternehmen Seelöwe Marinefährprahm Assembly Site", "", "Genghis-LOADONCALL-berck-landingcraft-objective.mis", 2, 7, "RTargBerckLandingCraft", 269247, 147771, 250, 200, 3000, 5, 0, 100, 290, true, true, 3, 6, "", add);
 			
-			addPointArea(MO_ObjectiveType.Military_Airfield, "Seefliegerhorst Berck-See (Seaplane Base)", "", "", 2, 10, "BTargBerckSee", 268093, 150466, 100, 80, 1000, 8, 0, 160, 222, true, false, 2, 8, "", add);						
+			addPointArea(MO_ObjectiveType.Military_Airfield, "Seefliegerhorst Berck-See (Seaplane Base)", "", "", 2, 10, "BTargBerckSee", 268093, 150466, 100, 80, 1000, 8, 0, 160, 222, true, true, 2, 8, "", add);						
 			
 						
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Calais Kriegsmarine Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 15, 0, 120, 196, true, false, 2, 8, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Calais Kriegsmarine Docks Area", "Cala", "", 2, 8, "RTargCalaisDocksArea", 284656, 217404, 400, 350, 8000, 15, 0, 120, 196, true, true, 2, 8, "", add, canBeDisabled: false);
 
             addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Veurne Wehrmacht Manufacturing Area", "", "", 2, 8, "RTargVeurneMilitaryManufacturingArea", 342180, 228344, 300, 250, 8000, 15, 0, 90, 246, true, false, 2, 10, "", add);
 
@@ -17186,16 +17193,16 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.Radar, "Truck-borne Radar", "", 1, 6, "RAFTruckRadar1", 122791, 200946, 100, 90, 3000, 3, 0, 110, 48, true, true, 1, 2, MO_MobileObjectiveType.DesertRadar, 24, 101962, 194891, 150400, 229524, 3, 8, MO_ProducerOrStorageType.None, "", add, radar_effective_radius_m: 30000);
             
             
-            addMobile(MO_ObjectiveType.KnickebeinHQ, "Radio Beam Wayfinding Coordination Center", "", 1, 10, "BRAFKnickebeinHQ", 30432, 285034, 200, 150, 12000, 28, 0, 40, 96, true, true, 1, 4, MO_MobileObjectiveType.KnickebeinHQ, 7, 10869, 259085, 97450, 307435, 25, 85, MO_ProducerOrStorageType.Knickebein_beams, "", add, radar_effective_radius_m: 30000, canbedisabled: false); //ALSO it's a radar center for that part of the map; sensible
+            addMobile(MO_ObjectiveType.KnickebeinHQ, "Radio Beam Wayfinding Coordination Center", "", 1, 10, "BRAFKnickebeinHQ", 30432, 285034, 200, 150, 12000, 28, 0, 40, 96, true, true, 1, 6, MO_MobileObjectiveType.KnickebeinHQ, 7, 10869, 259085, 97450, 307435, 25, 85, MO_ProducerOrStorageType.Knickebein_beams, "", add, radar_effective_radius_m: 30000, canbedisabled: false); //ALSO it's a radar center for that part of the map; sensible
               //If hte KnickebeinHQ gets knocked out then pilots can't use KB...
 
-            addMobile(MO_ObjectiveType.KnickebeinHQ, "Knickebein Coordination Center", "", 2, 10, "RLWKnickebeinHQ", 348309, 22333, 200, 150, 12000, 28, 0, 40, 96, true, true, 1, 4, MO_MobileObjectiveType.KnickebeinHQ, 7, 250370, 15086, 358314, 109537, 25, 85, MO_ProducerOrStorageType.Knickebein_beams, "", add, radar_effective_radius_m: 30000, canbedisabled: false); //ALSO it's a radar center for that part of the map; sensible
+            addMobile(MO_ObjectiveType.KnickebeinHQ, "Knickebein Coordination Center", "", 2, 10, "RLWKnickebeinHQ", 348309, 22333, 200, 150, 12000, 28, 0, 40, 96, true, true, 1, 6, MO_MobileObjectiveType.KnickebeinHQ, 7, 250370, 15086, 358314, 109537, 25, 85, MO_ProducerOrStorageType.Knickebein_beams, "", add, radar_effective_radius_m: 30000, canbedisabled: false); //ALSO it's a radar center for that part of the map; sensible
               //If hte KnickebeinHQ gets knocked out then pilots can't use KB...
             
 
             addMobile(MO_ObjectiveType.Military_Armored_Vehicles, "Veurne Gespensterdivision Mobile Panzer Group", "", 2, 8, "RWVeurneMobileArmour", 331978, 220669, 300, 250, 7000, 15, 0, 90, 230, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 15, 326050, 196380, 359018, 244017, 2, 5, MO_ProducerOrStorageType.None, "", add);
 
-            addMobile(MO_ObjectiveType.MilitaryArea, "Calais-Dunkirk Gespensterdivision Mobile Panzer Group", "", 2, 8, "RWCalaisDunkirkMobileArmour", 297538, 218812, 300, 250, 7000, 15, 0, 90, 270, true, true, 1, 24, MO_MobileObjectiveType.SmallArmourGroup, 12, 290538, 208812, 310535, 223074, 2, 5, MO_ProducerOrStorageType.None, "", add);
+            addMobile(MO_ObjectiveType.MilitaryArea, "Calais-Dunkirk Gespensterdivision Mobile Panzer Group", "", 2, 8, "RWCalaisDunkirkMobileArmour", 297538, 218812, 300, 250, 7000, 15, 0, 90, 270, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 12, 290538, 208812, 310535, 223074, 2, 5, MO_ProducerOrStorageType.None, "", add);
 
             addMobile(MO_ObjectiveType.Military_Armored_Vehicles, "Kent Mobile Armour", "", 1, 8, "BKentMobileArmour", 240196, 243824, 300, 250, 7000, 15, 0, 150, 330, true, true, 1, 10, MO_MobileObjectiveType.SmallArmourGroup, 24, 216410, 232331, 247147, 261063, 1, 5, MO_ProducerOrStorageType.None, "", add);
 
@@ -19800,14 +19807,14 @@ added Rouen Flak
 
     public enum shapeType { Circle, StretchedCircle, Rectangle, Line, DoubleLine };
 
-        //subHeading -1, choose a random heading for each object
-        //subHeading -2 means align with the circle perimeter, ie tangent to the circle
-        //variance is a random amount the object will be moved inside OR outside the circle radius (up to variance_m distance plus or minus)
-        //orientationAngle is orientation of the square, rectangle, line, double line etc.  
-        //for circle, doesn't matter.  -1 means choose a randome orientation
-        public ISectionFile PlaceObjectsInCircles(ISectionFile f, List<string> things, Point3d newPos, double radius_m, double variance_m, int howmany, int army, int percentSide = 33, double subHeading_deg = -1,
-        int stretcherType = 0, double stretcherAmt = 0, bool avoidWater = false, bool resetCount = false,
-        string addString = "", bool randomizeHowmany = true, string staticprefix = "", shapeType shape =  shapeType.StretchedCircle, double orientationAngle_deg = -1 )
+	//subHeading -1, choose a random heading for each object
+	//subHeading -2 means align with the circle perimeter, ie tangent to the circle
+	//variance is a random amount the object will be moved inside OR outside the circle radius (up to variance_m distance plus or minus)
+	//orientationAngle is orientation of the square, rectangle, line, double line etc.  
+	//for circle, doesn't matter.  -1 means choose a randome orientation
+	public ISectionFile PlaceObjectsInCircles(ISectionFile f, List<string> things, Point3d newPos, double radius_m, double variance_m, int howmany, int army, int percentSide = 33, double subHeading_deg = -1,
+	int stretcherType = 0, double stretcherAmt = 0, bool avoidWater = false, bool resetCount = false,
+	string addString = "", bool randomizeHowmany = true, string staticprefix = "", shapeType shape =  shapeType.StretchedCircle, double orientationAngle_deg = -1 )
     { 
         string ownerside = "nn";
         if (army == 2) ownerside = "de";
@@ -20998,7 +21005,7 @@ added Rouen Flak
 
             //update mobile ocnvoy position & associated autoflak positions occasionally; low priority
             tempflakcounter++;
-            if (tempflakcounter % 40 == 0)
+            if (tempflakcounter % 60 == 0)
             {
                 //Thread thr = Thread.CurrentThread;
                 thr.Priority = ThreadPriority.Lowest;
@@ -21531,7 +21538,17 @@ added Rouen Flak
             if (!mo.IsEnabled || !mo.IsPrimaryTarget)
             {
 
-                if (mo.MOObjectiveType == MO_ObjectiveType.Radar || mo.MOObjectiveType == MO_ObjectiveType.KnickebeinHQ) //radar needs more flak to protect it, so just half the req amount if not primary.
+
+                if (mo.MOObjectiveType == MO_ObjectiveType.Artillery_and_AA ){ //For AA objectives, this IS the objective, so make sure something is there
+					nfb = 1;
+                    nib = 4;                    
+
+                    if (ON_TESTSERVER)
+                    {
+                        nfb = 1;
+                        nib = 1;
+                    }
+				} else if (mo.MOObjectiveType == MO_ObjectiveType.Radar || mo.MOObjectiveType == MO_ObjectiveType.KnickebeinHQ) //radar needs more flak to protect it, so just half the req amount if not primary.
                 {
                     /*nfb = nfb / 3;
                     nib = nib;
@@ -21767,7 +21784,10 @@ added Rouen Flak
                 return false;
             }
             double batteryRadius = mo.radius;
-            if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2) batteryRadius += 125;  //For Blue radars, the exact location of flak can help locate the radar position, which we don't want. So we spread the batteries out a fair bit more.
+			
+			//For AA/artillery these are concentrated at the center rather than being out beyond the perimeter
+			if (mo.MOObjectiveType == MO_ObjectiveType.Artillery_and_AA) batteryRadius = 3;
+            if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2) batteryRadius += 65;  //For Blue radars, the exact location of flak can help locate the radar position, which we don't want. So we spread the batteries out a fair bit more.
 
             if (dbug) Console.WriteLine("MASL 2");
             List <Point3d> MO_AutoFlak_locations = mo.get_AutoFlak_locations();
@@ -23492,7 +23512,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
     //So apparently this messes up the count of postload static files by resetting the counter to 0 mid-calculation of those files.
     //so delaying the loading of these jerrycans solves the problem (kludge/temporary fix)
-    public void MO_PlaceSomeJerrycans(MissionObjective mo)
+	//Places jerrycans by default OR other objects as requested, so there are objects to bomb & strafe
+    public void MO_PlaceSomeJerrycans(MissionObjective mo, List<string> things = null, int numi = 0, double searchRadius_m = 0, double variance_m = 0, double stretchA = 1, shapeType shape =  shapeType.StretchedCircle, int wait = 200, string staticprefix = "PlaceSomeJerryCans" )
     {
         Point3d jcPos = mo.Pos;
         jcPos.z = -2;
@@ -23501,28 +23522,33 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         //place a jerrycan in the middle of the area, covering it.  This allows stats to be counted for anything in this area, and also sets up smoke etc for any bombs hitting this area.
 
         string jerry = "JerryCan_GER1_1";
+		
+		if (things == null) things = MO_Jerrycan71;
+		
+        if (searchRadius_m <=0) searchRadius_m = mo.radius / 2.0;		       
+		
+		if (variance_m <= 0) variance_m = 4.0 * searchRadius_m / 5.0;
 
-        double searchRadius_m = mo.radius / 2.0;
-        double stretchA = 1;
+        Timeout(random.NextDouble()*100 + wait, () => //no rush here, better to wait a bit
+			{
+				ISectionFile f = GamePlay.gpCreateSectionFile();
 
-        Timeout(random.Next(200, 224), () => //no rush here, better to wait a bit
-        {
-            ISectionFile f = GamePlay.gpCreateSectionFile();
+				if (numi <= 0) 
+					numi = (Convert.ToInt32(searchRadius_m * 2 * Math.PI / 150.0)).Clamp (20,1000);					
+			
 
-            int numi = Convert.ToInt32(searchRadius_m * 2 * Math.PI / 150.0);
-            if (numi < 20) numi = 20;
+				//toDO: This should be a rectangular array instead.
+				//2022-12: Seems best to keep jerrycans to 'nn' - especially when placed in enemy territory
+				//asfor example happens with ships.  So setting army: 0
+				f = PlaceObjectsInCircles(f, things, jcPos, searchRadius_m, variance_m, numi, army: 0, percentSide: 0, subHeading_deg: -1, stretcherType: 1, stretcherAmt: stretchA, resetCount: false, shape: shape, staticprefix: staticprefix);
+				if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Place some Jerrycans or other things at {0}", mo.Name);
+				GamePlay.gpPostMissionLoad(f);
 
-                //toDO: This should be a rectangular array instead.
-                //2022-12: Seems best to keep jerrycans to 'nn' - especially when placed in enemy territory
-                //asfor example happens with ships.  So setting army: 0
-                f = PlaceObjectsInCircles(f, MO_Jerrycan71, jcPos, searchRadius_m, 4.0 * searchRadius_m / 5.0, numi, army: 0, percentSide: 0, subHeading_deg: -1, stretcherType: 1, stretcherAmt: stretchA, resetCount: false);
-            if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Place some Jerrycans");
-            GamePlay.gpPostMissionLoad(f);
-
-            if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
+				if ( ON_TESTSERVER && !panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_"+numi.ToString() + "_" + Calcs.GetSafeFileName(mo.ID)); //testing)
             });
 
     }
+	
 
     public void MO_loadInitSubmission(MissionObjective mo)
     {
@@ -23558,191 +23584,225 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         
         foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
         {
+			try 
+			{
 
-            MissionObjective mo = entry.Value;
+				MissionObjective mo = entry.Value;
 
-            MO_MakeCameras(mo); //note  = this adds the info the file, must be finalized at the end 
+				MO_MakeCameras(mo); //note  = this adds the info the file, must be finalized at the end 
 
-            mo.IsEnabled = true;
+				mo.IsEnabled = true;
 
-            //if (mo.MOObjectiveType == MO_ObjectiveType.KnickebeinHQ) mo.Destroyed = true; //testing
+				//if (mo.MOObjectiveType == MO_ObjectiveType.KnickebeinHQ) mo.Destroyed = true; //testing
 
-            if ( (!mo.IsPrimaryTarget && mo.CanBeDisabled && random.Next(100) < MO_Objective_Percent_To_Disable ) || 
-                (ON_TESTSERVER && random.Next(100) < 75 && MO_Naval_Ship_ObjectiveTypes.Contains(mo.MOObjectiveType)) ) //randomly turn off say 5% or 20% (or whatever amt set) of objectives each day.  But, can't turn off radar or airports, etc (if marked as 'can't be disabled'.  For now.
-                //also turn off most ships for test server because they cause high CPU usage
-            {
-                mo.IsEnabled = false;
-                Console.WriteLine("Mo_InitializeAllObjectives: Objective {0} {1} is disabled/removed from the objectives list for this session", mo.ID, mo.Name);
-                //MO_PlaceDetritusInObjectArea(mo); //if startup & !enabled, then just place the detritus
-                Timeout(65, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup
-                RemoveSuggestedObjective(mo);
-                //We could also do other things here such as removing all the nearby statics or whatever.  Or even just some types of statics.
-            }
+				if ( (!mo.IsPrimaryTarget && mo.CanBeDisabled && random.Next(100) < MO_Objective_Percent_To_Disable ) || 
+					(ON_TESTSERVER && random.Next(100) < 75 && MO_Naval_Ship_ObjectiveTypes.Contains(mo.MOObjectiveType)) ) //randomly turn off say 5% or 20% (or whatever amt set) of objectives each day.  But, can't turn off radar or airports, etc (if marked as 'can't be disabled'.  For now.
+					//also turn off most ships for test server because they cause high CPU usage
+				{
+					mo.IsEnabled = false;
+					Console.WriteLine("Mo_InitializeAllObjectives: Objective {0} {1} is disabled/removed from the objectives list for this session", mo.ID, mo.Name);
+					//MO_PlaceDetritusInObjectArea(mo); //if startup & !enabled, then just place the detritus
+					Timeout(65, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup
+					RemoveSuggestedObjective(mo);
+					//We could also do other things here such as removing all the nearby statics or whatever.  Or even just some types of statics.
+				}
 
-            //handle changing owner/attacking arm of objectives when the territory/frontline changes
-            bool shipObjective = MO_ObjectiveIsNavalVessel(mo);
-            bool submarineObjective = (mo.MOObjectiveType == MO_ObjectiveType.Submarine);
-            bool landingGroundObjective = (mo.MOTriggerType == MO_TriggerType.TemporaryLandingGround );
+				//handle changing owner/attacking arm of objectives when the territory/frontline changes
+				bool shipObjective = MO_ObjectiveIsNavalVessel(mo);
+				bool submarineObjective = (mo.MOObjectiveType == MO_ObjectiveType.Submarine);
+				bool landingGroundObjective = (mo.MOTriggerType == MO_TriggerType.TemporaryLandingGround );
 
-            //***** 2022/12 SO ... ship objectives placed in enemy territory soon die.
-            //Because we have a DIFFERENT routine that goes through & systematically removes all actors/stationaries
-            //in enemy territory.  SO we made an exception there for ships & tanks/armored vehicles.
-            //That way we can have ships OR armored vehicle convoys in enemy territory **if we like*
+				//***** 2022/12 SO ... ship objectives placed in enemy territory soon die.
+				//Because we have a DIFFERENT routine that goes through & systematically removes all actors/stationaries
+				//in enemy territory.  SO we made an exception there for ships & tanks/armored vehicles.
+				//That way we can have ships OR armored vehicle convoys in enemy territory **if we like*
 
-            //However it generally seems to work better if we just switch all objectives in enemy territory.
-            //Perhaps we can make some exceptions, like submarines, whose entire job is to lurk around
-            //in enemy waters...
+				//However it generally seems to work better if we just switch all objectives in enemy territory.
+				//Perhaps we can make some exceptions, like submarines, whose entire job is to lurk around
+				//in enemy waters...
 
-            //always reset submarines to their original owner army - they don't switch sides.
-            if (submarineObjective)          
-            {
-                mo.OwnerArmy = mo.OriginalOwnerArmy;
-                mo.AttackingArmy = 3 - mo.OwnerArmy;
-            } 
+				//always reset submarines to their original owner army - they don't switch sides.
+				if (submarineObjective)          
+				{
+					mo.OwnerArmy = mo.OriginalOwnerArmy;
+					mo.AttackingArmy = 3 - mo.OwnerArmy;
+				} 
 
-            int terr = GamePlay.gpFrontArmy(mo.Pos.x, mo.Pos.y);
-            bool onEnemyTerritory = ((terr !=0 ) && (mo.OwnerArmy != terr)); //Note: Can't use mo.Attackingarmy == terr because LANDING GROUNDS and possibly some other future objectives have attackingarmy == ownerarmy
+				int terr = GamePlay.gpFrontArmy(mo.Pos.x, mo.Pos.y);
+				bool onEnemyTerritory = ((terr !=0 ) && (mo.OwnerArmy != terr)); //Note: Can't use mo.Attackingarmy == terr because LANDING GROUNDS and possibly some other future objectives have attackingarmy == ownerarmy
 
-            //shiptesting 2022/12
-            //if (!shipObjective && onEnemyTerritory) //this objective has switched sides.  So... (except ships)
-            if (!submarineObjective && !landingGroundObjective && onEnemyTerritory) //this objective has switched sides.  So... (including ships but NOT submarines and NOT landingroundobjectives)
-            {
-                Console.WriteLine("MO_InitializeAllObjectives(): Objective " + mo.Name + " has changed sides to " + terr.ToString() + " at " + DateTime.UtcNow.ToString());
-                if (mo.CanBeDisabled) {
-                    mo.IsEnabled = false; //When first switching sides it is disabled, for that first session
-                    Timeout(65, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup
-                    RemoveSuggestedObjective(mo);
-                }
-                mo.OwnerArmy = terr;
-                mo.AttackingArmy = 3 - terr;
-                mo.Destroyed = false;
-                mo.DestroyedPercent = 0;
-                mo.ObjectiveAchievedForPoints = false;
-                mo.TimeToUndestroy_UTC = null;
-                mo.LastHitTime_UTC = null;
-                mo.AirfieldDamagePoints = 0;
-                mo.FlakID = ""; //could be wrong army pre-made flak..
-                mo.DefenseUnits = null;
-                mo.Scouted = false;
-                mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
-                mo.numTimesScouted = 0;
-                mo.PlayersWhoContributedNames = new HashSet<string>();
-                mo.PlayersWhoRepairedNamesTimes = new Dictionary<string, int>();
-                mo.ObjectsDestroyed_num = 0;
-                mo.OrdnanceOnTarget_kg = 0;
-                mo.ActorsDestroyed_num = 0;
-                mo.HUDMessage = mo.HUDMessage.Replace(ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
-                mo.LOGMessage = mo.LOGMessage.Replace(ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+				//shiptesting 2022/12
+				//if (!shipObjective && onEnemyTerritory) //this objective has switched sides.  So... (except ships)
+				if (!submarineObjective && !landingGroundObjective && onEnemyTerritory) //this objective has switched sides.  So... (including ships but NOT submarines and NOT landingroundobjectives)
+				{
+					Console.WriteLine("MO_InitializeAllObjectives(): Objective " + mo.Name + " has changed sides to " + terr.ToString() + " at " + DateTime.UtcNow.ToString());
+					if (mo.CanBeDisabled) {
+						mo.IsEnabled = false; //When first switching sides it is disabled, for that first session
+						Timeout(65, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup
+						RemoveSuggestedObjective(mo);
+					}
+					mo.OwnerArmy = terr;
+					mo.AttackingArmy = 3 - terr;
+					mo.Destroyed = false;
+					mo.DestroyedPercent = 0;
+					mo.ObjectiveAchievedForPoints = false;
+					mo.TimeToUndestroy_UTC = null;
+					mo.LastHitTime_UTC = null;
+					mo.AirfieldDamagePoints = 0;
+					mo.FlakID = ""; //could be wrong army pre-made flak..
+					mo.DefenseUnits = null;
+					mo.Scouted = false;
+					mo.PlayersWhoScoutedNames = new Dictionary<string, int>();
+					mo.numTimesScouted = 0;
+					mo.PlayersWhoContributedNames = new HashSet<string>();
+					mo.PlayersWhoRepairedNamesTimes = new Dictionary<string, int>();
+					mo.ObjectsDestroyed_num = 0;
+					mo.OrdnanceOnTarget_kg = 0;
+					mo.ActorsDestroyed_num = 0;                
 
-                mo.Comment += " Changed sides to " + terr.ToString() + " at " + DateTime.UtcNow.ToString();
+					mo.Comment += " Changed sides to " + terr.ToString() + " at " + DateTime.UtcNow.ToString();
 
-                MO_PlaceSomeJerrycans(mo); //make sure there are at least a FEW items at the objective
-            }
+					MO_PlaceSomeJerrycans(mo); //make sure there are at least a FEW items at the objective
+				}
+				
+				
+				//used to do this only when they changed sides, but some of them are 
+				//messed up for some reason
+				try {
+				
+					//if (ON_TESTSERVER) Console.WriteLine("HUDMessage before: {0}", mo.HUDMessage);
+					//if (ON_TESTSERVER) Console.WriteLine("HUDMessage before: {0} {1}", mo.OwnerArmy, mo.AttackingArmy);
+					//if (ON_TESTSERVER) Console.WriteLine("HUDMessage before: {0} {1}", ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+					
+					//if (ON_TESTSERVER) Console.WriteLine("LOGMessage before: {0}", mo.LOGMessage);
+					//if (ON_TESTSERVER) Console.WriteLine("LOGMessage before: {0} {1}", mo.OwnerArmy, mo.AttackingArmy);
+					//if (ON_TESTSERVER) Console.WriteLine("LOGMessage before: {0} {1}", ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+					
+					
+					if (mo.HUDMessage != null)
+							mo.HUDMessage = mo.HUDMessage.Replace(ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+					if (mo.LOGMessage != null) mo.LOGMessage = mo.LOGMessage.Replace(ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+					
+					
+					//if (mo.LOGMessage.Length != null && mo.LOGMessage.Length > 0) mo.LOGMessage = mo.LOGMessage.Replace(ArmiesL[mo.OwnerArmy], ArmiesL[mo.AttackingArmy]);
+					
+					//if (ON_TESTSERVER) Console.WriteLine("HUDMessage after: {0}", mo.HUDMessage);
+					//if (ON_TESTSERVER) Console.WriteLine("LOGMessage after: {0}", mo.LOGMessage);
 
-            MO_HandleMobileObjectivePlacement(mo, startup: true); //place all mobile objectives at start of mission.  We should send all objectives through this, even if disabled as a thing happens even to disabled objectives.
+				} 
+				catch (Exception ex)
+				{
+					Console.WriteLine("MO Initialize objectives ERROR: " + ex.Message);					
+				}
+				
+				MO_HandleMobileObjectivePlacement(mo, startup: true); //place all mobile objectives at start of mission.  We should send all objectives through this, even if disabled as a thing happens even to disabled objectives.
 
-            Timeout(140, () =>
-            {
-                ISectionFile f2 = GamePlay.gpCreateSectionFile();
-                f2 = MO_HandleTriggerObjectiveRefresh(mo, f2); //make sure each trigger-type objective has a good number of jerrycans & explodey things around it
-                if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: MO_HandleTriggerObjectiveRefresh");
+				Timeout(140, () =>
+				{
+					ISectionFile f2 = GamePlay.gpCreateSectionFile();
+					f2 = MO_HandleTriggerObjectiveRefresh(mo, f2); //make sure each trigger-type objective has a good number of jerrycans & explodey things around it
+					if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: MO_HandleTriggerObjectiveRefresh");
 
-                GamePlay.gpPostMissionLoad(f2);
-                f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_refresh_ALL_init.mis"); //testing
-            });
-            //if (mo.MOTriggerType == MO_TriggerType.TemporaryLandingGround) landinggroundmission.renewTempLandingGround(mo); //we're going to do this at the point we transfer over the LGs to the new MissionObjectivesList instead of here
+					GamePlay.gpPostMissionLoad(f2);
+					f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_refresh_ALL_init.mis"); //testing
+				});
+				//if (mo.MOTriggerType == MO_TriggerType.TemporaryLandingGround) landinggroundmission.renewTempLandingGround(mo); //we're going to do this at the point we transfer over the LGs to the new MissionObjectivesList instead of here
 
-            //Console.WriteLine("Initialize - checking " + mo.ID + " " + mo.Name + " {0} {1} {2} {3}", mo.AutoFlak, mo.AutoFlakIfPrimary, mo.IsPrimaryTarget, mo.IsEnabled);
-            //string s = CLOD_PATH + FILE_PATH + "/" + mo.InitSubmissionName;
-            //if (mo.InitSubmissionName != null && mo.InitSubmissionName.Length > 0) Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " objective loadoncall file on deck . . . "); 
+				//Console.WriteLine("Initialize - checking " + mo.ID + " " + mo.Name + " {0} {1} {2} {3}", mo.AutoFlak, mo.AutoFlakIfPrimary, mo.IsPrimaryTarget, mo.IsEnabled);
+				//string s = CLOD_PATH + FILE_PATH + "/" + mo.InitSubmissionName;
+				//if (mo.InitSubmissionName != null && mo.InitSubmissionName.Length > 0) Console.WriteLine(s.Replace(CLOD_PATH + FILE_PATH, "") + " objective loadoncall file on deck . . . "); 
 
-            if (mo.IsEnabled)
-            {
-                //load submission if requested
-                MO_loadInitSubmission(mo);
+				if (mo.IsEnabled)
+				{
+					//load submission if requested
+					MO_loadInitSubmission(mo);
 
-                maddox.game.LandTypes landType = GamePlay.gpLandType(mo.Pos.x, mo.Pos.y);
-                bool landTypeWater = false;
-                if (landType == maddox.game.LandTypes.WATER) landTypeWater = true;
+					maddox.game.LandTypes landType = GamePlay.gpLandType(mo.Pos.x, mo.Pos.y);
+					bool landTypeWater = false;
+					if (landType == maddox.game.LandTypes.WATER) landTypeWater = true;
 
-                if (mo.MOTriggerType == MO_TriggerType.PointArea && !landTypeWater)
-                {
-                    MO_PlaceAppropriateJerrycan(mo);
-                }
+					if (mo.MOTriggerType == MO_TriggerType.PointArea && !landTypeWater)
+					{
+						MO_PlaceAppropriateJerrycan(mo);
+					}
 
-                if (!landTypeWater && mo.OwnerArmy != mo.OriginalOwnerArmy)
-                {
-                    MO_PlaceSomeJerrycans(mo); //make sure at least some stationary objects are in the object, of the type of that army, if the objective has switched sides
-                }                
+					if (!landTypeWater && mo.OwnerArmy != mo.OriginalOwnerArmy)
+					{
+						MO_PlaceSomeJerrycans(mo); //make sure at least some stationary objects are in the object, of the type of that army
+						//List<string> things = MO_ExplodeyThings.Concat(MO_Tables).Concat(MO_Cars).Concat(MO_ExplodeyThings).Concat(MO_ExplodeyThings);
+						var things = MO_ExplodeyThings.Concat(MO_Tables).Concat(MO_Cars).Concat(MO_ExplodeyThings).Concat(MO_ExplodeyThings).ToList();
+						MO_PlaceSomeJerrycans(mo, things, numi: 15 + random.Next(0,15), searchRadius_m: mo.radius * 0.6, variance_m: mo.radius* 0.5, stretchA: .8 * random.NextDouble() * 0.4, wait: 400, staticprefix: "MO_PlaceExtraObjects" );
+					}                
 
-                if (mo.Destroyed) Timeout(125, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup.  Also we want to wait until after any autoflak placed, so 45 seconds.
-                else if (mo.DestroyedPercent > 0) Timeout(125, () => { MO_RemoveObjective(mo, immediate: false, percent: mo.DestroyedPercent); });
+					if (mo.Destroyed) Timeout(125 + random.NextDouble()*120 + 125, () => { MO_RemoveObjective(mo, immediate: false); }); //This doesn't get initialized until 20-30 seconds after startup.  Also we want to wait until after any autoflak placed, so 45 seconds.
+					else if (mo.DestroyedPercent > 0) Timeout(125 + random.NextDouble()*120 + 125, () => { MO_RemoveObjective(mo, immediate: false, percent: mo.DestroyedPercent); });
 
-                bool isMobile = false;
-                if ((mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)) isMobile = true;
+					bool isMobile = false;
+					if ((mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)) isMobile = true;
 
-                Console.WriteLine("Objective status: {0} ORTGG {1:N0} num required: {2:N0})", mo.Name, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
-
-
-                //for Blue radars ONLY, but only non-mobile radar types and not the mini/local radars
-                if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2 && !isMobile && mo.RadarEffectiveRadius > 9999 && !mo.ID.Contains("HQR") )
-                { //create another radar just at the radius of the trigger area, that also must be destroyed. Then adjust points in addradarpointarea to match 90% of the total objects that are there.
-                    //Going to be hard.
-                    double angle = random.NextDouble() * 2 * Math.PI;
-                    double x = Math.Cos(angle) * (5 * mo.TriggerDestroyRadius / 6) + mo.Pos.x; //place another radar SOMEWHERE INSIDE the triggerradius;
-                    double y = Math.Sin(angle) * (5 * mo.TriggerDestroyRadius / 6) + mo.Pos.y;
-
-                    ISectionFile f = GamePlay.gpCreateSectionFile();
-                    f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, "Stationary.Radar.Wotan_II", side: "de", resetCount: true);
-                    f = Calcs.makeStatic(f, GamePlay, this, x + 0.5, y + 0.2, 0, "Stationary.Environment.JerryCan_GER1_1", side: "de");//Give them a couple small black dots to find
-
-                    //so it actually seems more interesting to just leave them be with, if you hit the two radars you knock it out & otherwise, not.  The extra "objects" don't really seem to add that much.
-                    //Also if they can' get both items they can still get the objective by piling enough KG near the target.
-                    /*                    
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 3.7, y + 4.5, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 4.6, y - 4.6, mo.Pos.z, "Stationary. Environment.JerryCan_GER1_1", side: "de");
-                    f = Calcs.makeStatic(f, GamePlay, this, x + 5.2, y - 5.6, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
-                    
-                    f = Calcs.makeStatic(f, GamePlay, this, x + 3, y + 3, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");//Give them a couple small black dots to find
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 3.5, y + 3, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
-                    f = Calcs.makeStatic(f, GamePlay, this, x - 3.5, y - 4, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
-                    f = Calcs.makeStatic(f, GamePlay, this, x + 5, y - 4.5, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
-                    */
-
-                    if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Initialize all objectives - update blue radars");
-                    GamePlay.gpPostMissionLoad(f);
-                    f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE_" + Calcs.GetSafeFileName(mo.ID) + "msn.txt"); //testing
-
-                    //TESTING BIRTHPLACES                  
-                    /*  
-                    ISectionFile f2 = GamePlay.gpCreateSectionFile();
-                    f2 = Calcs.CreateBirthPlace(f2, mo.ID + "_airspawn", mo.Pos.x, mo.Pos.y, 666, mo.AttackingArmy);
-                    GamePlay.gpPostMissionLoad(f2);
-                    f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + mo.ID + "_airspawn.mis");
-                    */
-
-                    //takes a while to gpload files, so must wait a bit.
-                    Timeout(60, () =>
-                    {
-                        double numTargets = 0;
-                        GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
-                        if (gs != null) numTargets = gs.Length;
-                        //int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.7))); // require 70% of the groundstationaries in the target area.  This should be fairly hard.
-                        int targetsRequired = 2;
-                        if (numTargets < targetsRequired) targetsRequired = Convert.ToInt32(numTargets);
-
-                        //NOTE!!!! Ignoring the given ortgg for now & just using 80% of the existing targets in the area.
-
-                        mo.ObjectsRequiredToTrigger_num = targetsRequired;
-
-                        if (ON_TESTSERVER) Console.WriteLine("UPDATED BLUE RADAR {0} new radar angle {1} x,y: {2},{3} numTargets in radius {4}, num required: {5})", mo.Name, angle, x, y, numTargets, targetsRequired);
-
-                    });
+					Console.WriteLine("Objective status: {0} ORTGG {1:N0} num required: {2:N0})", mo.Name, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
 
 
-                }
+					//for Blue radars ONLY, but only non-mobile radar types and not the mini/local radars
+					if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2 && !isMobile && mo.RadarEffectiveRadius > 9999 && !mo.ID.Contains("HQR") )
+					{ //create another radar just at the radius of the trigger area, that also must be destroyed. Then adjust points in addradarpointarea to match 90% of the total objects that are there.
+						//Going to be hard.
+						double angle = random.NextDouble() * 2 * Math.PI;
+						double x = Math.Cos(angle) * (5 * mo.TriggerDestroyRadius / 6) + mo.Pos.x; //place another radar SOMEWHERE INSIDE the triggerradius;
+						double y = Math.Sin(angle) * (5 * mo.TriggerDestroyRadius / 6) + mo.Pos.y;
+
+						ISectionFile f = GamePlay.gpCreateSectionFile();
+						f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, "Stationary.Radar.Wotan_II", side: "de", resetCount: true);
+						f = Calcs.makeStatic(f, GamePlay, this, x + 0.5, y + 0.2, 0, "Stationary.Environment.JerryCan_GER1_1", side: "de");//Give them a couple small black dots to find
+
+						//so it actually seems more interesting to just leave them be with, if you hit the two radars you knock it out & otherwise, not.  The extra "objects" don't really seem to add that much.
+						//Also if they can' get both items they can still get the objective by piling enough KG near the target.
+						/*                    
+						f = Calcs.makeStatic(f, GamePlay, this, x - 3.7, y + 4.5, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
+						f = Calcs.makeStatic(f, GamePlay, this, x - 4.6, y - 4.6, mo.Pos.z, "Stationary. Environment.JerryCan_GER1_1", side: "de");
+						f = Calcs.makeStatic(f, GamePlay, this, x + 5.2, y - 5.6, mo.Pos.z, "Stationary.Environment.JerryCan_GER1_1", side: "de");
+						
+						f = Calcs.makeStatic(f, GamePlay, this, x + 3, y + 3, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");//Give them a couple small black dots to find
+						f = Calcs.makeStatic(f, GamePlay, this, x - 3.5, y + 3, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
+						f = Calcs.makeStatic(f, GamePlay, this, x - 3.5, y - 4, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
+						f = Calcs.makeStatic(f, GamePlay, this, x + 5, y - 4.5, mo.Pos.z, "Stationary.Weapons_.Bomb_B_SD-500_E", side: "de");
+						*/
+
+						if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Initialize all objectives - update blue radars");
+						GamePlay.gpPostMissionLoad(f);
+						f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/blueradarUPDATE_FILE_" + Calcs.GetSafeFileName(mo.ID) + "msn.txt"); //testing
+
+						//TESTING BIRTHPLACES                  
+						/*  
+						ISectionFile f2 = GamePlay.gpCreateSectionFile();
+						f2 = Calcs.CreateBirthPlace(f2, mo.ID + "_airspawn", mo.Pos.x, mo.Pos.y, 666, mo.AttackingArmy);
+						GamePlay.gpPostMissionLoad(f2);
+						f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + mo.ID + "_airspawn.mis");
+						*/
+
+						//takes a while to gpload files, so must wait a bit.
+						Timeout(60, () =>
+						{
+							double numTargets = 0;
+							GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
+							if (gs != null) numTargets = gs.Length;
+							//int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.7))); // require 70% of the groundstationaries in the target area.  This should be fairly hard.
+							int targetsRequired = 2;
+							if (numTargets < targetsRequired) targetsRequired = Convert.ToInt32(numTargets);
+
+							//NOTE!!!! Ignoring the given ortgg for now & just using 80% of the existing targets in the area.
+
+							mo.ObjectsRequiredToTrigger_num = targetsRequired;
+
+							if (ON_TESTSERVER) Console.WriteLine("UPDATED BLUE RADAR {0} new radar angle {1} x,y: {2},{3} numTargets in radius {4}, num required: {5})", mo.Name, angle, x, y, numTargets, targetsRequired);
+
+						});
+
+
+					}
+				} 
                 
-            }
+            } catch (Exception ex) { Console.WriteLine("MO_InitSubmission - ERROR: {0}", ex.ToString());}
         }
 
         MO_FinalizeCameras(); //loads the static camera section file for all objs
@@ -26422,8 +26482,12 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			
 			//We ALSO don't let FIGHTERS go if that side already has a lot of fighters in the game
 			//max fighter groups == number of bomber groups on that side +3
-			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + 5 )  letFighterPatrolGo = false;
-			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + 5 )  letFighterPatrolGo = false;
+			int plusFightersRed = 5;
+			int plusFightersBlue =5;
+			plusFightersBlue += (numRedPlayers - numBluePlayers).Clamp(-1,5);
+			plusFightersBlue += (numBluePlayers - numRedPlayers).Clamp(-1,5);
+			if (redFighter && numAirGroupsByType[1][0] + numAirGroupsByType[1][1] > numAirGroupsByType[1][2] + plusFightersRed )  letFighterPatrolGo = false;
+			if (blueFighter && numAirGroupsByType[2][0] + numAirGroupsByType[2][1] > numAirGroupsByType[2][2] + plusFightersBlue )  letFighterPatrolGo = false;
 			
 			//If more fighters than 80% of the bombers on a side, then don't sent more fighters
 			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.8 * numAircraftByType[1][2])  letFighterPatrolGo = false;

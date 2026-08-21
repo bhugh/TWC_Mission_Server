@@ -3979,11 +3979,15 @@ struct
 	//NOT THE SAME as actor.destroy() AT ALL - this records the actor's death/being kill FOR STATS PURPOSES
 	//Whereas .destroy() removes the whole object from the sim altogether; different thing altogether
 	//*!!!!!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    private bool Stb_killActor(AiActor actor, int waitTime = 0, string reason = "Stb_killActor")
+    public bool Stb_killActor(AiActor actor, int waitTime = 0, string reason = "Stb_killActor")
     {
         if (actor != null)
         {
-            Timeout(waitTime, () =>
+            if (waitTime == 0) {
+				Battle.OnEventGame(GameEventId.ActorDead, actor, Battle.GetDamageInitiators(actor), 0);
+				Console.WriteLine("Stb_killActor IMMEDIATE: Name {0} Reason: {1}", actor.Name(), reason);
+			}
+			else Timeout(waitTime, () =>
             {
                 //Console.WriteLine("KillActor: " + actor.Name() );
                 //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 

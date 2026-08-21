@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -109,11 +110,6 @@ public class CoverMission : AMission, ICoverMission
     public int maximumAircraftAllowedPerMission_RepairMission { get; set; }
     public int maximumCheckoutsAllowedAtOnce_RepairMission { get; set; }
     public int maximumCheckoutsAllowedAtOnce_FerryMission { get; set; }
-	
-    static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
-    //public enum ArmiesE { None, Red, Blue };
-	
-	static public List<string> ArmiesSection = new List<string>() { "nn", "gb", "de" }; //armies as needed in section files ie for ground stationaries	
     
     public int maxPlayersToAllowCover { get; set; } //Number of players online in players' army, above this number no cover will be allowed
     public int numPlayersToReduceCover { get; set; } //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover
@@ -123,19 +119,19 @@ public class CoverMission : AMission, ICoverMission
     public int numPlayersToReduceCheckoutsEvenMore { get; set; } //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
     public enum CoverAGOrders {none, follow, attack };
 
-    public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
-    public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
-    public Dictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new Dictionary<AiAirGroup, Player>();
-    public Dictionary<Player, int> playerIndex = new Dictionary<Player, int>();
-    public Dictionary<Player, Dictionary<int, AiAirGroup>> coverAircraftAirGroupsIndexes = new Dictionary<Player, Dictionary<int, AiAirGroup>>();
-    public Dictionary<Player, Dictionary<Tuple<int, AiActor>, AiAirGroup>> coverAircraftActorsIndexes = new Dictionary<Player, Dictionary<Tuple<int, AiActor>, AiAirGroup>>();
-    public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new Dictionary<AiAirGroup, Point3d>();
-    public Dictionary<AiAirGroup, CoverAGOrders> coverAircraftAirGroupsOrders = new Dictionary<AiAirGroup, CoverAGOrders>();
-    public Dictionary<AiAirGroup, CoverACInfo> coverACInfo = new Dictionary<AiAirGroup, CoverACInfo>();
-    public Dictionary<Player, Tuple<Point3d, DateTime>> PBP_playerBombPoint = new Dictionary<Player, Tuple<Point3d, DateTime>>(); //Last point player has bombed, along with the time it was set, which can be used to target the cover bombers
-    public Dictionary<Player, BAM_BombAimMode> BAM_playerAimMode = new Dictionary<Player, BAM_BombAimMode>(); //What Cover Bomber Aim Mode the player has selected
+    public ConcurrentDictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new ConcurrentDictionary<Player, int>();
+    public ConcurrentDictionary<AiActor, Player> coverAircraftActorsCheckedOut = new ConcurrentDictionary<AiActor, Player>();
+    public ConcurrentDictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new ConcurrentDictionary<AiAirGroup, Player>();
+    public ConcurrentDictionary<Player, int> playerIndex = new ConcurrentDictionary<Player, int>();
+    public ConcurrentDictionary<Player, ConcurrentDictionary<int, AiAirGroup>> coverAircraftAirGroupsIndexes = new ConcurrentDictionary<Player, ConcurrentDictionary<int, AiAirGroup>>();
+    public ConcurrentDictionary<Player, ConcurrentDictionary<Tuple<int, AiActor>, AiAirGroup>> coverAircraftActorsIndexes = new ConcurrentDictionary<Player, ConcurrentDictionary<Tuple<int, AiActor>, AiAirGroup>>();
+    public ConcurrentDictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new ConcurrentDictionary<AiAirGroup, Point3d>();
+    public ConcurrentDictionary<AiAirGroup, CoverAGOrders> coverAircraftAirGroupsOrders = new ConcurrentDictionary<AiAirGroup, CoverAGOrders>();
+    public ConcurrentDictionary<AiAirGroup, CoverACInfo> coverACInfo = new ConcurrentDictionary<AiAirGroup, CoverACInfo>();
+    public ConcurrentDictionary<Player, Tuple<Point3d, DateTime>> PBP_playerBombPoint = new ConcurrentDictionary<Player, Tuple<Point3d, DateTime>>(); //Last point player has bombed, along with the time it was set, which can be used to target the cover bombers
+    public ConcurrentDictionary<Player, BAM_BombAimMode> BAM_playerAimMode = new ConcurrentDictionary<Player, BAM_BombAimMode>(); //What Cover Bomber Aim Mode the player has selected
 
-    public Dictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new Dictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
+    public ConcurrentDictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new ConcurrentDictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
 
     //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
     //double twcmap_minX = 10000;  //orig values.
@@ -166,7 +162,7 @@ public class CoverMission : AMission, ICoverMission
             TWCMainMission = TWCComms.Communicator.Instance.Main;
             TWCComms.Communicator.Instance.Cover = (ICoverMission)this; //allows -stats.cs to access this instance of Mission     
 
-			//CheckSplits_Timer_init();  //CheckSplits is causing error/program exit for now. 2026/08
+			CheckSplits_Timer_init();
 
             //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
             ran = new Random();
@@ -232,7 +228,7 @@ public class CoverMission : AMission, ICoverMission
     public AiActor[] allStaticActors = null;
     public object allStaticActors_lock = new object();
 
-    Dictionary<string, IMissionObjective> SMissionObjectivesList = new Dictionary<string, IMissionObjective>();
+    ConcurrentDictionary<string, IMissionObjective> SMissionObjectivesList = new ConcurrentDictionary<string, IMissionObjective>();
 
     private void renewAllStaticActors_recurs(bool onetime = false)
     {
@@ -450,42 +446,45 @@ public class CoverMission : AMission, ICoverMission
 
     public string BAM_toggleBombAimMode(Player player)
     {
-        if (player == null) return "(none)";
-        BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
+		try {
+			if (player == null) return "(none)";
+			BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
 
-        if (isOnRepairMission(player))
-        {
-            bam = BAM_BombAimMode.None;
-        }
-        else
-        {
-            if (bam == BAM_BombAimMode.Knickebein_Point) bam = BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point;
-            else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point) bam = BAM_BombAimMode.Bomb_Explosion_Point;
-            else if (bam == BAM_BombAimMode.Bomb_Explosion_Point) bam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
-            else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) bam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
-            else if (bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) bam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
-            else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) bam = BAM_BombAimMode.None;
-            else if (bam == BAM_BombAimMode.None) bam = BAM_BombAimMode.Knickebein_Point;
-        }
+			if (isOnRepairMission(player))
+			{
+				bam = BAM_BombAimMode.None;
+			}
+			else
+			{
+				if (bam == BAM_BombAimMode.Knickebein_Point) bam = BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point;
+				else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point) bam = BAM_BombAimMode.Bomb_Explosion_Point;
+				else if (bam == BAM_BombAimMode.Bomb_Explosion_Point) bam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
+				else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) bam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
+				else if (bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) bam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
+				else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) bam = BAM_BombAimMode.None;
+				else if (bam == BAM_BombAimMode.None) bam = BAM_BombAimMode.Knickebein_Point;
+			}
 
-        BAM_playerAimMode[player] = bam;
+			BAM_playerAimMode[player] = bam;
 
-        if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
+			if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
-        if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point || bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
-        {
-            if (player != null && player.Place() != null)
-            {
-                PBP_saveBombPoint(player, player.Place().Pos());
-                double wait = 10;
-                if (player.Place().Pos().z > 10) wait = player.Place().Pos().z / 120;  //person's terminal velocity is 50 m/s, we'll say something like a flare is a bit higher, say 120
-                Timeout(wait, () =>
-               {
-                   Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
-               });
-            }
-            else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
-        }
+			if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point || bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
+			{
+				if (player != null && player.Place() != null)
+				{
+					PBP_saveBombPoint(player, player.Place().Pos());
+					double wait = 10;
+					if (player.Place().Pos().z > 10) wait = player.Place().Pos().z / 120;  //person's terminal velocity is 50 m/s, we'll say something like a flare is a bit higher, say 120
+					Timeout(wait, () =>
+				   {
+					   Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
+				   });
+				}
+				else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
+			}
+		}
+		catch (Exception ex) { Console.WriteLine("Cover BAM_toggleBombAimMode ERROR: " + ex.ToString()); }
 
         return BAM_getPlayerBombAimMode_string(player);
     }
@@ -783,7 +782,8 @@ public class CoverMission : AMission, ICoverMission
                     //Console.WriteLine("CoverOnDestroy: Counting a/c left in " + actor.Name() + " {0} {1} {2}", aircraft.AirGroup().Name(), numAC, countAC);
                     if (countAC == 0 && coverAircraftAirGroupsActive.ContainsKey(aircraft.AirGroup()))
                     {
-                        coverAircraftAirGroupsActive.Remove(aircraft.AirGroup());
+						Player discard;
+                        coverAircraftAirGroupsActive.TryRemove(aircraft.AirGroup(), out discard);
                         //Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
                     }
 
@@ -879,14 +879,14 @@ public class CoverMission : AMission, ICoverMission
     }
 
     //Which a/c are currently available as cover a/c depending on stock available etc orderedictionary = acName, num remaining as string
-    public Dictionary<ArmiesE, Dictionary<string, int>> CoverAircraftCurrentlyAvailable = new Dictionary<ArmiesE, Dictionary<string, int>>();
+    public ConcurrentDictionary<ArmiesE, ConcurrentDictionary<string, int>> CoverAircraftCurrentlyAvailable = new ConcurrentDictionary<ArmiesE, ConcurrentDictionary<string, int>>();
 
     //public Dictionary<ArmiesE, Dictionary<string, bool>> CoverAircraftInitiallyAvailable = new Dictionary<ArmiesE, Dictionary<string, bool>>();
 
     //Which a/c are potentially available as cover a/c
-    public Dictionary<ArmiesE, Dictionary<string, bool>> CoverAircraftInitiallyAvailable = new Dictionary<ArmiesE, Dictionary<string, bool>>
+    public ConcurrentDictionary<ArmiesE, ConcurrentDictionary<string, bool>> CoverAircraftInitiallyAvailable = new ConcurrentDictionary<ArmiesE, ConcurrentDictionary<string, bool>>
     {
-        { ArmiesE.Red, new Dictionary<string,bool>() {
+        { ArmiesE.Red, new ConcurrentDictionary<string,bool>() {
                          
 
         // {bob."aircraft as known to game name",whether available for use as an escort aircraft or not},
@@ -972,7 +972,7 @@ public class CoverMission : AMission, ICoverMission
             {"tobruk:Aircraft.WellingtonMkIc_trop", false}, //5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW  5.017 SHOULD BE FIXED (2021/02), so re-adding it
 
         } },
-        { ArmiesE.Blue, new Dictionary <string,bool>(){
+        { ArmiesE.Blue, new ConcurrentDictionary <string,bool>(){
         {"bob:Aircraft.Bf-109E-1",true},
         {"bob:Aircraft.Bf-109E-1B",true},
         {"bob:Aircraft.Bf-109E-3",true},
@@ -1071,7 +1071,7 @@ public class CoverMission : AMission, ICoverMission
         foreach (ArmiesE army in new List<ArmiesE> { ArmiesE.Blue, ArmiesE.Red })
         {
             //Console.WriteLine("Cover: Setting cover aircraft currently available for {0}", army);
-            CoverAircraftCurrentlyAvailable[army] = new Dictionary<string, int>();
+            CoverAircraftCurrentlyAvailable[army] = new ConcurrentDictionary<string, int>();
             foreach (string acName in CoverAircraftInitiallyAvailable[army].Keys)
             {
                 //Console.WriteLine("Cover: Setting cover aircraft currently available for {0} {1} {2}", army, acName, CoverAircraftInitiallyAvailable[army][acName]);
@@ -1093,7 +1093,7 @@ public class CoverMission : AMission, ICoverMission
     //Returns shift_m (amount to shift this group right or left, in meters +/right or -/left), position slot (1 slot for each aircraft earlier on this list than this one, sorted into even=+/right and odd=-/left positions), the position of this airgroup in the list of its type for this player (bombers OR fighters), the position of this airgroup overall for this player (counting Bomber Groups AND fighter groups).
     //This is a simple/easy routine & we want to recalc it each time the cover/bomber a/c position & course is recalculated because it can change over time as aircraft or airgroups are added or crash/shot down, etc
 
-    Dictionary<Player, int> playerFormationPosition = new Dictionary<Player, int>();//position of the PLAYER within the bomber formation. 
+    ConcurrentDictionary<Player, int> playerFormationPosition = new ConcurrentDictionary<Player, int>();//position of the PLAYER within the bomber formation. 
     public int getPlayerFormationPosition(Player player)
     {
         if (player == null) return 0;
@@ -1108,7 +1108,7 @@ public class CoverMission : AMission, ICoverMission
         return playerFormationPosition[player];
     }
 
-    Dictionary<string, float> playerShiftFactor_pct = new Dictionary<string, float>();// Player name & percentage value to expand formation by, so 100, 150, 200, 300 etc for 100%, 200%, 300%
+    ConcurrentDictionary<string, float> playerShiftFactor_pct = new ConcurrentDictionary<string, float>();// Player name & percentage value to expand formation by, so 100, 150, 200, 300 etc for 100%, 200%, 300%
     float defaultAmtToShiftForEachBomber_m = 42;
     float defaultAmtToShiftForEachFighter_m = 30;
     float defaultAmtVerticleShift_m = 20;
@@ -1230,7 +1230,7 @@ public class CoverMission : AMission, ICoverMission
 
     }
 
-    public Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d> storedRollingAverages = new Dictionary<Tuple<Player, AiAirGroup, string, double>, Point3d>();
+    public ConcurrentDictionary<Tuple<Player, AiAirGroup, string, double>, Point3d> storedRollingAverages = new ConcurrentDictionary<Tuple<Player, AiAirGroup, string, double>, Point3d>();
 
     public Point3d storedRollingAverage(Player player, AiAirGroup airGroup, string type, Vector3d newpoint, double rolls)
     {
@@ -1247,7 +1247,7 @@ public class CoverMission : AMission, ICoverMission
         return res;
     }
 
-    public Dictionary<Player, System.Threading.Timer> COVER_ListPositionTimer = new Dictionary<Player, System.Threading.Timer>();
+    public ConcurrentDictionary<Player, System.Threading.Timer> COVER_ListPositionTimer = new ConcurrentDictionary<Player, System.Threading.Timer>();
     public readonly int COVER_ListPositionTimerPeriod_ms = 20154; //20 sec
 
     //returns false if it's been turned off or true if turned on.
@@ -2038,7 +2038,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         int count = 1;
         var agIndex = coverAircraftAirGroupsIndexes[player];
-        var agCopy = new Dictionary<int, AiAirGroup>(agIndex);
+        var agCopy = new ConcurrentDictionary<int, AiAirGroup>(agIndex);
         foreach (KeyValuePair<int, AiAirGroup> kv in agCopy)
         {
             if (kv.Key != index) continue;
@@ -2048,7 +2048,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         coverAircraftAirGroupsIndexes[player] = agIndex;
 
         var acIndex = coverAircraftActorsIndexes[player];
-        var acCopy = new Dictionary<Tuple<int, AiActor>, AiAirGroup>(acIndex);
+        var acCopy = new ConcurrentDictionary<Tuple<int, AiActor>, AiAirGroup>(acIndex);
         foreach (KeyValuePair<Tuple<int, AiActor>, AiAirGroup> kv in acCopy)
         {
             if (kv.Key.Item1 != index) continue;
@@ -2087,14 +2087,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
          public Dictionary<AiAirGroup, Player> coverAircraftActorsIndexes = new Dictionary<Player, Dictionary<int, AiActor>>();        
          */
 
-        var agIndex = new Dictionary<int, AiAirGroup>();
+        var agIndex = new ConcurrentDictionary<int, AiAirGroup>();
         if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];
         agIndex[indx] = newAirgroup;
         coverAircraftAirGroupsIndexes[player] = agIndex;
 
         foreach (AiActor actor in (newAirgroup as AiGroup).GetItems())
         {
-            var acIndex = new Dictionary<Tuple<int, AiActor>, AiAirGroup>();
+            var acIndex = new ConcurrentDictionary<Tuple<int, AiActor>, AiAirGroup>();
             if (coverAircraftActorsIndexes.ContainsKey(player)) acIndex = coverAircraftActorsIndexes[player];
             acIndex[new Tuple<int, AiActor>(indx, actor)] = newAirgroup;
             coverAircraftActorsIndexes[player] = acIndex;
@@ -2563,23 +2563,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
     //removes those matching this army, or if -1, ignores the army
    
-    public void removeAllGroundActorsNear_clean(Point3d pos, double radius_m, int percentToRemove = 100, int armyToRemove = -1, List<string> types_to_remove = null, List<string> types_to_retain = null, bool preserveOnWater = false, int callCount = 0, bool fast = false)
+    public void removeAllGroundActorsNear_clean(Point3d pos, double radius_m, int percentToRemove = 100, int armyToRemove = -1, List<string> types_to_remove = null, List<string> types_to_retain = null, bool preserveOnWater = false, int callCount = 0)
     {
-        try		
+        try
         {
-			double wait1 = 5;
-			double wait2 = 120;
-			if (fast) {
-				wait1 = 0;
-				wait1 = 0;
-			}
-
 
             List<AiActor> asa = getAllGroundActorsNear_clean(pos, radius_m);
             if (asa == null)
             {
                 Console.WriteLine("getAllGroundActorsNear_clean - asa is NULL, asa so we wait and try again ...");
-                if (callCount > 10) return;
+                if (callCount > 0) return;
                 Timeout(10, () => { removeAllGroundActorsNear_clean(pos, radius_m, percentToRemove, armyToRemove, types_to_remove, types_to_retain, preserveOnWater, callCount + 1); });
                 return;
             }
@@ -2641,9 +2634,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         Console.WriteLine("RemoveGroundActor - this matched and will be removed! {0} ", groundActorTypes);
 
                         if (ran.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
-						
-						mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors Near _clean");
-                        Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+                        Timeout(ran.Next(5, 120), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
                         count++;
                     }
                     catch (Exception ex)
@@ -2662,33 +2653,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 
     //removes ground actors matching army and types to remove, and standing on enemy territory
-	//types_to_retain are not kept if their army != territory, but replaced by the same thing with correct army
-    public void removeGroundActorsOnEnemyTerritory_clean(int percentToRemove = 100, int army = -1, List<string> types_to_remove = null, List<string> types_to_retain = null, bool preserveOnWater = false, List<string> types_to_skip = null, bool fast = false)
+    public void removeGroundActorsOnEnemyTerritory_clean(int percentToRemove = 100, int army = -1, List<string> types_to_remove = null, List<string> types_to_retain = null, bool preserveOnWater = false)
     {
         var asa = new List<AiActor>();
-		
-		var f = GamePlay.gpCreateSectionFile();
-		
-		double wait1 = 5;
-		double wait2 = 120;
-		if (fast) {
-			wait1 = 0;
-			wait1 = 0;
-			asa = CoverCalcs.gpGetAllGroundActors(this).ToList();
-			if (asa == null) return;
-		} else {
 
-			lock (allStaticActors_lock)
-			{
-				if (allStaticActors != null) asa = new List<AiActor>(allStaticActors);
-			}
-		}
-		
+        lock (allStaticActors_lock)
+        {
+            if (allStaticActors != null) asa = new List<AiActor>(allStaticActors);
+        }
+
         Console.WriteLine("covermission removeGroundActorsOnEnemyTerritory_clean: Starting");
         try
         {
             int count = 0;
- 
+
             foreach (AiActor aa in asa)
             {
                 try
@@ -2701,78 +2679,53 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //2022-12 - Don't use NAME for now as it now includes stuff like the objective ID
                     //
                     //string groundActorTypes = aa.Name() + (aa as AiCart).InternalTypeName();
-                    string groundActorName = (aa as AiCart).InternalTypeName();
-					string groundActorTypes = groundActorName;
+                    string groundActorTypes = (aa as AiCart).InternalTypeName();
                     if (aa as AiGroundActor != null) groundActorTypes += (aa as AiGroundActor).Type();
 
-                    //if (groundActorTypes.ToLower().Contains("tank")) Console.WriteLine("RemoveGroundActor - checking: {0} ", groundActorTypes);
-					Console.WriteLine("RemoveGroundActor - checking: {0} {1} {2} {3}", aa.Name(), groundActorName, groundActorTypes, aa.Army());
+                    if (groundActorTypes.ToLower().Contains("tank")) Console.WriteLine("RemoveGroundActor - checking: {0} ", groundActorTypes);
 
 
-                    bool remove = false;
-					bool retain = false;
-                    if (types_to_remove == null) remove = true;
+                    bool match = false;
+                    if (types_to_remove == null) match = true;
                     else foreach (string s in types_to_remove)
                         {
                             if (groundActorTypes.ToLower().Contains(s.ToLower()))
                             {
-                                remove = true;
+                                match = true;
                                 break;
                             }
                         }
-                    if (remove && types_to_retain != null) foreach (string s in types_to_retain)
+                    if (match && types_to_retain != null) foreach (string s in types_to_retain)
                         {
                             //We check NAME and groundactor TYPE and INTERNALTYPENAME for matches                       
                             if (groundActorTypes.ToLower().Contains(s.ToLower()))
                             {
-                                remove = true;
-								retain = true;
+                                match = false;
                                 break;
                             }
                         }
-					if (remove && types_to_skip != null) foreach (string s in types_to_skip)
-                        {
-                            //We check NAME and groundactor TYPE and INTERNALTYPENAME for matches                       
-                            if (groundActorTypes.ToLower().Contains(s.ToLower()))
-                            {
-                                remove = false;
-                                break;
-                            }
-                        }	
 
-                    if (remove && preserveOnWater)
+                    if (match && preserveOnWater)
                     {
-                        if (Calcs.isPointInOrNearWater(GamePlay, aa.Pos(), radius_m: 10)) remove = false;
+                        if (Calcs.isPointInOrNearWater(GamePlay, aa.Pos(), radius_m: 10)) match = false;
                     }
-					
-					if (!remove) continue;
 
-
+                    if (!match) continue;
 
 
                     if (ran.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
 
                     int terr = GamePlay.gpFrontArmy(aa.Pos().x, aa.Pos().y);
 
-					//only nn object on neutral territory stay - if gb or de on nn, must be replaced at min
-                    if (terr == 0 && aa.Army() == 0 ) continue;
+                    if (terr == 0) continue;
 
-					//if correct army on correct territory, it can stay
-                    if (terr != 0 && aa.Army() == terr) continue;
-					
-					//If it is excluded from removing, but doesn't match army of its territory, 
-					//it must be replaced with the same object but correct army 
-					if (retain && aa.Army() != 0) {
-						
-						f = Calcs.makeStatic(f, GamePlay, mainmission, aa.Pos().x, aa.Pos().y, 0, groundActorName, 0, ArmiesSection[aa.Army()], staticprefix: "replace_enemy_actor");
-						continue;
-					}
+                    if (aa.Army() == terr) continue;
 
                     //if (groundActorTypes.ToLower().Contains("tank")) 
                     Console.WriteLine("RemoveGroundActor - this matched and will be removed! {0} ", groundActorTypes);
 
-					mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors _clean");
-                    Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+
+                    Timeout(ran.Next(5, 120), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
                     count++;
                 }
                 catch (Exception ex)
@@ -2781,8 +2734,6 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     else { Console.WriteLine("Cover removeEnemyGroundActors ERROR: couldn't do something ERROR"); }
                 }
             }
-			//Note time 130s is longer than the longest possible .Destroy() time
-			Timeout(wait2 + 10, () => { GamePlay.gpPostMissionLoad(f); f.save(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/sectionfiles" + "/" + "remove-replacenemyactors" + ran.Next(0,99).ToString()); }); //testing}); 
             Console.WriteLine("cover.removeGroundActorsOnEnemyTerritory_clean: Removed {0} items ... ", count);
         }
         catch (Exception ex) { Console.WriteLine("cover.removeGroundActorsOnEnemyTerritory_clean ERROR: " + ex.ToString()); }
@@ -2979,7 +2930,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (GamePlay != null) GamePlay.gpLogServer(null, numret.ToString() + " groups of escort aircraft/bombers have been instructed to land at the nearest friendly airport and returned to General Supply.", new object[] { });
         }
 
-    Dictionary<Player, int> TimeOfPlayerLastLandRequest = new Dictionary<Player, int>();
+    ConcurrentDictionary<Player, int> TimeOfPlayerLastLandRequest = new ConcurrentDictionary<Player, int>();
 
     public void landCoverAircraft(Player player)
     {
@@ -3089,7 +3040,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         catch (Exception ex) { Console.WriteLine("COVER: landCoverAircraft (final) ERROR! " + ex.ToString()); }
     }
 
-    Dictionary<Player, DateTime> lastCheckoutTime_dt = new Dictionary<Player, DateTime>();
+    ConcurrentDictionary<Player, DateTime> lastCheckoutTime_dt = new ConcurrentDictionary<Player, DateTime>();
 
     public void checkoutCoverAircraft(Player player, string selectString)
     {
@@ -3674,7 +3625,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else return 0;
     }
 
-    public Dictionary<Player, Point3d> playerCurrentTargetPoint = new Dictionary<Player, Point3d>();
+    public ConcurrentDictionary<Player, Point3d> playerCurrentTargetPoint = new ConcurrentDictionary<Player, Point3d>();
     public bool hasPlayerCurrentTargetPointChanged(Player player, Point3d newTargetPoint)
     {
         bool playerTargetPointChanged = true;
@@ -4120,7 +4071,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 
     //how many per flight in each type of formation
-    Dictionary<string, int> numFlightFormation = new Dictionary<string, int>() {
+    ConcurrentDictionary<string, int> numFlightFormation = new ConcurrentDictionary<string, int>() {
             {"VIC",  6},  //experimentally determined, 4 is the max for BLUE, 6 for RED.  This seems to be the big difference between Blue & Red.
             {"VIC3", 6}, //holds true for all.  EXCEPT VIC only works for blue, not for read.  VIC3 works for both. 
             {"LINEABREAST",6},  //Not sure if there is any difference at all between the two???
@@ -4130,7 +4081,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
     };
     //how many per flight in each type of formation
-    Dictionary<string, string> flightFormationAbbreviations = new Dictionary<string, string>() {
+    ConcurrentDictionary<string, string> flightFormationAbbreviations = new ConcurrentDictionary<string, string>() {
             {"VI","VIC"},  //experimentally determined, 4 is the max for BLUE, 6 for RED.  This seems to be the big difference between Blue & Red.
             {"V3","VIC3"}, //holds true for all.  EXCEPT VIC only works for blue, not for read.  VIC3 works for both. 
             {"AB","LINEABREAST"},  //Not sure if there is any difference at all between the two???
@@ -5740,10 +5691,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         catch (Exception ex) { Console.WriteLine("Cover BomberUpdateWaypoints() ERROR: " + ex.ToString());  return false; }
     }
 
-    Dictionary<AiAirGroup, AiActor> airgroupTargets = new Dictionary<AiAirGroup, AiActor>(); //any ground actor this airgroup is targeting at the moment
-    Dictionary<AiAirGroup, GroundStationary> airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>(); //any ground stationary the airgroup is targeting at the  moment
-    Dictionary<AiAirGroup, Point3d> airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>(); //the point the airgroup is targeting at the moment
-    Dictionary<Point3d, DateTime> targetPointNoEnemiesFound_time = new Dictionary<Point3d, DateTime>();
+    ConcurrentDictionary<AiAirGroup, AiActor> airgroupTargets = new ConcurrentDictionary<AiAirGroup, AiActor>(); //any ground actor this airgroup is targeting at the moment
+    ConcurrentDictionary<AiAirGroup, GroundStationary> airgroupGroundTargets = new ConcurrentDictionary<AiAirGroup, GroundStationary>(); //any ground stationary the airgroup is targeting at the  moment
+    ConcurrentDictionary<AiAirGroup, Point3d> airgroupTargetPoints = new ConcurrentDictionary<AiAirGroup, Point3d>(); //the point the airgroup is targeting at the moment
+    ConcurrentDictionary<Point3d, DateTime> targetPointNoEnemiesFound_time = new ConcurrentDictionary<Point3d, DateTime>();
     //AARGH - all these three should be in one dictionary or whatever instead of 3, right?
 
     //Dictionary<AiAirGroup, GroundStationary> airgroupTargets = new Dictionary<AiAirGroup, GroundStationary>();
@@ -7540,57 +7491,61 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 	//as before, but now there is a new group add.
 	
 	private void CheckSplits(object obj) {
-	  for (int army =1; army<3; army ++) 	
-		if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
-		{
-			foreach (AiAirGroup airgroup in GamePlay.gpAirGroups(army))
+	  try {	
+		  for (int army =1; army<3; army ++) 	
+			if (GamePlay.gpAirGroups(army) != null && GamePlay.gpAirGroups(army).Length > 0)
 			{
-				if (airgroup != null && airgroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airgroup.motherGroup()))
+				foreach (AiAirGroup airgroup in GamePlay.gpAirGroups(army))
 				{
-					Console.WriteLine("COVER: airgroup has a mothergroup, and the mothergroup is one of the <cover airgroups, so we add the daughter group to that pilot's controlled <cover groups");
-					//If the airgroup is a split-off, and if it hasn't already transferred the 
-					//orders over from its motherGroup, we do it now
-					if (!coverAircraftAirGroupsActive.ContainsKey(airgroup) && !coverAircraftAirGroupsOrders.ContainsKey(airgroup) && coverAircraftAirGroupsOrders.ContainsKey(airgroup.motherGroup())) 
-					{ 
-						coverAircraftAirGroupsOrders[airgroup] = coverAircraftAirGroupsOrders[airgroup.motherGroup()];
-						Console.WriteLine("COVER: airgroup has a mothergroup, the mother group has AirGroupsOrders, and they haven't been transferred to the daughter group yet, os doing that now");
+					if (airgroup != null && airgroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airgroup.motherGroup()))
+					{
+						Console.WriteLine("COVER: airgroup has a mothergroup, and the mothergroup is one of the <cover airgroups, so we add the daughter group to that pilot's controlled <cover groups");
+						//If the airgroup is a split-off, and if it hasn't already transferred the 
+						//orders over from its motherGroup, we do it now
+						if (!coverAircraftAirGroupsActive.ContainsKey(airgroup) && !coverAircraftAirGroupsOrders.ContainsKey(airgroup) && coverAircraftAirGroupsOrders.ContainsKey(airgroup.motherGroup())) 
+						{ 
+							coverAircraftAirGroupsOrders[airgroup] = coverAircraftAirGroupsOrders[airgroup.motherGroup()];
+							Console.WriteLine("COVER: airgroup has a mothergroup, the mother group has AirGroupsOrders, and they haven't been transferred to the daughter group yet, os doing that now");
+						
+							Player player = coverAircraftAirGroupsActive[airgroup.motherGroup()];
+							
+							//And we also add it to the active airgroups for this player
+							coverAircraftAirGroupsActive.Add(airgroup, player);
+							
+
+							addToIndexes(player, airgroup);
+							
+							bool heavyBomber = false;
+							if (isHeavyBomber(airgroup) || isDiveBomber(airgroup)) heavyBomber = true;
+							bool isStrikeAC = Calcs.isStrikeAC(airgroup);
+
+							bool playerIsStrikeAC = false;
+							if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
+								playerIsStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
+
+							CoverACInfo acInfo = new CoverACInfo();
+							acInfo.PlaneType ="(unknown)";
+							if (airgroup.GetItems().Length > 0 && (airgroup.GetItems()[0] as AiAircraft) != null)  acInfo.PlaneType = CoverCalcs.GetAircraftType(airgroup.GetItems()[0] as AiAircraft);
+							acInfo.IsHeavyBomber = heavyBomber;
+							acInfo.IsDiveBomber = isDiveBomber(airgroup);
+							acInfo.IsStrikeAC = isStrikeAC;
+							acInfo.IsPlayerStrikeAC = playerIsStrikeAC;
+							coverACInfo[airgroup] = acInfo;
+
+							double delay = 11.2354 + ran.NextDouble() * 2;
+							//Console.WriteLine("1Heavybomber init: {0} {1} " + airgroup.Name() + " to " + player.Name(), heavyBomber, delay);
+							//if (heavyBomber) delay = 2 * delay; //don't think we really need this
+						//try
+						
+							keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+						}
+								  
+						
 					}
-					Player player = coverAircraftAirGroupsActive[airgroup.motherGroup()];
-					
-					//And we also add it to the active airgroups for this player
-					coverAircraftAirGroupsActive.Add(airgroup, player);
-					
-
-                    addToIndexes(player, airgroup);
-                    
-					bool heavyBomber = false;
-                    if (isHeavyBomber(airgroup) || isDiveBomber(airgroup)) heavyBomber = true;
-					bool isStrikeAC = Calcs.isStrikeAC(airgroup);
-
-					bool playerIsStrikeAC = false;
-					if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
-						playerIsStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
-
-					CoverACInfo acInfo = new CoverACInfo();
-					acInfo.PlaneType ="(unknown)";
-					if (airgroup.GetItems().Length > 0 && (airgroup.GetItems()[0] as AiAircraft) != null)  acInfo.PlaneType = CoverCalcs.GetAircraftType(airgroup.GetItems()[0] as AiAircraft);
-					acInfo.IsHeavyBomber = heavyBomber;
-					acInfo.IsDiveBomber = isDiveBomber(airgroup);
-					acInfo.IsStrikeAC = isStrikeAC;
-					acInfo.IsPlayerStrikeAC = playerIsStrikeAC;
-					coverACInfo[airgroup] = acInfo;
-
-					double delay = 11.2354 + ran.NextDouble() * 2;
-					//Console.WriteLine("1Heavybomber init: {0} {1} " + airgroup.Name() + " to " + player.Name(), heavyBomber, delay);
-					//if (heavyBomber) delay = 2 * delay; //don't think we really need this
-					//try
-					
-						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
-                              
-					
 				}
 			}
-		}
+			
+	  } catch (Exception ex) { Console.WriteLine ("Cover-checksplitsERROR: " + ex.ToString()); }
 	}
 
 } //end class
@@ -8558,14 +8513,11 @@ public static class CoverCalcs
     //this is the routine below. This catches other slightly odd things that CloD makes but does not
     //put through OnActorCreated.  Like a the LOAD on the back of a truck, or some static/actor ships
     //-->Then merged all 3 of these lists together/union 
-    public static AiActor[] gpGetAllGroundActors(CoverMission msn, int lastMissionLoaded = 0)
+    public static AiActor[] gpGetAllGroundActors(CoverMission msn, int lastMissionLoaded)
     {
         List<AiActor> result = new List<AiActor>();
         if (msn.GamePlay == null) return result.ToArray();
-        
-		List<int> armies = new List<int>(msn.GamePlay.gpArmies());
-		
-		if (lastMissionLoaded == 0) lastMissionLoaded = msn.GamePlay.gpNextMissionNumber();
+        List<int> armies = new List<int>(msn.GamePlay.gpArmies());
         //List<int> armies = new List<int>() { 1, 2 };
         if (msn.mainmission.AllGroundDict!= null) result = msn.mainmission.AllGroundDict.Values.ToList();        // everything picked up by onactorcreated
         for (int s = 0; s < lastMissionLoaded + 2; s++)

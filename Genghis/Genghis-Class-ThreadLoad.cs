@@ -19,7 +19,8 @@ public class ThreadLoadMission : AMission
 {
     [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
     public static extern Int32 GetCurrentWin32ThreadId();
-    private Mission mainmission;
+    public Mission mainmission;
+	private bool _handlerRegistered;
 
     public double recentCPUPercent = 0; //%, ie 0-100 not 0-1
     public double allTimeCPUPercent = 0;//%, ie 0-100 not 0-1
@@ -50,6 +51,12 @@ public class ThreadLoadMission : AMission
     public ThreadLoadMission(Mission msn)
     {
         mainmission = msn;
+		
+		//Hopefully handle any program crashes not otherwise handled
+		//such as Steam disconnect...
+		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+		_handlerRegistered = true;
+		
     }
 
     private System.Threading.Timer threadLoadTimer;
@@ -242,7 +249,32 @@ public class ThreadLoadMission : AMission
         base.OnBattleStoped();
 
         threadLoadTimer_dispose();
+		
+	    if (_handlerRegistered)
+	    {
+			AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+			_handlerRegistered = false;
+		}
 
     }
+	
+	//should handle most ANY error not otherwise captured; we'll see
+	//Needs: AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+	//on initialization
+	private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+	{
+		try 
+		{
+			var ex = (Exception)e.ExceptionObject;
+			Console.WriteLine("UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim: " + ex.ToString());
+			File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim:\n\n {1}\n", DateTime.Now, ex));
+			//SaveCrashReport(exception);
+	    }
+		catch
+		{
+			// Nothing further can safely be done
+		}
+	}
+	
 }
 

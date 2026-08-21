@@ -2376,22 +2376,32 @@ public class MoveBombTargetMission : AMission
 
             if (mainmission.ON_TESTSERVER) Console.WriteLine("MoveBomb: Should we check radar returns for airGroup? " + agActor.Name() + " " + agAircraft.InternalTypeName() + " airGroup Name: " + airGroupName + " task: " + task.ToString());
 			
+			bool escorting = false;
+			
 			//Don't do this if it's a cover airgroup, or bombers, fighters covering bombers, etc
             var aawpt_list = new List<AiAirWayPointType> {
                         AiAirWayPointType.GATTACK_TARG,
                             AiAirWayPointType.GATTACK_POINT,
-                            AiAirWayPointType.COVER,
-                            AiAirWayPointType.ESCORT,
+                            //AiAirWayPointType.COVER,
+                            //AiAirWayPointType.ESCORT,
                             AiAirWayPointType.FOLLOW};
         
             if (aawpt_list.Contains((currWP as AiAirWayPoint).Action)) return false; 
+			
+			var aawpt_list_escort = new List<AiAirWayPointType> {                        
+                            AiAirWayPointType.COVER,
+                            AiAirWayPointType.ESCORT,
+                            };
+			if (aawpt_list_escort.Contains((currWP as AiAirWayPoint).Action)) escorting = true; 
 
             //usually we don't do this with heavy bombers (unless a small group and already dropped bombs); or Stukas if they still have their bombs
             bool isBomber = ( MoveBombCalcs.isHeavyBomber(airGroup) && airGroup.hasBombs() && airGroup.GetItems().Length > 4 ) || ( MoveBombCalcs.isDiveBomber(airGroup) && airGroup.hasBombs() );
             if (isBomber) return false;
             
             //The "cover" or "nochange" is in the AIRGROUP name, not the actor/aircraft name
-            if (airGroupName.ToLower().Contains("cover")  || airGroupName.ToLower().Contains("nochange")) return false;
+			//We're trying: while escorting or covering, even if _COVER a/c, we will 
+			//give them radar intcpt, ONLY IF it is VERY GOOD, like <5 min or maybe <3 min
+            if ( ( airGroupName.ToLower().Contains("cover")  && !escorting) || airGroupName.ToLower().Contains("nochange")) return false;
 
             if (mainmission.ON_TESTSERVER) Console.WriteLine("MoveBomb: Checking radar returns for airGroup: " + agActor.Name() + " " + agAircraft.InternalTypeName());
             
@@ -2687,7 +2697,7 @@ public class MoveBombTargetMission : AMission
 
                 if (!goodintercept)
                 {
-                    //Console.WriteLine("MoveBombINER: Returning - no good intercept found for airgroup: " + agActor.Name());
+                    Console.WriteLine("MoveBombINER: Returning - no good intercept found for airgroup: " + agActor.Name());
                     //So here is where would could implement avoiding nearby enemy AI groups etc
 
                     return false;
@@ -2702,6 +2712,11 @@ public class MoveBombTargetMission : AMission
                 if (iPoint.z > 6500) iPoint.z = bestAagri.agi.pos.z + ran.NextDouble() * 1000 - 750;
                 if (iPoint.z > 8500) iPoint.z = 8500 + ran.NextDouble() * 2000 - 1500;
                 if (iPoint.z < 100 ) iPoint.z = 100 + ran.NextDouble() * 150 - 20;
+				
+				if (escorting  && interceptTime_sec > 240) {
+					Console.WriteLine("MoveBombINER: Returning - intercept found for ESCORT but it wasn't very good ({0:N0}s): " + agActor.Name(), interceptTime_sec);
+					return false;
+				}
 
 
                 //Console.WriteLine("MoveBombINER: Making new intercept for " + bestAagri.pagi.playerNames + " to attack " + bestAagri.agi.playerNames);

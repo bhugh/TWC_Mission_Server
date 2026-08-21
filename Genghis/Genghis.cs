@@ -512,6 +512,9 @@ public class Mission : AMission, IMainMission
 
     static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
     //public enum ArmiesE { None, Red, Blue };
+	
+	static public List<string> ArmiesSection = new List<string>() { "nn", "gb", "de" }; //armies as needed in section files ie for ground stationaries
+    
 
     public bool MISSION_STARTED = false;
     public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
@@ -564,6 +567,7 @@ public class Mission : AMission, IMainMission
     public string MapPrevWinner = ""; //Winner of the previous mission, if there was one
     public int CampaignMapMaxRedSuffixMax = 1; //This implies you have initairports files named with suffix ie -R001, -R002, -R003, -R004 through the max
     public int CampaignMapMaxBlueSuffixMax = 1; //This implies you have initairports files named ie -B001, -B002, -B003, -B004 through the max
+	public string BattleWonObjectiveMsg = "[[BATTLE WON! Repair & re-supply underway!]] ";
 
     Stopwatch stopwatch;
     ConcurrentDictionary<string, Tuple<long, SortedDictionary<string, string>>> radar_messages_store;
@@ -1390,17 +1394,18 @@ public class Mission : AMission, IMainMission
         }
     }
 
-    public void removeGroundActorsAndStationariesInEnemyTerritory()
+    public void removeGroundActorsAndStationariesInEnemyTerritory(bool fast = false)
     {
         Console.WriteLine("removeGroundActorsAndStationariesInEnemyTerritory: Starting . . . ");
         //"tank." gets Tank.Matilda etc but not Tanker.Medium.  Same for car.
-        List<string> typesToRetain = new List<string>() { "ship", "truck", "tank.", "spg", "car.", "jerrycan_ger" };
-        covermission.removeGroundActorsOnEnemyTerritory_clean(percentToRemove: 100, army: -1, types_to_remove: null, types_to_retain: typesToRetain, preserveOnWater: true);
+        List<string> typesToRetain = new List<string>() { "ship", "truck", "tank.", "spg", "car.", "jerrycan_ger", "aircraft." };
+		List<string> typesToSkip = new List<string>() { "submarine"}; //sub is the only kind that actualy operates in enemy waters
+        covermission.removeGroundActorsOnEnemyTerritory_clean(percentToRemove: 100, army: -1, types_to_remove: null, types_to_retain: typesToRetain, types_to_skip: typesToSkip, preserveOnWater: false, fast: fast);
         typesToRetain = new List<string>() { "jerrycan_ger" };
-        Calcs.removeStaticsOnEnemyTerritory(GamePlay, this, types_to_remove: null, percentToRemove: 100, armyToRemove: -1, types_to_retain: typesToRetain, preserveOnWater: true, replaceThem: true);
+        Calcs.removeStaticsOnEnemyTerritory(GamePlay, this, types_to_remove: null, percentToRemove: 100, armyToRemove: -1, types_to_retain: typesToRetain, preserveOnWater: false, replaceThem: true);
     }
 
-    public void removeEnemyGroundActorsStationariesNearAnObjectiveInNeutralTerritory(MissionObjective mo)
+    public void removeEnemyGroundActorsStationariesNearAnObjectiveInNeutralTerritory(MissionObjective mo, bool fast = false)
     {
         try
         {
@@ -1423,7 +1428,7 @@ public class Mission : AMission, IMainMission
 
                 Console.WriteLine("clearGroundActorsAndStationariesNearAnObjectiveinNeutralTerritory: Removing army {0} ground actors & statics near " + mo.Name + " at ({1:F0},{2:F0})", i, mo.Pos.x, mo.Pos.y);
 
-                covermission.removeAllGroundActorsNear_clean(pos: mo.Pos, radius_m: radius_m, percentToRemove: 100, armyToRemove: i, types_to_remove: null, types_to_retain: typesToRetain, preserveOnWater: true);
+                covermission.removeAllGroundActorsNear_clean(pos: mo.Pos, radius_m: radius_m, percentToRemove: 100, armyToRemove: i, types_to_remove: null, types_to_retain: typesToRetain, preserveOnWater: true, fast: fast);
                 Console.WriteLine("clearGroundActorsAndStationariesNearAnObjectiveinNeutralTerritory: 2");
                 Calcs.removeStaticsOnEnemyTerritory(GamePlay, this, types_to_remove: null, percentToRemove: 100, armyToRemove: i, types_to_retain: null, preserveOnWater: false, clearNeutral: true, radius_m: radius_m, center: mo.Pos, replaceThem: true, addX: true); //types is a SUBSTRING MATCH and CASE 
             }
@@ -1444,12 +1449,12 @@ public class Mission : AMission, IMainMission
 
     }
 
-    public void clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory()
+    public void clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory(bool fast=false)
     {
         foreach(MissionObjective mo in MissionObjectivesList.Values.ToList())
         {
             Console.WriteLine("clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory: Removing enemy ground actors & statics near " + mo.Name);
-            removeEnemyGroundActorsStationariesNearAnObjectiveInNeutralTerritory(mo);
+            removeEnemyGroundActorsStationariesNearAnObjectiveInNeutralTerritory(mo, fast: fast);
         }
     }
 
@@ -1832,8 +1837,12 @@ public class Mission : AMission, IMainMission
                             //Console.WriteLine("Airfield dest: Removing airfield item " + gg.Name);
                             Timeout(random.NextDouble() * 40, () =>
                             {
-                                gg.Destroy();
+								try {
+									gg.Destroy();
+									if (ON_TESTSERVER) Console.WriteLine("AirfieldDisable - destroying {0} {1}", gg.Name, gg.Title);
+								} catch (Exception ex) { Console.WriteLine("**AirfieldDisable .destroy gg ERROR: " + ex.ToString()); }
                             });
+							
                         }
                     }
                 }
@@ -1920,7 +1929,7 @@ public class Mission : AMission, IMainMission
                 });
 
                 if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("MXX7 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
-                                                                                                                           //f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.txt"); //testing
+																															if (ON_TESTSERVER) f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "airfielddisableMAIN-ISectionFile.mis"); //testing
             }
             catch (Exception ex)
             {
@@ -2047,11 +2056,55 @@ public class Mission : AMission, IMainMission
             }
 
             double wait = stb_random.NextDouble() * 45;
+			if (Time.tickCounter() < 600000) wait = 0;
             Timeout(wait, () =>
             {
-                MO_HandlePointAreaObjectives(stationary, initiator);
-                MO_makeAllObjectivesScoutedAndLaunchDefenseFromPos(stationary.pos, initiator.Player);
-            });
+				Point3d pos = new Point3d(-1, -1, -1);
+				if (stationary != null) pos = stationary.pos;
+				
+				bool destroyedByCannon = false; 
+				string initiatorName = "unknown";
+				string tName = "";
+				if (initiator.Tool != null) {
+					
+					if (initiator.Actor != null) initiatorName = initiator.Actor.Name();
+					AiDamageTool tool = initiator.Tool;
+					tName = tool.Name;
+					AiDamageToolType tType = tool.Type;
+					if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {0}", tName, tType);
+					if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
+					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
+				}
+				//We're just going to stop counting damage by bofors/AA; also destroy the offending flak
+				if (initiatorName.ToLower().Contains(":static") || 
+					initiatorName.ToLower().Contains(autoFlakPrefix.ToLower()) ||
+					initiatorName.ToLower().Contains(tempFlakPrefix.ToLower())) {
+						if (ON_TESTSERVER) Console.WriteLine("Stationary killed by flak/AA: {0}. Discarding/not counting towards Objective Destruction, and .destroying() {0}.", initiatorName);
+						
+						//And..just destroy these problem AA/flak
+						try {
+							statsmission.Stb_killActor((initiator.Actor), 0, "OnStationaryKilled killing FLAK that killed friendly - over or too near front");
+							(initiator.Actor as AiCart).Destroy();
+						} catch (Exception ex) { Console.WriteLine("HandlePointAreaObjectives - remove FLAK ERROR: " + ex.Message); }
+						
+						return;
+				}
+				
+				if (destroyedByCannon) {
+						
+					//Soo, strafing hits that killed an actual object, 
+					//also count as much as 500lb bomb hitting the  OBJ
+					Timeout(random.Next(3,30), () => {
+						//MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
+						OnBombExplosion_DoWork("Cannon", mass_kg: 150, pos: pos, initiator: initiator, eventArgInt: 0);
+						
+					});
+				}
+					
+				MO_HandlePointAreaObjectives(stationary, initiator, destroyedByCannon: destroyedByCannon);
+				MO_makeAllObjectivesScoutedAndLaunchDefenseFromPos(stationary.pos, initiator.Player);
+				
+			});
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
             //Console.WriteLine("OSK: Stationary " + stationary.Name + " " + stationary.country + " " + stationary.pos.x.ToString("F0") + " " + stationary.pos.y.ToString("F0") + " " + stationary.Title + " " + stationary.Type.ToString() + " " + "killed by ");
@@ -2077,6 +2130,9 @@ public class Mission : AMission, IMainMission
     //Do various things when a bomb is dropped/explodes.  For now we are assessing whether or not the bomb is dropped in a civilian area, and giving penalties if that happens.
     //TODO: X Give points/credit for bombs dropped on enemy airfields and/or possibly other targets of interest.
     //TODO: This is the sort of thing that could be pushed to the 2nd thread/multi-threaded
+	/* Supposedly/perhaps/according to AI, values for eventArgInt mean:
+		0 = Direct Ground / Object Impact: The bomb hit solid land or an object (like a building or hangar) and detonated normally.1 = Water Impact: The bomb struck water. This is crucial if you are writing scripts to detect near-misses on ships or torpedo/marine bombing behavior.2 = Airburst / Mid-Air Detonation: The bomb exploded before touching the ground (for example, if it was detonated prematurely by AA fire, flak, or secondary shockwaves).
+	*/
     public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
     {
 
@@ -4076,7 +4132,7 @@ public class Mission : AMission, IMainMission
   FrontMarker20 230005.07 198916.29 1
 
         */
-    public ISectionFile DrawFrontLinesPerMapState(double minMapState_ext = -25, double maxMapState_ext = 25, double? currMapState = null, string saveName = "frontfile.mis", bool loadSectionFile = true, ISectionFile f2 = null, bool test = false, double campaign_offset_ext=0)
+    public ISectionFile DrawFrontLinesPerMapState(double minMapState_ext = -25, double maxMapState_ext = 25, double? currMapState = null, string saveName = "frontfile.mis", bool loadSectionFile = true, ISectionFile f2 = null, bool test = false, double campaign_offset_ext=0, bool fast = false)
     {
         try
         {
@@ -4562,10 +4618,14 @@ public class Mission : AMission, IMainMission
 
             if (loadSectionFile)
             {
-                Timeout(12.74, () =>
-                {
-                    GamePlay.gpPostMissionLoad(f);
-                });
+				if (fast) GamePlay.gpPostMissionLoad(f);
+				else {
+					
+					Timeout(12.74, () =>
+					{
+						GamePlay.gpPostMissionLoad(f);
+					});
+				}
 
                 if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Drew current frontline");
             }
@@ -8447,9 +8507,11 @@ public class Mission : AMission, IMainMission
             CampaignMapSuffix = GetMapSuffix(); //This must happen BEFORE EndMissionIfPlayersInactive(); as this reads in the initial campaign state variable & EndMissionIfPlayersInactive(); will overwrite it.
                                                 //Timeout(5, () => { SetAirfieldTargets(); });  //Delay for the situation where airfields are loaded via init submissions, which might take a while to load
 
-            testFrontLines();
+            if (ON_TESTSERVER) testFrontLines();
 
-            DrawFrontLinesPerMapState(-MAP_WIN_POINTS, MAP_WIN_POINTS, campaign_offset_ext: MAP_FRONTLINE_OFFSET); //2022-03-21 - WAS 100, NOW 125
+            DrawFrontLinesPerMapState(-MAP_WIN_POINTS, MAP_WIN_POINTS, campaign_offset_ext: MAP_FRONTLINE_OFFSET, fast: true); //2022-03-21 - WAS 100, NOW 125
+			
+			removeGroundActorsAndStationariesInEnemyTerritory(fast:true); //trying to avoid  those initial kills of friendlies by FLAK
 
 
                 //TESTING
@@ -8484,9 +8546,11 @@ public class Mission : AMission, IMainMission
             //#7. Transfer old (from disk) missionobjectives list to new/regular objectives list
             Timeout(8, () =>
             {
+				removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
                 //Thread.Sleep(15000);
                 Console.WriteLine("campaign21: post-sleep...");
                 ReadInitialSubmissions(MISSION_ID + "-initsubmission", 0, 0); //so we can include initsubmissions if we want.  Needs to be after the timeout because we process them to change army of stationaries based on frontlines, which need to be loaded
+				removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
 
                 
                 //Wait for init submissions, esp. spawn points, to load, then check them
@@ -8501,6 +8565,7 @@ public class Mission : AMission, IMainMission
 
                     removeAndChangeBirthPlacesInEnemyTerritory();//remove any birthplaces that have fallen behind enemy lines
                     addAirfieldWindsocks();
+					removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
 
 
                     //So spawnpoints are an init submission now, so we need ot wait until all those are loaded before running
@@ -8513,6 +8578,8 @@ public class Mission : AMission, IMainMission
                     mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
 
                     if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
+					
+					clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory(fast:true);
 
 
                     //LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
@@ -8633,17 +8700,17 @@ public class Mission : AMission, IMainMission
             //Wait a while to do this, for init submissions to load, any flak to be placed etc
             //450 seemed too long but maybe 130 was too short.
             Timeout(180, () => { 
-                removeGroundActorsAndStationariesInEnemyTerritory();
+                removeGroundActorsAndStationariesInEnemyTerritory(fast: true);
                 //clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
             });
-            Timeout(205, () => {
+            Timeout(1855, () => {
                 //removeGroundActorsAndStationariesInEnemyTerritory();
-                clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
+                clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory(fast:true);
             });
 			
 			//2026-08: Do it again as it seems some still survive, maybe some items are being loaded later?
 			Timeout(400, () => { 
-                removeGroundActorsAndStationariesInEnemyTerritory();
+                removeGroundActorsAndStationariesInEnemyTerritory(fast: true);
                 //clearGroundActorsAndStationariesNearAllObjectivesinNeutralTerritory();
             });
             Timeout(430, () => {
@@ -16239,6 +16306,11 @@ public class Mission : AMission, IMainMission
                     msn.MO_WriteOutAllMissionObjectives(msn.MISSION_ID + "-mission_objectives_complete.txt", false);
                 }
                 catch (Exception ex) { Console.WriteLine("MO_init error5! " + ex.ToString()); }
+				
+				//if they won the battle last mission the "BATTLE WON!" msg last until the next restart
+				//we remove it here
+				if (msn.MissionObjectivesCompletedString[ArmiesE.Red] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Red].Replace(msn.BattleWonObjectiveMsg,"");
+				if (msn.MissionObjectivesCompletedString[ArmiesE.Blue] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Blue].Replace(msn.BattleWonObjectiveMsg,"");
             }
             catch (Exception ex) { Console.WriteLine("MO_init ERROR (overall initializer)! " + ex.ToString()); }
         }
@@ -18112,7 +18184,7 @@ added Rouen Flak
         }
         //resets the score & obj completed for the army, must be done immediately after win
         MissionObjectiveScore[(ArmiesE)army] = 0;
-        MissionObjectivesCompletedString[(ArmiesE)army] = "";
+        MissionObjectivesCompletedString[(ArmiesE)army] = BattleWonObjectiveMsg;
         
     }
 
@@ -18153,7 +18225,7 @@ added Rouen Flak
         }
 
         MissionObjectiveScore[(ArmiesE)army] = 0;
-        MissionObjectivesCompletedString[(ArmiesE)army] = "";
+        MissionObjectivesCompletedString[(ArmiesE)army] = BattleWonObjectiveMsg;
 
     }
 
@@ -26111,7 +26183,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
     //FOR STATIONARY TARGETS DESTROYED ***OR*** BUILDINGS
     //if st==null then it is a BUILDING instead of a groundstationary object
-    public void MO_HandlePointAreaObjectives(GroundStationary st, AiDamageInitiator initiator, string title = null, Point3d? BuildingPos = null)
+    public void MO_HandlePointAreaObjectives(GroundStationary st, AiDamageInitiator initiator, string title = null, Point3d? BuildingPos = null, bool destroyedByCannon = false)
     {
         try
         {
@@ -26135,33 +26207,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             DateTime currTime_dt = DateTime.UtcNow;
             double repairSpeedupFactor = 1;
-			
-			bool destroyedByCannon = false; 
-			string initiatorName = "unknown";
-			string tName = "";
-			if (initiator.Tool != null) {
-				
-				if (initiator.Actor != null) initiatorName = initiator.Actor.Name();
-				AiDamageTool tool = initiator.Tool;
-				tName = tool.Name;
-				AiDamageToolType tType = tool.Type;
-				if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {0}", tName, tType);
-				if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
-				if (ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
-			}
-
-			//We're just going to stop counting damage by bofors/AA
-			if (initiatorName.ToLower().Contains(":static") || initiatorName.ToLower().Contains(autoFlakPrefix.ToLower()) ||
-				initiatorName.ToLower().Contains(tempFlakPrefix.ToLower())) {
-					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by flak/AA: {0}. Discarding/not counting towards Objective Destruction.", initiatorName);
-					
-					//And..just destroy these problem AA/flak
-					try {
-						(initiator.Actor as AiCart).Destroy();
-					} catch (Exception ex) { Console.WriteLine("HandlePointAreaObjectives - remove FLAK ERROR: " + ex.Message); }
-					
-					return;
-			}
+						
 
             foreach (string ID in MissionObjectivesList.Keys.ToList())
             {
@@ -26214,11 +26260,6 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     if (dist > mo.TriggerDestroyRadius) damageCount *= 0.5; //less damage effectiveness if inside radius but outside triggerradius
 					
 					if (destroyedByCannon) {
-						//Soo, strafing hits that killed an actual object, 
-						//also count as much as 500lb bomb hitting the  OBJ
-						Timeout(random.Next(3,30), () => {
-							MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
-						});
 						damageCount *= 3; //triple credit for strafing damage of ground objects
 					}
 					
@@ -26227,9 +26268,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     else if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         mo.ObjectsDestroyed_num ++;
 					
-					if (destroyedByCannon) {
-						
-					}
+
 
                     //Console.WriteLine("BSD: 3");
 
@@ -28702,6 +28741,16 @@ public static class Calcs
 
 		return name;
 	}
+	
+	//the .Title seems to have a nonbreaking space between characters, to change to "." instead:
+	//This can be used directly in the .mis file
+	public static string cleanStationaryTitle (string title){
+		if (title == null) return title;
+		return title.Replace("\u00C2\u00A0", ".")
+						.Replace("\u00A0", ".")
+						.Replace("..", ".")
+						.Trim();
+	}
 
     public static bool isHeavyBomber(AiAircraft aircraft)
     {
@@ -30784,11 +30833,17 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                             if (armyToRemove == 2 && gg.country != "de") continue;
                             if (armyToRemove == 0 && gg.country != "nn") continue;
                         }
+						
+						string cleanTitle = Calcs.cleanStationaryTitle( gg.Title);
+						
 
-                        //Don't include NAME for now as it now includes stuff like the objective ID
+                        //Don't include NAME for now as it now includes stuff like the objective ID "static3493" "replace_old_enemy_statics34898" but not really any helpful info about the TYPE of static 
                         //string types = gg.Title + gg.Type.ToString() + gg.Name + gg.Category;
                         string types = gg.Title + gg.Type.ToString() + gg.Category;
-                        if (types.Contains("tank") && msn.ON_TESTSERVER) Console.WriteLine("RemoveStatic - checking: {0} ", types);
+						//string ggNames = String.Format("{0} ::: {1} : {2} : {3} : {4}", cleanedTitle, gg.Name, gg.Title, gg.Type.ToString(), gg.Category);
+						
+						//if (msn.ON_TESTSERVER) Console.WriteLine("ggNames: {0} ", ggNames);
+                        //if (types.Contains("tank") && msn.ON_TESTSERVER) Console.WriteLine("RemoveStatic - checking: {0} ", types);
 
                         bool match = false;
                         if (types_to_remove == null) match = true;
@@ -30832,6 +30887,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                         if (ggarmy == terr) continue;
                         if (replaceThem)
                         {
+							/*
                             string typ = "Stationary.Environment.JerryCan_GER1_2";
                             string names = (gg.Type.ToString() + gg.Title).ToLower();
                             if (names.Contains("industrial")) typ = "Stationary.Environment.CamoNetPlaneBig";
@@ -30843,10 +30899,23 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                             else if (names.Contains("tank")) typ = "Stationary.Environment.TelegaBallon_UK1";
                             else if (names.Contains("truck")) typ = "Stationary.Ford_G917";
                             else if (clc_random.Next(5) < 1) typ = "Stationary.Environment.CamoNetPlane";
+							*/
+							
+							//we keep any nn statics as nn, but switch de to gb and vice-versa
+							//Usually most statics are nn but a few de or gb to give targets
+							//a little more visibility in the sim
+							//But we can't have wrong army on wrong terr or attacked by AA etc....
+							string side = Mission.ArmiesSection[0];
+							if (ggarmy > 0) side = Mission.ArmiesSection[terr];
 
-                            f = Calcs.makeStatic(f, GamePlay, msn, gg.pos.x, gg.pos.y, 0, typ, 0, "nn", staticprefix: "remove_enemy_neutral");
+                            f = Calcs.makeStatic(f, GamePlay, msn, gg.pos.x, gg.pos.y, 0, cleanTitle, 0, side, staticprefix: "replace_enemy_statics");
+							if (msn.ON_TESTSERVER) Console.WriteLine("Replacing with new static {0} {1}", cleanTitle, side );
                         }
-                        msn.Timeout(clc_random.Next(5, 120), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+						
+						 
+						
+                        msn.Timeout(clc_random.Next(5, 120), () => { gg.Destroy();  });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually						looks fake.
+						if (msn.ON_TESTSERVER) Console.WriteLine("Removing static {0} {1} {2}", cleanTitle, ggarmy, Mission.ArmiesSection[ggarmy] );
                         count++;
                     }
                     catch (Exception ex)
@@ -32314,6 +32383,35 @@ public static class NumberExtensions
         if (value.CompareTo(min) < 0) return min;
         if (value.CompareTo(max) > 0) return max;
         return value;
+    }
+}
+
+public static class ConcurrentDictionaryExtensions
+{
+    // Adds a key/value pair, throwing an exception if the key already exists.
+    public static void Add<TKey, TValue>(
+        this ConcurrentDictionary<TKey, TValue> dictionary, 
+        TKey key, 
+        TValue value)
+    {
+        if (dictionary == null) 
+            throw new ArgumentNullException("ConcurrentDictionary");
+
+        if (!dictionary.TryAdd(key, value))
+        {
+            throw new ArgumentException("An item with the same key has already been added. ", key.ToString());
+        }
+    }
+
+    // Removes the value with the specified key, returning true if successful.
+    public static bool Remove<TKey, TValue>(
+        this ConcurrentDictionary<TKey, TValue> dictionary, 
+        TKey key)
+    {
+        if (dictionary == null) 
+            throw new ArgumentNullException(dictionary.ToString());
+		TValue value;
+        return dictionary.TryRemove(key, out value);
     }
 }
 

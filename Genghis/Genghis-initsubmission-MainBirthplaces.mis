@@ -201,7 +201,7 @@
   Static178 Stationary.Airfield.Fuel_Storage nn 264277.41 185622.78 95.00 
   Static179 Stationary.Airfield.Fuel_Storage nn 264301.13 185624.81 95.00 
   Static175 Stationary.Hangars.Single_Plane nn 264135.09 187026.61 -75.00 
-  Static176 Stationary.Hangars.Single_Plane nn 264106.03 187018.39 -75.00 
+  Static1176 Stationary.Hangars.Single_Plane nn 264106.03 187018.39 -75.00 
   Static180 Stationary.Environment.CamoNetPlane nn 264539.09 186724.52 -145.00 
   Static181 Stationary.Environment.CamoNetPlane nn 264557.88 186699.09 -145.00 
   Static182 Stationary.Environment.CamoNetPlane nn 264581.16 186672.58 -145.00 
@@ -219,24 +219,24 @@
   Static194 Stationary.Airfield.Fuel_Storage nn 269432.38 207090.94 -260.00 
   Static197 Stationary.Airfield.HydraulicBombLoader_GER1 de 265910.19 190297.83 -410.00 
   Static198 Stationary.Airfield.HydraulicBombLoader_GER1 de 265868.59 190315.70 -410.00 
-  Static194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265874.06 190297.83 -410.00 
-  Static195 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265884.25 190264.41 -410.00 
-  Static194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265926.97 190269.00 -410.00 
-  Static195 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265928.78 190283.97 -410.00 
-  Static194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265885.13 190284.03 -410.00 
-  Static194 Stationary.Airfield.Fuel_Storage nn 265887.88 190312.89 -655.00 
-  Static195 Stationary.Airfield.Fuel_Storage nn 265865.03 190315.78 -655.00 
-  Static194 Stationary.Airfield.Fuel_Storage nn 265874.47 190311.31 -655.00 
-  Static194 tobruk:Stationary.Airfield.TwinHanger nn 265903.63 190279.58 -635.00 
-  Static195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265889.69 190297.80 -655.00 
-  Static196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265901.00 190294.14 -655.00 
-  Static195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265922.53 190294.14 -655.00 
-  Static196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265915.22 190281.00 -655.00 
-  Static195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265892.19 190272.34 -655.00 
-  Static196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265899.84 190267.59 -655.00 
-  Static195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265915.53 190261.00 -655.00 
-  Static196 Stationary.Industrial.Oxygen_Facility nn 265871.09 190286.83 -790.00 
-  Static195 Stationary.Bf-110C-4N de 265921.31 189890.13 -790.00 
+  Static1194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265874.06 190297.83 -410.00 
+  Static1195 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265884.25 190264.41 -410.00 
+  Static2194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265926.97 190269.00 -410.00 
+  Static2195 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265928.78 190283.97 -410.00 
+  Static3194 Stationary.Airfield.HydraulicBombLoader_GER1 nn 265885.13 190284.03 -410.00 
+  Static5194 Stationary.Airfield.Fuel_Storage nn 265887.88 190312.89 -655.00 
+  Static3195 Stationary.Airfield.Fuel_Storage nn 265865.03 190315.78 -655.00 
+  Static4194 Stationary.Airfield.Fuel_Storage nn 265874.47 190311.31 -655.00 
+  Static6194 tobruk:Stationary.Airfield.TwinHanger nn 265903.63 190279.58 -635.00 
+  Static6195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265889.69 190297.80 -655.00 
+  Static6196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265901.00 190294.14 -655.00 
+  Static7195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265922.53 190294.14 -655.00 
+  Static7196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265915.22 190281.00 -655.00 
+  Static8195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265892.19 190272.34 -655.00 
+  Static8196 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265899.84 190267.59 -655.00 
+  Static9195 Stationary.Weapons_.Bomb_B_GP_1000lb_MkI nn 265915.53 190261.00 -655.00 
+  Static9196 Stationary.Industrial.Oxygen_Facility nn 265871.09 190286.83 -790.00 
+  Static10195 Stationary.Bf-110C-4N de 265921.31 189890.13 -790.00 
   Static199 Stationary.Environment.HydrogenBalloon_UK1 nn 265985.50 190171.84 -790.00 
   Static200 Stationary.Environment.HydrogenBalloon_UK1 nn 265976.75 190202.50 -790.00 
   Static201 Stationary.Environment.HydrogenBalloon_UK1 nn 265983.00 190188.73 -790.00 
@@ -378,49 +378,49 @@
   Static298 Stationary.WalrusMkI gb 215480.61 257860.97 -105.00 
   Static290 Stationary.WalrusMkI nn 215453.30 257863.02 -100.00 
   Static299 Stationary.SunderlandMkI nn 215419.81 257866.50 -100.00 
-  Static290 Stationary.SunderlandMkI nn 215378.84 257875.05 -100.00 
-  Static299 Stationary.WalrusMkI nn 215373.41 257849.14 -190.00 
-  Static290 Stationary.WalrusMkI nn 215372.55 257827.59 -190.00 
-  Static299 Stationary.WalrusMkI nn 215350.55 257852.02 -190.00 
-  Static290 Stationary.WalrusMkI nn 215350.19 257830.77 -190.00 
-  Static299 Stationary.SunderlandMkI nn 215336.31 257882.23 -100.00 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215401.08 257875.20 -9.100 
-  Static299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215355.34 257871.53 -9.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215357.27 257882.56 -9.100 
-  Static299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215359.02 257894.08 -9.100 
-  Static299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215402.84 257886.56 -9.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215441.86 257882.56 -4.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215308.17 257882.88 -9.100 
+  Static1290 Stationary.SunderlandMkI nn 215378.84 257875.05 -100.00 
+  Static1299 Stationary.WalrusMkI nn 215373.41 257849.14 -190.00 
+  Static2290 Stationary.WalrusMkI nn 215372.55 257827.59 -190.00 
+  Static2299 Stationary.WalrusMkI nn 215350.55 257852.02 -190.00 
+  Static3290 Stationary.WalrusMkI nn 215350.19 257830.77 -190.00 
+  Static3299 Stationary.SunderlandMkI nn 215336.31 257882.23 -100.00 
+  Static4290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215401.08 257875.20 -9.100 
+  Static4299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215355.34 257871.53 -9.100 
+  Static5290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215357.27 257882.56 -9.100 
+  Static5299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215359.02 257894.08 -9.100 
+  Static6299 tobruk:Stationary.Environment.RockWall_Line_12m nn 215402.84 257886.56 -9.100 
+  Static6290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215441.86 257882.56 -4.100 
+  Static7290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215308.17 257882.88 -9.100 
   Static297 tobruk:Stationary.Environment.RockWall_Line_12m nn 215310.25 257894.23 -9.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215312.33 257906.06 -9.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215379.66 257858.89 -94.100 
-  Static297 tobruk:Stationary.Environment.RockWall_Line_12m nn 215369.89 257860.17 -94.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215358.38 257862.25 -104.100 
-  Static290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215467.19 257879.84 -4.100 
+  Static8290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215312.33 257906.06 -9.100 
+  Static9290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215379.66 257858.89 -94.100 
+  Static1297 tobruk:Stationary.Environment.RockWall_Line_12m nn 215369.89 257860.17 -94.100 
+  Static10290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215358.38 257862.25 -104.100 
+  Static11290 tobruk:Stationary.Environment.RockWall_Line_12m nn 215467.19 257879.84 -4.100 
   Static295 tobruk:Stationary.Environment.RockWall_Line_12m nn 215493.89 257874.25 -4.100 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215347.50 257847.91 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215370.91 257843.77 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215376.75 257830.73 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215359.91 257825.61 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215324.08 257879.23 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215350.25 257890.94 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215370.91 257870.63 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215390.53 257882.67 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215410.84 257860.64 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215428.75 257874.41 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215448.72 257860.64 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215458.70 257866.84 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215474.88 257855.13 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215485.89 257861.67 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215480.23 257801.88 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215397.36 257815.66 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215325.13 257839.64 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215327.53 257860.30 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215309.63 257861.67 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215340.63 257833.81 -305.00 
-  Static289 Stationary.Environment.JerryCan_GER1_1 nn 215340.61 257856.86 -305.00 
-  Static290 Stationary.Environment.JerryCan_GER1_1 nn 215398.45 257852.03 -305.00 
-  Static289 Stationary.Airfield.HydraulicBombLoader_GER1 gb 215413.23 257844.39 -30.00 
+  Static12289 Stationary.Environment.JerryCan_GER1_1 nn 215347.50 257847.91 -305.00 
+  Static12290 Stationary.Environment.JerryCan_GER1_1 nn 215370.91 257843.77 -305.00 
+  Static13289 Stationary.Environment.JerryCan_GER1_1 nn 215376.75 257830.73 -305.00 
+  Static13290 Stationary.Environment.JerryCan_GER1_1 nn 215359.91 257825.61 -305.00 
+  Static14289 Stationary.Environment.JerryCan_GER1_1 nn 215324.08 257879.23 -305.00 
+  Static15290 Stationary.Environment.JerryCan_GER1_1 nn 215350.25 257890.94 -305.00 
+  Static16289 Stationary.Environment.JerryCan_GER1_1 nn 215370.91 257870.63 -305.00 
+  Static17290 Stationary.Environment.JerryCan_GER1_1 nn 215390.53 257882.67 -305.00 
+  Static18289 Stationary.Environment.JerryCan_GER1_1 nn 215410.84 257860.64 -305.00 
+  Static19290 Stationary.Environment.JerryCan_GER1_1 nn 215428.75 257874.41 -305.00 
+  Static20289 Stationary.Environment.JerryCan_GER1_1 nn 215448.72 257860.64 -305.00 
+  Static20290 Stationary.Environment.JerryCan_GER1_1 nn 215458.70 257866.84 -305.00 
+  Static21289 Stationary.Environment.JerryCan_GER1_1 nn 215474.88 257855.13 -305.00 
+  Static21290 Stationary.Environment.JerryCan_GER1_1 nn 215485.89 257861.67 -305.00 
+  Static22289 Stationary.Environment.JerryCan_GER1_1 nn 215480.23 257801.88 -305.00 
+  Static22290 Stationary.Environment.JerryCan_GER1_1 nn 215397.36 257815.66 -305.00 
+  Static23289 Stationary.Environment.JerryCan_GER1_1 nn 215325.13 257839.64 -305.00 
+  Static23290 Stationary.Environment.JerryCan_GER1_1 nn 215327.53 257860.30 -305.00 
+  Static24289 Stationary.Environment.JerryCan_GER1_1 nn 215309.63 257861.67 -305.00 
+  Static24290 Stationary.Environment.JerryCan_GER1_1 nn 215340.63 257833.81 -305.00 
+  Static25289 Stationary.Environment.JerryCan_GER1_1 nn 215340.61 257856.86 -305.00 
+  Static25290 Stationary.Environment.JerryCan_GER1_1 nn 215398.45 257852.03 -305.00 
+  Static26289 Stationary.Airfield.HydraulicBombLoader_GER1 gb 215413.23 257844.39 -30.00 
 [Buildings]
 [BuildingsLinks]
 [Airdromes]

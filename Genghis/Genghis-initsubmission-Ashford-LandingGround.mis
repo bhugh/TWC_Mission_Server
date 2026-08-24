@@ -21,51 +21,262 @@
 [splines]
 [CustomChiefs]
 [Stationary]
+  Static116 Stationary.BeaufighterMkIF nn 207029.86 236602.25 -695.00 
+  Static118 Stationary.BeaufighterMkIF nn 207049.52 236557.64 -695.00 
   Static36 Stationary.Environment.CamoNetPlaneBig nn 207045.41 236567.77 -335.00 
+  Static117 Stationary.BeaufighterMkIF nn 207042.70 236576.55 -695.00 
+  Static115 Stationary.BeaufighterMkIF nn 207016.25 236626.44 -695.00 
   Static6 Stationary.Environment.CamoNetPlaneBig nn 207013.52 236632.98 -335.00 
+  Static114 Stationary.BeaufighterMkIF nn 207012.09 236639.66 -695.00 
   Static23 Stationary.Environment.CamoNetPlaneBig nn 206975.88 236727.38 -335.00 
+  Static78 Stationary.Environment.FuelDrum_GER1_9 nn 206984.48 236690.27 -610.00 
+  Static77 Stationary.Environment.FuelDrum_GER1_9 nn 206983.09 236691.78 -610.00 
+  Static76 Stationary.Environment.FuelDrum_GER1_9 nn 206982.55 236692.88 -610.00 
+  Static75 Stationary.Environment.FuelDrum_GER1_9 nn 206981.77 236694.14 -610.00 
+  Static74 Stationary.Environment.FuelDrum_GER1_9 nn 206980.48 236696.08 -610.00 
+  Static69 Stationary.Environment.FuelDrum_GER1_9 nn 206984.78 236692.52 -610.00 
+  Static70 Stationary.Environment.FuelDrum_GER1_9 nn 206986.11 236690.75 -610.00 
+  Static68 Stationary.Environment.FuelDrum_GER1_9 nn 206984.00 236693.97 -610.00 
+  Static73 Stationary.Environment.FuelDrum_GER1_9 nn 206979.28 236698.08 -610.00 
+  Static72 Stationary.Environment.FuelDrum_GER1_9 nn 206978.48 236699.41 -610.00 
+  Static67 Stationary.Environment.FuelDrum_GER1_9 nn 206983.03 236695.42 -610.00 
+  Static66 Stationary.Environment.FuelDrum_GER1_9 nn 206982.30 236696.92 -610.00 
+  Static62 Stationary.Environment.FuelDrum_GER1_9 nn 206988.11 236690.88 -610.00 
+  Static61 Stationary.Environment.FuelDrum_GER1_9 nn 206987.08 236692.88 -610.00 
+  Static71 Stationary.Environment.FuelDrum_GER1_9 nn 206978.00 236701.22 -610.00 
+  Static65 Stationary.Environment.FuelDrum_GER1_9 nn 206981.52 236698.63 -610.00 
+  Static64 Stationary.Environment.FuelDrum_GER1_9 nn 206980.97 236700.50 -610.00 
+  Static60 Stationary.Environment.FuelDrum_GER1_9 nn 206986.17 236694.52 -610.00 
+  Static59 Stationary.Environment.FuelDrum_GER1_9 nn 206985.58 236695.72 -610.00 
+  Static63 Stationary.Environment.FuelDrum_GER1_9 nn 206980.19 236701.95 -610.00 
+  Static58 Stationary.Environment.FuelDrum_GER1_9 nn 206984.66 236697.41 -610.00 
+  Static54 Stationary.Environment.FuelDrum_GER1_9 nn 206990.11 236691.00 -610.00 
+  Static53 Stationary.Environment.FuelDrum_GER1_9 nn 206989.33 236692.63 -610.00 
+  Static52 Stationary.Environment.FuelDrum_GER1_9 nn 206988.91 236693.91 -610.00 
+  Static51 Stationary.Environment.FuelDrum_GER1_9 nn 206987.98 236694.98 -610.00 
+  Static57 Stationary.Environment.FuelDrum_GER1_9 nn 206983.94 236699.17 -610.00 
+  Static50 Stationary.Environment.FuelDrum_GER1_9 nn 206987.33 236696.69 -610.00 
+  Static56 Stationary.Environment.FuelDrum_GER1_9 nn 206983.16 236700.73 -610.00 
+  Static55 Stationary.Environment.FuelDrum_GER1_9 nn 206982.55 236702.44 -610.00 
+  Static49 Stationary.Environment.FuelDrum_GER1_9 nn 206986.23 236698.08 -610.00 
+  Static48 Stationary.Environment.FuelDrum_GER1_9 nn 206985.69 236699.47 -610.00 
+  Static47 Stationary.Environment.FuelDrum_GER1_9 nn 206984.91 236701.05 -610.00 
+  Static46 Stationary.Environment.FuelDrum_GER1_9 nn 206984.44 236703.13 -610.00 
+  Static113 Stationary.BeaufighterMkIF nn 206978.08 236719.41 -695.00 
+  Static45 Stationary.Environment.JerryCan_GER1_1 nn 206994.33 236705.39 -305.00 
   Static9 Stationary.Environment.CamoNetPlaneBig nn 207226.95 236700.36 -155.00 
+  Static94 Stationary.BeaufighterMkIF nn 207227.03 236709.23 -505.00 
+  Static95 Stationary.BeaufighterMkIF nn 207237.19 236692.30 -505.00 
+  Static112 Stationary.BeaufighterMkIF nn 206971.28 236736.78 -695.00 
+  Static111 Stationary.BeaufighterMkIF nn 206950.56 236785.41 -695.00 
   Static27 Stationary.Environment.CamoNetPlaneBig nn 206944.97 236793.94 -335.00 
+  Static93 Stationary.BeaufighterMkIF nn 207177.09 236754.38 -505.00 
   Static8 Stationary.Environment.CamoNetPlaneBig nn 207170.81 236762.91 -155.00 
+  Static92 Stationary.BeaufighterMkIF nn 207169.34 236772.03 -505.00 
+  Static109 Stationary.BeaufighterMkIF nn 206898.78 236834.92 -695.00 
   Static37 Stationary.Environment.CamoNetPlaneBig nn 206893.73 236845.02 -335.00 
+  Static108 Stationary.BeaufighterMkIF nn 206890.84 236853.81 -695.00 
+  Static110 Stationary.BeaufighterMkIF nn 206941.86 236802.80 -695.00 
+  Static89 Stationary.BeaufighterMkIF nn 207100.91 236862.05 -505.00 
+  Static91 Stationary.BeaufighterMkIF nn 207126.80 236820.03 -505.00 
   Static29 Stationary.Environment.CamoNetPlaneBig nn 207121.94 236826.59 -155.00 
+  Static90 Stationary.BeaufighterMkIF nn 207121.81 236833.06 -505.00 
+  Static106 Stationary.BeaufighterMkIF nn 206839.06 236919.77 -695.00 
   Static38 Stationary.Environment.CamoNetPlaneBig nn 206847.78 236914.17 -335.00 
+  Static107 Stationary.BeaufighterMkIF nn 206853.50 236901.02 -695.00 
+  Static88 Stationary.BeaufighterMkIF nn 207084.39 236887.56 -505.00 
   Static30 Stationary.Environment.CamoNetPlaneBig nn 207079.30 236896.19 -155.00 
+  Static87 Stationary.BeaufighterMkIF nn 207074.27 236903.33 -505.00 
   Static22 Stationary.Environment.Portable_Siren_UK1 gb 206831.69 236956.34 0.00 
+  Static105 Stationary.BeaufighterMkIF nn 206820.91 236991.61 -695.00 
+  Static85 Stationary.BeaufighterMkIF nn 207032.64 236956.08 -505.00 
   Static31 Stationary.Environment.CamoNetPlaneBig nn 207026.78 236963.89 -155.00 
+  Static84 Stationary.BeaufighterMkIF nn 207025.20 236971.44 -505.00 
+  Static86 Stationary.BeaufighterMkIF nn 207055.56 236930.55 -505.00 
   Static39 Stationary.Environment.CamoNetPlaneBig nn 206818.11 237000.89 -335.00 
+  Static104 Stationary.BeaufighterMkIF nn 206818.63 237009.34 -695.00 
   Static20 Stationary.Environment.TentZeltbahnBig_GER1 nn 206808.78 237047.08 -65.00 
-  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206829.83 237055.67 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206831.88 237058.84 -155.00 
   Static25 Stationary.Environment.Polotnische_X_red_1 nn 206959.00 237010.33 0.00 
   Static28 Stationary.RacingSigns.RacingSign1 nn 206959.72 237010.55 0.00 /hstart -15
   Static24 Stationary.Environment.Polotnische_X_red_1 nn 206951.13 237028.84 0.00 
   Static26 Stationary.RacingSigns.RacingSign1 nn 206951.38 237029.36 0.00 /hstart -15
+  Static83 Stationary.BeaufighterMkIF nn 206999.92 236998.11 -505.00 
+  Static82 Stationary.BeaufighterMkIF nn 206985.95 237030.34 -520.00 
   Static32 Stationary.Environment.CamoNetPlaneBig nn 206978.13 237039.39 -155.00 
+  Static81 Stationary.BeaufighterMkIF nn 206979.75 237049.81 -520.00 
   Static1 Stationary.Environment.TentBell_UK1 nn 206801.63 237063.95 -65.00 
   Static19 Stationary.Environment.FuelDrum_UK1_9 nn 206827.88 237059.09 -155.00 
-  Static2 Stationary.Environment.TentZeltbahnBig_GER1 nn 206804.95 237084.06 -65.00 
-  Static11 Stationary.Environment.FuelDrum_UK1_9 nn 206832.63 237056.72 -155.00 
-  Static18 Stationary.Environment.FuelDrum_UK1_9 nn 206831.30 237060.11 -155.00 
+  Static11 Stationary.Environment.FuelDrum_UK1_9 nn 206833.53 237059.58 -155.00 
+  Static2 Stationary.Environment.TentZeltbahnBig_GER1 nn 206801.08 237086.78 -65.00 
+  Static18 Stationary.Environment.FuelDrum_UK1_9 nn 206829.61 237059.83 -155.00 
   Static3 Stationary.Environment.TentZeltbahnBig_GER1 nn 206797.20 237096.00 -65.00 
-  Static12 Stationary.Environment.FuelDrum_UK1_9 nn 206836.33 237058.80 -155.00 
-  Static17 Stationary.Environment.FuelDrum_UK1_9 nn 206834.69 237061.45 -155.00 
-  Static13 Stationary.Environment.FuelDrum_UK1_9 nn 206839.58 237060.86 -155.00 
-  Static16 Stationary.Environment.FuelDrum_UK1_9 nn 206837.77 237062.94 -155.00 
-  Static5 Stationary.Environment.TentZeltbahnBig_GER1 nn 206831.72 237071.50 -65.00 
+  Static12 Stationary.Environment.FuelDrum_UK1_9 nn 206835.19 237060.41 -155.00 
+  Static17 Stationary.Environment.FuelDrum_UK1_9 nn 206831.14 237060.50 -155.00 
+  Static16 Stationary.Environment.FuelDrum_UK1_9 nn 206832.77 237061.22 -155.00 
+  Static13 Stationary.Environment.FuelDrum_UK1_9 nn 206836.98 237061.23 -155.00 
+  Static5 Stationary.Environment.TentZeltbahnBig_GER1 nn 206829.89 237074.38 -65.00 
   Static15 Stationary.Environment.FuelDrum_UK1_9 nn 206839.98 237064.42 -155.00 
-  Static14 Stationary.Environment.FuelDrum_UK1_9 nn 206842.66 237062.50 -155.00 
-  Static4 Stationary.Environment.TentZeltbahnBig_GER1 nn 206822.55 237088.33 -65.00 
-  Static0 Stationary.Environment.TentZeltbahnBig_GER1 nn 206810.58 237109.16 -65.00 
+  Static14 Stationary.Environment.FuelDrum_UK1_9 nn 206839.06 237061.97 -155.00 
+  Static4 Stationary.Environment.TentZeltbahnBig_GER1 nn 206820.59 237094.98 -65.00 
+  Static0 Stationary.Environment.TentZeltbahnBig_GER1 nn 206816.95 237103.44 -65.00 
+  Static80 Stationary.BeaufighterMkIF nn 206940.34 237092.06 -520.00 
+  Static79 Stationary.BeaufighterMkIF nn 206932.48 237104.16 -520.00 
   Static33 Stationary.Environment.CamoNetPlaneBig nn 206937.50 237099.41 -155.00 
   Static41 Stationary.Environment.CamoNetPlaneBig nn 206780.03 237162.59 -335.00 
+  Static101 Stationary.BeaufighterMkIF nn 206778.45 237165.16 -695.00 
+  Static103 Stationary.BeaufighterMkIF nn 206798.08 237121.28 -695.00 
+  Static102 Stationary.BeaufighterMkIF nn 206784.13 237152.78 -695.00 
   Static40 Stationary.Environment.CamoNetPlaneBig nn 206758.20 237223.89 -335.00 
+  Static100 Stationary.BeaufighterMkIF nn 206755.86 237230.72 -695.00 
+  Static98 Stationary.BeaufighterMkIF nn 206717.94 237292.77 -695.00 
+  Static99 Stationary.BeaufighterMkIF nn 206725.09 237274.45 -695.00 
   Static42 Stationary.Environment.CamoNetPlaneBig nn 206720.58 237285.09 -335.00 
   Static34 Stationary.Environment.CamoNetPlaneBig nn 206867.67 237289.94 -155.00 
   Static43 Stationary.Environment.CamoNetPlaneBig nn 206694.88 237345.34 -335.00 
   Static7 Stationary.Environment.CamoNetPlaneBig nn 206844.63 237336.95 -150.00 
   Static21 tobruk:Stationary.Environment.Windsock_v2 nn 206823.17 237361.92 -65.00 
+  Static97 Stationary.BeaufighterMkIF nn 206843.09 237350.08 -505.00 
+  Static96 Stationary.BeaufighterMkIF nn 206852.38 237333.11 -505.00 
   Static44 Stationary.Environment.CamoNetPlaneBig nn 206671.52 237394.56 -335.00 
   Static35 Stationary.Environment.CamoNetPlaneBig nn 206799.19 237416.78 -155.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206666.08 237400.08 -1055.00 
+  Static120 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206677.28 237383.27 -1055.00 
+  Static121 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206690.67 237353.58 -1055.00 
+  Static122 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206696.23 237337.34 -1055.00 
+  Static123 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206754.61 237230.55 -1055.00 
+  Static124 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206814.28 237005.38 -1055.00 
+  Static125 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206888.64 236852.00 -1055.00 
+  Static126 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206869.81 236880.02 -1055.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206796.39 237424.59 -1235.00 
+  Static121 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206802.64 237408.25 -1235.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206875.45 237281.50 -1235.00 
+  Static121 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206888.34 237247.72 -1235.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207226.61 236705.30 -1235.00 
+  Static121 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207205.06 236734.20 -1235.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207150.61 236797.73 -1235.00 
+  Static121 Stationary.Environment.TentMedicLarge_UK1 nn 206965.56 237071.34 -1325.00 
+  Static119 Stationary.Environment.TentMedicLarge_UK1 nn 207072.11 236921.75 -1325.00 
+  Static126 Stationary.Environment.TentMedicLarge_UK1 nn 207115.25 236852.14 -1325.00 
+  Static127 Stationary.Environment.TentMedicLarge_UK1 nn 206997.55 236655.23 -1325.00 
+  Static128 Stationary.Environment.TentMedicLarge_UK1 nn 206908.47 236821.78 -1325.00 
+  Static129 Stationary.Environment.TentMedicLarge_UK1 nn 206914.44 236810.44 -1325.00 
+  Static130 Stationary.Environment.TentMedicLarge_UK1 nn 206829.14 236943.39 -1325.00 
+  Static131 Stationary.Environment.TentMedicLarge_UK1 nn 206795.34 237027.17 -1325.00 
+  Static132 Stationary.Environment.TentMedicLarge_UK1 nn 206765.36 237194.25 -1325.00 
+  Static133 Stationary.Environment.TentMedicLarge_UK1 gb 206734.09 237249.67 -1325.00 
+  Static134 Stationary.Environment.TentMedicLarge_UK1 nn 206707.56 237314.64 -1325.00 
+  Static135 Stationary.Environment.TentMedicLarge_UK1 nn 206653.20 237422.31 -1325.00 
+  Static136 Stationary.Environment.TentMedicLarge_UK1 gb 206861.91 237315.27 -1325.00 
+  Static137 Stationary.Environment.TentMedicLarge_UK1 nn 206813.23 237391.72 -1325.00 
+  Static138 Stationary.Environment.TentMedicLarge_UK1 nn 206900.11 237225.09 -1325.00 
+  Static139 Stationary.Environment.TentMedicLarge_UK1 gb 206923.11 237138.05 -1235.00 
+  Static140 Stationary.Environment.TentMedicLarge_UK1 nn 207018.81 236991.03 -1325.00 
+  Static121 Stationary.Environment.TentMedicLarge_UK1 nn 206993.48 237017.58 -1325.00 
+  Static140 Stationary.Environment.TentMedicLarge_UK1 nn 207241.06 236677.94 -1325.00 
+  Static119 Stationary.Environment.TentMedicLarge_UK1 nn 206785.75 237135.56 -1325.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206834.52 237061.94 -155.00 
+  Static16 Stationary.Environment.FuelDrum_UK1_9 nn 206836.19 237062.77 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206838.30 237063.61 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206830.16 237058.19 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206828.30 237057.41 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206840.98 237062.78 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206839.52 237060.34 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206837.67 237059.59 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206835.91 237058.59 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206834.05 237057.64 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206832.34 237056.86 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206834.77 237055.94 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206836.77 237056.75 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206838.84 237057.86 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206835.27 237064.20 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206833.61 237063.86 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206796.95 237113.52 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206782.50 237159.63 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206749.30 237232.38 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206725.16 237280.39 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206720.98 237298.17 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206697.53 237343.11 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206691.86 237352.48 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206675.00 237382.00 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206662.77 237401.80 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206795.48 237427.83 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206806.69 237408.55 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206841.34 237350.58 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206848.44 237334.44 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206876.17 237286.14 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206891.81 237257.22 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206897.67 237243.14 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206940.45 237107.80 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206944.92 237093.66 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206975.92 237048.89 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206985.25 237028.52 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206998.81 237009.53 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207010.61 236997.16 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207024.70 236973.56 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207040.56 236954.28 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207056.66 236939.91 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207066.48 236927.80 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207082.09 236906.48 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207079.80 236883.45 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207090.19 236864.45 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207095.42 236853.52 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207118.42 236835.08 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207121.36 236815.19 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207139.95 236806.61 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207151.75 236788.47 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207146.58 236785.31 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207162.13 236770.34 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207175.20 236750.78 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207197.23 236738.11 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207194.88 236736.95 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207218.61 236706.66 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207224.09 236703.19 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207237.08 236691.08 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207039.47 236575.95 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207046.72 236556.81 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207028.45 236595.08 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207024.69 236602.03 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 207013.95 236624.36 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 207007.88 236637.11 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206946.55 236780.42 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206939.78 236799.55 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206965.55 236735.30 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206975.06 236717.89 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206892.83 236829.22 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206893.75 236856.36 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206896.38 236852.23 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206876.45 236871.47 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206875.53 236872.63 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206875.53 236873.88 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206823.34 236991.72 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206819.25 237010.50 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206795.13 237113.25 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206795.89 237115.58 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206779.27 237151.42 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206775.69 237165.36 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206757.63 237229.19 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206754.47 237232.34 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206728.19 237274.95 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206727.55 237275.92 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206721.69 237292.14 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206719.27 237292.02 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206701.30 237333.92 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206700.88 237336.20 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206694.17 237355.06 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206693.09 237356.25 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206679.97 237381.33 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206679.88 237381.55 -155.00 
+  Static10 Stationary.Environment.FuelDrum_UK1_9 nn 206668.03 237402.66 -155.00 
+  Static2 Stationary.Environment.FuelDrum_UK1_9 nn 206664.47 237402.97 -155.00 
+  Static2 Stationary.Environment.TentMedicLarge_UK1 nn 206813.52 237084.73 -1415.00 
+  Static2 Stationary.Environment.TentZeltbahnBig_GER1 nn 206825.00 237085.66 -65.00 
+  Static0 Stationary.Environment.TentZeltbahnBig_GER1 nn 206805.42 237077.83 -65.00 
+  Static2 Stationary.Environment.TentZeltbahnBig_GER1 nn 206810.86 237066.83 -65.00 
+  Static0 Stationary.Environment.TentMedicLarge_UK1 nn 206901.20 237183.09 -1415.00 
+  Static0 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206919.22 237190.44 -1145.00 
+  Static2 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206931.61 237163.53 -1145.00 
+  Static0 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206943.13 237141.25 -1145.00 
 [Buildings]
 [BuildingsLinks]
 [Airdromes]

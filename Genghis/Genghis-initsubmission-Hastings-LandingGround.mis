@@ -21,78 +21,300 @@
 [splines]
 [CustomChiefs]
 [Stationary]
+  Static72 tobruk:Stationary.BeaufighterMkIC nn 0.00 0.00 0.00 
+  Static91 tobruk:Stationary.BeaufighterMkIC nn 194589.03 208108.98 -690.00 
+  Static182 tobruk:Stationary.WellingtonMkIc_t gb 194597.84 208102.70 -690.00 
+  Static262 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194596.67 208106.92 -60.00 
+  Static263 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194601.98 208102.25 -60.00 
   Static60 Stationary.Environment.CamoNetPlaneBig nn 194593.47 208112.38 -330.00 
+  Static279 tobruk:Stationary.WellingtonMkIc_t nn 194590.77 208118.77 -690.00 
   Static36 Stationary.Environment.JerryCan_GER1_1 nn 194620.05 208093.55 -330.00 
   Static6 tobruk:Stationary.Environment.Windsock_v2 nn 194624.69 208094.80 -65.00 
+  Static260 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194554.64 208169.02 -60.00 
+  Static159 Stationary.Environment.TentMedicLarge_UK1 gb 194543.84 208184.27 -60.00 
+  Static92 tobruk:Stationary.BeaufighterMkIC nn 194564.08 208149.05 -690.00 
+  Static160 Stationary.Environment.TentMedicLarge_UK1 gb 194578.50 208135.56 -60.00 
+  Static261 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194566.50 208150.03 -60.00 
+  Static93 tobruk:Stationary.BeaufighterMkIC nn 194560.48 208162.50 -690.00 
   Static59 Stationary.Environment.CamoNetPlaneBig nn 194564.20 208159.81 -330.00 
+  Static264 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194751.52 208167.66 -60.00 
   Static61 Stationary.Environment.CamoNetPlaneBig nn 194746.89 208173.48 -510.00 
+  Static184 tobruk:Stationary.WellingtonMkIc_t gb 194748.23 208176.81 -690.00 
+  Static265 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194748.56 208177.73 -60.00 
+  Static89 tobruk:Stationary.BeaufighterMkIC nn 194748.50 208177.59 -510.00 
+  Static90 tobruk:Stationary.BeaufighterMkIC nn 194756.89 208165.03 -510.00 
+  Static94 tobruk:Stationary.BeaufighterMkIC nn 194527.88 208207.25 -690.00 
+  Static259 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194533.27 208205.84 -60.00 
+  Static95 tobruk:Stationary.BeaufighterMkIC nn 194519.69 208222.25 -690.00 
   Static58 Stationary.Environment.CamoNetPlaneBig nn 194528.03 208214.11 -330.00 
+  Static258 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194524.42 208222.39 -60.00 
   Static71 Stationary.Environment.CamoNetPlaneBig nn 194711.30 208226.89 -510.00 
+  Static88 tobruk:Stationary.BeaufighterMkIC nn 194720.30 208217.91 -510.00 
+  Static183 tobruk:Stationary.WellingtonMkIc_t gb 194709.52 208231.14 -690.00 
+  Static87 tobruk:Stationary.BeaufighterMkIC nn 194710.03 208231.78 -510.00 
+  Static266 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194720.45 208221.41 -60.00 
+  Static267 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194708.72 208236.17 -60.00 
+  Static124 tobruk:Stationary.WellingtonMkIc_t nn 194415.34 208273.11 -600.00 
+  Static255 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194416.23 208274.52 -60.00 
+  Static123 tobruk:Stationary.WellingtonMkIc_t nn 194404.97 208295.13 -600.00 
+  Static254 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194405.20 208297.16 -60.00 
+  Static104 tobruk:Stationary.WellingtonMkIc_t nn 194393.36 208312.97 -600.00 
+  Static253 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194395.97 208314.39 -60.00 
+  Static161 Stationary.Environment.TentMedicLarge_UK1 gb 194453.53 208287.52 -60.00 
+  Static96 tobruk:Stationary.BeaufighterMkIC nn 194440.55 208305.19 -690.00 
+  Static257 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194444.98 208301.86 -60.00 
+  Static97 tobruk:Stationary.BeaufighterMkIC nn 194433.25 208318.94 -690.00 
   Static57 Stationary.Environment.CamoNetPlaneBig nn 194438.67 208315.06 -330.00 
+  Static86 tobruk:Stationary.BeaufighterMkIC nn 194672.33 208288.44 -510.00 
+  Static268 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194681.38 208279.53 -60.00 
   Static62 Stationary.Environment.CamoNetPlaneBig nn 194671.80 208291.14 -510.00 
+  Static269 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194672.38 208296.78 -60.00 
+  Static158 Stationary.Environment.TentMedicLarge_UK1 gb 194689.83 208257.25 -60.00 
+  Static250 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194367.97 208352.80 -60.00 
+  Static122 tobruk:Stationary.WellingtonMkIc_t nn 194356.89 208373.22 -600.00 
+  Static249 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194361.30 208369.16 -60.00 
+  Static101 tobruk:Stationary.WellingtonMkIc_t nn 194369.02 208353.86 -600.00 
+  Static251 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194387.36 208335.83 -60.00 
+  Static121 tobruk:Stationary.BeaufighterMkIC nn 194390.34 208338.36 -690.00 
+  Static162 Stationary.Environment.TentMedicLarge_UK1 gb 194419.97 208338.14 -60.00 
+  Static252 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194413.23 208348.88 -60.00 
+  Static98 tobruk:Stationary.BeaufighterMkIC nn 194413.11 208349.80 -690.00 
+  Static248 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194394.41 208379.22 -60.00 
+  Static99 tobruk:Stationary.BeaufighterMkIC nn 194394.47 208379.17 -690.00 
+  Static256 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194439.86 208327.11 -60.00 
+  Static157 Stationary.Environment.TentMedicLarge_UK1 gb 194648.94 208336.81 -60.00 
   Static33 Stationary.Environment.JerryCan_GER1_1 nn 194633.59 208356.13 -330.00 
+  Static280 tobruk:Stationary.WellingtonMkIc_t nn 194633.67 208364.36 -870.00 
+  Static270 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194637.16 208360.81 -60.00 
   Static23 Stationary.Environment.CamoNetPlaneBig nn 194628.61 208370.05 -150.00 
+  Static85 tobruk:Stationary.BeaufighterMkIC nn 194638.39 208360.47 -510.00 
+  Static84 tobruk:Stationary.BeaufighterMkIC nn 194627.63 208375.14 -510.00 
+  Static271 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194629.06 208373.27 -60.00 
+  Static281 tobruk:Stationary.WellingtonMkIc_t nn 194625.00 208378.61 -870.00 
+  Static244 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194334.67 208390.22 -60.00 
+  Static190 tobruk:Stationary.WellingtonMkIc_t nn 194339.31 208390.70 -690.00 
+  Static243 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194321.34 208416.88 -60.00 
+  Static187 tobruk:Stationary.WellingtonMkIc_t nn 194322.31 208417.98 -690.00 
+  Static239 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194314.20 208447.31 -60.00 
+  Static186 tobruk:Stationary.WellingtonMkIc_t nn 194315.02 208446.45 -780.00 
+  Static191 tobruk:Stationary.WellingtonMkIc_t nn 194359.92 208407.81 -690.00 
+  Static245 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194363.11 208406.17 -60.00 
+  Static242 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194342.55 208428.52 -60.00 
+  Static188 tobruk:Stationary.WellingtonMkIc_t nn 194342.94 208428.98 -690.00 
+  Static241 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194363.72 208442.58 -60.00 
+  Static189 tobruk:Stationary.WellingtonMkIc_t nn 194364.75 208441.23 -690.00 
   Static56 Stationary.Environment.CamoNetPlaneBig nn 194393.69 208386.55 -330.00 
+  Static100 tobruk:Stationary.BeaufighterMkIC nn 194388.05 208392.75 -690.00 
+  Static247 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194387.17 208393.11 -60.00 
+  Static246 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194377.56 208413.59 -60.00 
+  Static192 tobruk:Stationary.WellingtonMkIc_t nn 194378.06 208416.47 -690.00 
   Static34 Stationary.Environment.JerryCan_GER1_1 nn 194604.55 208405.47 -330.00 
+  Static282 tobruk:Stationary.WellingtonMkIc_t nn 194604.80 208410.78 -870.00 
   Static8 Stationary.Environment.CamoNetPlaneBig nn 194598.23 208418.92 -150.00 
+  Static83 tobruk:Stationary.BeaufighterMkIC nn 194606.27 208411.63 -510.00 
+  Static273 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194592.61 208426.95 -60.00 
+  Static272 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194608.94 208415.55 -60.00 
+  Static156 Stationary.Environment.TentMedicLarge_UK1 gb 194584.50 208441.69 -60.00 
+  Static82 tobruk:Stationary.BeaufighterMkIC nn 194597.63 208429.28 -510.00 
+  Static237 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194301.47 208460.58 -60.00 
+  Static235 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194290.53 208491.58 -60.00 
+  Static196 tobruk:Stationary.WellingtonMkIc_t nn 194293.73 208493.84 -690.00 
+  Static185 tobruk:Stationary.WellingtonMkIc_t nn 194305.91 208466.48 -780.00 
+  Static102 tobruk:Stationary.BeaufighterMkIC nn 194348.88 208464.30 -690.00 
+  Static103 tobruk:Stationary.BeaufighterMkIC nn 194335.98 208480.09 -690.00 
   Static55 Stationary.Environment.CamoNetPlaneBig nn 194343.31 208472.34 -330.00 
+  Static240 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194352.91 208464.11 -60.00 
+  Static238 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194337.80 208479.75 -60.00 
+  Static163 Stationary.Environment.TentMedicLarge_UK1 gb 194327.97 208494.20 -60.00 
+  Static234 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194313.63 208511.64 -60.00 
+  Static194 tobruk:Stationary.WellingtonMkIc_t nn 194322.92 208510.88 -690.00 
   Static3 Stationary.RacingSigns.RacingSign1 nn 194482.95 208457.59 -330.00 /hstart -15
   Static2 Stationary.RacingSigns.RacingSign1 nn 194469.80 208479.98 -330.00 /hstart -15
+  Static155 Stationary.Environment.TentMedicLarge_UK1 gb 194553.89 208503.30 -60.00 
   Static35 Stationary.Environment.JerryCan_GER1_1 nn 194566.75 208461.84 -330.00 
+  Static283 tobruk:Stationary.WellingtonMkIc_t nn 194570.34 208461.23 -870.00 
   Static9 Stationary.Environment.CamoNetPlaneBig nn 194567.00 208468.97 -150.00 
+  Static81 tobruk:Stationary.BeaufighterMkIC nn 194575.23 208461.94 -510.00 
+  Static275 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194564.36 208474.44 -60.00 
+  Static80 tobruk:Stationary.BeaufighterMkIC nn 194566.75 208473.98 -510.00 
+  Static274 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194581.00 208459.98 -60.00 
+  Static236 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194268.03 208521.97 -60.00 
+  Static195 tobruk:Stationary.WellingtonMkIc_t nn 194277.92 208518.16 -690.00 
+  Static231 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194277.77 208557.23 -60.00 
+  Static106 tobruk:Stationary.BeaufighterMkIC nn 194276.41 208563.47 -690.00 
+  Static232 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194292.97 208547.50 -60.00 
   Static54 Stationary.Environment.CamoNetPlaneBig nn 194284.36 208556.58 -330.00 
+  Static105 tobruk:Stationary.BeaufighterMkIC nn 194292.22 208549.81 -690.00 
+  Static164 Stationary.Environment.TentMedicLarge_UK1 gb 194268.97 208573.78 -60.00 
+  Static233 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194308.77 208532.31 -60.00 
+  Static193 tobruk:Stationary.WellingtonMkIc_t nn 194308.94 208533.97 -690.00 
+  Static289 tobruk:Stationary.WellingtonMkIc_t nn 194594.98 208569.17 -870.00 
+  Static278 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194600.80 208571.39 -60.00 
+  Static284 tobruk:Stationary.WellingtonMkIc_t nn 194614.70 208565.81 -870.00 
+  Static154 Stationary.Environment.TentMedicLarge_UK1 gb 194626.06 208536.39 -60.00 
+  Static229 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194235.19 208625.47 -60.00 
+  Static108 tobruk:Stationary.BeaufighterMkIC nn 194237.66 208628.64 -690.00 
+  Static165 Stationary.Environment.TentMedicLarge_UK1 gb 194262.28 208582.91 -60.00 
+  Static166 Stationary.Environment.TentMedicLarge_UK1 gb 194257.41 208590.20 -60.00 
+  Static107 tobruk:Stationary.BeaufighterMkIC nn 194245.55 208610.75 -690.00 
+  Static230 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194249.78 208610.22 -60.00 
   Static53 Stationary.Environment.CamoNetPlaneBig nn 194245.56 208620.84 -330.00 
-  Static52 Stationary.Environment.CamoNetPlaneBig nn 194181.11 208717.03 -330.00 
+  Static180 tobruk:Stationary.WellingtonMkIc_t gb 194497.14 208630.08 -600.00 
+  Static79 tobruk:Stationary.BeaufighterMkIC nn 194524.33 208633.61 -510.00 
+  Static144 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194539.64 208621.91 -60.00 
+  Static143 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194538.78 208623.67 -60.00 
+  Static149 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194541.16 208622.80 -60.00 
+  Static134 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194538.34 208625.41 -60.00 
+  Static142 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194540.88 208624.53 -60.00 
+  Static133 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194537.64 208627.22 -60.00 
+  Static145 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194542.78 208623.34 -60.00 
+  Static135 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194540.06 208626.36 -60.00 
+  Static132 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194538.97 208628.20 -60.00 
+  Static141 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194542.77 208625.91 -60.00 
+  Static146 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194544.30 208624.14 -60.00 
+  Static136 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194542.19 208627.22 -60.00 
+  Static131 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194540.55 208629.42 -60.00 
+  Static140 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194545.34 208626.75 -60.00 
+  Static147 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194546.41 208625.00 -60.00 
+  Static130 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194542.28 208630.11 -60.00 
+  Static137 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194544.05 208628.48 -60.00 
+  Static129 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194543.56 208630.83 -60.00 
+  Static148 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194548.27 208626.03 -60.00 
+  Static139 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194547.16 208627.94 -60.00 
+  Static138 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194546.13 208629.41 -60.00 
+  Static128 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194544.80 208631.52 -60.00 
+  Static288 tobruk:Stationary.WellingtonMkIc_t nn 194577.06 208593.70 -870.00 
+  Static127 Stationary.Hangars.Type_C34_Medium nn 194593.56 208588.22 -60.00 
+  Static277 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194592.17 208590.53 -60.00 
+  Static285 tobruk:Stationary.WellingtonMkIc_t nn 194603.53 208583.03 -870.00 
+  Static276 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194579.23 208609.73 -60.00 
+  Static286 tobruk:Stationary.WellingtonMkIc_t nn 194596.33 208602.20 -870.00 
+  Static287 tobruk:Stationary.WellingtonMkIc_t nn 194589.47 208613.63 -870.00 
+  Static228 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194213.94 208652.95 -60.00 
+  Static109 tobruk:Stationary.BeaufighterMkIC nn 194213.83 208656.69 -690.00 
+  Static197 tobruk:Stationary.WellingtonMkIc_t nn 194228.64 208652.11 -690.00 
+  Static227 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194231.53 208652.25 -60.00 
+  Static167 Stationary.Environment.TentMedicLarge_UK1 gb 194203.02 208681.69 -60.00 
+  Static226 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194217.58 208669.94 -60.00 
+  Static168 Stationary.Environment.TentMedicLarge_UK1 gb 194200.05 208688.41 -60.00 
+  Static198 tobruk:Stationary.WellingtonMkIc_t nn 194215.30 208674.67 -690.00 
+  Static169 Stationary.Environment.TentMedicLarge_UK1 gb 194196.47 208693.30 -60.00 
+  Static179 tobruk:Stationary.WellingtonMkIc_t gb 194486.28 208647.03 -600.00 
+  Static181 tobruk:Stationary.WellingtonMkIc_t gb 194477.84 208660.95 -600.00 
   Static50 Stationary.Environment.JerryCan_GER1_1 nn 194466.81 208686.91 -330.00 
   Static11 Stationary.Environment.TentBell_UK1 nn 194467.42 208686.59 -330.00 
+  Static78 tobruk:Stationary.BeaufighterMkIC nn 194508.61 208653.75 -510.00 
+  Static126 tobruk:Stationary.BeaufighterMkIC nn 194545.48 208642.55 -870.00 
   Static45 Stationary.Environment.JerryCan_GER1_1 nn 194514.23 208675.89 -330.00 
+  Static125 tobruk:Stationary.BeaufighterMkIC nn 194533.36 208657.73 -870.00 
   Static46 Stationary.Environment.JerryCan_GER1_1 nn 194513.69 208680.66 -330.00 
   Static32 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194520.89 208674.30 -330.00 
   Static29 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194521.22 208673.05 -330.00 
   Static31 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194523.31 208672.84 -330.00 
-  Static27 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194521.83 208675.14 -330.00 
-  Static28 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194523.61 208673.22 -330.00 
   Static30 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194522.92 208674.16 -330.00 
-  Static20 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194524.63 208675.53 -330.00 
+  Static28 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194523.61 208673.22 -330.00 
+  Static27 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 194521.83 208675.14 -330.00 
   Static47 Stationary.Environment.JerryCan_GER1_1 nn 194519.70 208680.77 -330.00 
+  Static20 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194524.63 208675.53 -330.00 
   Static26 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194526.91 208675.73 -330.00 
   Static19 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194525.94 208677.41 -330.00 
-  Static48 Stationary.Environment.JerryCan_GER1_1 nn 194505.20 208698.30 -330.00 
   Static12 Stationary.Environment.TentBell_UK1 nn 194506.42 208697.52 -330.00 
-  Static25 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194528.80 208677.00 -330.00 
+  Static48 Stationary.Environment.JerryCan_GER1_1 nn 194505.20 208698.30 -330.00 
   Static18 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194527.64 208678.50 -330.00 
+  Static25 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194528.80 208677.00 -330.00 
   Static24 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194530.50 208677.95 -330.00 
   Static17 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194529.41 208679.59 -330.00 
   Static22 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194532.08 208678.86 -330.00 
   Static44 Stationary.Environment.JerryCan_GER1_1 nn 194528.78 208683.14 -330.00 
   Static16 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 194531.08 208680.56 -330.00 
+  Static170 Stationary.Environment.TentMedicLarge_UK1 gb 194163.81 208737.70 -60.00 
+  Static37 Stationary.Environment.JerryCan_GER1_1 nn 194159.92 208749.36 -330.00 
+  Static112 tobruk:Stationary.WellingtonMkIc_t nn 194158.09 208755.11 -690.00 
+  Static225 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194184.39 208706.39 -60.00 
+  Static224 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194176.58 208716.06 -60.00 
+  Static110 tobruk:Stationary.BeaufighterMkIC nn 194187.92 208706.58 -690.00 
+  Static52 Stationary.Environment.CamoNetPlaneBig nn 194181.11 208717.03 -330.00 
+  Static111 tobruk:Stationary.BeaufighterMkIC nn 194177.77 208723.81 -690.00 
   Static4 Stationary.Environment.TentBell_UK1 nn 194426.86 208745.67 -330.00 
   Static41 Stationary.Environment.JerryCan_GER1_1 nn 194429.73 208745.70 -330.00 
   Static10 Stationary.Environment.TentBell_UK1 nn 194449.47 208710.72 -330.00 
   Static42 Stationary.Environment.JerryCan_GER1_1 nn 194454.66 208706.31 -330.00 
-  Static5 Stationary.Environment.TentBell_UK1 nn 194437.77 208731.66 -330.00 
   Static49 Stationary.Environment.JerryCan_GER1_1 nn 194437.61 208731.28 -330.00 
+  Static5 Stationary.Environment.TentBell_UK1 nn 194437.77 208731.66 -330.00 
   Static13 Stationary.Environment.TentBell_UK1 nn 194487.64 208721.58 -330.00 
-  Static43 Stationary.Environment.JerryCan_GER1_1 nn 194490.44 208718.80 -330.00 
   Static14 Stationary.Environment.TentBell_UK1 nn 194469.70 208739.44 -330.00 
+  Static43 Stationary.Environment.JerryCan_GER1_1 nn 194490.44 208718.80 -330.00 
   Static15 Stationary.Environment.TentBell_UK1 nn 194457.23 208756.58 -330.00 
   Static51 Stationary.Environment.JerryCan_GER1_1 nn 194457.00 208757.13 -330.00 
   Static40 Stationary.Environment.JerryCan_GER1_1 nn 194474.91 208742.22 -330.00 
-  Static37 Stationary.Environment.JerryCan_GER1_1 nn 194191.23 208779.97 -330.00 
+  Static221 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194110.11 208818.20 -60.00 
+  Static38 Stationary.Environment.JerryCan_GER1_1 nn 194111.13 208822.58 -330.00 
+  Static223 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194136.47 208771.39 -60.00 
+  Static113 tobruk:Stationary.BeaufighterMkIC nn 194139.80 208770.91 -690.00 
+  Static114 tobruk:Stationary.BeaufighterMkIC nn 194129.13 208787.94 -690.00 
   Static1 Stationary.Environment.CamoNetPlaneBig gb 194135.44 208782.75 -330.00 
+  Static222 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194130.47 208792.41 -60.00 
+  Static115 tobruk:Stationary.BeaufighterMkIC nn 194112.06 208815.59 -690.00 
+  Static171 Stationary.Environment.TentMedicLarge_UK1 gb 194119.84 208809.39 -60.00 
+  Static211 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194357.38 208830.17 -60.00 
+  Static209 tobruk:Stationary.WellingtonMkIc_t nn 194362.25 208827.80 -510.00 
+  Static153 Stationary.Environment.TentMedicLarge_UK1 gb 194430.83 208770.47 -60.00 
+  Static210 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194403.61 208798.59 -60.00 
+  Static77 tobruk:Stationary.BeaufighterMkIC nn 194403.69 208801.80 -510.00 
+  Static290 tobruk:Stationary.WellingtonMkIc_t nn 194411.00 208793.41 -870.00 
   Static63 Stationary.Environment.CamoNetPlaneBig nn 194402.42 208803.73 -510.00 
-  Static38 Stationary.Environment.JerryCan_GER1_1 nn 194148.03 208847.44 -330.00 
+  Static291 tobruk:Stationary.WellingtonMkIc_t nn 194401.89 208811.64 -870.00 
+  Static116 tobruk:Stationary.BeaufighterMkIC nn 194095.52 208848.39 -690.00 
+  Static220 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194086.09 208858.42 -60.00 
   Static7 Stationary.Environment.CamoNetPlaneBig gb 194089.33 208856.95 -330.00 
+  Static117 tobruk:Stationary.WellingtonMkIc_t nn 194086.14 208863.73 -690.00 
+  Static39 Stationary.Environment.JerryCan_GER1_1 nn 194066.77 208895.08 -330.00 
+  Static219 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194075.89 208895.66 -60.00 
+  Static118 tobruk:Stationary.BeaufighterMkIC nn 194081.59 208894.97 -690.00 
   Static64 Stationary.Environment.CamoNetPlaneBig nn 194361.83 208868.52 -510.00 
-  Static39 Stationary.Environment.JerryCan_GER1_1 nn 194112.16 208916.36 -330.00 
+  Static76 tobruk:Stationary.BeaufighterMkIC nn 194364.88 208871.52 -510.00 
+  Static200 tobruk:Stationary.WellingtonMkIc_t nn 194358.00 208877.64 -510.00 
+  Static212 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194368.34 208856.95 -60.00 
+  Static199 tobruk:Stationary.WellingtonMkIc_t nn 194370.77 208856.97 -510.00 
+  Static119 tobruk:Stationary.BeaufighterMkIC nn 194069.25 208929.16 -690.00 
   Static0 Stationary.Environment.CamoNetPlaneBig gb 194061.39 208938.75 -330.00 
+  Static218 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194062.67 208939.48 -60.00 
+  Static292 tobruk:Stationary.WellingtonMkIc_t nn 194063.55 208948.64 -690.00 
+  Static150 Stationary.Environment.TentMedicLarge_UK1 gb 194342.63 208907.89 -60.00 
+  Static75 tobruk:Stationary.BeaufighterMkIC nn 194320.75 208942.80 -510.00 
   Static65 Stationary.Environment.CamoNetPlaneBig nn 194318.50 208945.20 -510.00 
-  Static69 Stationary.Environment.JerryCan_GER1_1 nn 194089.91 208978.22 -330.00 
+  Static201 tobruk:Stationary.WellingtonMkIc_t nn 194328.45 208937.36 -510.00 
+  Static213 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194320.52 208947.95 -60.00 
+  Static202 tobruk:Stationary.WellingtonMkIc_t nn 194318.20 208953.86 -510.00 
+  Static69 Stationary.Environment.JerryCan_GER1_1 nn 194056.59 208983.89 -330.00 
+  Static174 Stationary.Environment.TentMedicLarge_UK1 gb 194078.08 208979.03 -60.00 
+  Static173 Stationary.Environment.TentMedicLarge_UK1 gb 194073.88 208986.25 -60.00 
+  Static172 Stationary.Environment.TentMedicLarge_UK1 gb 194070.28 208992.84 -60.00 
+  Static217 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194049.47 209020.53 -60.00 
+  Static120 tobruk:Stationary.BeaufighterMkIC nn 194058.20 209015.44 -690.00 
   Static70 Stationary.Environment.CamoNetPlaneBig gb 194057.70 209020.02 -330.00 
+  Static177 Stationary.Environment.TentMedicLarge_UK1 gb 194302.59 208979.64 -60.00 
+  Static151 Stationary.Environment.TentMedicLarge_UK1 gb 194295.53 208987.14 -60.00 
+  Static74 tobruk:Stationary.BeaufighterMkIC nn 194268.58 209022.45 -510.00 
   Static66 Stationary.Environment.CamoNetPlaneBig nn 194268.16 209023.86 -510.00 
+  Static203 tobruk:Stationary.WellingtonMkIc_t nn 194275.39 209016.97 -510.00 
+  Static214 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194273.52 209019.97 -60.00 
+  Static178 Stationary.Environment.TentMedicLarge_UK1 gb 194306.86 208971.72 -60.00 
+  Static293 tobruk:Stationary.WellingtonMkIc_t nn 194054.75 209025.61 -690.00 
   Static21 tobruk:Stationary.Environment.Windsock_v2 nn 194085.64 209051.09 -65.00 
+  Static205 tobruk:Stationary.WellingtonMkIc_t nn 194229.47 209076.75 -510.00 
+  Static215 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194227.27 209084.64 -60.00 
   Static67 Stationary.Environment.CamoNetPlaneBig nn 194226.28 209085.28 -510.00 
+  Static73 tobruk:Stationary.BeaufighterMkIC nn 194227.70 209086.89 -510.00 
+  Static204 tobruk:Stationary.WellingtonMkIc_t nn 194266.19 209032.66 -510.00 
+  Static152 Stationary.Environment.TentMedicLarge_UK1 gb 194250.66 209056.45 -60.00 
+  Static206 tobruk:Stationary.WellingtonMkIc_t nn 194218.53 209096.53 -510.00 
+  Static207 tobruk:Stationary.WellingtonMkIc_t nn 194197.92 209132.50 -510.00 
   Static68 Stationary.Environment.CamoNetPlaneBig nn 194191.91 209141.42 -510.00 
+  Static216 tobruk:Stationary.Environment.Misc.FuelDrum_GER1W_9 nn 194197.03 209138.41 -60.00 
+  Static208 tobruk:Stationary.WellingtonMkIc_t nn 194187.64 209149.30 -510.00 
+  Static175 Stationary.Environment.TentMedicLarge_UK1 gb 194181.05 209168.55 -60.00 
+  Static176 Stationary.Environment.TentMedicLarge_UK1 gb 194176.81 209174.61 -60.00 
 [Buildings]
 [BuildingsLinks]
 [Airdromes]

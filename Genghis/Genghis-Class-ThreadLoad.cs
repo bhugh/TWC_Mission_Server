@@ -266,9 +266,21 @@ public class ThreadLoadMission : AMission
 		try 
 		{
 			var ex = (Exception)e.ExceptionObject;
+			File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim:\n\n {1}\n", DateTime.Now, ex));
 			Console.WriteLine("UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim: " + ex.ToString());
+			mainmission.SaveMapState("");
+			Console.WriteLine("UNHANDLED EXCEPTION ERROR! 1");
+			mainmission.MO_WriteMissionObjects(wait: true);
+			Console.WriteLine("UNHANDLED EXCEPTION ERROR! 2");
+			mainmission.statsmission.OnBattleStoped();
+			Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3");
+			
 			File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim:\n\n {1}\n", DateTime.Now, ex));
 			//SaveCrashReport(exception);
+			//try to do a nice exit now
+			//GamePlay.gpBattleStop();
+			Console.WriteLine("UNHANDLED EXCEPTION ERROR! 4");
+			File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Good exit", DateTime.Now));
 	    }
 		catch
 		{

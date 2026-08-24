@@ -4004,6 +4004,61 @@ struct
         //Console.WriteLine("KillActor: Actor was NULL");
         return false;
     }
+	
+	/*
+	public virtual void OnEventGame(GameEventId eventId, Object eventArg0, Object eventArg1, Int32 eventArgInt)
+
+
+		## Variable Breakdown
+		* **`GameEventId eventId`**: The specific trigger or type of event (such as `GameEventId.BombExplosion`).
+		* **`Object eventArg0`**: The primary object associated with the event (often the actor, weapon, or item involved, like the specific bomb or aircraft).
+		* **`Object eventArg1`**: The secondary object or target associated with the event (if applicable, such as the impacted surface or damaged entity).
+		* **`Int32 eventArgInt`**: An integer value providing extra numerical data or parameters for the event (such as identification numbers, counts, or specific damage values).
+
+		<FollowUp>
+		
+		eventArg0: The AiActor representing the object that caused the explosion (usually the bomb itself, or the aircraft that dropped it, depending on the event stack). You can cast it using eventArg0 as AiActor.eventArg1: The Point3d structural coordinate structure (or null). This passes the specific XYZ global coordinates of the explosion map position.eventArgInt: A value that is typically 0 (or left unused). In some generic game code frameworks, it acts as an arbitrary internal event ID placeholder, but it carries no unique metrics for a standard bomb detonation.
+		
+		//AiDamageInitiator.AiDamageInitiator(maddox.game.world.AiActor, maddox.game.world.AiPerson, maddox.game.Player, maddox.game.world.AiDamageTool)
+		
+		//AiDamageTool.AiDamageTool(maddox.game.world.AiDamageToolType, string)
+		//AiDamageToolType.Cannon .Ordance .Unknown .Collision  name = string, name of damager 
+
+		*/
+		
+	public bool Stb_dropBomb(Point3d pos, double mass_kg = 500, AiActor actor = null, AiPerson person = null, Player player = null, int waitTime = 0, string reason = "Stb_dropBomb")
+    {
+        //if (actor != null)
+        {
+			
+			string oName = "Bomb.SC-500_GradeIII_K"; //we could use even more different sizes/types - right now just approximating
+			if (mass_kg < 75) oName = "Bomb.SC-50_GradeII_J";
+			else if (mass_kg < 250) oName = "Bomb.Bomb_GP_250lb_MkIV";
+			
+			if (person == null) person = (actor as AiCart).Person(0);
+			maddox.game.world.AiDamageTool tool = new maddox.game.world.AiDamageTool(maddox.game.world.AiDamageToolType.Ordance, oName);
+			AiDamageInitiator initiator = new AiDamageInitiator(actor, person, player, tool);
+            
+			if (waitTime == 0) {
+				Battle.OnEventGame(GameEventId.BombExplosion, pos, initiator, 0);
+				Console.WriteLine("Stb_dropBomb IMMEDIATE: Initiator {0} {1} location: {2},{3}", actor.Name(), player.Name(), pos.x,  pos.y, reason);
+			}
+			else Timeout(waitTime, () =>
+            {
+                //Console.WriteLine("KillActor: " + actor.Name() );
+                //Battle.OnActorDead(0, player.Name(), actor, OnBattleStarted.GetDamageInitiators(actor); 
+				
+				//if(actor as AiAircraft != null) mainmission.AircraftDestroyList[(actor as AiAircraft)] = reason;
+				Battle.OnEventGame(GameEventId.BombExplosion, pos, initiator, 0);
+				Console.WriteLine("Stb_dropBomb IMMEDIATE: Initiator {0} {1} location: {2},{3}", actor.Name(), player.Name(), pos.x,  pos.y, reason);
+            });
+
+            return true;
+ 
+        }
+        //Console.WriteLine("KillActor: Actor was NULL");
+        //return false;
+    }		
 
     private void Stb_KillACNowIfInAircraftKilled(AiAircraft aircraft)
     {

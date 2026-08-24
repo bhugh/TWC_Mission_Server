@@ -1,0 +1,8 @@
+Good explodey things for strafing:
+
+ - Camo nets, but Must make them disappear .Destroy() after they are hit, or they shelter anything below them from further damage
+ - C34 & C38 hangars can be killed with strafing, except (?) C34 short, for some reason
+ - All MEDIC TENTS are really explodey
+ - Larger a/c are easier, ie Wellington rather than Hurricane
+ - Portable command center is OK but very small
+ - German Fuel Drum 1 W_9 goes up really good especially if there are several together

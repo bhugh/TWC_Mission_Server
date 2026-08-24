@@ -12,7 +12,7 @@
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-ObjectiveRepairMissions.cs"
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-MoveBombTarget.cs"
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-MakeLandingGround.cs"
-////$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-TacviewImplMission.cs"
+//$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-TacviewImplMission.cs"
 
 
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
@@ -41,8 +41,8 @@
 ///$reference parts/core/MySql.Data.dll  //THIS DOESN'T SEEM TO WORK
 ///$reference parts/core/System.Data.dll //THIS DOESN'T SEEM TO WORK
 
-/// $ reference parts/core/TacviewRecorder.dll 
-//using TacviewRecorder;
+// $ reference parts/core/TacviewRecorder.dll 
+using TacviewRecorder;
 
 // v.1_19_07. script by oreva, zaltys, small_bee, bhugh, flug, fatal_error, several other contributors/online code snippets & examples
 
@@ -502,7 +502,7 @@ public class Mission : AMission, IMainMission
     public LandingGroundMission landinggroundmission;
     public SkinCheckMission skincheckmission;
     public ThreadLoadMission threadloadmission;
-	//public TacviewImplMission tacviewimplmission;
+	public TacviewImplMission tacviewimplmission;
     //public BaseMission gcvmission;
 
     public string MISSION_FOLDER_PATH;
@@ -633,11 +633,11 @@ public class Mission : AMission, IMainMission
             knickebeinmission = new KnickebeinMission(this);
             objectiverepairmission = new ObjectiveRepairMission(this);
             movebombtargetmission = new MoveBombTargetMission(this);
-			/*
+			
 			try {
 				tacviewimplmission = new TacviewImplMission(this); //must do this PLUS something like 
 			} catch (Exception ex) { Console.WriteLine("Tacview INIT error: " + ex.Message); };
-			*/
+			
 			
 			
             //gvcmission = new GCV.GCVMission();
@@ -2081,7 +2081,7 @@ public class Mission : AMission, IMainMission
 			//So camo netting, even if "destroyed" still somehow shields the items
 			//under it from bullets & cannon fire.  So we'll just remove the dead camo 
 			//rather quickly
-			if (stationary.Title.Contains(".Camo")) {
+			if (stationary.Title.Contains("CamoNet")) {
 				double wait2 = stb_random.NextDouble() * 3;
 				Timeout(wait2, () => {stationary.Destroy();});
 				if (ON_TESTSERVER) Console.WriteLine("StationaryKilled - removing .Camo, Title: {0}", stationary.Title);
@@ -2109,7 +2109,7 @@ public class Mission : AMission, IMainMission
 					AiDamageTool tool = initiator.Tool;
 					tName = tool.Name;
 					AiDamageToolType tType = tool.Type;
-					if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {1}", tName, tType);
+				if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {1} title: {2} name: {3} type: {4} Category: {5}", tName, tType, stationary.Title, stationary.Name, stationary.Type, stationary.Category);
 					if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
 					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
 				}
@@ -2133,10 +2133,15 @@ public class Mission : AMission, IMainMission
 						
 					//Soo, strafing hits that killed an actual object, 
 					//also count as much as 500lb bomb hitting the  OBJ
-					Timeout(random.Next(3,30), () => {
+					//~11-14 sec delay like low-level bombing, to avoid killing pilot...
+					Timeout(random.NextDouble()*4 + 9, () => {
 						//MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
-						OnBombExplosion_DoWork("Cannon", mass_kg: 150, pos: pos, initiator: initiator, eventArgInt: 0);
-						statsmission.Stb_dropBomb(pos, 100, initiator.Actor, initiator.Person, initiator.Player, waitTime: 0, reason: "Strafing killed stationary");
+						OnBombExplosion_DoWork("Cannon", mass_kg: 500, pos: pos, initiator: initiator, eventArgInt: 0);
+						
+						
+						//Not sure if the below is working at all
+						statsmission.Stb_dropBomb(pos, 500, initiator.Actor, initiator.Person, initiator.Player, waitTime: 3, reason: "Strafing killed stationary");
+				
 						
 					});
 				}
@@ -8951,12 +8956,12 @@ public class Mission : AMission, IMainMission
             gpBattle.creatingMissionScript(threadloadmission, missionNumber + 10, "Genghis.cs");
             Console.WriteLine("MI 13");
 			
-			/*
+			
 			try {
 				gpBattle.creatingMissionScript(tacviewimplmission, missionNumber + 11, CLOD_PATH + FILE_PATH + "/Genghis-Class-TacViewImplMission.cs");
 			} catch (Exception ex) { Console.WriteLine("tacview - creatingmissionscript error: " + ex.Message); };
 			Console.WriteLine("MI 14");
-			*/
+			
 			
             //gpBattle.creatingMissionScript(gvcmission, missionNumber + 5, "Genghis.cs");
             //gvcmission = new GCV.GCVMission();

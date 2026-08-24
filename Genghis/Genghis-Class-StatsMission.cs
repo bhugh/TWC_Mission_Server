@@ -4030,10 +4030,16 @@ struct
     {
         //if (actor != null)
         {
+			/* f.add(s, "Detonator", "Bomb.Bomb_GP_40lb_MkIII 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 0 30 " + delay_sec);
+            f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 0 30 " + delay_sec);
+			*/
 			
 			string oName = "Bomb.SC-500_GradeIII_K"; //we could use even more different sizes/types - right now just approximating
-			if (mass_kg < 75) oName = "Bomb.SC-50_GradeII_J";
-			else if (mass_kg < 250) oName = "Bomb.Bomb_GP_250lb_MkIV";
+			if (mass_kg < 35) oName = "Bomb.Bomb_GP_40lb_MkIII";
+			else if (mass_kg < 75) oName = "Bomb.SC-50_GradeII_J";
+			else if (mass_kg < 175) oName = "Bomb.Bomb_GP_250lb_MkIV";
+			else if (mass_kg < 375) oName = "Bomb.Bomb_GP_500lb_MkIV";
 			
 			if (person == null) person = (actor as AiCart).Person(0);
 			maddox.game.world.AiDamageTool tool = new maddox.game.world.AiDamageTool(maddox.game.world.AiDamageToolType.Ordance, oName);
@@ -4050,7 +4056,7 @@ struct
 				
 				//if(actor as AiAircraft != null) mainmission.AircraftDestroyList[(actor as AiAircraft)] = reason;
 				Battle.OnEventGame(GameEventId.BombExplosion, pos, initiator, 0);
-				Console.WriteLine("Stb_dropBomb IMMEDIATE: Initiator {0} {1} location: {2},{3}", actor.Name(), player.Name(), pos.x,  pos.y, reason);
+				Console.WriteLine("Stb_dropBomb Delayed: Initiator {0} {1} location: {2},{3}", actor.Name(), player.Name(), pos.x,  pos.y, reason);
             });
 
             return true;

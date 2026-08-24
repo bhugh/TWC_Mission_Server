@@ -6,7 +6,7 @@
 //$reference parts/core/gamePages.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 
-//$reference parts/core/TacviewRecorder21.dll 
+//$reference parts/core/TacviewRecorder.dll 
 using TacviewRecorder;
 
 using System;
@@ -102,6 +102,8 @@ public class TacviewImplMission : TacviewMission
 			supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
 			
 			
+			//This all should be put in INITED not INIT...
+			
 			//DestinationFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
 			
 			//TypeOfMission.BigMission = Aircraft + ground units + static objects. 
@@ -153,7 +155,7 @@ public class TacviewImplMission : TacviewMission
 			//TypeOfMission.Normal = Aircraft + ground units. 
 			//The default mission type is BigMission 
 			//MissionType = TypeOfMission.DogFight;
-			MissionType = TacviewMission.TypeOfMission.DogFight;
+			MissionType = TacviewMission.TypeOfMission.DogFight; //Doesn't work unfortunatley - always does BigMission
 			//this.oTacViewCore.MissionType = TacviewMission.TypeOfMission.DogFight;
 			
 			ShowPlayer = true; 
@@ -170,7 +172,7 @@ public class TacviewImplMission : TacviewMission
 			//DisableRecorder() Prevents the recorder from starting up.  
 			//Allows you to run a mission without taking the recorder into account 
 			//and without having to change the mission's base class.
-			StartDelay = 0; // Start in 300 seconds 
+			StartDelay = -1; // Start in 300 seconds 
 			ZipFinalFile = true; // compress the file 
 			
 			//AddWaypoint(name, x, y, z, army= 0) 
@@ -397,6 +399,9 @@ public class TacviewImplMission : TacviewMission
         return 0;
 
     }
+	int tacRecorderMax = 6;
+	int tacRecorderCount = 0;
+	bool tacRecorderOn = false;
 
     void Mission_EventChat(Player from, string msg)
     {
@@ -428,6 +433,42 @@ public class TacviewImplMission : TacviewMission
 
  
         }
+		if (msg.StartsWith("<tac") && !msg.StartsWith("<tach"))
+        {
+			if (tacRecorderOn ) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Already recording - no action taken.");            
+				return;
+			}
+			if (tacRecorderCount >= tacRecorderMax) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. The maximum number of recordings have been taken this session, sorry!");            
+				return;
+			}
+			double Mission_Time_hrs =(GamePlay.gpTimeofDay() - mainmission.START_MISSION_TIME_HRS);
+			if (Mission_Time_hrs <= 0.25 ) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. can't record during the first 15 minutes of  anew mission, sorry!");            
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Try again in a little while.");
+				return;
+			}
+				
+            Console.WriteLine("Will record action via Tacview for the next 5 minutes...");
+			tacRecorderCount ++;
+			mainmission.twcLogServer(new Player[] { player }, string.Format(">>>Tacview: Will record action via Tacview for the next 5 minutes. Request {0} of {1} allowed per session.", tacRecorderCount, tacRecorderMax));            
+			mainmission.twcLogServer(null, string.Format(">>>Tacview: Recording started - for next 5 minutes!"));            
+            
+			string ms = "Recording started at request of " + player.Name();
+			AddBookmark(ms);
+			StartRecorder();
+			
+			Timeout(300, () => {
+				StopRecorder();
+				tacRecorderOn = false;
+				Console.WriteLine("Tacview stopped...");
+			mainmission.twcLogServer(null, ">>>Tacview: Recording stopped.");            
+				
+				});
+
+ 
+        }
 				
 
   
@@ -435,13 +476,17 @@ public class TacviewImplMission : TacviewMission
         {
             string msg42 = "TACVIEW RECORDER HELP";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tacview is installed and recording this mission!";
+            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records a 5-minute segment with chat command <tac";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = "<tmes I want to save this message";
+            msg42 = string.Format(">>>>>>Any player can request the recording. {1} recording requests allowed per session. Currently {0} of {1} used.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = "will put your message in the Tacview file at that point in time.";
+			msg42 = string.Format(">>>>>>There will be a delay of at least 24 hrs before the recording is available.  We're still working out the details of how to do that.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = "Thanks to FlyBy for creating the Tacview Recorder!";
+			msg42 = ">>> Chat command <tmes saves a message to that recorder at the current time stamp.";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Example: <tmes Spirit 42 just got a kill!";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Thanks to FlyBy for creating the Tacview Recorder!";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             
         }

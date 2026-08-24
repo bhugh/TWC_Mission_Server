@@ -28834,7 +28834,7 @@ public static class Calcs
 		return name;
 	}
 	
-	private static readonly HashSet<string> tobrukTitles = new()
+	private static HashSet<string> tobrukTitles = new HashSet<string>()
 	{
 		"Stationary.Airfield.BritishWatchTower",
 		"Stationary.Environment.Misc.FuelDrum_GER1WR_9",

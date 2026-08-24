@@ -2130,20 +2130,40 @@ public class Mission : AMission, IMainMission
 				}
 				
 				if (destroyedByCannon) {
-						
+					string tl = stationary.Title.ToLower();
+					int ml = 1;
+					if (stationary.Category == "Aircraft" || tl.Contains("aircraft")) ml = 5;
+					else if (stationary.Category == "Car") ml = 3;
+					else if (stationary.Category == "ArmoredCar") ml = 5;
+					else if (stationary.Category == "Tank") ml = 6;
+					else if (tl.Contains("tent")) ml = 2;
+					else if (tl.Contains("camonet")) ml = 2;
+					else if (tl.Contains("hangar")) ml = 10;
+					else if (tl.Contains("fuel") || tl.Contains("ammo")) ml = 3;
+					else if (tl.Contains("weapons_")) ml = 3;
+					
 					//Soo, strafing hits that killed an actual object, 
 					//also count as much as 500lb bomb hitting the  OBJ
 					//~11-14 sec delay like low-level bombing, to avoid killing pilot...
-					Timeout(random.NextDouble()*4 + 9, () => {
-						//MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
-						OnBombExplosion_DoWork("Cannon", mass_kg: 500, pos: pos, initiator: initiator, eventArgInt: 0);
-						
-						
-						//Not sure if the below is working at all
-						statsmission.Stb_dropBomb(pos, 500, initiator.Actor, initiator.Person, initiator.Player, waitTime: 3, reason: "Strafing killed stationary");
-				
-						
-					});
+					Point3d pos2 = new Point3d (pos.x, pos.y, pos.z);
+					
+					//so certain features count as multiple (ml) bomb hits, not just 1
+					for (int i=0; i<ml ; i++ ) {
+						Timeout(random.NextDouble()*35 + 5, () => {
+							//MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
+							OnBombExplosion_DoWork("Cannon", mass_kg: 253, pos: pos2, initiator: initiator, eventArgInt: 0);
+							
+							
+							//Not sure if the below is working at all
+							statsmission.Stb_dropBomb(pos, 500, initiator.Actor, initiator.Person, initiator.Player, waitTime: 3, reason: "Strafing killed stationary");
+							
+							//move it around a bit each time bec. that scores better
+							pos2.x += random.Next(10,20) * (random.Next(0,2)*2-1);
+							pos2.y += random.Next(10,20) * (random.Next(0,2)*2-1);
+					
+							
+						});
+					}
 				}
 					
 				MO_HandlePointAreaObjectives(stationary, initiator, destroyedByCannon: destroyedByCannon);
@@ -2264,7 +2284,8 @@ public class Mission : AMission, IMainMission
 
     public double bomberCorrectionFactor(string acName)
     {
-        string acName_tl = acName.ToLower();
+        if (acName == "Cannon") return 3.5;
+		string acName_tl = acName.ToLower();
         foreach (string key in Bombers_data.Keys)
         {
             if (acName.ToLower().Contains(key.ToLower()))
@@ -2346,6 +2367,8 @@ public class Mission : AMission, IMainMission
                 acType = Calcs.GetAircraftType(aircraft);
                 if (ON_TESTSERVER) Console.WriteLine("Bomb Hit: {0:N0} {1:N0} {2:N0} {3}", pos.x, pos.y, pos.z, acType);
             }
+			
+			if (title == "Cannon") acType = "Cannon";
 
             //so these are all compared with a JU88 which carries 4X250kg + 28X50KG which is 2400kg or 5291 lb.
             //So these correction figures bring all these bombers up to par with the JU88 as far as kg-tonnage is concerned.
@@ -12607,12 +12630,15 @@ public class Mission : AMission, IMainMission
         }
         else if ((msg.StartsWith("Ta") || msg.StartsWith("<")) &&
             //Don't give our help when any of these typical -stats.cs chat commands are entered
-            !(msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
-            || msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac") || msg.StartsWith("<asv")
-            || msg.StartsWith("<net") || msg.StartsWith("<k") || msg.StartsWith("<chelp") || msg.StartsWith("<cdist") || msg.StartsWith("<cover") || msg.StartsWith("<cpos") || msg.StartsWith("<cland") || msg.StartsWith("<ca") || msg.StartsWith("<cr") || msg.StartsWith("<clist") || msg.StartsWith("<de") || msg.StartsWith("<da") || msg.StartsWith("<pi") || msg.StartsWith("<fe") || msg.StartsWith("<ab") ||
-              msg.StartsWith("<phelp") || msg.StartsWith("<wa") || msg.StartsWith("<wind") ||
-              msg.StartsWith("<ma") || msg.StartsWith("<khelp") || msg.StartsWith("<phelp") ||
-              msg.StartsWith("<ahelp") || msg.StartsWith("<pi") || msg.StartsWith("<pd") || msg.StartsWith("<ma") || msg.StartsWith("<lg"))
+			!(
+				msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
+				|| msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac") || msg.StartsWith("<asv")
+				|| msg.StartsWith("<net") || msg.StartsWith("<k") || msg.StartsWith("<chelp") || msg.StartsWith("<cdist") || msg.StartsWith("<cover") || msg.StartsWith("<cpos") || msg.StartsWith("<cland") || msg.StartsWith("<ca") || msg.StartsWith("<cr") || msg.StartsWith("<clist") || msg.StartsWith("<de") || msg.StartsWith("<da") || msg.StartsWith("<pi") || msg.StartsWith("<fe") || msg.StartsWith("<ab") ||
+				  msg.StartsWith("<phelp") || msg.StartsWith("<wa") || msg.StartsWith("<wind") ||
+				  msg.StartsWith("<ma") || msg.StartsWith("<khelp") || msg.StartsWith("<phelp") ||
+				  msg.StartsWith("<ahelp") || msg.StartsWith("<pi") || msg.StartsWith("<pd") || msg.StartsWith("<ma") || msg.StartsWith("<lg") || msg.StartsWith("<tac") || msg.StartsWith("<tmes ")
+				  
+			  )
 
             )
         {

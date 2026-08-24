@@ -271,7 +271,7 @@ public class TacviewImplMission : TacviewMission
 
             stb_lastMissionLoaded = missionNumber;
 			
-			Console.WriteLine("-TacviewImplMission OnMissionLoaded() {0} {1} ", missionNumber, MissionNumber);
+			//Console.WriteLine("-TacviewImplMission OnMissionLoaded() {0} {1} ", missionNumber, MissionNumber);
 
 
             if (missionNumber == MissionNumber)
@@ -445,7 +445,7 @@ public class TacviewImplMission : TacviewMission
 			}
 			double Mission_Time_hrs =(GamePlay.gpTimeofDay() - mainmission.START_MISSION_TIME_HRS);
 			if (Mission_Time_hrs <= 0.25 ) {
-				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. can't record during the first 15 minutes of  anew mission, sorry!");            
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. can't record during the first 15 minutes of a new mission, sorry!");            
 				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Try again in a little while.");
 				return;
 			}

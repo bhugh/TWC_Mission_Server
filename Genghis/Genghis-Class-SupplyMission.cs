@@ -111,6 +111,7 @@ public class SupplyMission : AMission, ISupplyMission
     }
     public override void Inited()
     {
+		base.Inited();
         ReadSupply(supplySuffix);
         SaveSupplyRecursive(true);
         Console.WriteLine(DisplayNumberOfAvailablePlanes(0, null, false).Replace(Environment.NewLine, ", "));

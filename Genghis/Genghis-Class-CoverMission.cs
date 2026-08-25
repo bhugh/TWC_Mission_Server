@@ -8542,6 +8542,7 @@ public static class CoverCalcs
             string typename = "";
             if (a as AiCart != null) typename = (a as AiCart).InternalTypeName().ToString();
             //string typename2 = a.InternalTypeName();
+			if (a as GroundStationary != null) {typename = a.Title; type = a.Category;}
             gp.gpLogServer(to, string.Format(a.Name + " type: {3} typename: {4} pos: {0:N0} {1:N0} {2:N0}", a.pos.x, a.pos.y, a.pos.z, type, typename), null);
         }
     }

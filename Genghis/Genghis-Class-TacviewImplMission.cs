@@ -92,14 +92,15 @@ public class TacviewImplMission : TacviewMission
         catch (Exception ex) { Console.WriteLine("TacviewImpl Mission() ERROR: " + ex.ToString()); }
     }
 
+/*
     public override void Init(ABattle b, int missionNumber)
     {
         try
         {  
 			Console.WriteLine("-TacviewImplMission.cs starting init()...");
 
-            MissionNumberListener = -1;
-			supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
+            //MissionNumberListener = -1;
+			//supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
 			
 			
 			//This all should be put in INITED not INIT...
@@ -143,6 +144,8 @@ public class TacviewImplMission : TacviewMission
 		base.Init(b, missionNumber);
     }
 	
+	*/
+	
 	public override void Inited()
     {		
         try
@@ -155,11 +158,11 @@ public class TacviewImplMission : TacviewMission
 			//TypeOfMission.Normal = Aircraft + ground units. 
 			//The default mission type is BigMission 
 			//MissionType = TypeOfMission.DogFight;
-			MissionType = TacviewMission.TypeOfMission.DogFight; //Doesn't work unfortunatley - always does BigMission
+			//MissionType = TacviewMission.TypeOfMission.DogFight; //Doesn't work unfortunatley - always does BigMission
 			//this.oTacViewCore.MissionType = TacviewMission.TypeOfMission.DogFight;
 			
 			ShowPlayer = true; 
-			ShowPlayerAsHuman = false; 
+			ShowPlayerAsHuman = true; 
 			
 			//Value = 0 : recorder starts immediately 
 			//Value > 0: starts x second(s) after the mission is loaded.  
@@ -187,6 +190,7 @@ public class TacviewImplMission : TacviewMission
         catch (Exception ex) { Console.WriteLine("TacviewImpl Inited ERROR: " + ex.Message); };
 		base.Inited();
     }
+	/*
 	
 	public virtual void OnBattleInit()
     {
@@ -232,6 +236,7 @@ public class TacviewImplMission : TacviewMission
         Console.WriteLine("TacviewImpl OnBattleInit() ERROR: " + ex.ToString()); 
       }
     }
+	*/
 	
 	
 	
@@ -240,13 +245,13 @@ public class TacviewImplMission : TacviewMission
 		AddBookmark(message);		
 	}
 
+/*
 
     public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
 
         base.OnPlaceEnter(player, actor, placeIndex);
-        //startKnickebein(player);
-
+   
     }
 
     public override void OnBattleStarted()
@@ -258,6 +263,8 @@ public class TacviewImplMission : TacviewMission
 
     int stb_lastMissionLoaded = -1;
 	//MissionNumberListener = MissionNumber;
+	*/
+	/*
 
     public override void OnMissionLoaded(int missionNumber)
     {
@@ -290,25 +297,29 @@ public class TacviewImplMission : TacviewMission
 		
 		base.OnMissionLoaded(missionNumber);
     }
+	
+	*/
 
     public override void OnBattleStoped()
     {
-        base.OnBattleStoped();
+		try {
+
+			if (GamePlay != null && GamePlay is GameDef)
+			{
+				//Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+				(GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+				//If we don't remove the new EventChat when the battle is stopped
+				//we tend to get several copies of it operating, if we're not careful
+			}
+			Console.WriteLine("TacviewImpl OnBattleStoped, EventChat disconnected . . .");
 		
-		
-
-
-
-        if (GamePlay != null && GamePlay is GameDef)
-        {
-            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
-            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
-            //If we don't remove the new EventChat when the battle is stopped
-            //we tend to get several copies of it operating, if we're not careful
-        }
-		Console.WriteLine("TacviewImpl OnBattleStoped, EventChat disconnected . . .");
+		}
+        catch (Exception ex) { Console.WriteLine("TacviewImpl Mission() ERROR: " + ex.ToString()); }
+		base.OnBattleStoped();
 
     }
+	
+	/*
     
     public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
     {
@@ -375,6 +386,8 @@ public class TacviewImplMission : TacviewMission
         base.OnAircraftKilled(missionNumber, shortName, aircraft);
         
     }
+	
+	*/
 
     
 

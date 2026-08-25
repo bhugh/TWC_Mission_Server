@@ -329,7 +329,7 @@ public class StatsMission : AMission, IStatsMission
     //TUBROK
         public readonly string[] stb_ESCAPED_MSG = { ">>>{0} escaped capture and is hiding in the desert! ", ">>>{0} escaped and is hiding in the mountains. ", ">>>{0} escaped and is living with a herd of wild goats! ", ">>>{0} escaped--now has to find the way home!", ">>>{0} was helped by local Tuareg fighters and escaped!", ">>>{0} was helped by desert nomads and escaped!" }; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID escape.
     */
-    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { ">>>{0} crash landed in enemy territory. ", ">>>{0} crashed enemy territory. ", ">>>{0} crash landed behind enemy lines. " };
+    public readonly string[] stb_CRASHLAND_ENEMY_MSG = { ">>>{0} crash landed in enemy territory. ", ">>>{0} crashed in enemy territory. ", ">>>{0} crash landed behind enemy lines. " };
     public readonly string[] stb_CRASHLAND_FRIENDLY_MSG = { ">>>{0} crash landed in friendly territory. Now you have explain that to the CO. Good luck! ", ">>>{0} crash landed in friendly territory - your plane was scrapped. ", ">>>{0} crash landed in friendly territory. Nearby citizens soon arrived to help! ", ">>>{0} crash landed in friendly territory. You'll need to catch a ride back to base! " };
 
     public readonly string[] stb_LANDAWAYAIRPORT_SAFE_FRIENDLY_MSG_NOTATAIRPORT = { ">>>{0} landed in friendly territory away from an airport, with moderate injuries. Medical care was late arriving, worsening them. And your plane was written off. ",

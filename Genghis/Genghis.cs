@@ -28909,18 +28909,22 @@ public static class Calcs
 		name = name.Replace(" UK", " ");
 		name = name.Replace(" 1", " ");
 		name = name.Replace(" 9", " ");
-		name = name.Replace("CamoNetPlaneBig", "Camo Net");
+		name = name.Replace("CamoNetPlaneBig", "Large Camo Net");
 		name = name.Replace("CamoNetPlane", "Camo Net");
+		
+		
 
 		// 2. Remove specific prefixes/substrings (case-insensitive for safety)
-		string[] targets = { "Stationary", "buildings", "Environment", "TobrukBuilding", "Generic", "Industrial", "CargoPreset", "Weapons_", "Ammo_Vehicles", "Composition3", "Artillery", "Airfield", "Furniture", "Building England", "Building France", "Building Germany", "Building" };
+		string[] targets = { "Stationary", "buildings", "Environment", "TobrukBuilding", "Generic", "Industrial", "CargoPreset", "Weapons_", "Ammo_Vehicles", "Composition3", "Artillery", "Airfield", "Furniture", "Building England", "Building France", "Building Germany", "Building", "Aircraft", "Car", "Misc", "Radar" };
 		foreach (var target in targets)
 		{
-			name = Regex.Replace(name, target, "", RegexOptions.IgnoreCase);
+			if (name.ToLower().StartsWith(target.ToLower())) name = Regex.Replace(name, target, "", RegexOptions.IgnoreCase);
 		}
 
 		// 3. Add spaces before capital letters, but skip successive capitals (acronyms)
         name = Regex.Replace(name, @"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ");
+		
+		name = name.Replace("Tent Medic Large", "Large Utility Tent");//Tent Medic Large
 
 	
 

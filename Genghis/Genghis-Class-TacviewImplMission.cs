@@ -253,17 +253,25 @@ public class TacviewImplMission : TacviewMission
         base.OnPlaceEnter(player, actor, placeIndex);
    
     }
-
+*/
     public override void OnBattleStarted()
     {
         base.OnBattleStarted();
 		
+		 Console.WriteLine("-TacviewImplMission OnBattleStarted - EventChat initialized ");
+
+		if (GamePlay != null && GamePlay is GameDef)
+		{
+			//Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+			(GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+		}
+		
 		Console.WriteLine("TacviewImpl OnBattleStarted . . .");
     }
-
+/*
     int stb_lastMissionLoaded = -1;
 	//MissionNumberListener = MissionNumber;
-	*/
+	
 	/*
 
     public override void OnMissionLoaded(int missionNumber)

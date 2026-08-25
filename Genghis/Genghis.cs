@@ -18121,6 +18121,7 @@ added Rouen Flak
         {
             twcLogServer(null, winner + " has won this battle and completed all objectives assigned by HQ!", new object[] { });
             GamePlay.gpHUDLogCenter(winner + " has won this battle. Congratulations, " + winner + "!");
+			tacviewimplmission.AddBookmark(winner + " has completed all objectives assigned by HQ and won this battle.");
         });
         Timeout(endseconds + 10, () =>
         {
@@ -19079,6 +19080,7 @@ added Rouen Flak
 
                 twcLogServer(null, af + gsl.staffGroupName + " photographed in sector " + gsl.sector + " by " + player.Name(), new object[] { });
                 GamePlay.gpHUDLogCenter(null, af + " Commander Found, Intel Gathered! Good Job, " + ArmiesL[army] + "!");
+				tacviewimplmission.AddBookmark(af + " Commander Found, Intel Gathered! Good Job, " + ArmiesL[army] + "!");
                 Timeout(10, () =>
                 {
                     twcLogServer(null, "The General's papers and effects are bound to reveal important intelligence about the enemy's movements over the next 24 hours!", new object[] { });
@@ -25209,6 +25211,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             Timeout(messageDelay_sec, () =>
             {
                 twcLogServer(null, mes1, new object[] { });
+				tacviewimplmission.AddBookmark(mes1);
                 twcLogServer(null, pom + "All involved have received commendations and promotions.", new object[] { });
                 //MissionObjectivesList[ID] = OldObj;
             });
@@ -26051,7 +26054,9 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             }
             else if (Math.Floor(oldDestroyedPercent * 100.0 / 10.0) % 2 != Math.Floor(mo.DestroyedPercent * 100.0 / 10.0) % 2) //if crossing threshold @ 10, 20, 30, etc, 50, 100% give a message with status update of objective
             {
-                twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged of {3} required to destroy objective", new object[] { mo.Name, (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.ObjectsRequiredToTrigger_num.ToString("F0") });
+				string messy = string.Format("{0} damaged: {1}% destroyed, {2} items damaged of {3} required to destroy objective", mo.Name, (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.ObjectsRequiredToTrigger_num.ToString("F0") );
+                twcLogServer(null, messy, null );
+				tacviewimplmission.AddBookmark(messy);
             }
         }
         catch (Exception ex) { Console.WriteLine("MO_CalculateAndRecordTriggerObjectivesDamagePercent ERROR: " + ex.ToString()); }

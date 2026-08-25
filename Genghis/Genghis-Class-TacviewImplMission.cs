@@ -175,7 +175,7 @@ public class TacviewImplMission : TacviewMission
 			//DisableRecorder() Prevents the recorder from starting up.  
 			//Allows you to run a mission without taking the recorder into account 
 			//and without having to change the mission's base class.
-			StartDelay = -1; // Start in 300 seconds 
+			StartDelay = 0; // Start in 300 seconds 
 			ZipFinalFile = true; // compress the file 
 			
 			//AddWaypoint(name, x, y, z, army= 0) 
@@ -310,6 +310,7 @@ public class TacviewImplMission : TacviewMission
 
     public override void OnBattleStoped()
     {
+		base.OnBattleStoped();
 		try {
 
 			if (GamePlay != null && GamePlay is GameDef)
@@ -320,10 +321,14 @@ public class TacviewImplMission : TacviewMission
 				//we tend to get several copies of it operating, if we're not careful
 			}
 			Console.WriteLine("TacviewImpl OnBattleStoped, EventChat disconnected . . .");
+			
+			//This seems to stop/save the file
+			//Otherwise it only automatically does so if the console is closed.  It seems.
+			StopRecorder();
 		
 		}
         catch (Exception ex) { Console.WriteLine("TacviewImpl Mission() ERROR: " + ex.ToString()); }
-		base.OnBattleStoped();
+
 
     }
 	
@@ -454,6 +459,7 @@ public class TacviewImplMission : TacviewMission
 
  
         }
+		/*
 		if (msg.StartsWith("<tac") && !msg.StartsWith("<tach"))
         {
 			if (tacRecorderOn ) {
@@ -490,6 +496,7 @@ public class TacviewImplMission : TacviewMission
 
  
         }
+		*/
 				
 
   
@@ -497,17 +504,21 @@ public class TacviewImplMission : TacviewMission
         {
             string msg42 = "TACVIEW RECORDER HELP";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records a 5-minute segment with chat command <tac";
+            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records the whole mission.";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = string.Format(">>>>>>Any player can request the recording. {1} recording requests allowed per session. Currently {0} of {1} used.", tacRecorderCount, tacRecorderMax);
+            msg42 = string.Format(">>>After the mission finishes, we can filter the file to show the immediate area of each pilot while they were flying.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = string.Format(">>>>>>There will be a delay of at least 24 hrs before the recording is available.  We're still working out the details of how to do that.", tacRecorderCount, tacRecorderMax);
+			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);
+			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);
+			msg42 = string.Format(">>>Right now the filtering/uploading happens manually so will only be occasionally or upon special request.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
 			msg42 = ">>> Chat command <tmes saves a message to that recorder at the current time stamp.";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
 			msg42 = ">>>Example: <tmes Spirit 42 just got a kill!";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = ">>>Thanks to FlyBy for creating the Tacview Recorder!";
+			msg42 = ">>>Within Tacview, you can search for messages to find a specific time or event.";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Thanks to FlyBy for creating the Tacview Recorder for CLOD!";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             
         }

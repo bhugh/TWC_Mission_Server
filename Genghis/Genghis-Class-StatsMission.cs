@@ -3573,6 +3573,12 @@ struct
         //gplogserver chokes on long chat messages, so we will break them up into chunks . . . 
         string str = (string)data;
         int maxChunkSize = 200;
+		
+		//object vars = third as object;
+		string st = data as string;		
+		
+		//Will send all logmessages going to everyone, to the Tacview recorder
+		if (to == null) mainmission.tacviewimplmission.AddBookmark(String.Format(st, third));
 
         IEnumerable<string> lines = StatCalcs.SplitToLines(str, maxChunkSize);
         //for (int i = 0; i < str.Length; i += maxChunkSize)
@@ -10133,7 +10139,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 //if (GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) == 0 &&
                 //       GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // crash-landed in neutral water
                 //If landing in water, you chance of rescue goes up 25% if home waters, down 25% if enemy water
-                //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 
+                //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 				
+				
                 if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // crash-landed in water
                 {
 
@@ -10156,7 +10163,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     {   // ASR success
                         Console.WriteLine("Crashlanded Water: Luck " + Luck.ToString("F2") + " " + RescueChance.ToString("F2"));
                         if (player.Army() == GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y)) // friendly territory
-                        {
+                        {							
                             gpLogServerAndLog(null, StatCalcs.randSTR(stb_ASR_RESCUE_MSG), new object[] { PlayerNameM });
                         }
                         else

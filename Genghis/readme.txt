@@ -8,6 +8,12 @@ It will probably run if placed in another subdirectory within C:\Users\..youruse
 
 Requires setting up a number of directories near the top of genghis.cs and Genghis-Class-StatsMission.cs. Among other things this sets up the location of stats.ini, where a lot more directories, passwords, default values, etc need to be set up.  Most of these can be set up in Genghis-Class-StatsMission.cs but are better handled in stats.ini.
 
-In genghis.cs several passwords etc for the radar access must be set up.  Search for "password" and "secret1" through "secret12".
+Radar & stats are uploaded via FTP to a web server somewhere - that server also requires certain files which are included here.
+
+Similarly for Tacview - a directory where files are saved by tacviewrecorder.dll and scripts there for processing the files.  The main script runs these scripts and then later, transfers the files via FTP to a different directory on the same server. parts/core/TacviewRecorder.dll is the location for the .dll.  A copy of the required .dll should be in this distribution as well.
+
+The TWCClodMission communicator is the other required .dll. parts/core/CloDMissionCommunicator.dll.  A separate directory has the full build info & source files for that.
+
+In genghis.cs several passwords etc for the radar access must be set up.  Search for "password" and "SECRET".
 
 Even if you don't run the mission server per se, the code has all sorts of examples showing how to do things programmatically within the IL2 Cliffs of Dover - Blitz scripting and mission-building system.

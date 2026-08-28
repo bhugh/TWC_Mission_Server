@@ -23,12 +23,12 @@
 [Stationary]
   Static7 tobruk:Stationary.Environment.Windsock_v2 nn 205210.89 211148.45 -65.00 
   Static232 Stationary.Environment.TentMedicLarge_UK1 nn 205204.11 211156.97 -810.00 
-  Static150 tobruk:Stationary.BeaufighterMkIC gb 205208.88 211172.89 -1080.00 
+  Static150 tobruk:Stationary.BeaufighterMkIC nn 205208.88 211172.89 -1080.00 
   Static91 Stationary.Environment.CamoNetPlaneBig nn 205207.00 211184.34 -720.00 
   Static6 tobruk:Stationary.Environment.Windsock_v2 nn 205458.89 211159.89 -65.00 
   Static36 Stationary.Environment.JerryCan_GER1_1 nn 205459.83 211159.19 -330.00 
   Static213 Stationary.Environment.TentMedicLarge_UK1 nn 205198.34 211222.44 -810.00 
-  Static149 tobruk:Stationary.BeaufighterMkIC gb 205205.20 211248.61 -1080.00 
+  Static149 tobruk:Stationary.BeaufighterMkIC nn 205205.20 211248.61 -1080.00 
   Static83 Stationary.RacingSigns.RacingSign1 nn 205246.83 211218.77 -270.00 /hstart -15
   Static92 Stationary.Environment.CamoNetPlaneBig nn 205207.00 211258.47 -720.00 
   Static84 Stationary.RacingSigns.RacingSign1 nn 205246.30 211236.81 -270.00 /hstart -15
@@ -36,40 +36,40 @@
   Static151 Stationary.HurricaneMkI_FB nn 205458.09 211214.05 -1260.00 
   Static212 Stationary.Environment.TentMedicLarge_UK1 nn 205456.73 211241.48 -810.00 
   Static152 Stationary.HurricaneMkI_FB nn 205461.03 211263.31 -1260.00 
-  Static148 tobruk:Stationary.BeaufighterMkIC gb 205205.94 211264.78 -1080.00 
+  Static148 tobruk:Stationary.BeaufighterMkIC nn 205205.94 211264.78 -1080.00 
   Static214 Stationary.Environment.TentMedicLarge_UK1 nn 205202.52 211295.08 -810.00 
   Static89 Stationary.Environment.CamoNetPlaneBig nn 205458.08 211277.59 -540.00 
   Static153 Stationary.HurricaneMkI_FB nn 205461.77 211283.89 -1260.00 
-  Static235 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 205140.00 211352.03 -1080.00 
+  Static235 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205140.00 211352.03 -1080.00 
   Static93 Stationary.Environment.CamoNetPlaneBig nn 205204.61 211334.19 -720.00 
-  Static147 tobruk:Stationary.BeaufighterMkIC gb 205204.47 211340.50 -1080.00 
+  Static147 tobruk:Stationary.BeaufighterMkIC nn 205204.47 211340.50 -1080.00 
   Static215 Stationary.Environment.TentMedicLarge_UK1 nn 205199.53 211374.86 -810.00 
   Static154 Stationary.HurricaneMkI_FB nn 205462.50 211355.20 -1260.00 
   Static88 Stationary.Environment.CamoNetPlaneBig nn 205462.06 211362.08 -540.00 
   Static155 Stationary.HurricaneMkI_FB nn 205465.44 211372.84 -1260.00 
   Static233 Stationary.Hangars.Type_C38_Short nn 205133.27 211410.23 -810.00 
-  Static146 tobruk:Stationary.BeaufighterMkIC gb 205202.25 211402.25 -1080.00 
+  Static146 tobruk:Stationary.BeaufighterMkIC nn 205202.25 211402.25 -1080.00 
   Static94 Stationary.Environment.CamoNetPlaneBig nn 205203.81 211410.70 -720.00 
-  Static145 tobruk:Stationary.BeaufighterMkIC gb 205203.73 211422.83 -1080.00 
+  Static145 tobruk:Stationary.BeaufighterMkIC nn 205203.73 211422.83 -1080.00 
   Static216 Stationary.Environment.TentMedicLarge_UK1 nn 205200.13 211448.67 -810.00 
   Static211 Stationary.Environment.TentMedicLarge_UK1 nn 205461.50 211399.86 -810.00 
   Static156 Stationary.HurricaneMkI_FB nn 205466.17 211424.31 -1260.00 
   Static87 Stationary.Environment.CamoNetPlaneBig nn 205462.06 211433.02 -540.00 
   Static157 Stationary.HurricaneMkI_FB nn 205463.97 211439.02 -1260.00 
   Static34 Stationary.Environment.JerryCan_GER1_1 nn 205539.75 211434.38 -330.00 
-  Static143 tobruk:Stationary.BeaufighterMkIC gb 205116.25 211515.47 -1080.00 
-  Static234 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 205136.95 211468.08 -1080.00 
-  Static144 tobruk:Stationary.BeaufighterMkIC gb 205206.67 211473.56 -1080.00 
+  Static143 tobruk:Stationary.BeaufighterMkIC nn 205116.25 211515.47 -1080.00 
+  Static234 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205136.95 211468.08 -1080.00 
+  Static144 tobruk:Stationary.BeaufighterMkIC nn 205206.67 211473.56 -1080.00 
   Static95 Stationary.Environment.CamoNetPlaneBig nn 205207.00 211482.44 -720.00 
   Static210 Stationary.Environment.TentMedicLarge_UK1 nn 205461.50 211461.78 -810.00 
   Static8 Stationary.Environment.CamoNetPlaneBig nn 205460.47 211497.58 -540.00 
   Static158 Stationary.HurricaneMkI_FB nn 205469.11 211490.47 -1260.00 
   Static231 Stationary.Environment.TentMedicLarge_UK1 nn 205087.56 211547.88 -720.00 
   Static114 Stationary.Environment.CamoNetPlaneBig nn 205119.03 211526.22 -720.00 
-  Static142 tobruk:Stationary.BeaufighterMkIC gb 205118.45 211534.58 -1080.00 
-  Static141 tobruk:Stationary.BeaufighterMkIC gb 205116.98 211555.89 -1080.00 
+  Static142 tobruk:Stationary.BeaufighterMkIC nn 205118.45 211534.58 -1080.00 
+  Static141 tobruk:Stationary.BeaufighterMkIC nn 205116.98 211555.89 -1080.00 
   Static113 Stationary.Environment.CamoNetPlaneBig nn 205115.34 211566.78 -720.00 
-  Static140 tobruk:Stationary.BeaufighterMkIC gb 205112.56 211573.55 -1080.00 
+  Static140 tobruk:Stationary.BeaufighterMkIC nn 205112.56 211573.55 -1080.00 
   Static209 Stationary.Environment.TentMedicLarge_UK1 nn 205463.28 211528.45 -810.00 
   Static3 Stationary.RacingSigns.RacingSign1 nn 205441.50 211570.08 -330.00 /hstart -15
   Static159 Stationary.HurricaneMkI_FB nn 205461.77 211561.05 -1260.00 
@@ -84,13 +84,13 @@
   Static227 Stationary.Environment.TentMedicLarge_UK1 nn 205074.30 211635.72 -870.00 
   Static23 Stationary.Environment.JerryCan_GER1_1 nn 205115.17 211600.56 -330.00 
   Static35 Stationary.Environment.JerryCan_GER1_1 nn 205114.64 211605.31 -330.00 
-  Static139 tobruk:Stationary.BeaufighterMkIC gb 205115.52 211609.56 -1080.00 
+  Static139 tobruk:Stationary.BeaufighterMkIC nn 205115.52 211609.56 -1080.00 
   Static71 Stationary.Environment.JerryCan_GER1_1 nn 205106.14 211622.95 -330.00 
   Static112 Stationary.Environment.CamoNetPlaneBig nn 205111.66 211618.41 -720.00 
   Static72 Stationary.Environment.TentBell_UK1 nn 205107.39 211622.17 -350.00 
   Static79 Stationary.Environment.TentBell_UK1 nn 205088.61 211646.25 -330.00 
   Static77 Stationary.Environment.JerryCan_GER1_1 nn 205091.39 211643.45 -330.00 
-  Static138 tobruk:Stationary.BeaufighterMkIC gb 205111.09 211633.83 -1080.00 
+  Static138 tobruk:Stationary.BeaufighterMkIC nn 205111.09 211633.83 -1080.00 
   Static33 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 205122.17 211597.70 -330.00 
   Static37 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 205121.86 211598.95 -330.00 
   Static53 tobruk:Stationary.Environment.Misc.FuelDrum_UK1W_1 nn 205124.25 211597.50 -330.00 
@@ -115,7 +115,7 @@
   Static169 Stationary.HurricaneMkI_FB nn 205497.78 211644.11 -1305.00 
   Static236 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205507.30 211599.72 -960.00 
   Static172 Stationary.HurricaneMkI_FB nn 205508.08 211627.20 -1305.00 
-  Static237 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 205536.00 211614.42 -960.00 
+  Static237 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205536.00 211614.42 -960.00 
   Static173 Stationary.HurricaneMkI_FB nn 205524.98 211636.77 -1305.00 
   Static174 Stationary.HurricaneMkI_FB nn 205540.42 211647.80 -1305.00 
   Static238 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205561.63 211627.06 -960.00 
@@ -139,9 +139,9 @@
   Static195 tobruk:Stationary.BeaufighterMkIC nn 205133.34 211688.67 -1155.00 
   Static193 tobruk:Stationary.BeaufighterMkIC nn 205167.09 211674.67 -1155.00 
   Static196 tobruk:Stationary.BeaufighterMkIC nn 205158.86 211697.31 -1155.00 
-  Static137 tobruk:Stationary.BeaufighterMkIC gb 205205.20 211660.28 -1080.00 
+  Static137 tobruk:Stationary.BeaufighterMkIC nn 205205.20 211660.28 -1080.00 
   Static96 Stationary.Environment.CamoNetPlaneBig nn 205210.19 211673.73 -720.00 
-  Static136 tobruk:Stationary.BeaufighterMkIC gb 205208.88 211681.61 -1080.00 
+  Static136 tobruk:Stationary.BeaufighterMkIC nn 205208.88 211681.61 -1080.00 
   Static217 Stationary.Environment.TentMedicLarge_UK1 nn 205203.70 211698.73 -810.00 
   Static170 Stationary.HurricaneMkI_FB nn 205514.69 211655.88 -1305.00 
   Static171 Stationary.HurricaneMkI_FB nn 205534.55 211666.17 -1305.00 
@@ -155,17 +155,17 @@
   Static201 tobruk:Stationary.BeaufighterMkIC nn 205178.20 211713.36 -1155.00 
   Static228 Stationary.Environment.TentMedicLarge_UK1 nn 205158.81 211741.41 -790.00 
   Static200 tobruk:Stationary.BeaufighterMkIC nn 205174.09 211729.81 -1155.00 
-  Static135 tobruk:Stationary.BeaufighterMkIC gb 205209.61 211724.98 -1080.00 
+  Static135 tobruk:Stationary.BeaufighterMkIC nn 205209.61 211724.98 -1080.00 
   Static97 Stationary.Environment.CamoNetPlaneBig nn 205208.59 211733.52 -720.00 
-  Static134 tobruk:Stationary.BeaufighterMkIC gb 205210.34 211741.89 -1080.00 
+  Static134 tobruk:Stationary.BeaufighterMkIC nn 205210.34 211741.89 -1080.00 
   Static109 Stationary.Environment.CamoNetPlaneBig nn 205530.78 211715.50 -540.00 
   Static164 Stationary.HurricaneMkI_FB nn 205530.86 211730.13 -1260.00 
   Static243 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205615.19 211732.78 -970.00 
   Static206 Stationary.Environment.TentMedicLarge_UK1 nn 205587.72 211764.22 -810.00 
   Static218 Stationary.Environment.TentMedicLarge_UK1 nn 205128.09 211822.58 -810.00 
-  Static127 tobruk:Stationary.BeaufighterMkIC gb 205214.75 211778.64 -1080.00 
+  Static127 tobruk:Stationary.BeaufighterMkIC nn 205214.75 211778.64 -1080.00 
   Static98 Stationary.Environment.CamoNetPlaneBig nn 205212.58 211785.33 -720.00 
-  Static126 tobruk:Stationary.BeaufighterMkIC gb 205211.08 211789.67 -1080.00 
+  Static126 tobruk:Stationary.BeaufighterMkIC nn 205211.08 211789.67 -1080.00 
   Static165 Stationary.HurricaneMkI_FB nn 205540.42 211780.84 -1260.00 
   Static108 Stationary.Environment.CamoNetPlaneBig nn 205534.47 211788.02 -540.00 
   Static166 Stationary.HurricaneMkI_FB nn 205541.89 211801.44 -1260.00 
@@ -179,8 +179,8 @@
   Static188 Stationary.HurricaneMkI_FB nn 205592.63 211826.42 -1335.00 
   Static125 tobruk:Stationary.BeaufighterMkIC nn 205128.75 211842.61 -1080.00 
   Static111 Stationary.Environment.CamoNetPlaneBig nn 205128.88 211851.94 -720.00 
-  Static124 tobruk:Stationary.BeaufighterMkIC gb 205130.95 211855.83 -1080.00 
-  Static123 tobruk:Stationary.BeaufighterMkIC gb 205125.80 211897.00 -1080.00 
+  Static124 tobruk:Stationary.BeaufighterMkIC nn 205130.95 211855.83 -1080.00 
+  Static123 tobruk:Stationary.BeaufighterMkIC nn 205125.80 211897.00 -1080.00 
   Static110 Stationary.Environment.CamoNetPlaneBig nn 205130.09 211898.64 -720.00 
   Static130 tobruk:Stationary.BeaufighterMkIC nn 205168.44 211860.25 -1080.00 
   Static129 tobruk:Stationary.BeaufighterMkIC nn 205169.17 211880.09 -1080.00 
@@ -217,9 +217,9 @@
   Static16 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 205587.45 211872.11 -330.00 
   Static44 Stationary.Environment.JerryCan_GER1_1 nn 205585.16 211874.69 -330.00 
   Static219 Stationary.Environment.TentMedicLarge_UK1 nn 205126.30 211927.36 -810.00 
-  Static122 tobruk:Stationary.BeaufighterMkIC gb 205208.14 211928.61 -1080.00 
+  Static122 tobruk:Stationary.BeaufighterMkIC nn 205208.14 211928.61 -1080.00 
   Static99 Stationary.Environment.CamoNetPlaneBig nn 205208.17 211940.75 -720.00 
-  Static121 tobruk:Stationary.BeaufighterMkIC gb 205204.47 211947.00 -1080.00 
+  Static121 tobruk:Stationary.BeaufighterMkIC nn 205204.47 211947.00 -1080.00 
   Static175 Stationary.HurricaneMkI_FB nn 205461.77 211938.91 -1260.00 
   Static85 Stationary.Environment.CamoNetPlaneBig nn 205456.48 211953.50 -540.00 
   Static49 Stationary.Environment.JerryCan_GER1_1 nn 205493.98 211922.83 -330.00 
@@ -234,24 +234,24 @@
   Static51 Stationary.Environment.JerryCan_GER1_1 nn 205513.38 211948.67 -330.00 
   Static40 Stationary.Environment.JerryCan_GER1_1 nn 205531.28 211933.77 -330.00 
   Static220 Stationary.Environment.TentMedicLarge_UK1 nn 205204.89 211969.63 -810.00 
-  Static120 tobruk:Stationary.BeaufighterMkIC gb 205207.41 211985.95 -1080.00 
+  Static120 tobruk:Stationary.BeaufighterMkIC nn 205207.41 211985.95 -1080.00 
   Static100 Stationary.Environment.CamoNetPlaneBig nn 205207.80 212002.13 -720.00 
-  Static119 tobruk:Stationary.BeaufighterMkIC gb 205206.67 212005.80 -1080.00 
+  Static119 tobruk:Stationary.BeaufighterMkIC nn 205206.67 212005.80 -1080.00 
   Static179 Stationary.HurricaneMkI_FB nn 205455.14 211983.02 -1260.00 
   Static177 Stationary.HurricaneMkI_FB nn 205452.20 212007.28 -1260.00 
   Static52 Stationary.Environment.CamoNetPlaneBig nn 205453.48 212017.14 -540.00 
   Static178 Stationary.HurricaneMkI_FB nn 205456.61 212026.39 -1260.00 
-  Static118 tobruk:Stationary.BeaufighterMkIC gb 205213.28 212041.83 -1080.00 
-  Static117 tobruk:Stationary.BeaufighterMkIC gb 205217.69 212073.44 -1080.00 
+  Static118 tobruk:Stationary.BeaufighterMkIC nn 205213.28 212041.83 -1080.00 
+  Static117 tobruk:Stationary.BeaufighterMkIC nn 205217.69 212073.44 -1080.00 
   Static101 Stationary.Environment.CamoNetPlaneBig nn 205217.36 212083.42 -720.00 
   Static207 Stationary.Environment.TentMedicLarge_UK1 nn 205452.56 212043.45 -810.00 
   Static180 Stationary.HurricaneMkI_FB nn 205450.73 212060.94 -1260.00 
   Static39 Stationary.Environment.JerryCan_GER1_1 nn 205441.91 212075.55 -420.00 
-  Static0 Stationary.Environment.CamoNetPlaneBig gb 205452.86 212071.45 -540.00 
+  Static0 Stationary.Environment.CamoNetPlaneBig nn 205452.86 212071.45 -540.00 
   Static181 Stationary.HurricaneMkI_FB nn 205457.36 212081.53 -1260.00 
-  Static116 tobruk:Stationary.BeaufighterMkIC gb 205216.22 212096.23 -1080.00 
+  Static116 tobruk:Stationary.BeaufighterMkIC nn 205216.22 212096.23 -1080.00 
   Static102 Stationary.Environment.CamoNetPlaneBig nn 205221.34 212137.63 -720.00 
-  Static115 tobruk:Stationary.BeaufighterMkIC gb 205224.31 212144.02 -1080.00 
+  Static115 tobruk:Stationary.BeaufighterMkIC nn 205224.31 212144.02 -1080.00 
   Static182 Stationary.HurricaneMkI_FB nn 205454.41 212113.88 -1260.00 
   Static104 Stationary.Environment.CamoNetPlaneBig nn 205453.30 212124.08 -540.00 
   Static208 Stationary.Environment.TentMedicLarge_UK1 nn 205457.33 212149.44 -810.00 

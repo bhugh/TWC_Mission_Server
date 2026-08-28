@@ -1357,7 +1357,7 @@ public class Mission : AMission, IMainMission
 						//Not removing statics here in case needed for replacement airport, we'll see
 						//Calcs.removeStatics(GamePlay, this, p.x, p.y, radius_m: 1800, percentToRemove: 100, army: army, replaceThem: true);
 						//trying removeStaticsOnEnemyTerritory to see if they look better/work better afterwards
-						Calcs.removeStaticsOnEnemyTerritory(GamePlay, this, center: p, radius_m: 1800, percentToRemove: 100, armyToRemove: army, replaceThem: true);
+						Calcs.removeStaticsOnEnemyTerritory(GamePlay, this, center: p, radius_m: 1800, percentToRemove: 100, armyToRemove: army, replaceThem: true, fast:fast);
 						covermission.removeAllGroundActorsNear_clean(p, radius_m: 2200, percentToRemove: 100, armyToRemove: army, fast:fast);
 					}); //This can can wait a while, and it helps to wait until various initial submissions are loaded
 					
@@ -3129,6 +3129,7 @@ public class Mission : AMission, IMainMission
 
         /// REARM/REFUEL: cancel possibly pending request of player
         //  ManageRnr.cancelOfPlayer(GamePlay, player);
+		if (threadloadmission.SoftExit() && player != null) MO_RecordPlayerScoutPhotos(player);
 
         if (actor != null && actor is AiAircraft)
         {
@@ -3983,7 +3984,7 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("Map Save #4");
 
             currentContent = String.Join(Environment.NewLine, currentContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(s => s.Trim()).Take(150)); //cut down prev content to max of $X lines & omit blank lines
+                .Select(s => s.Trim()).Take(500)); //cut down prev content to max of $X lines & omit blank lines. Around 480 lines/day.  This is also backed up periodically in the backups directory, several times/day.
             //File.WriteAllText(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
             Calcs.WriteAllTextAsync(filepath, newMapState.ToString() + Environment.NewLine + turnString + Environment.NewLine + date + Environment.NewLine + currentContent);
             if (!intermediateSave) MapStateSaved = true;
@@ -5528,7 +5529,7 @@ public class Mission : AMission, IMainMission
                                     //Console.WriteLine("groupAllAircraft: 1.1");
                                     if (actor != null && actor is AiAircraft)
                                     {
-										Console.WriteLine("GPAA-4 " + DateTime.UtcNow.ToString("T") + " " + army.ToString());
+										//Console.WriteLine("GPAA-4 " + DateTime.UtcNow.ToString("T") + " " + army.ToString());
 										AiAircraft aircraft = actor as AiAircraft;
                                         //Keep a tally of the total number  of a/c altogether and for each side.
                                         //We do it by AIRGROUP so we really only need to do this for the first one in the group
@@ -11203,75 +11204,92 @@ public class Mission : AMission, IMainMission
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
     public override void OnPlayerConnected(Player player)
     {
-        string message;
-        //Not starting it here due to Coop Start Mode
-        //if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
-        //MISSION_STARTED = true;        
+		try {
+			string message;
+			//Not starting it here due to Coop Start Mode
+			//if (!MISSION_STARTED) DebugAndLog("First player connected; Mission timer starting");
+			//MISSION_STARTED = true;        
 
-        //MO_RecordPlayerScoutPhotos(player, false, true); //for testing
+			//MO_RecordPlayerScoutPhotos(player, false, true); //for testing
 
-        if (MissionNumber > -1)
-        {
-            setMainMenu(player);
+			if (MissionNumber > -1)
+			{
+				setMainMenu(player);
 
-            twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
-            //twcLogServer(null, "Mission loaded.", new object[] { });
+				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
+				//twcLogServer(null, "Mission loaded.", new object[] { });
 
-            DateTime utcDate = DateTime.UtcNow;
+				DateTime utcDate = DateTime.UtcNow;
 
-            //utcDate.ToString(culture), utcDate.Kind
-            //Write current time in UTC, what happened, player name
-            message = utcDate.ToString("u") + " Connected " + player.Name();
+				//utcDate.ToString(culture), utcDate.Kind
+				//Write current time in UTC, what happened, player name
+				message = utcDate.ToString("u") + " Connected " + player.Name();
 
-            DebugAndLog(message);
-            if (COOP_START_MODE)
-            {
-                Stb_Chat("CO-OP MISSION START MODE", null);
-                Stb_Chat("CO-OP START: You can spawn on the ground and taxi but", null);
-                Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
-            }
-        }
+				DebugAndLog(message);
+				if (COOP_START_MODE)
+				{
+					Stb_Chat("CO-OP MISSION START MODE", null);
+					Stb_Chat("CO-OP START: You can spawn on the ground and taxi but", null);
+					Stb_Chat("DO NOT TAKE OFF OR AIR SPAWN until CO-OP mission start time", null);
+				}
+			}
+		}
+        catch (Exception ex) { Console.WriteLine("Main OnPlayerConnected error: " + ex.Message); }
+		
+		base.OnPlayerConnected(player);
     }
 
     //INITIATING THE MENUS FOR THE PLAYER AT VARIOUS KEY POINTS
     public override void OnPlayerDisconnected(Player player, string diagnostic)
     {
-        MO_SpoilPlayerScoutPhotos(player);
+		try {
+			if (!threadloadmission.SoftExit()) MO_SpoilPlayerScoutPhotos(player);
 
-        string message;
-        if (MissionNumber > -1)
-        {
+			string message;
+			if (MissionNumber > -1)
+			{
 
-            DateTime utcDate = DateTime.UtcNow;
+				DateTime utcDate = DateTime.UtcNow;
 
-            //utcDate.ToString(culture), utcDate.Kind
-            //Write current time in UTC, what happened, player name
-            message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic;
-            DebugAndLog(message);
-        }
+				//utcDate.ToString(culture), utcDate.Kind
+				//Write current time in UTC, what happened, player name
+				message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic;
+				DebugAndLog(message);
+			}
+		}
+        catch (Exception ex) { Console.WriteLine("Main OnPlayerDisconnected error: " + ex.Message); }
+		
+		base.OnPlayerDisconnected(player, diagnostic);
     }
 
     public override void OnPlayerArmy(Player player, int Army)
     {
-        if (MissionNumber > -1)
-        {
-            /* AiAircraft aircraft = (player.Place() as AiAircraft);
-                            string cs = ""; 
-                            //int p = part.ParameterTypes.I_VelocityIAS; 
-                            double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
-                            twcLogServer(new Player[] { player }, "Plane: "  
-                            + cs + " " + ias, new object[] { });
-            */
-            //We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
-            //always must choose their army before entering the map, so this catches all players before entering the actual gameplay
-            setMainMenu(player);
-            if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
-            MISSION_STARTED = true;
-            //twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
-            twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
-            //twcLogServer(null, "Mission loaded.", new object[] { });
-        }
+		base.OnPlayerArmy(player, Army);
+		try {
+			if (MissionNumber > -1)
+			{
+				/* AiAircraft aircraft = (player.Place() as AiAircraft);
+								string cs = ""; 
+								//int p = part.ParameterTypes.I_VelocityIAS; 
+								double ias = (double) aircraft.getParameter(part.ParameterTypes.I_VelocityIAS, -1);
+								twcLogServer(new Player[] { player }, "Plane: "  
+								+ cs + " " + ias, new object[] { });
+				*/
+				//We re-init menu & mission_started here bec. in some situations OnPlayerConnected never happens.  But, they
+				//always must choose their army before entering the map, so this catches all players before entering the actual gameplay
+				setMainMenu(player);
+				if (!MISSION_STARTED) DebugAndLog("First player connected (OnPlayerArmy); Mission timer starting");
+				MISSION_STARTED = true;
+				//twcLogServer(new Player[] { player }, "Welcome " + player.Name(), new object[] { });
+				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
+				//twcLogServer(null, "Mission loaded.", new object[] { });
+			}
+		}
+        catch (Exception ex) { Console.WriteLine("Main OnPlayerArmy error: " + ex.Message); }
+		
+		
     }
+	
     public override void Inited()
     {
 		base.Inited();
@@ -16486,8 +16504,8 @@ public class Mission : AMission, IMainMission
 				
 				//if they won the battle last mission the "BATTLE WON!" msg last until the next restart
 				//we remove it here
-				if (msn.MissionObjectivesCompletedString[ArmiesE.Red] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Red].Replace(msn.BattleWonObjectiveMsg,"");
-				if (msn.MissionObjectivesCompletedString[ArmiesE.Blue] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Blue].Replace(msn.BattleWonObjectiveMsg,"");
+				if (msn.MissionObjectivesCompletedString[ArmiesE.Red] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Red] = msn.MissionObjectivesCompletedString[ArmiesE.Red].Replace(msn.BattleWonObjectiveMsg,"");
+				if (msn.MissionObjectivesCompletedString[ArmiesE.Blue] != null ) msn.MissionObjectivesCompletedString[ArmiesE.Blue] = msn.MissionObjectivesCompletedString[ArmiesE.Blue].Replace(msn.BattleWonObjectiveMsg,"");
             }
             catch (Exception ex) { Console.WriteLine("MO_init ERROR (overall initializer)! " + ex.ToString()); }
         }
@@ -23445,7 +23463,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             }
         }
-        Console.WriteLine("Number remaining primary objectives for {0} is {1}", army, numRemainingObjectives);
+        //Console.WriteLine("Number remaining primary objectives for {0} is {1}", army, numRemainingObjectives);
 
         return numRemainingObjectives;
     }
@@ -26655,7 +26673,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             int numRedPlayers = Calcs.gpNumberOfPlayers(GamePlay, 1);
             int numBluePlayers = Calcs.gpNumberOfPlayers(GamePlay, 2);
 			
-			if (ON_TESTSERVER) {numRedPlayers = 11; numBluePlayers = 1; nump = 22;}
+			if (ON_TESTSERVER) {numRedPlayers = 11; numBluePlayers = 11; nump = 22;}
 			
 			bool redFighter = false;
 			bool blueFighter = false;
@@ -26668,7 +26686,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			blueBomber =doesNestedListContain(blueBomberActions, actionName);
 			
 
-			Console.WriteLine("stopAI 1 {0} Red: {1} {2} BlueF/B: {3} {4} nump: {5} Red: {6} Blue: {7}", actionName, redFighter, redBomber, blueFighter, blueBomber, nump, numRedPlayers, numBluePlayers);
+			if (ON_TESTSERVER) Console.WriteLine("stopAI 1 {0} Red: {1} {2} BlueF/B: {3} {4} nump: {5} Red: {6} Blue: {7}", actionName, redFighter, redBomber, blueFighter, blueBomber, nump, numRedPlayers, numBluePlayers);
 			
 			//always allow through the cover groups that follow the main bomber spawn-in
 			if ( (redBomber || blueBomber) && stopAISpawnedABomber && bomberFormationSpawning && actionName.ToLower().Contains("cover")) {
@@ -26679,15 +26697,15 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			
 			//flip side: If the bomber WASN'T allowed through, then also don't allow its associated _Cover
 			if ( (redBomber || blueBomber) && !stopAISpawnedABomber && actionName.ToLower().Contains("cover")) {
-				Console.WriteLine("stopAI: Stopping _cover because bomber was stopped: " + actionName);
+				if (ON_TESTSERVER) Console.WriteLine("stopAI: Stopping _cover because bomber was stopped: " + actionName);
 				return true;
 			}
 			
 			AiAirGroup[] empty = Array.Empty<AiAirGroup>();
 			
-			Console.WriteLine("stopAI: Number of aircraft NOfAc (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", numRedAircraft, numBlueAircraft, numTotalAircraft, numAircraftByType[1][0],numAircraftByType[1][1],numAircraftByType[1][2], numAircraftByType[2][0],numAircraftByType[2][1],numAircraftByType[2][2],numAircraftByType[1][0]+numAircraftByType[2][0],numAircraftByType[1][1]+numAircraftByType[2][1],numAircraftByType[1][2]+numAircraftByType[2][2]);
+			if (ON_TESTSERVER) Console.WriteLine("stopAI: Number of aircraft NOfAc (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", numRedAircraft, numBlueAircraft, numTotalAircraft, numAircraftByType[1][0],numAircraftByType[1][1],numAircraftByType[1][2], numAircraftByType[2][0],numAircraftByType[2][1],numAircraftByType[2][2],numAircraftByType[1][0]+numAircraftByType[2][0],numAircraftByType[1][1]+numAircraftByType[2][1],numAircraftByType[1][2]+numAircraftByType[2][2]);
         
-			Console.WriteLine("stopAI: Number of airgroups (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length, numAirGroupsByType[1][0],numAirGroupsByType[1][1],numAirGroupsByType[1][2], numAirGroupsByType[2][0],numAirGroupsByType[2][1],numAirGroupsByType[2][2],numAirGroupsByType[1][0]+numAirGroupsByType[2][0],numAirGroupsByType[1][1]+numAirGroupsByType[2][1],numAirGroupsByType[1][2]+numAirGroupsByType[2][2]);
+			if (ON_TESTSERVER) Console.WriteLine("stopAI: Number of airgroups (FIGHT,STURM,BOMB): red:{0} ({3},{4},{5}) blue:{1} ({6},{7},{8}) total:{2} ({9},{10},{11})", (GamePlay.gpAirGroups(1) ?? empty).Length, (GamePlay.gpAirGroups(2) ?? empty).Length, (GamePlay.gpAirGroups(1) ?? empty).Length + (GamePlay.gpAirGroups(2) ?? empty).Length, numAirGroupsByType[1][0],numAirGroupsByType[1][1],numAirGroupsByType[1][2], numAirGroupsByType[2][0],numAirGroupsByType[2][1],numAirGroupsByType[2][2],numAirGroupsByType[1][0]+numAirGroupsByType[2][0],numAirGroupsByType[1][1]+numAirGroupsByType[2][1],numAirGroupsByType[1][2]+numAirGroupsByType[2][2]);
 			
 			//##### STEP 1 #######
 			//First are baselines: max overall planes in sim, max # fighters on each side, max # bombers on each side.  
@@ -26705,7 +26723,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             if (blueFighter && 				
 				(random.Next(4,8) < numBluePlayers)  
 				) letFighterPatrolGo = false;
-            Console.WriteLine("stopAI 2");
+            //Console.WriteLine("stopAI 2");
 			
 			
 			
@@ -26722,7 +26740,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			if (redFighter && numAircraftByType[1][0] + numAircraftByType[1][1] > 0.8 * numAircraftByType[1][2])  letFighterPatrolGo = false;
 			if (blueFighter && numAircraftByType[2][0] + numAircraftByType[2][1] > 0.8 * numAircraftByType[2][2])  letFighterPatrolGo = false;
 			
-			Console.WriteLine("stopAI 3");
+			//Console.WriteLine("stopAI 3");
 			
 			if ((redFighter || blueFighter ) && !letFighterPatrolGo) return true;
 			
@@ -26749,7 +26767,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             }
 			*/
 
-            Console.WriteLine("stopAI 4");
+            //Console.WriteLine("stopAI 4");
 
 
             //if (nump > 80 || (nump > 60 && random.NextDouble() > 0.65) || (nump > 40 && random.NextDouble() > 0.2))
@@ -26786,7 +26804,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			double redPlayer_pct = (1 - (numRedPlayers - minPlayers/2.0) / (diffPlayers/2.0)).Clamp(0,1);
 
 
-            Console.WriteLine("stopAI: Blue ac/players {0} {1}; Red ac/players  {2} {3}; Stop AI group. Percents (All R B): {4:N2} {5:N2} {6:N2} Cutoffs (R/B): {7:N0} {8:N0}" + actionName + "? " + DateTime.UtcNow.ToString("T"), numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers, player_pct, bluePlayer_pct, redPlayer_pct, diffAircraft * bluePlayer_pct + minAircraftPerSide, diffAircraft * redPlayer_pct + minAircraftPerSide);
+            if (ON_TESTSERVER) Console.WriteLine("stopAI: Blue ac/players {0} {1}; Red ac/players  {2} {3}; Stop AI group. Percents (All R B): {4:N2} {5:N2} {6:N2} Cutoffs (R/B): {7:N0} {8:N0}" + actionName + "? " + DateTime.UtcNow.ToString("T"), numBlueAircraft, numBluePlayers, numRedAircraft, numRedPlayers, player_pct, bluePlayer_pct, redPlayer_pct, diffAircraft * bluePlayer_pct + minAircraftPerSide, diffAircraft * redPlayer_pct + minAircraftPerSide);
 			
 			
             //Never let bombers OR fighters go if num Blue a/c > 60
@@ -26800,7 +26818,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			
 			
 
-            Console.WriteLine("stopAI 5");
+            //Console.WriteLine("stopAI 5");
 
             //Console.WriteLine("stopAI: " + nump.ToString() + " players currently online");
 			//Don't let ANYTHING through if no players online
@@ -26811,14 +26829,14 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 return true;
             }
 
-            Console.WriteLine("stopAI 6");
+            //Console.WriteLine("stopAI 6");
 
             //So regardless of phase-out of AI groups, if one side has just a few players
             //we continue to send AI bomber raids from their side, just to keep things active/interesting
             if (redBomber || blueBomber)
             {
 
-                Console.WriteLine("stopAI 7");
+                //Console.WriteLine("stopAI 7");
 
 
 
@@ -26834,7 +26852,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 //2021-12, moving it from 1 to 5
                 //2021-11 this doesnt really seem to work but leaving it be for now
 
-                Console.WriteLine("stopAI 8");
+                //Console.WriteLine("stopAI 8");
 
                 //One side is vastly outnumbered by the other side (counting breathers only), say 33% or less of the breather total, we continue to send AI bomber raids from their side
                 if (nump < (minPlayers + maxPlayers) / 2 && nump > 0)
@@ -31113,6 +31131,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                         int ggarmy = -1;
                         if (gg.country == "gb") ggarmy = 1;
                         if (gg.country == "de") ggarmy = 2;
+						Console.WriteLine("ReplaceEnemy (before): oldcountry: {0} ggarmy: {1} {2}",gg.country, ggarmy, cleanTitle);
                         if (ggarmy == -1) continue;
                         if (ggarmy == terr) continue;
                         if (replaceThem)
@@ -31131,12 +31150,16 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                             else if (clc_random.Next(5) < 1) typ = "Stationary.Environment.CamoNetPlane";
 							*/
 							
+							
+							
 							//we keep any nn statics as nn, but switch de to gb and vice-versa
 							//Usually most statics are nn but a few de or gb to give targets
 							//a little more visibility in the sim
 							//But we can't have wrong army on wrong terr or attacked by AA etc....
 							string side = Mission.ArmiesSection[0];
 							if (ggarmy > 0) side = Mission.ArmiesSection[terr];
+							
+							Console.WriteLine("ReplaceEnemy (after): oldcountry: {0} ggarmy: {1} new side: {2} {3}",gg.country, ggarmy, side, cleanTitle);
 
                             f = Calcs.makeStatic(f, GamePlay, msn, gg.pos.x, gg.pos.y, 0, cleanTitle, 0, side, staticprefix: "replace_enemy_statics");
 							if (msn.ON_TESTSERVER) Console.WriteLine("Replacing with new static {0} {1}", cleanTitle, side );

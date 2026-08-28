@@ -1,0 +1,789 @@
+﻿using System; // Ensure this is at the absolute top of your file
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Collections;
+using System.Globalization;
+using maddox.game;
+using maddox.game.world;
+using maddox.GP;
+using maddox.game.page;
+using maddox.steam;
+using part;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Text;
+
+public class ThreadLoadMission : AMission
+{
+    [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
+    public static extern Int32 GetCurrentWin32ThreadId();
+    public Mission mainmission;
+	public TWClient twclient;
+	private bool _handlerRegistered;
+	
+	// Keep a static reference so garbage collection doesn't clean them up
+	// intercepts console & looks for steam connection errors etc
+    private static ConsoleInterceptor _interceptor;
+    //private static AsyncConsoleProcessor _processor;
+
+    public double recentCPUPercent = 0; //%, ie 0-100 not 0-1
+    public double allTimeCPUPercent = 0;//%, ie 0-100 not 0-1
+    public double timeSinceStart_s = 0; // in seconds
+	
+	public TimeSpan oneIntervalTickLength; //
+    public TimeSpan allTimeTickLength;//
+	public TimeSpan allTimeMaxTickLength;//
+	public TimeSpan currentTickLength;
+	private long initTick;
+	private long lastSingleTick;
+	private long lastOneIntervalTick;
+	public TimeSpan lastSingleTickTime;
+	public TimeSpan lastOneIntTickTime;
+
+	
+	public double oneIntAveTick_ms; //************* average tick length over past interval (10 seconds)
+			
+	public double allTimeAveTick_ms; //************ average tick length since server start
+	
+
+    public CircularArray<double> CPUPercent_stack = new CircularArray<double>(6); //saves the last 6 values/last 1 minute
+    public double rollingAverageCPUPercent; //rolling average over the past 1 minute, in % ie 0-100 NOT 0-1					
+			
+	public CircularArray<double> TickTime_stack = new CircularArray<double>(6); //saves the last 6 values/last 1 minute
+    public double rollingAverageTickTime_ms; //************ average tick length over past minute 
+
+    public ThreadLoadMission(Mission msn)
+    {
+        mainmission = msn;
+		twclient = new TWClient(msn, this);
+		
+		//Hopefully handle any program crashes not otherwise handled
+		//such as Steam disconnect...
+		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+		_handlerRegistered = true;
+		
+
+		
+    }
+
+    private System.Threading.Timer threadLoadTimer;
+    public Stopwatch threadLoadStopWatch = new Stopwatch();
+	public Stopwatch threadLoadTickStopWatch = new Stopwatch();
+    private TimeSpan initCPUTime;
+    private TimeSpan lastTime;
+    private TimeSpan lastCPUTime;
+	
+    public int threadID;
+    public int win32ThreadID;
+    public Thread ourThread;
+    public ProcessThread ourProcessThread;
+
+    public void threadLoadTimer_recurs()
+    {
+        try
+        {
+            Console.WriteLine("threadLoad: Starting timer! " + DateTime.UtcNow.ToString("T"));
+            threadLoadTimer = new System.Threading.Timer(
+                new TimerCallback(threadLoad_callback),
+                null,
+                dueTime: 10000, //wait time @ startup
+                period: 10000); //periodically call the callback at this interval, every 4-6 minutes say
+
+            initThreadLoad();
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad_recurs error: " + ex.Message); }
+    }
+
+    public void threadLoadTimer_dispose()
+    {
+        try
+        {
+            if (threadLoadTimer != null) threadLoadTimer.Dispose();
+        }
+        catch (Exception ex) { }
+    }
+
+    public void initThreadLoad()
+    {
+        try
+        {
+            threadLoadStopWatch.Reset();
+            threadLoadStopWatch.Start();
+
+            ourThread = Thread.CurrentThread;
+
+            threadID = ourThread.ManagedThreadId;
+            win32ThreadID = GetCurrentWin32ThreadId();
+            ourProcessThread = getThreadByID(win32ThreadID);
+
+            //initCPUTime = ourThread.TotalProcessorTime;
+            initCPUTime = ourProcessThread.TotalProcessorTime;
+            lastCPUTime = initCPUTime;
+            lastTime = threadLoadStopWatch.Elapsed;		
+			lastSingleTickTime = lastTime;
+			lastOneIntTickTime = lastTime;			
+			
+			initTick = Time.tickCounter();
+			lastSingleTick = initTick;
+			lastOneIntervalTick = initTick;			
+
+            Console.WriteLine("threadLoad: Initializing!  Thread ID: {0}", win32ThreadID);
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad_callback error: " + ex.Message); }
+    }
+
+    public void threadLoad_callback(object o)
+    {
+        try
+        {
+            //err, this will be an entirely new thread called by the timer, so this
+            //part wn't work at all - we are interested in the one main launcher64.exe
+            //thread that all the missions run on
+            /*int currentWin32ThreadID = GetCurrentWin32ThreadId();
+            if (win32ThreadID != currentWin32ThreadID)
+            {
+                Console.WriteLine("threadLoad: New thread!  Was {0}, now {1}. Restarting stats...", win32ThreadID, currentWin32ThreadID);
+                initThreadLoad();
+                return;
+            }
+            */
+
+            TimeSpan thisCPUTime = ourProcessThread.TotalProcessorTime;
+
+            TimeSpan thisTime = threadLoadStopWatch.Elapsed;
+            TimeSpan deltaCPU = thisCPUTime.Subtract(lastCPUTime);
+            TimeSpan deltaTime = thisTime.Subtract(lastTime);
+            TimeSpan elapsedCPU = thisCPUTime.Subtract(initCPUTime);
+            //TimeSpan elapsedTime = thisTime.Subtract(Stopwatch.)
+
+            recentCPUPercent = safeDivide(deltaCPU.TotalMilliseconds, deltaTime.TotalMilliseconds) * 100.0;
+            CPUPercent_stack.Push(recentCPUPercent);
+            rollingAverageCPUPercent = rollingAverage(CPUPercent_stack.Array);
+            
+
+            allTimeCPUPercent = safeDivide(elapsedCPU.TotalMilliseconds, threadLoadStopWatch.ElapsedMilliseconds) * 100.0;
+            timeSinceStart_s = threadLoadStopWatch.ElapsedMilliseconds / 1000.0;
+
+            if (timeSinceStart_s < 240) rollingAverageCPUPercent = 0; //don't push anything here until 4 minutes in...
+			
+			
+			//TimeSpan tickOneIntLength = thisTime.Subtract(lastOneIntTickTime);
+			long deltaTicks = Time.tickCounter() - lastOneIntervalTick;
+			
+			oneIntAveTick_ms = safeDivide(deltaTime.TotalMilliseconds, (double)deltaTicks);
+			
+			allTimeAveTick_ms = safeDivide(thisTime.TotalMilliseconds, (double)Time.tickCounter());
+						
+			
+			TickTime_stack.Push(oneIntAveTick_ms);
+            rollingAverageTickTime_ms = rollingAverage(TickTime_stack.Array);
+
+			Console.WriteLine("threadLoad: {0:n1}% (rolling ave. {3:n1}%) - " +
+			"{1:n0} ms used of {2:n0} ms since last call", recentCPUPercent, deltaCPU.TotalMilliseconds, deltaTime.TotalMilliseconds, rollingAverageCPUPercent);
+            Console.WriteLine("threadLoad: {0:n1}% - " + "{1:n2} s used of {2:n2} s since program start", allTimeCPUPercent, elapsedCPU.TotalSeconds, timeSinceStart_s);
+			Console.WriteLine("threadLoad: current tick {0:n0}ms; max tick {1:n0}ms; interval {2:n0}ms; rolling ave {3:n0}ms ; all time {4:n0}ms", currentTickLength.TotalMilliseconds, allTimeMaxTickLength.TotalMilliseconds, oneIntAveTick_ms, rollingAverageTickTime_ms, allTimeAveTick_ms );
+			
+			allTimeMaxTickLength = currentTickLength; //actually not all time but for this interval
+
+            lastTime = thisTime;
+            lastCPUTime = thisCPUTime;
+			lastOneIntervalTick = Time.tickCounter();
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad_callback error: " + ex.Message); };
+    }
+
+    public double safeDivide(double numer, double denom)
+    {
+        try
+        {
+            if (denom != 0) return numer / denom;
+            if (numer == 0) return 0;
+            else return 100000000000;
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad safeDivide error: " + ex.Message); return 0; };
+    }
+
+    public ProcessThread getThreadByID(int ID)
+    {
+        try
+        {
+            Process p = Process.GetCurrentProcess();
+            foreach (ProcessThread pt in p.Threads)
+            {
+                if (pt.Id == ID) return pt;
+            }
+
+            return null;
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad getThreadByID error: " + ex.Message);
+            return null;
+        }
+    }
+
+    public double rollingAverage(double [] ar) {
+        if (ar.Length == 0) return 0;
+        double accum = 0;
+
+        for (int i = 0; i < ar.Length; i++ )
+        {
+            accum += ar[i];
+        }
+        return accum / ar.Length;
+    }
+	
+	public override void Inited()
+    {
+        base.Inited();
+        
+        try
+        {
+            // Subscribe to the global Steam WClient callback 
+            // Note: If WClient is instantiated per-server instance, hook into the active instance
+            /*if (WClient.Instance != null)
+            {
+                WClient.Instance.onSteamShutdown += MyCustomSteamShutdownHandler;
+                // Double check if there is an onSteamDisconnect or onConnectionLost variant
+            }
+			*/
+			
+					        // 1. Save the original console output stream
+			/*
+			TextWriter originalOut = Console.Out;
+
+			// 2. Create our interceptor and hook into the event
+			var interceptor = new ConsoleInterceptor(originalOut);
+			interceptor.OnLineWritten += (message) =>
+			{
+				// Do whatever you want with the captured message here
+				// (e.g., log to file, send to a UI window, or telemetry)
+				//System.Diagnostics.Debug.WriteLine($"[MONITOR CAPTURED]: {message}");
+				
+				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/shadow-console.log", message + "\n");
+			};
+
+			// 3. Redirect Console.WriteLine to use our interceptor
+			Console.SetOut(interceptor);
+
+			// --- Test cases ---
+			Console.WriteLine("Hello World!");
+			Console.WriteLine("Monitoring works in real-time.");
+			
+			// 4. (Optional) Restore the original console behavior when done
+			Console.SetOut(originalOut);
+			
+			*/
+			
+			/*
+			TextWriter originalOut = Console.Out;
+			ConsoleInterceptor interceptor = new ConsoleInterceptor(originalOut);
+
+			// Initialize our background worker
+			using (AsyncConsoleProcessor processor = new AsyncConsoleProcessor(mainmission))
+			{
+				// Direct the event to push messages onto the background queue
+				interceptor.OnLineWritten += processor.EnqueueMessage;
+				Console.SetOut(interceptor);
+
+				// Test execution
+				Console.WriteLine("Message 1: Safe and fast.");
+				Console.WriteLine("Message 2: Running off the main thread.");
+
+				// Keep main thread alive briefly to let background thread finish logging
+				//System.Threading.Thread.Sleep(500); 
+
+				Console.SetOut(originalOut);
+			}
+			*/
+			
+			//_processor = new AsyncConsoleProcessor(mainmission, this);
+
+			// 2. Initialize interceptor with the default Console stream
+			_interceptor = new ConsoleInterceptor(Console.Out, mainmission, this);
+
+			// 3. Link the interceptor event to the async queue
+			//_interceptor.OnLineWritten += _processor.EnqueueMessage;
+
+			// 4. Divert the system output globally
+			Console.SetOut(_interceptor);
+
+			// =======================================================
+			// Everything below here works exactly as normal. 
+			// All Console.Write/WriteLine statements print to the screen 
+			// AND get processed safely on the background thread.
+			// =======================================================
+
+			Console.WriteLine("ThreadLoad: Console Interception started...");
+			
+        } catch (Exception ex)
+        {
+            
+            Console.WriteLine("[ThreadLoad INITED ERROR]: " + ex.Message);
+        }
+    }
+	
+	
+
+	/*
+	    try
+        {
+            if (WClient.Instance != null)
+            {
+                WClient.Instance.onSteamShutdown -= MyCustomSteamShutdownHandler;
+            }
+        }
+        catch { }
+		*/
+	
+	public override void OnTickGame()
+    {
+        base.OnTickGame();
+		
+		TimeSpan thisTime = threadLoadStopWatch.Elapsed;
+		currentTickLength = thisTime.Subtract(lastSingleTickTime);
+		if (TimeSpan.Compare(currentTickLength, allTimeMaxTickLength) == 1 ) allTimeMaxTickLength = currentTickLength; // compare == 1 means 1st greater than 2nd; ==0 means they are equal
+		lastSingleTickTime = thisTime;
+		
+		
+	}
+
+    public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+
+        threadLoadTimer_recurs();
+
+    }
+
+    public override void OnBattleStoped()
+    {
+        base.OnBattleStoped();
+
+        threadLoadTimer_dispose();
+		
+	    if (_handlerRegistered)
+	    {
+			AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+			_handlerRegistered = false;
+		}
+
+    }
+	
+	public DateTime lastCrash = DateTime.Now;
+	public DateTime lastFileSave = DateTime.Now;
+	
+	//Returns true of we've had a crash (which includes Steam disconnection) within past 60 seconds
+	public bool SoftExit (){
+		double timeSinceLastCrash_s = DateTime.Now.Subtract(lastCrash).TotalSeconds;
+		if (timeSinceLastCrash_s < 60) return true;
+		return false;
+	}
+
+	
+	public void OnUnhandledException(string sender, string st)
+	{
+		Exception ex = new Exception(st);
+		UnhandledExceptionEventArgs e = new UnhandledExceptionEventArgs(exception: ex, isTerminating: true); 
+		OnUnhandledException(sender: (object)sender, e: e);
+				
+	}
+	
+	//should handle most ANY error not otherwise captured; we'll see
+	//Needs: AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+	//on initialization
+	public void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+	{
+		try 
+		{
+			File.WriteAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors-semaphore.log", "1"); //Do a very quick simple write first; if all else fails, file timestamp indicates when the crash happened
+			
+			DateTime now = DateTime.Now;
+			
+			double timeSinceLastCrash_s = now.Subtract(lastCrash).TotalSeconds;
+			lastCrash = now;
+			double timeSinceLastFileSave_s = now.Subtract(lastFileSave).TotalSeconds;			
+			
+			var ex = new Exception("Unknown error!"); 
+			if (e.ExceptionObject is Exception) ex = (Exception)e.ExceptionObject;
+			string term = "(not terminating)";
+			if (e.IsTerminating) term = "(TERMINATING!)";
+			
+			File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:U} - UNHANDLED EXCEPTION ERROR! {2} Could be an error or crash ANYWHERE in the sim:\n\n {1}\n", now, ex, term));
+			if (timeSinceLastFileSave_s > 30) {
+				//Console.WriteLine("UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim: " + ex.ToString());
+				mainmission.SaveMapState("");
+				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 1");
+				mainmission.MO_WriteMissionObjects(wait: true);
+				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 2");
+				mainmission.statsmission.OnBattleStoped();
+				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3");
+				lastFileSave = now;
+				
+				mainmission.tacviewimplmission.StopRecorder(); //our last priority, but this safely stops & saves the tacview recording of the session.  We COULD do this only if .isTerminating is TRUE, bec. no recording will  take place after this even if the mission continues...  But safer just to stop now and safe at least some/most.
+				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3B");
+			
+				//File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim:\n\n {1}\n", DateTime.Now, ex));
+				//SaveCrashReport(exception);
+				//try to do a nice exit now
+				//GamePlay.gpBattleStop();
+				
+				
+				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 4A");
+				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Crash saves successfully completed - good exit", DateTime.Now));
+			} else {
+				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 4B");
+				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Good exit (but no saves requested)", now));
+			}
+	    }
+		
+		catch
+		{
+			// Nothing further can safely be done
+		}
+	}
+	
+}
+
+public class TWClient : WClient
+{
+	public Mission mainmission;
+	public ThreadLoadMission threadloadmission;
+	
+	public TWClient(Mission msn, ThreadLoadMission tlmsn )
+    {
+        mainmission = msn;
+		threadloadmission = tlmsn;
+		
+			// This method intercepts the exact callback frame from the Steam API before the server prints the "[SYSTEM] Server got logged out..." string
+	}
+	
+	//public DateTime lastOnSteamShutdown = DateTime.Now;			
+	
+    public override void onSteamShutdown()
+    {
+        try
+        {
+			// 1. Force write out simple urgent telemetry file immediately - file date will show last crash if all else fails
+            System.IO.File.WriteAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-steam-connection-died-semaphore.log", "1");
+			
+			//double timeSinceLastOnSteamShutdown_s = DateTime.Now.Subtract(lastOnSteamShutdown).TotalSeconds;
+			//lastOnSteamShutdown = DateTime.Now;
+			
+			// 2. Log the issue more precisely; usually the log file is still working on a Steam disconnection so we'll see it
+            Console.WriteLine("[FMB INTERCEPT WClient onSteamShutdown] Console Steam Connection Lost messaged at {0:u}! Running emergency triage, save, etc ...", DateTime.Now);
+			
+			//So steam shutdown notices seem to come fast & furious for a second or two before final disconnect
+			//So we could wait until say 2 notices before slamming the shutdown, but let's not.
+			//if (timeSinceLastOnSteamShutdown_s > 0.5 && timeSinceLastOnSteamShutdown_s < 30) {
+			//}
+			
+			
+			// 3. Handle the issue more extensively, save needed files, softExit people rather than killing etc
+			threadloadmission.OnUnhandledException(sender: "Steam Shutdown (TWC)", st: "Steam Shutting Down! (maddox.steam.WClient OnSteamShutdown triggered)");			                        
+            
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad_recurs error: " + ex.Message); }
+		
+		base.onSteamShutdown();
+    }
+				
+		
+		
+}
+
+public class TWServer : WServer
+{
+	public Mission mainmission;
+	public ThreadLoadMission threadloadmission;
+	
+	public TWServer(Mission msn, ThreadLoadMission tlmsn )
+    {
+        mainmission = msn;
+		threadloadmission = tlmsn;
+		
+			// This method intercepts the exact callback frame from the Steam API before the server prints the "[SYSTEM] Server got logged out..." string
+	}
+	
+	//public DateTime lastOnSteamShutdown = DateTime.Now;			
+	
+    public override void onDisconnected()
+    {
+        try
+        {
+			// 1. Force write out simple urgent telemetry file immediately - file date will show last crash if all else fails
+            System.IO.File.WriteAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-steam-connection-died-semaphore.log", "1");
+			
+			//double timeSinceLastOnSteamShutdown_s = DateTime.Now.Subtract(lastOnSteamShutdown).TotalSeconds;
+			//lastOnSteamShutdown = DateTime.Now;
+			
+			// 2. Log the issue more precisely; usually the log file is still working on a Steam disconnection so we'll see it
+            Console.WriteLine("[FMB INTERCEPT] WServer.onDisconnect triggered at {0:u}! Running emergency triage, save, etc ...", DateTime.Now);
+			
+			//So steam shutdown notices seem to come fast & furious for a second or two before final disconnect
+			//So we could wait until say 2 notices before slamming the shutdown, but let's not.
+			//if (timeSinceLastOnSteamShutdown_s > 0.5 && timeSinceLastOnSteamShutdown_s < 30) {
+			//}
+			
+			
+			// 3. Handle the issue more extensively, save needed files, softExit people rather than killing etc
+			threadloadmission.OnUnhandledException(sender: "Steam Shutdown (TWC)", st: "Steam Shutting Down! (maddox.steam.WClient OnSteamShutdown triggered)");			                        
+            
+        }
+        catch (Exception ex) { Console.WriteLine("threadLoad_recurs error: " + ex.Message); }
+		
+		base.onDisconnected();
+    }
+				
+		
+		
+}
+
+
+/*
+class Program
+{
+    static void Main()
+    {
+        // 1. Save the original console output stream
+        TextWriter originalOut = Console.Out;
+
+        // 2. Create our interceptor and hook into the event
+        var interceptor = new ConsoleInterceptor(originalOut);
+        interceptor.OnLineWritten += (message) =>
+        {
+            // Do whatever you want with the captured message here
+            // (e.g., log to file, send to a UI window, or telemetry)
+            System.Diagnostics.Debug.WriteLine($"[MONITOR CAPTURED]: {message}");
+        };
+
+        // 3. Redirect Console.WriteLine to use our interceptor
+        Console.SetOut(interceptor);
+
+        // --- Test cases ---
+        Console.WriteLine("Hello World!");
+        Console.WriteLine("Monitoring works in real-time.");
+        
+        // 4. (Optional) Restore the original console behavior when done
+        Console.SetOut(originalOut);
+    }
+}
+*/
+
+public class ConsoleInterceptor : TextWriter
+{
+    private readonly TextWriter _originalOutput;
+    private readonly StringBuilder _lineBuffer = new StringBuilder();
+	private Mission mainmission;
+	private ThreadLoadMission threadloadmission;
+    
+    public event System.Action<string> OnLineWritten;
+
+    public ConsoleInterceptor(TextWriter originalOutput, Mission msn, ThreadLoadMission tlmsn)
+    {
+        _originalOutput = originalOutput;
+		mainmission = msn;
+		threadloadmission = tlmsn;
+    }
+
+    public override Encoding Encoding
+    {
+        get { return _originalOutput.Encoding; }
+    }
+
+    // Intercepting single characters is the most reliable way 
+    // to catch everything from Console.Write and Console.WriteLine
+	
+	/*
+    public override void Write(char value)
+    {
+        _originalOutput.Write(value);
+
+        if (value == '\n')
+        {
+            string completedLine = _lineBuffer.ToString().TrimEnd('\r');
+            _lineBuffer.Clear();
+
+			if (completedLine.Contains("Server got logged out of Steam") || completedLine.Contains("Got logged out of Steam") || completedLine.Contains("connection to Steam lost"))
+			{
+				// 4. EMERGENCY BRAKE: Force the game's thread to run your cleanup synchronously!
+				threadloadmission.OnUnhandledException(sender: "Steam Shutdown (TWC)", st: "[FMB Sync/Slow Console Intercept] Steam Shutting Down!  OnSteamShutdown triggered");	
+				Console.WriteLine("[STEAM SHUTDOWN - slow sync write]");
+			}
+			else
+			{
+				// Normal message, pass to your async queue as usual
+				//if (OnLineWritten != null) OnLineWritten(completedLine);
+			}
+		}		
+        else
+        {
+            _lineBuffer.Append(value);
+        }
+    }
+	*/
+	
+	
+	
+	
+	public override void Write(char value)
+	{
+		// 1. Pass to console instantly
+		_originalOutput.Write(value);
+
+		if (value == '\n')
+		{
+			// 2. Scan the StringBuilder directly without converting it to a string first.
+			// We look for "Steam" or "lost" because they are unique keywords in your 3 error strings.
+			if (BufferContainsKeyword(_lineBuffer))
+			{
+				// Only convert to a string if we are absolutely sure a keyword matched
+				string completedLine = _lineBuffer.ToString().TrimEnd('\r');
+
+				if (completedLine.Contains("Server got logged out of Steam") || 
+					completedLine.Contains("Got logged out of Steam") || 
+					completedLine.Contains("connection to Steam lost"))
+				{
+					_lineBuffer.Clear(); // Clear before executing to avoid double-processing
+					
+					threadloadmission.OnUnhandledException(
+						sender: "Steam Shutdown (TWC)", 
+						st: "[FMB Sync/FAST Console Intercept] Steam Shutting Down!  OnSteamShutdown triggered)"
+					);
+					return;
+				}
+			}
+
+			// 3. Clear the buffer allocation-free for the next line
+			_lineBuffer.Clear();
+		}		
+		else
+		{
+			_lineBuffer.Append(value);
+		}
+	}
+
+	// Highly optimized helper that checks the StringBuilder without allocating memory
+	private static bool BufferContainsKeyword(StringBuilder sb)
+	{
+		int len = sb.Length;
+		if (len < 4) return false; // "lost" is 4 characters
+
+		// Scan backwards through the line buffer for unique identifiers 
+		// This is incredibly fast and produces 0 bytes of GC garbage.
+		for (int i = 0; i <= len - 4; i++)
+		{
+			// Quick check for 'S' (Steam) or 'l' (lost) to save CPU cycles
+			char c = sb[i];
+			
+			if (c == 'S' && i <= len - 5) // Check for "Steam"
+			{
+				if (sb[i+1] == 't' && sb[i+2] == 'e' && sb[i+3] == 'a' && sb[i+4] == 'm')
+					return true;
+			}
+			else if (c == 'l') // Check for "lost"
+			{
+				if (sb[i+1] == 'o' && sb[i+2] == 's' && sb[i+3] == 't')
+					return true;
+			}
+		}
+		return false;
+	}
+
+	// Overriding the buffer array ensures high-performance string writes match perfectly
+	public override void Write(char[] buffer, int index, int count)
+	{
+		_originalOutput.Write(buffer, index, count);
+		
+		for (int i = index; i < index + count; i++)
+		{
+			char value = buffer[i];
+			if (value == '\n')
+			{
+				string completedLine = _lineBuffer.ToString().TrimEnd('\r');
+				_lineBuffer.Clear();
+
+				if (OnLineWritten != null)
+				{
+					OnLineWritten(completedLine);
+				}
+			}
+			else
+			{
+				_lineBuffer.Append(value);
+			}
+		}
+	}
+	
+}
+
+/*
+
+
+public class AsyncConsoleProcessor : IDisposable
+{
+    // Thread-safe queue for staging logs
+    private readonly BlockingCollection<string> _msgQueue = new BlockingCollection<string>();
+    private readonly Task _workerTask;
+	Mission mainmission;
+	ThreadLoadMission threadloadmission;
+
+    public AsyncConsoleProcessor(Mission msn, ThreadLoadMission tlmsn)
+    {
+		mainmission = msn;
+		threadloadmission = tlmsn;
+        // Start a dedicated background thread to process messages
+        _workerTask = Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
+    }
+
+    // This method intercepts Console messages from the event
+    public void EnqueueMessage(string message)
+    {
+        _msgQueue.Add(message);
+    }
+
+    private void ProcessQueue()
+    {
+        // GetConsumingEnumerable blocks the thread automatically when empty, 
+        // consuming 0% CPU until a new message arrives.
+        foreach (string message in _msgQueue.GetConsumingEnumerable())
+        {
+            // Execute your heavy background tasks safely here
+            // e.g., writing to a file, database, or sending network requests.
+            //System.Diagnostics.Debug.WriteLine("[ASYNC WORKER THREAD]: " + message);
+			//File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/shadow-console.log", message + "\n");
+			if (message.Contains("Server got logged out of Steam") || message.Contains("Got logged out of Steam") || message.Contains("connection to Steam lost")){
+				// 1. Force write out simple urgent telemetry file immediately - file date will show last crash if all else fails
+				System.IO.File.WriteAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-steam-connection-died-semaphore.log", "1");
+				
+				//double timeSinceLastOnSteamShutdown_s = DateTime.Now.Subtract(lastOnSteamShutdown).TotalSeconds;
+				//lastOnSteamShutdown = DateTime.Now;
+				
+				// 2. Log the issue more precisely; usually the log file is still working on a Steam disconnection so we'll see it
+				Console.WriteLine("[FMB ASYNC INTERCEPT] Triggered at {0:u}! Running emergency triage, save, etc ...", DateTime.Now);
+				
+				//So steam shutdown notices seem to come fast & furious for a second or two before final disconnect
+				//So we could wait until say 2 notices before slamming the shutdown, but let's not.
+				//if (timeSinceLastOnSteamShutdown_s > 0.5 && timeSinceLastOnSteamShutdown_s < 30) {
+				//}
+				
+				
+				// 3. Handle the issue more extensively, save needed files, softExit people rather than killing etc
+				threadloadmission.OnUnhandledException(sender: "Steam Shutdown (TWC)", st: "Steam Shutting Down! (maddox.steam.WClient OnSteamShutdown triggered)");	
+			}
+        }
+    }
+
+    public void Dispose()
+    {
+        // Tell the collection no more items are coming
+        _msgQueue.CompleteAdding();
+        
+        // Wait for the background thread to finish processing remaining logs
+        _workerTask.Wait();
+        _msgQueue.Dispose();
+    }
+}
+*/

@@ -4,7 +4,7 @@
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
 //$reference parts/core/gamePages.dll
-//$reference parts/core/CloDMissionCommunicator.dll
+///// $ reference parts/core/CloDMissionCommunicator.dll
 
 //$reference parts/core/TacviewRecorder.dll 
 using TacviewRecorder;
@@ -16,6 +16,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Text;
 using maddox.GP;
 using maddox.game;
@@ -25,7 +26,7 @@ using maddox.game.page;
 using part;
 using System.Text.RegularExpressions;
 
-using TWCComms;
+//using TWCComms;
 using System.Media;
 
 
@@ -158,6 +159,7 @@ public class TacviewImplMission : TacviewMission
 			//TypeOfMission.Normal = Aircraft + ground units. 
 			//The default mission type is BigMission 
 			//MissionType = TypeOfMission.DogFight;
+			MissionType = TypeOfMission.BigMission;
 			//MissionType = TacviewMission.TypeOfMission.DogFight; //Doesn't work unfortunatley - always does BigMission
 			//this.oTacViewCore.MissionType = TacviewMission.TypeOfMission.DogFight;
 			
@@ -175,13 +177,25 @@ public class TacviewImplMission : TacviewMission
 			//DisableRecorder() Prevents the recorder from starting up.  
 			//Allows you to run a mission without taking the recorder into account 
 			//and without having to change the mission's base class.
-			StartDelay = 0; // Start in 300 seconds 
+			
+			//So if startDelay > 0 then it seems to result in many lines in the file starting with "," - meaning
+			//the object ID was missing or blank somehow.  It must be a bug in the .dll.  So, just start 0.
+			//StartDelay = 8; // Wait just long enough to skip starting a Tacview file when e.g. we restart to reset time or weather
+			
+			
 			ZipFinalFile = true; // compress the file 
 			
 			//AddWaypoint(name, x, y, z, army= 0) 
 			//RemoveWaypoint(name)
 			
 			//AddBookmark(message)  //don't use AddBookemark in inited but throughout the  mission
+			
+			//Wait about a minute to upload the old .acmi file - enough to skip over any server restarts
+			//but still early in processing of the mission.
+			//This will put old .acmi file in ../tacview/originals and processed file in ../tacview/processed
+			//Another process in -stats.cs regular runs the FTP uploads for radar and also the .acmi files
+			//if any exist in /processed
+			Timeout(63.52, () => { processOldTacviewFiles(); });
 			
 			Console.WriteLine("TacviewImpl Inited . . .");
 			
@@ -401,6 +415,45 @@ public class TacviewImplMission : TacviewMission
     }
 	
 	*/
+	
+	//Process any old, completed Tacview files from previous session(s)
+	//Mostly should just be one from the previous session.
+	//But proc.bat processes any *.zip.acmi files found in the tacview directory,
+	//putting the processed file ("fog of war" in a bubble around each player only) in subdir "processed"
+	//and moving the original file to subdirectory "originals"
+	public void processOldTacviewFiles()
+	{
+		// Fire and forget on a separate thread pool thread
+		Task.Run(() =>
+		{
+			try
+			{
+				string destFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+				string FileName = destFolder + "/proc.bat";
+				ProcessStartInfo startInfo = new ProcessStartInfo (FileName);
+				
+					
+					
+					startInfo.UseShellExecute = false;         // Required to redirect output or hide window
+					startInfo.CreateNoWindow = true;           // Hides the black CMD window entirely
+					startInfo.RedirectStandardOutput = true;    // Allows you to capture logs if needed
+					startInfo.RedirectStandardError = true;
+				
+				using (Process process = Process.Start(startInfo))
+				{
+					// Wait for the batch script to finish processing files
+					process.WaitForExit(); 
+					
+					int exitCode = process.ExitCode;
+					Console.WriteLine("Batch script finished with exit code: {exitCode}");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("TacviewImpl - Error running batch file to process previous .acmi files: {ex.Message}");
+			}
+		});
+}
 
     
 
@@ -431,9 +484,16 @@ public class TacviewImplMission : TacviewMission
 
     void Mission_EventChat(Player from, string msg)
     {
+		
         if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
 
         Player player = from as Player;
+		string playername = "";
+		if (player != null) playername = player.Name() + ": ";
+		
+		//log all chat msgs to TacviewRecorder
+		AddBookmark(playername + msg);
+		
         AiAircraft aircraft = null;
         if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
         AiActor actor = aircraft as AiActor;
@@ -446,8 +506,9 @@ public class TacviewImplMission : TacviewMission
         if (msg.StartsWith("<!deban") && (admin_privilege_level(player) < 2))
         {
 
+
         }
-        */
+        
         if (msg.StartsWith("<tmes"))
         {
             Console.WriteLine("Adding message to Tacview...");
@@ -459,7 +520,7 @@ public class TacviewImplMission : TacviewMission
 
  
         }
-		/*
+		
 		if (msg.StartsWith("<tac") && !msg.StartsWith("<tach"))
         {
 			if (tacRecorderOn ) {
@@ -500,23 +561,24 @@ public class TacviewImplMission : TacviewMission
 				
 
   
-        else if (msg.StartsWith("<tachelp"))
+        if (msg.StartsWith("<tachelp"))
         {
             string msg42 = "TACVIEW RECORDER HELP";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records the whole mission.";
+            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records the whole session, including Chat messages.";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = string.Format(">>>After the mission finishes, we can filter the file to show the immediate area of each pilot while they were flying.", tacRecorderCount, tacRecorderMax);
+            msg42 = string.Format(">>>After the session finishes, we can filter the file to show the immediate area of each pilot while they were flying.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);
-			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);
+			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);			
 			msg42 = string.Format(">>>Right now the filtering/uploading happens manually so will only be occasionally or upon special request.", tacRecorderCount, tacRecorderMax);
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			/*
 			msg42 = ">>> Chat command <tmes saves a message to that recorder at the current time stamp.";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
 			msg42 = ">>>Example: <tmes Spirit 42 just got a kill!";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
 			msg42 = ">>>Within Tacview, you can search for messages to find a specific time or event.";
+			*/
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
 			msg42 = ">>>Thanks to FlyBy for creating the Tacview Recorder for CLOD!";
 			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });

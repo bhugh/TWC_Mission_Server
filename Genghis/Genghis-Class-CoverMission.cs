@@ -245,7 +245,7 @@ public class CoverMission : AMission, ICoverMission
             {
                 if (mainmission.panic() && ran.Next(2) == 0) return; //if in panic mode cut runs by 50%
 
-                if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-1 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
+                //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-1 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
 
                 Console.WriteLine("renewAllStaticActors running . . . ");
                 //OK, we were missing some actors since our custom gpGetGroundActors only gets actors named "static1002" and similar.
@@ -265,7 +265,7 @@ public class CoverMission : AMission, ICoverMission
                 SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
 
                 Console.WriteLine("renewAllStaticActors complete . . . ");
-                if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
+                //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
             }
             catch (Exception ex) { Console.WriteLine("cover: renewAllStaticActors ERROR: " + ex.ToString()); }
         });
@@ -930,7 +930,7 @@ public class CoverMission : AMission, ICoverMission
         {"bob:Aircraft.HurricaneMkI_FB",true},
         {"bob:Aircraft.SpitfireMkI",true},
         {"bob:Aircraft.SpitfireMkIa",true},
-        {"bob:Aircraft.SpitfireMkIa_100oct",false},
+        {"bob:Aircraft.SpitfireMkIa_100oct",true},
         {"bob:Aircraft.SpitfireMkI_100oct",true},
         {"bob:Aircraft.SpitfireMkIIa",false},
             { "tobruk:Aircraft.GladiatorMkII_trop", true},
@@ -954,8 +954,8 @@ public class CoverMission : AMission, ICoverMission
             {"tobruk:Aircraft.SpitfireMkIIb", true},
             {"tobruk:Aircraft.SpitfireMkVa", true},
             {"tobruk:Aircraft.SpitfireMkVb", true},
-            {"tobruk:Aircraft.SpitfireMkVb-HF", true},
-            {"tobruk:Aircraft.SpitfireMkVb-HF-Late", true},
+            {"tobruk:Aircraft.SpitfireMkVb-HF", false},
+            {"tobruk:Aircraft.SpitfireMkVb-HF-Late", false},
             {"tobruk:Aircraft.SpitfireMkVb-HF-Trop", false},
             {"tobruk:Aircraft.SpitfireMkVbLate", true},
             {"tobruk:Aircraft.SpitfireMkVbTrop", false},
@@ -977,13 +977,13 @@ public class CoverMission : AMission, ICoverMission
         {"bob:Aircraft.Bf-109E-1B",true},
         {"bob:Aircraft.Bf-109E-3",true},
         {"bob:Aircraft.Bf-109E-3B",true},
-        {"bob:Aircraft.Bf-109E-4",false},
-        {"bob:Aircraft.Bf-109E-4_Late",false},
+        {"bob:Aircraft.Bf-109E-4",true},
+        {"bob:Aircraft.Bf-109E-4_Late",true},
         {"bob:Aircraft.Bf-110C-2",true},
         {"bob:Aircraft.Bf-110C-4",true},
         {"bob:Aircraft.Bf-110C-4-NJG",true},
         {"bob:Aircraft.Bf-110C-4B" ,true},
-        {"bob:Aircraft.Bf-110C-4Late",false},
+        {"bob:Aircraft.Bf-110C-4Late",true},
         {"bob:Aircraft.Bf-110C-4N",true},
         //{"bob:Aircraft.Bf-110C-4-NJG",true}, //this is a good cover a/c for bombers
         {"bob:Aircraft.Bf-110C-6",true},  //These crash straight into the ground upon spawn FOR SOME UNKNOWN REASON so just eliminating their use altogether here.
@@ -998,10 +998,10 @@ public class CoverMission : AMission, ICoverMission
         {"bob:Aircraft.Ju-88A-1",true},
         {"bob:Aircraft.Do-17Z-2",true}, //17Z-1 also exists, but is so similar...
         {"bob:Aircraft.Do-215B-1",true},
-        {"bob:Aircraft.Bf-109E-4B",false},
-        {"bob:Aircraft.Bf-109E-4B_Late",false},
-        {"bob:Aircraft.Bf-109E-4N",false},
-        {"bob:Aircraft.Bf-109E-4N_Late",false},
+        {"bob:Aircraft.Bf-109E-4B",true},
+        {"bob:Aircraft.Bf-109E-4B_Late",true},
+        {"bob:Aircraft.Bf-109E-4N",true},
+        {"bob:Aircraft.Bf-109E-4N_Late",true},
         {"tobruk:Aircraft.Bf-108B-2_Trop",true},
             {"tobruk:Aircraft.Bf-109E-7",true},
             {"tobruk:Aircraft.Bf-109E-7_Trop",false},
@@ -1189,7 +1189,7 @@ public class CoverMission : AMission, ICoverMission
         double shiftamt = amtToShiftForEachBomber_m;
         if (!type) shiftamt = amtToShiftForEachFighter_m;
         double shift_m = pos * shiftamt;
-        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} : {4} ", new object[] { shift_m, pos, count, allcount, airGroup.Name() }); 
+        //if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} : {4} ", new object[] { shift_m, pos, count, allcount, airGroup.Name() }); 
 
         return new Tuple<double, int, int, int>(shift_m, pos, count, allcount);
 
@@ -1459,12 +1459,20 @@ public class CoverMission : AMission, ICoverMission
                 if (targetname == "Ground Obj" && airgroupGroundTargets != null && airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].Title.Length > 0)
                 {
                     string tmp = airgroupGroundTargets[airGroup].Title;
-
+					
+					if (airgroupGroundTargets[airGroup] is GroundStationary) {
+						targettype = Calcs.CleanStationaryName(tmp);
+						targetname = targettype;
+						
+					} else {
                     //This is usually something like "Stationary.Environment.TentTroopLarge_GER1_DMG1"
                     //So we want to get rid of the stuff before the last . and after the first _
                     if (tmp.Contains(".")) tmp = tmp.Split('.').Last();
                     if (tmp.Contains("_")) tmp = tmp.Split('_').First();
                     if (tmp.Length > 2 && !tmp.ToLower().Contains("static")) targetname = tmp; //No need to display if it is just like "103:Static1092"
+					}
+					
+					
                 }
 
                 bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.follow);
@@ -1473,8 +1481,8 @@ public class CoverMission : AMission, ICoverMission
                 if (action.Contains("GND-ATTACK"))
                 {
                     if (distToTarget_m < 15000) //give the details in this case
-                        if (targetname.Length > 1 && !targetname.ToLower().Contains("static"))
-                            msg += String.Format(" {0} ({1}, {2})", targettype, targetname, Calcs.correctedSectorNameDoubleKeypad(this, p));
+                        if (targetname.Length > 1 && (airgroupGroundTargets[airGroup] is AiGroundActor))
+                            msg += String.Format(" {0} (Live, {2})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
                         else
                             msg += String.Format(" {0} ({1})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
                     else //no details if too far away.  Only the sector (action is included, above, already) 
@@ -3691,7 +3699,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         try
         {
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
             AiAirGroup tasktarget = null;
             task = AiAirGroupTask.DO_NOTHING;
             //So, sometimes airgroups split up, say when under attack or landing.  If so, we just add the new group to the coverAircraftAirGroupsActive (but
@@ -3740,7 +3748,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             
             //if (!heavyBomber) actual_delay = delay * 4; //experiment, kinda worked?  but maybe 2* instead of 4*?
             Timeout(actual_delay, () => keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay, heavyBomber, isStrikeAC, isPlayerStrikeAC, AltDiff_m, AltDiff_range_m, AltDiffBomber_m, AltDiffBomber_range_m, AltDiffPlayerEscort_m, AltDiffPlayerEscort_range_m));
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
 
             double AltDiffPassed_m = AltDiff_m;
@@ -3960,7 +3968,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //double AltDiff_range_m = 50, bool nodupe = true)
                     if (attacking) return; //if attacking is false that means for example no GROUND ENEMY was found, so it is not attacking anything, so we should keep it following or whatever else is normal
                 }
-                if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
+                //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
                 if (bombersContinuingFinalRun) return; //we never let bombers continuing final run move on to the next part where they escort or fly with the player, since the player DOESN'T EXIST ANY MORE!
             }
 
@@ -4114,7 +4122,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //Console.WriteLine("8ChangeTask(after): {0} {1} {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), tasktarget.ToString());            
 
             //Console.WriteLine("6ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
         }
         catch (Exception ex) { Console.WriteLine("KeepAircraftOnTaskRECURS ERROR: " + ex.ToString()); }
     }
@@ -5755,7 +5763,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             if (GamePlay == null || airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false); }
             Console.WriteLine("MBT: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX1 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX1 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
             double changeL_XY_m = 100;
             AiAirWayPoint aaWP = null;
             Vector3d Vwld = new Vector3d(0, 0, 0);
@@ -5791,9 +5799,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             Point3d pos = newTargetPoint;
 
             Console.WriteLine(String.Format("MBT: newtargetpoint {0:F0} {1:F0} {2:F0}  ", pos.x, pos.y, pos.z));
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX2 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX2 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
             Tuple<Point3d?, double> obj_cr = ObjectivesRadius_m(pos); //FIND the TUPLE center point, radius of any objective this point is in.
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX3 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX3 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
 
             double Obj_radius = 0;
             Point3d Obj_pos = new Point3d(-1, -1, -1);
@@ -5867,7 +5875,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (mmtlm.recentCPUPercent > 98 || mmtlm.rollingAverageCPUPercent > 95) panic = 3;
                 else if (mmtlm.recentCPUPercent > 95 || mmtlm.rollingAverageCPUPercent > 90) panic = 2;
                 else if (mmtlm.recentCPUPercent > 90 || mmtlm.rollingAverageCPUPercent > 85) panic = 1;
-                if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX4 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
+                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX4 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
                 //if the dropped bomb/flare is in an objective radius, then we try to 
                 //pick objects in OR near that objective
                 //CLOD special - TOBRUK is different
@@ -5915,7 +5923,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (!diveTarget)
                 {
                     Console.WriteLine("MBT: Trying to find a ground actor near {0:n0}/{1:n0}", pos.x, pos.y);
-                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
+                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
 
                     //If this area has been searched for enemies & none found, don't keep doing
                     //it repeatedly again (CPU hog).  Will stop ALL cover groups from
@@ -5929,13 +5937,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                             if (allStaticActors != null)
                             {
-                                if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1A " + DateTime.UtcNow.ToString("T.fffffff"));
+                                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1A " + DateTime.UtcNow.ToString("T.fffffff"));
                                 var asa = new List<AiActor>();
                                 lock (allStaticActors_lock)
                                 {
                                     if (allStaticActors != null) asa = new List<AiActor>(allStaticActors);
                                 }
-                                if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1B " + DateTime.UtcNow.ToString("T.fffffff"));
+                                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1B " + DateTime.UtcNow.ToString("T.fffffff"));
                                 int p = 0;
                                 if (panic > 0) p = panic + 2;
                                 int numsteps = 6 - p;
@@ -5946,14 +5954,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 for (int d = 0; d <= numsteps; d++)
                                 {
-                                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
+                                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
                                     if (asa == null || asa.Count == 0)
                                     {
                                         renewAllStaticActors_recurs(onetime: true);
                                     }
-                                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2A " + DateTime.UtcNow.ToString("T.fffffff"));
+                                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2A " + DateTime.UtcNow.ToString("T.fffffff"));
                                     List<AiActor> closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(asa.ToArray(), pos, preferredMove_m + d * step).ToList()); //1000?
-                                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2B " + DateTime.UtcNow.ToString("T.fffffff"));                                                                                                                                                   //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
+                                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2B " + DateTime.UtcNow.ToString("T.fffffff"));                                                                                                                                                   //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
 
                                     if (closeStaticActors == null || closeStaticActors.Count == 0)
                                     {
@@ -6008,7 +6016,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                             }
-                            if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
+                            //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
                         }
                         catch (Exception ex) { Console.WriteLine("Bomb select #1 ERROR: " + ex.ToString()); }
 
@@ -6037,7 +6045,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             for (int d = 0; d <= steps; d++)
                             {
 
-                                if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
+                                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
                                 //Console.WriteLine("MBT: Trying to find a ground stationary");
                                 GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step);
                                 //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
@@ -6103,7 +6111,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (!diveTarget) Console.WriteLine("MBT: Didn't find Actor or Stationary for target, going to FOLLOW instead");
 
             }
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX5 " + DateTime.UtcNow.ToString("T.fffffff"));
+            //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX5 " + DateTime.UtcNow.ToString("T.fffffff"));
             Point3d newPos = pos;
             Point3d savePos = pos;
 

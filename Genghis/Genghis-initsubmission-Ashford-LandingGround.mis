@@ -65,7 +65,7 @@
   Static113 Stationary.BeaufighterMkIF nn 206978.08 236719.41 -695.00 
   Static45 Stationary.Environment.JerryCan_GER1_1 nn 206994.33 236705.39 -305.00 
   Static9 Stationary.Environment.CamoNetPlaneBig nn 207226.95 236700.36 -155.00 
-  Static94 Stationary.BeaufighterMkIF nn 207227.03 236709.23 -505.00 
+  Static94 Stationary.BeaufighterMkIF gb 207227.03 236709.23 -505.00 
   Static95 Stationary.BeaufighterMkIF nn 207237.19 236692.30 -505.00 
   Static112 Stationary.BeaufighterMkIF nn 206971.28 236736.78 -695.00 
   Static111 Stationary.BeaufighterMkIF nn 206950.56 236785.41 -695.00 
@@ -76,7 +76,7 @@
   Static109 Stationary.BeaufighterMkIF nn 206898.78 236834.92 -695.00 
   Static37 Stationary.Environment.CamoNetPlaneBig nn 206893.73 236845.02 -335.00 
   Static108 Stationary.BeaufighterMkIF nn 206890.84 236853.81 -695.00 
-  Static110 Stationary.BeaufighterMkIF nn 206941.86 236802.80 -695.00 
+  Static110 Stationary.BeaufighterMkIF gb 206941.86 236802.80 -695.00 
   Static89 Stationary.BeaufighterMkIF nn 207100.91 236862.05 -505.00 
   Static91 Stationary.BeaufighterMkIF nn 207126.80 236820.03 -505.00 
   Static29 Stationary.Environment.CamoNetPlaneBig nn 207121.94 236826.59 -155.00 
@@ -143,9 +143,9 @@
   Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206666.08 237400.08 -1055.00 
   Static120 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206677.28 237383.27 -1055.00 
   Static121 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206690.67 237353.58 -1055.00 
-  Static122 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206696.23 237337.34 -1055.00 
+  Static122 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206696.23 237337.34 -1055.00 
   Static123 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206754.61 237230.55 -1055.00 
-  Static124 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206814.28 237005.38 -1055.00 
+  Static124 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206814.28 237005.38 -1055.00 
   Static125 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206888.64 236852.00 -1055.00 
   Static126 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206869.81 236880.02 -1055.00 
   Static119 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206796.39 237424.59 -1235.00 
@@ -164,7 +164,7 @@
   Static130 Stationary.Environment.TentMedicLarge_UK1 nn 206829.14 236943.39 -1325.00 
   Static131 Stationary.Environment.TentMedicLarge_UK1 nn 206795.34 237027.17 -1325.00 
   Static132 Stationary.Environment.TentMedicLarge_UK1 nn 206765.36 237194.25 -1325.00 
-  Static133 Stationary.Environment.TentMedicLarge_UK1 gb 206734.09 237249.67 -1325.00 
+  Static133 Stationary.Environment.TentMedicLarge_UK1 nn 206734.09 237249.67 -1325.00 
   Static134 Stationary.Environment.TentMedicLarge_UK1 nn 206707.56 237314.64 -1325.00 
   Static135 Stationary.Environment.TentMedicLarge_UK1 nn 206653.20 237422.31 -1325.00 
   Static136 Stationary.Environment.TentMedicLarge_UK1 gb 206861.91 237315.27 -1325.00 

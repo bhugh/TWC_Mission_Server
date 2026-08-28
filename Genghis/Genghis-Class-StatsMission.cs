@@ -5258,14 +5258,25 @@ struct
 
 
     }
+	
     public override void OnBattleStoped()
     {
         #region
-        base.OnBattleStoped();
+     
 
-        Console.WriteLine("Stats-OnBattleStoped1");
+        Console.WriteLine("Stats-OnBattleStoped0");
+		OnBattleStoped_doWork(true);
+    	
+		base.OnBattleStoped();
 
-        try
+        #endregion
+    }
+	
+	public void OnBattleStoped_doWork( bool realBattleStoped = true)
+	{
+		Console.WriteLine("Stats-OnBattleStoped_doWork 1");	
+	
+	    try
         {
             if (Stb_LogStatsTimer != null) Stb_LogStatsTimer.Dispose();
             if (removeOffMapPlayersTimer != null) removeOffMapPlayersTimer.Dispose();
@@ -5380,17 +5391,18 @@ struct
 
         Console.WriteLine("Stats-OnBattleStoped7");
 
-        try
-        {
-            stb_StatRecorder.StbSr_FinishWaitingTasks(); //THIS CLOSES THE SECOND THREAD SO STATS WON'T WORK AT ALL AFTER THIS IS CALLED!!!
+		if (realBattleStoped) {
+			try
+			{
+				stb_StatRecorder.StbSr_FinishWaitingTasks(); //THIS CLOSES THE SECOND THREAD SO STATS WON'T WORK AT ALL AFTER THIS IS CALLED!!!  Also tends to kill the entire app...
 
-        }
-        catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR: " + ex.ToString()); } //Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
+			}
+			catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR: " + ex.ToString()); } //Stb_PrepareErrorMessage(ex); } //So, for example we can't use the Stb_PrepareErrorMessage scheme any more (?)
 
+		}
         Console.WriteLine("Stats-OnBattleStoped8");
-
-        #endregion
-    }
+	
+	}
 
     /*
     public override void OnTickGame()
@@ -7777,10 +7789,19 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     {
         #region stb
         base.OnPlaceLeave(player, actor, placeIndex);
+		
+		
 
         if (player!=null) Console.WriteLine("OnPlaceLeave: player " + player.Name());
         if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor " + StatCalcs.GetAircraftType(actor as AiAircraft));
         if (actor == null ) Console.WriteLine("OnPlaceLeave: actor is null!");
+		
+		if (mainmission.threadloadmission.SoftExit()) {
+			Console.WriteLine("OnPlaceLeave: SOFT EXIT, server probably closing, no action");
+			if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, true, reason: "SAFE_ServerClosing"); 
+			return;
+		}
+		
         double instantAGL_m = -1000;
         if (actor as AiAircraft == null) Console.WriteLine("OnPlaceLeave: actor as AiAircraft is null!");
         else instantAGL_m = calcInstantAGL_m(actor as AiAircraft);
@@ -8320,6 +8341,10 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
     {
         base.OnAircraftKilled(missionNumber, shortName, aircraft);
+		
+		if (mainmission.threadloadmission.SoftExit() && aircraft != null) {
+					supplymission.SupplyOnPlaceLeave(null, aircraft as AiActor, 0, softExit: true, reason: "SAFE_Server Shutdown");					
+				}
 
         //if it's ai controlled we consider it "killed" at this point, so go ahead & assign points.
         if (Stb_isAiControlledPlane(aircraft)) Stb_killActor((aircraft as AiActor), 30, "DEAD_stats_OnAircraftKilled");
@@ -8351,6 +8376,9 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             if (aircraft != null)
             {
+				if (mainmission.threadloadmission.SoftExit()) {
+					supplymission.SupplyOnPlaceLeave(null, actor, 0, softExit: true, reason: "SAFE_Server Shutdown");					
+				}
 				if(mainmission.AircraftDestroyedList.ContainsKey(aircraft))  {
 					reason = mainmission.AircraftDestroyedList[aircraft];
 					Console.WriteLine("StatsOnDestroy: Reason for " + shortName + ": " + reason);
@@ -10906,7 +10934,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             base.OnPlayerDisconnected(player, diagnostic);
             try
             {
-                System.Console.WriteLine("OnPlayerDisconnected");
+                System.Console.WriteLine("Stats-OnPlayerDisconnected");
                 StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, player.Name(), new int[] { 777 }, player.Place() as AiActor);
                 stb_StatRecorder.StbSr_EnqueueTask(sst1);
                 stb_SaveIPlayerStat.StbSis_Save(player); //Save the stats CloD has been accumulating
@@ -14631,24 +14659,76 @@ public class StbStatRecorder : IStbStatRecorder
                         list2 = list2.Concat(list).ToList(); //must add .ToList() bec it concats but returns an ienumerable rather than a list
                         //FtpWebRequest request = CreateFtpRequest(serverUri, WebRequestMethods.Ftp.UploadFile, stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword);
                                                              //Console.WriteLine("FTP Radar files . . . ");
-                    foreach (string file in list2)
-                        {
-                            Console.WriteLine("FTP Radar files: " + file);
-                            string shortname = Path.GetFileName(file);
-                            StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
-                              //stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
-                              stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
-                              file);
+						foreach (string file in list2)
+							{
+								Console.WriteLine("FTP Radar files: " + file);
+								string shortname = Path.GetFileName(file);
+								StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "radar/" + shortname,
+								  //stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+								  stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+								  file);
 
-                            //Console.WriteLine("DELETING " + file); //delete this line once we're sure it's working
-                            File.Delete(file);  //experimental: once radar files are uploaded, delete them.  Prevents duplicate/problem uploads over time
-                            Thread.Sleep(1000);
-                        }
+								//Console.WriteLine("DELETING " + file); //delete this line once we're sure it's working
+								File.Delete(file);  //experimental: once radar files are uploaded, delete them.  Prevents duplicate/problem uploads over time
+								//Thread.Sleep(1000);
+							}
+							
+							
+						//upload the 'TACVIEW' files
+                        //This will transfer any file that fits the mask *.acmi
+                        filenames = Directory.GetFiles(mission.mainmission.CLOD_PATH + mission.mainmission.FILE_PATH + "/tacview/processed", "*.zip.acmi");
+                        
 
-                    }
+                        list = new List<string>(filenames);
+                        
+						//This routine is called frequently & we should need to upload tacview files just once per session, so
+						//do this very infrequently
+                        //if (stbSr_random.Next(0,100) == 1) {
+							Console.WriteLine("FTP Tacview files . . . ");
+							foreach (string file in list)
+								{
+									Console.WriteLine("FTP Tacview files: " + file);
+									string shortname = Path.GetFileName(file);
+									bool outcome = StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/" + shortname,
+									  //stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+									  stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
+									  file);
+
+									//Console.WriteLine("DELETING " + file); //delete this line once we're sure it's working
+									//File.Delete(file);  //experimental: once radar files are uploaded, delete them.  Prevents duplicate/problem uploads over time
+									//Thread.Sleep(5000);
+									if (outcome) {
+										try {
+											File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
+												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/uploaded/" + shortname); //true + overwrite
+										}
+										catch (Exception ex) { 
+											StbSr_PrepareErrorMessage(ex, "1st try, move of Tacview file to /uploaded directory failed");
+											try {
+												File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
+												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/uploaded/" + stbSr_random.Next(0,999).ToString() + shortname); // try renaming the file with a random #
+											}		
+											catch (Exception ex1) { 
+												StbSr_PrepareErrorMessage(ex1, "2nd try move of Tacview file to /uploaded directory failed, trying once more"); 
+												try {
+												File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
+												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" +  shortname + "_movefailed"+stbSr_random.Next(0,999).ToString()); // try renaming the file with a random #
+												}		
+												catch (Exception ex2) { 
+													StbSr_PrepareErrorMessage(ex2, "3rd try,  now rename of Tacview file in /processed failed, giving up"); 
+												}		
+											}																	 								
+											
+										}
+										break; //only do the first one in the directory, that is enough as this is called very often and we'll just do one each time 
+									}
+
+							}
+						//}
+					}
                 }
             }
-            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "situation map file"); }
+            catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "situation map & tacview files upload"); }
         }
 
         private void StbSr_Upload(string ftpServer, string userName, string password, string filename)
@@ -14663,12 +14743,14 @@ public class StbStatRecorder : IStbStatRecorder
                 }
             }
             catch (Exception ex) { StbSr_PrepareErrorMessage(ex, "upload"); }
-    }
+		}
+    
 
     //SSL FTP
     //public bool StbSr_UploadSSL(string ftpServer, string username, string password, string filename = null)
     //FtpWebRequest request = CreateFtpRequest(serverUri, WebRequestMethods.Ftp.UploadFile, username, password);
-    public bool StbSr_UploadSSL(string ftpServer, string username, string password , string filename = null)
+	// if text == false it is binary instead, like a .zip
+    public bool StbSr_UploadSSL(string ftpServer, string username, string password , string filename = null, bool isText = true)
     {
         try
         {
@@ -14699,9 +14781,15 @@ public class StbStatRecorder : IStbStatRecorder
 
             //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX6 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
             // read file into byte array
-            StreamReader sourceStream = new StreamReader(filename);
+            /*StreamReader sourceStream = new StreamReader(filename);
             byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
-            sourceStream.Close();
+            sourceStream.Close(); */
+			
+			//Better way to do this, per AI anyway
+			byte[] fileContents = null;
+			if 	(isText) fileContents = Encoding.UTF8.GetBytes(File.ReadAllText(filename)); //the text way
+			else fileContents = File.ReadAllBytes(filename); //the binary way
+			
             request.ContentLength = fileContents.Length;
             Stream requestStream = null;
             

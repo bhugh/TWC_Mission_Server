@@ -17,7 +17,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 
-
 public class ThreadLoadMission : AMission
 {
     [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
@@ -69,7 +68,6 @@ public class ThreadLoadMission : AMission
 		//such as Steam disconnect...
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		_handlerRegistered = true;
-		
 		
 
 		
@@ -240,10 +238,7 @@ public class ThreadLoadMission : AMission
         return accum / ar.Length;
     }
 	
-	
-
-			
-	
+	TextWriter originalOut = Console.Out;
 	
 	public override void Inited()
     {
@@ -251,9 +246,6 @@ public class ThreadLoadMission : AMission
         
         try
         {
-			initConsoleInterceptor();
-			startInputParser();
-			
             // Subscribe to the global Steam WClient callback 
             // Note: If WClient is instantiated per-server instance, hook into the active instance
             /*if (WClient.Instance != null)
@@ -355,9 +347,21 @@ public class ThreadLoadMission : AMission
 			};
 			*/
 		
+			// 1. Save the original console output stream
+			
+			//***************TextWriter originalOut = Console.Out;
+
+			// 2. Create our interceptor and hook into the event
+			//****************var interceptor = new ConsoleInterceptor(Console.Out, mainmission, this);
 			
 			
-			//Console.SetOut(TextWriter.Null); //completely mutes the console.....
+
+			// 3. Redirect Console.WriteLine to use our interceptor
+			//Need to restore it later when we quite, battleStoped
+			//so we don't get multiple interceptors going etc.
+			//**********************Console.SetOut(interceptor);  
+			
+			Console.SetOut(TextWriter.Null);
 
 			// --- Test cases ---
 			//Console.WriteLine("Hello World!");
@@ -375,12 +379,9 @@ public class ThreadLoadMission : AMission
         base.OnBattleStoped();
 		
 		// 5. set console output back to normal
-		_interceptor.localDispose();
 		Console.SetOut(originalOut);
-		
 
         threadLoadTimer_dispose();
-		_keepRunningInputThread = false;
 		
 	    if (_handlerRegistered)
 	    {
@@ -440,7 +441,7 @@ public class ThreadLoadMission : AMission
 
 				
 				
-				mainmission.tacviewimplmission.StopRecorder(); //our last priority, but this safely stops & saves the tacview recording of the session.  We COULD do this only if .isTerminating is TRUE, bec. no recording will  take place after this even if the mission continues...  But safer just to stop now and save at least some/most of the Tacview that has been recorded so far.  If it cuts off unexpectedly it might be corrupted (though likely just a part line, could be edited  easily...).
+				mainmission.tacviewimplmission.StopRecorder(); //our last priority, but this safely stops & saves the tacview recording of the session.  We COULD do this only if .isTerminating is TRUE, bec. no recording will  take place after this even if the mission continues...  But safer just to stop now and safe at least some/most.
 				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3B");
 			
 				lastFileSave = now;
@@ -472,169 +473,7 @@ public class ThreadLoadMission : AMission
 		}
 	}
 	
-	TextWriter originalOut = Console.Out;
-	
-	private void initConsoleInterceptor () {
-		// 1. Save the original console output stream
-			//try to flush the buffer for log.txt
-		    for (int i = 0; i < 100 ; i++) Console.WriteLine("...........................................................................................");
-			Console.WriteLine("===========================================================================================");
-			Console.WriteLine(">>>>>>Console is MUTED! All text in logfile @ ClodDir/log_twc_Week_XXXX.txt.");
-			Console.WriteLine(">>>>>>CONSOLE ON & CONSOLE OFF to re-start or stop the console text.");
-			Console.WriteLine(">>>>>>(May need to repeat these & CLOD Commands once or twice if they don't work at first.)");
-			Console.WriteLine("===========================================================================================");
-			
-			TextWriter originalOut = Console.Out;
-
-			// 2. Create our interceptor and hook into the event
-			_interceptor = new ConsoleInterceptor(originalOut, mainmission, this);
-			Console.SetOut(_interceptor);  
-			Console.WriteLine("");
-			Console.WriteLine("");
-			
-			
-			// Default configuration starts muted for extreme performance
-			_interceptor.ConsoleDisplayActive = false; 
-						
-						
-			AppDomain.CurrentDomain.ProcessExit += new EventHandler((sender, e) => 
-			{
-				// Explicitly trigger your interceptor's cleanup
-				_interceptor.Dispose();
-			});
-			
-			/*
-			// 3. Start a non-blocking background thread to watch for console key input commands
-			Thread inputThread = new Thread(new ThreadStart(delegate
-			{
-				while (true)
-				{
-					string input = Console.ReadLine();
-					if (string.IsNullOrEmpty(input)) continue;
-
-					if (input.Equals("Console On", StringComparison.OrdinalIgnoreCase))
-					{
-						_interceptor.ConsoleDisplayActive = true;
-						Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT ENABLED = [SYSTEM] OFF to turn it off <<<\n");
-					}
-					else if (input.Equals("Console Off", StringComparison.OrdinalIgnoreCase))
-					{
-						_interceptor.ConsoleDisplayActive = false;
-						Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT DISABLED (LOGGING CONTINUES) - [SYSTEM] ON to turn it back on <<<\n");
-					}
-				}
-			}));
-			
-			inputThread.IsBackground = true;
-			inputThread.Start();
-			*/
-	}
-	
-	private static volatile bool _keepRunningInputThread = true;
-	
-	private void startInputParser() {
-	
-	     /*
-		 //this doesn't work FOR SOME REASON
-		Thread passiveInputThread = new Thread(new ThreadStart(delegate
-		{
-			StringBuilder inputBuffer = new StringBuilder();
-
-			while (true)
-			{
-				// Thread sleep prevents this loop from thrashing a CPU core while idle
-				//Thread.Sleep(15); 
-
-				// Check if a physical key has been pressed without blocking the thread
-				if (Console.KeyAvailable)
-				{
-					//Console.Error.WriteLine("\nGot one!\n");
-					// intercept intercepted character (true parameter hides duplicate echo)
-					ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-					
-					Console.Error.WriteLine("\nGot one! {0}\n", keyInfo.KeyChar);
-
-					// Send the key press right back to the original console stream 
-					// so Cliffs of Dover still sees it natively on the exact first try!
-					Console.Write(keyInfo.KeyChar);
-
-					if (keyInfo.Key == ConsoleKey.Enter)
-					{
-						string commandLine = inputBuffer.ToString().Trim();
-						inputBuffer.Clear();
-
-						// Evaluate commands locally on the input side
-						if (commandLine.IndexOf("Console On", StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							_interceptor.ConsoleDisplayActive = true;
-							Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT ENABLED <<<\n");
-						}
-						else if (commandLine.IndexOf("Console Off", StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							_interceptor.ConsoleDisplayActive = false;
-							Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT DISABLED (LOGGING CONTINUES) <<<\n");
-						}
-					}
-					else if (keyInfo.Key == ConsoleKey.Backspace)
-					{
-						if (inputBuffer.Length > 0)
-						{
-							inputBuffer.Remove(inputBuffer.Length - 1, 1);
-						}
-					}
-					else
-					{
-						// Add standard character inputs to our command analyzer
-						if (keyInfo.KeyChar != '\0')
-						{
-							inputBuffer.Append(keyInfo.KeyChar);
-						}
-					}
-				}
-			}
-		}));
-
-		passiveInputThread.IsBackground = true;
-		passiveInputThread.Start();
-		*/
-		_interceptor.ConsoleDisplayActive = false; 
-
-		Thread inputThread = new Thread(new ThreadStart(delegate
-		{
-			_keepRunningInputThread = true;
-			while (_keepRunningInputThread)
-			{
-				string input = Console.ReadLine();
-				
-		        if (string.IsNullOrEmpty(input)) 
-				{
-					Thread.Sleep(50); //prevents constant CPU thrashing.  Hopefully.
-					continue;
-				}
-
-				if (input.Equals("Console On", StringComparison.OrdinalIgnoreCase))
-				{
-					_interceptor.ConsoleDisplayActive = true;
-					Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT ENABLED - CONSOLE OFF to turn it off again<<<\n");
-				}
-				else if (input.Equals("Console Off", StringComparison.OrdinalIgnoreCase))
-				{
-					_interceptor.ConsoleDisplayActive = false;
-					Console.Error.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT DISABLED (LOGGING TO FILE CONTINUES) - CONSOLE ON to turn on again<<<\n");
-				}
-			}
-		}));
-    
-    inputThread.IsBackground = true;
-    inputThread.Start();
-
-    // Mission logic continues down here...
-
-
-	}
 }
-
-
 
 
 
@@ -645,151 +484,78 @@ public class ConsoleInterceptor : TextWriter
     private readonly StringBuilder _lineBuffer = new StringBuilder();
     private Mission mainmission;
     private ThreadLoadMission threadloadmission;
-
-    private readonly BlockingCollection<string> _logQueue = new BlockingCollection<string>();
-    private StreamWriter _fileWriter;
-    private readonly Thread _loggingThread;
-    private readonly string _baseLogDirectory;
-    private string _currentLogPath;
-    private int _currentWeekNumber;
-
-    private int _isConsoleDisplayActive = 0; 
-
-    public bool ConsoleDisplayActive
-    {
-        get 
-        { 
-            return Interlocked.CompareExchange(ref _isConsoleDisplayActive, 0, 0) == 1; 
-        }
-        set 
-        { 
-            Interlocked.Exchange(ref _isConsoleDisplayActive, value ? 1 : 0); 
-        }
-    }
+    
+    public event System.Action<string> OnLineWritten;
 
     public ConsoleInterceptor(TextWriter originalOutput, Mission msn, ThreadLoadMission tlmsn)
     {
         _originalOutput = originalOutput;
         mainmission = msn;
         threadloadmission = tlmsn;
-
-        _baseLogDirectory = mainmission.CLOD_PATH;
-        
-        ManageOldLogFiles();
-
-        _currentWeekNumber = GetIso8601WeekOfYear(DateTime.Now);
-        _currentLogPath = GetWeeklyLogPath(DateTime.Now);
-        
-        _fileWriter = new StreamWriter(_currentLogPath, true, Encoding.UTF8);
-        _fileWriter.AutoFlush = true;
-        
-        _loggingThread = new Thread(ProcessLogQueue);
-        _loggingThread.IsBackground = true;
-        _loggingThread.Name = "ConsoleLoggingThread";
-        _loggingThread.Start();
-		_logQueue.Add("%$#@!%$#@!");
-		
     }
-	
-	public void localDispose(){
-		Dispose(true);
-	}
 
     public override Encoding Encoding
     {
         get { return _originalOutput.Encoding; }
     }
 
+    // Fix 1: Route individual character inputs through the fast processor
     public override void Write(char value)
     {
-        if (ConsoleDisplayActive)
-        {
-            _originalOutput.Write(value);
-        }
-        
+        _originalOutput.Write(value);
         ProcessIncomingChar(value);
     }
 
+    // Fix 2: Route array/block buffer chunks through the exact same fast processor
     public override void Write(char[] buffer, int index, int count)
     {
-        if (ConsoleDisplayActive)
-        {
-            _originalOutput.Write(buffer, index, count);
-        }
-
+        _originalOutput.Write(buffer, index, count);
+        
         for (int i = index; i < index + count; i++)
         {
             ProcessIncomingChar(buffer[i]);
         }
     }
 
+    // Core central parsing engine
     private void ProcessIncomingChar(char value)
     {
-
-		
         if (value == '\n')
         {
-            string completedLine = _lineBuffer.ToString().TrimEnd('\r'); 
-			_lineBuffer.Clear();			
+            if (BufferContainsKeyword(_lineBuffer))
+            {
+                string completedLine = _lineBuffer.ToString().TrimEnd('\r');
 
-            _logQueue.Add(completedLine);
-			
-			string trimmedLine = completedLine.Trim();
-			
-			/*
-			if (trimmedLine.Contains("[SYSTEM]")) {
-				_originalOutput.WriteLine("\n>>> FOUND [SYSTEM] <<<\n");
-			}
-			*/
-			
-			if (BufferContainsKeyword(_lineBuffer, this))
-				{
-				
-				/*
-				// Passively catch the toggle commands when they clear the game's buffer
-				if (trimmedLine.IndexOf("[SYSTEM] On", StringComparison.OrdinalIgnoreCase) >= 0)
-				{
-					ConsoleDisplayActive = true;										
-					_originalOutput.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT ENABLED <<<\n");
-					return; // Exit early so this system command isn't written to the log file
-				}
-				else if (trimmedLine.IndexOf("[SYSTEM] Off", StringComparison.OrdinalIgnoreCase) >= 0)
-				{
-					ConsoleDisplayActive = false;										
-					_originalOutput.WriteLine("\n>>> VISIBLE CONSOLE OUTPUT DISABLED (LOGGING CONTINUES) <<<\n");
-					return; // Exit early
-				}
-				*/
+                if (completedLine.Contains("Server got logged out of Steam") || 
+                    completedLine.Contains("Got logged out of Steam") || 
+                    completedLine.Contains("connection to Steam lost"))
+                {
+                    _lineBuffer.Clear(); // Avoid duplicate triggers
+                    
+					Console.WriteLine("================================================================================");
+					Console.WriteLine("Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]");
+					Console.WriteLine("================================================================================");
+                    threadloadmission.OnUnhandledException(
+                        sender: "Steam Shutdown (TWC)", 
+                        st: "Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]"
+                    );
+                    return;
+                }
+            }
 
-				if (trimmedLine.Contains("Server got logged out of Steam") || 
-					trimmedLine.Contains("Got logged out of Steam") || 
-					trimmedLine.Contains("connection to Steam lost"))
-				{					
-					_originalOutput.WriteLine("================================================================================");
-					_originalOutput.WriteLine("Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]");
-					_originalOutput.WriteLine("================================================================================");
-					
-					threadloadmission.OnUnhandledException(
-						"Steam Shutdown (TWC)", 
-						"Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]"
-					);
-				}
-			}
-						
+            _lineBuffer.Clear();
         }		
         else
         {
             _lineBuffer.Append(value);
         }
-		
     }
-	
-	//Superfast way to check for [SYSTEM] since this is in the main thread and runs or every single character output to console
-	private static bool BufferContainsKeyword(StringBuilder sb, ConsoleInterceptor ci )
-	//private bool BufferContainsKeyword(StringBuilder sb, ConsoleInterceptor ci )
+
+    // Fix 3: Adjusted bounds checking to prevent missing words at the absolute end of the buffer
+    private static bool BufferContainsKeyword(StringBuilder sb)
     {
         int len = sb.Length;
-        if (len < 7) return false; 
+        if (len < 4) return false; 
 
         for (int i = 0; i < len; i++)
         {
@@ -798,10 +564,8 @@ public class ConsoleInterceptor : TextWriter
             // Safe bounds validation before reading offsets
             if (c == '[' && (i + 7) < len) 
             {
-                if (sb[i+1] == 'S' && sb[i+2] == 'Y' && sb[i+3] == 'S' && sb[i+4] == 'T' && sb[i+5] == 'E' && sb[i+6] == 'M' && sb[i+7] == ']' ) {
-					ci._originalOutput.WriteLine("\n>>> FOUND [SYSTEM] <<<\n");
+                if (sb[i+1] == 'S' && sb[i+2] == 'Y' && sb[i+3] == 'S' && sb[i+4] == 'T' && sb[i+5] == 'E' && sb[i+6] == 'M' && sb[i+7] == ']' )
                     return true;
-				}
             }
             /*else if (c == 'l' && (i + 3) < len) 
             {
@@ -810,97 +574,6 @@ public class ConsoleInterceptor : TextWriter
             }*/
         }
         return false;
-    }
-
-    private void ProcessLogQueue()
-    {
-        foreach (string line in _logQueue.GetConsumingEnumerable())
-        {
-            try
-            {
-                DateTime now = DateTime.Now;
-                int activeWeek = GetIso8601WeekOfYear(now);
-
-                if (activeWeek != _currentWeekNumber)
-                {
-                    _currentWeekNumber = activeWeek;
-                    if (_fileWriter != null)
-                    {
-                        _fileWriter.Dispose();
-                    }
-                    
-                    _currentLogPath = GetWeeklyLogPath(now);
-                    _fileWriter = new StreamWriter(_currentLogPath, true, Encoding.UTF8);
-                    _fileWriter.AutoFlush = true;
-                    
-                    ManageOldLogFiles();
-                }
-				if (line == "%$#@!%$#@!") {
-					_fileWriter.WriteLine();
-					_fileWriter.WriteLine();
-					_fileWriter.WriteLine("======================================================================");
-					_fileWriter.WriteLine("======================================================================");
-					_fileWriter.WriteLine(string.Format("!!!NEW LOG SESSION!!! [{0:yyyy-MM-dd HH:mm:ss}]===========================", now));
-					_fileWriter.WriteLine("======================================================================");
-					_fileWriter.WriteLine("======================================================================");					
-					
-				} else {
-					_fileWriter.WriteLine(string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", now, line));
-				}
-            }
-            catch { }
-        }
-    }
-
-    private string GetWeeklyLogPath(DateTime date)
-    {
-        int week = GetIso8601WeekOfYear(date);
-        return Path.Combine(_baseLogDirectory, string.Format("log_twc_Week_{0:yyyy}_{1:D2}.txt", date, week));
-    }
-
-    private static int GetIso8601WeekOfYear(DateTime time)
-    {
-        DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
-        if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
-        {
-            time = time.AddDays(3);
-        }
-        return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-    }
-
-    private void ManageOldLogFiles()
-    {
-        try
-        {
-            if (!Directory.Exists(_baseLogDirectory)) return;
-
-            DirectoryInfo dirInfo = new DirectoryInfo(_baseLogDirectory);
-            FileInfo[] files = dirInfo.GetFiles("log_twc_*.txt");
-            DateTime retentionThreshold = DateTime.Now.AddDays(-30);
-
-            foreach (FileInfo file in files)
-            {
-                if (file.LastWriteTime < retentionThreshold)
-                {
-                    file.Delete();
-                }
-            }
-        }
-        catch { }
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _logQueue.CompleteAdding();
-            _loggingThread.Join(2000); 
-            if (_fileWriter != null)
-            {
-                _fileWriter.Dispose();
-            }
-        }
-        base.Dispose(disposing);
     }
 }
 

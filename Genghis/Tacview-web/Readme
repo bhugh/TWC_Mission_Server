@@ -5,3 +5,5 @@ The included index.php file will read/find all .txt.acmi or .zip.acmi files in t
 The location/username/pass/etc of the FTP server is set in stats.ini.
 
 The tacview files are uploaded by the same periodic FTP upload routine as the radar files.  Radar files are sent to (FTP server main dir)/twc/radar. Tacview files go to (FTP server main dir)/twc/tacview.  That is the same directory where this index.html and .htaccess should go.
+
+In addition to this, the TacviewRecorder.dll (installed in the Steam ...../core directory), Genghis-Class-TacviewRecorderImpl.cs, the ..../Fresh Input File/tacview directory and scripts within it (found in a separate directory in this repository), you'll need the files found in .../IL2CLOD dir/Tacview - especially the .csv file found there.  Those files are also in a separate directory in this repository.

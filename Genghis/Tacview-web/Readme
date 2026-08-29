@@ -1,3 +1,7 @@
 Tacview files are processed and then uploaded to a web page so people can download them.
 
 The included index.php file will read/find all .txt.acmi or .zip.acmi files in the directory it is in, and display them as a web page with an explanation and a list of files to click and download.
+
+The location/username/pass/etc of the FTP server is set in stats.ini.
+
+The tacview files are uploaded by the same periodic FTP upload routine as the radar files.  Radar files are sent to (FTP server main dir)/twc/radar. Tacview files go to (FTP server main dir)/twc/tacview.  That is the same directory where this index.html and .htaccess should go.

@@ -1,0 +1,3 @@
+Tacview files are processed and then uploaded to a web page so people can download them.
+
+The included index.php file will read/find all .txt.acmi or .zip.acmi files in the directory it is in, and display them as a web page with an explanation and a list of files to click and download.

@@ -5,9 +5,9 @@ Especially important is the .csv file, which contains the mapping between aircra
 Also note that you can edit this file to change the models used in Tacview.
 
 Note that these files, and TacviewRecorder.dll are from from JDU/FlyBy's TacviewRecorder 2.0 - more info at 
-  https://www.youtube.com/watch?v=agcQxz1CHm0 
-  https://forum.il2sturmovik.com/topic/88789-tacview-recorder-20-add-on-is-available/
-  https://drive.google.com/drive/folders/1t7_Ekt4fcp5lT7vz9W8QaY9O09JzbJwF
+  * https://www.youtube.com/watch?v=agcQxz1CHm0 
+  * https://forum.il2sturmovik.com/topic/88789-tacview-recorder-20-add-on-is-available/
+  * https://drive.google.com/drive/folders/1t7_Ekt4fcp5lT7vz9W8QaY9O09JzbJwF
 
 In addition to the files in this directory in the correct location, you will need:
  * The TacviewRecorder.dll (installed in the Steam ...../core directory)

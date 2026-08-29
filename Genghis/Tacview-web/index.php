@@ -123,7 +123,7 @@
     Rather, the view is similar to what the player pilots see in the sim, showing just a limited sight-bubble around each live pilot. <a href="https://github.com/syn111/tacview-filter">syn111's tacview-filter script</a> is used to create the "fog of war" files.</p>
     <p>This is an early version of the recorder.  So it works but has quite a few quirks: Objects - especially ground objects - often have unusual or generic names, messages often indicate objects or aircraft are "Destroyed" when actually they have just left the battle or been removed by the server for internal server or performance reasons etc, some objects - especially ground objects - don't show up even when close to a player. Map locations are all displaced to the middle of the North Atlantic. Many insignificant ground objects (tables, jerrycans, fuel barrels) show up just as big as major, important ones looking just like tanks or planes or hangars. You will see players flying in to their spawnpoint from the lower left corner of the map, or flying between their crashpoint and spawnpoint.</p>
     <p>So just don't worry about all of those details and it is a very useful and helpful tool for seeing how missions and engagements went, that will only improve in the future.</p>
-    <p>Team Fusion has hinted about a Tacview implemention in a forthcoming release - so we may see more to come!</p>
+    <p><a href="https://steamcommunity.com/app/754530/discussions/0/687493774987888855/">Team Fusion has hinted about a Tacview implemention in a forthcoming release</a> - so we may see more to come!</p>
 
 </body>
 </html>

@@ -9,3 +9,9 @@ Note that these files, and TacviewRecorder.dll are from from JDU/FlyBy's Tacview
   https://forum.il2sturmovik.com/topic/88789-tacview-recorder-20-add-on-is-available/
   https://drive.google.com/drive/folders/1t7_Ekt4fcp5lT7vz9W8QaY9O09JzbJwF
 
+In addition to the files in this directory in the correct location, you will need:
+ * The TacviewRecorder.dll (installed in the Steam ...../core directory)
+ * Genghis-Class-TacviewRecorderImpl.cs in .../Fresh Input File
+ * The ..../Fresh Input File/tacview directory and scripts within it (found in a separate directory in this repository)
+ * The files (and follow the instructions) found in ../Genghis/Tacview-web elsewhere in this distribution
+

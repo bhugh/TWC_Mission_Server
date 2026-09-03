@@ -6,6 +6,7 @@
 //$reference parts/core/gamePages.dll
 //$reference parts/core/CloDMissionCommunicator.dll
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -1570,9 +1571,9 @@ public class CoverMission : AMission, ICoverMission
         AiAircraft aircraft = null;
         if (player != null) aircraft = player.Place() as AiAircraft;
 
-        if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)))
+        if (aircraft == null || (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))))
         {
-            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, fighter-bombers, some fighters, and repair/restock missions only!****";
+            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, fighter-bombers/strike aircraft when armed with bombs, some fighters (fighter-bombers), and repair/restock missions only!****";
             if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
             return m;
         }
@@ -1699,7 +1700,7 @@ public class CoverMission : AMission, ICoverMission
         int maximumAircraftAllowedPerMission = 0;
 
         if (isBomberAllowedCover(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_BomberPilots;
-        else if (isFighterAllowedCover(aircraft) || Calcs.isStrikeAC(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots;
+        else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots;
         if (isOnRepairMission(player)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_RepairMission;
 
         int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
@@ -1761,7 +1762,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         int maximumCheckoutsAllowedAtOnce = 0;
 
         if (isBomberAllowedCover(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
-        else if (isFighterAllowedCover(aircraft) || Calcs.isStrikeAC(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
+        else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
         if (isOnRepairMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_RepairMission;
         if (isOnFerryMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FerryMission;
 
@@ -1804,7 +1805,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     public bool isFighterOrStrikeAllowedCoverForThisAircraft(Player player, string key)
     {
         if (player == null || player.Place() as AiAircraft == null) return false;
-        if ((isFighterAllowedCover(player) && !Calcs.isStrikeAC(player) && !isHeavyBomber(key))) return false;
+        if (isFighterAllowedCover(player) && !(Calcs.isStrikeAC(player) && Calcs.playerHasBombs(player)) && !isHeavyBomber(key)) return false;
+		if (Calcs.isStrikeAC(player) && !Calcs.playerHasBombs(player)) return false;		
         if ((Calcs.isStrikeAC(player) && !isDiveBomber(player) && !Calcs.isStrikeAC(key) && !isHeavyBomber(key))) return false;
         return true;
     }
@@ -2174,6 +2176,45 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 			}
 
         }
+		else if (msg.StartsWith("<lgroundall") && (admin_privilege_level(player) > 1))
+        {
+          
+			Point3d pos = new Point3d (250000,250000,0);
+			
+			if (player != null && player.Place() != null) pos = player.Place().Pos();
+			
+			string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+			
+			string saveFile =  "/sectionfiles/"+ currentDateTime +"_ALLGroundStationary-list.txt";
+			
+			string msg111 = string.Format("ALL Groundstationary list to file {0} - starting...", saveFile);
+			
+			Console.WriteLine(msg111);
+			mainmission.twcLogServer(new Player[] { player }, msg111 );
+		
+			CoverCalcs.listAllGroundStationaries(this, GamePlay, new Player[] {player}, missionNumber: -1, initPos: pos, radius_m: -1, saveFile: saveFile);
+		}		
+		
+		else if (msg.StartsWith("<lground") && (admin_privilege_level(player) > 1))
+        {
+            Console.WriteLine("Groundstationary list to file - starting...");
+			mainmission.twcLogServer(new Player[] { player }, "Groundstationary list to file - starting...");
+			
+			Point3d pos = new Point3d (250000,250000,0);
+			
+			if (player != null && player.Place() != null) pos = player.Place().Pos();
+			
+			string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+			
+			string saveFile =  "/sectionfiles/"+ currentDateTime +"_GroundStationary-list.txt";
+			
+			string msg111 = string.Format("Groundstationary list to file {0} - starting...", saveFile);
+			
+			Console.WriteLine(msg111);
+			mainmission.twcLogServer(new Player[] { player }, msg111 );
+		
+			CoverCalcs.listAllGroundStationaries(this, GamePlay, new Player[] {player}, missionNumber: -1, initPos: pos, radius_m: 10000, saveFile: saveFile);
+		}
 
         /*
          * \
@@ -2681,7 +2722,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 		double wait2 = 120;
 		if (fast) {
 			wait1 = 0;
-			wait1 = 0;
+			wait2 = 0;
 			asa = CoverCalcs.gpGetAllGroundActors(this).ToList();
 			if (asa == null) return;
 		} else {
@@ -2780,7 +2821,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     Console.WriteLine("RemoveGroundActor - this matched and will be removed! {0} ", groundActorTypes);
 
 					mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors _clean");
-                    Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+                    Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { 
+						//Console.WriteLine("Cover removeEnemyGroundActors: Destroyed {0} {1}");
+						Console.WriteLine("RemoveGroundActor - destroying now: {0} {1} {2} {3}", aa.Name(), groundActorName, groundActorTypes, aa.Army());
+						(aa as AiCart).Destroy(); 
+					});  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
                     count++;
                 }
                 catch (Exception ex)
@@ -2790,7 +2835,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
             }
 			//Note time 130s is longer than the longest possible .Destroy() time
-			Timeout(wait2 + 10, () => { GamePlay.gpPostMissionLoad(f); f.save(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/sectionfiles" + "/" + "remove-replacenemyactors" + ran.Next(0,99).ToString()); }); //testing}); 
+			Timeout(wait2 + 10, () => { 
+				GamePlay.gpPostMissionLoad(f); f.save(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/sectionfiles" + "/" + "remove-replacenemyactors" + ran.Next(0,99).ToString()); 
+				Console.WriteLine("Cover removeEnemyGroundActors: Loaded replacement aiactors");
+			}); //testing}); 
             Console.WriteLine("cover.removeGroundActorsOnEnemyTerritory_clean: Removed {0} items ... ", count);
         }
         catch (Exception ex) { Console.WriteLine("cover.removeGroundActorsOnEnemyTerritory_clean ERROR: " + ex.ToString()); }
@@ -3259,6 +3307,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
             
 
+			//StrikeAC must take bombs themselves & their <cover ac just take bombs also
+			if (Calcs.isStrikeAC(player) && fighterbomber == "f") fighterbomber = "b";
+			
             string fbVersion = "";
             if (fighterbomber != "")
             {
@@ -3356,7 +3407,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //a formation as a hurriFB pilot, only heavy bombers can lead.  They could bring Hurri FB's with them, though.
                 //if ((!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) ) || coverCalcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
 
-                if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)) && !Calcs.isStrikeAC(aircraft) && !isOnRepairMission(player)) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
+                if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player)) && !isOnRepairMission(player))) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers WITH BOMBS, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
 
                 /* int maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
                 if (isFighterAllowedCover(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots; */
@@ -3565,14 +3616,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 if (isHeavyBomber(newAirgroup) || isDiveBomber(newAirgroup)) heavyBomber = true;
                                 bool isStrikeAC = Calcs.isStrikeAC(newAirgroup);
 
-                                bool playerIsStrikeAC = false;
+                                bool playerIsStrikeACwithBombs = false;
                                 if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
-                                    playerIsStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
+                                    playerIsStrikeACwithBombs = (Calcs.isStrikeAC(player.Place() as AiAircraft) && Calcs.playerHasBombs(player));
 
                                 acInfo.IsHeavyBomber = heavyBomber;
                                 acInfo.IsDiveBomber = isDiveBomber(newAirgroup);
                                 acInfo.IsStrikeAC = isStrikeAC;
-                                acInfo.IsPlayerStrikeAC = playerIsStrikeAC;
+                                acInfo.IsPlayerStrikeAC = playerIsStrikeACwithBombs;
                                 coverACInfo[newAirgroup] = acInfo;
 
                                 double delay = 11.2354 + ran.NextDouble() * 2;
@@ -3580,7 +3631,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 //if (heavyBomber) delay = 2 * delay; //don't think we really need this
                                 //try
                                 {
-                                    keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+                                    keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeACwithBombs, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
                                                                                                                                                                                                                                                                                                                                              //Was AltDiffBomber_m: -14, AltDiffBomber_range_m: -45 - trying closer 2020/01/25
                                                                                                                                                                                                                                                                                                                                              //2018/11/16 - WAS 43 seconds, trying 21 seconds instead
                                                                                                                                                                                                                                                                                                                                              //Console.WriteLine("1recurs started");
@@ -4353,6 +4404,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
         } */
+		
+		bool isBlenheim = type.Contains("Blenheim");
+		
         int numFlightsCreated = 0;
         numACcreated = 0;
         for (int flight = 0; flight < 4; flight++)
@@ -4393,6 +4447,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     }
                     else r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted towards the center of that range
                     r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
+					if (isBlenheim) {
+						//Turn down basic flying skill; much moreso if they are 'cover' vs 'bomber'
+						if ( j == 0 && isBomber ) r = (r - 0.2).Clamp(0.3,0.6);
+						if ( j == 0 && !isBomber ) r = (r - 0.4).Clamp(0.23,0.45);
+						
+						//turn down even more for advanced flying skill
+						if ( j == 1 && isBomber ) r = (r - 0.3).Clamp(0.2,0.4);
+						if ( j == 1 && !isBomber ) r = (r - 0.5).Clamp(0.1,0.3);
+						
+						//similarly for tactics
+						if ( j == 4 && isBomber ) r = (r - 0.3).Clamp(0.3, 0.5);
+						if ( j == 4 && !isBomber ) r = (r - 0.4).Clamp(0.2, 0.4);
+						
+					}
 
 
                     if (army == 1) //So Red bomber pilots have been complaining that Blue fighter cover is more effective than theirs.  This is probably true given (especially) the formidable AI ability of a pair of 110 fighters just due to CloD's built-in 110 AI algorithms.  So . . . trying to bump up Red cover fighter abilities a little to compensate.
@@ -5037,6 +5105,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (weapons.Length == 0)
             {
                 weapons = "1 1 2"; //default
+				if (fighterbomber == "h") weapons = "1 1 3";
                 if (fighterbomber == "f") weapons = "1 1 0";
             }
             if (fuel == 0) fuel = 100;
@@ -5054,6 +5123,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (weapons.Length == 0)
             {
                 weapons = "1 1 2"; //default
+				if (fighterbomber == "h") weapons = "1 1 3";
                 if (fighterbomber == "f") weapons = "1 1 0";
             }
             if (fuel == 0) fuel = 100;
@@ -5072,6 +5142,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (weapons.Length == 0)
             {
                 weapons = "1 1 1"; //1 1 1 has 4x50kg, whereas 1 1 3 has 1x250kg.
+				if (fighterbomber == "h") weapons = "1 1 3";
                 if (fighterbomber == "f") weapons = "1 1 0";
             }
             if (fuel == 0) fuel = 100;
@@ -5117,7 +5188,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 1 0 0 0 4 4 4");
             f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 1 0 0 0 4 4 4");
 
-            if (weapons.Length == 0) weapons = "1 1"; //default
+            if (weapons.Length == 0) weapons = "1 1 1"; //default
+			if (fighterbomber == "h") weapons = "1 1 3";
+            if (fighterbomber == "f") weapons = "1 1 0";
             if (fuel == 0) fuel = 100;
 
         }
@@ -5137,7 +5210,19 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 4 4 4 0 0 0");
             f.add(s, "Belt", "_Gun02 bob:Gun.MG151_20 MainBelt 0 2 1 2 1 2");
 
-            if (weapons.Length == 0) weapons = "1 2"; // 1 1 is MG 151/15 and 1 2 is MG 151/20
+            if (weapons.Length == 0) weapons = "1 1 2"; // 1 1 is MG 151/15 and 1 2 is MG 151/20
+			if (fighterbomber == "h") weapons = "1 1 3";
+            if (fighterbomber == "f") weapons = "1 1 0";
+            if (fuel == 0) fuel = 100;
+
+        }
+		else if (type.Contains("Bf-109F-4Z"))
+        {
+            f.add(s, "Belt", "_Gun00 bob:Gun.MG17 MainBelt 2 4 4 4 0 0 0");
+            f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 4 4 4 0 0 0");
+            f.add(s, "Belt", "_Gun02 bob:Gun.MG151_20 MainBelt 0 2 1 2 1 2");
+
+            if (weapons.Length == 0) weapons = "1 1"; //  
             if (fuel == 0) fuel = 100;
 
         }
@@ -5147,7 +5232,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             f.add(s, "Belt", "_Gun01 bob:Gun.MG17 MainBelt 2 4 4 4 0 0 0");
             f.add(s, "Belt", "_Gun02 bob:Gun.MG151_20 MainBelt 0 2 1 2 1 2");
 
-            if (weapons.Length == 0) weapons = "1 1 0"; //  final 0 is wing guns but they don't seem to work no matter what
+            if (weapons.Length == 0) weapons = "1 1 0"; //  
+			if (fighterbomber == "h") weapons = "1 1 3";
+            if (fighterbomber == "f") weapons = "1 1 0";
             if (fuel == 0) fuel = 100;
 
         }
@@ -6064,6 +6151,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                         //Figuring out "army" of stationaries if not so easy.  If they have an army "gb" or "de" we go with that.  If set to "nn" however we go with
                                         //whatever TERRITORY they are on.  If they are in neutral territory I guess they are neutral?!
+										//UPDATE: .country seems to just be which territory they are on?
+										//At least for some objects, like aircraft?
                                         int statArmy = 0;
                                         if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive)
                                         {
@@ -7575,9 +7664,9 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
                     if (isHeavyBomber(airgroup) || isDiveBomber(airgroup)) heavyBomber = true;
 					bool isStrikeAC = Calcs.isStrikeAC(airgroup);
 
-					bool playerIsStrikeAC = false;
+					bool playerIsStrikeACwithBombs = false;
 					if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
-						playerIsStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
+						playerIsStrikeACwithBombs = (Calcs.isStrikeAC(player.Place() as AiAircraft) && Calcs.playerHasBombs(player));
 
 					CoverACInfo acInfo = new CoverACInfo();
 					acInfo.PlaneType ="(unknown)";
@@ -7585,7 +7674,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 					acInfo.IsHeavyBomber = heavyBomber;
 					acInfo.IsDiveBomber = isDiveBomber(airgroup);
 					acInfo.IsStrikeAC = isStrikeAC;
-					acInfo.IsPlayerStrikeAC = playerIsStrikeAC;
+					acInfo.IsPlayerStrikeAC = playerIsStrikeACwithBombs;
 					coverACInfo[airgroup] = acInfo;
 
 					double delay = 11.2354 + ran.NextDouble() * 2;
@@ -7593,7 +7682,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 					//if (heavyBomber) delay = 2 * delay; //don't think we really need this
 					//try
 					
-						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeACwithBombs, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
                               
 					
 				}
@@ -8537,23 +8626,206 @@ public static class CoverCalcs
         }
 
     }
+	
+	public static void listAllGroundStationaries(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1, Point3d? initPos = null, double radius_m = -1, string saveFile = "")
+	{
+		if (gp == null) return;
 
-    public static void listAllGroundStationaries(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1)
+		GroundStationary[] gs = new GroundStationary[] {};
+		Point3d pos = new Point3d (250000, 250000, 0);
+		
+		if (initPos.HasValue && radius_m > 0) {
+			gp.gpLogServer(null, "Listing to console (and file) all ground stationaries within radius...", new object[] { });
+			pos = initPos.Value;
+			gs = gp.gpGroundStationarys(pos.x, pos.y, radius_m);
+		} else {
+			gp.gpLogServer(null, "Listing to console (and file) all ground stationaries...", new object[] { });
+			gs = gp.gpGroundStationarys();
+		}
+		
+		// --- STEP 1: SNAPSHOT EVERYTHING ON THE MAIN THREAD ---
+		List<string> linesToSave = new List<string>();
+
+		foreach (GroundStationary a in gs)
+		{
+			if (a == null) continue;
+			string type = "";
+			string category = "";
+			string name = "";
+			int army = -1;
+			string country = "";
+		
+			int ggarmy = -1;
+			string ggctry = "";
+			
+			string gatype = "";
+			
+			string ganame = "";
+			int gaarmy = -1;
+			
+			string carttype = "";
+			string typename = "";
+			
+			bool isAlive = false;
+			bool gaisAlive = false;
+			Point3d aPos = new Point3d(0, 0, 0);
+			Point3d gaaPos = new Point3d(0, 0, 0);
+			
+			GroundStationary gg = (a as GroundStationary);
+			
+			// Safely extract primitives while on the main thread
+			if (a as AiGroundActor != null) {
+				gatype = (a as AiGroundActor).Type().ToString();
+				gaaPos = (a as AiActor).Pos();
+				ganame = (a as AiActor).Name();
+				gaarmy = (a as AiActor).Army();
+				gaisAlive = (a as AiGroundActor).IsAlive();
+			}
+			
+			
+			if (a as AiCart != null) {
+				carttype = (a as AiCart).InternalTypeName().ToString();
+				//cartarmy = (a as AiCart).Army().
+			}
+			//string typename2 = a.InternalTypeName();
+			if (gg != null) {
+				typename = gg.Title; 
+				category = gg.Category;
+				type = gg.Type.ToString();
+				name = gg.Name;
+				aPos = gg.pos;
+				isAlive = gg.IsAlive;
+				country = gg.country;
+				string cleanName = Calcs.CleanStationaryID(gg.Name);
+				if (msn.mainmission.GroundStationary_army.ContainsKey(cleanName)) {
+					ggarmy = msn.mainmission.GroundStationary_army[cleanName].Army;
+					ggctry = msn.mainmission.GroundStationary_army[cleanName].Country;
+				}
+				
+			}
+			string line = string.Format("{0:N3} {1:N3} {2:N3} {3} {4} {5} {6} {7} {8} {9} GA:  {10} {11} {12} {13} {14}", a.pos.x, a.pos.y, a.pos.z, name, type, typename, isAlive, country, ggarmy, ggctry, gaarmy, ganame, gatype, carttype, gaisAlive );
+
+			//string line = string.Format("Name: {0} | Type: {1} | Army: {2} | Country: {3} | Pos: {4},{5},{6} | Alive: {7}", 
+			//	name, type, army, country, aPos.x.ToString("F2"), aPos.y.ToString("F2"), aPos.z.ToString("F2"), isAlive);
+			
+			linesToSave.Add(line);
+
+			// Immediate game logging/chat must stay on the main thread
+			/* if (to != null) {
+				//foreach (Player p in to) {
+					gp.gpLogServer(to, line, new object[] { });
+				//}
+			}*/
+		}
+
+		// Determine paths safely before leaving the thread
+		string tempFile = string.IsNullOrEmpty(saveFile) ? "tempfile.txt" : saveFile;
+		string fullPath = msn.mainmission.CLOD_PATH + msn.mainmission.FILE_PATH + tempFile;
+
+		// --- STEP 2: OFF-LOAD ONLY DISK I/O TO THE BACKGROUND THREAD ---
+		// We only pass the strings, which are immutable and 100% thread-safe.
+		//Task.Run(() => {
+			try 
+			{
+				using (StreamWriter writer = new StreamWriter(fullPath))
+				{
+					foreach (string line in linesToSave)
+					{
+						writer.WriteLine(line);
+					}
+				}
+				// Note: gp.gpLogServer might fail inside Task.Run if it requires main-thread context. 
+				// If it causes glitches, move it outside or use a game-provided tick/timeout callback.
+				Console.WriteLine("Ground stationary export complete to disk.");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error writing ground stationary file: " + ex.Message);
+			}
+		//});
+	}
+	
+	/*
+	
+	//List ALL ground stationaries OR those within a radius OR save them to a file
+    public static void listAllGroundStationaries(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1, Point3d? initPos = null, double radius_m	= -1, string saveFile = "")
     {
+		// Point3d pos, double radius
+		GroundStationary[] gs = new GroundStationary[] {};
+		
+		Point3d pos = new Point3d (250000, 250000, 0);
+		
+		if (initPos.HasValue && radius_m > 0) {
+			gp.gpLogServer(null, "Listing all ground stationaries within , per CloD:", new object[] { });
+			pos = initPos.Value;
+			gs =  gp.gpGroundStationarys(pos.x, pos.y, radius_m);
+		} else {
+			gp.gpLogServer(null, "Listing all ground stationaries, per CloD:", new object[] { });
+			gs = gp.gpGroundStationarys();
+		}
         
         if (gp == null) return;
-        gp.gpLogServer(null, "Listing all ground stationaries, per CloD:", new object[] { });
-        foreach (GroundStationary a in gp.gpGroundStationarys())
-        {
-            string type = "";
-            if (a as AiGroundActor != null) type = (a as AiGroundActor).Type().ToString();
-            string typename = "";
-            if (a as AiCart != null) typename = (a as AiCart).InternalTypeName().ToString();
-            //string typename2 = a.InternalTypeName();
-			if (a as GroundStationary != null) {typename = a.Title; type = a.Category;}
-            gp.gpLogServer(to, string.Format(a.Name + " type: {3} typename: {4} pos: {0:N0} {1:N0} {2:N0}", a.pos.x, a.pos.y, a.pos.z, type, typename), null);
-        }
+		
+		Task.Run( () => {
+		
+			// 1. Get the directory where the script/application is currently running
+			//string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			
+			string tempFile = saveFile;
+			if (saveFile == "") tempFile = "tempfile.txt";
+
+			// 3. Combine them safely to create the absolute path
+			string fullPath = msn.mainmission.CLOD_PATH + msn.mainmission.FILE_PATH+tempFile;
+			//string fullPath = tempFile;
+			Console.WriteLine ("Saving groundstationary list to: {0}", fullPath);
+
+			// 4. Automatically create the subdirectory if it does not exist
+
+			
+			using (StreamWriter writer = new StreamWriter(fullPath))
+			{
+			
+			
+				foreach (GroundStationary a in gs)
+				{
+					if (a == null) continue;
+					string type = "";
+					string category = "";
+					string name = "";
+					int army = -1;
+					string country = "";
+					bool isAlive = false;
+					Point3d aPos = new Point3d (0,0,0);
+					
+					if (a as AiGroundActor != null) {
+						type = (a as AiGroundActor).Type().ToString();
+						aPos = (a as AiActor).Pos();
+						name = (a as AiActor).Name();
+						army = (a as AiActor).Army();
+						isAlive = (a as AiGroundActor).IsAlive();
+					}
+					string typename = "";
+					if (a as AiCart != null) typename = (a as AiCart).InternalTypeName().ToString();
+					//string typename2 = a.InternalTypeName();
+					if (a as GroundStationary != null) {
+						typename = gg.Title; 
+						category = gg.Category;
+						type = gg.Type.ToString();
+						name = gg.Name;
+						aPos = gg.pos;
+						isAlive = gg.IsAlive;
+						country = gg.country;
+					}
+					string msg = string.Format("{0:N3} {1:N3} {2:N3} {8} {3} {4} {5} {6} {7}", a.pos.x, a.pos.y, a.pos.z, type, typename, isAlive, army, country, name);
+					 if (saveFile=="") gp.gpLogServer(to, msg, null);
+					 else {
+						 writer.WriteLine(msg);
+					 }
+				}
+			}
+		});
     }
+	*/
 
     private static int maxStatics = 10000; //so, these are guesses or somewhat reasonable maximums & might be wrong . . .
     private static int maxSubmissions = 4000;
@@ -8619,6 +8891,25 @@ public static class CoverCalcs
             return new AiActor[] { };
         }
     }
+	/*
+	public static GroundStationary[] gpGetAllGroundStationariesNear(AiActor[] aia, Point3d pos, double radius)
+    { try
+        {
+            List<AiActor> result = new List<AiActor>();
+            if (aia == null || aia.Length == 0) return new AiActor[] { };
+            foreach (AiActor a in aia)
+            {
+                if (CoverCalcs.CalculatePointDistance(a.Pos(), pos) < radius) result.Add(a);
+            }
+            return result.ToArray();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("gpGetAllGroundActorsNear ERROR " + ex.ToString());
+            return new AiActor[] { };
+        }
+    }
+	*/
     public static void Shuffle<T>(this IList<T> list)
     {
         if (list == null || list.Count == 0) return;

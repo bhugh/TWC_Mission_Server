@@ -381,6 +381,7 @@ public class ThreadLoadMission : AMission
 
         threadLoadTimer_dispose();
 		_keepRunningInputThread = false;
+		_keepRunningMinuteThread = false;
 		
 	    if (_handlerRegistered)
 	    {
@@ -434,17 +435,17 @@ public class ThreadLoadMission : AMission
 			if (timeSinceLastFileSave_s > 30) {
 				//Console.WriteLine("UNHANDLED EXCEPTION ERROR!  Could be an error or crash ANYWHERE in the sim: " + ex.ToString());
 				mainmission.SaveMapState("");
-				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 1");
+				Console.WriteLine("Handling UNHANDLED EXCEPTION ERROR! 1");
 				mainmission.MO_WriteMissionObjects(wait: true);
-				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 2");
+				Console.WriteLine("Handling UNHANDLED EXCEPTION ERROR! 2");
 
 				
 				
-				mainmission.tacviewimplmission.StopRecorder(); //our last priority, but this safely stops & saves the tacview recording of the session.  We COULD do this only if .isTerminating is TRUE, bec. no recording will  take place after this even if the mission continues...  But safer just to stop now and save at least some/most of the Tacview that has been recorded so far.  If it cuts off unexpectedly it might be corrupted (though likely just a part line, could be edited  easily...).
+				if (mainmission.tacviewimplmission != null) mainmission.tacviewimplmission.StopRecorder(); //our last priority, but this safely stops & saves the tacview recording of the session.  We COULD do this only if .isTerminating is TRUE, bec. no recording will  take place after this even if the mission continues...  But safer just to stop now and save at least some/most of the Tacview that has been recorded so far.  If it cuts off unexpectedly it might be corrupted (though likely just a part line, could be edited  easily...).
 				//Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3B");
 			
 				lastFileSave = now;
-				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 3");
+				Console.WriteLine("Handling UNHANDLED EXCEPTION ERROR! 3");
 				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Crash saves almost complete - all but .stats\n\n", DateTime.Now));
 				
 				//stb_StatRecorder.StbSr_FinishWaitingTasks() seems to horch things up badly so it just exits there
@@ -458,11 +459,11 @@ public class ThreadLoadMission : AMission
 				//GamePlay.gpBattleStop();
 				
 				
-				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 4A");
-				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Crash saves successfully completed - good exit\n\n", DateTime.Now));
+				Console.WriteLine("Handling UNHANDLED EXCEPTION ERROR! 4A - Crash saves successfully completed - good exit");
+				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("Handling UNHANDLED EXCEPTION ERROR {0:u} - Crash saves successfully completed - good exit\n\n", DateTime.Now));
 			} else {
-				Console.WriteLine("UNHANDLED EXCEPTION ERROR! 4B");
-				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("{0:u} - Good exit (but no saves requested)\n\n", now));
+				Console.WriteLine("Handling UNHANDLED EXCEPTION ERROR! 4B  - Good exit (but no saves requested)\n\n");
+				File.AppendAllText(mainmission.CLOD_PATH + mainmission.FILE_PATH + "/launchercrashes/launcher-crashes-errors.log", string.Format("Handling UNHANDLED EXCEPTION ERROR {0:u} - Good exit (but no saves requested)\n\n", now));
 			}
 	    }
 		
@@ -473,15 +474,18 @@ public class ThreadLoadMission : AMission
 	}
 	
 	TextWriter originalOut = Console.Out;
+	private static volatile bool _keepRunningMinuteThread = true;
 	
 	private void initConsoleInterceptor () {
 		// 1. Save the original console output stream
 			//try to flush the buffer for log.txt
+			Console.WriteLine("Battle begins!.............................................................................");
 		    for (int i = 0; i < 100 ; i++) Console.WriteLine("...........................................................................................");
+			Console.WriteLine("Battle begins!.............................................................................");
 			Console.WriteLine("===========================================================================================");
-			Console.WriteLine(">>>>>>Console is MUTED! All text in logfile @ ClodDir/log_twc_Week_XXXX.txt.");
-			Console.WriteLine(">>>>>>CONSOLE ON & CONSOLE OFF to re-start or stop the console text.");
-			Console.WriteLine(">>>>>>(May need to repeat these & CLOD Commands once or twice if they don't work at first.)");
+			Console.WriteLine(">>>>>>     Console is MUTED! All text in logfile @ ClodDir/log_twc_Week_XXXX.txt    <<<<<<");
+			Console.WriteLine(">>>>>>         CONSOLE ON & CONSOLE OFF to re-start or stop the console text        <<<<<<");
+			Console.WriteLine(">>>>>>   (May need to repeat these & CLOD Commands if they do not work first time)  <<<<<<");
 			Console.WriteLine("===========================================================================================");
 			
 			TextWriter originalOut = Console.Out;
@@ -501,6 +505,27 @@ public class ThreadLoadMission : AMission
 			{
 				// Explicitly trigger your interceptor's cleanup
 				_interceptor.Dispose();
+			});
+			
+			_keepRunningMinuteThread = true;
+			//Write . to screen every 1 minute to show activity
+			Task.Run(() => {
+				int minuteCount = 0;
+				while (_keepRunningMinuteThread && !_interceptor.ConsoleDisplayActive)
+				{
+					Thread.Sleep(60000);
+					
+					if (minuteCount %60 == 0) {
+						int hr = minuteCount/60;
+						if (hr > 0) originalOut.WriteLine("");
+						originalOut.Write("Hour {0:00}:", hr);
+						
+					} else {
+						originalOut.Write(".");
+					}
+					originalOut.Flush();
+					minuteCount ++;
+				}
 			});
 			
 			/*
@@ -722,6 +747,7 @@ public class ConsoleInterceptor : TextWriter
             ProcessIncomingChar(buffer[i]);
         }
     }
+	int lineCount = 0;
 
     private void ProcessIncomingChar(char value)
     {
@@ -729,12 +755,20 @@ public class ConsoleInterceptor : TextWriter
 		
         if (value == '\n')
         {
-            string completedLine = _lineBuffer.ToString().TrimEnd('\r'); 
-			_lineBuffer.Clear();			
+            string completedLine = _lineBuffer.ToString().TrimEnd('\r');
+			//var saveLB = _lineBuffer;
+			
 
             _logQueue.Add(completedLine);
 			
-			string trimmedLine = completedLine.Trim();
+			/*
+			lineCount ++;
+			
+			if (lineCount % 500 == 0)  {
+				_originalOutput.Write($"lineCount.");
+				_originalOutput.Flush();
+			}
+			*/
 			
 			/*
 			if (trimmedLine.Contains("[SYSTEM]")) {
@@ -744,6 +778,7 @@ public class ConsoleInterceptor : TextWriter
 			
 			if (BufferContainsKeyword(_lineBuffer, this))
 				{
+				_lineBuffer.Clear();				
 				
 				/*
 				// Passively catch the toggle commands when they clear the game's buffer
@@ -760,14 +795,21 @@ public class ConsoleInterceptor : TextWriter
 					return; // Exit early
 				}
 				*/
+				
+				//string trimmedLine = completedLine;
 
-				if (trimmedLine.Contains("Server got logged out of Steam") || 
-					trimmedLine.Contains("Got logged out of Steam") || 
-					trimmedLine.Contains("connection to Steam lost"))
+				if (completedLine.Contains("Server got logged out of Steam") || 
+					completedLine.Contains("Got logged out of Steam") || 
+					completedLine.Contains("connection to Steam lost"))
 				{					
 					_originalOutput.WriteLine("================================================================================");
 					_originalOutput.WriteLine("Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]");
 					_originalOutput.WriteLine("================================================================================");
+					_originalOutput.WriteLine(_lineBuffer.ToString());
+					Console.WriteLine("================================================================================");
+					Console.WriteLine("Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]");
+					Console.WriteLine("================================================================================");
+					Console.WriteLine(_lineBuffer.ToString());
 					
 					threadloadmission.OnUnhandledException(
 						"Steam Shutdown (TWC)", 
@@ -775,6 +817,7 @@ public class ConsoleInterceptor : TextWriter
 					);
 				}
 			}
+			_lineBuffer.Clear();			
 						
         }		
         else
@@ -789,17 +832,28 @@ public class ConsoleInterceptor : TextWriter
 	//private bool BufferContainsKeyword(StringBuilder sb, ConsoleInterceptor ci )
     {
         int len = sb.Length;
-        if (len < 7) return false; 
+        if (len < 20) return false;  //line always has [1823] ERROR [SYSTEM] where the # Vhas at least 1 digit, thus the whole thing is far > 19 length
+		//int searchDist = 30.Clamp(0,len);
+		//if (len <searchDist) searchDist = len;
+		len = len.Clamp(0,18); //the first ERROR Is always within the first 13 chars or so but 18 for safety [12343234] ERROR [SYSTEM] = 16 chars
 
-        for (int i = 0; i < len; i++)
+        for (int i = 0; i < len - 5; i++) //len -5 because "ERROR" has 5 digits
         {
+			//ci._originalOutput.WriteLine("\n>>> FOUND [ <<<\n");
+			//Console.WriteLine("\n>>> FOUND [ <<<\n");
             char c = sb[i];
             
             // Safe bounds validation before reading offsets
-            if (c == '[' && (i + 7) < len) 
+            if (c == 'E') 
             {
-                if (sb[i+1] == 'S' && sb[i+2] == 'Y' && sb[i+3] == 'S' && sb[i+4] == 'T' && sb[i+5] == 'E' && sb[i+6] == 'M' && sb[i+7] == ']' ) {
-					ci._originalOutput.WriteLine("\n>>> FOUND [SYSTEM] <<<\n");
+				//ci._originalOutput.WriteLine("\n>>> FOUND CHAR <<<\n"); //OK don't do this (print an E to console) as it leads to stack overflow
+				//Console.WriteLine("\n>>> FOUND CHAR <<<\n");
+                if (sb[i+1] == 'R' && sb[i+2] == 'R' && sb[i+3] == 'O' && sb[i+4] == 'R'
+					   //&& sb[i+5] == 'M'
+						//&& sb[i+6] == 'M' && sb[i+7] == ']' 
+						) {
+					//ci._originalOutput.WriteLine("\n>>> FOUND ERROR <<<\n"); //OK don't do this either (print an E to console, or especially not the whole word ERROR as it is the word we are searching for) as it leads to stack overflow
+					//Console.WriteLine("\n>>> FOUND ERROR <<<\n");
                     return true;
 				}
             }

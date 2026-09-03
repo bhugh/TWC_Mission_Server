@@ -20,62 +20,62 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static6 Stationary.Environment.JerryCan_GER1_1 nn 348235.34 125018.74 25.00 
-  Static4 Stationary.BMW_R71_w_MG_34 de 348242.56 125022.42 -65.00 
-  Static15 Stationary.Opel_Blitz_cargo de 348247.81 125022.77 -65.00 
-  Static9 Stationary.Environment.JerryCan_GER1_1 de 348251.44 125026.05 25.00 
-  Static8 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348240.06 125037.99 -65.00 
-  Static13 Stationary.Opel_Blitz_cargo de 348257.81 125027.64 -65.00 
-  Static14 Stationary.Opel_Blitz_cargo de 348263.59 125029.74 -65.00 
-  Static10 Stationary.Environment.JerryCan_GER1_1 nn 348270.69 125032.99 25.00 
-  Static17 Stationary.Radar.EnglishRadar2 nn 348277.47 125026.39 -65.00 
-  Static5 Stationary.BMW_R71_w_MG_34 de 348284.50 125038.77 -65.00 
-  Static7 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348274.38 125053.91 -65.00 
-  Static11 Stationary.Environment.JerryCan_GER1_1 nn 348296.44 125048.02 25.00 
-  Static16 Stationary.Radar.EnglishRadar2 nn 348308.69 125041.07 -65.00 
-  Static12 Stationary.BMW_R71_w_MG_34 de 348312.03 125052.88 -65.00 
-  Static0 Stationary.Environment.JerryCan_GER1_1 nn 348318.31 125054.06 25.00 
-  Static18 Stationary.Radar.EnglishRadar2 nn 348336.28 125053.18 -65.00 
-  Static2 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348307.06 125069.07 -65.00 
-  Static1 Stationary.Environment.JerryCan_GER1_1 nn 348344.75 125063.05 25.00 
-  Static3 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348336.09 125083.70 -65.00 
-  Static19 Artillery.Bofors_StandAlone gb 346713.81 124191.75 0.00 /timeout 0/radius_hide 0
-  Static20 Artillery.Bofors_StandAlone de 347928.59 125249.12 0.00 /timeout 0/radius_hide 0
-  Static22 Artillery.Bofors_StandAlone de 348669.47 124899.12 0.00 /timeout 0/radius_hide 0
-  Static23 Artillery.Bofors_StandAlone de 348196.81 124712.67 0.00 /timeout 0/radius_hide 0
-  Static24 Artillery.Bofors_StandAlone de 347725.63 124736.20 0.00 /timeout 0/radius_hide 0
-  Static21 Artillery.Bofors_StandAlone de 349138.88 124653.80 0.00 /timeout 0/radius_hide 0
-  Static25 Artillery.Bofors_StandAlone de 348063.97 124376.23 0.00 /timeout 0/radius_hide 0
-  Static26 Artillery.Bofors_StandAlone de 347220.44 125008.70 0.00 /timeout 0/radius_hide 0
-  Static27 Stationary.Radar.Wotan_I de 348144.97 124957.60 0.00 
-  Static28 Stationary.Radar.Wotan_I de 348568.59 125110.95 0.00 
-  Static29 Stationary.Radar.Wotan_I de 348563.06 124911.17 0.00 
-  Static30 Stationary.Radar.Wotan_I de 348220.00 125204.64 0.00 
-  Static31 Stationary.Radar.Wotan_I de 348050.53 125033.80 0.00 
-  Static32 Stationary.Radar.Wotan_I de 348186.94 124845.04 0.00 
-  Static33 Stationary.Airfield.blister_hangar nn 348151.59 124854.98 0.00 
-  Static34 Stationary.Airfield.blister_hangar nn 348595.25 124928.01 0.00 
-  Static35 Stationary.Airfield.blister_hangar nn 348593.88 125100.23 0.00 
-  Static36 Stationary.Airfield.blister_hangar nn 348246.66 125184.28 0.00 
-  Static37 Stationary.Airfield.blister_hangar nn 348198.44 125182.91 0.00 
-  Static38 Stationary.Airfield.blister_hangar nn 348599.56 124904.45 0.00 
-  Static39 Stationary.Airfield.blister_hangar nn 348167.00 124828.33 0.00 
-  Static40 Stationary.Airfield.blister_hangar nn 348073.88 125021.77 0.00 
-  Static41 Stationary.Airfield.blister_hangar nn 348076.56 125042.37 0.00 
-  Static42 Stationary.Airfield.blister_hangar nn 348441.06 125150.73 0.00 
-  Static43 Stationary.Airfield.blister_hangar nn 348167.00 125110.43 0.00 
-  Static44 Stationary.Airfield.blister_hangar nn 348259.25 124895.49 0.00 
-  Static45 Stationary.Airfield.blister_hangar nn 348513.59 124996.70 0.00 
-  Static46 Stationary.Radar.Wotan_I de 348476.88 124997.59 0.00 
-  Static47 Stationary.Radar.Wotan_I de 348407.91 125154.31 0.00 
-  Static48 Stationary.Radar.Wotan_I de 348158.97 125098.79 0.00 
-  Static49 Stationary.Airfield.blister_hangar nn 348169.69 124944.75 0.00 
-  Static50 Stationary.Environment.JerryCan_GER1_1 nn 348180.78 125104.59 25.00 
-  Static51 Stationary.Environment.JerryCan_GER1_1 nn 348198.25 124961.36 25.00 
-  Static52 Stationary.Environment.JerryCan_GER1_1 nn 348519.09 124962.24 25.00 
-  Static53 Stationary.Environment.JerryCan_GER1_1 nn 348543.38 125104.33 25.00 
-  Static54 Stationary.Airfield.blister_hangar nn 348573.94 124895.70 0.00 
-  Static55 Stationary.Airfield.blister_hangar nn 348199.84 124814.77 0.00 
-  Static56 Stationary.Airfield.blister_hangar nn 348088.34 125008.11 0.00 
+  German_Radar_HQ6 Stationary.Environment.JerryCan_GER1_1 nn 348235.34 125018.74 25.00 
+  German_Radar_HQ4 Stationary.BMW_R71_w_MG_34 de 348242.56 125022.42 -65.00 
+  German_Radar_HQ15 Stationary.Opel_Blitz_cargo de 348247.81 125022.77 -65.00 
+  German_Radar_HQ9 Stationary.Environment.JerryCan_GER1_1 de 348251.44 125026.05 25.00 
+  German_Radar_HQ8 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348240.06 125037.99 -65.00 
+  German_Radar_HQ13 Stationary.Opel_Blitz_cargo de 348257.81 125027.64 -65.00 
+  German_Radar_HQ14 Stationary.Opel_Blitz_cargo de 348263.59 125029.74 -65.00 
+  German_Radar_HQ10 Stationary.Environment.JerryCan_GER1_1 nn 348270.69 125032.99 25.00 
+  German_Radar_HQ17 Stationary.Radar.EnglishRadar2 nn 348277.47 125026.39 -65.00 
+  German_Radar_HQ5 Stationary.BMW_R71_w_MG_34 de 348284.50 125038.77 -65.00 
+  German_Radar_HQ7 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348274.38 125053.91 -65.00 
+  German_Radar_HQ11 Stationary.Environment.JerryCan_GER1_1 nn 348296.44 125048.02 25.00 
+  German_Radar_HQ16 Stationary.Radar.EnglishRadar2 nn 348308.69 125041.07 -65.00 
+  German_Radar_HQ12 Stationary.BMW_R71_w_MG_34 de 348312.03 125052.88 -65.00 
+  German_Radar_HQ0 Stationary.Environment.JerryCan_GER1_1 nn 348318.31 125054.06 25.00 
+  German_Radar_HQ18 Stationary.Radar.EnglishRadar2 nn 348336.28 125053.18 -65.00 
+  German_Radar_HQ2 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348307.06 125069.07 -65.00 
+  German_Radar_HQ1 Stationary.Environment.JerryCan_GER1_1 nn 348344.75 125063.05 25.00 
+  German_Radar_HQ3 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348336.09 125083.70 -65.00 
+  German_Radar_HQ19 Artillery.Bofors_StandAlone gb 346713.81 124191.75 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ20 Artillery.Bofors_StandAlone de 347928.59 125249.12 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ22 Artillery.Bofors_StandAlone de 348669.47 124899.12 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ23 Artillery.Bofors_StandAlone de 348196.81 124712.67 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ24 Artillery.Bofors_StandAlone de 347725.63 124736.20 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ21 Artillery.Bofors_StandAlone de 349138.88 124653.80 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ25 Artillery.Bofors_StandAlone de 348063.97 124376.23 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ26 Artillery.Bofors_StandAlone de 347220.44 125008.70 0.00 /timeout 0/radius_hide 0
+  German_Radar_HQ27 Stationary.Radar.Wotan_I de 348144.97 124957.60 0.00 
+  German_Radar_HQ28 Stationary.Radar.Wotan_I de 348568.59 125110.95 0.00 
+  German_Radar_HQ29 Stationary.Radar.Wotan_I de 348563.06 124911.17 0.00 
+  German_Radar_HQ30 Stationary.Radar.Wotan_I de 348220.00 125204.64 0.00 
+  German_Radar_HQ31 Stationary.Radar.Wotan_I de 348050.53 125033.80 0.00 
+  German_Radar_HQ32 Stationary.Radar.Wotan_I de 348186.94 124845.04 0.00 
+  German_Radar_HQ33 Stationary.Airfield.blister_hangar nn 348151.59 124854.98 0.00 
+  German_Radar_HQ34 Stationary.Airfield.blister_hangar nn 348595.25 124928.01 0.00 
+  German_Radar_HQ35 Stationary.Airfield.blister_hangar nn 348593.88 125100.23 0.00 
+  German_Radar_HQ36 Stationary.Airfield.blister_hangar nn 348246.66 125184.28 0.00 
+  German_Radar_HQ37 Stationary.Airfield.blister_hangar nn 348198.44 125182.91 0.00 
+  German_Radar_HQ38 Stationary.Airfield.blister_hangar nn 348599.56 124904.45 0.00 
+  German_Radar_HQ39 Stationary.Airfield.blister_hangar nn 348167.00 124828.33 0.00 
+  German_Radar_HQ40 Stationary.Airfield.blister_hangar nn 348073.88 125021.77 0.00 
+  German_Radar_HQ41 Stationary.Airfield.blister_hangar nn 348076.56 125042.37 0.00 
+  German_Radar_HQ42 Stationary.Airfield.blister_hangar nn 348441.06 125150.73 0.00 
+  German_Radar_HQ43 Stationary.Airfield.blister_hangar nn 348167.00 125110.43 0.00 
+  German_Radar_HQ44 Stationary.Airfield.blister_hangar nn 348259.25 124895.49 0.00 
+  German_Radar_HQ45 Stationary.Airfield.blister_hangar nn 348513.59 124996.70 0.00 
+  German_Radar_HQ46 Stationary.Radar.Wotan_I de 348476.88 124997.59 0.00 
+  German_Radar_HQ47 Stationary.Radar.Wotan_I de 348407.91 125154.31 0.00 
+  German_Radar_HQ48 Stationary.Radar.Wotan_I de 348158.97 125098.79 0.00 
+  German_Radar_HQ49 Stationary.Airfield.blister_hangar nn 348169.69 124944.75 0.00 
+  German_Radar_HQ50 Stationary.Environment.JerryCan_GER1_1 nn 348180.78 125104.59 25.00 
+  German_Radar_HQ51 Stationary.Environment.JerryCan_GER1_1 nn 348198.25 124961.36 25.00 
+  German_Radar_HQ52 Stationary.Environment.JerryCan_GER1_1 nn 348519.09 124962.24 25.00 
+  German_Radar_HQ53 Stationary.Environment.JerryCan_GER1_1 nn 348543.38 125104.33 25.00 
+  German_Radar_HQ54 Stationary.Airfield.blister_hangar nn 348573.94 124895.70 0.00 
+  German_Radar_HQ55 Stationary.Airfield.blister_hangar nn 348199.84 124814.77 0.00 
+  German_Radar_HQ56 Stationary.Airfield.blister_hangar nn 348088.34 125008.11 0.00 
 [Buildings]
 [BuildingsLinks]

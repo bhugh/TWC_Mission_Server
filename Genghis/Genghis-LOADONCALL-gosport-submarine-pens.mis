@@ -21,235 +21,235 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static55 Stationary.Industrial.Oxygen_Facility nn 75828.94 192105.20 -140.00 
-  Static56 Stationary.Industrial.Oxygen_Facility nn 75819.02 192121.17 -155.00 
-  Static6 Stationary.Industrial.Oxygen_Facility nn 75843.82 192080.31 -50.00 
-  Static7 Stationary.Industrial.Oxygen_Facility nn 75859.94 192093.97 -50.00 
-  Static45 Stationary.Industrial.Oxygen_Facility nn 75876.27 192107.94 -50.00 
-  Static44 Stationary.Industrial.Oxygen_Facility nn 75891.98 192121.31 -50.00 
-  Static61 Stationary.Industrial.Oxygen_Facility nn 75809.72 192140.45 -155.00 
-  Static237 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75793.28 192160.52 -150.00 /hstart 18
-  Static218 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75788.06 192168.72 -150.00 /hstart 18
-  Static213 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75783.98 192176.81 -150.00 /hstart 18
-  Static199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75779.05 192185.13 -150.00 /hstart 18
-  Static0 Stationary.Weapons_.Torpedo_T_F5 nn 75821.00 192147.33 -65.00 
-  Static236 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75807.57 192167.92 -150.00 /hstart 18
-  Static217 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75802.34 192176.16 -150.00 /hstart 18
-  Static212 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75798.25 192184.27 -150.00 /hstart 18
-  Static57 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75814.76 192175.84 120.00 
-  Static241 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75819.80 192175.41 -150.00 /hstart 20
-  Static221 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75814.57 192183.63 -150.00 /hstart 20
-  Static216 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75810.47 192191.70 -150.00 /hstart 20
-  Static240 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75836.65 192185.91 -150.00 /hstart 20
-  Static39 Stationary.Industrial.Oxygen_Facility nn 75838.10 192186.42 -65.00 
-  Static113 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75901.83 192128.02 -65.00 
-  Static29 Stationary.Industrial.Oxygen_Facility nn 75904.05 192131.97 -50.00 
-  Static30 Stationary.Industrial.Oxygen_Facility nn 75921.19 192146.47 -50.00 
-  Static121 Stationary.Weapons_.Torpedo_T_F5 nn 75931.09 192150.66 -65.00 
-  Static25 Stationary.Industrial.Oxygen_Facility nn 75935.41 192161.11 -50.00 
-  Static23 Stationary.Weapons_.Torpedo_T_F5 nn 75933.79 192170.27 -65.00 
-  Static26 Stationary.Industrial.Oxygen_Facility nn 75951.53 192174.77 -50.00 
-  Static27 Stationary.Industrial.Oxygen_Facility nn 75966.43 192187.31 -50.00 
-  Static10 tobruk:Stationary.Environment.50meterStonewall nn 75770.76 192194.13 -65.00 
-  Static201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75774.94 192193.19 -150.00 /hstart 18
-  Static20 Stationary.Environment.PortCrane1_FRA1 nn 75765.26 192204.73 -250.00 
-  Static183 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75771.13 192201.66 -150.00 /hstart 18
-  Static200 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75793.31 192192.53 -150.00 /hstart 18
-  Static19 ShipUnit.Boat_42ft_SailingLaunch gb 75776.85 192213.22 -245.00 /sleep 1440/skill 0/slowfire 100
-  Static197 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75789.23 192200.61 -150.00 /hstart 18
-  Static182 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75785.41 192209.09 -150.00 /hstart 18
-  Static76 Stationary.Weapons_.Torpedo_T_F5 nn 75792.41 192204.22 -65.00 
-  Static11 tobruk:Stationary.Environment.50meterStonewall nn 75793.65 192206.69 -65.00 
-  Static198 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75805.53 192200.02 -150.00 /hstart 20
-  Static33 Stationary.Environment.PortCrane1_FRA1 nn 75789.34 192217.34 -220.00 
-  Static50 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75806.57 192203.28 -65.00 
-  Static193 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75801.44 192208.11 -150.00 /hstart 20
-  Static188 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75797.63 192216.58 -150.00 /hstart 20
-  Static220 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75831.49 192194.13 -150.00 /hstart 20
-  Static215 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75827.38 192202.20 -150.00 /hstart 20
-  Static195 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75822.43 192210.50 -150.00 /hstart 20
-  Static51 Stationary.Weapons_.Torpedo_T_F5 nn 75836.34 192197.55 -65.00 
-  Static192 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75818.35 192218.59 -150.00 /hstart 20
-  Static12 tobruk:Stationary.Environment.50meterStonewall nn 75817.45 192220.45 -65.00 
-  Static187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75814.53 192227.05 -150.00 /hstart 20
-  Static34 Stationary.Environment.PortCrane1_FRA1 nn 75812.63 192231.45 -220.00 
-  Static77 Stationary.Weapons_.Torpedo_T_F5 nn 75835.82 192225.94 -65.00 
-  Static21 tobruk:ShipUnit.U-class_SS gb 75822.18 192241.67 120.00 /sleep 1440/skill 0/slowfire 100
-  Static342 Stationary.Environment.JerryCan_GER1_1 nn 75855.67 192196.72 110.00 
-  Static239 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75862.32 192200.45 -150.00 /hstart 20
-  Static58 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75861.88 192202.83 120.00 
-  Static219 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75857.09 192208.67 -150.00 /hstart 20
-  Static214 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75853.00 192216.78 -150.00 /hstart 20
-  Static194 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75848.08 192225.08 -150.00 /hstart 20
-  Static191 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75843.98 192233.16 -150.00 /hstart 20
-  Static13 tobruk:Stationary.Environment.50meterStonewall nn 75844.22 192236.86 -65.00 
-  Static186 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75840.16 192241.63 -150.00 /hstart 20
-  Static40 Stationary.Industrial.Oxygen_Facility nn 75875.58 192206.89 -65.00 
-  Static35 Stationary.Environment.PortCrane1_FRA1 nn 75840.38 192244.45 80.00 
-  Static49 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75861.31 192228.75 -65.00 
-  Static238 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75887.94 192215.63 -150.00 /hstart 20
-  Static211 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75882.76 192223.84 -150.00 /hstart 20
-  Static209 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75878.66 192231.92 -150.00 /hstart 20
-  Static46 Stationary.Weapons_.Torpedo_T_F5 nn 75891.80 192218.16 -65.00 
-  Static190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75873.73 192240.20 -150.00 /hstart 20
-  Static189 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75869.62 192248.31 -150.00 /hstart 20
-  Static2 Stationary.Weapons_.Torpedo_T_F5 nn 75900.27 192221.81 -65.00 
-  Static14 tobruk:Stationary.Environment.50meterStonewall nn 75871.09 192251.41 -65.00 
-  Static175 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75899.94 192255.06 -150.00 /hstart 20
-  Static59 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75907.94 192229.63 120.00 
-  Static234 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75914.19 192230.48 -150.00 /hstart 20
-  Static210 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75908.97 192238.70 -150.00 /hstart 20
-  Static208 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75904.88 192246.80 -150.00 /hstart 20
-  Static41 Stationary.Industrial.Oxygen_Facility nn 75929.48 192239.48 -95.00 
-  Static227 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75940.27 192245.39 -150.00 /hstart 20
-  Static207 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75935.06 192253.61 -150.00 /hstart 20
-  Static60 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75950.38 192254.19 120.00 
-  Static28 Stationary.Industrial.Oxygen_Facility nn 75980.94 192199.98 -50.00 
-  Static24 Stationary.Industrial.Oxygen_Facility nn 75995.86 192212.56 -50.00 
-  Static52 Stationary.Industrial.Oxygen_Facility nn 76011.55 192225.30 -50.00 
-  Static53 Stationary.Industrial.Oxygen_Facility nn 76026.68 192237.86 -50.00 
-  Static54 Stationary.Industrial.Oxygen_Facility nn 76040.91 192250.41 -50.00 
-  Static185 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75865.81 192256.78 -150.00 /hstart 20
-  Static36 Stationary.Environment.PortCrane1_FRA1 nn 75865.55 192261.67 80.00 
-  Static78 Stationary.Weapons_.Torpedo_T_F5 nn 75867.01 192263.70 -65.00 
-  Static196 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75895.85 192263.19 -150.00 /hstart 20
-  Static15 tobruk:Stationary.Environment.50meterStonewall nn 75896.66 192267.13 -65.00 
-  Static184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75892.03 192271.61 -150.00 /hstart 20
-  Static37 Stationary.Environment.PortCrane1_FRA1 nn 75892.70 192276.45 -235.00 
-  Static48 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75906.94 192256.30 -65.00 
-  Static206 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75930.94 192261.69 -150.00 /hstart 20
-  Static172 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75926.03 192270.00 -150.00 /hstart 20
-  Static16 tobruk:Stationary.Environment.50meterStonewall nn 75919.08 192279.44 -65.00 
-  Static173 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75921.91 192278.09 -150.00 /hstart 20
-  Static38 Stationary.Environment.PortCrane1_FRA1 nn 75914.30 192289.03 -175.00 
-  Static163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75918.11 192286.55 -150.00 /hstart 20
-  Static79 Stationary.Weapons_.Torpedo_T_F5 nn 75934.38 192286.56 -65.00 
-  Static47 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75949.49 192273.33 -65.00 
-  Static226 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75966.16 192260.39 -150.00 /hstart 19
-  Static204 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75960.96 192268.61 -150.00 /hstart 19
-  Static205 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75956.84 192276.70 -150.00 /hstart 19
-  Static17 tobruk:Stationary.Environment.50meterStonewall nn 75941.51 192293.36 -65.00 
-  Static170 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75951.92 192285.02 -150.00 /hstart 19
-  Static171 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75947.83 192293.09 -150.00 /hstart 19
-  Static42 Stationary.Environment.PortCrane1_FRA1 nn 75937.46 192303.19 65.00 
-  Static165 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75944.04 192301.53 -150.00 /hstart 19
-  Static22 ShipUnit.Boat_42ft_SailingLaunch nn 75946.63 192318.05 -60.00 /sleep 1440/skill 2/slowfire 100
-  Static18 tobruk:Stationary.Environment.50meterStonewall nn 75967.27 192309.81 -65.00 
-  Static43 Stationary.Environment.PortCrane1_FRA1 nn 75963.70 192319.34 -260.00 
-  Static222 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75991.88 192274.98 -150.00 /hstart 18
-  Static203 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75986.68 192283.81 -150.00 /hstart 18
-  Static202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75982.60 192291.33 -150.00 /hstart 18
-  Static3 Stationary.Weapons_.Torpedo_T_F5 nn 75973.16 192302.44 -65.00 
-  Static169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75977.64 192300.17 -150.00 /hstart 18
-  Static168 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75973.57 192307.70 -150.00 /hstart 18
-  Static164 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75969.76 192316.75 -150.00 /hstart 18
-  Static1 tobruk:Stationary.Environment.50meterStonewall nn 75992.94 192295.83 -150.00 
-  Static8 tobruk:Stationary.Environment.50meterStonewall nn 75982.73 192307.02 -150.00 
-  Static62 Stationary.Industrial.Oxygen_Facility nn 76019.65 192271.61 -215.00 
-  Static5 Stationary.Environment.PortCrane1_FRA1 de 75994.68 192299.50 65.00 
-  Static32 Stationary.Environment.PortCrane1_FRA1 de 75986.52 192309.84 35.00 
-  Static9 tobruk:Stationary.Environment.50meterStonewall nn 75985.70 192319.88 -60.00 
-  Static4 tobruk:Stationary.Environment.50meterStonewall nn 75974.75 192320.30 -150.00 
-  Static31 Stationary.Environment.PortCrane1_FRA1 nn 75982.91 192326.45 95.00 
-  Static63 Stationary.Environment.JerryCan_GER1_1 nn 76017.52 192265.78 110.00 
-  Static64 Stationary.Environment.JerryCan_GER1_1 nn 76025.69 192252.09 110.00 
-  Static65 Stationary.Environment.JerryCan_GER1_1 nn 76014.26 192237.92 110.00 
-  Static66 Stationary.Environment.JerryCan_GER1_1 nn 76005.58 192228.33 110.00 
-  Static67 Stationary.Environment.JerryCan_GER1_1 nn 75996.01 192218.70 110.00 
-  Static68 Stationary.Environment.JerryCan_GER1_1 nn 75980.51 192207.64 110.00 
-  Static69 Stationary.Environment.JerryCan_GER1_1 nn 75969.06 192200.31 110.00 
-  Static70 Stationary.Environment.JerryCan_GER1_1 nn 75957.16 192188.86 110.00 
-  Static71 Stationary.Environment.JerryCan_GER1_1 nn 75943.88 192181.53 110.00 
-  Static72 Stationary.Environment.JerryCan_GER1_1 nn 75930.61 192171.02 110.00 
-  Static73 Stationary.Environment.JerryCan_GER1_1 nn 75920.99 192155.91 110.00 
-  Static74 Stationary.Environment.JerryCan_GER1_1 nn 75911.38 192147.20 110.00 
-  Static75 Stationary.Environment.JerryCan_GER1_1 nn 75898.56 192138.97 110.00 
-  Static80 Stationary.Environment.JerryCan_GER1_1 nn 75882.16 192129.98 110.00 
-  Static81 Stationary.Environment.JerryCan_GER1_1 nn 75859.79 192109.94 110.00 
-  Static82 Stationary.Environment.JerryCan_GER1_1 nn 75846.55 192099.45 110.00 
-  Static83 Stationary.Environment.JerryCan_GER1_1 nn 75836.98 192104.05 110.00 
-  Static84 Stationary.Environment.JerryCan_GER1_1 nn 75828.30 192115.48 110.00 
-  Static85 Stationary.Environment.JerryCan_GER1_1 nn 75819.57 192133.70 110.00 
-  Static86 Stationary.Environment.JerryCan_GER1_1 nn 75809.50 192135.06 110.00 
-  Static87 Stationary.Environment.JerryCan_GER1_1 nn 75816.41 192108.17 110.00 
-  Static88 Stationary.Environment.JerryCan_GER1_1 nn 75827.84 192093.55 110.00 
-  Static89 Stationary.Environment.JerryCan_GER1_1 nn 75840.55 192085.19 110.00 
-  Static90 Stationary.Environment.JerryCan_GER1_1 nn 75877.50 192095.02 110.00 
-  Static91 Stationary.Environment.JerryCan_GER1_1 nn 75889.87 192110.58 110.00 
-  Static92 Stationary.Environment.JerryCan_GER1_1 nn 75900.39 192125.69 110.00 
-  Static93 Stationary.Environment.JerryCan_GER1_1 nn 75923.28 192140.80 110.00 
-  Static94 Stationary.Environment.JerryCan_GER1_1 nn 75944.34 192157.73 110.00 
-  Static95 Stationary.Environment.JerryCan_GER1_1 nn 75952.13 192166.44 110.00 
-  Static96 Stationary.Environment.JerryCan_GER1_1 nn 75976.85 192187.95 110.00 
-  Static97 Stationary.Environment.JerryCan_GER1_1 nn 75990.59 192208.09 110.00 
-  Static98 Stationary.Environment.JerryCan_GER1_1 nn 76009.73 192220.52 110.00 
-  Static99 Stationary.Environment.JerryCan_GER1_1 nn 76029.04 192230.98 110.00 
-  Static100 Stationary.Environment.JerryCan_GER1_1 nn 76037.19 192245.20 110.00 
-  Static101 Stationary.Environment.JerryCan_GER1_1 nn 76044.90 192263.52 110.00 
-  Static102 Stationary.Environment.JerryCan_GER1_1 nn 76033.90 192271.28 110.00 
-  Static103 Stationary.Environment.JerryCan_GER1_1 nn 76022.07 192271.28 110.00 
-  Static104 Stationary.Environment.JerryCan_GER1_1 nn 75987.84 192274.47 110.00 
-  Static105 Stationary.Environment.JerryCan_GER1_1 nn 75975.02 192290.50 110.00 
-  Static106 Stationary.Environment.JerryCan_GER1_1 nn 75964.48 192301.03 110.00 
-  Static107 Stationary.Environment.JerryCan_GER1_1 nn 75950.30 192306.98 110.00 
-  Static108 Stationary.Environment.JerryCan_GER1_1 nn 75954.88 192297.83 110.00 
-  Static109 Stationary.Environment.JerryCan_GER1_1 nn 75957.62 192285.92 110.00 
-  Static110 Stationary.Environment.JerryCan_GER1_1 nn 75965.86 192275.39 110.00 
-  Static111 Stationary.Environment.JerryCan_GER1_1 nn 75970.44 192269.44 110.00 
-  Static112 Stationary.Environment.JerryCan_GER1_1 nn 75963.12 192262.58 110.00 
-  Static114 Stationary.Environment.JerryCan_GER1_1 nn 75951.21 192257.08 110.00 
-  Static115 Stationary.Environment.JerryCan_GER1_1 nn 75941.59 192262.11 110.00 
-  Static116 Stationary.Environment.JerryCan_GER1_1 nn 75931.52 192274.02 110.00 
-  Static117 Stationary.Environment.JerryCan_GER1_1 nn 75924.66 192280.89 110.00 
-  Static118 Stationary.Environment.JerryCan_GER1_1 nn 75915.50 192277.67 110.00 
-  Static119 Stationary.Environment.JerryCan_GER1_1 nn 75918.70 192266.23 110.00 
-  Static120 Stationary.Environment.JerryCan_GER1_1 nn 75923.28 192258.00 110.00 
-  Static122 Stationary.Environment.JerryCan_GER1_1 nn 75926.95 192244.72 110.00 
-  Static123 Stationary.Environment.JerryCan_GER1_1 nn 75920.08 192240.59 110.00 
-  Static124 Stationary.Environment.JerryCan_GER1_1 nn 75910.47 192250.67 110.00 
-  Static125 Stationary.Environment.JerryCan_GER1_1 nn 75892.61 192265.78 110.00 
-  Static126 Stationary.Environment.JerryCan_GER1_1 nn 75885.74 192259.83 110.00 
-  Static127 Stationary.Environment.JerryCan_GER1_1 nn 75890.78 192246.55 110.00 
-  Static128 Stationary.Environment.JerryCan_GER1_1 nn 75894.90 192237.84 110.00 
-  Static129 Stationary.Environment.JerryCan_GER1_1 nn 75893.98 192226.86 110.00 
-  Static130 Stationary.Environment.JerryCan_GER1_1 nn 75880.71 192222.73 110.00 
-  Static131 Stationary.Environment.JerryCan_GER1_1 nn 75870.18 192212.67 110.00 
-  Static132 Stationary.Environment.JerryCan_GER1_1 nn 75860.11 192223.20 110.00 
-  Static133 Stationary.Environment.JerryCan_GER1_1 nn 75849.58 192240.59 110.00 
-  Static134 Stationary.Environment.JerryCan_GER1_1 nn 75834.93 192231.44 110.00 
-  Static135 Stationary.Environment.JerryCan_GER1_1 nn 75825.31 192226.41 110.00 
-  Static136 Stationary.Environment.JerryCan_GER1_1 nn 75829.43 192213.13 110.00 
-  Static137 Stationary.Environment.JerryCan_GER1_1 nn 75844.09 192204.42 110.00 
-  Static138 Stationary.Environment.JerryCan_GER1_1 nn 75845.45 192195.73 110.00 
-  Static139 Stationary.Environment.JerryCan_GER1_1 nn 75833.09 192190.23 110.00 
-  Static140 Stationary.Environment.JerryCan_GER1_1 nn 75820.73 192184.28 110.00 
-  Static141 Stationary.Environment.JerryCan_GER1_1 nn 75816.16 192193.91 110.00 
-  Static142 Stationary.Environment.JerryCan_GER1_1 nn 75806.09 192210.84 110.00 
-  Static143 Stationary.Environment.JerryCan_GER1_1 nn 75798.30 192213.13 110.00 
-  Static144 Stationary.Environment.JerryCan_GER1_1 nn 75785.48 192206.27 110.00 
-  Static145 Stationary.Environment.JerryCan_GER1_1 nn 75777.70 192197.56 110.00 
-  Static146 Stationary.Environment.JerryCan_GER1_1 nn 75779.53 192181.08 110.00 
-  Static147 Stationary.Environment.JerryCan_GER1_1 nn 75787.77 192168.27 110.00 
-  Static148 Stationary.Environment.JerryCan_GER1_1 nn 75789.60 192164.14 110.00 
-  Static149 Stationary.Environment.JerryCan_GER1_1 nn 75780.45 192158.19 110.00 
-  Static150 Stationary.Environment.JerryCan_GER1_1 nn 75773.13 192171.02 110.00 
-  Static151 Stationary.Environment.JerryCan_GER1_1 nn 75765.34 192180.63 110.00 
-  Static152 Stationary.Environment.JerryCan_GER1_1 nn 75759.39 192192.53 110.00 
-  Static153 Stationary.Weapons_.Torpedo_T_F5 nn 75852.78 192236.02 -65.00 
-  Static154 Stationary.Weapons_.Torpedo_T_F5 nn 75880.71 192247.47 -65.00 
-  Static155 Stationary.Weapons_.Torpedo_T_F5 nn 75902.23 192255.25 -65.00 
-  Static156 Stationary.Weapons_.Torpedo_T_F5 nn 75922.37 192275.84 -65.00 
-  Static157 Stationary.Weapons_.Torpedo_T_F5 nn 75956.25 192297.83 -65.00 
-  Static158 Stationary.Weapons_.Torpedo_T_F5 nn 75987.38 192290.95 -65.00 
-  Static159 Stationary.Weapons_.Torpedo_T_F5 nn 75978.22 192277.22 -65.00 
-  Static160 Stationary.Weapons_.Torpedo_T_F5 nn 75948.46 192260.73 -65.00 
-  Static161 Stationary.Weapons_.Torpedo_T_F5 nn 75920.54 192242.89 -65.00 
-  Static162 Stationary.Weapons_.Torpedo_T_F5 nn 75875.67 192225.95 -65.00 
-  Static166 Stationary.Weapons_.Torpedo_T_F5 nn 75859.65 192213.58 -65.00 
-  Static167 Stationary.Weapons_.Torpedo_T_F5 nn 75838.13 192205.80 -65.00 
-  Static174 Stationary.Weapons_.Torpedo_T_F5 nn 75821.20 192187.03 -65.00 
-  Static176 Stationary.Weapons_.Torpedo_T_F5 nn 75807.00 192181.53 -65.00 
-  Static177 Stationary.Weapons_.Torpedo_T_F5 nn 75793.73 192168.72 -65.00 
-  Static178 Stationary.Weapons_.Torpedo_T_F5 nn 75785.94 192187.03 -65.00 
+  Gosport_Submarine_Pens55 Stationary.Industrial.Oxygen_Facility nn 75828.94 192105.20 -140.00 
+  Gosport_Submarine_Pens56 Stationary.Industrial.Oxygen_Facility nn 75819.02 192121.17 -155.00 
+  Gosport_Submarine_Pens6 Stationary.Industrial.Oxygen_Facility nn 75843.82 192080.31 -50.00 
+  Gosport_Submarine_Pens7 Stationary.Industrial.Oxygen_Facility nn 75859.94 192093.97 -50.00 
+  Gosport_Submarine_Pens45 Stationary.Industrial.Oxygen_Facility nn 75876.27 192107.94 -50.00 
+  Gosport_Submarine_Pens44 Stationary.Industrial.Oxygen_Facility nn 75891.98 192121.31 -50.00 
+  Gosport_Submarine_Pens61 Stationary.Industrial.Oxygen_Facility nn 75809.72 192140.45 -155.00 
+  Gosport_Submarine_Pens237 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75793.28 192160.52 -150.00 /hstart 18
+  Gosport_Submarine_Pens218 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75788.06 192168.72 -150.00 /hstart 18
+  Gosport_Submarine_Pens213 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75783.98 192176.81 -150.00 /hstart 18
+  Gosport_Submarine_Pens199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75779.05 192185.13 -150.00 /hstart 18
+  Gosport_Submarine_Pens0 Stationary.Weapons_.Torpedo_T_F5 nn 75821.00 192147.33 -65.00 
+  Gosport_Submarine_Pens236 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75807.57 192167.92 -150.00 /hstart 18
+  Gosport_Submarine_Pens217 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75802.34 192176.16 -150.00 /hstart 18
+  Gosport_Submarine_Pens212 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75798.25 192184.27 -150.00 /hstart 18
+  Gosport_Submarine_Pens57 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75814.76 192175.84 120.00 
+  Gosport_Submarine_Pens241 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75819.80 192175.41 -150.00 /hstart 20
+  Gosport_Submarine_Pens221 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75814.57 192183.63 -150.00 /hstart 20
+  Gosport_Submarine_Pens216 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75810.47 192191.70 -150.00 /hstart 20
+  Gosport_Submarine_Pens240 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75836.65 192185.91 -150.00 /hstart 20
+  Gosport_Submarine_Pens39 Stationary.Industrial.Oxygen_Facility nn 75838.10 192186.42 -65.00 
+  Gosport_Submarine_Pens113 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75901.83 192128.02 -65.00 
+  Gosport_Submarine_Pens29 Stationary.Industrial.Oxygen_Facility nn 75904.05 192131.97 -50.00 
+  Gosport_Submarine_Pens30 Stationary.Industrial.Oxygen_Facility nn 75921.19 192146.47 -50.00 
+  Gosport_Submarine_Pens121 Stationary.Weapons_.Torpedo_T_F5 nn 75931.09 192150.66 -65.00 
+  Gosport_Submarine_Pens25 Stationary.Industrial.Oxygen_Facility nn 75935.41 192161.11 -50.00 
+  Gosport_Submarine_Pens23 Stationary.Weapons_.Torpedo_T_F5 nn 75933.79 192170.27 -65.00 
+  Gosport_Submarine_Pens26 Stationary.Industrial.Oxygen_Facility nn 75951.53 192174.77 -50.00 
+  Gosport_Submarine_Pens27 Stationary.Industrial.Oxygen_Facility nn 75966.43 192187.31 -50.00 
+  Gosport_Submarine_Pens10 tobruk:Stationary.Environment.50meterStonewall nn 75770.76 192194.13 -65.00 
+  Gosport_Submarine_Pens201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75774.94 192193.19 -150.00 /hstart 18
+  Gosport_Submarine_Pens20 Stationary.Environment.PortCrane1_FRA1 nn 75765.26 192204.73 -250.00 
+  Gosport_Submarine_Pens183 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75771.13 192201.66 -150.00 /hstart 18
+  Gosport_Submarine_Pens200 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75793.31 192192.53 -150.00 /hstart 18
+  Gosport_Submarine_Pens19 ShipUnit.Boat_42ft_SailingLaunch gb 75776.85 192213.22 -245.00 /sleep 1440/skill 0/slowfire 100
+  Gosport_Submarine_Pens197 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75789.23 192200.61 -150.00 /hstart 18
+  Gosport_Submarine_Pens182 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75785.41 192209.09 -150.00 /hstart 18
+  Gosport_Submarine_Pens76 Stationary.Weapons_.Torpedo_T_F5 nn 75792.41 192204.22 -65.00 
+  Gosport_Submarine_Pens11 tobruk:Stationary.Environment.50meterStonewall nn 75793.65 192206.69 -65.00 
+  Gosport_Submarine_Pens198 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75805.53 192200.02 -150.00 /hstart 20
+  Gosport_Submarine_Pens33 Stationary.Environment.PortCrane1_FRA1 nn 75789.34 192217.34 -220.00 
+  Gosport_Submarine_Pens50 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75806.57 192203.28 -65.00 
+  Gosport_Submarine_Pens193 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75801.44 192208.11 -150.00 /hstart 20
+  Gosport_Submarine_Pens188 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75797.63 192216.58 -150.00 /hstart 20
+  Gosport_Submarine_Pens220 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75831.49 192194.13 -150.00 /hstart 20
+  Gosport_Submarine_Pens215 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75827.38 192202.20 -150.00 /hstart 20
+  Gosport_Submarine_Pens195 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75822.43 192210.50 -150.00 /hstart 20
+  Gosport_Submarine_Pens51 Stationary.Weapons_.Torpedo_T_F5 nn 75836.34 192197.55 -65.00 
+  Gosport_Submarine_Pens192 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75818.35 192218.59 -150.00 /hstart 20
+  Gosport_Submarine_Pens12 tobruk:Stationary.Environment.50meterStonewall nn 75817.45 192220.45 -65.00 
+  Gosport_Submarine_Pens187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75814.53 192227.05 -150.00 /hstart 20
+  Gosport_Submarine_Pens34 Stationary.Environment.PortCrane1_FRA1 nn 75812.63 192231.45 -220.00 
+  Gosport_Submarine_Pens77 Stationary.Weapons_.Torpedo_T_F5 nn 75835.82 192225.94 -65.00 
+  Gosport_Submarine_Pens21 tobruk:ShipUnit.U-class_SS gb 75822.18 192241.67 120.00 /sleep 1440/skill 0/slowfire 100
+  Gosport_Submarine_Pens342 Stationary.Environment.JerryCan_GER1_1 nn 75855.67 192196.72 110.00 
+  Gosport_Submarine_Pens239 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75862.32 192200.45 -150.00 /hstart 20
+  Gosport_Submarine_Pens58 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75861.88 192202.83 120.00 
+  Gosport_Submarine_Pens219 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75857.09 192208.67 -150.00 /hstart 20
+  Gosport_Submarine_Pens214 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75853.00 192216.78 -150.00 /hstart 20
+  Gosport_Submarine_Pens194 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75848.08 192225.08 -150.00 /hstart 20
+  Gosport_Submarine_Pens191 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75843.98 192233.16 -150.00 /hstart 20
+  Gosport_Submarine_Pens13 tobruk:Stationary.Environment.50meterStonewall nn 75844.22 192236.86 -65.00 
+  Gosport_Submarine_Pens186 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75840.16 192241.63 -150.00 /hstart 20
+  Gosport_Submarine_Pens40 Stationary.Industrial.Oxygen_Facility nn 75875.58 192206.89 -65.00 
+  Gosport_Submarine_Pens35 Stationary.Environment.PortCrane1_FRA1 nn 75840.38 192244.45 80.00 
+  Gosport_Submarine_Pens49 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75861.31 192228.75 -65.00 
+  Gosport_Submarine_Pens238 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75887.94 192215.63 -150.00 /hstart 20
+  Gosport_Submarine_Pens211 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75882.76 192223.84 -150.00 /hstart 20
+  Gosport_Submarine_Pens209 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75878.66 192231.92 -150.00 /hstart 20
+  Gosport_Submarine_Pens46 Stationary.Weapons_.Torpedo_T_F5 nn 75891.80 192218.16 -65.00 
+  Gosport_Submarine_Pens190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75873.73 192240.20 -150.00 /hstart 20
+  Gosport_Submarine_Pens189 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75869.62 192248.31 -150.00 /hstart 20
+  Gosport_Submarine_Pens2 Stationary.Weapons_.Torpedo_T_F5 nn 75900.27 192221.81 -65.00 
+  Gosport_Submarine_Pens14 tobruk:Stationary.Environment.50meterStonewall nn 75871.09 192251.41 -65.00 
+  Gosport_Submarine_Pens175 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75899.94 192255.06 -150.00 /hstart 20
+  Gosport_Submarine_Pens59 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75907.94 192229.63 120.00 
+  Gosport_Submarine_Pens234 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75914.19 192230.48 -150.00 /hstart 20
+  Gosport_Submarine_Pens210 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75908.97 192238.70 -150.00 /hstart 20
+  Gosport_Submarine_Pens208 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75904.88 192246.80 -150.00 /hstart 20
+  Gosport_Submarine_Pens41 Stationary.Industrial.Oxygen_Facility nn 75929.48 192239.48 -95.00 
+  Gosport_Submarine_Pens227 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75940.27 192245.39 -150.00 /hstart 20
+  Gosport_Submarine_Pens207 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75935.06 192253.61 -150.00 /hstart 20
+  Gosport_Submarine_Pens60 tobruk:Stationary.Airfield.LawsHangerGravesend nn 75950.38 192254.19 120.00 
+  Gosport_Submarine_Pens28 Stationary.Industrial.Oxygen_Facility nn 75980.94 192199.98 -50.00 
+  Gosport_Submarine_Pens24 Stationary.Industrial.Oxygen_Facility nn 75995.86 192212.56 -50.00 
+  Gosport_Submarine_Pens52 Stationary.Industrial.Oxygen_Facility nn 76011.55 192225.30 -50.00 
+  Gosport_Submarine_Pens53 Stationary.Industrial.Oxygen_Facility nn 76026.68 192237.86 -50.00 
+  Gosport_Submarine_Pens54 Stationary.Industrial.Oxygen_Facility nn 76040.91 192250.41 -50.00 
+  Gosport_Submarine_Pens185 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75865.81 192256.78 -150.00 /hstart 20
+  Gosport_Submarine_Pens36 Stationary.Environment.PortCrane1_FRA1 nn 75865.55 192261.67 80.00 
+  Gosport_Submarine_Pens78 Stationary.Weapons_.Torpedo_T_F5 nn 75867.01 192263.70 -65.00 
+  Gosport_Submarine_Pens196 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75895.85 192263.19 -150.00 /hstart 20
+  Gosport_Submarine_Pens15 tobruk:Stationary.Environment.50meterStonewall nn 75896.66 192267.13 -65.00 
+  Gosport_Submarine_Pens184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75892.03 192271.61 -150.00 /hstart 20
+  Gosport_Submarine_Pens37 Stationary.Environment.PortCrane1_FRA1 nn 75892.70 192276.45 -235.00 
+  Gosport_Submarine_Pens48 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75906.94 192256.30 -65.00 
+  Gosport_Submarine_Pens206 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75930.94 192261.69 -150.00 /hstart 20
+  Gosport_Submarine_Pens172 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75926.03 192270.00 -150.00 /hstart 20
+  Gosport_Submarine_Pens16 tobruk:Stationary.Environment.50meterStonewall nn 75919.08 192279.44 -65.00 
+  Gosport_Submarine_Pens173 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75921.91 192278.09 -150.00 /hstart 20
+  Gosport_Submarine_Pens38 Stationary.Environment.PortCrane1_FRA1 nn 75914.30 192289.03 -175.00 
+  Gosport_Submarine_Pens163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75918.11 192286.55 -150.00 /hstart 20
+  Gosport_Submarine_Pens79 Stationary.Weapons_.Torpedo_T_F5 nn 75934.38 192286.56 -65.00 
+  Gosport_Submarine_Pens47 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 75949.49 192273.33 -65.00 
+  Gosport_Submarine_Pens226 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75966.16 192260.39 -150.00 /hstart 19
+  Gosport_Submarine_Pens204 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75960.96 192268.61 -150.00 /hstart 19
+  Gosport_Submarine_Pens205 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75956.84 192276.70 -150.00 /hstart 19
+  Gosport_Submarine_Pens17 tobruk:Stationary.Environment.50meterStonewall nn 75941.51 192293.36 -65.00 
+  Gosport_Submarine_Pens170 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75951.92 192285.02 -150.00 /hstart 19
+  Gosport_Submarine_Pens171 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75947.83 192293.09 -150.00 /hstart 19
+  Gosport_Submarine_Pens42 Stationary.Environment.PortCrane1_FRA1 nn 75937.46 192303.19 65.00 
+  Gosport_Submarine_Pens165 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75944.04 192301.53 -150.00 /hstart 19
+  Gosport_Submarine_Pens22 ShipUnit.Boat_42ft_SailingLaunch nn 75946.63 192318.05 -60.00 /sleep 1440/skill 2/slowfire 100
+  Gosport_Submarine_Pens18 tobruk:Stationary.Environment.50meterStonewall nn 75967.27 192309.81 -65.00 
+  Gosport_Submarine_Pens43 Stationary.Environment.PortCrane1_FRA1 nn 75963.70 192319.34 -260.00 
+  Gosport_Submarine_Pens222 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75991.88 192274.98 -150.00 /hstart 18
+  Gosport_Submarine_Pens203 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75986.68 192283.81 -150.00 /hstart 18
+  Gosport_Submarine_Pens202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75982.60 192291.33 -150.00 /hstart 18
+  Gosport_Submarine_Pens3 Stationary.Weapons_.Torpedo_T_F5 nn 75973.16 192302.44 -65.00 
+  Gosport_Submarine_Pens169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75977.64 192300.17 -150.00 /hstart 18
+  Gosport_Submarine_Pens168 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75973.57 192307.70 -150.00 /hstart 18
+  Gosport_Submarine_Pens164 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 75969.76 192316.75 -150.00 /hstart 18
+  Gosport_Submarine_Pens1 tobruk:Stationary.Environment.50meterStonewall nn 75992.94 192295.83 -150.00 
+  Gosport_Submarine_Pens8 tobruk:Stationary.Environment.50meterStonewall nn 75982.73 192307.02 -150.00 
+  Gosport_Submarine_Pens62 Stationary.Industrial.Oxygen_Facility nn 76019.65 192271.61 -215.00 
+  Gosport_Submarine_Pens5 Stationary.Environment.PortCrane1_FRA1 de 75994.68 192299.50 65.00 
+  Gosport_Submarine_Pens32 Stationary.Environment.PortCrane1_FRA1 de 75986.52 192309.84 35.00 
+  Gosport_Submarine_Pens9 tobruk:Stationary.Environment.50meterStonewall nn 75985.70 192319.88 -60.00 
+  Gosport_Submarine_Pens4 tobruk:Stationary.Environment.50meterStonewall nn 75974.75 192320.30 -150.00 
+  Gosport_Submarine_Pens31 Stationary.Environment.PortCrane1_FRA1 nn 75982.91 192326.45 95.00 
+  Gosport_Submarine_Pens63 Stationary.Environment.JerryCan_GER1_1 nn 76017.52 192265.78 110.00 
+  Gosport_Submarine_Pens64 Stationary.Environment.JerryCan_GER1_1 nn 76025.69 192252.09 110.00 
+  Gosport_Submarine_Pens65 Stationary.Environment.JerryCan_GER1_1 nn 76014.26 192237.92 110.00 
+  Gosport_Submarine_Pens66 Stationary.Environment.JerryCan_GER1_1 nn 76005.58 192228.33 110.00 
+  Gosport_Submarine_Pens67 Stationary.Environment.JerryCan_GER1_1 nn 75996.01 192218.70 110.00 
+  Gosport_Submarine_Pens68 Stationary.Environment.JerryCan_GER1_1 nn 75980.51 192207.64 110.00 
+  Gosport_Submarine_Pens69 Stationary.Environment.JerryCan_GER1_1 nn 75969.06 192200.31 110.00 
+  Gosport_Submarine_Pens70 Stationary.Environment.JerryCan_GER1_1 nn 75957.16 192188.86 110.00 
+  Gosport_Submarine_Pens71 Stationary.Environment.JerryCan_GER1_1 nn 75943.88 192181.53 110.00 
+  Gosport_Submarine_Pens72 Stationary.Environment.JerryCan_GER1_1 nn 75930.61 192171.02 110.00 
+  Gosport_Submarine_Pens73 Stationary.Environment.JerryCan_GER1_1 nn 75920.99 192155.91 110.00 
+  Gosport_Submarine_Pens74 Stationary.Environment.JerryCan_GER1_1 nn 75911.38 192147.20 110.00 
+  Gosport_Submarine_Pens75 Stationary.Environment.JerryCan_GER1_1 nn 75898.56 192138.97 110.00 
+  Gosport_Submarine_Pens80 Stationary.Environment.JerryCan_GER1_1 nn 75882.16 192129.98 110.00 
+  Gosport_Submarine_Pens81 Stationary.Environment.JerryCan_GER1_1 nn 75859.79 192109.94 110.00 
+  Gosport_Submarine_Pens82 Stationary.Environment.JerryCan_GER1_1 nn 75846.55 192099.45 110.00 
+  Gosport_Submarine_Pens83 Stationary.Environment.JerryCan_GER1_1 nn 75836.98 192104.05 110.00 
+  Gosport_Submarine_Pens84 Stationary.Environment.JerryCan_GER1_1 nn 75828.30 192115.48 110.00 
+  Gosport_Submarine_Pens85 Stationary.Environment.JerryCan_GER1_1 nn 75819.57 192133.70 110.00 
+  Gosport_Submarine_Pens86 Stationary.Environment.JerryCan_GER1_1 nn 75809.50 192135.06 110.00 
+  Gosport_Submarine_Pens87 Stationary.Environment.JerryCan_GER1_1 nn 75816.41 192108.17 110.00 
+  Gosport_Submarine_Pens88 Stationary.Environment.JerryCan_GER1_1 nn 75827.84 192093.55 110.00 
+  Gosport_Submarine_Pens89 Stationary.Environment.JerryCan_GER1_1 nn 75840.55 192085.19 110.00 
+  Gosport_Submarine_Pens90 Stationary.Environment.JerryCan_GER1_1 nn 75877.50 192095.02 110.00 
+  Gosport_Submarine_Pens91 Stationary.Environment.JerryCan_GER1_1 nn 75889.87 192110.58 110.00 
+  Gosport_Submarine_Pens92 Stationary.Environment.JerryCan_GER1_1 nn 75900.39 192125.69 110.00 
+  Gosport_Submarine_Pens93 Stationary.Environment.JerryCan_GER1_1 nn 75923.28 192140.80 110.00 
+  Gosport_Submarine_Pens94 Stationary.Environment.JerryCan_GER1_1 nn 75944.34 192157.73 110.00 
+  Gosport_Submarine_Pens95 Stationary.Environment.JerryCan_GER1_1 nn 75952.13 192166.44 110.00 
+  Gosport_Submarine_Pens96 Stationary.Environment.JerryCan_GER1_1 nn 75976.85 192187.95 110.00 
+  Gosport_Submarine_Pens97 Stationary.Environment.JerryCan_GER1_1 nn 75990.59 192208.09 110.00 
+  Gosport_Submarine_Pens98 Stationary.Environment.JerryCan_GER1_1 nn 76009.73 192220.52 110.00 
+  Gosport_Submarine_Pens99 Stationary.Environment.JerryCan_GER1_1 nn 76029.04 192230.98 110.00 
+  Gosport_Submarine_Pens100 Stationary.Environment.JerryCan_GER1_1 nn 76037.19 192245.20 110.00 
+  Gosport_Submarine_Pens101 Stationary.Environment.JerryCan_GER1_1 nn 76044.90 192263.52 110.00 
+  Gosport_Submarine_Pens102 Stationary.Environment.JerryCan_GER1_1 nn 76033.90 192271.28 110.00 
+  Gosport_Submarine_Pens103 Stationary.Environment.JerryCan_GER1_1 nn 76022.07 192271.28 110.00 
+  Gosport_Submarine_Pens104 Stationary.Environment.JerryCan_GER1_1 nn 75987.84 192274.47 110.00 
+  Gosport_Submarine_Pens105 Stationary.Environment.JerryCan_GER1_1 nn 75975.02 192290.50 110.00 
+  Gosport_Submarine_Pens106 Stationary.Environment.JerryCan_GER1_1 nn 75964.48 192301.03 110.00 
+  Gosport_Submarine_Pens107 Stationary.Environment.JerryCan_GER1_1 nn 75950.30 192306.98 110.00 
+  Gosport_Submarine_Pens108 Stationary.Environment.JerryCan_GER1_1 nn 75954.88 192297.83 110.00 
+  Gosport_Submarine_Pens109 Stationary.Environment.JerryCan_GER1_1 nn 75957.62 192285.92 110.00 
+  Gosport_Submarine_Pens110 Stationary.Environment.JerryCan_GER1_1 nn 75965.86 192275.39 110.00 
+  Gosport_Submarine_Pens111 Stationary.Environment.JerryCan_GER1_1 nn 75970.44 192269.44 110.00 
+  Gosport_Submarine_Pens112 Stationary.Environment.JerryCan_GER1_1 nn 75963.12 192262.58 110.00 
+  Gosport_Submarine_Pens114 Stationary.Environment.JerryCan_GER1_1 nn 75951.21 192257.08 110.00 
+  Gosport_Submarine_Pens115 Stationary.Environment.JerryCan_GER1_1 nn 75941.59 192262.11 110.00 
+  Gosport_Submarine_Pens116 Stationary.Environment.JerryCan_GER1_1 nn 75931.52 192274.02 110.00 
+  Gosport_Submarine_Pens117 Stationary.Environment.JerryCan_GER1_1 nn 75924.66 192280.89 110.00 
+  Gosport_Submarine_Pens118 Stationary.Environment.JerryCan_GER1_1 nn 75915.50 192277.67 110.00 
+  Gosport_Submarine_Pens119 Stationary.Environment.JerryCan_GER1_1 nn 75918.70 192266.23 110.00 
+  Gosport_Submarine_Pens120 Stationary.Environment.JerryCan_GER1_1 nn 75923.28 192258.00 110.00 
+  Gosport_Submarine_Pens122 Stationary.Environment.JerryCan_GER1_1 nn 75926.95 192244.72 110.00 
+  Gosport_Submarine_Pens123 Stationary.Environment.JerryCan_GER1_1 nn 75920.08 192240.59 110.00 
+  Gosport_Submarine_Pens124 Stationary.Environment.JerryCan_GER1_1 nn 75910.47 192250.67 110.00 
+  Gosport_Submarine_Pens125 Stationary.Environment.JerryCan_GER1_1 nn 75892.61 192265.78 110.00 
+  Gosport_Submarine_Pens126 Stationary.Environment.JerryCan_GER1_1 nn 75885.74 192259.83 110.00 
+  Gosport_Submarine_Pens127 Stationary.Environment.JerryCan_GER1_1 nn 75890.78 192246.55 110.00 
+  Gosport_Submarine_Pens128 Stationary.Environment.JerryCan_GER1_1 nn 75894.90 192237.84 110.00 
+  Gosport_Submarine_Pens129 Stationary.Environment.JerryCan_GER1_1 nn 75893.98 192226.86 110.00 
+  Gosport_Submarine_Pens130 Stationary.Environment.JerryCan_GER1_1 nn 75880.71 192222.73 110.00 
+  Gosport_Submarine_Pens131 Stationary.Environment.JerryCan_GER1_1 nn 75870.18 192212.67 110.00 
+  Gosport_Submarine_Pens132 Stationary.Environment.JerryCan_GER1_1 nn 75860.11 192223.20 110.00 
+  Gosport_Submarine_Pens133 Stationary.Environment.JerryCan_GER1_1 nn 75849.58 192240.59 110.00 
+  Gosport_Submarine_Pens134 Stationary.Environment.JerryCan_GER1_1 nn 75834.93 192231.44 110.00 
+  Gosport_Submarine_Pens135 Stationary.Environment.JerryCan_GER1_1 nn 75825.31 192226.41 110.00 
+  Gosport_Submarine_Pens136 Stationary.Environment.JerryCan_GER1_1 nn 75829.43 192213.13 110.00 
+  Gosport_Submarine_Pens137 Stationary.Environment.JerryCan_GER1_1 nn 75844.09 192204.42 110.00 
+  Gosport_Submarine_Pens138 Stationary.Environment.JerryCan_GER1_1 nn 75845.45 192195.73 110.00 
+  Gosport_Submarine_Pens139 Stationary.Environment.JerryCan_GER1_1 nn 75833.09 192190.23 110.00 
+  Gosport_Submarine_Pens140 Stationary.Environment.JerryCan_GER1_1 nn 75820.73 192184.28 110.00 
+  Gosport_Submarine_Pens141 Stationary.Environment.JerryCan_GER1_1 nn 75816.16 192193.91 110.00 
+  Gosport_Submarine_Pens142 Stationary.Environment.JerryCan_GER1_1 nn 75806.09 192210.84 110.00 
+  Gosport_Submarine_Pens143 Stationary.Environment.JerryCan_GER1_1 nn 75798.30 192213.13 110.00 
+  Gosport_Submarine_Pens144 Stationary.Environment.JerryCan_GER1_1 nn 75785.48 192206.27 110.00 
+  Gosport_Submarine_Pens145 Stationary.Environment.JerryCan_GER1_1 nn 75777.70 192197.56 110.00 
+  Gosport_Submarine_Pens146 Stationary.Environment.JerryCan_GER1_1 nn 75779.53 192181.08 110.00 
+  Gosport_Submarine_Pens147 Stationary.Environment.JerryCan_GER1_1 nn 75787.77 192168.27 110.00 
+  Gosport_Submarine_Pens148 Stationary.Environment.JerryCan_GER1_1 nn 75789.60 192164.14 110.00 
+  Gosport_Submarine_Pens149 Stationary.Environment.JerryCan_GER1_1 nn 75780.45 192158.19 110.00 
+  Gosport_Submarine_Pens150 Stationary.Environment.JerryCan_GER1_1 nn 75773.13 192171.02 110.00 
+  Gosport_Submarine_Pens151 Stationary.Environment.JerryCan_GER1_1 nn 75765.34 192180.63 110.00 
+  Gosport_Submarine_Pens152 Stationary.Environment.JerryCan_GER1_1 nn 75759.39 192192.53 110.00 
+  Gosport_Submarine_Pens153 Stationary.Weapons_.Torpedo_T_F5 nn 75852.78 192236.02 -65.00 
+  Gosport_Submarine_Pens154 Stationary.Weapons_.Torpedo_T_F5 nn 75880.71 192247.47 -65.00 
+  Gosport_Submarine_Pens155 Stationary.Weapons_.Torpedo_T_F5 nn 75902.23 192255.25 -65.00 
+  Gosport_Submarine_Pens156 Stationary.Weapons_.Torpedo_T_F5 nn 75922.37 192275.84 -65.00 
+  Gosport_Submarine_Pens157 Stationary.Weapons_.Torpedo_T_F5 nn 75956.25 192297.83 -65.00 
+  Gosport_Submarine_Pens158 Stationary.Weapons_.Torpedo_T_F5 nn 75987.38 192290.95 -65.00 
+  Gosport_Submarine_Pens159 Stationary.Weapons_.Torpedo_T_F5 nn 75978.22 192277.22 -65.00 
+  Gosport_Submarine_Pens160 Stationary.Weapons_.Torpedo_T_F5 nn 75948.46 192260.73 -65.00 
+  Gosport_Submarine_Pens161 Stationary.Weapons_.Torpedo_T_F5 nn 75920.54 192242.89 -65.00 
+  Gosport_Submarine_Pens162 Stationary.Weapons_.Torpedo_T_F5 nn 75875.67 192225.95 -65.00 
+  Gosport_Submarine_Pens166 Stationary.Weapons_.Torpedo_T_F5 nn 75859.65 192213.58 -65.00 
+  Gosport_Submarine_Pens167 Stationary.Weapons_.Torpedo_T_F5 nn 75838.13 192205.80 -65.00 
+  Gosport_Submarine_Pens174 Stationary.Weapons_.Torpedo_T_F5 nn 75821.20 192187.03 -65.00 
+  Gosport_Submarine_Pens176 Stationary.Weapons_.Torpedo_T_F5 nn 75807.00 192181.53 -65.00 
+  Gosport_Submarine_Pens177 Stationary.Weapons_.Torpedo_T_F5 nn 75793.73 192168.72 -65.00 
+  Gosport_Submarine_Pens178 Stationary.Weapons_.Torpedo_T_F5 nn 75785.94 192187.03 -65.00 
 [Buildings]
 [BuildingsLinks]

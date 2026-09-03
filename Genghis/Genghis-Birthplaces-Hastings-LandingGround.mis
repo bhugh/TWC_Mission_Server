@@ -1,0 +1,241 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 350000 300000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Hastings_LG72 tobruk:Stationary.BeaufighterMkIC nn 0.00 0.00 0.00 
+  Hastings_LG91 tobruk:Stationary.BeaufighterMkIC nn 194589.03 208108.98 -690.00 
+  Hastings_LG182 tobruk:Stationary.WellingtonMkIc_t nn 194560.22 208109.56 -645.00 
+  Hastings_LG60 Stationary.Environment.CamoNetPlaneBig nn 194593.47 208112.38 -330.00 
+  Hastings_LG279 tobruk:Stationary.WellingtonMkIc_t nn 194545.28 208128.19 -660.00 
+  Hastings_LG36 Stationary.Environment.JerryCan_GER1_1 nn 194620.05 208093.55 -330.00 
+  Hastings_LG6 tobruk:Stationary.Environment.Windsock_v2 nn 194624.69 208094.80 -65.00 
+  Hastings_LG160 Stationary.Environment.TentMedicLarge_UK1 nn 194578.50 208135.56 -60.00 
+  Hastings_LG93 tobruk:Stationary.BeaufighterMkIC nn 194563.03 208158.75 -690.00 
+  Hastings_LG59 Stationary.Environment.CamoNetPlaneBig nn 194564.20 208159.81 -330.00 
+  Hastings_LG184 tobruk:Stationary.WellingtonMkIc_t gb 194741.59 208160.05 -870.00 
+  Hastings_LG89 tobruk:Stationary.BeaufighterMkIC nn 194748.50 208177.59 -510.00 
+  Hastings_LG90 tobruk:Stationary.BeaufighterMkIC nn 194735.38 208140.98 -510.00 
+  Hastings_LG94 tobruk:Stationary.BeaufighterMkIC nn 194558.02 208197.44 -690.00 
+  Hastings_LG95 tobruk:Stationary.BeaufighterMkIC nn 194536.36 208195.88 -750.00 
+  Hastings_LG71 Stationary.Environment.CamoNetPlaneBig nn 194711.30 208226.89 -510.00 
+  Hastings_LG88 tobruk:Stationary.BeaufighterMkIC nn 194735.27 208197.11 -510.00 
+  Hastings_LG183 tobruk:Stationary.WellingtonMkIc_t gb 194709.66 208226.09 -520.00 
+  Hastings_LG87 tobruk:Stationary.BeaufighterMkIC nn 194698.88 208200.02 -495.00 
+  Hastings_LG124 tobruk:Stationary.WellingtonMkIc_t nn 194415.34 208273.11 -600.00 
+  Hastings_LG123 tobruk:Stationary.WellingtonMkIc_t nn 194404.97 208295.13 -600.00 
+  Hastings_LG104 tobruk:Stationary.WellingtonMkIc_t nn 194393.36 208312.97 -600.00 
+  Hastings_LG96 tobruk:Stationary.BeaufighterMkIC nn 194460.11 208287.20 -690.00 
+  Hastings_LG97 tobruk:Stationary.BeaufighterMkIC nn 194439.80 208313.64 -690.00 
+  Hastings_LG57 Stationary.Environment.CamoNetPlaneBig nn 194438.67 208315.06 -330.00 
+  Hastings_LG86 tobruk:Stationary.BeaufighterMkIC nn 194657.19 208307.03 -510.00 
+  Hastings_LG158 Stationary.Environment.TentMedicLarge_UK1 nn 194689.83 208257.25 -60.00 
+  Hastings_LG122 tobruk:Stationary.WellingtonMkIc_t nn 194356.89 208373.22 -600.00 
+  Hastings_LG101 tobruk:Stationary.WellingtonMkIc_t nn 194369.02 208353.86 -600.00 
+  Hastings_LG121 tobruk:Stationary.BeaufighterMkIC nn 194390.34 208338.36 -690.00 
+  Hastings_LG98 tobruk:Stationary.BeaufighterMkIC nn 194413.11 208349.80 -690.00 
+  Hastings_LG99 tobruk:Stationary.BeaufighterMkIC nn 194392.61 208386.33 -690.00 
+  Hastings_LG33 Stationary.Environment.JerryCan_GER1_1 nn 194633.59 208356.13 -330.00 
+  Hastings_LG280 tobruk:Stationary.WellingtonMkIc_t nn 194661.38 208378.09 -810.00 
+  Hastings_LG23 Stationary.Environment.CamoNetPlaneBig nn 194628.61 208370.05 -150.00 
+  Hastings_LG85 tobruk:Stationary.BeaufighterMkIC nn 194641.59 208332.63 -510.00 
+  Hastings_LG84 tobruk:Stationary.BeaufighterMkIC nn 194642.38 208399.00 -405.00 
+  Hastings_LG281 tobruk:Stationary.WellingtonMkIc_t nn 194627.55 208370.55 -870.00 
+  Hastings_LG190 tobruk:Stationary.WellingtonMkIc_t nn 194339.31 208390.70 -690.00 
+  Hastings_LG187 tobruk:Stationary.WellingtonMkIc_t nn 194322.31 208417.98 -690.00 
+  Hastings_LG186 tobruk:Stationary.WellingtonMkIc_t nn 194315.02 208446.45 -780.00 
+  Hastings_LG191 tobruk:Stationary.WellingtonMkIc_t nn 194359.92 208407.81 -690.00 
+  Hastings_LG188 tobruk:Stationary.WellingtonMkIc_t nn 194342.94 208428.98 -690.00 
+  Hastings_LG189 tobruk:Stationary.WellingtonMkIc_t nn 194364.75 208441.23 -690.00 
+  Hastings_LG56 Stationary.Environment.CamoNetPlaneBig nn 194393.69 208386.55 -330.00 
+  Hastings_LG192 tobruk:Stationary.WellingtonMkIc_t nn 194378.06 208416.47 -690.00 
+  Hastings_LG34 Stationary.Environment.JerryCan_GER1_1 nn 194604.55 208405.47 -330.00 
+  Hastings_LG282 tobruk:Stationary.WellingtonMkIc_t nn 194620.61 208439.55 -810.00 
+  Hastings_LG8 Stationary.Environment.CamoNetPlaneBig nn 194598.23 208418.92 -150.00 
+  Hastings_LG83 tobruk:Stationary.BeaufighterMkIC nn 194629.09 208419.11 -560.00 
+  Hastings_LG82 tobruk:Stationary.BeaufighterMkIC nn 194597.22 208419.27 -510.00 
+  Hastings_LG196 tobruk:Stationary.WellingtonMkIc_t nn 194293.73 208493.84 -690.00 
+  Hastings_LG185 tobruk:Stationary.WellingtonMkIc_t nn 194305.91 208466.48 -780.00 
+  Hastings_LG102 tobruk:Stationary.BeaufighterMkIC nn 194342.44 208473.41 -690.00 
+  Hastings_LG55 Stationary.Environment.CamoNetPlaneBig nn 194343.31 208472.34 -330.00 
+  Hastings_LG163 Stationary.Environment.TentMedicLarge_UK1 nn 194327.34 208494.83 -60.00 
+  Hastings_LG194 tobruk:Stationary.WellingtonMkIc_t nn 194321.66 208513.25 -690.00 
+  Hastings_LG3 Stationary.RacingSigns.RacingSign1 nn 194482.95 208457.59 -330.00 /hstart -15
+  Hastings_LG2 Stationary.RacingSigns.RacingSign1 nn 194469.80 208479.98 -330.00 /hstart -15
+  Hastings_LG35 Stationary.Environment.JerryCan_GER1_1 nn 194566.75 208461.84 -330.00 
+  Hastings_LG283 tobruk:Stationary.WellingtonMkIc_t nn 194592.48 208489.80 -735.00 
+  Hastings_LG9 Stationary.Environment.CamoNetPlaneBig nn 194567.00 208468.97 -150.00 
+  Hastings_LG81 tobruk:Stationary.BeaufighterMkIC nn 194605.17 208463.17 -550.00 
+  Hastings_LG80 tobruk:Stationary.BeaufighterMkIC nn 194567.31 208467.98 -510.00 
+  Hastings_LG195 tobruk:Stationary.WellingtonMkIc_t nn 194277.92 208518.16 -690.00 
+  Hastings_LG106 tobruk:Stationary.BeaufighterMkIC nn 194283.20 208555.58 -690.00 
+  Hastings_LG54 Stationary.Environment.CamoNetPlaneBig nn 194284.36 208556.58 -330.00 
+  Hastings_LG164 Stationary.Environment.TentMedicLarge_UK1 nn 194265.34 208582.94 -60.00 
+  Hastings_LG193 tobruk:Stationary.WellingtonMkIc_t nn 194316.69 208536.81 -690.00 
+  Hastings_LG289 tobruk:Stationary.WellingtonMkIc_t nn 194594.98 208569.17 -870.00 
+  Hastings_LG284 tobruk:Stationary.WellingtonMkIc_t nn 194614.70 208565.81 -870.00 
+  Hastings_LG107 tobruk:Stationary.BeaufighterMkIC nn 194245.39 208620.83 -690.00 
+  Hastings_LG53 Stationary.Environment.CamoNetPlaneBig nn 194245.56 208620.84 -330.00 
+  Hastings_LG180 tobruk:Stationary.WellingtonMkIc_t gb 194497.14 208630.08 -600.00 
+  Hastings_LG79 tobruk:Stationary.BeaufighterMkIC nn 194524.33 208633.61 -510.00 
+  Hastings_LG288 tobruk:Stationary.WellingtonMkIc_t nn 194577.06 208593.70 -870.00 
+  Hastings_LG127 Stationary.Hangars.Type_C34_Medium nn 194593.56 208588.22 -60.00 
+  Hastings_LG285 tobruk:Stationary.WellingtonMkIc_t nn 194603.53 208583.03 -870.00 
+  Hastings_LG286 tobruk:Stationary.WellingtonMkIc_t nn 194596.33 208602.20 -870.00 
+  Hastings_LG287 tobruk:Stationary.WellingtonMkIc_t nn 194589.47 208613.63 -870.00 
+  Hastings_LG109 tobruk:Stationary.BeaufighterMkIC nn 194215.08 208653.42 -690.00 
+  Hastings_LG197 tobruk:Stationary.WellingtonMkIc_t nn 194234.13 208656.66 -690.00 
+  Hastings_LG167 Stationary.Environment.TentMedicLarge_UK1 nn 194203.02 208681.69 -60.00 
+  Hastings_LG198 tobruk:Stationary.WellingtonMkIc_t nn 194215.30 208674.67 -690.00 
+  Hastings_LG169 Stationary.Environment.TentMedicLarge_UK1 nn 194196.47 208693.30 -60.00 
+  Hastings_LG179 tobruk:Stationary.WellingtonMkIc_t nn 194486.28 208647.03 -600.00 
+  Hastings_LG181 tobruk:Stationary.WellingtonMkIc_t gb 194477.84 208660.95 -600.00 
+  Hastings_LG50 Stationary.Environment.JerryCan_GER1_1 nn 194466.81 208686.91 -330.00 
+  Hastings_LG11 Stationary.Environment.TentBell_UK1 nn 194467.42 208686.59 -330.00 
+  Hastings_LG78 tobruk:Stationary.BeaufighterMkIC nn 194508.61 208653.75 -510.00 
+  Hastings_LG126 tobruk:Stationary.BeaufighterMkIC nn 194545.48 208642.55 -870.00 
+  Hastings_LG125 tobruk:Stationary.BeaufighterMkIC nn 194533.36 208657.73 -870.00 
+  Hastings_LG12 Stationary.Environment.TentBell_UK1 nn 194506.42 208697.52 -330.00 
+  Hastings_LG48 Stationary.Environment.JerryCan_GER1_1 nn 194505.20 208698.30 -330.00 
+  Hastings_LG44 Stationary.Environment.JerryCan_GER1_1 nn 194528.78 208683.14 -330.00 
+  Hastings_LG112 tobruk:Stationary.WellingtonMkIc_t nn 194162.19 208749.31 -690.00 
+  Hastings_LG52 Stationary.Environment.CamoNetPlaneBig nn 194178.72 208716.00 -330.00 
+  Hastings_LG111 tobruk:Stationary.BeaufighterMkIC nn 194177.77 208723.81 -690.00 
+  Hastings_LG4 Stationary.Environment.TentBell_UK1 nn 194426.86 208745.67 -330.00 
+  Hastings_LG41 Stationary.Environment.JerryCan_GER1_1 nn 194429.73 208745.70 -330.00 
+  Hastings_LG10 Stationary.Environment.TentBell_UK1 nn 194449.47 208710.72 -330.00 
+  Hastings_LG42 Stationary.Environment.JerryCan_GER1_1 nn 194454.66 208706.31 -330.00 
+  Hastings_LG5 Stationary.Environment.TentBell_UK1 nn 194437.77 208731.66 -330.00 
+  Hastings_LG49 Stationary.Environment.JerryCan_GER1_1 nn 194437.61 208731.28 -330.00 
+  Hastings_LG13 Stationary.Environment.TentBell_UK1 nn 194487.64 208721.58 -330.00 
+  Hastings_LG14 Stationary.Environment.TentBell_UK1 nn 194469.70 208739.44 -330.00 
+  Hastings_LG43 Stationary.Environment.JerryCan_GER1_1 nn 194490.44 208718.80 -330.00 
+  Hastings_LG15 Stationary.Environment.TentBell_UK1 nn 194457.23 208756.58 -330.00 
+  Hastings_LG51 Stationary.Environment.JerryCan_GER1_1 nn 194457.00 208757.13 -330.00 
+  Hastings_LG40 Stationary.Environment.JerryCan_GER1_1 nn 194474.91 208742.22 -330.00 
+  Hastings_LG38 Stationary.Environment.JerryCan_GER1_1 nn 194111.13 208822.58 -330.00 
+  Hastings_LG114 tobruk:Stationary.BeaufighterMkIC nn 194135.25 208780.80 -690.00 
+  Hastings_LG1 Stationary.Environment.CamoNetPlaneBig nn 194135.44 208782.75 -330.00 
+  Hastings_LG115 tobruk:Stationary.BeaufighterMkIC nn 194112.06 208815.59 -690.00 
+  Hastings_LG209 tobruk:Stationary.WellingtonMkIc_t nn 194362.25 208827.80 -510.00 
+  Hastings_LG77 tobruk:Stationary.BeaufighterMkIC nn 194399.88 208789.45 -510.00 
+  Hastings_LG290 tobruk:Stationary.WellingtonMkIc_t nn 194444.05 208787.23 -870.00 
+  Hastings_LG63 Stationary.Environment.CamoNetPlaneBig nn 194407.13 208795.36 -510.00 
+  Hastings_LG291 tobruk:Stationary.WellingtonMkIc_t nn 194430.97 208759.48 -870.00 
+  Hastings_LG116 tobruk:Stationary.BeaufighterMkIC nn 194089.06 208857.23 -690.00 
+  Hastings_LG7 Stationary.Environment.CamoNetPlaneBig nn 194089.33 208856.95 -330.00 
+  Hastings_LG39 Stationary.Environment.JerryCan_GER1_1 nn 194066.77 208895.08 -330.00 
+  Hastings_LG118 tobruk:Stationary.BeaufighterMkIC nn 194081.59 208894.97 -690.00 
+  Hastings_LG64 Stationary.Environment.CamoNetPlaneBig nn 194361.83 208868.52 -510.00 
+  Hastings_LG76 tobruk:Stationary.BeaufighterMkIC nn 194361.20 208867.84 -510.00 
+  Hastings_LG200 tobruk:Stationary.WellingtonMkIc_t nn 194340.95 208855.61 -495.00 
+  Hastings_LG119 tobruk:Stationary.BeaufighterMkIC nn 194014.53 208953.63 -650.00 
+  Hastings_LG0 Stationary.Environment.CamoNetPlaneBig nn 194022.30 208925.83 -240.00 
+  Hastings_LG292 tobruk:Stationary.WellingtonMkIc_t nn 194019.36 208928.92 -585.00 
+  Hastings_LG150 Stationary.Environment.TentMedicLarge_UK1 nn 194342.63 208907.89 -60.00 
+  Hastings_LG75 tobruk:Stationary.BeaufighterMkIC nn 194320.02 208943.39 -510.00 
+  Hastings_LG65 Stationary.Environment.CamoNetPlaneBig nn 194318.50 208945.20 -510.00 
+  Hastings_LG201 tobruk:Stationary.WellingtonMkIc_t nn 194305.44 208905.95 -465.00 
+  Hastings_LG69 Stationary.Environment.JerryCan_GER1_1 nn 194056.59 208983.89 -330.00 
+  Hastings_LG173 Stationary.Environment.TentMedicLarge_UK1 nn 194073.88 208986.25 -60.00 
+  Hastings_LG120 tobruk:Stationary.BeaufighterMkIC nn 194040.19 209033.45 -660.00 
+  Hastings_LG70 Stationary.Environment.CamoNetPlaneBig nn 194015.89 209016.63 -330.00 
+  Hastings_LG74 tobruk:Stationary.BeaufighterMkIC nn 194287.14 208989.97 -510.00 
+  Hastings_LG66 Stationary.Environment.CamoNetPlaneBig nn 194281.98 209032.69 -510.00 
+  Hastings_LG203 tobruk:Stationary.WellingtonMkIc_t nn 194278.78 209030.67 -510.00 
+  Hastings_LG178 Stationary.Environment.TentMedicLarge_UK1 nn 194304.78 208978.86 -60.00 
+  Hastings_LG293 tobruk:Stationary.WellingtonMkIc_t nn 194020.77 209018.47 -690.00 
+  Hastings_LG21 tobruk:Stationary.Environment.Windsock_v2 nn 194085.64 209051.09 -65.00 
+  Hastings_LG205 tobruk:Stationary.WellingtonMkIc_t nn 194245.25 209101.64 -510.00 
+  Hastings_LG67 Stationary.Environment.CamoNetPlaneBig nn 194250.77 209104.25 -510.00 
+  Hastings_LG73 tobruk:Stationary.BeaufighterMkIC nn 194262.67 209064.92 -510.00 
+  Hastings_LG204 tobruk:Stationary.WellingtonMkIc_t nn 194318.30 209009.02 -510.00 
+  Hastings_LG206 tobruk:Stationary.WellingtonMkIc_t nn 194232.22 209137.81 -390.00 
+  Hastings_LG207 tobruk:Stationary.WellingtonMkIc_t nn 194230.13 209162.28 -450.00 
+  Hastings_LG68 Stationary.Environment.CamoNetPlaneBig nn 194189.48 209141.56 -510.00 
+  Hastings_LG208 tobruk:Stationary.WellingtonMkIc_t nn 194190.50 209140.58 -510.00 
+  Hastings_LG175 Stationary.Environment.TentMedicLarge_UK1 nn 194178.03 209168.41 -60.00 
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  HastingsLG 194436.77 208585.03 0 1000 700 1
+[HastingsLG_Runways]
+  194425.34 208607.43 -60.00 800.00 40.00 0
+[HastingsLG_Points]
+  194371.23 208522.87 11 9 7 5 3 1
+  194215.22 208958.74 2
+  194191.92 209003.96
+  194621.35 208248.48 4
+  194653.45 208206.63
+  194171.12 209042.64 6
+  194141.06 209096.46
+  194674.16 208172.20 8
+  194697.83 208136.63
+  194503.30 208550.10 10
+  194540.61 208551.35
+  194474.52 208594.28 12
+  194513.37 208594.95
+[BirthPlace]
+  "Hastings Landing Ground" 1 194441 208590 0 1 1 1 . . . 1 /Heading 0.0 /Type takeoff
+[BirthPlace0]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  Aircraft.Su-26M
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo

@@ -20,7 +20,7 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static59 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 125481.52 18431.91 0.00 /hstart -6
-  Static92 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 125470.38 18427.47 0.00 /hstart -6
+  Caen_Railyard59 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 125481.52 18431.91 0.00 /hstart -6
+  Caen_Railyard92 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 125470.38 18427.47 0.00 /hstart -6
 [Buildings]
 [BuildingsLinks]

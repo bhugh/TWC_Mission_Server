@@ -21,287 +21,230 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static249 Stationary.Environment.CamoNetPlaneBig nn 266023.78 189761.38 -245.00 /hstart 5
-  Static247 Stationary.Environment.CamoNetPlaneBig nn 266023.78 189761.38 -245.00 /hstart 5
-  Static248 Stationary.Environment.CamoNetPlaneBig nn 266023.78 189761.38 -245.00 /hstart 5
-  Static250 Stationary.Environment.CamoNetPlaneBig nn 266023.78 189761.38 -245.00 /hstart 5
-  Static241 Stationary.Industrial.Railroad.Engine_Shed nn 266000.56 189792.83 115.00 /hstart 5
-  Static240 Stationary.Industrial.Railroad.Engine_Shed nn 266000.56 189792.83 115.00 /hstart 5
-  Static245 Stationary.Environment.CamoNetPlaneBig nn 266016.22 189777.66 -65.00 /hstart 5
-  Static244 Stationary.Industrial.Railroad.Engine_Shed nn 266005.84 189794.92 115.00 /hstart 5
-  Static243 Stationary.Industrial.Railroad.Engine_Shed nn 266005.84 189794.92 115.00 /hstart 5
-  Static242 Stationary.Environment.CamoNetPlaneBig de 266008.78 189794.00 -65.00 /hstart 5
-  Static246 Stationary.Weapons_.Destructing_Bomb nn 266028.31 189777.94 -65.00 /hstart 5
-  Static239 Stationary.Industrial.Railroad.Engine_Shed nn 266011.72 189796.91 115.00 /hstart 5
-  Static238 Stationary.Industrial.Railroad.Engine_Shed nn 266011.72 189796.91 115.00 /hstart 5
-  Static221 Stationary.Environment.CamoNetPlaneBig nn 266002.44 189807.27 -60.00 /hstart 5
-  Static236 Stationary.Industrial.Railroad.Engine_Shed nn 266016.84 189799.44 115.00 /hstart 5
-  Static237 Stationary.Industrial.Railroad.Engine_Shed nn 266016.84 189799.44 115.00 /hstart 5
-  Static235 Stationary.Industrial.Railroad.Engine_Shed nn 266016.84 189799.44 115.00 /hstart 5
-  Static282 Stationary.Environment.CamoNetPlaneBig de 265994.22 189823.98 -65.00 /hstart 5
-  Static222 Stationary.Weapons_.Destructing_Bomb nn 266017.03 189802.77 -65.00 /hstart 5
-  Static119 Stationary.Environment.CamoNetPlaneBig nn 265907.00 189861.19 -245.00 /hstart 5
-  Static120 Stationary.Environment.CamoNetPlaneBig nn 265907.00 189861.19 -245.00 /hstart 5
-  Static83 Stationary.Environment.CamoNetPlaneBig nn 265907.00 189861.19 -245.00 /hstart 5
-  Static84 Stationary.Environment.CamoNetPlaneBig nn 265907.00 189861.19 -245.00 /hstart 5
-  Static147 Stationary.Weapons_.Destructing_Bomb nn 265911.63 189866.41 -135.00 /hstart 5
-  Static82 Stationary.Environment.CamoNetPlaneBig nn 265899.44 189879.19 -65.00 /hstart 5
-  Static279 Stationary.Environment.CamoNetPlaneBig nn 265978.69 189860.41 -65.00 /hstart 5
-  Static273 Stationary.Environment.CamoNetPlaneBig nn 265969.63 189879.94 -65.00 /hstart 5
-  Static280 Stationary.Environment.CamoNetPlaneBig nn 265985.63 189841.66 -65.00 /hstart 5
-  Static281 Stationary.Weapons_.Destructing_Bomb nn 265999.53 189836.06 -65.00 /hstart 5
-  Static278 Stationary.Weapons_.Destructing_Bomb nn 265987.13 189875.56 -110.00 /hstart 5
-  Static80 Stationary.Environment.CamoNetPlaneBig nn 265892.00 189893.84 -65.00 /hstart 5
-  Static148 Stationary.Weapons_.Destructing_Bomb nn 265877.56 189912.94 -135.00 /hstart 5
-  Static36 Stationary.Environment.CamoNetPlaneBig nn 265885.66 189907.11 -65.00 /hstart 5
-  Static79 Stationary.Environment.CamoNetPlaneBig nn 265877.41 189923.83 -65.00 /hstart 6
-  Static78 Stationary.Environment.CamoNetPlaneBig de 265868.84 189941.48 -65.00 /hstart 6
-  Static149 Stationary.Weapons_.Destructing_Bomb nn 265861.44 189950.44 -135.00 /hstart 5
-  Static142 Stationary.Weapons_.Destructing_Bomb nn 265935.03 189940.06 -65.00 /hstart 5
-  Static131 Stationary.Environment.CamoNetPlaneBig nn 265952.78 189929.31 -245.00 /hstart 5
-  Static133 Stationary.Environment.CamoNetPlaneBig nn 265952.78 189929.31 -245.00 /hstart 5
-  Static132 Stationary.Environment.CamoNetPlaneBig nn 265952.78 189929.31 -245.00 /hstart 5
-  Static134 Stationary.Environment.CamoNetPlaneBig nn 265952.78 189929.31 -245.00 /hstart 5
-  Static130 Stationary.Environment.CamoNetPlaneBig nn 265945.25 189947.28 -65.00 /hstart 5
-  Static37 Stationary.Environment.CamoNetPlaneBig nn 265852.84 189979.78 -65.00 /hstart 5
-  Static172 Stationary.Environment.CamoNetPlaneBig nn 265842.66 189999.69 -65.00 /hstart 5
-  Static39 Stationary.Environment.CamoNetPlaneBig nn 265861.88 189960.23 -65.00 /hstart 5
-  Static127 Stationary.Environment.CamoNetPlaneBig nn 265914.66 190009.61 -65.00 /hstart 5
-  Static129 Stationary.Environment.CamoNetPlaneBig nn 265937.81 189961.95 -65.00 /hstart 6
-  Static118 Stationary.Environment.CamoNetPlaneBig nn 265931.47 189975.22 -60.00 /hstart 6
-  Static141 Stationary.Weapons_.Destructing_Bomb de 265925.81 189982.45 -70.00 /hstart 5
-  Static128 Stationary.Environment.CamoNetPlaneBig nn 265923.22 189991.94 -65.00 /hstart 5
-  Static14 Stationary.Environment.CamoNetPlaneBig nn 265824.47 190068.27 -70.00 /hstart 9
-  Static126 Stationary.Environment.CamoNetPlaneBig nn 265907.69 190028.36 -65.00 /hstart 3
-  Static140 Stationary.Weapons_.Destructing_Bomb nn 265906.69 190036.67 -65.00 /hstart 5
-  Static125 Stationary.Environment.CamoNetPlaneBig nn 265898.66 190047.88 -65.00 /hstart 5
-  Static13 Stationary.Environment.CamoNetPlaneBig nn 265817.47 190089.69 -70.00 /hstart 9
-  Static270 Stationary.Environment.CamoNetPlaneBig nn 265914.53 190180.08 -70.00 /hstart 9
-  Static175 Stationary.Environment.CamoNetPlaneBig nn 265914.53 190180.08 -70.00 /hstart 9
-  Static5 Stationary.Environment.CamoNetPlaneBig nn 265914.53 190180.08 -70.00 /hstart 9
-  Static269 Stationary.Environment.CamoNetPlaneBig nn 265921.53 190158.64 -70.00 /hstart 9
-  Static186 Stationary.Environment.CamoNetPlaneBig nn 265921.53 190158.64 -70.00 /hstart 9
-  Static4 Stationary.Environment.CamoNetPlaneBig nn 265921.53 190158.64 -70.00 /hstart 9
-  Static107 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static56 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static105 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static106 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static57 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static58 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static59 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static104 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
-  Static103 Stationary.Environment.CamoNetPlaneBig nn 265848.50 190237.95 -70.00 /hstart 5
-  Static74 Stationary.Environment.CamoNetPlaneBig nn 265848.50 190237.95 -70.00 /hstart 5
-  Static72 Stationary.Industrial.Railroad.Engine_Shed nn 265834.22 190254.44 110.00 /hstart 5
-  Static168 Stationary.Industrial.Railroad.Engine_Shed nn 265834.22 190254.44 110.00 /hstart 5
-  Static169 Stationary.Industrial.Railroad.Engine_Shed nn 265834.22 190254.44 110.00 /hstart 5
-  Static73 Stationary.Industrial.Railroad.Engine_Shed nn 265834.22 190254.44 110.00 /hstart 5
-  Static101 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
-  Static194 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
-  Static100 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
-  Static70 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
-  Static71 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
-  Static86 Stationary.Environment.CamoNetPlaneBig de 265842.50 190254.89 -70.00 /hstart 5
-  Static67 Stationary.Environment.CamoNetPlaneBig de 265842.50 190254.89 -70.00 /hstart 5
-  Static98 Stationary.Industrial.Railroad.Engine_Shed nn 265845.72 190257.53 110.00 /hstart 5
-  Static99 Stationary.Industrial.Railroad.Engine_Shed nn 265845.72 190257.53 110.00 /hstart 5
-  Static69 Stationary.Industrial.Railroad.Engine_Shed nn 265845.72 190257.53 110.00 /hstart 5
-  Static68 Stationary.Industrial.Railroad.Engine_Shed nn 265845.72 190257.53 110.00 /hstart 5
-  Static220 Stationary.Environment.CamoNetPlaneBig nn 265837.34 190268.66 -65.00 /hstart 5
-  Static61 Stationary.Environment.CamoNetPlaneBig nn 265837.34 190268.66 -65.00 /hstart 5
-  Static170 Stationary.Environment.CamoNetPlaneBig nn 265837.34 190268.66 -65.00 /hstart 5
-  Static87 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static64 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static96 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static97 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static65 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static66 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5
-  Static63 Stationary.Weapons_.Destructing_Bomb nn 265851.50 190262.91 -70.00 /hstart 5
-  Static212 Stationary.Weapons_.Destructing_Bomb nn 265851.50 190262.91 -70.00 /hstart 5
-  Static102 Stationary.Weapons_.Destructing_Bomb nn 265851.50 190262.91 -70.00 /hstart 5
-  Static55 Stationary.Weapons_.Destructing_Bomb nn 265860.59 190237.19 -70.00 /hstart 5
-  Static121 Stationary.Weapons_.Destructing_Bomb nn 265860.59 190237.19 -70.00 /hstart 5
-  Static346 Stationary.Environment.CamoNetPlaneBig nn 265896.81 190269.08 20.00 /hstart 9
-  Static251 Stationary.Environment.CamoNetPlaneBig de 265830.63 190286.03 -70.00 /hstart 5
-  Static146 Stationary.Environment.CamoNetPlaneBig de 265830.63 190286.03 -70.00 /hstart 5
-  Static60 Stationary.Environment.CamoNetPlaneBig de 265830.63 190286.03 -70.00 /hstart 5
-  Static253 Stationary.Environment.CamoNetPlaneBig nn 265823.59 190304.39 -70.00 /hstart 5
-  Static76 Stationary.Environment.CamoNetPlaneBig nn 265823.59 190304.39 -70.00 /hstart 5
-  Static144 Stationary.Environment.CamoNetPlaneBig nn 265823.59 190304.39 -70.00 /hstart 5
-  Static145 Stationary.Weapons_.Destructing_Bomb nn 265836.97 190297.59 -70.00 /hstart 5
-  Static75 Stationary.Weapons_.Destructing_Bomb nn 265836.97 190297.59 -70.00 /hstart 5
-  Static252 Stationary.Weapons_.Destructing_Bomb nn 265836.97 190297.59 -70.00 /hstart 5
-  Static85 Stationary.Environment.CamoNetPlaneBig nn 265818.31 190323.67 -70.00 /hstart 5
-  Static254 Stationary.Environment.CamoNetPlaneBig nn 265818.31 190323.67 -70.00 /hstart 5
-  Static143 Stationary.Environment.CamoNetPlaneBig nn 265818.31 190323.67 -70.00 /hstart 5
-  Static345 Stationary.Environment.CamoNetPlaneBig nn 265915.25 190275.86 20.00 /hstart 9
-  Static81 Stationary.Environment.CamoNetPlaneBig nn 265811.00 190343.91 -70.00 /hstart 5
-  Static187 Stationary.Environment.CamoNetPlaneBig nn 265811.00 190343.91 -70.00 /hstart 5
-  Static256 Stationary.Environment.CamoNetPlaneBig nn 265811.00 190343.91 -70.00 /hstart 5
-  Static188 Stationary.Weapons_.Destructing_Bomb nn 265828.06 190338.03 -115.00 /hstart 5
-  Static255 Stationary.Weapons_.Destructing_Bomb nn 265828.06 190338.03 -115.00 /hstart 5
-  Static77 Stationary.Weapons_.Destructing_Bomb nn 265828.06 190338.03 -115.00 /hstart 5
-  Static0 Stationary.Industrial.Railroad.Engine_Shed nn 265911.28 190057.77 110.00 /hstart 5
-  Static1 Stationary.Industrial.Railroad.Engine_Shed nn 265899.38 190052.52 110.00 /hstart 5
-  Static2 Stationary.Industrial.Railroad.Engine_Shed nn 265886.66 190046.97 110.00 /hstart 5
-  Static3 Stationary.Industrial.Railroad.Engine_Shed nn 265971.63 189840.17 205.00 /hstart 5
-  Static6 Stationary.Industrial.Railroad.Engine_Shed nn 265981.06 189819.69 205.00 /hstart 5
-  Static7 Stationary.Industrial.Railroad.Engine_Shed nn 265990.19 189801.41 205.00 /hstart 5
-  Static8 Stationary.Industrial.Railroad.Engine_Shed nn 265999.59 189780.92 205.00 /hstart 5
-  Static9 Stationary.Industrial.Railroad.Engine_Shed nn 266009.84 189761.55 205.00 /hstart 5
-  Static10 Stationary.Environment.JerryCan_GER1_1 nn 265829.84 190078.97 110.00 
-  Static11 Stationary.Environment.JerryCan_GER1_1 nn 265827.06 190092.36 110.00 
-  Static12 Stationary.Environment.JerryCan_GER1_1 nn 265818.69 190097.38 110.00 
-  Static15 Stationary.Environment.JerryCan_GER1_1 nn 265808.66 190092.92 110.00 
-  Static16 Stationary.Environment.JerryCan_GER1_1 nn 265814.25 190078.42 110.00 
-  Static17 Stationary.Environment.JerryCan_GER1_1 nn 265859.97 189939.02 110.00 
-  Static18 Stationary.Environment.JerryCan_GER1_1 nn 265864.97 189922.84 110.00 
-  Static19 Stationary.Environment.JerryCan_GER1_1 nn 265871.13 189912.25 110.00 
-  Static20 Stationary.Environment.JerryCan_GER1_1 nn 265887.28 189923.97 110.00 
-  Static21 Stationary.Environment.JerryCan_GER1_1 nn 265873.91 189955.75 110.00 
-  Static22 Stationary.Environment.JerryCan_GER1_1 nn 265852.16 189956.31 110.00 
-  Static23 Stationary.Environment.JerryCan_GER1_1 nn 265843.22 189968.58 110.00 
-  Static24 Stationary.Environment.JerryCan_GER1_1 nn 265928.53 189957.98 110.00 
-  Static25 Stationary.Environment.JerryCan_GER1_1 nn 265930.22 189968.02 110.00 
-  Static26 Stationary.Environment.JerryCan_GER1_1 nn 265925.75 189979.72 110.00 
-  Static27 Stationary.Environment.JerryCan_GER1_1 nn 265917.38 189979.17 110.00 
-  Static28 Stationary.Environment.JerryCan_GER1_1 nn 265917.94 189967.45 110.00 
-  Static29 Stationary.Environment.JerryCan_GER1_1 nn 265967.03 190042.73 110.00 
-  Static30 Stationary.Environment.JerryCan_GER1_1 nn 265965.34 190057.23 110.00 
-  Static31 Stationary.Environment.JerryCan_GER1_1 nn 265950.84 190052.22 110.00 
-  Static32 Stationary.Environment.JerryCan_GER1_1 nn 265972.03 190043.30 110.00 
-  Static33 Stationary.Environment.JerryCan_GER1_1 nn 265978.72 190033.25 110.00 
-  Static34 Stationary.Environment.JerryCan_GER1_1 nn 266037.84 189885.48 110.00 
-  Static35 Stationary.Environment.JerryCan_GER1_1 nn 266051.22 189888.83 110.00 
-  Static38 Stationary.Environment.JerryCan_GER1_1 nn 266056.78 189883.27 110.00 
-  Static40 Stationary.Environment.JerryCan_GER1_1 nn 266049.53 189877.13 110.00 
-  Static41 Stationary.Environment.JerryCan_GER1_1 nn 266045.09 189876.56 110.00 
-  Static42 Stationary.Environment.JerryCan_GER1_1 nn 266123.41 189863.16 110.00 
-  Static43 Stationary.Environment.JerryCan_GER1_1 nn 266122.19 189850.89 110.00 
-  Static44 Stationary.Environment.JerryCan_GER1_1 nn 266125.00 189843.64 110.00 
-  Static45 Stationary.Environment.JerryCan_GER1_1 nn 266134.78 189842.47 110.00 
-  Static46 Stationary.Environment.JerryCan_GER1_1 nn 266134.78 189850.84 110.00 
-  Static47 Stationary.Environment.JerryCan_GER1_1 nn 266138.69 189857.55 110.00 
-  Static48 Stationary.Environment.JerryCan_GER1_1 nn 266143.16 189872.06 110.00 
-  Static49 Stationary.Environment.JerryCan_GER1_1 nn 266137.03 189872.63 110.00 
-  Static50 Stationary.Environment.JerryCan_GER1_1 nn 266126.72 189848.09 110.00 
-  Static51 Stationary.Environment.JerryCan_GER1_1 nn 266125.59 189838.61 110.00 
-  Static52 Stationary.Environment.JerryCan_GER1_1 nn 266130.66 189823.53 110.00 
-  Static53 Stationary.Environment.JerryCan_GER1_1 nn 266133.50 189827.42 110.00 
-  Static54 Stationary.Environment.JerryCan_GER1_1 nn 266144.28 189837.44 110.00 
-  Static62 Stationary.Environment.JerryCan_GER1_1 nn 266151.00 189854.20 110.00 
-  Static88 Stationary.Environment.JerryCan_GER1_1 nn 266037.28 189759.47 110.00 
-  Static89 Stationary.Environment.JerryCan_GER1_1 nn 266020.53 189767.84 110.00 
-  Static90 Stationary.Environment.JerryCan_GER1_1 nn 266012.75 189778.44 110.00 
-  Static91 Stationary.Environment.JerryCan_GER1_1 nn 266003.25 189789.58 110.00 
-  Static92 Stationary.Environment.JerryCan_GER1_1 nn 266000.47 189797.39 110.00 
-  Static93 Stationary.Environment.JerryCan_GER1_1 nn 265995.47 189815.23 110.00 
-  Static94 Stationary.Environment.JerryCan_GER1_1 nn 265993.78 189823.05 110.00 
-  Static95 Stationary.Environment.JerryCan_GER1_1 nn 265986.53 189837.53 110.00 
-  Static108 Stationary.Environment.JerryCan_GER1_1 nn 265978.72 189850.92 110.00 
-  Static109 Stationary.Environment.JerryCan_GER1_1 nn 265974.81 189863.75 110.00 
-  Static110 Stationary.Environment.JerryCan_GER1_1 nn 265967.56 189872.11 110.00 
-  Static111 Stationary.Environment.JerryCan_GER1_1 nn 265960.88 189878.80 110.00 
-  Static112 Stationary.Environment.JerryCan_GER1_1 nn 265981.50 189894.97 110.00 
-  Static113 Stationary.Environment.JerryCan_GER1_1 nn 265979.28 189872.11 110.00 
-  Static114 Stationary.Environment.JerryCan_GER1_1 nn 266002.16 189847.02 110.00 
-  Static115 Stationary.Environment.JerryCan_GER1_1 nn 266015.53 189820.81 110.00 
-  Static116 Stationary.Environment.JerryCan_GER1_1 nn 266027.78 189765.61 110.00 
-  Static117 Stationary.Environment.JerryCan_GER1_1 nn 265999.91 189696.47 110.00 
-  Static122 Stationary.Environment.JerryCan_GER1_1 nn 265995.47 189697.58 110.00 
-  Static123 Stationary.Environment.JerryCan_GER1_1 nn 265990.44 189698.70 110.00 
-  Static124 Stationary.Environment.JerryCan_GER1_1 nn 265991.56 189702.59 110.00 
-  Static135 Stationary.Environment.JerryCan_GER1_1 nn 265996.00 189704.27 110.00 
-  Static136 Stationary.Environment.JerryCan_GER1_1 nn 265896.19 189860.95 110.00 
-  Static137 Stationary.Environment.JerryCan_GER1_1 nn 265895.66 189878.80 110.00 
-  Static138 Stationary.Environment.JerryCan_GER1_1 nn 265895.66 189883.81 110.00 
-  Static139 Stationary.Environment.JerryCan_GER1_1 nn 265876.69 189894.97 110.00 
-  Static150 Stationary.Environment.JerryCan_GER1_1 nn 265885.06 189883.27 110.00 
-  Static151 Stationary.Environment.JerryCan_GER1_1 nn 265891.75 189876.56 110.00 
-  Static152 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189862.08 110.00 
-  Static153 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189883.27 110.00 
-  Static154 Stationary.Environment.JerryCan_GER1_1 nn 265900.09 189898.88 110.00 
-  Static155 Stationary.Environment.JerryCan_GER1_1 nn 265825.94 189879.92 110.00 
-  Static156 Stationary.Environment.JerryCan_GER1_1 nn 265837.09 189892.73 110.00 
-  Static157 Stationary.Environment.JerryCan_GER1_1 nn 265837.09 189880.47 110.00 
-  Static158 Stationary.Environment.JerryCan_GER1_1 nn 265838.22 189866.55 110.00 
-  Static159 Stationary.Environment.JerryCan_GER1_1 nn 265847.13 189863.75 110.00 
-  Static160 Stationary.Environment.JerryCan_GER1_1 nn 265846.03 189881.59 110.00 
-  Static161 Stationary.Environment.JerryCan_GER1_1 nn 265827.63 189892.19 110.00 
-  Static162 Stationary.Environment.JerryCan_GER1_1 nn 265826.50 189879.92 110.00 
-  Static163 Stationary.Environment.JerryCan_GER1_1 nn 265793.28 189947.73 110.00 
-  Static164 Stationary.Environment.JerryCan_GER1_1 nn 265795.84 189983.06 110.00 
-  Static165 Stationary.Environment.JerryCan_GER1_1 nn 265779.09 190011.50 110.00 
-  Static166 Stationary.Environment.JerryCan_GER1_1 nn 265761.25 190055.00 110.00 
-  Static167 Stationary.Environment.JerryCan_GER1_1 nn 265759.56 190090.23 110.00 
-  Static171 Stationary.Environment.JerryCan_GER1_1 nn 265926.88 190127.48 110.00 
-  Static173 Stationary.Environment.JerryCan_GER1_1 nn 265992.09 190022.09 110.00 
-  Static174 Stationary.Environment.JerryCan_GER1_1 nn 266003.81 189980.28 110.00 
-  Static176 Stationary.Environment.JerryCan_GER1_1 nn 266022.22 189947.94 110.00 
-  Static177 Stationary.Environment.JerryCan_GER1_1 nn 266025.00 189923.97 110.00 
-  Static178 Stationary.Environment.JerryCan_GER1_1 nn 266057.91 189843.67 110.00 
-  Static179 Stationary.Environment.JerryCan_GER1_1 nn 266083.00 189804.64 110.00 
-  Static180 Stationary.Environment.JerryCan_GER1_1 nn 266088.56 189787.91 110.00 
-  Static181 Stationary.Environment.JerryCan_GER1_1 nn 266108.66 189733.83 110.00 
-  Static182 Stationary.Environment.JerryCan_GER1_1 nn 266093.59 189715.42 110.00 
-  Static183 Stationary.Environment.JerryCan_GER1_1 nn 266068.50 189710.41 110.00 
-  Static184 Stationary.Environment.JerryCan_GER1_1 nn 265956.97 189699.81 110.00 
-  Static185 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189724.91 110.00 
-  Static189 Stationary.Environment.JerryCan_GER1_1 nn 265877.22 189756.77 110.00 
-  Static190 Stationary.Environment.JerryCan_GER1_1 nn 265847.69 189793.02 110.00 
-  Static191 Stationary.Environment.JerryCan_GER1_1 nn 265828.75 189836.50 110.00 
-  Static192 Stationary.Environment.JerryCan_GER1_1 nn 266022.53 190104.41 110.00 
-  Static193 Stationary.Environment.JerryCan_GER1_1 nn 266039.84 190068.11 110.00 
-  Static195 Stationary.Environment.JerryCan_GER1_1 nn 266041.53 190031.80 110.00 
-  Static196 Stationary.Environment.JerryCan_GER1_1 nn 266047.66 190018.39 110.00 
-  Static197 Stationary.Environment.JerryCan_GER1_1 nn 266059.38 189999.97 110.00 
-  Static198 Stationary.Environment.JerryCan_GER1_1 nn 266076.16 189966.45 110.00 
-  Static199 Stationary.Environment.JerryCan_GER1_1 nn 266089.56 189938.53 110.00 
-  Static200 Stationary.Environment.JerryCan_GER1_1 nn 266099.44 189915.06 110.00 
-  Static201 Stationary.Environment.JerryCan_GER1_1 nn 266105.75 189905.58 110.00 
-  Static202 Stationary.Environment.JerryCan_GER1_1 nn 266155.69 189772.22 110.00 
-  Static203 Stationary.Environment.JerryCan_GER1_1 nn 266109.19 189765.61 110.00 
-  Static204 Stationary.Environment.JerryCan_GER1_1 nn 265797.44 190130.09 110.00 
-  Static205 Stationary.Environment.JerryCan_GER1_1 nn 265742.72 190117.81 110.00 
-  Static206 Stationary.Environment.JerryCan_GER1_1 nn 265785.84 189912.80 110.00 
-  Static207 Stationary.Environment.JerryCan_GER1_1 nn 265793.22 189835.02 110.00 
-  Static208 Stationary.Environment.JerryCan_GER1_1 nn 265804.31 189816.13 110.00 
-  Static209 Stationary.Environment.JerryCan_GER1_1 nn 265817.09 189786.16 110.00 
-  Static210 Stationary.Environment.JerryCan_GER1_1 nn 265780.38 189876.63 110.00 
-  Static211 Stationary.Environment.JerryCan_GER1_1 nn 266021.16 190050.02 110.00 
-  Static213 Stationary.Environment.JerryCan_GER1_1 nn 265963.66 190095.14 110.00 
-  Static214 Stationary.Environment.JerryCan_GER1_1 nn 265889.50 190036.05 110.00 
-  Static215 Stationary.Environment.JerryCan_GER1_1 nn 265896.19 190021.55 110.00 
-  Static216 Stationary.Environment.JerryCan_GER1_1 nn 265907.34 190008.72 110.00 
-  Static217 Stationary.Environment.JerryCan_GER1_1 nn 265915.16 190005.38 110.00 
-  Static218 Stationary.Environment.JerryCan_GER1_1 nn 265925.19 190013.17 110.00 
-  Static219 Stationary.Environment.JerryCan_GER1_1 nn 265919.06 190028.80 110.00 
-  Static223 Stationary.Environment.JerryCan_GER1_1 nn 265910.16 190039.94 110.00 
-  Static224 Stationary.Environment.JerryCan_GER1_1 nn 265953.06 189939.02 110.00 
-  Static225 Stationary.Environment.JerryCan_GER1_1 nn 265949.72 189915.59 110.00 
-  Static226 Stationary.Environment.JerryCan_GER1_1 nn 265904.00 189855.94 110.00 
-  Static227 Stationary.Environment.JerryCan_GER1_1 nn 265837.66 189986.97 110.00 
-  Static228 Stationary.Environment.JerryCan_GER1_1 nn 265838.22 189994.78 110.00 
-  Static229 Stationary.Environment.JerryCan_GER1_1 nn 265844.34 190008.72 110.00 
-  Static230 Stationary.Environment.JerryCan_GER1_1 nn 265967.03 190169.16 110.00 
-  Static231 Stationary.Environment.JerryCan_GER1_1 nn 265998.59 190139.53 110.00 
-  Static232 Stationary.Environment.JerryCan_GER1_1 nn 265995.78 190129.31 110.00 
-  Static233 Stationary.Environment.JerryCan_GER1_1 nn 265807.63 190052.31 110.00 
-  Static234 Stationary.Environment.JerryCan_GER1_1 nn 265859.50 189827.14 110.00 
-  Static257 Stationary.Environment.JerryCan_GER1_1 nn 265880.81 189840.11 110.00 
-  Static258 Stationary.Environment.JerryCan_GER1_1 nn 265937.34 189737.25 110.00 
-  Static259 Stationary.Environment.JerryCan_GER1_1 nn 265912.31 189843.83 110.00 
-  Static260 Stationary.Environment.JerryCan_GER1_1 nn 265949.41 189869.77 110.00 
-  Static261 Stationary.Environment.JerryCan_GER1_1 nn 265927.16 189994.88 110.00 
-  Static262 Stationary.Environment.JerryCan_GER1_1 nn 265916.03 189991.16 110.00 
-  Static263 ShipUnit.MotorBarge_Large1 nn 265898.38 190077.50 -70.00 /sleep 1440/skill 0/slowfire 100/skin materialSummer2_gray
-  Static264 ShipUnit.MotorBarge_Large1 nn 265965.56 189801.20 25.00 /sleep 1440/skill 0/slowfire 1/skin materialSummer2_gray
+  Boulogne_NavalE249 Stationary.Environment.CamoNetPlaneBig nn 266023.78 189761.38 -245.00 /hstart 5  
+  Boulogne_NavalE241 Stationary.Industrial.Railroad.Engine_Shed nn 266000.56 189792.83 115.00 /hstart 5
+  Boulogne_NavalE245 Stationary.Environment.CamoNetPlaneBig nn 266016.22 189777.66 -65.00 /hstart 5
+  Boulogne_NavalE244 Stationary.Industrial.Railroad.Engine_Shed nn 266005.84 189794.92 115.00 /hstart 5  
+  Boulogne_NavalE242 Stationary.Environment.CamoNetPlaneBig de 266008.78 189794.00 -65.00 /hstart 5
+  Boulogne_NavalE246 Stationary.Weapons_.Destructing_Bomb nn 266028.31 189777.94 -65.00 /hstart 5
+  Boulogne_NavalE239 Stationary.Industrial.Railroad.Engine_Shed nn 266011.72 189796.91 115.00 /hstart 5  
+  Boulogne_NavalE221 Stationary.Environment.CamoNetPlaneBig nn 266002.44 189807.27 -60.00 /hstart 5
+  Boulogne_NavalE236 Stationary.Industrial.Railroad.Engine_Shed nn 266016.84 189799.44 115.00 /hstart 5  
+  Boulogne_NavalE282 Stationary.Environment.CamoNetPlaneBig de 265994.22 189823.98 -65.00 /hstart 5
+  Boulogne_NavalE222 Stationary.Weapons_.Destructing_Bomb nn 266017.03 189802.77 -65.00 /hstart 5
+  Boulogne_NavalE119 Stationary.Environment.CamoNetPlaneBig nn 265907.00 189861.19 -245.00 /hstart 5    
+  Boulogne_NavalE147 Stationary.Weapons_.Destructing_Bomb nn 265911.63 189866.41 -135.00 /hstart 5
+  Boulogne_NavalE82 Stationary.Environment.CamoNetPlaneBig nn 265899.44 189879.19 -65.00 /hstart 5
+  Boulogne_NavalE279 Stationary.Environment.CamoNetPlaneBig nn 265978.69 189860.41 -65.00 /hstart 5
+  Boulogne_NavalE273 Stationary.Environment.CamoNetPlaneBig nn 265969.63 189879.94 -65.00 /hstart 5
+  Boulogne_NavalE280 Stationary.Environment.CamoNetPlaneBig nn 265985.63 189841.66 -65.00 /hstart 5
+  Boulogne_NavalE281 Stationary.Weapons_.Destructing_Bomb nn 265999.53 189836.06 -65.00 /hstart 5
+  Boulogne_NavalE278 Stationary.Weapons_.Destructing_Bomb nn 265987.13 189875.56 -110.00 /hstart 5
+  Boulogne_NavalE80 Stationary.Environment.CamoNetPlaneBig nn 265892.00 189893.84 -65.00 /hstart 5
+  Boulogne_NavalE148 Stationary.Weapons_.Destructing_Bomb nn 265877.56 189912.94 -135.00 /hstart 5
+  Boulogne_NavalE36 Stationary.Environment.CamoNetPlaneBig nn 265885.66 189907.11 -65.00 /hstart 5
+  Boulogne_NavalE79 Stationary.Environment.CamoNetPlaneBig nn 265877.41 189923.83 -65.00 /hstart 6
+  Boulogne_NavalE78 Stationary.Environment.CamoNetPlaneBig de 265868.84 189941.48 -65.00 /hstart 6
+  Boulogne_NavalE149 Stationary.Weapons_.Destructing_Bomb nn 265861.44 189950.44 -135.00 /hstart 5
+  Boulogne_NavalE142 Stationary.Weapons_.Destructing_Bomb nn 265935.03 189940.06 -65.00 /hstart 5
+  Boulogne_NavalE131 Stationary.Environment.CamoNetPlaneBig nn 265952.78 189929.31 -245.00 /hstart 5  
+  Boulogne_NavalE130 Stationary.Environment.CamoNetPlaneBig nn 265945.25 189947.28 -65.00 /hstart 5
+  Boulogne_NavalE37 Stationary.Environment.CamoNetPlaneBig nn 265852.84 189979.78 -65.00 /hstart 5
+  Boulogne_NavalE172 Stationary.Environment.CamoNetPlaneBig nn 265842.66 189999.69 -65.00 /hstart 5
+  Boulogne_NavalE39 Stationary.Environment.CamoNetPlaneBig nn 265861.88 189960.23 -65.00 /hstart 5
+  Boulogne_NavalE127 Stationary.Environment.CamoNetPlaneBig nn 265914.66 190009.61 -65.00 /hstart 5
+  Boulogne_NavalE129 Stationary.Environment.CamoNetPlaneBig nn 265937.81 189961.95 -65.00 /hstart 6
+  Boulogne_NavalE118 Stationary.Environment.CamoNetPlaneBig nn 265931.47 189975.22 -60.00 /hstart 6
+  Boulogne_NavalE141 Stationary.Weapons_.Destructing_Bomb de 265925.81 189982.45 -70.00 /hstart 5
+  Boulogne_NavalE128 Stationary.Environment.CamoNetPlaneBig nn 265923.22 189991.94 -65.00 /hstart 5
+  Boulogne_NavalE14 Stationary.Environment.CamoNetPlaneBig nn 265824.47 190068.27 -70.00 /hstart 9
+  Boulogne_NavalE126 Stationary.Environment.CamoNetPlaneBig nn 265907.69 190028.36 -65.00 /hstart 3
+  Boulogne_NavalE140 Stationary.Weapons_.Destructing_Bomb nn 265906.69 190036.67 -65.00 /hstart 5
+  Boulogne_NavalE125 Stationary.Environment.CamoNetPlaneBig nn 265898.66 190047.88 -65.00 /hstart 5
+  Boulogne_NavalE13 Stationary.Environment.CamoNetPlaneBig nn 265817.47 190089.69 -70.00 /hstart 9
+  Boulogne_NavalE270 Stationary.Environment.CamoNetPlaneBig nn 265914.53 190180.08 -70.00 /hstart 9  
+  Boulogne_NavalE5 Stationary.Environment.CamoNetPlaneBig nn 265914.53 190180.08 -70.00 /hstart 9
+  Boulogne_NavalE269 Stationary.Environment.CamoNetPlaneBig nn 265921.53 190158.64 -70.00 /hstart 9  
+  Boulogne_NavalE4 Stationary.Environment.CamoNetPlaneBig nn 265921.53 190158.64 -70.00 /hstart 9
+  Boulogne_NavalE107 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5
+  Boulogne_NavalE56 Stationary.Environment.CamoNetPlaneBig nn 265854.63 190221.08 -250.00 /hstart 5    
+  Boulogne_NavalE103 Stationary.Environment.CamoNetPlaneBig nn 265848.50 190237.95 -70.00 /hstart 5
+  Boulogne_NavalE72 Stationary.Industrial.Railroad.Engine_Shed nn 265834.22 190254.44 110.00 /hstart 5    
+  Boulogne_NavalE101 Stationary.Industrial.Railroad.Engine_Shed nn 265839.66 190256.06 110.00 /hstart 5
+  Boulogne_NavalE86 Stationary.Environment.CamoNetPlaneBig de 265842.50 190254.89 -70.00 /hstart 5  
+  Boulogne_NavalE98 Stationary.Industrial.Railroad.Engine_Shed nn 265845.72 190257.53 110.00 /hstart 5  
+  Boulogne_NavalE220 Stationary.Environment.CamoNetPlaneBig nn 265837.34 190268.66 -65.00 /hstart 5  
+  Boulogne_NavalE87 Stationary.Industrial.Railroad.Engine_Shed nn 265851.03 190259.61 110.00 /hstart 5  
+  Boulogne_NavalE63 Stationary.Weapons_.Destructing_Bomb nn 265851.50 190262.91 -70.00 /hstart 5
+  Boulogne_NavalE55 Stationary.Weapons_.Destructing_Bomb nn 265860.59 190237.19 -70.00 /hstart 5  
+  Boulogne_NavalE346 Stationary.Environment.CamoNetPlaneBig nn 265896.81 190269.08 20.00 /hstart 9
+  Boulogne_NavalE251 Stationary.Environment.CamoNetPlaneBig de 265830.63 190286.03 -70.00 /hstart 5  
+  Boulogne_NavalE253 Stationary.Environment.CamoNetPlaneBig nn 265823.59 190304.39 -70.00 /hstart 5  
+  Boulogne_NavalE145 Stationary.Weapons_.Destructing_Bomb nn 265836.97 190297.59 -70.00 /hstart 5  
+  Boulogne_NavalE85 Stationary.Environment.CamoNetPlaneBig nn 265818.31 190323.67 -70.00 /hstart 5
+  Boulogne_NavalE345 Stationary.Environment.CamoNetPlaneBig nn 265915.25 190275.86 20.00 /hstart 9
+  Boulogne_NavalE81 Stationary.Environment.CamoNetPlaneBig nn 265811.00 190343.91 -70.00 /hstart 5
+  Boulogne_NavalE188 Stationary.Weapons_.Destructing_Bomb nn 265828.06 190338.03 -115.00 /hstart 5
+  Boulogne_NavalE0 Stationary.Industrial.Railroad.Engine_Shed nn 265911.28 190057.77 110.00 /hstart 5
+  Boulogne_NavalE1 Stationary.Industrial.Railroad.Engine_Shed nn 265899.38 190052.52 110.00 /hstart 5
+  Boulogne_NavalE2 Stationary.Industrial.Railroad.Engine_Shed nn 265886.66 190046.97 110.00 /hstart 5
+  Boulogne_NavalE3 Stationary.Industrial.Railroad.Engine_Shed nn 265971.63 189840.17 205.00 /hstart 5
+  Boulogne_NavalE6 Stationary.Industrial.Railroad.Engine_Shed nn 265981.06 189819.69 205.00 /hstart 5
+  Boulogne_NavalE7 Stationary.Industrial.Railroad.Engine_Shed nn 265990.19 189801.41 205.00 /hstart 5
+  Boulogne_NavalE8 Stationary.Industrial.Railroad.Engine_Shed nn 265999.59 189780.92 205.00 /hstart 5
+  Boulogne_NavalE9 Stationary.Industrial.Railroad.Engine_Shed nn 266009.84 189761.55 205.00 /hstart 5
+  Boulogne_NavalE10 Stationary.Environment.JerryCan_GER1_1 nn 265829.84 190078.97 110.00 
+  Boulogne_NavalE11 Stationary.Environment.JerryCan_GER1_1 nn 265827.06 190092.36 110.00 
+  Boulogne_NavalE12 Stationary.Environment.JerryCan_GER1_1 nn 265818.69 190097.38 110.00 
+  Boulogne_NavalE15 Stationary.Environment.JerryCan_GER1_1 nn 265808.66 190092.92 110.00 
+  Boulogne_NavalE16 Stationary.Environment.JerryCan_GER1_1 nn 265814.25 190078.42 110.00 
+  Boulogne_NavalE17 Stationary.Environment.JerryCan_GER1_1 nn 265859.97 189939.02 110.00 
+  Boulogne_NavalE18 Stationary.Environment.JerryCan_GER1_1 nn 265864.97 189922.84 110.00 
+  Boulogne_NavalE19 Stationary.Environment.JerryCan_GER1_1 nn 265871.13 189912.25 110.00 
+  Boulogne_NavalE20 Stationary.Environment.JerryCan_GER1_1 nn 265887.28 189923.97 110.00 
+  Boulogne_NavalE21 Stationary.Environment.JerryCan_GER1_1 nn 265873.91 189955.75 110.00 
+  Boulogne_NavalE22 Stationary.Environment.JerryCan_GER1_1 nn 265852.16 189956.31 110.00 
+  Boulogne_NavalE23 Stationary.Environment.JerryCan_GER1_1 nn 265843.22 189968.58 110.00 
+  Boulogne_NavalE24 Stationary.Environment.JerryCan_GER1_1 nn 265928.53 189957.98 110.00 
+  Boulogne_NavalE25 Stationary.Environment.JerryCan_GER1_1 nn 265930.22 189968.02 110.00 
+  Boulogne_NavalE26 Stationary.Environment.JerryCan_GER1_1 nn 265925.75 189979.72 110.00 
+  Boulogne_NavalE27 Stationary.Environment.JerryCan_GER1_1 nn 265917.38 189979.17 110.00 
+  Boulogne_NavalE28 Stationary.Environment.JerryCan_GER1_1 nn 265917.94 189967.45 110.00 
+  Boulogne_NavalE29 Stationary.Environment.JerryCan_GER1_1 nn 265967.03 190042.73 110.00 
+  Boulogne_NavalE30 Stationary.Environment.JerryCan_GER1_1 nn 265965.34 190057.23 110.00 
+  Boulogne_NavalE31 Stationary.Environment.JerryCan_GER1_1 nn 265950.84 190052.22 110.00 
+  Boulogne_NavalE32 Stationary.Environment.JerryCan_GER1_1 nn 265972.03 190043.30 110.00 
+  Boulogne_NavalE33 Stationary.Environment.JerryCan_GER1_1 nn 265978.72 190033.25 110.00 
+  Boulogne_NavalE34 Stationary.Environment.JerryCan_GER1_1 nn 266037.84 189885.48 110.00 
+  Boulogne_NavalE35 Stationary.Environment.JerryCan_GER1_1 nn 266051.22 189888.83 110.00 
+  Boulogne_NavalE38 Stationary.Environment.JerryCan_GER1_1 nn 266056.78 189883.27 110.00 
+  Boulogne_NavalE40 Stationary.Environment.JerryCan_GER1_1 nn 266049.53 189877.13 110.00 
+  Boulogne_NavalE41 Stationary.Environment.JerryCan_GER1_1 nn 266045.09 189876.56 110.00 
+  Boulogne_NavalE42 Stationary.Environment.JerryCan_GER1_1 nn 266123.41 189863.16 110.00 
+  Boulogne_NavalE43 Stationary.Environment.JerryCan_GER1_1 nn 266122.19 189850.89 110.00 
+  Boulogne_NavalE44 Stationary.Environment.JerryCan_GER1_1 nn 266125.00 189843.64 110.00 
+  Boulogne_NavalE45 Stationary.Environment.JerryCan_GER1_1 nn 266134.78 189842.47 110.00 
+  Boulogne_NavalE46 Stationary.Environment.JerryCan_GER1_1 nn 266134.78 189850.84 110.00 
+  Boulogne_NavalE47 Stationary.Environment.JerryCan_GER1_1 nn 266138.69 189857.55 110.00 
+  Boulogne_NavalE48 Stationary.Environment.JerryCan_GER1_1 nn 266143.16 189872.06 110.00 
+  Boulogne_NavalE49 Stationary.Environment.JerryCan_GER1_1 nn 266137.03 189872.63 110.00 
+  Boulogne_NavalE50 Stationary.Environment.JerryCan_GER1_1 nn 266126.72 189848.09 110.00 
+  Boulogne_NavalE51 Stationary.Environment.JerryCan_GER1_1 nn 266125.59 189838.61 110.00 
+  Boulogne_NavalE52 Stationary.Environment.JerryCan_GER1_1 nn 266130.66 189823.53 110.00 
+  Boulogne_NavalE53 Stationary.Environment.JerryCan_GER1_1 nn 266133.50 189827.42 110.00 
+  Boulogne_NavalE54 Stationary.Environment.JerryCan_GER1_1 nn 266144.28 189837.44 110.00 
+  Boulogne_NavalE62 Stationary.Environment.JerryCan_GER1_1 nn 266151.00 189854.20 110.00 
+  Boulogne_NavalE88 Stationary.Environment.JerryCan_GER1_1 nn 266037.28 189759.47 110.00 
+  Boulogne_NavalE89 Stationary.Environment.JerryCan_GER1_1 nn 266020.53 189767.84 110.00 
+  Boulogne_NavalE90 Stationary.Environment.JerryCan_GER1_1 nn 266012.75 189778.44 110.00 
+  Boulogne_NavalE91 Stationary.Environment.JerryCan_GER1_1 nn 266003.25 189789.58 110.00 
+  Boulogne_NavalE92 Stationary.Environment.JerryCan_GER1_1 nn 266000.47 189797.39 110.00 
+  Boulogne_NavalE93 Stationary.Environment.JerryCan_GER1_1 nn 265995.47 189815.23 110.00 
+  Boulogne_NavalE94 Stationary.Environment.JerryCan_GER1_1 nn 265993.78 189823.05 110.00 
+  Boulogne_NavalE95 Stationary.Environment.JerryCan_GER1_1 nn 265986.53 189837.53 110.00 
+  Boulogne_NavalE108 Stationary.Environment.JerryCan_GER1_1 nn 265978.72 189850.92 110.00 
+  Boulogne_NavalE109 Stationary.Environment.JerryCan_GER1_1 nn 265974.81 189863.75 110.00 
+  Boulogne_NavalE110 Stationary.Environment.JerryCan_GER1_1 nn 265967.56 189872.11 110.00 
+  Boulogne_NavalE111 Stationary.Environment.JerryCan_GER1_1 nn 265960.88 189878.80 110.00 
+  Boulogne_NavalE112 Stationary.Environment.JerryCan_GER1_1 nn 265981.50 189894.97 110.00 
+  Boulogne_NavalE113 Stationary.Environment.JerryCan_GER1_1 nn 265979.28 189872.11 110.00 
+  Boulogne_NavalE114 Stationary.Environment.JerryCan_GER1_1 nn 266002.16 189847.02 110.00 
+  Boulogne_NavalE115 Stationary.Environment.JerryCan_GER1_1 nn 266015.53 189820.81 110.00 
+  Boulogne_NavalE116 Stationary.Environment.JerryCan_GER1_1 nn 266027.78 189765.61 110.00 
+  Boulogne_NavalE117 Stationary.Environment.JerryCan_GER1_1 nn 265999.91 189696.47 110.00 
+  Boulogne_NavalE122 Stationary.Environment.JerryCan_GER1_1 nn 265995.47 189697.58 110.00 
+  Boulogne_NavalE123 Stationary.Environment.JerryCan_GER1_1 nn 265990.44 189698.70 110.00 
+  Boulogne_NavalE124 Stationary.Environment.JerryCan_GER1_1 nn 265991.56 189702.59 110.00 
+  Boulogne_NavalE135 Stationary.Environment.JerryCan_GER1_1 nn 265996.00 189704.27 110.00 
+  Boulogne_NavalE136 Stationary.Environment.JerryCan_GER1_1 nn 265896.19 189860.95 110.00 
+  Boulogne_NavalE137 Stationary.Environment.JerryCan_GER1_1 nn 265895.66 189878.80 110.00 
+  Boulogne_NavalE138 Stationary.Environment.JerryCan_GER1_1 nn 265895.66 189883.81 110.00 
+  Boulogne_NavalE139 Stationary.Environment.JerryCan_GER1_1 nn 265876.69 189894.97 110.00 
+  Boulogne_NavalE150 Stationary.Environment.JerryCan_GER1_1 nn 265885.06 189883.27 110.00 
+  Boulogne_NavalE151 Stationary.Environment.JerryCan_GER1_1 nn 265891.75 189876.56 110.00 
+  Boulogne_NavalE152 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189862.08 110.00 
+  Boulogne_NavalE153 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189883.27 110.00 
+  Boulogne_NavalE154 Stationary.Environment.JerryCan_GER1_1 nn 265900.09 189898.88 110.00 
+  Boulogne_NavalE155 Stationary.Environment.JerryCan_GER1_1 nn 265825.94 189879.92 110.00 
+  Boulogne_NavalE156 Stationary.Environment.JerryCan_GER1_1 nn 265837.09 189892.73 110.00 
+  Boulogne_NavalE157 Stationary.Environment.JerryCan_GER1_1 nn 265837.09 189880.47 110.00 
+  Boulogne_NavalE158 Stationary.Environment.JerryCan_GER1_1 nn 265838.22 189866.55 110.00 
+  Boulogne_NavalE159 Stationary.Environment.JerryCan_GER1_1 nn 265847.13 189863.75 110.00 
+  Boulogne_NavalE160 Stationary.Environment.JerryCan_GER1_1 nn 265846.03 189881.59 110.00 
+  Boulogne_NavalE161 Stationary.Environment.JerryCan_GER1_1 nn 265827.63 189892.19 110.00 
+  Boulogne_NavalE162 Stationary.Environment.JerryCan_GER1_1 nn 265826.50 189879.92 110.00 
+  Boulogne_NavalE163 Stationary.Environment.JerryCan_GER1_1 nn 265793.28 189947.73 110.00 
+  Boulogne_NavalE164 Stationary.Environment.JerryCan_GER1_1 nn 265795.84 189983.06 110.00 
+  Boulogne_NavalE165 Stationary.Environment.JerryCan_GER1_1 nn 265779.09 190011.50 110.00 
+  Boulogne_NavalE166 Stationary.Environment.JerryCan_GER1_1 nn 265761.25 190055.00 110.00 
+  Boulogne_NavalE167 Stationary.Environment.JerryCan_GER1_1 nn 265759.56 190090.23 110.00 
+  Boulogne_NavalE171 Stationary.Environment.JerryCan_GER1_1 nn 265926.88 190127.48 110.00 
+  Boulogne_NavalE173 Stationary.Environment.JerryCan_GER1_1 nn 265992.09 190022.09 110.00 
+  Boulogne_NavalE174 Stationary.Environment.JerryCan_GER1_1 nn 266003.81 189980.28 110.00 
+  Boulogne_NavalE176 Stationary.Environment.JerryCan_GER1_1 nn 266022.22 189947.94 110.00 
+  Boulogne_NavalE177 Stationary.Environment.JerryCan_GER1_1 nn 266025.00 189923.97 110.00 
+  Boulogne_NavalE178 Stationary.Environment.JerryCan_GER1_1 nn 266057.91 189843.67 110.00 
+  Boulogne_NavalE179 Stationary.Environment.JerryCan_GER1_1 nn 266083.00 189804.64 110.00 
+  Boulogne_NavalE180 Stationary.Environment.JerryCan_GER1_1 nn 266088.56 189787.91 110.00 
+  Boulogne_NavalE181 Stationary.Environment.JerryCan_GER1_1 nn 266108.66 189733.83 110.00 
+  Boulogne_NavalE182 Stationary.Environment.JerryCan_GER1_1 nn 266093.59 189715.42 110.00 
+  Boulogne_NavalE183 Stationary.Environment.JerryCan_GER1_1 nn 266068.50 189710.41 110.00 
+  Boulogne_NavalE184 Stationary.Environment.JerryCan_GER1_1 nn 265956.97 189699.81 110.00 
+  Boulogne_NavalE185 Stationary.Environment.JerryCan_GER1_1 nn 265912.38 189724.91 110.00 
+  Boulogne_NavalE189 Stationary.Environment.JerryCan_GER1_1 nn 265877.22 189756.77 110.00 
+  Boulogne_NavalE190 Stationary.Environment.JerryCan_GER1_1 nn 265847.69 189793.02 110.00 
+  Boulogne_NavalE191 Stationary.Environment.JerryCan_GER1_1 nn 265828.75 189836.50 110.00 
+  Boulogne_NavalE192 Stationary.Environment.JerryCan_GER1_1 nn 266022.53 190104.41 110.00 
+  Boulogne_NavalE193 Stationary.Environment.JerryCan_GER1_1 nn 266039.84 190068.11 110.00 
+  Boulogne_NavalE195 Stationary.Environment.JerryCan_GER1_1 nn 266041.53 190031.80 110.00 
+  Boulogne_NavalE196 Stationary.Environment.JerryCan_GER1_1 nn 266047.66 190018.39 110.00 
+  Boulogne_NavalE197 Stationary.Environment.JerryCan_GER1_1 nn 266059.38 189999.97 110.00 
+  Boulogne_NavalE198 Stationary.Environment.JerryCan_GER1_1 nn 266076.16 189966.45 110.00 
+  Boulogne_NavalE199 Stationary.Environment.JerryCan_GER1_1 nn 266089.56 189938.53 110.00 
+  Boulogne_NavalE200 Stationary.Environment.JerryCan_GER1_1 nn 266099.44 189915.06 110.00 
+  Boulogne_NavalE201 Stationary.Environment.JerryCan_GER1_1 nn 266105.75 189905.58 110.00 
+  Boulogne_NavalE202 Stationary.Environment.JerryCan_GER1_1 nn 266155.69 189772.22 110.00 
+  Boulogne_NavalE203 Stationary.Environment.JerryCan_GER1_1 nn 266109.19 189765.61 110.00 
+  Boulogne_NavalE204 Stationary.Environment.JerryCan_GER1_1 nn 265797.44 190130.09 110.00 
+  Boulogne_NavalE205 Stationary.Environment.JerryCan_GER1_1 nn 265742.72 190117.81 110.00 
+  Boulogne_NavalE206 Stationary.Environment.JerryCan_GER1_1 nn 265785.84 189912.80 110.00 
+  Boulogne_NavalE207 Stationary.Environment.JerryCan_GER1_1 nn 265793.22 189835.02 110.00 
+  Boulogne_NavalE208 Stationary.Environment.JerryCan_GER1_1 nn 265804.31 189816.13 110.00 
+  Boulogne_NavalE209 Stationary.Environment.JerryCan_GER1_1 nn 265817.09 189786.16 110.00 
+  Boulogne_NavalE210 Stationary.Environment.JerryCan_GER1_1 nn 265780.38 189876.63 110.00 
+  Boulogne_NavalE211 Stationary.Environment.JerryCan_GER1_1 nn 266021.16 190050.02 110.00 
+  Boulogne_NavalE213 Stationary.Environment.JerryCan_GER1_1 nn 265963.66 190095.14 110.00 
+  Boulogne_NavalE214 Stationary.Environment.JerryCan_GER1_1 nn 265889.50 190036.05 110.00 
+  Boulogne_NavalE215 Stationary.Environment.JerryCan_GER1_1 nn 265896.19 190021.55 110.00 
+  Boulogne_NavalE216 Stationary.Environment.JerryCan_GER1_1 nn 265907.34 190008.72 110.00 
+  Boulogne_NavalE217 Stationary.Environment.JerryCan_GER1_1 nn 265915.16 190005.38 110.00 
+  Boulogne_NavalE218 Stationary.Environment.JerryCan_GER1_1 nn 265925.19 190013.17 110.00 
+  Boulogne_NavalE219 Stationary.Environment.JerryCan_GER1_1 nn 265919.06 190028.80 110.00 
+  Boulogne_NavalE223 Stationary.Environment.JerryCan_GER1_1 nn 265910.16 190039.94 110.00 
+  Boulogne_NavalE224 Stationary.Environment.JerryCan_GER1_1 nn 265953.06 189939.02 110.00 
+  Boulogne_NavalE225 Stationary.Environment.JerryCan_GER1_1 nn 265949.72 189915.59 110.00 
+  Boulogne_NavalE226 Stationary.Environment.JerryCan_GER1_1 nn 265904.00 189855.94 110.00 
+  Boulogne_NavalE227 Stationary.Environment.JerryCan_GER1_1 nn 265837.66 189986.97 110.00 
+  Boulogne_NavalE228 Stationary.Environment.JerryCan_GER1_1 nn 265838.22 189994.78 110.00 
+  Boulogne_NavalE229 Stationary.Environment.JerryCan_GER1_1 nn 265844.34 190008.72 110.00 
+  Boulogne_NavalE230 Stationary.Environment.JerryCan_GER1_1 nn 265967.03 190169.16 110.00 
+  Boulogne_NavalE231 Stationary.Environment.JerryCan_GER1_1 nn 265998.59 190139.53 110.00 
+  Boulogne_NavalE232 Stationary.Environment.JerryCan_GER1_1 nn 265995.78 190129.31 110.00 
+  Boulogne_NavalE233 Stationary.Environment.JerryCan_GER1_1 nn 265807.63 190052.31 110.00 
+  Boulogne_NavalE234 Stationary.Environment.JerryCan_GER1_1 nn 265859.50 189827.14 110.00 
+  Boulogne_NavalE257 Stationary.Environment.JerryCan_GER1_1 nn 265880.81 189840.11 110.00 
+  Boulogne_NavalE258 Stationary.Environment.JerryCan_GER1_1 nn 265937.34 189737.25 110.00 
+  Boulogne_NavalE259 Stationary.Environment.JerryCan_GER1_1 nn 265912.31 189843.83 110.00 
+  Boulogne_NavalE260 Stationary.Environment.JerryCan_GER1_1 nn 265949.41 189869.77 110.00 
+  Boulogne_NavalE261 Stationary.Environment.JerryCan_GER1_1 nn 265927.16 189994.88 110.00 
+  Boulogne_NavalE262 Stationary.Environment.JerryCan_GER1_1 nn 265916.03 189991.16 110.00 
+  Boulogne_NavalE263 ShipUnit.MotorBarge_Large1 nn 265898.38 190077.50 -70.00 /sleep 1440/skill 0/slowfire 100/skin materialSummer2_gray
+  Boulogne_NavalE264 ShipUnit.MotorBarge_Large1 nn 265965.56 189801.20 25.00 /sleep 1440/skill 0/slowfire 1/skin materialSummer2_gray
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Big 1 265817.64 190080.93 110.00
   1_bld buildings.House$Oil_Bunker-Big 1 265932.90 189970.83 190.00
   2_bld buildings.House$Oil_Bunker-Big 1 265875.14 189928.73 150.00
   3_bld buildings.House$Oil_Bunker-Big 1 265914.70 190171.32 110.00
-  4_bld buildings.House$Oil_Bunker-Big 1 265914.70 190171.32 110.00
   5_bld buildings.House$Oil_Bunker-Big 1 265902.77 190271.57 250.00
   6_bld buildings.House$Oil_Bunker-Big 1 266154.40 189845.91 -65.00
   7_bld buildings.House$Oil_Bunker-Big 1 266174.26 189805.63 -65.00

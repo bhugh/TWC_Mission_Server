@@ -1,0 +1,330 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 350000 300000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Rye_LG7 tobruk:Stationary.Environment.Windsock_v2 nn 205210.89 211148.45 -65.00 
+  Rye_LG150 tobruk:Stationary.BeaufighterMkIC nn 205178.89 211187.67 -1065.00 
+  Rye_LG91 Stationary.Environment.CamoNetPlaneBig nn 205159.69 211188.98 -720.00 
+  Rye_LG6 tobruk:Stationary.Environment.Windsock_v2 nn 205458.89 211159.89 -65.00 
+  Rye_LG36 Stationary.Environment.JerryCan_GER1_1 nn 205459.83 211159.19 -330.00 
+  Rye_LG213 Stationary.Environment.TentMedicLarge_UK1 nn 205164.97 211224.77 -810.00 
+  Rye_LG149 tobruk:Stationary.BeaufighterMkIC nn 205206.05 211263.61 -1070.00 
+  Rye_LG83 Stationary.RacingSigns.RacingSign1 nn 205246.83 211218.77 -270.00 /hstart -15
+  Rye_LG92 Stationary.Environment.CamoNetPlaneBig nn 205182.28 211259.31 -720.00 
+  Rye_LG84 Stationary.RacingSigns.RacingSign1 nn 205246.30 211236.81 -270.00 /hstart -15
+  Rye_LG90 Stationary.Environment.CamoNetPlaneBig nn 205477.47 211229.58 -540.00 
+  Rye_LG151 Stationary.HurricaneMkI_FB nn 205463.38 211228.41 -1260.00 
+  Rye_LG152 Stationary.HurricaneMkI_FB nn 205439.69 211274.72 -1260.00 
+  Rye_LG148 tobruk:Stationary.BeaufighterMkIC nn 205184.39 211258.66 -1080.00 
+  Rye_LG214 Stationary.Environment.TentMedicLarge_UK1 nn 205202.52 211295.08 -810.00 
+  Rye_LG89 Stationary.Environment.CamoNetPlaneBig nn 205458.08 211277.59 -540.00 
+  Rye_LG153 Stationary.HurricaneMkI_FB nn 205458.81 211278.61 -1260.00 
+  Rye_LG235 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205140.00 211352.03 -1080.00 
+  Rye_LG93 Stationary.Environment.CamoNetPlaneBig nn 205202.50 211358.91 -720.00 
+  Rye_LG147 tobruk:Stationary.BeaufighterMkIC nn 205202.36 211359.94 -1080.00 
+  Rye_LG154 Stationary.HurricaneMkI_FB nn 205442.02 211378.22 -1245.00 
+  Rye_LG88 Stationary.Environment.CamoNetPlaneBig nn 205459.95 211383.42 -540.00 
+  Rye_LG155 Stationary.HurricaneMkI_FB nn 205462.91 211384.25 -1260.00 
+  Rye_LG233 Stationary.Hangars.Type_C38_Short nn 205133.27 211410.23 -810.00 
+  Rye_LG146 tobruk:Stationary.BeaufighterMkIC nn 205204.78 211410.55 -1080.00 
+  Rye_LG94 Stationary.Environment.CamoNetPlaneBig nn 205203.81 211410.70 -720.00 
+  Rye_LG156 Stationary.HurricaneMkI_FB nn 205463.00 211426.64 -1260.00 
+  Rye_LG87 Stationary.Environment.CamoNetPlaneBig nn 205462.06 211433.02 -540.00 
+  Rye_LG157 Stationary.HurricaneMkI_FB nn 205463.97 211439.02 -1260.00 
+  Rye_LG34 Stationary.Environment.JerryCan_GER1_1 nn 205539.75 211434.38 -330.00 
+  Rye_LG143 tobruk:Stationary.BeaufighterMkIC nn 205118.42 211525.56 -1080.00 
+  Rye_LG234 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205136.95 211468.08 -1080.00 
+  Rye_LG144 tobruk:Stationary.BeaufighterMkIC nn 205193.78 211460.05 -1090.00 
+  Rye_LG210 Stationary.Environment.TentMedicLarge_UK1 nn 205461.50 211461.78 -810.00 
+  Rye_LG158 Stationary.HurricaneMkI_FB nn 205466.78 211486.88 -1260.00 
+  Rye_LG114 Stationary.Environment.CamoNetPlaneBig nn 205119.03 211526.22 -720.00 
+  Rye_LG141 tobruk:Stationary.BeaufighterMkIC nn 205116.98 211555.89 -1080.00 
+  Rye_LG113 Stationary.Environment.CamoNetPlaneBig nn 205114.27 211572.19 -720.00 
+  Rye_LG140 tobruk:Stationary.BeaufighterMkIC nn 205112.56 211573.55 -1080.00 
+  Rye_LG209 Stationary.Environment.TentMedicLarge_UK1 nn 205435.61 211528.45 -880.00 
+  Rye_LG3 Stationary.RacingSigns.RacingSign1 nn 205441.50 211570.08 -330.00 /hstart -15
+  Rye_LG159 Stationary.HurricaneMkI_FB nn 205458.17 211571.83 -1285.00 
+  Rye_LG1 Stationary.Environment.CamoNetPlaneBig nn 205477.30 211570.42 -540.00 
+  Rye_LG160 Stationary.HurricaneMkI_FB nn 205478.05 211571.31 -1260.00 
+  Rye_LG70 Stationary.Environment.JerryCan_GER1_1 nn 205055.61 211630.97 -330.00 
+  Rye_LG69 Stationary.Environment.TentBell_UK1 nn 205050.42 211635.39 -330.00 
+  Rye_LG68 Stationary.Environment.JerryCan_GER1_1 nn 205067.75 211611.56 -330.00 
+  Rye_LG67 Stationary.Environment.TentBell_UK1 nn 205068.39 211611.25 -330.00 
+  Rye_LG139 tobruk:Stationary.BeaufighterMkIC nn 205112.28 211616.41 -1080.00 
+  Rye_LG112 Stationary.Environment.CamoNetPlaneBig nn 205111.66 211618.41 -720.00 
+  Rye_LG79 Stationary.Environment.TentBell_UK1 nn 205088.61 211646.25 -330.00 
+  Rye_LG2 Stationary.RacingSigns.RacingSign1 nn 205428.34 211592.47 -330.00 /hstart -15
+  Rye_LG161 Stationary.HurricaneMkI_FB nn 205461.23 211618.70 -1260.00 
+  Rye_LG86 Stationary.Environment.CamoNetPlaneBig nn 205460.47 211625.91 -540.00 
+  Rye_LG162 Stationary.HurricaneMkI_FB nn 205460.30 211633.92 -1260.00 
+  Rye_LG169 Stationary.HurricaneMkI_FB nn 205497.78 211644.11 -1305.00 
+  Rye_LG236 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205507.30 211599.72 -960.00 
+  Rye_LG172 Stationary.HurricaneMkI_FB nn 205508.08 211627.20 -1305.00 
+  Rye_LG237 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205536.00 211614.42 -960.00 
+  Rye_LG173 Stationary.HurricaneMkI_FB nn 205524.98 211636.77 -1305.00 
+  Rye_LG174 Stationary.HurricaneMkI_FB nn 205540.42 211647.80 -1305.00 
+  Rye_LG238 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205561.63 211627.06 -960.00 
+  Rye_LG240 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205608.05 211620.27 -825.00 
+  Rye_LG73 Stationary.Environment.JerryCan_GER1_1 nn 205038.56 211655.94 -330.00 
+  Rye_LG74 Stationary.Environment.TentBell_UK1 nn 205038.72 211656.31 -330.00 
+  Rye_LG75 Stationary.Environment.TentBell_UK1 nn 205027.81 211670.33 -330.00 
+  Rye_LG76 Stationary.Environment.JerryCan_GER1_1 nn 205031.23 211670.92 -330.00 
+  Rye_LG224 Stationary.Environment.TentMedicLarge_UK1 nn 205046.81 211661.63 -870.00 
+  Rye_LG78 Stationary.Environment.TentBell_UK1 nn 205070.64 211664.09 -330.00 
+  Rye_LG81 Stationary.Environment.JerryCan_GER1_1 nn 205057.97 211681.78 -330.00 
+  Rye_LG80 Stationary.Environment.TentBell_UK1 nn 205058.17 211681.25 -330.00 
+  Rye_LG82 Stationary.Environment.JerryCan_GER1_1 nn 205075.86 211666.89 -330.00 
+  Rye_LG203 tobruk:Stationary.BeaufighterMkIC nn 205089.33 211666.03 -1155.00 
+  Rye_LG202 tobruk:Stationary.BeaufighterMkIC nn 205075.75 211689.48 -1155.00 
+  Rye_LG191 tobruk:Stationary.BeaufighterMkIC nn 205116.48 211660.69 -1155.00 
+  Rye_LG194 tobruk:Stationary.BeaufighterMkIC nn 205107.02 211683.31 -1155.00 
+  Rye_LG197 tobruk:Stationary.BeaufighterMkIC nn 205100.44 211705.95 -1155.00 
+  Rye_LG192 tobruk:Stationary.BeaufighterMkIC nn 205139.94 211666.03 -1155.00 
+  Rye_LG195 tobruk:Stationary.BeaufighterMkIC nn 205133.34 211688.67 -1155.00 
+  Rye_LG193 tobruk:Stationary.BeaufighterMkIC nn 205167.09 211674.67 -1155.00 
+  Rye_LG196 tobruk:Stationary.BeaufighterMkIC nn 205158.86 211697.31 -1155.00 
+  Rye_LG96 Stationary.Environment.CamoNetPlaneBig nn 205210.19 211673.73 -720.00 
+  Rye_LG136 tobruk:Stationary.BeaufighterMkIC nn 205208.16 211672.59 -1080.00 
+  Rye_LG217 Stationary.Environment.TentMedicLarge_UK1 nn 205194.33 211698.38 -810.00 
+  Rye_LG170 Stationary.HurricaneMkI_FB nn 205514.69 211655.88 -1305.00 
+  Rye_LG171 Stationary.HurricaneMkI_FB nn 205534.55 211666.17 -1305.00 
+  Rye_LG241 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205566.38 211663.72 -895.00 
+  Rye_LG163 Stationary.HurricaneMkI_FB nn 205532.83 211706.39 -1260.00 
+  Rye_LG242 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205565.17 211697.66 -895.00 
+  Rye_LG239 Stationary.Hangars.Type_C38_Short nn 205612.77 211677.89 -810.00 
+  Rye_LG198 tobruk:Stationary.BeaufighterMkIC nn 205126.36 211712.13 -1155.00 
+  Rye_LG199 tobruk:Stationary.BeaufighterMkIC nn 205151.05 211719.94 -1155.00 
+  Rye_LG201 tobruk:Stationary.BeaufighterMkIC nn 205178.20 211713.36 -1155.00 
+  Rye_LG200 tobruk:Stationary.BeaufighterMkIC nn 205174.09 211729.81 -1155.00 
+  Rye_LG134 tobruk:Stationary.BeaufighterMkIC nn 205213.25 211741.20 -1080.00 
+  Rye_LG109 Stationary.Environment.CamoNetPlaneBig nn 205530.78 211715.50 -540.00 
+  Rye_LG164 Stationary.HurricaneMkI_FB nn 205532.13 211722.95 -1260.00 
+  Rye_LG243 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 205615.19 211732.78 -970.00 
+  Rye_LG218 Stationary.Environment.TentMedicLarge_UK1 nn 205128.09 211822.58 -810.00 
+  Rye_LG98 Stationary.Environment.CamoNetPlaneBig nn 205129.33 211792.00 -720.00 
+  Rye_LG126 tobruk:Stationary.BeaufighterMkIC nn 205129.88 211790.19 -1080.00 
+  Rye_LG165 Stationary.HurricaneMkI_FB nn 205534.50 211779.58 -1260.00 
+  Rye_LG108 Stationary.Environment.CamoNetPlaneBig nn 205534.47 211788.02 -540.00 
+  Rye_LG166 Stationary.HurricaneMkI_FB nn 205535.55 211794.05 -1260.00 
+  Rye_LG167 Stationary.HurricaneMkI_FB nn 205540.11 211830.44 -1260.00 
+  Rye_LG107 Stationary.Environment.CamoNetPlaneBig nn 205539.39 211839.64 -540.00 
+  Rye_LG204 Stationary.Environment.TentMedicLarge_UK1 nn 205586.53 211793.41 -810.00 
+  Rye_LG189 Stationary.HurricaneMkI_FB nn 205579.39 211808.78 -1335.00 
+  Rye_LG187 Stationary.HurricaneMkI_FB nn 205576.45 211826.42 -1335.00 
+  Rye_LG190 Stationary.HurricaneMkI_FB nn 205597.03 211806.58 -1335.00 
+  Rye_LG188 Stationary.HurricaneMkI_FB nn 205592.63 211826.42 -1335.00 
+  Rye_LG111 Stationary.Environment.CamoNetPlaneBig nn 205095.72 211850.23 -720.00 
+  Rye_LG124 tobruk:Stationary.BeaufighterMkIC nn 205099.16 211851.89 -1080.00 
+  Rye_LG123 tobruk:Stationary.BeaufighterMkIC nn 205149.39 211929.31 -1080.00 
+  Rye_LG130 tobruk:Stationary.BeaufighterMkIC nn 205168.44 211860.25 -1080.00 
+  Rye_LG110 Stationary.Environment.CamoNetPlaneBig nn 205149.06 211928.56 -720.00 
+  Rye_LG129 tobruk:Stationary.BeaufighterMkIC nn 205169.17 211880.09 -1080.00 
+  Rye_LG128 tobruk:Stationary.BeaufighterMkIC nn 205171.91 211901.28 -1080.00 
+  Rye_LG133 tobruk:Stationary.BeaufighterMkIC nn 205185.34 211860.98 -1080.00 
+  Rye_LG132 tobruk:Stationary.BeaufighterMkIC nn 205188.30 211880.09 -1080.00 
+  Rye_LG131 tobruk:Stationary.BeaufighterMkIC nn 205189.77 211899.20 -1080.00 
+  Rye_LG168 Stationary.HurricaneMkI_FB nn 205542.63 211847.75 -1260.00 
+  Rye_LG50 Stationary.Environment.JerryCan_GER1_1 nn 205523.17 211878.45 -330.00 
+  Rye_LG11 Stationary.Environment.TentBell_UK1 nn 205523.80 211878.13 -330.00 
+  Rye_LG10 Stationary.Environment.TentBell_UK1 nn 205505.84 211902.27 -330.00 
+  Rye_LG42 Stationary.Environment.JerryCan_GER1_1 nn 205511.03 211897.86 -330.00 
+  Rye_LG48 Stationary.Environment.JerryCan_GER1_1 nn 205561.56 211889.84 -330.00 
+  Rye_LG12 Stationary.Environment.TentBell_UK1 nn 205562.80 211889.06 -330.00 
+  Rye_LG185 Stationary.HurricaneMkI_FB nn 205573.50 211844.08 -1335.00 
+  Rye_LG186 Stationary.HurricaneMkI_FB nn 205589.67 211845.55 -1335.00 
+  Rye_LG45 Stationary.Environment.JerryCan_GER1_1 nn 205570.59 211867.44 -330.00 
+  Rye_LG46 Stationary.Environment.JerryCan_GER1_1 nn 205570.06 211872.20 -330.00 
+  Rye_LG47 Stationary.Environment.JerryCan_GER1_1 nn 205576.06 211872.31 -330.00 
+  Rye_LG44 Stationary.Environment.JerryCan_GER1_1 nn 205585.16 211874.69 -330.00 
+  Rye_LG122 tobruk:Stationary.BeaufighterMkIC nn 205208.14 211928.61 -1080.00 
+  Rye_LG99 Stationary.Environment.CamoNetPlaneBig nn 205208.17 211940.75 -720.00 
+  Rye_LG121 tobruk:Stationary.BeaufighterMkIC nn 205204.47 211947.00 -1080.00 
+  Rye_LG175 Stationary.HurricaneMkI_FB nn 205442.13 211923.06 -1260.00 
+  Rye_LG49 Stationary.Environment.JerryCan_GER1_1 nn 205493.98 211922.83 -330.00 
+  Rye_LG5 Stationary.Environment.TentBell_UK1 nn 205494.14 211923.20 -330.00 
+  Rye_LG176 Stationary.HurricaneMkI_FB nn 205455.67 211982.92 -1260.00 
+  Rye_LG4 Stationary.Environment.TentBell_UK1 nn 205483.23 211937.22 -330.00 
+  Rye_LG41 Stationary.Environment.JerryCan_GER1_1 nn 205486.09 211937.25 -330.00 
+  Rye_LG43 Stationary.Environment.JerryCan_GER1_1 nn 205546.81 211910.34 -330.00 
+  Rye_LG14 Stationary.Environment.TentBell_UK1 nn 205526.06 211930.98 -330.00 
+  Rye_LG13 Stationary.Environment.TentBell_UK1 nn 205544.02 211913.13 -330.00 
+  Rye_LG15 Stationary.Environment.TentBell_UK1 nn 205513.59 211948.13 -330.00 
+  Rye_LG51 Stationary.Environment.JerryCan_GER1_1 nn 205513.38 211948.67 -330.00 
+  Rye_LG40 Stationary.Environment.JerryCan_GER1_1 nn 205531.28 211933.77 -330.00 
+  Rye_LG120 tobruk:Stationary.BeaufighterMkIC nn 205208.09 211976.89 -1080.00 
+  Rye_LG100 Stationary.Environment.CamoNetPlaneBig nn 205216.52 212036.48 -720.00 
+  Rye_LG119 tobruk:Stationary.BeaufighterMkIC nn 205224.80 211978.11 -1080.00 
+  Rye_LG179 Stationary.HurricaneMkI_FB nn 205441.83 211983.44 -1260.00 
+  Rye_LG177 Stationary.HurricaneMkI_FB nn 205454.31 212016.78 -1260.00 
+  Rye_LG52 Stationary.Environment.CamoNetPlaneBig nn 205453.48 212017.14 -540.00 
+  Rye_LG118 tobruk:Stationary.BeaufighterMkIC nn 205215.33 212036.88 -1080.00 
+  Rye_LG117 tobruk:Stationary.BeaufighterMkIC nn 205235.81 212068.66 -1080.00 
+  Rye_LG180 Stationary.HurricaneMkI_FB nn 205453.69 212070.88 -1260.00 
+  Rye_LG0 Stationary.Environment.CamoNetPlaneBig nn 205452.86 212071.45 -540.00 
+  Rye_LG116 tobruk:Stationary.BeaufighterMkIC nn 205219.13 212069.56 -1080.00 
+  Rye_LG115 tobruk:Stationary.BeaufighterMkIC nn 205225.00 212201.97 -1100.00 
+  Rye_LG182 Stationary.HurricaneMkI_FB nn 205444.69 212103.11 -1260.00 
+  Rye_LG208 Stationary.Environment.TentMedicLarge_UK1 nn 205440.02 212151.55 -810.00 
+  Rye_LG103 Stationary.Environment.CamoNetPlaneBig nn 205225.16 212203.33 -740.00 
+  Rye_LG21 tobruk:Stationary.Environment.Windsock_v2 nn 205441.22 212160.42 -65.00 
+  Rye_LG183 Stationary.HurricaneMkI_FB nn 205447.45 212223.73 -1260.00 
+  Rye_LG105 Stationary.Environment.CamoNetPlaneBig nn 205448.20 212225.86 -540.00 
+  Rye_LG9 tobruk:Stationary.Environment.Windsock_v2 nn 205257.58 212237.55 -65.00 
+  Rye_LG106 Stationary.Environment.CamoNetPlaneBig nn 205353.45 212242.13 -565.00 
+  Rye_LG16 tobruk:Stationary.BeaufighterMkIC nn 205351.44 212241.31 -1280.00 
+  Rye_LG17 Stationary.HurricaneMkI_FB nn 205460.95 212102.03 -1260.00 
+  Rye_LG18 Stationary.HurricaneMkI_FB nn 205462.86 211922.91 -1260.00 
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  RyeLG_east 205659.85 211660.81 0 600 700 1
+  RyeLG_west 205016.98 211654.98 0 600 600 1
+[RyeLG_east_Runways]
+  205381.37 211654.19 -270.00 800.00 40.00 0
+[RyeLG_east_Points]
+  205461.84 211779.84 11 9 7 5 3 1
+  205396.51 212070.70 2
+  205398.11 212137.65
+  205383.76 211228.20 4
+  205394.12 211184.36
+  205384.56 212053.16 6
+  205368.62 212111.35
+  205364.63 211227.40 8
+  205364.63 211183.57
+  205430.73 211817.07 10
+  205464.88 211837.30
+  205430.32 211876.87 12
+  205459.74 211892.54
+[RyeLG_west_Runways]
+  205275.95 211655.20 -270.00 740.00 40.00 0
+[RyeLG_west_Points]
+  205177.99 211552.50 15 13 11 9 7 5 3 1
+  205269.01 211272.25 2
+  205269.01 211234.15
+  205278.84 212041.67 4
+  205273.92 212093.30
+  205272.69 211200.96 6
+  205276.38 211153.03
+  205286.21 212140.00 8
+  205286.21 212185.48
+  205220.36 211606.81 10
+  205188.48 211594.85
+  205222.75 211838.75 12
+  205194.86 211854.69
+  205224.35 211547.82 14
+  205198.84 211523.12
+  205229.51 211879.04 16
+  205204.76 211895.99
+[AIChiefs]
+  AIChief_0 3 205595 211757/spawn AnimalGroup.Cow_Angus/r 100
+  AIChief_1 3 205151 211410/spawn AnimalGroup.Cow_Ayrshire/r 100
+[BirthPlace]
+  "Rye Landing Ground - East" 1 205654 211665 0 1 1 1 . . . 1 /Heading 0.0 /Type takeoff
+  "Rye Landing Ground - West" 1 205021 211650 0 1 1 1 . . . 1 /Heading 0.0 /Type takeoff
+[BirthPlace0]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  Aircraft.Su-26M
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo
+[BirthPlace1]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  Aircraft.Su-26M
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo

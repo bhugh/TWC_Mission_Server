@@ -21,210 +21,210 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static0 Stationary.Weapons_.Torpedo_T_F5 nn 247530.66 234810.45 185.00 
-  Static173 Stationary.Weapons_.Destructing_Bomb nn 247522.72 234807.50 185.00 /hstart 5
-  Static49 Stationary.Environment.GuardTower_UK-GER_1 nn 247530.63 234812.20 190.00 /hstart 15
-  Static48 Stationary.Weapons_.Torpedo_T_F5 nn 247526.52 234813.73 185.00 
-  Static128 Stationary.Weapons_.Destructing_Bomb nn 247528.14 234814.16 185.00 /hstart 5
-  Static47 Stationary.Weapons_.Torpedo_T_F5 nn 247516.80 234808.34 185.00 
-  Static134 Stationary.Weapons_.Torpedo_T_F5 de 247511.19 234806.02 185.00 
-  Static56 Stationary.Environment.GuardTower_UK-GER_1 nn 247502.97 234800.92 190.00 /hstart 22
-  Static86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247527.98 234816.73 -80.00 /hstart 19
-  Static85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247519.41 234815.02 -80.00 /hstart 19
-  Static1 Stationary.Weapons_.Torpedo_T_F5 nn 247512.13 234811.83 185.00 
-  Static46 Stationary.Weapons_.Torpedo_T_F5 nn 247502.39 234807.94 185.00 
-  Static21 Stationary.Weapons_.Torpedo_T_F5 nn 247526.92 234822.22 185.00 
-  Static133 Stationary.Weapons_.Destructing_Bomb nn 247518.25 234818.08 185.00 /hstart 5
-  Static84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247509.56 234813.39 -80.00 /hstart 19
-  Static2 Stationary.Weapons_.Torpedo_T_F5 nn 247502.02 234810.17 185.00 
-  Static140 Stationary.Weapons_.Destructing_Bomb nn 247507.50 234813.91 185.00 /hstart 5
-  Static22 Stationary.Weapons_.Torpedo_T_F5 nn 247514.02 234819.50 185.00 
-  Static82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247499.70 234811.89 -80.00 /hstart 19
-  Static129 Stationary.Weapons_.Destructing_Bomb nn 247525.41 234827.06 185.00 /hstart 5
-  Static23 Stationary.Weapons_.Torpedo_T_F5 nn 247508.14 234818.06 185.00 
-  Static174 Stationary.Environment.JerryCan_GER1_1 nn 247526.45 234829.95 185.00 
-  Static35 Stationary.Weapons_.Torpedo_T_F5 nn 247524.66 234829.88 185.00 
-  Static20 Stationary.Weapons_.Torpedo_T_F5 nn 247525.14 234832.08 185.00 
-  Static24 Stationary.Weapons_.Torpedo_T_F5 nn 247501.42 234817.52 185.00 
-  Static19 Stationary.Weapons_.Torpedo_T_F5 nn 247526.33 234836.13 185.00 
-  Static34 Stationary.Weapons_.Torpedo_T_F5 nn 247512.84 234828.52 185.00 
-  Static141 Stationary.Weapons_.Destructing_Bomb nn 247505.95 234825.22 185.00 /hstart 5
-  Static175 Stationary.Environment.JerryCan_GER1_1 nn 247506.28 234826.89 185.00 
-  Static33 Stationary.Weapons_.Torpedo_T_F5 nn 247506.81 234827.45 185.00 
-  Static132 Stationary.Weapons_.Destructing_Bomb nn 247518.11 234834.78 185.00 /hstart 5
-  Static55 Stationary.Environment.GuardTower_UK-GER_1 nn 247498.77 234826.28 190.00 /hstart 22
-  Static53 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247498.81 234825.94 280.00 
-  Static18 Stationary.Weapons_.Torpedo_T_F5 nn 247526.06 234844.33 185.00 
-  Static17 Stationary.Weapons_.Torpedo_T_F5 nn 247521.23 234843.39 185.00 
-  Static90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247523.69 234844.44 -80.00 /hstart 19
-  Static36 Stationary.Weapons_.Torpedo_T_F5 nn 247525.59 234847.20 185.00 
-  Static130 Stationary.Weapons_.Destructing_Bomb nn 247524.67 234847.25 185.00 /hstart 5
-  Static89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247514.58 234842.48 -80.00 /hstart 19
-  Static16 Stationary.Weapons_.Torpedo_T_F5 nn 247512.81 234843.16 185.00 
-  Static50 Stationary.Environment.GuardTower_UK-GER_1 nn 247524.53 234850.23 190.00 /hstart 15
-  Static88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247505.78 234840.86 -80.00 /hstart 19
-  Static15 Stationary.Weapons_.Torpedo_T_F5 nn 247505.67 234840.70 185.00 
-  Static142 Stationary.Weapons_.Destructing_Bomb nn 247503.34 234840.16 185.00 /hstart 5
-  Static131 Stationary.Weapons_.Destructing_Bomb nn 247510.19 234847.47 185.00 /hstart 5
-  Static37 Stationary.Weapons_.Torpedo_T_F5 nn 247512.63 234848.31 185.00 
-  Static52 Stationary.Environment.GuardTower_UK-GER_1 nn 247470.88 234801.84 190.00 /hstart 15
-  Static172 Stationary.Weapons_.Destructing_Bomb nn 247468.19 234802.34 185.00 /hstart 5
-  Static146 Stationary.Weapons_.Destructing_Bomb nn 247491.23 234806.81 185.00 /hstart 5
-  Static3 Stationary.Weapons_.Torpedo_T_F5 nn 247492.78 234809.34 185.00 
-  Static147 Stationary.Weapons_.Destructing_Bomb nn 247482.66 234803.64 185.00 /hstart 5
-  Static45 Stationary.Weapons_.Torpedo_T_F5 nn 247485.69 234806.27 185.00 
-  Static80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247489.98 234810.06 -80.00 /hstart 19
-  Static4 Stationary.Weapons_.Torpedo_T_F5 nn 247485.48 234808.16 185.00 
-  Static79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247480.08 234808.34 -80.00 /hstart 19
-  Static5 Stationary.Weapons_.Torpedo_T_F5 nn 247476.11 234806.23 185.00 
-  Static145 Stationary.Weapons_.Destructing_Bomb nn 247492.59 234817.88 185.00 /hstart 5
-  Static25 Stationary.Weapons_.Torpedo_T_F5 nn 247489.27 234817.75 185.00 
-  Static61 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247470.69 234806.75 -80.00 /hstart 19
-  Static148 Stationary.Weapons_.Destructing_Bomb nn 247480.72 234813.86 185.00 /hstart 5
-  Static26 Stationary.Weapons_.Torpedo_T_F5 nn 247479.11 234814.33 185.00 
-  Static184 Stationary.Environment.JerryCan_GER1_1 nn 247491.39 234823.66 185.00 
-  Static6 Stationary.Weapons_.Torpedo_T_F5 nn 247466.03 234809.61 185.00 
-  Static32 Stationary.Weapons_.Torpedo_T_F5 nn 247497.08 234827.73 185.00 
-  Static27 Stationary.Weapons_.Torpedo_T_F5 nn 247475.17 234815.75 185.00 
-  Static44 Stationary.Weapons_.Torpedo_T_F5 nn 247467.19 234811.83 185.00 
-  Static171 Stationary.Weapons_.Destructing_Bomb nn 247465.78 234812.14 185.00 /hstart 5
-  Static31 Stationary.Weapons_.Torpedo_T_F5 nn 247491.13 234826.89 185.00 
-  Static7 Stationary.Weapons_.Torpedo_T_F5 nn 247466.19 234814.84 185.00 
-  Static144 Stationary.Weapons_.Destructing_Bomb nn 247491.98 234830.91 185.00 /hstart 5
-  Static30 Stationary.Weapons_.Torpedo_T_F5 nn 247485.67 234827.42 185.00 
-  Static149 Stationary.Weapons_.Destructing_Bomb nn 247476.44 234823.45 185.00 /hstart 5
-  Static185 Stationary.Environment.JerryCan_GER1_1 nn 247473.56 234822.13 185.00 
-  Static28 Stationary.Weapons_.Torpedo_T_F5 nn 247473.88 234823.66 185.00 
-  Static29 Stationary.Weapons_.Torpedo_T_F5 nn 247478.64 234828.50 185.00 
-  Static87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247496.70 234838.97 -80.00 /hstart 19
-  Static186 Stationary.Environment.JerryCan_GER1_1 nn 247463.83 234820.59 185.00 
-  Static14 Stationary.Weapons_.Torpedo_T_F5 nn 247498.42 234841.22 185.00 
-  Static83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247494.53 234838.55 -80.00 /hstart 19
-  Static8 Stationary.Weapons_.Torpedo_T_F5 nn 247465.41 234824.06 185.00 
-  Static13 Stationary.Weapons_.Torpedo_T_F5 nn 247494.55 234841.16 185.00 
-  Static43 Stationary.Weapons_.Torpedo_T_F5 nn 247463.00 234823.14 185.00 
-  Static38 Stationary.Weapons_.Torpedo_T_F5 nn 247502.48 234847.52 185.00 
-  Static81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247484.88 234836.92 -80.00 /hstart 19
-  Static150 Stationary.Weapons_.Destructing_Bomb nn 247477.33 234833.23 185.00 /hstart 5
-  Static170 Stationary.Weapons_.Destructing_Bomb nn 247463.50 234826.34 185.00 /hstart 5
-  Static12 Stationary.Weapons_.Torpedo_T_F5 nn 247485.03 234840.47 185.00 
-  Static11 Stationary.Weapons_.Torpedo_T_F5 nn 247481.52 234839.19 185.00 
-  Static60 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247475.11 234835.23 -80.00 /hstart 19
-  Static39 Stationary.Weapons_.Torpedo_T_F5 nn 247490.16 234845.44 185.00 
-  Static9 Stationary.Weapons_.Torpedo_T_F5 nn 247464.38 234832.77 185.00 
-  Static10 Stationary.Weapons_.Torpedo_T_F5 nn 247471.88 234837.23 185.00 
-  Static77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247465.50 234833.80 -80.00 /hstart 19
-  Static54 Stationary.Environment.GuardTower_UK-GER_1 nn 247494.25 234852.20 190.00 /hstart 22
-  Static40 Stationary.Weapons_.Torpedo_T_F5 nn 247479.44 234845.47 185.00 
-  Static41 Stationary.Weapons_.Torpedo_T_F5 nn 247471.05 234842.86 185.00 
-  Static42 Stationary.Weapons_.Torpedo_T_F5 nn 247463.16 234839.19 185.00 
-  Static51 Stationary.Environment.GuardTower_UK-GER_1 nn 247464.38 234839.98 190.00 /hstart 15
-  Static168 Stationary.Weapons_.Destructing_Bomb nn 247473.53 234845.66 185.00 /hstart 5
-  Static169 Stationary.Weapons_.Destructing_Bomb nn 247463.42 234842.48 185.00 /hstart 5
-  Static57 Stationary.Environment.GuardTower_UK-GER_1 nn 247430.73 234813.64 190.00 /hstart 22
-  Static58 Stationary.Weapons_.Destructing_Bomb nn 247454.69 234794.86 185.00 /hstart 5
-  Static59 Stationary.Weapons_.Torpedo_T_F5 nn 247458.48 234801.09 185.00 
-  Static62 Stationary.Weapons_.Torpedo_T_F5 nn 247458.89 234809.59 185.00 
-  Static63 Stationary.Weapons_.Torpedo_T_F5 nn 247448.77 234795.70 185.00 
-  Static64 Stationary.Weapons_.Torpedo_T_F5 de 247443.17 234793.39 185.00 
-  Static65 Stationary.Environment.GuardTower_UK-GER_1 nn 247434.95 234788.28 190.00 /hstart 22
-  Static66 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247451.39 234802.39 -80.00 /hstart 19
-  Static67 Stationary.Weapons_.Torpedo_T_F5 nn 247444.09 234799.20 185.00 
-  Static68 Stationary.Weapons_.Torpedo_T_F5 nn 247434.36 234795.30 185.00 
-  Static69 Stationary.Weapons_.Destructing_Bomb nn 247450.23 234805.44 185.00 /hstart 5
-  Static70 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247441.55 234800.75 -80.00 /hstart 19
-  Static71 Stationary.Weapons_.Torpedo_T_F5 nn 247433.98 234797.53 185.00 
-  Static72 Stationary.Weapons_.Destructing_Bomb nn 247439.47 234801.27 185.00 /hstart 5
-  Static73 Stationary.Weapons_.Torpedo_T_F5 nn 247446.00 234806.86 185.00 
-  Static74 Stationary.Weapons_.Destructing_Bomb nn 247457.38 234814.42 185.00 /hstart 5
-  Static75 Stationary.Weapons_.Torpedo_T_F5 nn 247440.13 234805.44 185.00 
-  Static76 Stationary.Environment.JerryCan_GER1_1 nn 247458.44 234817.33 185.00 
-  Static78 Stationary.Weapons_.Torpedo_T_F5 nn 247456.64 234817.25 185.00 
-  Static91 Stationary.Weapons_.Torpedo_T_F5 nn 247457.11 234819.45 185.00 
-  Static92 Stationary.Weapons_.Torpedo_T_F5 nn 247458.31 234823.50 185.00 
-  Static93 Stationary.Weapons_.Torpedo_T_F5 nn 247444.81 234815.89 185.00 
-  Static94 Stationary.Weapons_.Destructing_Bomb nn 247437.94 234812.59 185.00 /hstart 5
-  Static95 Stationary.Weapons_.Torpedo_T_F5 nn 247438.78 234814.83 185.00 
-  Static96 Stationary.Weapons_.Destructing_Bomb nn 247450.09 234822.14 185.00 /hstart 5
-  Static97 Stationary.Weapons_.Torpedo_T_F5 nn 247458.05 234831.69 185.00 
-  Static98 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247455.67 234831.81 -80.00 /hstart 19
-  Static99 Stationary.Weapons_.Torpedo_T_F5 nn 247453.22 234830.75 185.00 
-  Static100 Stationary.Weapons_.Torpedo_T_F5 nn 247457.56 234834.56 185.00 
-  Static101 Stationary.Weapons_.Destructing_Bomb nn 247456.66 234834.63 185.00 /hstart 5
-  Static102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247446.55 234829.86 -80.00 /hstart 19
-  Static103 Stationary.Weapons_.Torpedo_T_F5 nn 247444.78 234830.52 185.00 
-  Static104 Stationary.Environment.GuardTower_UK-GER_1 nn 247456.50 234837.61 190.00 /hstart 15
-  Static105 Stationary.Weapons_.Torpedo_T_F5 nn 247444.61 234835.67 185.00 
-  Static106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247431.69 234799.25 -80.00 /hstart 19
-  Static107 Stationary.Weapons_.Torpedo_T_F5 nn 247433.39 234804.88 185.00 
-  Static108 Stationary.Environment.JerryCan_GER1_1 nn 247438.25 234814.25 185.00 
-  Static109 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247430.78 234813.30 280.00 
-  Static110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247437.75 234828.23 -80.00 /hstart 19
-  Static111 Stationary.Weapons_.Torpedo_T_F5 nn 247437.64 234828.06 185.00 
-  Static112 Stationary.Weapons_.Destructing_Bomb nn 247435.31 234827.52 185.00 /hstart 5
-  Static113 Stationary.Weapons_.Destructing_Bomb nn 247442.17 234834.84 185.00 /hstart 5
-  Static114 Stationary.Weapons_.Destructing_Bomb nn 247423.22 234794.17 185.00 /hstart 5
-  Static115 Stationary.Weapons_.Destructing_Bomb nn 247414.63 234791.02 185.00 /hstart 5
-  Static116 Stationary.Weapons_.Torpedo_T_F5 nn 247424.75 234796.70 185.00 
-  Static117 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234793.63 185.00 
-  Static118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247421.97 234797.42 -80.00 /hstart 19
-  Static119 Stationary.Weapons_.Torpedo_T_F5 nn 247417.45 234795.53 185.00 
-  Static120 Stationary.Weapons_.Destructing_Bomb nn 247424.58 234805.23 185.00 /hstart 5
-  Static121 Stationary.Weapons_.Torpedo_T_F5 nn 247421.23 234805.13 185.00 
-  Static122 Stationary.Environment.JerryCan_GER1_1 nn 247423.36 234811.03 185.00 
-  Static123 Stationary.Weapons_.Torpedo_T_F5 nn 247429.06 234815.09 180.00 
-  Static124 Stationary.Weapons_.Torpedo_T_F5 nn 247423.11 234814.27 185.00 
-  Static125 Stationary.Weapons_.Destructing_Bomb nn 247423.95 234818.28 185.00 /hstart 5
-  Static126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247428.67 234826.33 -80.00 /hstart 19
-  Static127 Stationary.Weapons_.Torpedo_T_F5 nn 247430.39 234828.58 185.00 
-  Static135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247426.52 234825.91 -80.00 /hstart 19
-  Static136 Stationary.Weapons_.Torpedo_T_F5 nn 247426.53 234828.52 185.00 
-  Static137 Stationary.Weapons_.Torpedo_T_F5 nn 247434.45 234834.88 185.00 
-  Static138 Stationary.Environment.GuardTower_UK-GER_1 nn 247426.23 234839.56 190.00 /hstart 22
-  Static139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247412.06 234795.70 -80.00 /hstart 19
-  Static143 Stationary.Weapons_.Torpedo_T_F5 nn 247408.08 234793.61 185.00 
-  Static151 Stationary.Weapons_.Destructing_Bomb nn 247412.69 234801.23 185.00 /hstart 5
-  Static152 Stationary.Weapons_.Torpedo_T_F5 nn 247411.09 234801.69 185.00 
-  Static153 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234814.80 185.00 
-  Static154 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247416.84 234824.28 -80.00 /hstart 19
-  Static155 Stationary.Weapons_.Torpedo_T_F5 nn 247417.00 234827.83 185.00 
-  Static156 Stationary.Weapons_.Torpedo_T_F5 nn 247422.13 234832.81 185.00 
-  Static157 Stationary.Environment.GuardTower_UK-GER_1 nn 247402.86 234789.20 190.00 /hstart 15
-  Static158 Stationary.Weapons_.Torpedo_T_F5 nn 247407.16 234803.11 185.00 
-  Static159 Stationary.Weapons_.Destructing_Bomb nn 247408.42 234810.83 185.00 /hstart 5
-  Static160 Stationary.Weapons_.Torpedo_T_F5 nn 247410.61 234815.86 185.00 
-  Static161 Stationary.Weapons_.Torpedo_T_F5 nn 247413.48 234826.55 185.00 
-  Static162 Stationary.Weapons_.Destructing_Bomb nn 247400.16 234789.72 185.00 /hstart 5
-  Static163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247402.67 234794.11 -80.00 /hstart 19
-  Static164 Stationary.Environment.JerryCan_GER1_1 nn 247405.55 234809.50 185.00 
-  Static165 Stationary.Weapons_.Torpedo_T_F5 nn 247405.84 234811.03 185.00 
-  Static166 Stationary.Weapons_.Destructing_Bomb nn 247409.31 234820.61 185.00 /hstart 5
-  Static167 Stationary.Weapons_.Torpedo_T_F5 nn 247411.41 234832.83 185.00 
-  Static176 Stationary.Weapons_.Torpedo_T_F5 nn 247398.00 234796.98 185.00 
-  Static177 Stationary.Weapons_.Torpedo_T_F5 nn 247399.16 234799.19 185.00 
-  Static178 Stationary.Weapons_.Destructing_Bomb nn 247397.75 234799.52 185.00 /hstart 5
-  Static179 Stationary.Weapons_.Torpedo_T_F5 nn 247398.17 234802.22 185.00 
-  Static180 Stationary.Environment.JerryCan_GER1_1 nn 247395.80 234807.97 185.00 
-  Static181 Stationary.Weapons_.Torpedo_T_F5 nn 247397.39 234811.42 185.00 
-  Static182 Stationary.Weapons_.Torpedo_T_F5 nn 247394.98 234810.52 185.00 
-  Static183 Stationary.Weapons_.Destructing_Bomb nn 247395.47 234813.70 185.00 /hstart 5
-  Static187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247407.08 234822.61 -80.00 /hstart 19
-  Static188 Stationary.Weapons_.Torpedo_T_F5 nn 247396.36 234820.14 185.00 
-  Static189 Stationary.Weapons_.Torpedo_T_F5 nn 247403.84 234824.59 185.00 
-  Static190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247397.47 234821.16 -80.00 /hstart 19
-  Static191 Stationary.Weapons_.Torpedo_T_F5 nn 247403.03 234830.22 185.00 
-  Static192 Stationary.Weapons_.Destructing_Bomb nn 247405.50 234833.02 185.00 /hstart 5
-  Static193 Stationary.Weapons_.Torpedo_T_F5 nn 247395.14 234826.55 185.00 
-  Static194 Stationary.Environment.GuardTower_UK-GER_1 nn 247396.36 234827.36 190.00 /hstart 15
-  Static195 Stationary.Weapons_.Destructing_Bomb nn 247395.39 234829.84 185.00 /hstart 5
-  Static196 Stationary.Weapons_.Torpedo_T_F5 nn 247462.64 234797.81 185.00 
-  Static197 Stationary.Environment.GuardTower_UK-GER_1 nn 247462.59 234799.56 190.00 /hstart 15
-  Static198 Stationary.Weapons_.Destructing_Bomb nn 247460.13 234801.53 185.00 /hstart 5
-  Static199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247459.97 234804.09 -80.00 /hstart 19
-  Static200 Stationary.Weapons_.Torpedo_T_F5 nn 247312.20 234957.05 185.00 
-  Static201 Stationary.Weapons_.Torpedo_T_F5 nn 247316.47 234806.52 185.00 
-  Static202 Stationary.Weapons_.Torpedo_T_F5 nn 247494.08 234730.81 185.00 
-  Static203 Stationary.Weapons_.Torpedo_T_F5 nn 247592.38 234841.48 185.00 
+  Dover_Submarine_Pen0 Stationary.Weapons_.Torpedo_T_F5 nn 247530.66 234810.45 185.00 
+  Dover_Submarine_Pen173 Stationary.Weapons_.Destructing_Bomb nn 247522.72 234807.50 185.00 /hstart 5
+  Dover_Submarine_Pen49 Stationary.Environment.GuardTower_UK-GER_1 nn 247530.63 234812.20 190.00 /hstart 15
+  Dover_Submarine_Pen48 Stationary.Weapons_.Torpedo_T_F5 nn 247526.52 234813.73 185.00 
+  Dover_Submarine_Pen128 Stationary.Weapons_.Destructing_Bomb nn 247528.14 234814.16 185.00 /hstart 5
+  Dover_Submarine_Pen47 Stationary.Weapons_.Torpedo_T_F5 nn 247516.80 234808.34 185.00 
+  Dover_Submarine_Pen134 Stationary.Weapons_.Torpedo_T_F5 de 247511.19 234806.02 185.00 
+  Dover_Submarine_Pen56 Stationary.Environment.GuardTower_UK-GER_1 nn 247502.97 234800.92 190.00 /hstart 22
+  Dover_Submarine_Pen86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247527.98 234816.73 -80.00 /hstart 19
+  Dover_Submarine_Pen85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247519.41 234815.02 -80.00 /hstart 19
+  Dover_Submarine_Pen1 Stationary.Weapons_.Torpedo_T_F5 nn 247512.13 234811.83 185.00 
+  Dover_Submarine_Pen46 Stationary.Weapons_.Torpedo_T_F5 nn 247502.39 234807.94 185.00 
+  Dover_Submarine_Pen21 Stationary.Weapons_.Torpedo_T_F5 nn 247526.92 234822.22 185.00 
+  Dover_Submarine_Pen133 Stationary.Weapons_.Destructing_Bomb nn 247518.25 234818.08 185.00 /hstart 5
+  Dover_Submarine_Pen84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247509.56 234813.39 -80.00 /hstart 19
+  Dover_Submarine_Pen2 Stationary.Weapons_.Torpedo_T_F5 nn 247502.02 234810.17 185.00 
+  Dover_Submarine_Pen140 Stationary.Weapons_.Destructing_Bomb nn 247507.50 234813.91 185.00 /hstart 5
+  Dover_Submarine_Pen22 Stationary.Weapons_.Torpedo_T_F5 nn 247514.02 234819.50 185.00 
+  Dover_Submarine_Pen82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247499.70 234811.89 -80.00 /hstart 19
+  Dover_Submarine_Pen129 Stationary.Weapons_.Destructing_Bomb nn 247525.41 234827.06 185.00 /hstart 5
+  Dover_Submarine_Pen23 Stationary.Weapons_.Torpedo_T_F5 nn 247508.14 234818.06 185.00 
+  Dover_Submarine_Pen174 Stationary.Environment.JerryCan_GER1_1 nn 247526.45 234829.95 185.00 
+  Dover_Submarine_Pen35 Stationary.Weapons_.Torpedo_T_F5 nn 247524.66 234829.88 185.00 
+  Dover_Submarine_Pen20 Stationary.Weapons_.Torpedo_T_F5 nn 247525.14 234832.08 185.00 
+  Dover_Submarine_Pen24 Stationary.Weapons_.Torpedo_T_F5 nn 247501.42 234817.52 185.00 
+  Dover_Submarine_Pen19 Stationary.Weapons_.Torpedo_T_F5 nn 247526.33 234836.13 185.00 
+  Dover_Submarine_Pen34 Stationary.Weapons_.Torpedo_T_F5 nn 247512.84 234828.52 185.00 
+  Dover_Submarine_Pen141 Stationary.Weapons_.Destructing_Bomb nn 247505.95 234825.22 185.00 /hstart 5
+  Dover_Submarine_Pen175 Stationary.Environment.JerryCan_GER1_1 nn 247506.28 234826.89 185.00 
+  Dover_Submarine_Pen33 Stationary.Weapons_.Torpedo_T_F5 nn 247506.81 234827.45 185.00 
+  Dover_Submarine_Pen132 Stationary.Weapons_.Destructing_Bomb nn 247518.11 234834.78 185.00 /hstart 5
+  Dover_Submarine_Pen55 Stationary.Environment.GuardTower_UK-GER_1 nn 247498.77 234826.28 190.00 /hstart 22
+  Dover_Submarine_Pen53 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247498.81 234825.94 280.00 
+  Dover_Submarine_Pen18 Stationary.Weapons_.Torpedo_T_F5 nn 247526.06 234844.33 185.00 
+  Dover_Submarine_Pen17 Stationary.Weapons_.Torpedo_T_F5 nn 247521.23 234843.39 185.00 
+  Dover_Submarine_Pen90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247523.69 234844.44 -80.00 /hstart 19
+  Dover_Submarine_Pen36 Stationary.Weapons_.Torpedo_T_F5 nn 247525.59 234847.20 185.00 
+  Dover_Submarine_Pen130 Stationary.Weapons_.Destructing_Bomb nn 247524.67 234847.25 185.00 /hstart 5
+  Dover_Submarine_Pen89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247514.58 234842.48 -80.00 /hstart 19
+  Dover_Submarine_Pen16 Stationary.Weapons_.Torpedo_T_F5 nn 247512.81 234843.16 185.00 
+  Dover_Submarine_Pen50 Stationary.Environment.GuardTower_UK-GER_1 nn 247524.53 234850.23 190.00 /hstart 15
+  Dover_Submarine_Pen88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247505.78 234840.86 -80.00 /hstart 19
+  Dover_Submarine_Pen15 Stationary.Weapons_.Torpedo_T_F5 nn 247505.67 234840.70 185.00 
+  Dover_Submarine_Pen142 Stationary.Weapons_.Destructing_Bomb nn 247503.34 234840.16 185.00 /hstart 5
+  Dover_Submarine_Pen131 Stationary.Weapons_.Destructing_Bomb nn 247510.19 234847.47 185.00 /hstart 5
+  Dover_Submarine_Pen37 Stationary.Weapons_.Torpedo_T_F5 nn 247512.63 234848.31 185.00 
+  Dover_Submarine_Pen52 Stationary.Environment.GuardTower_UK-GER_1 nn 247470.88 234801.84 190.00 /hstart 15
+  Dover_Submarine_Pen172 Stationary.Weapons_.Destructing_Bomb nn 247468.19 234802.34 185.00 /hstart 5
+  Dover_Submarine_Pen146 Stationary.Weapons_.Destructing_Bomb nn 247491.23 234806.81 185.00 /hstart 5
+  Dover_Submarine_Pen3 Stationary.Weapons_.Torpedo_T_F5 nn 247492.78 234809.34 185.00 
+  Dover_Submarine_Pen147 Stationary.Weapons_.Destructing_Bomb nn 247482.66 234803.64 185.00 /hstart 5
+  Dover_Submarine_Pen45 Stationary.Weapons_.Torpedo_T_F5 nn 247485.69 234806.27 185.00 
+  Dover_Submarine_Pen80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247489.98 234810.06 -80.00 /hstart 19
+  Dover_Submarine_Pen4 Stationary.Weapons_.Torpedo_T_F5 nn 247485.48 234808.16 185.00 
+  Dover_Submarine_Pen79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247480.08 234808.34 -80.00 /hstart 19
+  Dover_Submarine_Pen5 Stationary.Weapons_.Torpedo_T_F5 nn 247476.11 234806.23 185.00 
+  Dover_Submarine_Pen145 Stationary.Weapons_.Destructing_Bomb nn 247492.59 234817.88 185.00 /hstart 5
+  Dover_Submarine_Pen25 Stationary.Weapons_.Torpedo_T_F5 nn 247489.27 234817.75 185.00 
+  Dover_Submarine_Pen61 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247470.69 234806.75 -80.00 /hstart 19
+  Dover_Submarine_Pen148 Stationary.Weapons_.Destructing_Bomb nn 247480.72 234813.86 185.00 /hstart 5
+  Dover_Submarine_Pen26 Stationary.Weapons_.Torpedo_T_F5 nn 247479.11 234814.33 185.00 
+  Dover_Submarine_Pen184 Stationary.Environment.JerryCan_GER1_1 nn 247491.39 234823.66 185.00 
+  Dover_Submarine_Pen6 Stationary.Weapons_.Torpedo_T_F5 nn 247466.03 234809.61 185.00 
+  Dover_Submarine_Pen32 Stationary.Weapons_.Torpedo_T_F5 nn 247497.08 234827.73 185.00 
+  Dover_Submarine_Pen27 Stationary.Weapons_.Torpedo_T_F5 nn 247475.17 234815.75 185.00 
+  Dover_Submarine_Pen44 Stationary.Weapons_.Torpedo_T_F5 nn 247467.19 234811.83 185.00 
+  Dover_Submarine_Pen171 Stationary.Weapons_.Destructing_Bomb nn 247465.78 234812.14 185.00 /hstart 5
+  Dover_Submarine_Pen31 Stationary.Weapons_.Torpedo_T_F5 nn 247491.13 234826.89 185.00 
+  Dover_Submarine_Pen7 Stationary.Weapons_.Torpedo_T_F5 nn 247466.19 234814.84 185.00 
+  Dover_Submarine_Pen144 Stationary.Weapons_.Destructing_Bomb nn 247491.98 234830.91 185.00 /hstart 5
+  Dover_Submarine_Pen30 Stationary.Weapons_.Torpedo_T_F5 nn 247485.67 234827.42 185.00 
+  Dover_Submarine_Pen149 Stationary.Weapons_.Destructing_Bomb nn 247476.44 234823.45 185.00 /hstart 5
+  Dover_Submarine_Pen185 Stationary.Environment.JerryCan_GER1_1 nn 247473.56 234822.13 185.00 
+  Dover_Submarine_Pen28 Stationary.Weapons_.Torpedo_T_F5 nn 247473.88 234823.66 185.00 
+  Dover_Submarine_Pen29 Stationary.Weapons_.Torpedo_T_F5 nn 247478.64 234828.50 185.00 
+  Dover_Submarine_Pen87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247496.70 234838.97 -80.00 /hstart 19
+  Dover_Submarine_Pen186 Stationary.Environment.JerryCan_GER1_1 nn 247463.83 234820.59 185.00 
+  Dover_Submarine_Pen14 Stationary.Weapons_.Torpedo_T_F5 nn 247498.42 234841.22 185.00 
+  Dover_Submarine_Pen83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247494.53 234838.55 -80.00 /hstart 19
+  Dover_Submarine_Pen8 Stationary.Weapons_.Torpedo_T_F5 nn 247465.41 234824.06 185.00 
+  Dover_Submarine_Pen13 Stationary.Weapons_.Torpedo_T_F5 nn 247494.55 234841.16 185.00 
+  Dover_Submarine_Pen43 Stationary.Weapons_.Torpedo_T_F5 nn 247463.00 234823.14 185.00 
+  Dover_Submarine_Pen38 Stationary.Weapons_.Torpedo_T_F5 nn 247502.48 234847.52 185.00 
+  Dover_Submarine_Pen81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247484.88 234836.92 -80.00 /hstart 19
+  Dover_Submarine_Pen150 Stationary.Weapons_.Destructing_Bomb nn 247477.33 234833.23 185.00 /hstart 5
+  Dover_Submarine_Pen170 Stationary.Weapons_.Destructing_Bomb nn 247463.50 234826.34 185.00 /hstart 5
+  Dover_Submarine_Pen12 Stationary.Weapons_.Torpedo_T_F5 nn 247485.03 234840.47 185.00 
+  Dover_Submarine_Pen11 Stationary.Weapons_.Torpedo_T_F5 nn 247481.52 234839.19 185.00 
+  Dover_Submarine_Pen60 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247475.11 234835.23 -80.00 /hstart 19
+  Dover_Submarine_Pen39 Stationary.Weapons_.Torpedo_T_F5 nn 247490.16 234845.44 185.00 
+  Dover_Submarine_Pen9 Stationary.Weapons_.Torpedo_T_F5 nn 247464.38 234832.77 185.00 
+  Dover_Submarine_Pen10 Stationary.Weapons_.Torpedo_T_F5 nn 247471.88 234837.23 185.00 
+  Dover_Submarine_Pen77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247465.50 234833.80 -80.00 /hstart 19
+  Dover_Submarine_Pen54 Stationary.Environment.GuardTower_UK-GER_1 nn 247494.25 234852.20 190.00 /hstart 22
+  Dover_Submarine_Pen40 Stationary.Weapons_.Torpedo_T_F5 nn 247479.44 234845.47 185.00 
+  Dover_Submarine_Pen41 Stationary.Weapons_.Torpedo_T_F5 nn 247471.05 234842.86 185.00 
+  Dover_Submarine_Pen42 Stationary.Weapons_.Torpedo_T_F5 nn 247463.16 234839.19 185.00 
+  Dover_Submarine_Pen51 Stationary.Environment.GuardTower_UK-GER_1 nn 247464.38 234839.98 190.00 /hstart 15
+  Dover_Submarine_Pen168 Stationary.Weapons_.Destructing_Bomb nn 247473.53 234845.66 185.00 /hstart 5
+  Dover_Submarine_Pen169 Stationary.Weapons_.Destructing_Bomb nn 247463.42 234842.48 185.00 /hstart 5
+  Dover_Submarine_Pen57 Stationary.Environment.GuardTower_UK-GER_1 nn 247430.73 234813.64 190.00 /hstart 22
+  Dover_Submarine_Pen58 Stationary.Weapons_.Destructing_Bomb nn 247454.69 234794.86 185.00 /hstart 5
+  Dover_Submarine_Pen59 Stationary.Weapons_.Torpedo_T_F5 nn 247458.48 234801.09 185.00 
+  Dover_Submarine_Pen62 Stationary.Weapons_.Torpedo_T_F5 nn 247458.89 234809.59 185.00 
+  Dover_Submarine_Pen63 Stationary.Weapons_.Torpedo_T_F5 nn 247448.77 234795.70 185.00 
+  Dover_Submarine_Pen64 Stationary.Weapons_.Torpedo_T_F5 de 247443.17 234793.39 185.00 
+  Dover_Submarine_Pen65 Stationary.Environment.GuardTower_UK-GER_1 nn 247434.95 234788.28 190.00 /hstart 22
+  Dover_Submarine_Pen66 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247451.39 234802.39 -80.00 /hstart 19
+  Dover_Submarine_Pen67 Stationary.Weapons_.Torpedo_T_F5 nn 247444.09 234799.20 185.00 
+  Dover_Submarine_Pen68 Stationary.Weapons_.Torpedo_T_F5 nn 247434.36 234795.30 185.00 
+  Dover_Submarine_Pen69 Stationary.Weapons_.Destructing_Bomb nn 247450.23 234805.44 185.00 /hstart 5
+  Dover_Submarine_Pen70 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247441.55 234800.75 -80.00 /hstart 19
+  Dover_Submarine_Pen71 Stationary.Weapons_.Torpedo_T_F5 nn 247433.98 234797.53 185.00 
+  Dover_Submarine_Pen72 Stationary.Weapons_.Destructing_Bomb nn 247439.47 234801.27 185.00 /hstart 5
+  Dover_Submarine_Pen73 Stationary.Weapons_.Torpedo_T_F5 nn 247446.00 234806.86 185.00 
+  Dover_Submarine_Pen74 Stationary.Weapons_.Destructing_Bomb nn 247457.38 234814.42 185.00 /hstart 5
+  Dover_Submarine_Pen75 Stationary.Weapons_.Torpedo_T_F5 nn 247440.13 234805.44 185.00 
+  Dover_Submarine_Pen76 Stationary.Environment.JerryCan_GER1_1 nn 247458.44 234817.33 185.00 
+  Dover_Submarine_Pen78 Stationary.Weapons_.Torpedo_T_F5 nn 247456.64 234817.25 185.00 
+  Dover_Submarine_Pen91 Stationary.Weapons_.Torpedo_T_F5 nn 247457.11 234819.45 185.00 
+  Dover_Submarine_Pen92 Stationary.Weapons_.Torpedo_T_F5 nn 247458.31 234823.50 185.00 
+  Dover_Submarine_Pen93 Stationary.Weapons_.Torpedo_T_F5 nn 247444.81 234815.89 185.00 
+  Dover_Submarine_Pen94 Stationary.Weapons_.Destructing_Bomb nn 247437.94 234812.59 185.00 /hstart 5
+  Dover_Submarine_Pen95 Stationary.Weapons_.Torpedo_T_F5 nn 247438.78 234814.83 185.00 
+  Dover_Submarine_Pen96 Stationary.Weapons_.Destructing_Bomb nn 247450.09 234822.14 185.00 /hstart 5
+  Dover_Submarine_Pen97 Stationary.Weapons_.Torpedo_T_F5 nn 247458.05 234831.69 185.00 
+  Dover_Submarine_Pen98 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247455.67 234831.81 -80.00 /hstart 19
+  Dover_Submarine_Pen99 Stationary.Weapons_.Torpedo_T_F5 nn 247453.22 234830.75 185.00 
+  Dover_Submarine_Pen100 Stationary.Weapons_.Torpedo_T_F5 nn 247457.56 234834.56 185.00 
+  Dover_Submarine_Pen101 Stationary.Weapons_.Destructing_Bomb nn 247456.66 234834.63 185.00 /hstart 5
+  Dover_Submarine_Pen102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247446.55 234829.86 -80.00 /hstart 19
+  Dover_Submarine_Pen103 Stationary.Weapons_.Torpedo_T_F5 nn 247444.78 234830.52 185.00 
+  Dover_Submarine_Pen104 Stationary.Environment.GuardTower_UK-GER_1 nn 247456.50 234837.61 190.00 /hstart 15
+  Dover_Submarine_Pen105 Stationary.Weapons_.Torpedo_T_F5 nn 247444.61 234835.67 185.00 
+  Dover_Submarine_Pen106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247431.69 234799.25 -80.00 /hstart 19
+  Dover_Submarine_Pen107 Stationary.Weapons_.Torpedo_T_F5 nn 247433.39 234804.88 185.00 
+  Dover_Submarine_Pen108 Stationary.Environment.JerryCan_GER1_1 nn 247438.25 234814.25 185.00 
+  Dover_Submarine_Pen109 tobruk:Stationary.Airfield.LawsHangerGravesend nn 247430.78 234813.30 280.00 
+  Dover_Submarine_Pen110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247437.75 234828.23 -80.00 /hstart 19
+  Dover_Submarine_Pen111 Stationary.Weapons_.Torpedo_T_F5 nn 247437.64 234828.06 185.00 
+  Dover_Submarine_Pen112 Stationary.Weapons_.Destructing_Bomb nn 247435.31 234827.52 185.00 /hstart 5
+  Dover_Submarine_Pen113 Stationary.Weapons_.Destructing_Bomb nn 247442.17 234834.84 185.00 /hstart 5
+  Dover_Submarine_Pen114 Stationary.Weapons_.Destructing_Bomb nn 247423.22 234794.17 185.00 /hstart 5
+  Dover_Submarine_Pen115 Stationary.Weapons_.Destructing_Bomb nn 247414.63 234791.02 185.00 /hstart 5
+  Dover_Submarine_Pen116 Stationary.Weapons_.Torpedo_T_F5 nn 247424.75 234796.70 185.00 
+  Dover_Submarine_Pen117 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234793.63 185.00 
+  Dover_Submarine_Pen118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247421.97 234797.42 -80.00 /hstart 19
+  Dover_Submarine_Pen119 Stationary.Weapons_.Torpedo_T_F5 nn 247417.45 234795.53 185.00 
+  Dover_Submarine_Pen120 Stationary.Weapons_.Destructing_Bomb nn 247424.58 234805.23 185.00 /hstart 5
+  Dover_Submarine_Pen121 Stationary.Weapons_.Torpedo_T_F5 nn 247421.23 234805.13 185.00 
+  Dover_Submarine_Pen122 Stationary.Environment.JerryCan_GER1_1 nn 247423.36 234811.03 185.00 
+  Dover_Submarine_Pen123 Stationary.Weapons_.Torpedo_T_F5 nn 247429.06 234815.09 180.00 
+  Dover_Submarine_Pen124 Stationary.Weapons_.Torpedo_T_F5 nn 247423.11 234814.27 185.00 
+  Dover_Submarine_Pen125 Stationary.Weapons_.Destructing_Bomb nn 247423.95 234818.28 185.00 /hstart 5
+  Dover_Submarine_Pen126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247428.67 234826.33 -80.00 /hstart 19
+  Dover_Submarine_Pen127 Stationary.Weapons_.Torpedo_T_F5 nn 247430.39 234828.58 185.00 
+  Dover_Submarine_Pen135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247426.52 234825.91 -80.00 /hstart 19
+  Dover_Submarine_Pen136 Stationary.Weapons_.Torpedo_T_F5 nn 247426.53 234828.52 185.00 
+  Dover_Submarine_Pen137 Stationary.Weapons_.Torpedo_T_F5 nn 247434.45 234834.88 185.00 
+  Dover_Submarine_Pen138 Stationary.Environment.GuardTower_UK-GER_1 nn 247426.23 234839.56 190.00 /hstart 22
+  Dover_Submarine_Pen139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247412.06 234795.70 -80.00 /hstart 19
+  Dover_Submarine_Pen143 Stationary.Weapons_.Torpedo_T_F5 nn 247408.08 234793.61 185.00 
+  Dover_Submarine_Pen151 Stationary.Weapons_.Destructing_Bomb nn 247412.69 234801.23 185.00 /hstart 5
+  Dover_Submarine_Pen152 Stationary.Weapons_.Torpedo_T_F5 nn 247411.09 234801.69 185.00 
+  Dover_Submarine_Pen153 Stationary.Weapons_.Torpedo_T_F5 nn 247417.66 234814.80 185.00 
+  Dover_Submarine_Pen154 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247416.84 234824.28 -80.00 /hstart 19
+  Dover_Submarine_Pen155 Stationary.Weapons_.Torpedo_T_F5 nn 247417.00 234827.83 185.00 
+  Dover_Submarine_Pen156 Stationary.Weapons_.Torpedo_T_F5 nn 247422.13 234832.81 185.00 
+  Dover_Submarine_Pen157 Stationary.Environment.GuardTower_UK-GER_1 nn 247402.86 234789.20 190.00 /hstart 15
+  Dover_Submarine_Pen158 Stationary.Weapons_.Torpedo_T_F5 nn 247407.16 234803.11 185.00 
+  Dover_Submarine_Pen159 Stationary.Weapons_.Destructing_Bomb nn 247408.42 234810.83 185.00 /hstart 5
+  Dover_Submarine_Pen160 Stationary.Weapons_.Torpedo_T_F5 nn 247410.61 234815.86 185.00 
+  Dover_Submarine_Pen161 Stationary.Weapons_.Torpedo_T_F5 nn 247413.48 234826.55 185.00 
+  Dover_Submarine_Pen162 Stationary.Weapons_.Destructing_Bomb nn 247400.16 234789.72 185.00 /hstart 5
+  Dover_Submarine_Pen163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247402.67 234794.11 -80.00 /hstart 19
+  Dover_Submarine_Pen164 Stationary.Environment.JerryCan_GER1_1 nn 247405.55 234809.50 185.00 
+  Dover_Submarine_Pen165 Stationary.Weapons_.Torpedo_T_F5 nn 247405.84 234811.03 185.00 
+  Dover_Submarine_Pen166 Stationary.Weapons_.Destructing_Bomb nn 247409.31 234820.61 185.00 /hstart 5
+  Dover_Submarine_Pen167 Stationary.Weapons_.Torpedo_T_F5 nn 247411.41 234832.83 185.00 
+  Dover_Submarine_Pen176 Stationary.Weapons_.Torpedo_T_F5 nn 247398.00 234796.98 185.00 
+  Dover_Submarine_Pen177 Stationary.Weapons_.Torpedo_T_F5 nn 247399.16 234799.19 185.00 
+  Dover_Submarine_Pen178 Stationary.Weapons_.Destructing_Bomb nn 247397.75 234799.52 185.00 /hstart 5
+  Dover_Submarine_Pen179 Stationary.Weapons_.Torpedo_T_F5 nn 247398.17 234802.22 185.00 
+  Dover_Submarine_Pen180 Stationary.Environment.JerryCan_GER1_1 nn 247395.80 234807.97 185.00 
+  Dover_Submarine_Pen181 Stationary.Weapons_.Torpedo_T_F5 nn 247397.39 234811.42 185.00 
+  Dover_Submarine_Pen182 Stationary.Weapons_.Torpedo_T_F5 nn 247394.98 234810.52 185.00 
+  Dover_Submarine_Pen183 Stationary.Weapons_.Destructing_Bomb nn 247395.47 234813.70 185.00 /hstart 5
+  Dover_Submarine_Pen187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247407.08 234822.61 -80.00 /hstart 19
+  Dover_Submarine_Pen188 Stationary.Weapons_.Torpedo_T_F5 nn 247396.36 234820.14 185.00 
+  Dover_Submarine_Pen189 Stationary.Weapons_.Torpedo_T_F5 nn 247403.84 234824.59 185.00 
+  Dover_Submarine_Pen190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247397.47 234821.16 -80.00 /hstart 19
+  Dover_Submarine_Pen191 Stationary.Weapons_.Torpedo_T_F5 nn 247403.03 234830.22 185.00 
+  Dover_Submarine_Pen192 Stationary.Weapons_.Destructing_Bomb nn 247405.50 234833.02 185.00 /hstart 5
+  Dover_Submarine_Pen193 Stationary.Weapons_.Torpedo_T_F5 nn 247395.14 234826.55 185.00 
+  Dover_Submarine_Pen194 Stationary.Environment.GuardTower_UK-GER_1 nn 247396.36 234827.36 190.00 /hstart 15
+  Dover_Submarine_Pen195 Stationary.Weapons_.Destructing_Bomb nn 247395.39 234829.84 185.00 /hstart 5
+  Dover_Submarine_Pen196 Stationary.Weapons_.Torpedo_T_F5 nn 247462.64 234797.81 185.00 
+  Dover_Submarine_Pen197 Stationary.Environment.GuardTower_UK-GER_1 nn 247462.59 234799.56 190.00 /hstart 15
+  Dover_Submarine_Pen198 Stationary.Weapons_.Destructing_Bomb nn 247460.13 234801.53 185.00 /hstart 5
+  Dover_Submarine_Pen199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 247459.97 234804.09 -80.00 /hstart 19
+  Dover_Submarine_Pen200 Stationary.Weapons_.Torpedo_T_F5 nn 247312.20 234957.05 185.00 
+  Dover_Submarine_Pen201 Stationary.Weapons_.Torpedo_T_F5 nn 247316.47 234806.52 185.00 
+  Dover_Submarine_Pen202 Stationary.Weapons_.Torpedo_T_F5 nn 247494.08 234730.81 185.00 
+  Dover_Submarine_Pen203 Stationary.Weapons_.Torpedo_T_F5 nn 247592.38 234841.48 185.00 
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Small 1 247513.27 234828.75 185.00
   1_bld buildings.House$Oil_Bunker-Small 1 247487.94 234826.22 185.00

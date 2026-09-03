@@ -21,181 +21,181 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static59 Stationary.Weapons_.Torpedo_T_F5 nn 160238.41 51047.66 100.00 
-  Static0 Stationary.Weapons_.Torpedo_T_F5 nn 160236.31 51026.50 100.00 
-  Static49 Stationary.Environment.GuardTower_UK-GER_1 nn 160238.05 51026.69 105.00 /hstart 15
-  Static173 Stationary.Weapons_.Destructing_Bomb nn 160232.67 51034.16 100.00 /hstart 5
-  Static128 Stationary.Weapons_.Destructing_Bomb nn 160239.78 51029.33 100.00 /hstart 5
-  Static48 Stationary.Weapons_.Torpedo_T_F5 nn 160239.20 51030.92 100.00 
-  Static86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160242.33 51029.71 -165.00 /hstart 19
-  Static47 Stationary.Weapons_.Torpedo_T_F5 nn 160233.00 51040.13 100.00 
-  Static134 Stationary.Weapons_.Torpedo_T_F5 de 160230.20 51045.51 100.00 
-  Static56 Stationary.Environment.GuardTower_UK-GER_1 nn 160224.39 51053.25 105.00 /hstart 22
-  Static85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160239.88 51038.11 -165.00 /hstart 19
-  Static21 Stationary.Weapons_.Torpedo_T_F5 nn 160247.70 51031.25 100.00 
-  Static1 Stationary.Weapons_.Torpedo_T_F5 nn 160236.06 51045.09 100.00 
-  Static133 Stationary.Weapons_.Destructing_Bomb nn 160242.81 51039.52 100.00 /hstart 5
-  Static84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160237.39 51047.77 -165.00 /hstart 19
-  Static129 Stationary.Weapons_.Destructing_Bomb nn 160252.39 51033.19 100.00 /hstart 5
-  Static46 Stationary.Weapons_.Torpedo_T_F5 nn 160231.33 51054.45 100.00 
-  Static140 Stationary.Weapons_.Destructing_Bomb nn 160237.73 51049.87 100.00 /hstart 5
-  Static22 Stationary.Weapons_.Torpedo_T_F5 nn 160243.88 51043.87 100.00 
-  Static174 Stationary.Environment.JerryCan_GER1_1 nn 160255.38 51032.39 100.00 
-  Static2 Stationary.Weapons_.Torpedo_T_F5 nn 160233.53 51055.01 100.00 
-  Static35 Stationary.Weapons_.Torpedo_T_F5 nn 160255.14 51034.18 100.00 
-  Static23 Stationary.Weapons_.Torpedo_T_F5 nn 160241.94 51049.59 100.00 
-  Static82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160235.03 51057.46 -165.00 /hstart 19
-  Static146 Stationary.Weapons_.Destructing_Bomb nn 160229.25 51065.46 100.00 /hstart 5
-  Static3 Stationary.Weapons_.Torpedo_T_F5 nn 160231.89 51064.14 100.00 
-  Static24 Stationary.Weapons_.Torpedo_T_F5 nn 160240.80 51056.25 100.00 
-  Static34 Stationary.Weapons_.Torpedo_T_F5 nn 160252.75 51045.82 100.00 
-  Static80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160232.38 51066.99 -165.00 /hstart 19
-  Static45 Stationary.Weapons_.Torpedo_T_F5 nn 160228.22 51070.94 100.00 
-  Static141 Stationary.Weapons_.Destructing_Bomb nn 160248.86 51052.40 100.00 /hstart 5
-  Static4 Stationary.Weapons_.Torpedo_T_F5 nn 160230.08 51071.31 100.00 
-  Static175 Stationary.Environment.JerryCan_GER1_1 nn 160250.55 51052.23 100.00 
-  Static33 Stationary.Weapons_.Torpedo_T_F5 nn 160251.17 51051.74 100.00 
-  Static145 Stationary.Weapons_.Destructing_Bomb nn 160240.38 51065.07 100.00 /hstart 5
-  Static25 Stationary.Weapons_.Torpedo_T_F5 nn 160239.97 51068.37 100.00 
-  Static53 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160248.95 51059.58 195.00 
-  Static55 Stationary.Environment.GuardTower_UK-GER_1 nn 160249.30 51059.66 110.00 /hstart 22
-  Static32 Stationary.Weapons_.Torpedo_T_F5 nn 160250.59 51061.46 70.00 
-  Static184 Stationary.Environment.JerryCan_GER1_1 nn 160246.05 51066.78 100.00 
-  Static31 Stationary.Weapons_.Torpedo_T_F5 nn 160249.23 51067.31 100.00 
-  Static144 Stationary.Weapons_.Destructing_Bomb nn 160253.31 51066.82 100.00 /hstart 5
-  Static20 Stationary.Weapons_.Torpedo_T_F5 nn 160257.38 51033.89 100.00 
-  Static19 Stationary.Weapons_.Torpedo_T_F5 nn 160261.52 51033.05 100.00 
-  Static132 Stationary.Weapons_.Destructing_Bomb nn 160259.45 51041.12 100.00 /hstart 5
-  Static18 Stationary.Weapons_.Torpedo_T_F5 nn 160269.66 51034.03 100.00 
-  Static90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160269.56 51036.40 -165.00 /hstart 19
-  Static36 Stationary.Weapons_.Torpedo_T_F5 nn 160272.47 51034.75 100.00 
-  Static17 Stationary.Weapons_.Torpedo_T_F5 nn 160268.30 51038.76 100.00 
-  Static130 Stationary.Weapons_.Destructing_Bomb nn 160272.45 51035.67 100.00 /hstart 5
-  Static50 Stationary.Environment.GuardTower_UK-GER_1 nn 160275.41 51036.07 105.00 /hstart 15
-  Static89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160266.81 51045.32 -165.00 /hstart 19
-  Static16 Stationary.Weapons_.Torpedo_T_F5 nn 160267.33 51047.14 100.00 
-  Static88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160264.44 51053.94 -165.00 /hstart 19
-  Static15 Stationary.Weapons_.Torpedo_T_F5 nn 160264.27 51054.03 100.00 
-  Static142 Stationary.Weapons_.Destructing_Bomb nn 160263.52 51056.30 100.00 /hstart 5
-  Static37 Stationary.Weapons_.Torpedo_T_F5 nn 160272.45 51047.77 100.00 
-  Static131 Stationary.Weapons_.Destructing_Bomb nn 160271.41 51050.12 100.00 /hstart 5
-  Static87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160261.75 51062.82 -165.00 /hstart 19
-  Static83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160261.14 51064.94 -165.00 /hstart 19
-  Static14 Stationary.Weapons_.Torpedo_T_F5 nn 160264.14 51061.30 100.00 
-  Static38 Stationary.Weapons_.Torpedo_T_F5 nn 160270.77 51057.80 100.00 
-  Static13 Stationary.Weapons_.Torpedo_T_F5 nn 160263.75 51065.15 100.00 
-  Static39 Stationary.Weapons_.Torpedo_T_F5 nn 160267.63 51069.91 100.00 
-  Static54 Stationary.Environment.GuardTower_UK-GER_1 nn 160274.72 51066.40 105.00 /hstart 22
-  Static57 Stationary.Weapons_.Torpedo_T_F5 nn 160259.81 51079.26 100.00 
-  Static147 Stationary.Weapons_.Destructing_Bomb nn 160225.34 51073.73 100.00 /hstart 5
-  Static79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160229.80 51076.70 -165.00 /hstart 19
-  Static52 Stationary.Environment.GuardTower_UK-GER_1 nn 160222.52 51085.30 105.00 /hstart 15
-  Static5 Stationary.Weapons_.Torpedo_T_F5 nn 160227.36 51080.48 100.00 
-  Static172 Stationary.Weapons_.Destructing_Bomb nn 160222.78 51088.03 100.00 /hstart 5
-  Static148 Stationary.Weapons_.Destructing_Bomb nn 160235.36 51076.55 100.00 /hstart 5
-  Static61 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160227.39 51085.92 -165.00 /hstart 19
-  Static26 Stationary.Weapons_.Torpedo_T_F5 nn 160235.67 51078.19 100.00 
-  Static27 Stationary.Weapons_.Torpedo_T_F5 nn 160236.75 51082.24 100.00 
-  Static6 Stationary.Weapons_.Torpedo_T_F5 nn 160229.84 51090.82 100.00 
-  Static44 Stationary.Weapons_.Torpedo_T_F5 nn 160232.14 51089.85 100.00 
-  Static30 Stationary.Weapons_.Torpedo_T_F5 nn 160249.30 51072.80 100.00 
-  Static171 Stationary.Weapons_.Destructing_Bomb nn 160232.34 51091.28 100.00 /hstart 5
-  Static149 Stationary.Weapons_.Destructing_Bomb nn 160244.55 51081.64 100.00 /hstart 5
-  Static7 Stationary.Weapons_.Torpedo_T_F5 nn 160235.06 51091.11 100.00 
-  Static185 Stationary.Environment.JerryCan_GER1_1 nn 160242.97 51084.39 100.00 
-  Static29 Stationary.Weapons_.Torpedo_T_F5 nn 160249.75 51079.89 100.00 
-  Static28 Stationary.Weapons_.Torpedo_T_F5 nn 160244.52 51084.23 100.00 
-  Static186 Stationary.Environment.JerryCan_GER1_1 nn 160240.59 51093.97 100.00 
-  Static150 Stationary.Weapons_.Destructing_Bomb nn 160254.36 51081.61 100.00 /hstart 5
-  Static8 Stationary.Weapons_.Torpedo_T_F5 nn 160244.17 51092.69 100.00 
-  Static43 Stationary.Weapons_.Torpedo_T_F5 nn 160243.06 51095.01 100.00 
-  Static170 Stationary.Weapons_.Destructing_Bomb nn 160246.28 51094.79 100.00 /hstart 5
-  Static9 Stationary.Weapons_.Torpedo_T_F5 nn 160252.77 51094.47 100.00 
-  Static77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160253.88 51093.45 -165.00 /hstart 19
-  Static81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160258.67 51074.42 -165.00 /hstart 19
-  Static12 Stationary.Weapons_.Torpedo_T_F5 nn 160262.23 51074.58 100.00 
-  Static11 Stationary.Weapons_.Torpedo_T_F5 nn 160260.64 51077.96 100.00 
-  Static60 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160256.16 51084.00 -165.00 /hstart 19
-  Static10 Stationary.Weapons_.Torpedo_T_F5 nn 160257.86 51087.40 100.00 
-  Static40 Stationary.Weapons_.Torpedo_T_F5 nn 160266.72 51080.59 100.00 
-  Static41 Stationary.Weapons_.Torpedo_T_F5 nn 160263.39 51088.71 100.00 
-  Static168 Stationary.Weapons_.Destructing_Bomb nn 160266.39 51086.48 100.00 /hstart 5
-  Static51 Stationary.Environment.GuardTower_UK-GER_1 nn 160259.95 51095.11 105.00 /hstart 15
-  Static42 Stationary.Weapons_.Torpedo_T_F5 nn 160259.05 51096.25 100.00 
-  Static169 Stationary.Weapons_.Destructing_Bomb nn 160262.34 51096.27 100.00 /hstart 5
-  Static58 Stationary.Weapons_.Torpedo_T_F5 nn 160277.14 51049.48 100.00 
-  Static62 Stationary.Environment.JerryCan_GER1_1 nn 160225.95 51085.43 -65.00 
-  Static63 Stationary.Environment.JerryCan_GER1_1 nn 160232.23 51077.62 -65.00 
-  Static64 Stationary.Environment.JerryCan_GER1_1 nn 160228.94 51063.59 -65.00 
-  Static65 Stationary.Environment.JerryCan_GER1_1 nn 160230.53 51058.60 -65.00 
-  Static66 Stationary.Environment.JerryCan_GER1_1 nn 160235.58 51054.96 -65.00 
-  Static67 Stationary.Environment.JerryCan_GER1_1 nn 160248.14 51053.90 -65.00 
-  Static68 Stationary.Environment.JerryCan_GER1_1 nn 160254.59 51055.72 -65.00 
-  Static69 Stationary.Environment.JerryCan_GER1_1 nn 160268.39 51059.59 -65.00 
-  Static70 Stationary.Environment.JerryCan_GER1_1 nn 160276.20 51060.89 -65.00 
-  Static71 Stationary.Environment.JerryCan_GER1_1 nn 160272.33 51062.74 -65.00 
-  Static72 Stationary.Environment.JerryCan_GER1_1 nn 160271.39 51070.89 -65.00 
-  Static73 Stationary.Environment.JerryCan_GER1_1 nn 160276.55 51073.89 -65.00 
-  Static74 Stationary.Environment.JerryCan_GER1_1 nn 160272.09 51085.84 -65.00 
-  Static75 Stationary.Environment.JerryCan_GER1_1 nn 160267.52 51088.24 -65.00 
-  Static76 Stationary.Environment.JerryCan_GER1_1 nn 160264.28 51091.82 -65.00 
-  Static78 Stationary.Environment.JerryCan_GER1_1 nn 160248.31 51092.77 -65.00 
-  Static91 Stationary.Environment.JerryCan_GER1_1 nn 160239.39 51095.64 -65.00 
-  Static92 Stationary.Environment.JerryCan_GER1_1 nn 160234.88 51095.99 -65.00 
-  Static93 Stationary.Environment.JerryCan_GER1_1 nn 160236.98 51085.07 -65.00 
-  Static94 Stationary.Environment.JerryCan_GER1_1 nn 160242.86 51076.86 -65.00 
-  Static95 Stationary.Environment.JerryCan_GER1_1 nn 160249.91 51073.51 -65.00 
-  Static96 Stationary.Environment.JerryCan_GER1_1 nn 160262.23 51071.75 -65.00 
-  Static97 Stationary.Environment.JerryCan_GER1_1 nn 160271.39 51069.81 -65.00 
-  Static98 Stationary.Environment.JerryCan_GER1_1 nn 160279.14 51066.70 -65.00 
-  Static99 Stationary.Environment.JerryCan_GER1_1 nn 160279.08 51062.82 -65.00 
-  Static100 Stationary.Environment.JerryCan_GER1_1 nn 160266.52 51061.47 -65.00 
-  Static101 Stationary.Environment.JerryCan_GER1_1 nn 160249.78 51063.82 -65.00 
-  Static102 Stationary.Environment.JerryCan_GER1_1 nn 160243.67 51068.34 -65.00 
-  Static103 Stationary.Environment.JerryCan_GER1_1 nn 160236.11 51071.80 -65.00 
-  Static104 Stationary.Environment.JerryCan_GER1_1 nn 160229.30 51069.98 -65.00 
-  Static105 Stationary.Environment.JerryCan_GER1_1 nn 160235.17 51061.53 -65.00 
-  Static106 Stationary.Environment.JerryCan_GER1_1 nn 160250.89 51053.72 -65.00 
-  Static107 Stationary.Environment.JerryCan_GER1_1 nn 160260.77 51052.02 -65.00 
-  Static108 Stationary.Environment.JerryCan_GER1_1 nn 160270.03 51052.67 -65.00 
-  Static109 Stationary.Environment.JerryCan_GER1_1 nn 160258.47 51046.32 -65.00 
-  Static110 Stationary.Environment.JerryCan_GER1_1 nn 160254.13 51045.04 -65.00 
-  Static111 Stationary.Environment.JerryCan_GER1_1 nn 160282.27 51040.91 -65.00 
-  Static112 Stationary.Environment.JerryCan_GER1_1 nn 160260.19 51036.88 -65.00 
-  Static113 Stationary.Environment.JerryCan_GER1_1 nn 160246.59 51034.97 -65.00 
-  Static114 Stationary.Environment.JerryCan_GER1_1 nn 160240.02 51040.91 -65.00 
-  Static115 Stationary.Environment.JerryCan_GER1_1 nn 160226.44 51032.21 -65.00 
-  Static116 Stationary.Environment.JerryCan_GER1_1 nn 160231.73 51025.62 -65.00 
-  Static117 Stationary.Environment.JerryCan_GER1_1 nn 160243.84 51027.54 -65.00 
-  Static118 Stationary.Environment.JerryCan_GER1_1 nn 160247.23 51035.61 -65.00 
-  Static119 Stationary.Weapons_.Torpedo_T_F5 nn 160260.19 51077.86 100.00 
-  Static120 Stationary.Weapons_.Torpedo_T_F5 nn 160245.53 51081.46 100.00 
-  Static121 Stationary.Weapons_.Torpedo_T_F5 nn 160236.20 51077.00 100.00 
-  Static122 Stationary.Weapons_.Torpedo_T_F5 nn 160238.75 51057.26 100.00 
-  Static123 Stationary.Weapons_.Torpedo_T_F5 nn 160240.66 51046.43 100.00 
-  Static124 Stationary.Weapons_.Torpedo_T_F5 nn 160241.92 51037.30 100.00 
-  Static125 Stationary.Weapons_.Torpedo_T_F5 nn 160257.64 51037.09 100.00 
-  Static126 Stationary.Weapons_.Torpedo_T_F5 nn 160266.34 51055.56 100.00 
-  Static127 Stationary.Weapons_.Torpedo_T_F5 nn 160264.44 51059.81 100.00 
-  Static135 Stationary.Weapons_.Torpedo_T_F5 nn 160260.83 51071.70 100.00 
-  Static136 Stationary.Weapons_.Torpedo_T_F5 nn 160248.30 51077.43 100.00 
-  Static137 Stationary.Weapons_.Torpedo_T_F5 nn 160240.66 51068.94 100.00 
-  Static138 Stationary.Weapons_.Torpedo_T_F5 nn 160248.52 51054.29 100.00 
-  Static139 Stationary.Weapons_.Torpedo_T_F5 nn 160265.50 51043.46 100.00 
-  Static143 Stationary.Weapons_.Torpedo_T_F5 nn 160275.91 51036.88 100.00 
-  Static151 Stationary.Weapons_.Torpedo_T_F5 nn 160282.69 51036.24 100.00 
-  Static152 Stationary.Weapons_.Torpedo_T_F5 nn 160278.88 51054.07 100.00 
-  Static153 Stationary.Weapons_.Torpedo_T_F5 nn 160278.88 51059.60 100.00 
-  Static154 Stationary.Weapons_.Torpedo_T_F5 nn 160273.56 51079.13 100.00 
-  Static155 Stationary.Weapons_.Torpedo_T_F5 nn 160262.52 51086.56 100.00 
-  Static156 Stationary.Weapons_.Torpedo_T_F5 nn 160259.34 51089.96 100.00 
-  Static157 Stationary.Weapons_.Torpedo_T_F5 nn 160263.16 51094.62 100.00 
-  Static158 Stationary.Weapons_.Torpedo_T_F5 nn 160216.88 51078.91 100.00 
-  Static159 Stationary.Weapons_.Torpedo_T_F5 nn 160217.52 51066.81 100.00 
-  Static160 Stationary.Weapons_.Torpedo_T_F5 nn 160219.64 51058.96 100.00 
-  Static161 Stationary.Weapons_.Torpedo_T_F5 nn 160222.83 51047.28 100.00 
-  Static162 Stationary.Weapons_.Torpedo_T_F5 nn 160224.31 51040.49 100.00 
-  Static163 Stationary.Weapons_.Torpedo_T_F5 nn 160228.77 51032.63 100.00 
+  LeHavre_Widerstands59 Stationary.Weapons_.Torpedo_T_F5 nn 160238.41 51047.66 100.00 
+  LeHavre_Widerstands0 Stationary.Weapons_.Torpedo_T_F5 nn 160236.31 51026.50 100.00 
+  LeHavre_Widerstands49 Stationary.Environment.GuardTower_UK-GER_1 nn 160238.05 51026.69 105.00 /hstart 15
+  LeHavre_Widerstands173 Stationary.Weapons_.Destructing_Bomb nn 160232.67 51034.16 100.00 /hstart 5
+  LeHavre_Widerstands128 Stationary.Weapons_.Destructing_Bomb nn 160239.78 51029.33 100.00 /hstart 5
+  LeHavre_Widerstands48 Stationary.Weapons_.Torpedo_T_F5 nn 160239.20 51030.92 100.00 
+  LeHavre_Widerstands86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160242.33 51029.71 -165.00 /hstart 19
+  LeHavre_Widerstands47 Stationary.Weapons_.Torpedo_T_F5 nn 160233.00 51040.13 100.00 
+  LeHavre_Widerstands134 Stationary.Weapons_.Torpedo_T_F5 de 160230.20 51045.51 100.00 
+  LeHavre_Widerstands56 Stationary.Environment.GuardTower_UK-GER_1 nn 160224.39 51053.25 105.00 /hstart 22
+  LeHavre_Widerstands85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160239.88 51038.11 -165.00 /hstart 19
+  LeHavre_Widerstands21 Stationary.Weapons_.Torpedo_T_F5 nn 160247.70 51031.25 100.00 
+  LeHavre_Widerstands1 Stationary.Weapons_.Torpedo_T_F5 nn 160236.06 51045.09 100.00 
+  LeHavre_Widerstands133 Stationary.Weapons_.Destructing_Bomb nn 160242.81 51039.52 100.00 /hstart 5
+  LeHavre_Widerstands84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160237.39 51047.77 -165.00 /hstart 19
+  LeHavre_Widerstands129 Stationary.Weapons_.Destructing_Bomb nn 160252.39 51033.19 100.00 /hstart 5
+  LeHavre_Widerstands46 Stationary.Weapons_.Torpedo_T_F5 nn 160231.33 51054.45 100.00 
+  LeHavre_Widerstands140 Stationary.Weapons_.Destructing_Bomb nn 160237.73 51049.87 100.00 /hstart 5
+  LeHavre_Widerstands22 Stationary.Weapons_.Torpedo_T_F5 nn 160243.88 51043.87 100.00 
+  LeHavre_Widerstands174 Stationary.Environment.JerryCan_GER1_1 nn 160255.38 51032.39 100.00 
+  LeHavre_Widerstands2 Stationary.Weapons_.Torpedo_T_F5 nn 160233.53 51055.01 100.00 
+  LeHavre_Widerstands35 Stationary.Weapons_.Torpedo_T_F5 nn 160255.14 51034.18 100.00 
+  LeHavre_Widerstands23 Stationary.Weapons_.Torpedo_T_F5 nn 160241.94 51049.59 100.00 
+  LeHavre_Widerstands82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160235.03 51057.46 -165.00 /hstart 19
+  LeHavre_Widerstands146 Stationary.Weapons_.Destructing_Bomb nn 160229.25 51065.46 100.00 /hstart 5
+  LeHavre_Widerstands3 Stationary.Weapons_.Torpedo_T_F5 nn 160231.89 51064.14 100.00 
+  LeHavre_Widerstands24 Stationary.Weapons_.Torpedo_T_F5 nn 160240.80 51056.25 100.00 
+  LeHavre_Widerstands34 Stationary.Weapons_.Torpedo_T_F5 nn 160252.75 51045.82 100.00 
+  LeHavre_Widerstands80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160232.38 51066.99 -165.00 /hstart 19
+  LeHavre_Widerstands45 Stationary.Weapons_.Torpedo_T_F5 nn 160228.22 51070.94 100.00 
+  LeHavre_Widerstands141 Stationary.Weapons_.Destructing_Bomb nn 160248.86 51052.40 100.00 /hstart 5
+  LeHavre_Widerstands4 Stationary.Weapons_.Torpedo_T_F5 nn 160230.08 51071.31 100.00 
+  LeHavre_Widerstands175 Stationary.Environment.JerryCan_GER1_1 nn 160250.55 51052.23 100.00 
+  LeHavre_Widerstands33 Stationary.Weapons_.Torpedo_T_F5 nn 160251.17 51051.74 100.00 
+  LeHavre_Widerstands145 Stationary.Weapons_.Destructing_Bomb nn 160240.38 51065.07 100.00 /hstart 5
+  LeHavre_Widerstands25 Stationary.Weapons_.Torpedo_T_F5 nn 160239.97 51068.37 100.00 
+  LeHavre_Widerstands53 tobruk:Stationary.Airfield.LawsHangerGravesend nn 160248.95 51059.58 195.00 
+  LeHavre_Widerstands55 Stationary.Environment.GuardTower_UK-GER_1 nn 160249.30 51059.66 110.00 /hstart 22
+  LeHavre_Widerstands32 Stationary.Weapons_.Torpedo_T_F5 nn 160250.59 51061.46 70.00 
+  LeHavre_Widerstands184 Stationary.Environment.JerryCan_GER1_1 nn 160246.05 51066.78 100.00 
+  LeHavre_Widerstands31 Stationary.Weapons_.Torpedo_T_F5 nn 160249.23 51067.31 100.00 
+  LeHavre_Widerstands144 Stationary.Weapons_.Destructing_Bomb nn 160253.31 51066.82 100.00 /hstart 5
+  LeHavre_Widerstands20 Stationary.Weapons_.Torpedo_T_F5 nn 160257.38 51033.89 100.00 
+  LeHavre_Widerstands19 Stationary.Weapons_.Torpedo_T_F5 nn 160261.52 51033.05 100.00 
+  LeHavre_Widerstands132 Stationary.Weapons_.Destructing_Bomb nn 160259.45 51041.12 100.00 /hstart 5
+  LeHavre_Widerstands18 Stationary.Weapons_.Torpedo_T_F5 nn 160269.66 51034.03 100.00 
+  LeHavre_Widerstands90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160269.56 51036.40 -165.00 /hstart 19
+  LeHavre_Widerstands36 Stationary.Weapons_.Torpedo_T_F5 nn 160272.47 51034.75 100.00 
+  LeHavre_Widerstands17 Stationary.Weapons_.Torpedo_T_F5 nn 160268.30 51038.76 100.00 
+  LeHavre_Widerstands130 Stationary.Weapons_.Destructing_Bomb nn 160272.45 51035.67 100.00 /hstart 5
+  LeHavre_Widerstands50 Stationary.Environment.GuardTower_UK-GER_1 nn 160275.41 51036.07 105.00 /hstart 15
+  LeHavre_Widerstands89 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160266.81 51045.32 -165.00 /hstart 19
+  LeHavre_Widerstands16 Stationary.Weapons_.Torpedo_T_F5 nn 160267.33 51047.14 100.00 
+  LeHavre_Widerstands88 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160264.44 51053.94 -165.00 /hstart 19
+  LeHavre_Widerstands15 Stationary.Weapons_.Torpedo_T_F5 nn 160264.27 51054.03 100.00 
+  LeHavre_Widerstands142 Stationary.Weapons_.Destructing_Bomb nn 160263.52 51056.30 100.00 /hstart 5
+  LeHavre_Widerstands37 Stationary.Weapons_.Torpedo_T_F5 nn 160272.45 51047.77 100.00 
+  LeHavre_Widerstands131 Stationary.Weapons_.Destructing_Bomb nn 160271.41 51050.12 100.00 /hstart 5
+  LeHavre_Widerstands87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160261.75 51062.82 -165.00 /hstart 19
+  LeHavre_Widerstands83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160261.14 51064.94 -165.00 /hstart 19
+  LeHavre_Widerstands14 Stationary.Weapons_.Torpedo_T_F5 nn 160264.14 51061.30 100.00 
+  LeHavre_Widerstands38 Stationary.Weapons_.Torpedo_T_F5 nn 160270.77 51057.80 100.00 
+  LeHavre_Widerstands13 Stationary.Weapons_.Torpedo_T_F5 nn 160263.75 51065.15 100.00 
+  LeHavre_Widerstands39 Stationary.Weapons_.Torpedo_T_F5 nn 160267.63 51069.91 100.00 
+  LeHavre_Widerstands54 Stationary.Environment.GuardTower_UK-GER_1 nn 160274.72 51066.40 105.00 /hstart 22
+  LeHavre_Widerstands57 Stationary.Weapons_.Torpedo_T_F5 nn 160259.81 51079.26 100.00 
+  LeHavre_Widerstands147 Stationary.Weapons_.Destructing_Bomb nn 160225.34 51073.73 100.00 /hstart 5
+  LeHavre_Widerstands79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160229.80 51076.70 -165.00 /hstart 19
+  LeHavre_Widerstands52 Stationary.Environment.GuardTower_UK-GER_1 nn 160222.52 51085.30 105.00 /hstart 15
+  LeHavre_Widerstands5 Stationary.Weapons_.Torpedo_T_F5 nn 160227.36 51080.48 100.00 
+  LeHavre_Widerstands172 Stationary.Weapons_.Destructing_Bomb nn 160222.78 51088.03 100.00 /hstart 5
+  LeHavre_Widerstands148 Stationary.Weapons_.Destructing_Bomb nn 160235.36 51076.55 100.00 /hstart 5
+  LeHavre_Widerstands61 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160227.39 51085.92 -165.00 /hstart 19
+  LeHavre_Widerstands26 Stationary.Weapons_.Torpedo_T_F5 nn 160235.67 51078.19 100.00 
+  LeHavre_Widerstands27 Stationary.Weapons_.Torpedo_T_F5 nn 160236.75 51082.24 100.00 
+  LeHavre_Widerstands6 Stationary.Weapons_.Torpedo_T_F5 nn 160229.84 51090.82 100.00 
+  LeHavre_Widerstands44 Stationary.Weapons_.Torpedo_T_F5 nn 160232.14 51089.85 100.00 
+  LeHavre_Widerstands30 Stationary.Weapons_.Torpedo_T_F5 nn 160249.30 51072.80 100.00 
+  LeHavre_Widerstands171 Stationary.Weapons_.Destructing_Bomb nn 160232.34 51091.28 100.00 /hstart 5
+  LeHavre_Widerstands149 Stationary.Weapons_.Destructing_Bomb nn 160244.55 51081.64 100.00 /hstart 5
+  LeHavre_Widerstands7 Stationary.Weapons_.Torpedo_T_F5 nn 160235.06 51091.11 100.00 
+  LeHavre_Widerstands185 Stationary.Environment.JerryCan_GER1_1 nn 160242.97 51084.39 100.00 
+  LeHavre_Widerstands29 Stationary.Weapons_.Torpedo_T_F5 nn 160249.75 51079.89 100.00 
+  LeHavre_Widerstands28 Stationary.Weapons_.Torpedo_T_F5 nn 160244.52 51084.23 100.00 
+  LeHavre_Widerstands186 Stationary.Environment.JerryCan_GER1_1 nn 160240.59 51093.97 100.00 
+  LeHavre_Widerstands150 Stationary.Weapons_.Destructing_Bomb nn 160254.36 51081.61 100.00 /hstart 5
+  LeHavre_Widerstands8 Stationary.Weapons_.Torpedo_T_F5 nn 160244.17 51092.69 100.00 
+  LeHavre_Widerstands43 Stationary.Weapons_.Torpedo_T_F5 nn 160243.06 51095.01 100.00 
+  LeHavre_Widerstands170 Stationary.Weapons_.Destructing_Bomb nn 160246.28 51094.79 100.00 /hstart 5
+  LeHavre_Widerstands9 Stationary.Weapons_.Torpedo_T_F5 nn 160252.77 51094.47 100.00 
+  LeHavre_Widerstands77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160253.88 51093.45 -165.00 /hstart 19
+  LeHavre_Widerstands81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160258.67 51074.42 -165.00 /hstart 19
+  LeHavre_Widerstands12 Stationary.Weapons_.Torpedo_T_F5 nn 160262.23 51074.58 100.00 
+  LeHavre_Widerstands11 Stationary.Weapons_.Torpedo_T_F5 nn 160260.64 51077.96 100.00 
+  LeHavre_Widerstands60 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160256.16 51084.00 -165.00 /hstart 19
+  LeHavre_Widerstands10 Stationary.Weapons_.Torpedo_T_F5 nn 160257.86 51087.40 100.00 
+  LeHavre_Widerstands40 Stationary.Weapons_.Torpedo_T_F5 nn 160266.72 51080.59 100.00 
+  LeHavre_Widerstands41 Stationary.Weapons_.Torpedo_T_F5 nn 160263.39 51088.71 100.00 
+  LeHavre_Widerstands168 Stationary.Weapons_.Destructing_Bomb nn 160266.39 51086.48 100.00 /hstart 5
+  LeHavre_Widerstands51 Stationary.Environment.GuardTower_UK-GER_1 nn 160259.95 51095.11 105.00 /hstart 15
+  LeHavre_Widerstands42 Stationary.Weapons_.Torpedo_T_F5 nn 160259.05 51096.25 100.00 
+  LeHavre_Widerstands169 Stationary.Weapons_.Destructing_Bomb nn 160262.34 51096.27 100.00 /hstart 5
+  LeHavre_Widerstands58 Stationary.Weapons_.Torpedo_T_F5 nn 160277.14 51049.48 100.00 
+  LeHavre_Widerstands62 Stationary.Environment.JerryCan_GER1_1 nn 160225.95 51085.43 -65.00 
+  LeHavre_Widerstands63 Stationary.Environment.JerryCan_GER1_1 nn 160232.23 51077.62 -65.00 
+  LeHavre_Widerstands64 Stationary.Environment.JerryCan_GER1_1 nn 160228.94 51063.59 -65.00 
+  LeHavre_Widerstands65 Stationary.Environment.JerryCan_GER1_1 nn 160230.53 51058.60 -65.00 
+  LeHavre_Widerstands66 Stationary.Environment.JerryCan_GER1_1 nn 160235.58 51054.96 -65.00 
+  LeHavre_Widerstands67 Stationary.Environment.JerryCan_GER1_1 nn 160248.14 51053.90 -65.00 
+  LeHavre_Widerstands68 Stationary.Environment.JerryCan_GER1_1 nn 160254.59 51055.72 -65.00 
+  LeHavre_Widerstands69 Stationary.Environment.JerryCan_GER1_1 nn 160268.39 51059.59 -65.00 
+  LeHavre_Widerstands70 Stationary.Environment.JerryCan_GER1_1 nn 160276.20 51060.89 -65.00 
+  LeHavre_Widerstands71 Stationary.Environment.JerryCan_GER1_1 nn 160272.33 51062.74 -65.00 
+  LeHavre_Widerstands72 Stationary.Environment.JerryCan_GER1_1 nn 160271.39 51070.89 -65.00 
+  LeHavre_Widerstands73 Stationary.Environment.JerryCan_GER1_1 nn 160276.55 51073.89 -65.00 
+  LeHavre_Widerstands74 Stationary.Environment.JerryCan_GER1_1 nn 160272.09 51085.84 -65.00 
+  LeHavre_Widerstands75 Stationary.Environment.JerryCan_GER1_1 nn 160267.52 51088.24 -65.00 
+  LeHavre_Widerstands76 Stationary.Environment.JerryCan_GER1_1 nn 160264.28 51091.82 -65.00 
+  LeHavre_Widerstands78 Stationary.Environment.JerryCan_GER1_1 nn 160248.31 51092.77 -65.00 
+  LeHavre_Widerstands91 Stationary.Environment.JerryCan_GER1_1 nn 160239.39 51095.64 -65.00 
+  LeHavre_Widerstands92 Stationary.Environment.JerryCan_GER1_1 nn 160234.88 51095.99 -65.00 
+  LeHavre_Widerstands93 Stationary.Environment.JerryCan_GER1_1 nn 160236.98 51085.07 -65.00 
+  LeHavre_Widerstands94 Stationary.Environment.JerryCan_GER1_1 nn 160242.86 51076.86 -65.00 
+  LeHavre_Widerstands95 Stationary.Environment.JerryCan_GER1_1 nn 160249.91 51073.51 -65.00 
+  LeHavre_Widerstands96 Stationary.Environment.JerryCan_GER1_1 nn 160262.23 51071.75 -65.00 
+  LeHavre_Widerstands97 Stationary.Environment.JerryCan_GER1_1 nn 160271.39 51069.81 -65.00 
+  LeHavre_Widerstands98 Stationary.Environment.JerryCan_GER1_1 nn 160279.14 51066.70 -65.00 
+  LeHavre_Widerstands99 Stationary.Environment.JerryCan_GER1_1 nn 160279.08 51062.82 -65.00 
+  LeHavre_Widerstands100 Stationary.Environment.JerryCan_GER1_1 nn 160266.52 51061.47 -65.00 
+  LeHavre_Widerstands101 Stationary.Environment.JerryCan_GER1_1 nn 160249.78 51063.82 -65.00 
+  LeHavre_Widerstands102 Stationary.Environment.JerryCan_GER1_1 nn 160243.67 51068.34 -65.00 
+  LeHavre_Widerstands103 Stationary.Environment.JerryCan_GER1_1 nn 160236.11 51071.80 -65.00 
+  LeHavre_Widerstands104 Stationary.Environment.JerryCan_GER1_1 nn 160229.30 51069.98 -65.00 
+  LeHavre_Widerstands105 Stationary.Environment.JerryCan_GER1_1 nn 160235.17 51061.53 -65.00 
+  LeHavre_Widerstands106 Stationary.Environment.JerryCan_GER1_1 nn 160250.89 51053.72 -65.00 
+  LeHavre_Widerstands107 Stationary.Environment.JerryCan_GER1_1 nn 160260.77 51052.02 -65.00 
+  LeHavre_Widerstands108 Stationary.Environment.JerryCan_GER1_1 nn 160270.03 51052.67 -65.00 
+  LeHavre_Widerstands109 Stationary.Environment.JerryCan_GER1_1 nn 160258.47 51046.32 -65.00 
+  LeHavre_Widerstands110 Stationary.Environment.JerryCan_GER1_1 nn 160254.13 51045.04 -65.00 
+  LeHavre_Widerstands111 Stationary.Environment.JerryCan_GER1_1 nn 160282.27 51040.91 -65.00 
+  LeHavre_Widerstands112 Stationary.Environment.JerryCan_GER1_1 nn 160260.19 51036.88 -65.00 
+  LeHavre_Widerstands113 Stationary.Environment.JerryCan_GER1_1 nn 160246.59 51034.97 -65.00 
+  LeHavre_Widerstands114 Stationary.Environment.JerryCan_GER1_1 nn 160240.02 51040.91 -65.00 
+  LeHavre_Widerstands115 Stationary.Environment.JerryCan_GER1_1 nn 160226.44 51032.21 -65.00 
+  LeHavre_Widerstands116 Stationary.Environment.JerryCan_GER1_1 nn 160231.73 51025.62 -65.00 
+  LeHavre_Widerstands117 Stationary.Environment.JerryCan_GER1_1 nn 160243.84 51027.54 -65.00 
+  LeHavre_Widerstands118 Stationary.Environment.JerryCan_GER1_1 nn 160247.23 51035.61 -65.00 
+  LeHavre_Widerstands119 Stationary.Weapons_.Torpedo_T_F5 nn 160260.19 51077.86 100.00 
+  LeHavre_Widerstands120 Stationary.Weapons_.Torpedo_T_F5 nn 160245.53 51081.46 100.00 
+  LeHavre_Widerstands121 Stationary.Weapons_.Torpedo_T_F5 nn 160236.20 51077.00 100.00 
+  LeHavre_Widerstands122 Stationary.Weapons_.Torpedo_T_F5 nn 160238.75 51057.26 100.00 
+  LeHavre_Widerstands123 Stationary.Weapons_.Torpedo_T_F5 nn 160240.66 51046.43 100.00 
+  LeHavre_Widerstands124 Stationary.Weapons_.Torpedo_T_F5 nn 160241.92 51037.30 100.00 
+  LeHavre_Widerstands125 Stationary.Weapons_.Torpedo_T_F5 nn 160257.64 51037.09 100.00 
+  LeHavre_Widerstands126 Stationary.Weapons_.Torpedo_T_F5 nn 160266.34 51055.56 100.00 
+  LeHavre_Widerstands127 Stationary.Weapons_.Torpedo_T_F5 nn 160264.44 51059.81 100.00 
+  LeHavre_Widerstands135 Stationary.Weapons_.Torpedo_T_F5 nn 160260.83 51071.70 100.00 
+  LeHavre_Widerstands136 Stationary.Weapons_.Torpedo_T_F5 nn 160248.30 51077.43 100.00 
+  LeHavre_Widerstands137 Stationary.Weapons_.Torpedo_T_F5 nn 160240.66 51068.94 100.00 
+  LeHavre_Widerstands138 Stationary.Weapons_.Torpedo_T_F5 nn 160248.52 51054.29 100.00 
+  LeHavre_Widerstands139 Stationary.Weapons_.Torpedo_T_F5 nn 160265.50 51043.46 100.00 
+  LeHavre_Widerstands143 Stationary.Weapons_.Torpedo_T_F5 nn 160275.91 51036.88 100.00 
+  LeHavre_Widerstands151 Stationary.Weapons_.Torpedo_T_F5 nn 160282.69 51036.24 100.00 
+  LeHavre_Widerstands152 Stationary.Weapons_.Torpedo_T_F5 nn 160278.88 51054.07 100.00 
+  LeHavre_Widerstands153 Stationary.Weapons_.Torpedo_T_F5 nn 160278.88 51059.60 100.00 
+  LeHavre_Widerstands154 Stationary.Weapons_.Torpedo_T_F5 nn 160273.56 51079.13 100.00 
+  LeHavre_Widerstands155 Stationary.Weapons_.Torpedo_T_F5 nn 160262.52 51086.56 100.00 
+  LeHavre_Widerstands156 Stationary.Weapons_.Torpedo_T_F5 nn 160259.34 51089.96 100.00 
+  LeHavre_Widerstands157 Stationary.Weapons_.Torpedo_T_F5 nn 160263.16 51094.62 100.00 
+  LeHavre_Widerstands158 Stationary.Weapons_.Torpedo_T_F5 nn 160216.88 51078.91 100.00 
+  LeHavre_Widerstands159 Stationary.Weapons_.Torpedo_T_F5 nn 160217.52 51066.81 100.00 
+  LeHavre_Widerstands160 Stationary.Weapons_.Torpedo_T_F5 nn 160219.64 51058.96 100.00 
+  LeHavre_Widerstands161 Stationary.Weapons_.Torpedo_T_F5 nn 160222.83 51047.28 100.00 
+  LeHavre_Widerstands162 Stationary.Weapons_.Torpedo_T_F5 nn 160224.31 51040.49 100.00 
+  LeHavre_Widerstands163 Stationary.Weapons_.Torpedo_T_F5 nn 160228.77 51032.63 100.00 
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Small 1 160253.02 51045.42 100.00
   1_bld buildings.House$Oil_Bunker-Small 1 160248.29 51070.43 100.00

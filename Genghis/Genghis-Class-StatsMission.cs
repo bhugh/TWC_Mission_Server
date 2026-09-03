@@ -1797,6 +1797,8 @@ struct
 
                             Console.WriteLine("PLACE LEAVE: REAL sortie end--saving sortie / plane is AI controlled" + (currTime - cm.lastPositionEnter_sec).ToString() + " " + dis_meters.ToString("0.0"));
                         }
+						
+							
 
                         //Ok, so it's a real position leave, now save the stats, do the actual work etc.
                         StbCmr_SavePositionLeave_work(player, actor, cm);
@@ -3578,7 +3580,7 @@ struct
 		string st = data as string;		
 		
 		//Will send all logmessages going to everyone, to the Tacview recorder
-		if (to == null) mainmission.tacviewimplmission.AddBookmark(String.Format(st, third));
+		if (to == null && (mainmission.tacviewimplmission != null))  mainmission.tacviewimplmission.AddBookmark(String.Format(st, third));
 
         IEnumerable<string> lines = StatCalcs.SplitToLines(str, maxChunkSize);
         //for (int i = 0; i < str.Length; i += maxChunkSize)
@@ -6522,7 +6524,10 @@ struct
                 if (mainmission != null && mainmission.covermission != null) player1 = mainmission.covermission.getOwnerOfCoverAircraft(initiator.Actor);
                 if (player1 != null) stb_RecordNearbyPlayerStatsOnActorDead(player1, raw_score: score, killtype: 4);
             }
-
+			
+			//2026-08: Now we're letting mainmission handle ALL smoke, fire, craters from bombs
+			
+			/*
             //TF_Extensions.TF_GamePlay.Effect smoke = TF_Extensions.TF_GamePlay.Effect.SmokeSmall;
             // TF_Extensions.TF_GamePlay.gpCreateEffect(GamePlay, smoke, pos.x, pos.y, pos.z, 1200);
             string firetype = "BuildingFireSmall";
@@ -6550,6 +6555,7 @@ struct
             //todo: finer grained bigger/smaller fire depending on bomb tonnage
 
             //BigSitySmoke_0 BigSitySmoke_1 BuildingFireBig BuildingFireSmall Smoke1 Smoke2
+			*/
 
         }
         catch (Exception ex) { Console.WriteLine("ot_Handleareabombings: " + ex.ToString()); }
@@ -7796,9 +7802,32 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         if (actor as AiAircraft != null) Console.WriteLine("OnPlaceLeave: actor " + StatCalcs.GetAircraftType(actor as AiAircraft));
         if (actor == null ) Console.WriteLine("OnPlaceLeave: actor is null!");
 		
-		if (mainmission.threadloadmission.SoftExit()) {
+		//Do a softexit (no loss of life/stats/plane) if server closing due to error or steam disconnect
+		//Also 2026/09 - if player disconnected.  Bec. so many random disconnections now.
+		if (mainmission.threadloadmission.SoftExit() || (player != null && ! player.IsConnected())) {
 			Console.WriteLine("OnPlaceLeave: SOFT EXIT, server probably closing, no action");
-			if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, true, reason: "SAFE_ServerClosing"); 
+			if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, true, reason: "SAFE_ServerClosing_Or_PlayerDisconnected"); 
+			
+			if (player != null && ! player.IsConnected()) {
+							//mainmission.covermission.
+							string name = player.Name();
+							
+							Point3d pos = new Point3d (250000,250000,0);
+							if (actor != null) pos = actor.Pos();
+			
+							string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+							
+							string saveFile =  "/sectionfiles/"+ currentDateTime +"_GroundStationary-list.txt";
+							
+							string msg111 = string.Format("OnPlayerDisconnected & PlaceLeave: Groundstationary list for {1} to file {0} - starting...", saveFile, name);
+							
+							Console.WriteLine(msg111);
+							//mission.mainmission.twcLogServer(new Player[] { player }, msg111 );
+						
+							CoverCalcs.listAllGroundStationaries(mainmission.covermission, GamePlay, null , missionNumber: -1, initPos: pos, radius_m: 10000, saveFile: saveFile);
+			}
+			
+			
 			return;
 		}
 		
@@ -9960,6 +9989,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
     //public virtual void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary _stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
     //GroundStationary: string .Name .pos string .Title AiGroundActorType .Type .IsAlive string .country string .Category
+	//Note .country for GroundStationary is OFTEN just the country of the terr. it is on.  Like aircraft, cars, etc.  It's not gb, nn or de according to what is in the .mis file, merely what the terr is (mostly seems to be combatants, war weapons).  Others might be changed to only nn?  (mostly seems to be neutral objects, tables, nets.
 
     public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
     {
@@ -10061,7 +10091,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
 			
-			List<string> higherScores = new List<string>() { "ship", "truck", "tank", "spg", "car", "plane", "balloon", "ammo", "fuel" };
+			List<string> higherScores = new List<string>() { "ship", "truck", "tank", "spg", "car", "plane", "balloon", "ammo", "fuel", "aircraft" };
 			
 			string types = (stationary.Title + stationary.Type).ToLower();
 			
@@ -10092,7 +10122,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
 			}
 			
-			if (destroyedByCannon) score *= 3; //triple score for ground strafing victories
+			if (destroyedByCannon) score *= 3 / 2; //+50% score for ground strafing victories
 			
             //Console.WriteLine("OSK_dw 5");
             if (willReportDead) stb_RecordStatsOnActorDead(initiator, 4, score, 1, initiator.Tool.Type, deadStationary: stationary); //type 4 is any other ground type
@@ -10324,8 +10354,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     Stb_killActor((aircraft as AiActor), 10); //Wait 10 seconds (ie, 5 seconds after players are removed), so that a/c is destroyed but not players killed
                     Stb_RemoveAllPlayersFromAircraft(aircraft, 5);
 
-                    if (injuries > 0.35) Stb_Message(new Player[] { player }, PlayerNameM + " was injured in that crash - cannot continue.", new object[] { });
-                    if (stb_aircraftKilled.Contains((aircraft as AiActor).Name())) Stb_Message(new Player[] { player }, PlayerNameM + "'s plane was damaged too heavily - cannot continue.", new object[] { });
+                    if (injuries > 0.35) Stb_Message(new Player[] { player }, PlayerNameM + " was seriously injured in that crash - it's going to take some rest and recovery time.", new object[] { });
+                    if (stb_aircraftKilled.Contains((aircraft as AiActor).Name())) Stb_Message(new Player[] { player }, PlayerNameM + "'s plane was damaged heavily.", new object[] { });
                 }
 
             }
@@ -14681,41 +14711,56 @@ public class StbStatRecorder : IStbStatRecorder
 
                         list = new List<string>(filenames);
                         
+						///******************************************************
+						//UPLOAD TACVIEW FILES VIA FTP
+						//*******************************************************
 						//This routine is called frequently & we should need to upload tacview files just once per session, so
 						//do this very infrequently
                         //if (stbSr_random.Next(0,100) == 1) {
 							Console.WriteLine("FTP Tacview files . . . ");
+							string uploadedDir = mission.mainmission.CLOD_PATH + mission.mainmission.FILE_PATH + "/tacview/uploaded/";
+							try {
+								if (!Directory.Exists(uploadedDir))
+								{
+									Directory.CreateDirectory(uploadedDir);
+								}
+							} catch (Exception ex) { 
+											StbSr_PrepareErrorMessage(ex, string.Format("Tacview upload - couldn't create uploads directory: {0}", uploadedDir));
+							}											
+								
 							foreach (string file in list)
 								{
 									Console.WriteLine("FTP Tacview files: " + file);
 									string shortname = Path.GetFileName(file);
-									bool outcome = StbSr_UploadSSL(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/" + shortname,
+									string uploadDirFile = mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/" + shortname;
+									if (mission.mainmission.ON_TESTSERVER) uploadDirFile = mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/testserver/" + shortname;
+									bool outcome = StbSr_UploadSSL(uploadDirFile,
 									  //stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
 									  stbSr_LogStatsUploadUserName, stbSr_LogStatsUploadPassword,
-									  file);
+									  file, isText:false);
 
 									//Console.WriteLine("DELETING " + file); //delete this line once we're sure it's working
 									//File.Delete(file);  //experimental: once radar files are uploaded, delete them.  Prevents duplicate/problem uploads over time
 									//Thread.Sleep(5000);
 									if (outcome) {
 										try {
-											File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
-												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/uploaded/" + shortname); //true + overwrite
+											File.Move(file, 
+												 uploadedDir+ shortname); //true + overwrite
 										}
 										catch (Exception ex) { 
-											StbSr_PrepareErrorMessage(ex, "1st try, move of Tacview file to /uploaded directory failed");
+											StbSr_PrepareErrorMessage(ex, string.Format("1st try, move of Tacview file to /uploaded directory failed: {0} : {1}", file, mission.mainmission.CLOD_PATH + mission.mainmission.FILE_PATH + "tacview/uploaded/" + shortname));
 											try {
-												File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
-												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/uploaded/" + stbSr_random.Next(0,999).ToString() + shortname); // try renaming the file with a random #
+												File.Move(file, 
+												uploadedDir + shortname + "_" + stbSr_random.Next(0,999).ToString()); // try renaming the file with a random #
 											}		
 											catch (Exception ex1) { 
 												StbSr_PrepareErrorMessage(ex1, "2nd try move of Tacview file to /uploaded directory failed, trying once more"); 
 												try {
-												File.Move(mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" + shortname, 
-												mission.stb_LogStatsUploadFtpBaseDirectory + "tacview/processed/" +  shortname + "_movefailed"+stbSr_random.Next(0,999).ToString()); // try renaming the file with a random #
+												File.Move(file, 
+												file + "_movefailed"+stbSr_random.Next(1000,9999).ToString()); // try renaming the file with a random #
 												}		
 												catch (Exception ex2) { 
-													StbSr_PrepareErrorMessage(ex2, "3rd try,  now rename of Tacview file in /processed failed, giving up"); 
+													StbSr_PrepareErrorMessage(ex2, "3rd try, now rename of Tacview file in /processed failed, giving up"); 
 												}		
 											}																	 								
 											
@@ -14784,6 +14829,10 @@ public class StbStatRecorder : IStbStatRecorder
             /*StreamReader sourceStream = new StreamReader(filename);
             byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
             sourceStream.Close(); */
+			Console.WriteLine("FTP UPLOAD: text? {0} {1}", isText, filename);
+						
+			if (isText) request.UseBinary = false;
+			else request.UseBinary = true;
 			
 			//Better way to do this, per AI anyway
 			byte[] fileContents = null;
@@ -14968,9 +15017,14 @@ public class StbStatRecorder : IStbStatRecorder
                 sw.Close();
                 */
                 //if (TWCComms.Communicator.Instance.WARP_CHECK) StbSr_AlwaysWriteLine("SXX7 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
-            string date = DateTime.UtcNow.ToString("u");
+				string date = DateTime.UtcNow.ToString("u");
 
-                Task.Run(() => File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data));
+				
+                Task.Run(() =>  { 
+					File.AppendAllText(stbSr_ErrorLogPath, "\n" + date + " - " + (string)data);
+					//2026-08 - with clean console window we'd rather have all error msgs show up in the regular log file also
+					Console.WriteLine (">>>>>>>>>>>>stats ERROR: " + (string)data);
+				});
             }
             //catch (Exception ex) { StbSr_WriteLine(ex.Message); };
             catch (Exception ex) { Console.WriteLine(ex.ToString()); };

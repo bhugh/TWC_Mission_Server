@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,27 @@ using System.Text.RegularExpressions;
 
 //using TWCComms;
 using System.Media;
+
+/***************************************************************************
+/***************************************************************************
+/ TACVIEW RECORDER CLASS
+/
+/ * Tacview files are created here by TacviewRecorder.dll
+/ * Processed in various ways using script process-tacview.ps1, called via processOldTacviewFiles() below about a minute after each mission start
+/ * Uploaded via FTP in -stats.cs, public void StbSr_UploadSituationMapFilesLowFilter()
+/
+/ TacviewRecorder.dll is an early version with many bugs:
+/   * Must start @ beginning of mission with no delay (0) or many objects have no ID, crashing Tacview on playback
+/   * Removing all lines starting with "," will fix this problem to at least make files viewable, but much data lost
+/   * Thus we get many small files with no actual data when mission starts & then restarts immediately
+/   * We want to filter out for a "fog of war" effect which is done using tacview-filter.exe
+/   * However it can only filter for Color= or Coalition=, and TacviewRecorder.dll only sets pilots to Color=Green and no Coalition=
+/	* It uses Group=Player but tacview-filter.exe can't use that...
+/   * process-tacview.ps1 fixes this by adding the "Coalition=Allies" to all pilot IDs.
+/	* plus it renames files, adds them to the "tacview/processed" subdirectory and originals to "tacview/originals"
+/	* Then -stats uploads everyting in /processed to the FTP directory /twc/tacview and moves the file to "tacview/uploaded"
+/	* A php script in https://xxxxx.com/twc/tacview displays all tacview files in that directory and allows for downloads
+***************************************************************************/
 
 
 //CoverMission covermission = new CoverMission();
@@ -423,34 +445,49 @@ public class TacviewImplMission : TacviewMission
 	//and moving the original file to subdirectory "originals"
 	public void processOldTacviewFiles()
 	{
-		// Fire and forget on a separate thread pool thread
+		// Run powershell script to process tacview files on a separate thread pool thread
 		Task.Run(() =>
 		{
 			try
 			{
 				string destFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
-				string FileName = destFolder + "/proc.bat";
-				ProcessStartInfo startInfo = new ProcessStartInfo (FileName);
-				
-					
-					
-					startInfo.UseShellExecute = false;         // Required to redirect output or hide window
-					startInfo.CreateNoWindow = true;           // Hides the black CMD window entirely
-					startInfo.RedirectStandardOutput = true;    // Allows you to capture logs if needed
-					startInfo.RedirectStandardError = true;
-				
+				string scriptPath = Path.Combine(destFolder, "process-tacview.ps1");
+
+				// 1. Point to the powershell executable, not the script file
+				//ProcessStartInfo startInfo = new ProcessStartInfo("powershell.exe")
+				ProcessStartInfo startInfo = new ProcessStartInfo("pwsh.exe")
+				{
+					// 2. Pass execution policy bypass and the script path as arguments
+					Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -File \"{0}\"",scriptPath),
+					UseShellExecute = false,
+					CreateNoWindow = true,
+					RedirectStandardOutput = true,
+					RedirectStandardError = true
+				};
+
 				using (Process process = Process.Start(startInfo))
 				{
-					// Wait for the batch script to finish processing files
-					process.WaitForExit(); 
-					
+					// 3. Read output to prevent the process from hanging
+					string output = process.StandardOutput.ReadToEnd();
+					string error = process.StandardError.ReadToEnd();
+
+					process.WaitForExit();
+
 					int exitCode = process.ExitCode;
-					Console.WriteLine("Batch script finished with exit code: {exitCode}");
+					
+					// 4. Fixed string interpolation (added '$')
+					Console.WriteLine("TACVIEW: Script to process Tacview files finished successfully with exit code: {0}", exitCode);
+					
+					if (exitCode != 0)
+					{
+						Console.WriteLine("TACVIEW ERROR: Script to process Tacview files finished with exit code: {0}", exitCode);
+					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("TacviewImpl - Error running batch file to process previous .acmi files: {ex.Message}");
+				
+				Console.WriteLine("TacviewImpl Run Powershell Script - Error running script: {0}", ex.Message);
 			}
 		});
 }

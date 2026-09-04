@@ -674,10 +674,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "SECRET"}, //Red army #1
-                    { -2, "SECRET"}, //Blue, army #2
-                    { -3, "SECRET"}, //admin
-                    { -4, "SECRET"}, //admingrouped
+                    { -1, "lion"}, //Red army #1
+                    { -2, "france"}, //Blue, army #2
+                    { -3, "1twc2twc3"}, //admin
+                    { -4, "1twc2twc3"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -685,10 +685,10 @@ public class Mission : AMission, IMainMission
             {
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "SECRET"}, //Red army #1
-                    { -2, "SECRET"}, //Blue, army #2
-                    { -3, "SECRET"}, //admin
-                    { -4, "SECRET"}, //admingrouped
+                    { -1, "manston3"}, //Red army #1
+                    { -2, "oye21"}, //Blue, army #2
+                    { -3, "1twc2twc3"}, //admin
+                    { -4, "1twc2twc3"}, //admingrouped
                                         //note that passwords are CASEINSENSITIVE
                 };
 
@@ -729,10 +729,10 @@ public class Mission : AMission, IMainMission
                 ON_JUBILEE = false;
                 radarpasswords = new Dictionary<int, string>
                 {
-                    { -1, "SECRET"}, //Red army #1
-                    { -2, "SECRET"}, //Blue, army #2
-                    { -3, "SECRET"}, //admin
-                    { -4, "SECRET"}, //admingrouped
+                    { -1, "twc"}, //Red army #1
+                    { -2, "twc"}, //Blue, army #2
+                    { -3, "1twc2twc3"}, //admin
+                    { -4, "1twc2twc3"}, //admingrouped
                                   //note that passwords are CASEINSENSITIVE
                  };
             }
@@ -17501,9 +17501,9 @@ public class Mission : AMission, IMainMission
 
             addMobile(MO_ObjectiveType.Naval_Tanker_Convoy, "North Sea Tanker Group 2 (sink ~4)", "", 1, 6, "NorthSea_British_Tankers", 292621, 230047, 2500, 9500, 0, 0, 4, shipPriority+15, 12, false, false, 0, 0, MO_MobileObjectiveType.TankerShipGroup_GB, 8, 292621, 230047, 348142, 277376, 5, 20, MO_ProducerOrStorageType.fuel, "", add);
 
-            //addMobile(MO_ObjectiveType.Naval_Tanker_Convoy, "Isle of Wight Tanker Group (sink ~4)", "", 2, 6, "Wight_Tankers", 83353, 157366, 2200, 9500, 0, 39, 0, 120, 12, false, false, 0, 0, MO_MobileObjectiveType.TankerShipGroup_DE, 8, 42353, 137366, 84706, 161354, 5, 20, MO_ProducerOrStorageType.fuel, "", add);
+            addMobile(MO_ObjectiveType.Naval_Tanker_Convoy, "Isle of Wight Tanker Group (sink ~4)", "", 2, 6, "Wight_Tankers", 83353, 157366, 2200, 9500, 0, 39, 0, 120, 12, false, false, 0, 0, MO_MobileObjectiveType.TankerShipGroup_DE, 8, 42353, 137366, 84706, 161354, 5, 20, MO_ProducerOrStorageType.fuel, "", add);
 
-            //addMobile(MO_ObjectiveType.Naval_Tanker_Convoy, "Normandy Tanker Group (sink ~4)", "", 1, 6, "Normandy_Tankers", 111677, 62645, 2200, 9500, 0, 39, 0, 120, 12, false, false, 0, 0, MO_MobileObjectiveType.TankerShipGroup_GB, 8, 82457, 57908, 141677, 82645, 5, 20, MO_ProducerOrStorageType.fuel, "", add);
+            addMobile(MO_ObjectiveType.Naval_Tanker_Convoy, "Normandy Tanker Group (sink ~4)", "", 1, 6, "Normandy_Tankers", 111677, 62645, 2200, 9500, 0, 39, 0, 120, 12, false, false, 0, 0, MO_MobileObjectiveType.TankerShipGroup_GB, 8, 82457, 57908, 141677, 82645, 5, 20, MO_ProducerOrStorageType.fuel, "", add);
 
             addMobile(MO_ObjectiveType.Naval_Freighter_Convoy, "Channel Freighter Convoy (sink ~4)", "", 2, 6, "Channel_German_Freighters", 203197, 188179, 2300, 9500, 0, 39, 0, shipPriority+15, 12, false, false, 0, 0, MO_MobileObjectiveType.FreighterShipGroup_DE, 8, 203197, 188179, 253484, 211388, 5, 20, MO_ProducerOrStorageType.bullets_shells, "", add);
 
@@ -17872,8 +17872,8 @@ public class Mission : AMission, IMainMission
 
             }
 
-            numX = 2;
-            numY = 1;
+            numX = 3;
+            numY = 2;
             for (int i = 0; i < numY; i++)
             {
                 for (int j = 0; j < numX; j++)
@@ -17905,8 +17905,8 @@ public class Mission : AMission, IMainMission
 
             }
 
-            numX = 2;
-            numY = 1;
+            numX = 3;
+            numY = 2;
             for (int i = 0; i < numY; i++)
             {
                 for (int j = 0; j < numX; j++)
@@ -17938,7 +17938,7 @@ public class Mission : AMission, IMainMission
 
             }
 
-            numX = 3;
+            numX = 6;
             numY = 1;
             for (int i = 0; i < numY; i++)
             {
@@ -17971,7 +17971,7 @@ public class Mission : AMission, IMainMission
 
             }
 
-            numX = 3;
+            numX = 6;
             numY = 1;
             for (int i = 0; i < numY; i++)
             {
@@ -29245,10 +29245,12 @@ public static class Calcs
         bool ret = false;
         //2022-07-31 - added all Hurri types with boms to list, also hurri iid
         if (acType.Contains("Ju-87") || acType.Contains("Bf-110") || acType.Contains("Beaufighter") || acType.Contains("Ju-88C") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")
+			/*
 			|| acType.Contains("109E-4B") || acType.Contains("109E-1B") || acType.Contains("109E-3B")
 		|| acType.Contains("109E-4B") || acType.Contains("109E-7")|| acType.Contains("109F-2")
 		||  (acType.Contains("109F-4") && ! acType.Contains("109F-4Z"))
             || acType.Contains("HurricaneMkI_FB") || acType.Contains("HurricaneMkIIc") || acType.Contains("HurricaneMkIId")
+			*/
             ) ret = true; //Zerstorer, ground attack, Schlachtflugzeug, sturmovik, ground attack type a/c
 			//A lot of these are only StrikeAC if carrying bombs, but
 			//we'll have to check for that separately as it can really

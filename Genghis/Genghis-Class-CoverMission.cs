@@ -888,171 +888,202 @@ public class CoverMission : AMission, ICoverMission
     public Dictionary<ArmiesE, Dictionary<string, bool>> CoverAircraftInitiallyAvailable = new Dictionary<ArmiesE, Dictionary<string, bool>>
     {
         { ArmiesE.Red, new Dictionary<string,bool>() {
-                         
 
-        // {bob."aircraft as known to game name",whether available for use as an escort aircraft or not},
-        //mostly, bombers aren't available as escorts, or bomber-enabled fighter variants
-        //also rare or very valuable aircraft are not available
-        //TODO: could make this dictionary to include info as to whether allowed as a cover aircraft, whether it is a bomber or fighter as cover a/c, whether players flying
-        //that plane are allowed to have cover a/c as a fighter or a bomber pilot
-        //If set to "false" the a/c can't be used as cover
-        //Also, an aircraft not on this list can't be used as cover.  So you can just rem out a line to remove an aircraft.
-		
-        {"bob:Aircraft.BeaufighterMkIF", true},
-        {"bob:Aircraft.BeaufighterMkINF",true},
-        {"tobruk:Aircraft.BeaufighterMkIF_Late", true},
-        {"tobruk:Aircraft.BeaufighterMkINF_Late", true},
-        {"tobruk:Aircraft.BeaufighterMkIC", true},
-        {"tobruk:Aircraft.BeaufighterMkIC_Trop", false},
-        {"tobruk:Aircraft.BeaufighterMkIF_Late_Trop", false},
-        {"tobruk:Aircraft.BeaufighterMkINF_Late_Trop", false},
 
-        {"bob:Aircraft.DefiantMkI",true},
-        {"bob:Aircraft.SunderlandMkI",true},
-        {"bob:Aircraft.WalrusMkI",true},
-        {"bob:Aircraft.AnsonMkI",true},
-        {"bob:Aircraft.BlenheimMkI", true},
-        {"bob:Aircraft.BlenheimMkIF", true},
-        {"bob:Aircraft.BlenheimMkINF", true},
-        {"bob:Aircraft.BlenheimMkIV", true},
-        {"bob:Aircraft.BlenheimMkIVF",true},
-        {"bob:Aircraft.BlenheimMkIVF_Late",true},
-        {"bob:Aircraft.BlenheimMkIVNF",true},
-        {"bob:Aircraft.BlenheimMkIVNF_Late",true},
-        {"bob:Aircraft.BlenheimMkIV_Late",true},
-        {"bob:Aircraft.WellingtonMkIc",true}, //actually the Welly Ia
-        //{"bob:Aircraft.DH82A-1",10},  aircraft remmed out or not on list have no restrictions so if you dont want any //of these available use amount 0 like below
-        {"bob:Aircraft.DH82A-2",false},
-        {"bob:Aircraft.HurricaneMkI",true},
-        {"bob:Aircraft.HurricaneMkI_100oct",false},
-        {"bob:Aircraft.HurricaneMkI_100oct-NF",true},
-        {"bob:Aircraft.HurricaneMkI_dH5-20",true},
-        {"bob:Aircraft.HurricaneMkI_dH5-20_100oct",true},
-        {"bob:Aircraft.HurricaneMkI_FB",true},
-        {"bob:Aircraft.SpitfireMkI",true},
-        {"bob:Aircraft.SpitfireMkIa",true},
-        {"bob:Aircraft.SpitfireMkIa_100oct",true},
-        {"bob:Aircraft.SpitfireMkI_100oct",true},
-        {"bob:Aircraft.SpitfireMkIIa",false},
-            { "tobruk:Aircraft.GladiatorMkII_trop", true},
-            {"tobruk:Aircraft.HurricaneMkI_FB-Trop", false},
-            {"tobruk:Aircraft.HurricaneMkIIa", true},
-            {"tobruk:Aircraft.HurricaneMkIIaTrop", false},
-            {"tobruk:Aircraft.HurricaneMkIIb", true},
-            {"tobruk:Aircraft.HurricaneMkIIb-Late", true},
-            {"tobruk:Aircraft.HurricaneMkIIbTrop", false},
-            {"tobruk:Aircraft.HurricaneMkIIbTrop-Late", false},
-            {"tobruk:Aircraft.HurricaneMkIIc", true},
-            {"tobruk:Aircraft.HurricaneMkIIc-Late", true},
-            {"tobruk:Aircraft.HurricaneMkIIc-Trop", false},
-            {"tobruk:Aircraft.HurricaneMkIIc-Trop-Late", false},
-            {"tobruk:Aircraft.HurricaneMkIId", true},
-            {"tobruk:Aircraft.HurricaneMkIId-Trop", false},
-            {"tobruk:Aircraft.KittyhawkMkIA", true},
-            {"tobruk:Aircraft.KittyhawkMkIA-Trop", true},
-            {"tobruk:Aircraft.MartletMkIII", true},
-            {"tobruk:Aircraft.MartletMkIII_Trop", false},
-            {"tobruk:Aircraft.SpitfireMkIIb", true},
-            {"tobruk:Aircraft.SpitfireMkVa", true},
-            {"tobruk:Aircraft.SpitfireMkVb", true},
-            {"tobruk:Aircraft.SpitfireMkVb-HF", false},
-            {"tobruk:Aircraft.SpitfireMkVb-HF-Late", false},
-            {"tobruk:Aircraft.SpitfireMkVb-HF-Trop", false},
-            {"tobruk:Aircraft.SpitfireMkVbLate", true},
-            {"tobruk:Aircraft.SpitfireMkVbTrop", false},
-            {"tobruk:Aircraft.TomahawkMkII", true},
-            {"tobruk:Aircraft.TomahawkMkII-Late", true},
-            {"tobruk:Aircraft.TomahawkMkII-Late-Trop", false},
-            {"tobruk:Aircraft.TomahawkMkII-Trop", false},
-            {"tobruk:Aircraft.WellingtonMkIa_trop", false}, //This is a great plane BUT seems to cause the bug where ppl can't spawn into the server any more. 
-            {"tobruk:Aircraft.WellingtonMkIc_Late", true},
-            {"tobruk:Aircraft.WellingtonMkIc_Late_trop", false}, //5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW. 5.017 SHOULD BE FIXED (2021/02), so re-adding it
-            {"tobruk:Aircraft.WellingtonMkIc_t", true}, //welly Ic
-            {"tobruk:Aircraft.WellingtonMkIc_Torpedo", true },
-            {"tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop", true},
-            {"tobruk:Aircraft.WellingtonMkIc_trop", false}, //5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW  5.017 SHOULD BE FIXED (2021/02), so re-adding it
+			// {bob."aircraft as known to game name",whether available for use as an escort aircraft or not},
+			//mostly, bombers aren't available as escorts, or bomber-enabled fighter variants
+			//also rare or very valuable aircraft are not available
+			//TODO: could make this dictionary to include info as to whether allowed as a cover aircraft, whether it is a bomber or fighter as cover a/c, whether players flying
+			//that plane are allowed to have cover a/c as a fighter or a bomber pilot
+			//If set to "false" the a/c can't be used as cover
+			//Also, an aircraft not on this list can't be used as cover.  So you can just rem out a line to remove an aircraft.
 
-        } },
-        { ArmiesE.Blue, new Dictionary <string,bool>(){
-        {"bob:Aircraft.Bf-109E-1",true},
-        {"bob:Aircraft.Bf-109E-1B",true},
-        {"bob:Aircraft.Bf-109E-3",true},
-        {"bob:Aircraft.Bf-109E-3B",true},
-        {"bob:Aircraft.Bf-109E-4",true},
-        {"bob:Aircraft.Bf-109E-4_Late",true},
-        {"bob:Aircraft.Bf-110C-2",true},
-        {"bob:Aircraft.Bf-110C-4",true},
-        {"bob:Aircraft.Bf-110C-4-NJG",true},
-        {"bob:Aircraft.Bf-110C-4B" ,true},
-        {"bob:Aircraft.Bf-110C-4Late",true},
-        {"bob:Aircraft.Bf-110C-4N",true},
-        //{"bob:Aircraft.Bf-110C-4-NJG",true}, //this is a good cover a/c for bombers
-        {"bob:Aircraft.Bf-110C-6",true},  //These crash straight into the ground upon spawn FOR SOME UNKNOWN REASON so just eliminating their use altogether here.
-        {"bob:Aircraft.Bf-110C-7",true},
-        {"bob:Aircraft.BR-20M",true},	
-        //{"bob:Aircraft.DH82A-1",10},  aircraft not on list aren't allowed as escorts, so disallow by either setting to FALSE or just remming out their line
-        {"bob:Aircraft.DH82A-2",false},
-        {"bob:Aircraft.G50",true},
-        {"bob:Aircraft.He-111H-2",true},
-        {"bob:Aircraft.He-111P-2",true},
-        {"bob:Aircraft.Ju-87B-2",true},
-        {"bob:Aircraft.Ju-88A-1",true},
-        {"bob:Aircraft.Do-17Z-2",true}, //17Z-1 also exists, but is so similar...
-        {"bob:Aircraft.Do-215B-1",true},
-        {"bob:Aircraft.Bf-109E-4B",true},
-        {"bob:Aircraft.Bf-109E-4B_Late",true},
-        {"bob:Aircraft.Bf-109E-4N",true},
-        {"bob:Aircraft.Bf-109E-4N_Late",true},
-        {"tobruk:Aircraft.Bf-108B-2_Trop",true},
-            {"tobruk:Aircraft.Bf-109E-7",true},
-            {"tobruk:Aircraft.Bf-109E-7_Trop",false},
-            {"tobruk:Aircraft.Bf-109E-7N",true},
-            {"tobruk:Aircraft.Bf-109E-7N_Trop",false},
-            {"tobruk:Aircraft.Bf-109E-7Z",true},
-            {"tobruk:Aircraft.Bf-109F-1",true},
-            {"tobruk:Aircraft.Bf-109F-2",true},
-            {"tobruk:Aircraft.Bf-109F-2_Late",true},
-            {"tobruk:Aircraft.Bf-109F-2_Trop",false},
-            {"tobruk:Aircraft.Bf-109F-4",true},
-            {"tobruk:Aircraft.Bf-109F-4_Derated",true},
-            {"tobruk:Aircraft.Bf-109F-4_Trop",false},
-            {"tobruk:Aircraft.Bf-109F-4_trop_Derated",false},
-            {"tobruk:Aircraft.Bf-109F-4Z",true},
-            {"tobruk:Aircraft.Bf-109F-4Z_Trop",false},
-            {"tobruk:Aircraft.Bf-110C-4B_Trop",false},
-            {"tobruk:Aircraft.Bf-110C-4N-NJG_Trop",false},
-            {"tobruk:Aircraft.Bf-110C-6_Trop",false},
-            {"tobruk:Aircraft.Bf-110C-7_Trop",false},
-            {"tobruk:Aircraft.BR-20M_Trop",false},
-            {"tobruk:Aircraft.CR42_Trop",false},
-            {"tobruk:Aircraft.D520_Serie1",true},
-            {"tobruk:Aircraft.D520_Serie1_Trop",false},
-            {"tobruk:Aircraft.DH82A_Trop",false}, //Tiger Moth/no weapons at all
-            {"tobruk:Aircraft.G50_Trop",false},
-            {"tobruk:Aircraft.He-111H-2_Trop",false},
-            {"tobruk:Aircraft.He-111H-6",true}, //this is just the same as H-6_Hermann, below, but leaving that as the name to emphasize that it carries the Hermanns
-            {"tobruk:Aircraft.He-111H-6_Trop",false}, //this is just the same as H-6_Hermann, below, but leaving that as the name to emphasize that it carries the Hermanns
-            {"tobruk:Aircraft.He-111H-6_torpedo",true}, //special mod to load the H-6 with torpedos; type is corrected in Stb_AddLoadoutForPlane()
-            {"tobruk:Aircraft.He-111H-6_Trop_torpedo",false}, //special mod to load the H-6 with torpedos; type is corrected in Stb_AddLoadoutForPlane()
-            //{"tobruk:Aircraft.He-111H-6_Hermann1000kg",true}, //OK, this doesn't work because it has to match SUPPLY and changing that & this & keeping it coordinated is a pain
-            //{"tobruk:Aircraft.He-111H-6_Trop_Hermann1000kg",false}, // ditto ^^^^
-            {"tobruk:Aircraft.Ju-87B-2_Trop",false},
-            {"tobruk:Aircraft.Ju-88A-5",true},
-            {"tobruk:Aircraft.Ju-88A-5_Trop",false},
-            {"tobruk:Aircraft.Ju-88A-5Late",true},
-            {"tobruk:Aircraft.Ju-88A-5Late_Trop",false},
-            {"tobruk:Aircraft.Ju-88C-1",true},
-            {"tobruk:Aircraft.Ju-88C-2",true},
-            {"tobruk:Aircraft.Ju-88C-2_Trop",false},
-            {"tobruk:Aircraft.Ju-88C-4",true},
-            {"tobruk:Aircraft.Ju-88C-4_Trop",false},
-            {"tobruk:Aircraft.Ju-88C-4Late",true},
-            {"tobruk:Aircraft.Ju-88C-4Late_Trop",false},
-            {"tobruk:Aircraft.Macchi-C202-SeriesIII",true},
-            {"tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota",true},
-            {"tobruk:Aircraft.Macchi-C202-SeriesVII",true},
-            {"tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota",true},
-        }
+
+
+
+
+			//{"bob:Aircraft.DH82A-1",10},  aircraft remmed out or not on list have no restrictions so if you dont want any //of these available use amount 0 like below        
+			{"bob:Aircraft.HurricaneMkI",true},
+			{"bob:Aircraft.HurricaneMkI_100oct",true},
+			{"bob:Aircraft.HurricaneMkI_100oct-NF",true},
+			{"bob:Aircraft.HurricaneMkI_dH5-20",true},
+			{"bob:Aircraft.HurricaneMkI_dH5-20_100oct",true},
+			{"bob:Aircraft.HurricaneMkI_FB",true},
+
+
+			{"tobruk:Aircraft.HurricaneMkI_FB-Trop", false},
+			{"tobruk:Aircraft.HurricaneMkIIa", true},
+			{"tobruk:Aircraft.HurricaneMkIIaTrop", false},
+			{"tobruk:Aircraft.HurricaneMkIIb", true},
+			{"tobruk:Aircraft.HurricaneMkIIb-Late", true},
+			{"tobruk:Aircraft.HurricaneMkIIbTrop", false},
+			{"tobruk:Aircraft.HurricaneMkIIbTrop-Late", false},
+			{"tobruk:Aircraft.HurricaneMkIIc", true},
+			{"tobruk:Aircraft.HurricaneMkIIc-Late", true},
+			{"tobruk:Aircraft.HurricaneMkIIc-Trop", false},
+			{"tobruk:Aircraft.HurricaneMkIIc-Trop-Late", false},
+			{"tobruk:Aircraft.HurricaneMkIId", true},
+			{"tobruk:Aircraft.HurricaneMkIId-Trop", false},
+			{"bob:Aircraft.SpitfireMkI",true},
+			{"bob:Aircraft.SpitfireMkIa",true},
+			{"bob:Aircraft.SpitfireMkIa_100oct",true},
+			{"bob:Aircraft.SpitfireMkI_100oct",true},
+			{"bob:Aircraft.SpitfireMkIIa",false},			
+			{"tobruk:Aircraft.SpitfireMkIIb", true},
+			{"tobruk:Aircraft.SpitfireMkVa", true},
+			{"tobruk:Aircraft.SpitfireMkVb", true},
+			{"tobruk:Aircraft.SpitfireMkVb-HF", false},
+			{"tobruk:Aircraft.SpitfireMkVb-HF-Late", false},
+			{"tobruk:Aircraft.SpitfireMkVb-HF-Trop", false},
+			{"tobruk:Aircraft.SpitfireMkVbLate", true},
+			{"tobruk:Aircraft.SpitfireMkVbTrop", false},
+			{"tobruk:Aircraft.KittyhawkMkIA", true},
+			{"tobruk:Aircraft.KittyhawkMkIA-Trop", true},
+			{"tobruk:Aircraft.MartletMkIII", true},
+			{"tobruk:Aircraft.MartletMkIII_Trop", false},			
+			{"tobruk:Aircraft.TomahawkMkII", true},
+			{"tobruk:Aircraft.TomahawkMkII-Late", true},
+			{"tobruk:Aircraft.TomahawkMkII-Late-Trop", false},
+			{"tobruk:Aircraft.TomahawkMkII-Trop", false},
+
+			//STURMOVIK
+
+			{"bob:Aircraft.DefiantMkI",true},
+			{"bob:Aircraft.BlenheimMkIF", true},
+			{"bob:Aircraft.BlenheimMkINF", true},
+			{"bob:Aircraft.BlenheimMkIVF",true},
+			{"bob:Aircraft.BlenheimMkIVF_Late",true},
+			{"bob:Aircraft.BlenheimMkIVNF",true},
+			{"bob:Aircraft.BlenheimMkIVNF_Late",true},
+			{"bob:Aircraft.BeaufighterMkIF", true},
+			{"bob:Aircraft.BeaufighterMkINF",true},
+			{"tobruk:Aircraft.BeaufighterMkIF_Late", true},
+			{"tobruk:Aircraft.BeaufighterMkINF_Late", true},
+			{"tobruk:Aircraft.BeaufighterMkIC", true},
+			{"tobruk:Aircraft.BeaufighterMkIC_Trop", false},
+			{"tobruk:Aircraft.BeaufighterMkIF_Late_Trop", false},
+			{"tobruk:Aircraft.BeaufighterMkINF_Late_Trop", false},			
+
+			//MISC - OLDER
+			{ "tobruk:Aircraft.GladiatorMkII_trop", true},
+			{"bob:Aircraft.DH82A-2",false},
+			{"bob:Aircraft.AnsonMkI",true},		
+
+			//BOMBERS
+			{"bob:Aircraft.SunderlandMkI",true},
+			{"bob:Aircraft.WalrusMkI",false}, //as of 2026-08, the AI walrus won't drop bombs, so disabling it for now. https://www.tfbt.nuvturais.de/issues/1584			
+			{"bob:Aircraft.BlenheimMkI", true},			
+			{"bob:Aircraft.BlenheimMkIV", true},
+			{"bob:Aircraft.BlenheimMkIV_Late",true},
+			
+			{"tobruk:Aircraft.WellingtonMkIa_trop", false}, //This is a great plane BUT seems to cause the bug where ppl can't spawn into the server any more. 
+			{"bob:Aircraft.WellingtonMkIc",true}, //actually the Welly Ia       		
+			{"tobruk:Aircraft.WellingtonMkIc_Late", true},
+			{"tobruk:Aircraft.WellingtonMkIc_Late_trop", false}, //5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW. 5.017 SHOULD BE FIXED (2021/02), so re-adding it
+			{"tobruk:Aircraft.WellingtonMkIc_t", true}, //welly Ic
+			{"tobruk:Aircraft.WellingtonMkIc_Torpedo", true },
+			{"tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop", true},
+			{"tobruk:Aircraft.WellingtonMkIc_trop", false},
+			//5.003 WON'T DROP BOMBS (more than 1 a mission) SO ELIMINATING IT FOR NOW  5.017 SHOULD BE FIXED (2021/02), so re-adding it
+
+		} 
+	},
+		{ ArmiesE.Blue, new Dictionary <string,bool>(){
+			
+			//FIGHTERS
+			{"bob:Aircraft.Bf-109E-1",true},
+			{"bob:Aircraft.Bf-109E-1B",true},
+			{"bob:Aircraft.Bf-109E-3",true},
+			{"bob:Aircraft.Bf-109E-3B",true},
+			{"bob:Aircraft.Bf-109E-4",true},
+			{"bob:Aircraft.Bf-109E-4_Late",true},
+
+			{"tobruk:Aircraft.Bf-109E-7",true},
+			{"tobruk:Aircraft.Bf-109E-7_Trop",false},
+			{"tobruk:Aircraft.Bf-109E-7N",true},
+			{"tobruk:Aircraft.Bf-109E-7N_Trop",false},
+			{"tobruk:Aircraft.Bf-109E-7Z",false},
+			{"bob:Aircraft.Bf-109E-4B",true},
+			{"bob:Aircraft.Bf-109E-4B_Late",true},
+			{"bob:Aircraft.Bf-109E-4N",true},
+			{"bob:Aircraft.Bf-109E-4N_Late",true},			
+			{"tobruk:Aircraft.Bf-109F-1",true},
+			{"tobruk:Aircraft.Bf-109F-2",true},
+			{"tobruk:Aircraft.Bf-109F-2_Late",true},
+			{"tobruk:Aircraft.Bf-109F-2_Trop",false},
+			{"tobruk:Aircraft.Bf-109F-4",true},
+			{"tobruk:Aircraft.Bf-109F-4_Derated",true},
+			{"tobruk:Aircraft.Bf-109F-4_Trop",false},
+			{"tobruk:Aircraft.Bf-109F-4_trop_Derated",false},
+			{"tobruk:Aircraft.Bf-109F-4Z",false},
+			{"tobruk:Aircraft.Bf-109F-4Z_Trop",false},		
+
+
+			{"bob:Aircraft.G50",true},
+			{"tobruk:Aircraft.G50_Trop",false},
+			{"tobruk:Aircraft.Macchi-C202-SeriesIII",true},
+			{"tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota",true},
+			{"tobruk:Aircraft.Macchi-C202-SeriesVII",true},
+			{"tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota",true},
+
+			//heavy fighters/Sturmovik
+			{"bob:Aircraft.Bf-110C-2",true},
+			{"bob:Aircraft.Bf-110C-4",true},			
+			{"tobruk:Aircraft.Bf-110C-4B_Trop",false},
+			{"bob:Aircraft.Bf-110C-4B" ,true},
+			{"bob:Aircraft.Bf-110C-4Late",true},
+			{"bob:Aircraft.Bf-110C-4N",true},
+			{"bob:Aircraft.Bf-110C-4-NJG",true},			
+			{"tobruk:Aircraft.Bf-110C-4N-NJG_Trop",false},						
+			//{"bob:Aircraft.Bf-110C-4-NJG",true}, //this is a good cover a/c for bombers
+			{"bob:Aircraft.Bf-110C-6",true},  //These crash straight into the ground upon spawn FOR SOME UNKNOWN REASON so just eliminating their use altogether here.
+			{"tobruk:Aircraft.Bf-110C-6_Trop",false},
+			{"bob:Aircraft.Bf-110C-7",true},			
+			{"tobruk:Aircraft.Bf-110C-7_Trop",false},		
+			{"tobruk:Aircraft.Ju-88C-1",true},
+			{"tobruk:Aircraft.Ju-88C-2",true},
+			{"tobruk:Aircraft.Ju-88C-2_Trop",false},
+			{"tobruk:Aircraft.Ju-88C-4",true},
+			{"tobruk:Aircraft.Ju-88C-4_Trop",false},
+			{"tobruk:Aircraft.Ju-88C-4Late",true},
+			{"tobruk:Aircraft.Ju-88C-4Late_Trop",false},			
+
+			//MISC - OLDER
+			{"bob:Aircraft.DH82A-2",false},
+			{"tobruk:Aircraft.Bf-108B-2_Trop",true},
+			{"tobruk:Aircraft.CR42_Trop",false},
+			{"tobruk:Aircraft.D520_Serie1",true},
+			{"tobruk:Aircraft.D520_Serie1_Trop",false},
+			{"tobruk:Aircraft.DH82A_Trop",false}, //Tiger Moth/no weapons at all
+
+			//{"bob:Aircraft.DH82A-1",10},  aircraft not on list aren't allowed as escorts, so disallow by either setting to FALSE or just remming out their line
+
+
+			//BOMBERS
+			{"bob:Aircraft.BR-20M",true},	
+			{"tobruk:Aircraft.BR-20M_Trop",false},
+			{"bob:Aircraft.Do-17Z-2",true}, //17Z-1 also exists, but is so similar...
+			{"bob:Aircraft.Do-215B-1",true},
+			{"tobruk:Aircraft.He-111H-2_Trop",false},
+			{"bob:Aircraft.He-111H-2",true},
+			{"tobruk:Aircraft.He-111H-6",true}, //this is just the same as H-6_Hermann, below, but leaving that as the name to emphasize that it carries the Hermanns		
+
+			{"tobruk:Aircraft.He-111H-6_Trop",false}, //this is just the same as H-6_Hermann, below, but leaving that as the name to emphasize that it carries the Hermanns
+			{"tobruk:Aircraft.He-111H-6_torpedo",true}, //special mod to load the H-6 with torpedos; type is corrected in Stb_AddLoadoutForPlane()
+			{"tobruk:Aircraft.He-111H-6_Trop_torpedo",false}, //special mod to load the H-6 with torpedos; type is corrected in			Stb_AddLoadoutForPlane()
+			{"bob:Aircraft.He-111P-2",true},			
+			//{"tobruk:Aircraft.He-111H-6_Hermann1000kg",true}, //OK, this doesn't work because it has to match SUPPLY and changing that & this & keeping it coordinated is a pain
+			//{"tobruk:Aircraft.He-111H-6_Trop_Hermann1000kg",false}, // ditto ^^^^
+			{"tobruk:Aircraft.Ju-87B-2_Trop",false},
+			{"bob:Aircraft.Ju-87B-2",true},
+			{"bob:Aircraft.Ju-88A-1",true},			
+			{"tobruk:Aircraft.Ju-88A-5",true},
+			{"tobruk:Aircraft.Ju-88A-5_Trop",false},
+			{"tobruk:Aircraft.Ju-88A-5Late",true},
+			{"tobruk:Aircraft.Ju-88A-5Late_Trop",false},
+
+
+			}
         }
 
         };
@@ -1324,6 +1355,8 @@ public class CoverMission : AMission, ICoverMission
 
             double player_vel_mph = 0;
             AiAircraft playerPlaceAircraft = null;
+			
+			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #1");
 
             if (playerPlace as AiAircraft != null)
             {
@@ -1338,7 +1371,7 @@ public class CoverMission : AMission, ICoverMission
             string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
             retmsg += smsg + nl;
 
-
+			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #2");
             //So if the player crashes (no longer in plane) we still keep their updates going as best we can; also avoids object reference errors
             if ((playerPlaceAircraft != null && !isHeavyBomber(playerPlace as AiAircraft) && !isDiveBomber(playerPlace as AiAircraft) && !isFighterAllowedCover(playerPlace as AiAircraft) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player)) && admin_privilege_level(player) < 1)
             {
@@ -1352,6 +1385,8 @@ public class CoverMission : AMission, ICoverMission
 
             double delay = 0.02;            
 
+			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #3");
+			
             //This doesn't work - apparently the indexes thing is not really working
             //var agIndex = new Dictionary<int, AiAirGroup>();
             //if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];           
@@ -1380,6 +1415,8 @@ public class CoverMission : AMission, ICoverMission
                 //part.ParameterTypes.M_Health
 
                 string msg = "";
+				
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #4");
 
                 if (playerPlaceAircraft == null) msg = "#" + count.ToString() + " " + CoverCalcs.GetAircraftType(aircraft) + " at " + alt_msg + CoverCalcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
                 else
@@ -1410,6 +1447,8 @@ public class CoverMission : AMission, ICoverMission
                     }
                     msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + heading_10.ToString("F0") + "°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
                 }
+				
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #5");
 
                 //AiAirGroupTask task = airGroup.getTask();
                 //string tsk = task.ToString();
@@ -1424,8 +1463,9 @@ public class CoverMission : AMission, ICoverMission
                 if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay)
                 {
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
+					if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #10");
                     if (CurrentWaypoints.Length > currWay + 1 && (CurrentWaypoints[currWay + 1] as AiAirWayPoint).Action.ToString().ToUpper().Contains("ATTACK")) currWay++;
-
+					if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #11");
                     action = (CurrentWaypoints[currWay] as AiAirWayPoint).Action.ToString();
                     targetname = "";
                     if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target != null) targetname = (CurrentWaypoints[currWay] as AiAirWayPoint).Target.Name();
@@ -1438,9 +1478,11 @@ public class CoverMission : AMission, ICoverMission
                             targettype = string.Join("-", splits);
                         }
                     }
+					if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #6");
                     if ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary != null) targettype += ((CurrentWaypoints[currWay] as AiAirWayPoint).Target as GroundStationary).Title;
                     p = (CurrentWaypoints[currWay] as AiWayPoint).P;
                 }
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #12");
 
 
                 //msg += " " + bomb + " " + tsk + " " + action;
@@ -1460,6 +1502,7 @@ public class CoverMission : AMission, ICoverMission
                 if (targetname == "Ground Obj" && airgroupGroundTargets != null && airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].Title.Length > 0)
                 {
                     string tmp = airgroupGroundTargets[airGroup].Title;
+					if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #13");
 					
 					if (airgroupGroundTargets[airGroup] is GroundStationary) {
 						targettype = Calcs.CleanStationaryName(tmp);
@@ -1478,16 +1521,19 @@ public class CoverMission : AMission, ICoverMission
 
                 bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.follow);
                 double distToTarget_m = CoverCalcs.CalculatePointDistance(p, aircraft.Pos());
+				
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #14");
 
                 if (action.Contains("GND-ATTACK"))
                 {
                     if (distToTarget_m < 15000) //give the details in this case
-                        if (targetname.Length > 1 && (airgroupGroundTargets[airGroup] is AiGroundActor))
-                            msg += String.Format(" {0} (Live, {2})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
+                        if (targetname.Length > 1 && airgroupGroundTargets != null && airgroupGroundTargets.ContainsKey(airGroup)  && (airgroupGroundTargets[airGroup] is AiGroundActor))
+                            msg += String.Format(" {0} (Live, {1})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
                         else
                             msg += String.Format(" {0} ({1})", targettype, Calcs.correctedSectorNameDoubleKeypad(this, p));
                     else //no details if too far away.  Only the sector (action is included, above, already) 
                         msg += String.Format(" ({0})", Calcs.correctedSectorNameDoubleKeypad(this, p));
+						if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #14A");
                 }
                 //In cases where the pilot has set a target point and type of "nearest enemy" but the a/c has not found
                 //a ground actor/stationary as a target. Only when FOLLOW AND BAM is nearest enemy
@@ -1497,6 +1543,7 @@ public class CoverMission : AMission, ICoverMission
 
                     if (distToTarget_m < 15000)
                     {
+						if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #15");
                         string s = "]]";
                         if (playerCurrentTargetPoint.ContainsKey(player))
                         {
@@ -1511,7 +1558,7 @@ public class CoverMission : AMission, ICoverMission
                     }
 
                 }
-
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #16");
                 //msg += String.Format(" Health: ({0:N2}, {1:N2})", health, namedDamage); //not sure what named damage is?
                 bool displayHealth = false;
                 string healthString = "";
@@ -1532,7 +1579,7 @@ public class CoverMission : AMission, ICoverMission
                     healthString += String.Format("{0:N0}", Math.Floor(health * 100));
                     hCount++;
                 }
-
+				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #17");
                 //Display some info about aircraft health
                 if (displayHealth) msg += " (" + healthString + ")";
                 if (ordersAreFollow) msg += " [[[RESERVE]]]";
@@ -1544,6 +1591,7 @@ public class CoverMission : AMission, ICoverMission
 
                 retmsg += msg + nl;
             }
+			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #18");
             if (count == 0)
             {
                 string msg2 = "[[[NO COVER AIRCRAFT - turning display off]]]";
@@ -1571,9 +1619,13 @@ public class CoverMission : AMission, ICoverMission
         AiAircraft aircraft = null;
         if (player != null) aircraft = player.Place() as AiAircraft;
 
-        if (aircraft == null || (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))))
+        //if (aircraft == null || (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft))
+		//		&& !(Calcs.isStrikeAC(aircraft))))
+		// && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))))
+		if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft) 
+				&& !(Calcs.isStrikeAC(aircraft))))
         {
-            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, fighter-bombers/strike aircraft when armed with bombs, some fighters (fighter-bombers), and repair/restock missions only!****";
+            string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, fighter-bombers/strike aircraft, a few select fighters, and repair/restock missions only!****";
             if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
             return m;
         }
@@ -1676,7 +1728,7 @@ public class CoverMission : AMission, ICoverMission
         string typeOfACexpl = " flying a fighter";
         if (aircraft == null) typeOfACexpl = " not in an aircraft";
         if (isBomberAllowedCover(aircraft)) typeOfACexpl = " flying a heavy bomber";
-        if (isFighterAllowedCover(aircraft)) typeOfACexpl = " flying a fighter-bomber";
+        if (isFighterAllowedCover(aircraft)) typeOfACexpl = " flying a fighter";
         if (Calcs.isStrikeAC(aircraft)) typeOfACexpl = " flying a " + mainmission.statsmission.stb_StrikeName + " aircraft";
         if (isOnRepairMission(player))
         {
@@ -1699,8 +1751,12 @@ public class CoverMission : AMission, ICoverMission
         AiAircraft aircraft = player.Place() as AiAircraft;
         int maximumAircraftAllowedPerMission = 0;
 
-        if (isBomberAllowedCover(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_BomberPilots;
+        /*if (isBomberAllowedCover(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_BomberPilots;
         else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots;
+		*/
+		if (isBomberAllowedCover(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_BomberPilots;
+        else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft))) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots;
+		
         if (isOnRepairMission(player)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_RepairMission;
 
         int acAllowedThisPlayer = maximumAircraftAllowedPerMission;
@@ -1762,7 +1818,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         int maximumCheckoutsAllowedAtOnce = 0;
 
         if (isBomberAllowedCover(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
-        else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
+        //else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
+		else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || Calcs.isStrikeAC(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
+		
         if (isOnRepairMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_RepairMission;
         if (isOnFerryMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FerryMission;
 
@@ -1805,9 +1863,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     public bool isFighterOrStrikeAllowedCoverForThisAircraft(Player player, string key)
     {
         if (player == null || player.Place() as AiAircraft == null) return false;
-        if (isFighterAllowedCover(player) && !(Calcs.isStrikeAC(player) && Calcs.playerHasBombs(player)) && !isHeavyBomber(key)) return false;
-		if (Calcs.isStrikeAC(player) && !Calcs.playerHasBombs(player)) return false;		
-        if ((Calcs.isStrikeAC(player) && !isDiveBomber(player) && !Calcs.isStrikeAC(key) && !isHeavyBomber(key))) return false;
+        //if (isFighterAllowedCover(player) && !(Calcs.isStrikeAC(player) && Calcs.playerHasBombs(player)) && !isHeavyBomber(key)) return false;
+		//if (Calcs.isStrikeAC(player) && !Calcs.playerHasBombs(player)) return false;		
+        //if ((Calcs.isStrikeAC(player) && !isDiveBomber(player) && !Calcs.isStrikeAC(key) && !isHeavyBomber(key))) return false;
+		
+		//StrikeAC can only take other StrikeAC
+		if (Calcs.isStrikeAC(player) && !Calcs.isStrikeAC(key)) return false;
+		
+		//Fighters who are NOT StrikeAC can only take Heavy Bombers
+		if ((isFighterAllowedCover(player) && !Calcs.isStrikeAC(player) && !isHeavyBomber(key))) return false;
+		
+		//Bombers can take anything
         return true;
     }
 
@@ -2898,9 +2964,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         if (acType == "") return false;
         bool ret = false;
-        //all strike/sturmovik fighters except JU-87, because it is group in with regular bombers so can take out
+        //all strike/sturmovik fighters except JU-87, because it is grouped in with regular bombers so can take out
         //even more a/c than the fighter-bombers
-        if (acType.Contains("Hurricane") || acType.Contains("Bf-109E-1B") || acType.Contains("Bf-109E-3B") || acType.Contains("Bf-109E-4B") || acType.Contains("Bf-110") || acType.Contains("Ju-88C") || acType.Contains("G50") || acType.Contains("Macchi") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("Beaufighter") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk") || acType.Contains("CR42")) ret = true;
+        if (acType.Contains("HurricaneMkI_") || acType.Equals("SpitfireMkI") ||  acType.Contains("Bf-109E") 
+			|| acType.Contains("Bf-109E-3B") || acType.Contains("Bf-109E-4B") 
+		|| acType.Contains("Macchi") || acType.Contains("G50") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk") || acType.Contains("CR42")) ret = true;
         return ret;
     }
     private bool isBomberAllowedCover(Player player)
@@ -2927,7 +2995,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         if (acType == "") return false;
         bool ret = false;
-        if (acType.Contains("Ju-88A") || acType.Contains("Ju-87") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington")) ret = true;
+        if (acType.Contains("Ju-88A") || acType.Contains("Ju-87") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkIV") || acType.Contains("Do-17") || acType.Contains("Wellington") || acType.Contains("HurricaneMkI_FB")) ret = true;
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF")) ret = false;
         return ret;
     }
@@ -2949,9 +3017,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (acType == "") return false;
         bool ret = false;
         //We're including heavy two-engine fighter bombers here (strike-fighter, sturmovik), like the 110C-4B, Hurricane FBs, Beaufighter FBs, Ju-88C, so that people can fly a FB lead a squad of those while flying cover for them
-        if (acType.Contains("Ju-88A") || acType.Contains("Ju-88C") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
-          || acType.Contains("Do-215B") || acType.Contains("Bf-110C-4B") || acType.Contains("Bf-110C-6") || acType.Contains("Bf-110C-7") || acType.Contains("BeaufighterMkIC")
-          || acType.Contains("Sunderland") || acType.Contains("Walrus") || acType.Contains("HurricaneMkI_FB") || acType.Contains("HurricaneMkIIb")) ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
+        if (acType.Contains("Ju-88A") 
+			//|| acType.Contains("Ju-88C") //no, this is actually a Sturmovik/ground attack type a/c
+			|| acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("BlenheimMkI") || acType.Contains("Do-17") || acType.Contains("Wellington")
+          || acType.Contains("Do-215B")
+		  //	  || acType.Contains("Bf-110C-4B") || acType.Contains("Bf-110C-6") || acType.Contains("Bf-110C-7") || acType.Contains("BeaufighterMkIC")
+          || acType.Contains("Sunderland") || acType.Contains("Walrus") || acType.Contains("HurricaneMkI_FB") 
+		  //|| acType.Contains("HurricaneMkIIb")) 
+		  )
+		  ret = true; //Contains("BlenheimMkI" includes BI, BIV, BIV Late, etc.
         if (acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")) ret = false;
         return ret;
     }
@@ -3407,7 +3481,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //a formation as a hurriFB pilot, only heavy bombers can lead.  They could bring Hurri FB's with them, though.
                 //if ((!isHeavyBomber(aircraft) && !isDiveBomber(aircraft) ) || coverCalcs.GetAircraftType(aircraft).Contains("Hurricane")) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you - cover provided for heavy bombers and dive bombers only!", new object[] { }); return; }
 
-                if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player)) && !isOnRepairMission(player))) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers WITH BOMBS, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
+                //if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player)) && !isOnRepairMission(player))) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers WITH BOMBS, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
+				
+				if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)) && !Calcs.isStrikeAC(aircraft) && !isOnRepairMission(player)) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
 
                 /* int maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
                 if (isFighterAllowedCover(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots; */
@@ -3616,14 +3692,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 if (isHeavyBomber(newAirgroup) || isDiveBomber(newAirgroup)) heavyBomber = true;
                                 bool isStrikeAC = Calcs.isStrikeAC(newAirgroup);
 
-                                bool playerIsStrikeACwithBombs = false;
+                                // 2026-09-03 - calculating this but not using it anywhere for now...
+								bool playerIsStrikeACwithBombs = false;
                                 if (player != null & player.Place() != null && player.Place() as AiAircraft != null)
                                     playerIsStrikeACwithBombs = (Calcs.isStrikeAC(player.Place() as AiAircraft) && Calcs.playerHasBombs(player));
+								
 
                                 acInfo.IsHeavyBomber = heavyBomber;
                                 acInfo.IsDiveBomber = isDiveBomber(newAirgroup);
                                 acInfo.IsStrikeAC = isStrikeAC;
-                                acInfo.IsPlayerStrikeAC = playerIsStrikeACwithBombs;
+                                acInfo.IsPlayerStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
                                 coverACInfo[newAirgroup] = acInfo;
 
                                 double delay = 11.2354 + ran.NextDouble() * 2;
@@ -3631,7 +3709,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 //if (heavyBomber) delay = 2 * delay; //don't think we really need this
                                 //try
                                 {
-                                    keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeACwithBombs, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+                                    keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, acInfo.IsPlayerStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
                                                                                                                                                                                                                                                                                                                                              //Was AltDiffBomber_m: -14, AltDiffBomber_range_m: -45 - trying closer 2020/01/25
                                                                                                                                                                                                                                                                                                                                              //2018/11/16 - WAS 43 seconds, trying 21 seconds instead
                                                                                                                                                                                                                                                                                                                                              //Console.WriteLine("1recurs started");
@@ -4389,6 +4467,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         k = "CallSign"; v = callsign; f.add(s, k, v);
         //k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
         //k = "Weapons"; v = weapons; f.add(s, k, v);
+		
+		bool isBlenheim = type.Contains("Blenheim");
+		
+		if (isBlenheim) fuelStr ="90"; //trying to make Blennies have a heavier load so their performance is not so crazy
+		
 
         f = Stb_AddLoadoutForPlane(f, s, type, fighterbomber, weapons, delay_sec, fuelStr);
 
@@ -4405,7 +4488,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
         } */
 		
-		bool isBlenheim = type.Contains("Blenheim");
+		
 		
         int numFlightsCreated = 0;
         numACcreated = 0;
@@ -6139,48 +6222,96 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 Console.WriteLine("MBT: Looking for nearby stationary at {0}m", changeL_XY_m * d);
                                 int numToCheck = 30;
                                 if (stationaries.Length < numToCheck) numToCheck = stationaries.Length;
-                                for (int i = 1; i < numToCheck; i++)
-                                {
-                                    try
-                                    {
-                                        if (stationaries.Length == 0) break;
-                                        int newStaIndex = ran.Next(stationaries.Length - 1);
-                                        //if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive && (newTarget == null ||
-                                        //    (Math.Pow(stationaries[newStaIndex].pos.x - pos.x, 2) + Math.Pow(stationaries[newStaIndex].pos.y - pos.y, 2) <
-                                        //    Math.Pow(newTarget.Pos().x - pos.x, 2) + Math.Pow(newTarget.Pos().y - pos.y, 2)))) 
+								
+								int timesThru = (d * 3) / steps;
+								
+								for (int j = timesThru; j>=0; j--) { //run through this three times, lloking for better then worse targets
+								
+									for (int i = 0; i < numToCheck; i++)
+									{
+										try
+										{
+											if (stationaries.Length == 0) break;
+											int newStaIndex = ran.Next(stationaries.Length - 1);
+											var gg = stationaries[newStaIndex];
+											//if (gg != null && gg.IsAlive && (newTarget == null ||
+											//    (Math.Pow(gg.pos.x - pos.x, 2) + Math.Pow(gg.pos.y - pos.y, 2) <
+											//    Math.Pow(newTarget.Pos().x - pos.x, 2) + Math.Pow(newTarget.Pos().y - pos.y, 2)))) 
 
-                                        //Figuring out "army" of stationaries if not so easy.  If they have an army "gb" or "de" we go with that.  If set to "nn" however we go with
-                                        //whatever TERRITORY they are on.  If they are in neutral territory I guess they are neutral?!
-										//UPDATE: .country seems to just be which territory they are on?
-										//At least for some objects, like aircraft?
-                                        int statArmy = 0;
-                                        if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive)
-                                        {
-                                            if (stationaries[newStaIndex].country == "de") statArmy = 2;
-                                            else if (stationaries[newStaIndex].country == "gb") statArmy = 1;
-                                            else { statArmy = GamePlay.gpFrontArmy(stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y); }
-                                        }
+											//Figuring out "army" of stationaries if not so easy.  If they have an army "gb" or "de" we go with that.  If set to "nn" however we go with
+											//whatever TERRITORY they are on.  If they are in neutral territory I guess they are neutral?!
+											//UPDATE: .country is just the DEFAULT country for an object, as shown in e.g. FMB
+											//Now we have a ConcurrentDictionary with actual country/ army.
+											int statArmy = 0;
+											if (gg != null && gg.IsAlive)
+											{
+												/*if (gg.country == "de") statArmy = 2;
+												else if (gg.country == "gb") statArmy = 1;
+												else { statArmy = GamePlay.gpFrontArmy(gg.pos.x, gg.pos.y); } */
+												
+												int ggarmy = -1;
+												string ggctry = "";
+												string cleanName = Calcs.CleanStationaryID(gg.Name);
+												if (mainmission.GroundStationary_army.ContainsKey(cleanName)) {
+													ggarmy = mainmission.GroundStationary_army[cleanName].Army;
+													ggctry = mainmission.GroundStationary_army[cleanName].Country;
+												}
+											
+												if (ggarmy != -1 && ggarmy != 0) statArmy = ggarmy;                                            
+												else { statArmy = GamePlay.gpFrontArmy(gg.pos.x, gg.pos.y); }
+											}
 
 
-                                        if (stationaries[newStaIndex] != null && stationaries[newStaIndex].IsAlive && !airgroupGroundTargets.ContainsValue(stationaries[newStaIndex])
-                                        && statArmy == 3 - airGroup.getArmy() && !stationaries[newStaIndex].Title.ToLower().Contains("crater")
-                                        && !stationaries[newStaIndex].Title.ToLower().Contains("smoke") && !stationaries[newStaIndex].Title.ToLower().Contains("fire") && !stationaries[newStaIndex].Title.ToLower().Contains("_dmg")//avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
-                                        ) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
-                                          //Names including _DMG are damaged items, don't need to target them.  IE Stationary.Environment.Ladder_UK1_DMG1
-                                          //We use things like this in our detritus fields, which mean target is destroyed or moved
-                                          //
+											if (gg != null && gg.IsAlive && !airgroupGroundTargets.ContainsValue(gg)
+											&& statArmy == 3 - airGroup.getArmy() && !gg.Title.ToLower().Contains("crater")
+											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")//avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
+											) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
+											  //Names including _DMG are damaged items, don't need to target them.  IE Stationary.Environment.Ladder_UK1_DMG1
+											  //We use things like this in our detritus fields, which mean target is destroyed or moved
+											  //
+										
+											  
 
-                                        {
-                                            newGroundTarget = stationaries[newStaIndex];
-                                            Console.WriteLine("MBT: Found a stationary for target: " + stationaries[newStaIndex].Name + " 1 " + stationaries[newStaIndex].Title + " 2 " + stationaries[newStaIndex].Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", stationaries[newStaIndex].pos.x, stationaries[newStaIndex].pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
-                                                                                                                                                                                                                                                                                                                                                                      //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
-                                            diveTarget = true;
-                                            break;
-                                        }
-                                    }
-                                    catch (Exception ex) { Console.WriteLine("Bomb select #2 ERROR: " + ex.ToString()); }
+											{
+												bool bk = false;
+												string types = (gg.Title + gg.Type.ToString() + gg.Category).ToLower(); 
+												string category = gg.Category;
+												int ml = 0;
+												
+												if (gg.Category == "Aircraft" || types.Contains("aircraft")) ml = 3;
+												else if (gg.Category == "Car") ml = 2;
+												else if (gg.Category == "ArmoredCar") ml = 3;
+												else if (gg.Category == "Tank") ml = 3;
+												else if (types.Contains("ship")) ml = 3;
+												else if (types.Contains("plane") || types.Contains("aagun") 
+													|| types.Contains("artillery")) ml = 3;
+												else if (types.Contains("tractor") || types.Contains("spg") 
+													|| types.Contains("truck") || types.Contains("trailer")
+													|| types.Contains("amphibian")) ml = 2;
+												else if (types.Contains("radar") || types.Contains("radio")) ml = 3;
+												else if (types.Contains("tent")) ml = 1;
+												else if (types.Contains("camonet")) ml = 2;
+												else if (types.Contains("hangar")) ml = 2;
+												//else if (types.Contains("fuel") || types.Contains("ammo")) ml = 1;
+												//else if (types.Contains("weapons_")) ml = 1;	
+												
+												//At first onlyh accept score 3.
+												//Then...2.  Then...1.  Then finally 0;
+												int accept = (3 - timesThru - j).Clamp(1,3);
+												if (d == steps && j == 0) accept = 0;												
+												if (ml < accept ) continue;
+												
+												newGroundTarget = gg;
+												Console.WriteLine("MBT: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+																																																																																										  //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
+												diveTarget = true;
+												break;
+											}
+										}
+										catch (Exception ex) { Console.WriteLine("Bomb select #2 ERROR: " + ex.ToString()); }
 
-                                }
+									}
+								}
                                 if (diveTarget) break;
                             }
                         }
@@ -7674,7 +7805,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 					acInfo.IsHeavyBomber = heavyBomber;
 					acInfo.IsDiveBomber = isDiveBomber(airgroup);
 					acInfo.IsStrikeAC = isStrikeAC;
-					acInfo.IsPlayerStrikeAC = playerIsStrikeACwithBombs;
+					acInfo.IsPlayerStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
 					coverACInfo[airgroup] = acInfo;
 
 					double delay = 11.2354 + ran.NextDouble() * 2;
@@ -7682,7 +7813,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 					//if (heavyBomber) delay = 2 * delay; //don't think we really need this
 					//try
 					
-						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, playerIsStrikeACwithBombs, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
+						keepAircraftOnTask_recurs(airgroup, AiAirGroupTask.DO_NOTHING, AiAirWayPointType.ESCORT, player, delay, heavyBomber, isStrikeAC, acInfo.IsPlayerStrikeAC, AltDiff_m: 666, AltDiff_range_m: 100, AltDiffBomber_m: -5, AltDiffBomber_range_m: 2, AltDiffPlayerEscort_m: -666, AltDiffPlayerEscort_range_m: 2); //_range is how much +/- random value ot add to the AltDiff altitude change.
                               
 					
 				}
@@ -8645,6 +8776,18 @@ public static class CoverCalcs
 		
 		// --- STEP 1: SNAPSHOT EVERYTHING ON THE MAIN THREAD ---
 		List<string> linesToSave = new List<string>();
+		string playername = "";
+		if (to != null && to.Length >  0 && to[0] != null) playername = to[0].Name();
+		string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+		
+		string msg = string.Format("{0} Player: {1}",currentDateTime, playername);
+		linesToSave.Add(msg);
+		msg = string.Format("({0} {1} {2}) - radius {3:N0}", pos.x, pos.y, pos.z, radius_m);
+		linesToSave.Add(msg);
+		linesToSave.Add("");
+		linesToSave.Add("==========================================================================================");
+		linesToSave.Add("");
+		
 
 		foreach (GroundStationary a in gs)
 		{

@@ -670,29 +670,15 @@ public class Mission : AMission, IMainMission
             //outPath = "C:\\GoogleDrive\\GCVData";
 
 
-            if (ON_JUBILEE)
-            {
-                radarpasswords = new Dictionary<int, string>
-                {
-                    { -1, "lion"}, //Red army #1
-                    { -2, "france"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
-                                        //note that passwords are CASEINSENSITIVE
-                };
+           
 
-            } else
-            {
-                radarpasswords = new Dictionary<int, string>
-                {
-                    { -1, "manston3"}, //Red army #1
-                    { -2, "oye21"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
-                                        //note that passwords are CASEINSENSITIVE
-                };
 
-            }
+
+
+
+
+
+
 
             random = new Random();
             stb_random = random;
@@ -727,15 +713,10 @@ public class Mission : AMission, IMainMission
                 SERVER_ID_SHORT = "Mission"; //FOR PRACTICE/TESTING SERVER, using a different radar. Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers
                 ON_TESTSERVER = true;
                 ON_JUBILEE = false;
-                radarpasswords = new Dictionary<int, string>
-                {
-                    { -1, "twc"}, //Red army #1
-                    { -2, "twc"}, //Blue, army #2
-                    { -3, "1twc2twc3"}, //admin
-                    { -4, "1twc2twc3"}, //admingrouped
-                                  //note that passwords are CASEINSENSITIVE
-                 };
+
             }
+
+           
 			
 			//frontline_offset: 12000/win30000 is almost but not quite frontline to French soil
 			//frontline_offset: -12000/win30000 is almost but not quite to ENGLISH soil.
@@ -9174,9 +9155,77 @@ public class Mission : AMission, IMainMission
             //2021-11 disabling skincheck for now
             //skincheckmission.DeleteLargeSkinFiles(deleteFile: true); //this is the only time we will actually DELETE the skin files (for safety/causes server crashes if deleted mid-mission)
 
+            initRadarPasswords();
+        
+
         }
         catch (Exception ex) { Console.WriteLine("MAIN INIT error: " + ex.Message); };
 
+
+    }
+
+    private void initRadarPasswords(){
+
+            string iniPath = System.IO.Path.Combine(STATSCS_FULL_PATH, "stats.ini");
+            string pwRed = "twc";
+            string pwBlue = "twc";
+            string pwAdmin = "twc";
+            string pwAdminGrouped = "twc";
+
+            string radPassSection = "RadarPasswords_Genghis";
+            if (ON_JUBILEE) radPassSection = "RadarPasswords_Jubilee";
+            if (ON_TESTSERVER) radPassSection = "RadarPasswords_TestServer";
+
+            if (System.IO.File.Exists(iniPath))
+            {
+                try
+                {
+                    string currentSection = "";
+                    foreach (string rawLine in System.IO.File.ReadAllLines(iniPath))
+                    {
+                        string line = rawLine.Trim();
+                        if (string.IsNullOrEmpty(line) || line.StartsWith("#") || line.StartsWith(";"))
+                            continue;
+
+                        if (line.StartsWith("[") && line.EndsWith("]"))
+                        {
+                            currentSection = line.Substring(1, line.Length - 2).Trim();
+                            continue;
+                        }
+
+                        if (currentSection.Equals(radPassSection, StringComparison.OrdinalIgnoreCase))
+                        {
+                            int equalsIdx = line.IndexOf('=');
+                            if (equalsIdx > 0)
+                            {
+                                string key = line.Substring(0, equalsIdx).Trim();
+                                string val = line.Substring(equalsIdx + 1).Trim();
+
+                                if (key.Equals("Red", StringComparison.OrdinalIgnoreCase))
+                                    pwRed = val;
+                                else if (key.Equals("Blue", StringComparison.OrdinalIgnoreCase))
+                                    pwBlue = val;
+                                else if (key.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                                    pwAdmin = val;
+                                else if (key.Equals("AdminGrouped", StringComparison.OrdinalIgnoreCase))
+                                    pwAdminGrouped = val;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error reading radar passwords from stats.ini: " + ex.Message);
+                }
+            }
+
+            radarpasswords = new Dictionary<int, string>
+            {
+                { -1, pwRed},          //Red army #1
+                { -2, pwBlue},         //Blue, army #2
+                { -3, pwAdmin},        //admin
+                { -4, pwAdminGrouped}, //admingrouped
+            };
 
     }
 

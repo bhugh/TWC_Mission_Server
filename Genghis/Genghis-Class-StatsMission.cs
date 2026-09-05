@@ -7808,24 +7808,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 			Console.WriteLine("OnPlaceLeave: SOFT EXIT, server probably closing, no action");
 			if (supplymission != null) supplymission.SupplyOnPlaceLeave(player, actor, 0, true, reason: "SAFE_ServerClosing_Or_PlayerDisconnected"); 
 			
-			if (player != null && ! player.IsConnected()) {
-							//mainmission.covermission.
-							string name = player.Name();
-							
-							Point3d pos = new Point3d (250000,250000,0);
-							if (actor != null) pos = actor.Pos();
 			
-							string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
-							
-							string saveFile =  "/sectionfiles/"+ currentDateTime +"_GroundStationary-list.txt";
-							
-							string msg111 = string.Format("OnPlayerDisconnected & PlaceLeave: Groundstationary list for {1} to file {0} - starting...", saveFile, name);
-							
-							Console.WriteLine(msg111);
-							//mission.mainmission.twcLogServer(new Player[] { player }, msg111 );
-						
-							CoverCalcs.listAllGroundStationaries(mainmission.covermission, GamePlay, null , missionNumber: -1, initPos: pos, radius_m: 10000, saveFile: saveFile);
-			}
 			
 			
 			return;

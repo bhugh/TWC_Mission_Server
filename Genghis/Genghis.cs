@@ -11359,6 +11359,48 @@ public class Mission : AMission, IMainMission
 				message = utcDate.ToString("u") + " Disconnected " + player.Name() + " " + diagnostic;
 				DebugAndLog(message);
 			}
+			
+			if (player != null && player.Place() != null && (player.Place() is AiAircraft)) {
+				//mainmission.covermission.
+				string name = player.Name();
+				AiAircraft aircraft = player.Place() as AiAircraft;
+				
+				Point3d pos = new Point3d (250000,250000,0);
+				//if (actor != null) 
+				pos = aircraft.Pos();
+
+				string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+				
+				string saveFile =  "/sectionfiles/"+ currentDateTime +"_GroundStationary-list.txt";
+				
+				
+				//mission.mainmission.twcLogServer(new Player[] { player }, msg111 );
+						
+
+				AiAirGroup airGroup = aircraft.AirGroup();
+				double vel_mph = 0;
+				if (Calcs.IsNaN(airGroup.Vwld())) vel_mph = 0; 
+				else vel_mph = Calcs.meterspsec2milesphour(Calcs.CalculatePointDistance(airGroup.Vwld()));
+				
+				
+				double elev_m = pos.z - Calcs.LandElevation_m(pos);
+
+				string msg111 = string.Format("OnPlayerDisconnected: {0} {1:N0} {2:N0} {3:N0}) {4}AGL_m, {5}mph", name, pos.x, pos.y, pos.z, pos.z - elev_m, vel_mph );
+				
+				Console.WriteLine(msg111);
+				
+				if (vel_mph > 1 || elev_m > 7) {
+					msg111 = string.Format("OnPlayerDisconnected & flying/moving: Groundstationary list for {1} to file {0} - starting...", saveFile, name);
+										
+					Console.WriteLine(msg111);
+					
+					msg111 = string.Format("OnPlayerDisconnected: {0} {1:N0} {2:N0} {3:N0}) {4}AGL_m, {5}mph", name, pos.x, pos.y, pos.z, pos.z - elev_m, vel_mph );
+					
+					CoverCalcs.listAllGroundStationaries(covermission, GamePlay, null , missionNumber: -1, initPos: pos, radius_m: 10000, saveFile: saveFile, message: msg111 );
+				}
+			
+			}
+			
 		}
         catch (Exception ex) { Console.WriteLine("Main OnPlayerDisconnected error: " + ex.Message); }
 		
@@ -17964,8 +18006,8 @@ public class Mission : AMission, IMainMission
                     addMobile(MO_ObjectiveType.Naval_Ship, "British Coastal Freighter " + name1 , "", 1, 2, "British_Coastal_Freighter" + name1, redinitX, redinitY, 1200, 8000, 0, 0, 1, shipPriority, 6, false, false, 0, 0,
                       MO_MobileObjectiveType.OneShipGroup_GB, 5, redLLX, redLLY, redURX, redURY, 1.000, 6.000, MO_ProducerOrStorageType.fuel, "", add, canbedisabled: false);
                     
-                    //Only xxxthirdxxx 2/3 as many
-                    if ((i + j) % 3 != 0)
+                    //Only third as many - these are "shoot-y"
+                    if ((i + j) % 3 == 0)
                         addMobile(MO_ObjectiveType.Naval_Ship, "British Coastal Patrol " + name2, "", 1, 4, "British_Coastal_Patrol_" + name2, redinitX + 9000, redinitY - 11000, 150, 7000, 0, 0, 1, shipPriority, 6, false, false, 0, 0, MO_MobileObjectiveType.OneMTBGroup_GB, 4, redLLX + 5000, redLLY + 3000, redURX + 5000, redURY + 3000, 1.500, 7.500, MO_ProducerOrStorageType.None, "", add, canbedisabled: false);
                 }
 
@@ -17997,8 +18039,8 @@ public class Mission : AMission, IMainMission
                     addMobile(MO_ObjectiveType.Naval_Ship, "French Coastal Freighter " + name1, "", 2, 2, "French_Coastal_Freighter" + name1, redinitX, redinitY, 1200, 8000, 0, 0, 1, shipPriority, 6, false, false, 0, 0,
                       MO_MobileObjectiveType.OneShipGroup_DE, 5, redLLX, redLLY, redURX, redURY, 1.000, 6.000, MO_ProducerOrStorageType.fuel, "", add, canbedisabled: false);
 
-                    //Only xthirdx 2/3 as many
-                    if ((i + j) % 3 != 0)
+                    //Only third as many
+                    if ((i + j) % 3 == 0)
                         addMobile(MO_ObjectiveType.Naval_Ship, "French Coastal Patrol " + name2, "", 1, 4, "French_Coastal_Patrol_" + name2, redinitX + 9000, redinitY - 11000, 150, 7000, 0, 0, 1, shipPriority, 6, false, false, 0, 0, MO_MobileObjectiveType.OneMTBGroup_DE, 4, redLLX + 5000, redLLY + 3000, redURX + 5000, redURY + 3000, 1.500, 7.500, MO_ProducerOrStorageType.None, "", add, canbedisabled: false);
 
                 }
@@ -19993,7 +20035,7 @@ added Rouen Flak
               { MO_MobileObjectiveType.FreighterShipGroup_GB,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
-                    { MO_MobileObjectiveThings.MO_Military_Ships_Medium_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Medium_GB,true, 1, 1, 2600, 200, 0.0005,shps:shipShapes )},
+                    { MO_MobileObjectiveThings.MO_Military_Ships_Medium_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Medium_GB,true, 1, 1, 2600, 200, 0.001,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Ships_Escort_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.01,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_GB, 1, 2200, 600, 0.4,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Small_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Small_GB, 6, 1800, 1800, shps:shipShapes )},
@@ -20004,7 +20046,7 @@ added Rouen Flak
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
                     //{ MO_MobileObjectiveThings.MO_Military_Ships_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_DE, 1, 1900, 200 )},
-                    { MO_MobileObjectiveThings.MO_Military_Ships_Medium_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Medium_DE, true, 1, 1, 2600, 200, 0.0005,shps:shipShapes )},
+                    { MO_MobileObjectiveThings.MO_Military_Ships_Medium_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Medium_DE, true, 1, 1, 2600, 200, 0.001,shps:shipShapes )}, //was .0005
                     { MO_MobileObjectiveThings.MO_Military_Ships_Escort_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.01,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_DE, true, 1, 1, 2200, 600, 0.4,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Small_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Small_DE, 6, 1800, 1800,shps:shipShapes )},
@@ -20016,7 +20058,7 @@ added Rouen Flak
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
                     //{ MO_MobileObjectiveThings.MO_Military_Ships_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_GB, 1, 2100, 400 )},
-                    { MO_MobileObjectiveThings.MO_Military_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Large_GB, true, 1, 1, 2600, 200, 0.0007,shps:shipShapes )},
+                    { MO_MobileObjectiveThings.MO_Military_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Large_GB, true, 1, 1, 2600, 200, 0.0014,shps:shipShapes )}, //was .0007
                     { MO_MobileObjectiveThings.MO_Military_Ships_Escort_GB, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.015,shps:shipShapes )},
                           { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_GB, true, 1, 2, 2000, 600, 0.45,shps:shipShapes )},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Small_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Small_GB, true, 2, 9, 1500, 1500, 1, shps:shipShapes)},
@@ -20025,7 +20067,7 @@ added Rouen Flak
 
             { MO_MobileObjectiveType.TankerShipGroup_DE,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
-                        { MO_MobileObjectiveThings.MO_Military_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Large_DE, true, 1, 1, 2600, 200, 0.0007,shps:shipShapes )},
+                        { MO_MobileObjectiveThings.MO_Military_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Large_DE, true, 1, 1, 2600, 200, 0.0014,shps:shipShapes )},
                         { MO_MobileObjectiveThings.MO_Military_Ships_Escort_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.015,shps:shipShapes )},
                                { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_DE, true, 1, 2, 1900, 700, 0.45, shps:shipShapes)},
                     { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Small_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Small_DE, true, 2, 9, 1500, 1200, shps:shipShapes )},
@@ -20035,7 +20077,7 @@ added Rouen Flak
              { MO_MobileObjectiveType.LargeTankerShipGroup_GB,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                         { MO_MobileObjectiveThings.MO_Military_Ships_Large_GB, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Large_GB, true, 1, 1, 2600, 200, 0.0007,shps:shipShapes )},
-						MO_Military_Ships_Large_GB, true, 1, 1, 2600, 200, 0.0032,shps:shipShapes )},
+						MO_Military_Ships_Large_GB, true, 1, 1, 2600, 200, 0.0047,shps:shipShapes )},
                         { MO_MobileObjectiveThings.MO_Military_Ships_Escort_GB, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.015,shps:shipShapes )},
 						MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.03,shps:shipShapes )},
                                { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_GB, true, 1, 2, 2400, 2000, 1, shps:shipShapes)},
@@ -20045,7 +20087,7 @@ added Rouen Flak
             { MO_MobileObjectiveType.LargeTankerShipGroup_DE,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                         { MO_MobileObjectiveThings.MO_Military_Ships_Large_DE, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Large_DE, true, 1, 1, 2600, 200, 0.0007,shps:shipShapes )},
-						MO_Military_Ships_Large_DE, true, 1, 1, 2600, 200, 0.0032,shps:shipShapes )},
+						MO_Military_Ships_Large_DE, true, 1, 1, 2600, 200, 0.0047,shps:shipShapes )}, //was .0032
                         { MO_MobileObjectiveThings.MO_Military_Ships_Escort_DE, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.015,shps:shipShapes )},
 						MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.03,shps:shipShapes )},
                                { MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_DE, true, 1, 2, 2400, 2100, 1, shps:shipShapes)},
@@ -20056,7 +20098,7 @@ added Rouen Flak
             { MO_MobileObjectiveType.SmallShipGroup_GB,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                         {  MO_MobileObjectiveThings.MO_Military_Ships_VeryLarge_GB, new MO_ThingsTypeNumberRadius//(MO_Military_Ships_VeryLarge_GB, true, 1, 1, 600, 200, 0.0005, shps: shipShapes )},
-						(MO_Military_Ships_VeryLarge_GB, true, 1, 1, 600, 200, 0.0025, shps: shipShapes )},
+						(MO_Military_Ships_VeryLarge_GB, true, 1, 1, 600, 200, 0.004, shps: shipShapes )}, //was .0025
                         { MO_MobileObjectiveThings.MO_Military_Ships_Escort_GB, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.015, shps: shipShapes )},
 						MO_Military_Ships_Escort_GB,true, 1, 1, 2600, 200, 0.03, shps: shipShapes )},
                         {  MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_GB, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_GB, true, 1, 1, 450, 250, 0.1, shps: shipShapes )},
@@ -20066,7 +20108,7 @@ added Rouen Flak
             { MO_MobileObjectiveType.SmallShipGroup_DE,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                         { MO_MobileObjectiveThings.MO_Military_Ships_VeryLarge_DE, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_VeryLarge_DE, true, 1, 1, 600, 200, 0.0005, shps:shipShapes )},
-						MO_Military_Ships_VeryLarge_DE, true, 1, 1, 600, 200, 0.0025, shps:shipShapes )},
+						MO_Military_Ships_VeryLarge_DE, true, 1, 1, 600, 200, 0.004, shps:shipShapes )},
                         { MO_MobileObjectiveThings.MO_Military_Ships_Escort_DE, new MO_ThingsTypeNumberRadius(//MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.015, shps:shipShapes )},
 						MO_Military_Ships_Escort_DE,true, 1, 1, 2600, 200, 0.03, shps:shipShapes )},
                         {   MO_MobileObjectiveThings.MO_Military_Cargo_Tanker_Ships_Large_DE, new MO_ThingsTypeNumberRadius(MO_Military_Cargo_Tanker_Ships_Large_DE, true, 1, 1, 450, 250, 0.2, shps:shipShapes )},
@@ -21079,7 +21121,7 @@ added Rouen Flak
             double probability_add = 0;
             if (ON_TESTSERVER && MO_All_VeryDangerous_Military_Navy_Ships.Contains(t) && num_Capital_Ships_in_Server < 1)
             {
-                probability_add = 0.035; //should be enough to get a capital/navy ship in each session , on the test server, most of the time
+                probability_add = 0.0035; //0.33 or so should be enough to get a capital/navy ship in each session , on the test server, most of the time
             }
 
             if (mttnr.probability < 1)
@@ -21094,7 +21136,7 @@ added Rouen Flak
             if (mttnr.probability < 0.01 && (MO_All_VeryDangerous_Military_Navy_Ships.Contains(t)))
             {
                 if (num_Capital_Ships_in_Server >= 1) continue;  //only let in one of these at a time
-                Console.WriteLine("Mobile objective {2}!!!!!! Massively increasing objective score because Military Ship included! Ship type = {0} Probability setting = {1} - Level 200 AND 25 points/objects required to kill it", t, mttnr.probability, mo.Name);
+                Console.WriteLine("Mobile objective {2}!!!!!! Massively increasing objective score because Military Ship included! Ship type = {0} Probability setting = {1} - Level 800+ AND 25 points/objects required to kill it", t, mttnr.probability, mo.Name);
                 mo.Points = 1000; //in case where the military ship is included but only rarely, when it IS included the points for the obj are massively bigger  for that session.
                 if (t == MO_MobileObjectiveThings.MO_Military_Ships_VeryLarge_DE || t == MO_MobileObjectiveThings.MO_Military_Ships_VeryLarge_GB) mo.Points = 1300;
                 else if (t == MO_MobileObjectiveThings.MO_Military_Ships_Large_DE || t == MO_MobileObjectiveThings.MO_Military_Ships_Large_GB) mo.Points = 1100;
@@ -30858,7 +30900,8 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     * Specifically, craters & smoke for airport bombing
     * 
     ********************************************************/
-
+	//int lcosCount = 0; now using staticCount instead, for ocnsistent numbering t hroughout all sectionFiles; unique #
+	
     public static void loadCratersAndSmoke(IGamePlay GamePlay, Mission msn, double x, double y, double z, string type = "", double duration_s = 300, string path = "", string type2 = "")
     {
             //for testing - disable all craters, smoke, and fire from airfield, civilian, other bombings & targets
@@ -30923,7 +30966,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         ISectionFile f = GamePlay.gpCreateSectionFile();
         string sect = "Stationary";
         string keybase = "Static_TWCLCOS_";
-        int count = 0;
+        //int count = 0; //lcosCount now
 
         List<string> types = new List<string> { };
         if (type.Length > 0) types.Add(type);
@@ -30942,21 +30985,23 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 lines = 2;
             }
 
-            count++;
-            string key = keybase + count.ToString();
+            //lcosCount++;
+			staticCount.Increment();
+            string key = keybase + staticCount.Value().ToString();
             string value = val1 + ".Environment." + ttemp + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + clc_random.Next(0, 181).ToString("0.0") + " /hstart " + z.ToString("0.00");
             f.add(sect, key, value);
 
             if (lines == 2)
             {
 
-                count++;
-                key = keybase + count.ToString();
+                //lcosCount++;
+				staticCount.Increment();
+                key = keybase + staticCount.Value().ToString();
                 value = val1 + ".Environment." + ttemp + " nn " + (x + 9).ToString("0.00") + " " + (y - 9).ToString("0.00") + " " + clc_random.Next(0, 181).ToString("0.0") + " /hstart  " + z.ToString("0.00");
                 f.add(sect, key, value);
 
-                count++;
-                key = keybase + count.ToString();
+                staticCount.Increment();
+                key = keybase + staticCount.Value().ToString();
                 value = val1 + ".Environment." + ttemp + " nn " + (x - 9).ToString("0.00") + " " + (y + 9).ToString("0.00") + " "  + clc_random.Next(0, 181).ToString("0.0") + " /hstart " + z.ToString("0.00");
                 f.add(sect, key, value);
             }
@@ -31012,8 +31057,34 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "loadStatic" + random.Next(0, 9)); //testing
 
     }
+	
+	// Thread-safe counter
+	public static class staticCount 
+	{
+		private static int _counter = 0;
 
-    private static int staticCount = 0;
+		public static void Increment()
+		{
+			// Safely does: _counter++
+			Interlocked.Increment(ref _counter); 
+		}
+
+		public static void AddValue(int amount)
+		{
+			// Safely does: _counter += amount
+			Interlocked.Add(ref _counter, amount); 
+		}
+
+		// FIXED: Added 'static' here
+		public static int Value()
+		{
+			// Reading an int is already atomic in C#, 
+			// but using Volatile ensures you read the freshest value from RAM
+			return Volatile.Read(ref _counter); 
+		}
+	}
+
+    //private static int staticCount = 0;
     private static int runCount = 0;
 
     //TODO: Make a dictionary key = sectionfile name or similar & & increment the static count independently for each different key.
@@ -31053,7 +31124,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         }
 
         if (sect == null) sect = "Stationary"; //allows to set different sections, like StaticCamera, AIChiefs, whatever
-        string key = "Static_TWC" + runCount.ToString() + "_" + staticCount.ToString("F0");
+        string key = "Static_TWC" + runCount.ToString() + "_" + staticCount.Value().ToString("F0");
         //We still include the word STATIC here because some various routines might expect it
         //including _TWC_ allows us to ID ALL statics generated by this.  The staticprefix allows
         //ID of which objective it came from - or whatever.
@@ -31061,7 +31132,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //for example we use the static prefix to identify the CHIEF.
         //It might be best to RETURN the updated static prefix somehow.
         string newstaticprefix = staticprefix.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
-        if (staticprefix.Length > 0) key = "Static_TWC" + runCount.ToString() + "_" + newstaticprefix + staticCount.ToString("F0");
+        if (staticprefix.Length > 0) key = "Static_TWC" + runCount.ToString() + "_" + newstaticprefix + staticCount.Value().ToString("F0");
         //For the prefix, replace any spaces with _ - there might be other illegal characters in static
         //names we should avoid, but that one for sure
 
@@ -31095,7 +31166,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
         if (sect == "StaticCamera")
         {
-            key = type + "_" + staticprefix.Replace(' ', '_') + runCount.ToString() + "_" + staticCount.ToString("F0");
+            key = type + "_" + staticprefix.Replace(' ', '_') + runCount.ToString() + "_" + staticCount.Value().ToString("F0");
             value = x.ToString("0") + " " + y.ToString("0") + " " + z.ToString("0");
         }
 		
@@ -31106,7 +31177,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //Console.WriteLine("Load Static: {0} {1}", key, type);
         f.add(sect, key, value);
 
-        staticCount++;
+        staticCount.Increment();
 
         return f;
 
@@ -31127,7 +31198,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                     Static5 Artillery.3_7_inch_QF_Mk_I gb 12308.17 17452.48 0.00 /timeout 0/radius_hide 0 /target AIChief_0
                 */
 
-        if (resetCount) staticCount = 0;
+        //if (resetCount) staticCount = 0;
 
         string sect = "AIChiefs";
         string key = "AIChief_TWCAIC_"+ chiefprefix + "_" + chiefNum.ToString("F0");
@@ -31136,7 +31207,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
         f.add(sect, key, value);
 
-        staticCount++;
+        staticCount.Increment();
         //Console.WriteLine("Load AIChief : " + f.ToString());
         //Console.WriteLine("Load Static: {0} {1}", key, "AIChief - artillery");
         return f;

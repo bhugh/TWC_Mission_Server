@@ -1538,7 +1538,7 @@ public class CoverMission : AMission, ICoverMission
                 //In cases where the pilot has set a target point and type of "nearest enemy" but the a/c has not found
                 //a ground actor/stationary as a target. Only when FOLLOW AND BAM is nearest enemy
                 //AND armed AND not set on RESERVE/FOLLOW
-                else if (action.Contains("FOLLOW") && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreFollow)
+                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreFollow)
                 {
 
                     if (distToTarget_m < 15000)
@@ -3334,7 +3334,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Point3d loc = new Point3d(0, 0, 0);
             if (aircraft != null) loc = actor.Pos();
-            loc.z += 350; //starting low, like took off from airport, but we have to make sure it is ABOVE THE ACTUAL GROUND LEVEL or else trouble.  So making it 350 meters higher than the pilot who called it in.
+            loc.z += 75 + Calcs.LandElevation_m(loc);  //adjust for elevvation; //starting low, like took off from airport, but we have to make sure it is ABOVE THE ACTUAL GROUND LEVEL or else trouble.  So making it 350 meters higher than the pilot who called it in.
             string escortedGroup = aircraft.AirGroup().Name();
 
             /*
@@ -3588,7 +3588,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (dtS.Item2.x != -1 || dtS.Item2.y != -1 || dtS.Item2.z != -1) loc = dtS.Item2; //nearest airport location.
                     loc.x = loc.x + ran.NextDouble() * 4000 - 2000; //randomize the exact start position a bit, to avoid spawning diff. a/c in on top of each other
                     loc.y = loc.y + ran.NextDouble() * 4000 - 2000;
-                    loc.z = 300 + ran.Next(100); //If ground airport, start the spawns near the ground, but not too near
+                    loc.z = 50 + ran.Next(100) + Calcs.LandElevation_m(loc);  //adjust for elevvation; //If ground airport, start the spawns near the ground, but not too near
                     if (dtS.Item3 && actor != null) loc.z = dtS.Item2.z + ran.Next(100) - 50; //actor.Pos().z;//In case of airspawn we spawn them in at or near the airspawn altitude, though. 
 
                     Vector3d vwld = aircraft.AirGroup().Vwld();
@@ -5929,10 +5929,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     public Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> BomberPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup playerAirGroup, Point3d newTargetPoint, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 1000,
         double AltDiff_range_m = 700, bool nodupe = true)
     {
-        try
-        {
+		//try
+        //{
             if (GamePlay == null || airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false); }
-            Console.WriteLine("MBT: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
+            Console.WriteLine("CBCW: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX1 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
             double changeL_XY_m = 100;
             AiAirWayPoint aaWP = null;
@@ -5968,7 +5968,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Point3d pos = newTargetPoint;
 
-            Console.WriteLine(String.Format("MBT: newtargetpoint {0:F0} {1:F0} {2:F0}  ", pos.x, pos.y, pos.z));
+            Console.WriteLine(String.Format("CBCW: newtargetpoint {0:F0} {1:F0} {2:F0}  ", pos.x, pos.y, pos.z));
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX2 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
             Tuple<Point3d?, double> obj_cr = ObjectivesRadius_m(pos); //FIND the TUPLE center point, radius of any objective this point is in.
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX3 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
@@ -5993,7 +5993,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //if (distPosToCenter < Obj_radius) searchRadius = Obj_radius - distPosToCenter;
                 if (randPointSearchRadius < 20) randPointSearchRadius = 20; //But, sometimes we are not aiming exactly at the center of the target (wind, etc), and all targets are AT LEAST 80-100m radius.  So we can always go with a 100m radius at least. (epsecially since we are searching for just 100/2 in reality.
 
-                Console.WriteLine(String.Format("MBT: target point was within an objective. RandPointSearchradius: {3:F0} ({0:F0} {1:F0} {2:F0})", pos.x, pos.y, pos.z, randPointSearchRadius));
+                Console.WriteLine(String.Format("CBCW: target point was within an objective. RandPointSearchradius: {3:F0} ({0:F0} {1:F0} {2:F0})", pos.x, pos.y, pos.z, randPointSearchRadius));
 
             }
 
@@ -6009,7 +6009,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //We could check if the point is on water & move it if so?  But then what if it is a ship?
             pos = newPoint;
 
-            Console.WriteLine(String.Format("MBT: newtargetpoint after randomizing with RandPointsearchradius {3:F0}: {0:F0} {1:F0} {2:F0}  ", pos.x, pos.y, pos.z, randPointSearchRadius));
+            Console.WriteLine(String.Format("CBCW: newtargetpoint after randomizing with RandPointsearchradius {3:F0}: {0:F0} {1:F0} {2:F0}  ", pos.x, pos.y, pos.z, randPointSearchRadius));
             
 
             //pos.z = playerAirGroup.Pos().z; //this was the first plan - just match the player's current altitude (at the target point - which is the only point in this AAWP
@@ -6023,9 +6023,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             GroundStationary newGroundTarget = null;
             bool diveTarget = false;
             //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
-            //Console.WriteLine("MBT: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
+            //Console.WriteLine("CBCW: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
 
-            if ((isDiveBomber(airGroup) && pos.z >= 1600) || BAM_isNearestEnemy(player))//only bother to do this search for dive bombers OR if we have specially requested as as "nearest enemy" type target
+            if (isDiveBomber(airGroup) && pos.z >= 1600 + Calcs.LandElevation_m(pos)  
+				|| BAM_isNearestEnemy(player))//only bother to do this search for dive bombers OR if we have specially requested as as "nearest enemy" type target
                                                                                         //Divebombs need an object to glom onto to do their dive, they also need to start above 2000m or so altitude (let's say 1600, that gives 1000 meters to aim & drop as usually set up; right now only JU87 can do dive bombing but many can target ground actors/stationaries somehow.
             {
                 //Console.WriteLine("TARGETING BY ACTOR!@!!!11!!!");
@@ -6092,7 +6093,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 double closest_m = 2 * maxMove_m;
                 if (!diveTarget)
                 {
-                    Console.WriteLine("MBT: Trying to find a ground actor near {0:n0}/{1:n0}", pos.x, pos.y);
+                    Console.WriteLine("CBCW: Trying to find a ground actor near {0:n0}/{1:n0}", pos.x, pos.y);
                     //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
 
                     //If this area has been searched for enemies & none found, don't keep doing
@@ -6135,10 +6136,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                     if (closeStaticActors == null || closeStaticActors.Count == 0)
                                     {
-                                        Console.WriteLine("MBT: Ground actor not found at distance {0:N0}", preferredMove_m + d * step);
+                                        Console.WriteLine("CBCW: Ground actor not found at distance {0:N0}", preferredMove_m + d * step);
                                         continue;
                                     }
-                                    Console.WriteLine("MBT: Ground actor checking {1} possible ground actors at distance {0:N0}", preferredMove_m + d * step, closeStaticActors.Count);
+                                    Console.WriteLine("CBCW: Ground actor checking {1} possible ground actors at distance {0:N0}", preferredMove_m + d * step, closeStaticActors.Count);
                                     CoverCalcs.Shuffle(closeStaticActors);
 
                                     //double closest_m = 2 * maxMove_m;
@@ -6167,13 +6168,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                             bestAct = act;
                                             diveTarget = true;
                                             newTarget = act;
-                                            Console.WriteLine("MBT: FOUND a ground actor" + newTarget.Name() + " " + groundType);
+                                            Console.WriteLine("CBCW: FOUND a ground actor" + newTarget.Name() + " " + groundType);
                                             break;
                                             /*
                                             if (dist_m < preferredMove_m)
                                             {
-                                                //Console.WriteLine("MBT: FOUND a ground actor within preferredMove - breaking");                                        
-                                                Console.WriteLine("MBT: FOUND a ground actor for cover target: " + newTarget.Name() + " " + groundType + " " + closest_m.ToString("N0") + " ({0:N0}, {1:N1}) ", act.Pos().x, act.Pos().y);
+                                                //Console.WriteLine("CBCW: FOUND a ground actor within preferredMove - breaking");                                        
+                                                Console.WriteLine("CBCW: FOUND a ground actor for cover target: " + newTarget.Name() + " " + groundType + " " + closest_m.ToString("N0") + " ({0:N0}, {1:N1}) ", act.Pos().x, act.Pos().y);
                                                 break;
                                             }
                                             */
@@ -6216,24 +6217,24 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             {
 
                                 //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
-                                //Console.WriteLine("MBT: Trying to find a ground stationary");
-                                GroundStationary[] stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step);
+                                //Console.WriteLine("CBCW: Trying to find a ground stationary");
+                                List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step).ToList();
                                 //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
-                                Console.WriteLine("MBT: Looking for nearby stationary at {0}m", changeL_XY_m * d);
+                                Console.WriteLine("CBCW: Looking for nearby stationary at {0}m", changeL_XY_m * d);
                                 int numToCheck = 30;
-                                if (stationaries.Length < numToCheck) numToCheck = stationaries.Length;
+                                if (stationaries.Count < numToCheck) numToCheck = stationaries.Count;
 								
 								int timesThru = (d * 3) / steps;
 								
 								for (int j = timesThru; j>=0; j--) { //run through this three times, lloking for better then worse targets
-								
+									CoverCalcs.Shuffle(stationaries);
 									for (int i = 0; i < numToCheck; i++)
 									{
 										try
 										{
-											if (stationaries.Length == 0) break;
-											int newStaIndex = ran.Next(stationaries.Length - 1);
-											var gg = stationaries[newStaIndex];
+											if (stationaries.Count == 0) break;
+											//int newStaIndex = ran.Next(stationaries.Length - 1);
+											var gg = stationaries[i];
 											//if (gg != null && gg.IsAlive && (newTarget == null ||
 											//    (Math.Pow(gg.pos.x - pos.x, 2) + Math.Pow(gg.pos.y - pos.y, 2) <
 											//    Math.Pow(newTarget.Pos().x - pos.x, 2) + Math.Pow(newTarget.Pos().y - pos.y, 2)))) 
@@ -6298,11 +6299,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												//At first onlyh accept score 3.
 												//Then...2.  Then...1.  Then finally 0;
 												int accept = (3 - timesThru - j).Clamp(1,3);
-												if (d == steps && j == 0) accept = 0;												
+												if (d == steps && j == 0) accept = 0;
+
+												Console.WriteLine("CBCW: Checkingstationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0} : score {4} && required {5}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y, ml, accept); //
+												
 												if (ml < accept ) continue;
 												
 												newGroundTarget = gg;
-												Console.WriteLine("MBT: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+												Console.WriteLine("CBCW: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
 																																																																																										  //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
 												diveTarget = true;
 												break;
@@ -6328,7 +6332,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
 
 
-                if (!diveTarget) Console.WriteLine("MBT: Didn't find Actor or Stationary for target, going to FOLLOW instead");
+                if (!diveTarget) Console.WriteLine("CBCW: Didn't find Actor or Stationary for target, going to NORMFLY instead");
 
             }
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX5 " + DateTime.UtcNow.ToString("T.fffffff"));
@@ -6341,7 +6345,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (newTarget != null)
                 {
-                    Console.WriteLine("MBT: Found a stationary, updating attack position");
+                    Console.WriteLine("CBCW: Found a stationary, updating attack position");
                     newPos.x = newTarget.Pos().x;
                     newPos.y = newTarget.Pos().y;
                 }
@@ -6359,7 +6363,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //3rd approach, just set it to the actual x,y
             else
             {
-                //Console.WriteLine("MBT: No stationary found, updating attack position");
+                //Console.WriteLine("CBCW: No stationary found, updating attack position");
                 newPos.x = pos.x;
                 newPos.y = pos.y;
 
@@ -6407,6 +6411,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 newPos.z = 1000; //Hurri FBs need to be at 1000m 5K out
                 if (distance_to_target_m < 5000) newPos.z = 0;
+				newPos.z += Calcs.LandElevation_m(newPos);  //adjust for elevvation
 
             }
 
@@ -6468,6 +6473,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
             newPos.z = CoverCalcs.checkMinAGL(newPos.z, newPos);
+			
+			//In case target is nearest enemy & we don't find one, we just head the a/c towards the player
+			if (!diveTarget && BAM_isNearestEnemy(player))
+				if (player != null & player.Place() != null && player.Place() as AiAircraft != null) 
+					newPos = player.Place().Pos();  
+				
+			
 
             //bombers especialy don't like to out run their waypoints.  So we are going to
             //make an extra waypoint that goes 30KM in the same direction, and we'll add that to the flight
@@ -6486,15 +6498,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirWayPoint nextWP2 = new AiAirWayPoint(ref LongPos, vel_mps);
 
 
-            Console.WriteLine(String.Format("MBT: newtargetpoint as sent to AiAirWayPoint: {0:F0} {1:F0} {2:F0}  ", newPos.x, newPos.y, newPos.z));
+            Console.WriteLine(String.Format("CBCW: newtargetpoint as sent to AiAirWayPoint: {0:F0} {1:F0} {2:F0}  ", newPos.x, newPos.y, newPos.z));
 
             (nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.AUTO;  //can do ._1 ._2 ._3 ._4 OR ALL_OUT.  But it is hard to say if it really affects the AI behavior much?
             (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.LEVEL;
             //if (ran.Next(2)==0) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;  //change to dive for 50% of bombers
 
             //if (isBomberArmed(airGroup)) airGroup.setTask(AiAirGroupTask.ATTACK_GROUND, null); //not sure if this really does anything here? Maybe not needed?  //Seems to make bombers drop bombs at ???; not sure what the 2nd variable is - should be an aiairgroup or null apparently?  Maybe only needed for ATTACK_AIR, DEFENDING, etc.
-
-            //Console.WriteLine("MBT: bom,alt: {0} {1:F0} {2}", isDiveBomber(airGroup), pos.z, (newTarget as AiActor) != null);
+			
+			Console.WriteLine("CBCW: 1");
+			 //Console.WriteLine("CBCW: bom,alt: {0} {1:F0} {2}", isDiveBomber(airGroup), pos.z, (newTarget as AiActor) != null);
             //if ((newTarget as AiActor) != null && isDiveBomber(airGroup) && pos.z >= 1800)
             bool noGroundEnemyFound = false;
             if (diveTarget)
@@ -6502,22 +6515,45 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //(nextWP as AiAirWayPoint).Target = newTarget as AiActor;  //change to newly selected target
                 if (newTarget != null) (nextWP as AiAirWayPoint).Target = newTarget;  //change to newly selected target
                 else if (newGroundTarget != null) (nextWP as AiAirWayPoint).Target = newGroundTarget as AiActor;  //This is bizarre, becuase if you do AiActor new = newGroundTarget as AiActor and then use new here, it WON'T WORK. But just use newGroundTarget as AiActor instead and it works.  There is no rhyme or reason.
+				
+				//OK< actually (newGroundTarget as AiActor) is NULL. 
+				//Explains all.
+				//so for GroundStationaries we can just set the point & forget .Target
+				
+				//Console.WriteLine ("(newGroundTarget as AiActor): {0} {1} {2}", (newGroundTarget as AiActor), (newGroundTarget as AiActor).Pos().x, (newGroundTarget as AiActor).Pos().y);
+				Console.WriteLine ("(newGroundTarget as AiActor): {0}", (newGroundTarget as AiActor));
+				
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_TARG;  //keep action same
-                (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
+				
+                if (isDiveBomber(airGroup)) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
+				else (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.AUTO;
                 //Console.WriteLine("set target to ground");
+				if (!isDiveBomber(airGroup))(nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.ALL_OUT; //can do AUTO _1, _2, _3, _4
+				Console.WriteLine("CBCW: 2");
             }
-            //case where the target is a point, no target actor found, just target the point
-            else if (!BAM_isNearestEnemy(player))
+            //case where the target is a point, just target the point (for dive bombers, we always search for divetarget ,even if the target is a point.  Bec. otherwise they won't dive. But if we can't find diveTarget, we can still target the point. So his applies to divebombers where no object found plus ALL point targets)
+            else if (!BAM_isNearestEnemy(player)) {//aim point isn't "nearest enemy, ie it's just a point
+				Console.WriteLine("CBCW: Attack point OR no ground object found to attack");
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_POINT;  //keep action same
-            //case where the target is ENEMY but we didn't find one.  In that case, DON'T drop
-            else
-            {
-                (nextWP as AiAirWayPoint).Action = AiAirWayPointType.FOLLOW;
-                noGroundEnemyFound = true;
+				//case where the target is ENEMY but we didn't find one.  In that case, DON'T drop
+				Console.WriteLine("CBCW: 3");
             }
+			else
+            {
+				Console.WriteLine("CBCW: Couldn't figure out what to do, just normflying towards pilot");
+                (nextWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
+                noGroundEnemyFound = true;
+				Console.WriteLine("CBCW: 4");
+			              
+            }
+			
+			Console.WriteLine("CBCW: 5");
 
-            (nextWP2 as AiAirWayPoint).Action = AiAirWayPointType.FOLLOW;
+            (nextWP2 as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY; //the 2nd point is always in straight line from the attack point as most types need to continue straight for a while after attack for it to work
 
+
+
+           
             //Console.WriteLine( "Target after: {0}", new object[] { wp });
             //Console.WriteLine( "Added{0}: {1}", new object[] { count, nextWP.Speed });
             string nm = "(null)";
@@ -6530,11 +6566,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 /* Console.WriteLine( "New Ground Target: {0} {1} {2:n0} {3:n0} {4} {5}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target.Name(), (nextWP as AiAirWayPoint).Target.Pos().x, (nextWP as AiAirWayPoint).Target.Pos().y, (nextWP as AiAirWayPoint).GAttackPasses, (nextWP as AiAirWayPoint).GAttackType }); */
 
                 //Console.WriteLine("BomberPosWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5} {6} LONG: {7:n0} {8:n0} {9:n0}", new object[] { (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Speed, nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackType, nextWP2.P.x, nextWP2.P.y, nextWP2.P.z});
-            }
+            /*}
             catch (Exception ex)
             {
                 Console.WriteLine("Cover/MoveBomb ChangeBomberWaypoint WriteLine: " + ex.ToString());
-            }
+            }*/
+			
+			Console.WriteLine("CBCW: 6");
 
             return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(nextWP, nextWP2, vel_mps, noGroundEnemyFound);
 
@@ -8715,177 +8753,183 @@ public static class CoverCalcs
 
     public static void listAllGroundActors(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1)
     {
-        //TODO: Make it list only the actors in that mission by prefixing "XX:" if missionNumber is included.
-        if (gp == null) return;
-        gp.gpLogServer(null, "Listing all ground actors:", new object[] { });
+		try {
+			//TODO: Make it list only the actors in that mission by prefixing "XX:" if missionNumber is included.
+			if (gp == null) return;
+			gp.gpLogServer(null, "Listing all ground actors:", new object[] { });
 
-        int group_count = 0;
-        if (gp.gpArmies() != null && gp.gpArmies().Length > 0)
-        {
-            foreach (int army in gp.gpArmies())
-            {
-                //List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
-                if (gp.gpGroundGroups(army) != null && gp.gpGroundGroups(army).Length > 0)
-                {
-                    foreach (AiGroundGroup group in gp.gpGroundGroups(army))
-                    {
-                        group_count++;
-                        if (group.GetItems() != null && group.GetItems().Length > 0)
-                        {
-                            //poscount = group.NOfAirc;
-                            foreach (AiActor actor in group.GetItems())
-                            {
-                                if (actor != null)
-                                {
-                                    gp.gpLogServer(to, actor.Name(), new object[] { });
-                                    AiGroundGroup actorSubGroup = actor as AiGroundGroup;
-                                    if (actorSubGroup != null && (actorSubGroup).GetItems() != null && actorSubGroup.GetItems().Length > 0)
-                                    {
-                                        foreach (AiActor a in actorSubGroup.GetItems())
-                                        {
-                                            //gp.gpLogServer(null, a.Name(), new object[] { });
-                                            msn.mainmission.gpLogServerWithDelay(to, a.Name(), null);
+			int group_count = 0;
+			if (gp.gpArmies() != null && gp.gpArmies().Length > 0)
+			{
+				foreach (int army in gp.gpArmies())
+				{
+					//List a/c in player army if "inOwnArmy" == true; otherwise lists a/c in all armies EXCEPT the player's own army
+					if (gp.gpGroundGroups(army) != null && gp.gpGroundGroups(army).Length > 0)
+					{
+						foreach (AiGroundGroup group in gp.gpGroundGroups(army))
+						{
+							group_count++;
+							if (group.GetItems() != null && group.GetItems().Length > 0)
+							{
+								//poscount = group.NOfAirc;
+								foreach (AiActor actor in group.GetItems())
+								{
+									if (actor != null)
+									{
+										gp.gpLogServer(to, actor.Name(), new object[] { });
+										AiGroundGroup actorSubGroup = actor as AiGroundGroup;
+										if (actorSubGroup != null && (actorSubGroup).GetItems() != null && actorSubGroup.GetItems().Length > 0)
+										{
+											foreach (AiActor a in actorSubGroup.GetItems())
+											{
+												//gp.gpLogServer(null, a.Name(), new object[] { });
+												msn.mainmission.gpLogServerWithDelay(to, a.Name(), null);
 
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception ex){ Console.WriteLine("Cover/List All Ground Actors, ERROR: {0}", ex); }
 
     }
 	
-	public static void listAllGroundStationaries(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1, Point3d? initPos = null, double radius_m = -1, string saveFile = "")
+	public static void listAllGroundStationaries(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1, Point3d? initPos = null, double radius_m = -1, string saveFile = "", string message = "")
 	{
-		if (gp == null) return;
+		try {
+			if (gp == null) return;
 
-		GroundStationary[] gs = new GroundStationary[] {};
-		Point3d pos = new Point3d (250000, 250000, 0);
-		
-		if (initPos.HasValue && radius_m > 0) {
-			gp.gpLogServer(null, "Listing to console (and file) all ground stationaries within radius...", new object[] { });
-			pos = initPos.Value;
-			gs = gp.gpGroundStationarys(pos.x, pos.y, radius_m);
-		} else {
-			gp.gpLogServer(null, "Listing to console (and file) all ground stationaries...", new object[] { });
-			gs = gp.gpGroundStationarys();
-		}
-		
-		// --- STEP 1: SNAPSHOT EVERYTHING ON THE MAIN THREAD ---
-		List<string> linesToSave = new List<string>();
-		string playername = "";
-		if (to != null && to.Length >  0 && to[0] != null) playername = to[0].Name();
-		string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
-		
-		string msg = string.Format("{0} Player: {1}",currentDateTime, playername);
-		linesToSave.Add(msg);
-		msg = string.Format("({0} {1} {2}) - radius {3:N0}", pos.x, pos.y, pos.z, radius_m);
-		linesToSave.Add(msg);
-		linesToSave.Add("");
-		linesToSave.Add("==========================================================================================");
-		linesToSave.Add("");
-		
-
-		foreach (GroundStationary a in gs)
-		{
-			if (a == null) continue;
-			string type = "";
-			string category = "";
-			string name = "";
-			int army = -1;
-			string country = "";
-		
-			int ggarmy = -1;
-			string ggctry = "";
+			GroundStationary[] gs = new GroundStationary[] {};
+			Point3d pos = new Point3d (250000, 250000, 0);
 			
-			string gatype = "";
-			
-			string ganame = "";
-			int gaarmy = -1;
-			
-			string carttype = "";
-			string typename = "";
-			
-			bool isAlive = false;
-			bool gaisAlive = false;
-			Point3d aPos = new Point3d(0, 0, 0);
-			Point3d gaaPos = new Point3d(0, 0, 0);
-			
-			GroundStationary gg = (a as GroundStationary);
-			
-			// Safely extract primitives while on the main thread
-			if (a as AiGroundActor != null) {
-				gatype = (a as AiGroundActor).Type().ToString();
-				gaaPos = (a as AiActor).Pos();
-				ganame = (a as AiActor).Name();
-				gaarmy = (a as AiActor).Army();
-				gaisAlive = (a as AiGroundActor).IsAlive();
+			if (initPos.HasValue && radius_m > 0) {
+				gp.gpLogServer(null, "Listing to console (and file) all ground stationaries within radius...", new object[] { });
+				pos = initPos.Value;
+				gs = gp.gpGroundStationarys(pos.x, pos.y, radius_m);
+			} else {
+				gp.gpLogServer(null, "Listing to console (and file) all ground stationaries...", new object[] { });
+				gs = gp.gpGroundStationarys();
 			}
 			
+			// --- STEP 1: SNAPSHOT EVERYTHING ON THE MAIN THREAD ---
+			List<string> linesToSave = new List<string>();
+			string playername = "";
+			if (to != null && to.Length >  0 && to[0] != null) playername = to[0].Name();
 			
-			if (a as AiCart != null) {
-				carttype = (a as AiCart).InternalTypeName().ToString();
-				//cartarmy = (a as AiCart).Army().
-			}
-			//string typename2 = a.InternalTypeName();
-			if (gg != null) {
-				typename = gg.Title; 
-				category = gg.Category;
-				type = gg.Type.ToString();
-				name = gg.Name;
-				aPos = gg.pos;
-				isAlive = gg.IsAlive;
-				country = gg.country;
-				string cleanName = Calcs.CleanStationaryID(gg.Name);
-				if (msn.mainmission.GroundStationary_army.ContainsKey(cleanName)) {
-					ggarmy = msn.mainmission.GroundStationary_army[cleanName].Army;
-					ggctry = msn.mainmission.GroundStationary_army[cleanName].Country;
+			string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+			
+			string msg = string.Format("{0} Player: {1}",currentDateTime, playername);
+			linesToSave.Add(msg);
+			msg = string.Format("({0} {1} {2}) - radius {3:N0}", pos.x, pos.y, pos.z, radius_m);
+			linesToSave.Add(msg);
+			if (message.Length > 0 ) linesToSave.Add(message);
+			linesToSave.Add("");
+			linesToSave.Add("==========================================================================================");
+			linesToSave.Add("");
+			
+
+			foreach (GroundStationary a in gs)
+			{
+				if (a == null) continue;
+				string type = "";
+				string category = "";
+				string name = "";
+				int army = -1;
+				string country = "";
+			
+				int ggarmy = -1;
+				string ggctry = "";
+				
+				string gatype = "";
+				
+				string ganame = "";
+				int gaarmy = -1;
+				
+				string carttype = "";
+				string typename = "";
+				
+				bool isAlive = false;
+				bool gaisAlive = false;
+				Point3d aPos = new Point3d(0, 0, 0);
+				Point3d gaaPos = new Point3d(0, 0, 0);
+				
+				GroundStationary gg = (a as GroundStationary);
+				
+				// Safely extract primitives while on the main thread
+				if (a as AiGroundActor != null) {
+					gatype = (a as AiGroundActor).Type().ToString();
+					gaaPos = (a as AiActor).Pos();
+					ganame = (a as AiActor).Name();
+					gaarmy = (a as AiActor).Army();
+					gaisAlive = (a as AiGroundActor).IsAlive();
 				}
 				
-			}
-			string line = string.Format("{0:N3} {1:N3} {2:N3} {3} {4} {5} {6} {7} {8} {9} GA:  {10} {11} {12} {13} {14}", a.pos.x, a.pos.y, a.pos.z, name, type, typename, isAlive, country, ggarmy, ggctry, gaarmy, ganame, gatype, carttype, gaisAlive );
-
-			//string line = string.Format("Name: {0} | Type: {1} | Army: {2} | Country: {3} | Pos: {4},{5},{6} | Alive: {7}", 
-			//	name, type, army, country, aPos.x.ToString("F2"), aPos.y.ToString("F2"), aPos.z.ToString("F2"), isAlive);
-			
-			linesToSave.Add(line);
-
-			// Immediate game logging/chat must stay on the main thread
-			/* if (to != null) {
-				//foreach (Player p in to) {
-					gp.gpLogServer(to, line, new object[] { });
-				//}
-			}*/
-		}
-
-		// Determine paths safely before leaving the thread
-		string tempFile = string.IsNullOrEmpty(saveFile) ? "tempfile.txt" : saveFile;
-		string fullPath = msn.mainmission.CLOD_PATH + msn.mainmission.FILE_PATH + tempFile;
-
-		// --- STEP 2: OFF-LOAD ONLY DISK I/O TO THE BACKGROUND THREAD ---
-		// We only pass the strings, which are immutable and 100% thread-safe.
-		//Task.Run(() => {
-			try 
-			{
-				using (StreamWriter writer = new StreamWriter(fullPath))
-				{
-					foreach (string line in linesToSave)
-					{
-						writer.WriteLine(line);
-					}
+				
+				if (a as AiCart != null) {
+					carttype = (a as AiCart).InternalTypeName().ToString();
+					//cartarmy = (a as AiCart).Army().
 				}
-				// Note: gp.gpLogServer might fail inside Task.Run if it requires main-thread context. 
-				// If it causes glitches, move it outside or use a game-provided tick/timeout callback.
-				Console.WriteLine("Ground stationary export complete to disk.");
+				//string typename2 = a.InternalTypeName();
+				if (gg != null) {
+					typename = gg.Title; 
+					category = gg.Category;
+					type = gg.Type.ToString();
+					name = gg.Name;
+					aPos = gg.pos;
+					isAlive = gg.IsAlive;
+					country = gg.country;
+					string cleanName = Calcs.CleanStationaryID(gg.Name);
+					if (msn.mainmission.GroundStationary_army.ContainsKey(cleanName)) {
+						ggarmy = msn.mainmission.GroundStationary_army[cleanName].Army;
+						ggctry = msn.mainmission.GroundStationary_army[cleanName].Country;
+					}
+					
+				}
+				string line = string.Format("{0:N3} {1:N3} {2:N3} {3} {4} {5} {6} {7} {8} {9} GA:  {10} {11} {12} {13} {14}", a.pos.x, a.pos.y, a.pos.z, name, type, typename, isAlive, country, ggarmy, ggctry, gaarmy, ganame, gatype, carttype, gaisAlive );
+
+				//string line = string.Format("Name: {0} | Type: {1} | Army: {2} | Country: {3} | Pos: {4},{5},{6} | Alive: {7}", 
+				//	name, type, army, country, aPos.x.ToString("F2"), aPos.y.ToString("F2"), aPos.z.ToString("F2"), isAlive);
+				
+				linesToSave.Add(line);
+
+				// Immediate game logging/chat must stay on the main thread
+				/* if (to != null) {
+					//foreach (Player p in to) {
+						gp.gpLogServer(to, line, new object[] { });
+					//}
+				}*/
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Error writing ground stationary file: " + ex.Message);
-			}
-		//});
+
+			// Determine paths safely before leaving the thread
+			string tempFile = string.IsNullOrEmpty(saveFile) ? "tempfile.txt" : saveFile;
+			string fullPath = msn.mainmission.CLOD_PATH + msn.mainmission.FILE_PATH + tempFile;
+
+			// --- STEP 2: OFF-LOAD ONLY DISK I/O TO THE BACKGROUND THREAD ---
+			// We only pass the strings, which are immutable and 100% thread-safe.
+			//Task.Run(() => {
+				try 
+				{
+					using (StreamWriter writer = new StreamWriter(fullPath))
+					{
+						foreach (string line in linesToSave)
+						{
+							writer.WriteLine(line);
+						}
+					}
+					// Note: gp.gpLogServer might fail inside Task.Run if it requires main-thread context. 
+					// If it causes glitches, move it outside or use a game-provided tick/timeout callback.
+					Console.WriteLine("Ground stationary export complete to disk.");
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Error writing ground stationary file: " + ex.Message);
+				}
+			//});
+		} catch (Exception ex){ Console.WriteLine("Cover/List All Ground Actors, ERROR: {0}", ex); }
 	}
 	
 	/*

@@ -1,0 +1,1251 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[BirthPlace]
+  "Tramecourt Bomber" 2 306582 160664 0 1 1 1 . . . 0
+  "Pihen Fighter" 2 278935 207295 0 1 1 1 de . . 0
+  "Calais Marck Fighter / Bomber" 2 291170 216331 0 1 1 1 . . . 0
+  "Caffiers 110" 2 281912 203450 0 1 1 1 de . . 0
+  "Manston Fighters" 1 248241 258962 0 1 1 1 gb . . 0
+  Gravesend 1 180364 264832 0 1 1 1 gb . . 0
+  "Eastchurch Spitfires" 1 212286 262830 0 1 1 1 gb . . 0
+  "Lympne Hurricanes" 1 225178 228783 0 1 1 1 gb . . 0
+  Littlestone 1 221950 221255 0 3 1 1 gb . . 0
+  "Ramsgate Spitfires" 1 251191 260925 0 1 1 1 gb . . 0
+  "Hurricane, SpitIa" 1 181261 248833 0 1 1 1 gb . . 0
+  "Hurricane, 302 (PL) Sqn" 1 188226 257817 0 1 1 1 gb . . 0
+  "Monchy- Brenton" 2 325597 152659 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Coquelles Fighter" 2 281315 213071 0 1 1 1 de . . 0
+  "Willmington Bomber" 1 167710 198455 0 1 1 1 gb . . 0
+  "Fighter Bomber Zutkerque" 2 299430 203053 0 1 1 1 de . . 0
+  "Blenhiem (low fuel)" 1 234561 248433 0 1 1 1 gb . . 0
+  Ywrench 2 295277 130601 0 1 0 0 de . . 0
+  "Marquise West" 2 272539 200159 0 1 1 1 de . . 0
+  "Oye Plauge" 2 296360 217323 0 1 1 1 . . . 0
+  "Biggin Hill" 1 155087 253697 0 1 1 1 . . . 0
+  Kenely 1 146612 250981 0 1 1 1 . . . 0
+  RedHill 1 143406 241146 0 1 1 1 . . . 0
+  Gastwick 1 141593 233970 0 1 1 1 . . . 0
+  Shoreham 1 133989 198600 0 1 1 1 . . . 0
+  Ford 1 113105 195906 0 1 1 1 . . . 0
+  Tangmere 1 104642 199351 0 1 1 1 . . . 0
+  Weasthampnett 1 101462 199781 0 1 1 1 . . . 0
+  "West Thorney" 1 89621 196154 0 1 1 1 . . . 0
+  Portsmouth 1 80248 196519 0 1 1 1 . . . 0
+  Gosport 1 72415 193869 0 1 1 1 . . . 0
+  "Lee on Solent" 1 69070 195409 0 1 1 1 . . . 0
+  Hamble 1 61242 200994 0 1 1 1 . . . 0
+  Southhampton 1 58666 209817 0 1 1 1 . . . 0
+  Worthydown 1 60669 228130 0 1 1 1 . . . 0
+  Andover 1 46124 239051 0 1 1 1 . . . 0
+  "Old Sarum" 1 28724 226243 0 1 0 1 . . . 0
+  Salisbury 1 28018 230195 0 1 1 1 . . . 0
+  "Boscombe Down" 1 31512 233226 0 1 1 1 . . . 0
+  Larkhill 1 22497 238740 0 1 1 1 . . . 0
+  Netheravon 1 29905 242155 0 1 1 1 . . . 0
+  Upavon 1 28733 247427 0 1 1 1 . . . 0
+  Watchfield 1 37892 284932 0 1 1 1 . . . 0
+  Yatesbury 1 18565 264189 0 1 1 1 . . . 0
+  Harwell 1 61394 280149 0 1 1 1 . . . 0
+  Reading 1 90986 266237 0 1 1 1 . . . 0
+  "White Waltham" 1 98892 272181 0 1 1 1 . . . 0
+  Heathrow 1 121353 269029 0 1 1 1 . . . 0
+  Feltham 1 125330 265519 0 1 1 1 . . . 0
+  Heston 1 125297 271335 0 0 0 0 . . . 0
+  Northolt 1 123492 278220 0 1 1 1 . . . 0
+  Hendon 1 135424 283735 0 1 1 1 . . . 0
+  Croydon 1 144284 256450 0 1 1 1 . . . 0
+  "RAF North Weald" 1 162563 297741 0 1 1 1 . . . 0
+  Hornchurch 1 166787 277624 0 1 1 1 . . . 0
+  Rochford 1 201062 282853 0 1 1 1 . . . 0
+  Dieppe 2 229205 96284 0 1 1 1 . . . 0
+  Abbeville 2 284039 124814 0 1 1 1 . . . 0
+  Ligescourt 2 285112 139911 0 1 1 1 . . . 0
+  Wailly 2 275847 156104 0 1 1 1 . . . 0
+  Beisjean 2 278734 157088 0 1 1 1 . . . 0
+  "Fliegerhorst Sempy" 2 287368 163216 0 1 1 1 . . . 0
+  "Fliegerhorst Estree" 2 280263 164216 0 1 1 1 . . . 0
+  "Fliegerhorst Samer" 2 278075 182199 0 1 1 1 . . . 0
+  "Fliegerhorst Desvres" 2 285084 182696 0 1 1 1 . . . 0
+  Colembert 2 284917 193073 0 1 1 1 . . . 0
+  "Feldflugplatz Hermelinghen" 2 285642 200028 0 1 1 1 . . . 0
+  Campagne-les-Guines 2 287134 202018 0 1 1 1 . . . 0
+  "Guines Airfield" 2 284084 205076 0 1 1 1 . . . 0
+  "St-Omar Wizemes" 2 311359 190429 0 1 1 1 . . . 0
+  St-Omar-Arques 2 317655 190572 0 1 1 1 . . . 0
+  ST-Omar-Claimarais 2 317869 195092 0 1 1 1 . . . 0
+  Rely 2 321400 172374 0 1 1 1 . . . 0
+  "Merville Calenne" 2 340747 178423 0 1 1 1 . . . 0
+  "Brias Airfield" 2 321108 153671 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Arras Airfield" 2 351335 145343 0 1 1 1 de Luftwaffe_Bomber_1940 . 0
+  "Archiet-Grevillers Airfield" 2 350155 121133 0 2 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Montdidier Airfield" 2 335229 72728 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  Carpiquet 2 117918 18146 0 1 1 1 de Luftwaffe_Fighter_1940 . 0
+  "Le Havre Bomber" 2 157333 57843 0 1 1 1 de . . 0
+  Sanddown 1 71306 177289 0 1 1 1 . . . 0
+  Bembridge 1 76331 180210 0 1 1 1 . . . 0
+  Ryde 1 74257 183303 0 1 1 1 . . . 0
+  Theville 2 43773 70739 0 1 1 1 . . . 0
+  Querquviller 2 27848 72588 0 0 0 0 . . . 0
+  Amberes-Deurne 2 355068 273554 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_II 1
+  "St. Truiden" 2 354345 191778 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG51_II 1
+  Cambrai 2 353975 116575 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG40_I 1
+  Paris-Orly 2 235438 19724 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG51_I 1
+  Tours 2 66217 19020 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "RAF Colerne" 1 27098 200752 5000 1 1 1 gb RAF_Bomber_1940 . 1
+  "RAF Wittering" 1 206005 305298 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_12Sqn 1
+  "RAF Coltishall" 1 280256 303797 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  Deauville 2 162931 39265 0 1 1 1 . . . 0
+  "RAF Horsham St Faith" 1 350069 305298 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  "RAF Harrowbeer" 1 15244 147934 5000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+  Dinard-Pleurtuit 2 14500 57096 5000 1 1 1 de Luftwaffe_Bomber_1940 BoB_LW_KG53_I 1
+  "RAF Horsham St Faith Recon" 1 340069 305298 10000 1 1 1 gb RAF_Bomber_1940 BoB_RAF_B_10Sqn 1
+[BirthPlace0]
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Ju-88A-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+[BirthPlace1]
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+[BirthPlace2]
+  Aircraft.Bf-109E-4
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+[BirthPlace3]
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+[BirthPlace4]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace5]
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa_100oct
+[BirthPlace6]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_FB
+[BirthPlace7]
+  Aircraft.BlenheimMkIV
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace8]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace9]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+[BirthPlace10]
+  Aircraft.SpitfireMkIa
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+[BirthPlace11]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_FB
+[BirthPlace12]
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+[BirthPlace13]
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+[BirthPlace14]
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.SpitfireMkIIa
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_FB
+[BirthPlace15]
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace16]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace17]
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace18]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-110C-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace19]
+  Aircraft.Ju-88A-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+[BirthPlace20]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace21]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace22]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace23]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace24]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace25]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace26]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.HurricaneMkI_FB
+[BirthPlace27]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace28]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace29]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace30]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace31]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace32]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace33]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace34]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace35]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace36]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_FB
+[BirthPlace37]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace38]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace39]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace40]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace41]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace42]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace43]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace44]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace45]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace46]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace47]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace48]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace49]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace50]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace51]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace52]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace53]
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace54]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace55]
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.HurricaneMkI_FB
+[BirthPlace56]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-109E-3B
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4B
+[BirthPlace57]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+[BirthPlace58]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+[BirthPlace59]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace60]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace61]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace62]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace63]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace64]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace65]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace66]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace67]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace68]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace69]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace70]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace71]
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-109E-3
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace72]
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-3B
+[BirthPlace73]
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.Bf-109E-3B
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace74]
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-3B
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4B
+[BirthPlace75]
+  Aircraft.Bf-109E-4_Late
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4N
+  Aircraft.Bf-109E-3B
+[BirthPlace76]
+  Aircraft.Bf-109E-4N_Late
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace77]
+  Aircraft.Ju-88A-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+[BirthPlace78]
+  Aircraft.Bf-109E-3B
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-1B
+  Aircraft.Bf-109E-3B
+  Aircraft.Bf-109E-4B
+[BirthPlace79]
+  Aircraft.Ju-88A-1
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+[BirthPlace80]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_FB
+[BirthPlace81]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+  Aircraft.SpitfireMkI
+  Aircraft.BlenheimMkIV
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.BlenheimMkIVF
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_FB
+[BirthPlace82]
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+[BirthPlace83]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-3B
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace84]
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-4B_Late
+  Aircraft.Bf-109E-3B
+  Aircraft.G50
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Bf-109E-3
+  Aircraft.BR-20M
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+[BirthPlace85]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+  Aircraft.Bf-110C-4
+[BirthPlace86]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+[BirthPlace87]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+[BirthPlace88]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+[BirthPlace89]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+[BirthPlace90]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[BirthPlace91]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[BirthPlace92]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[BirthPlace93]
+  Aircraft.Bf-110C-4-NJG
+  Aircraft.Bf-110C-6
+  Aircraft.Bf-110C-4N
+  Aircraft.Bf-110C-7
+  Aircraft.Bf-110C-4
+  Aircraft.Bf-110C-4Late
+  Aircraft.Bf-109E-3B
+  Aircraft.Ju-88A-1
+  Aircraft.Bf-109E-1
+  Aircraft.Bf-109E-1B
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.Ju-87B-2
+  Aircraft.Bf-109E-4
+  Aircraft.Bf-109E-4B
+[BirthPlace94]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[BirthPlace95]
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[BirthPlace96]
+  Aircraft.Ju-88A-1
+  Aircraft.Ju-87B-2
+  Aircraft.He-111P-2
+  Aircraft.He-111H-2
+  Aircraft.BR-20M
+  Aircraft.Bf-110C-4B
+[BirthPlace97]
+  Aircraft.BeaufighterMkIF
+  Aircraft.BeaufighterMkINF
+[WeatherFront]
+  LocalWeather_0 CUMULUS_GEN 25000 20000 101842.81 64011.64 3000 0
+  LocalWeather_1 CUMULUS_GEN 30000 20000 224444.37 173434.18 500 0
+  LocalWeather_2 CUMULUS_GEN 32000 20000 309172.13 264713.90 0 0
+  LocalWeather_3 CUMULUS_GEN 24000 18000 72603.72 136413.05 2000 0
+[LocalWeather_0]
+  EllipticA 25000
+  EllipticB 20000
+  RotAngle 0
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 0
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 10
+  RainPower 10
+  ThermalIntensity 10
+  CloudsDensity 10
+  MidSize 10
+[LocalWeather_1]
+  EllipticA 30000
+  EllipticB 20000
+  RotAngle 0
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 10
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 10
+  RainPower 10
+  ThermalIntensity 10
+  CloudsDensity 10
+  MidSize 10
+[LocalWeather_2]
+  EllipticA 32000
+  EllipticB 20000
+  RotAngle 0
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1700
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 9
+  RainPower 10
+  ThermalIntensity 9
+  CloudsDensity 6
+  MidSize 8
+[LocalWeather_3]
+  EllipticA 24000
+  EllipticB 18000
+  RotAngle 0
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 0
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 1
+  DropSize 10
+  RainPower 10
+  ThermalIntensity 10
+  CloudsDensity 10
+  MidSize 10

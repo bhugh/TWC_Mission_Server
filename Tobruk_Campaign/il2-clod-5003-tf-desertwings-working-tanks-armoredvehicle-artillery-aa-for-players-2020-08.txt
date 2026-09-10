@@ -1,0 +1,63 @@
+Tank & armored vehicles that work as player-controlled (TF 5.003)
+
+Armor.Matilda_2A
+Armor.Guy_Mk_IA
+Armor.Vickers_Mk_VIC
+Armor.Valentine_I
+
+Armor.Pz_IIIF
+Armor.Pz_IVD
+
+/num_units 2
+
+NOT working armor/tanks:
+
+Armor.tobruk:Matilda_2A_CS
+
+
+Artillery/AA
+
+Artillery.Bofors_StandAlone
+
+   Flak30 Shield
+   Zwillingsockel 36
+   2cm Flak 38
+
+
+---------
+
+Per TF 4.0 release notes - which still seem mostly (?) valid:
+
+Working/pilot-controllable Vehicles
+
+German
+
+Sdkfz 251/A Halftrack
+Sdkfz 222 Armoured Car
+Pz Mk IIC Light Tank
+Pz Mk IIIF Medium Tank
+Pz Mk 38T Medium Tank (captured Czech)
+Pz Mk IVD Heavy Tank
+
+French
+
+Somua S-35 Medium Tank
+Char 1 Bis Heavy Tank
+
+British
+
+Guy Mk IA Armoured Car*
+Vickers Mk VIC Light Tank*
+Valentine Mk I Medium Tank
+Matilda IIA Heavy Tank
+
+*Work in progress vehicles, currently have gunsight bugs
+
+Flak/Artillery
+
+Bofors 40mm AAA
+Zwillingssockel Twin 7.92mm AAA
+Flak 30 20mm AAA
+Flak 32 88mm AAA
+3 Inch AAA
+105mm Artillery

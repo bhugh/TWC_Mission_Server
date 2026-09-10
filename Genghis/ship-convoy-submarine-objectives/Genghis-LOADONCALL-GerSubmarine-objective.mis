@@ -1,0 +1,47 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 4.15000010048971
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Chiefs]
+  3001_Chief Ship.tobruk:U-class_SS it /sleep 0/skill 1/slowfire 1
+[3001_Chief_Road]
+  187241.50 173261.19 38.40 1 2 9.16666666666667
+  187536.69 173378.11 38.40 3 2 9.16666666666667
+  187869.14 173540.97 38.40  0 2 9.17
+  188133.80 173691.36 38.40 7 2 9.16666666666667
+  239011.03 208792.97 38.40  0 2 4.58
+  180030.64 175886.83 38.40  0 2 4.58
+  232383.41 206613.22 38.40  0 2 4.58
+  180964.14 179470.39 38.40  0 2 4.58
+  236042.22 204780.77 38.40  0 2 4.58
+  172695.67 181276.98 38.40  0 2 4.58
+  231040.67 202207.64 38.40  0 2 4.58
+  242481.16 208073.30 38.40  0 2 4.58
+  182560.91 187648.22 38.40  0 2 4.58
+  222135.78 202767.13 38.40  0 2 4.58
+  191782.38 191047.55 38.40  0 2 4.58
+  228147.39 204181.55 38.40  0 2 4.58
+  180591.48 182406.94 38.40  0 2 4.58
+  229878.95 201202.45 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BlueSubmarine1 TGroupDestroyed 3001_Chief 100

@@ -1,0 +1,28 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 7
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[BirthPlace]
+  "Test Bomber 1" 1 123915 25061 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Test Bomber 1" 2 71101 180453 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  "Test Bomber 2" 1 116685 15141 300 5 0 1 gb RAF_Fighter_1939 BoB_RAF_F_141Sqn_Early
+  "Test Bomber 2" 2 110880 193217 400 1 0 1 de Luftwaffe_Bomber_1940 .
+  Tanks1 1 121152 204480 0 0 0 1 . . .

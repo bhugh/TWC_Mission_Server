@@ -1,0 +1,81 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[Chiefs]
+  8_Chief Armor.Pz_IVD de /num_units 3
+  9_Chief Armor.Pz_IVD de 
+  10_Chief Armor.Pz_IVD de /pax_skin0 materialsDesert1
+  11_Chief Armor.Pz_IVD de /num_units 2
+  12_Chief Armor.Pz_IVD de 
+  13_Chief Armor.Pz_IVD de 
+[8_Chief_Road]
+  247352.16 64607.02 38.40 720 2 1
+  247217.78 64594.36 38.40
+[9_Chief_Road]
+  246790.09 63343.93 38.40 720 2 1
+  246750.33 63450.56 38.40
+[10_Chief_Road]
+  247024.89 64327.75 38.40 720 2 1
+  247149.45 64230.73 38.40
+[11_Chief_Road]
+  246880.59 63955.45 38.40 720 2 1
+  246838.30 63754.80 38.40
+[12_Chief_Road]
+  246605.31 63109.21 38.40  0 2 5.56
+  246656.84 63053.00 38.40
+[13_Chief_Road]
+  246544.61 62790.81 38.40  0 2 5.56
+  246619.53 62748.67 38.40
+[Stationary]
+  Static5 Artillery.Bofors de 249662.03 61802.17 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static2 Artillery.Bofors de 249309.19 61896.56 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static7 Artillery.Bofors de 248860.41 62180.89 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static9 Artillery.Bofors de 248658.59 62432.84 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Bofors de 248693.55 62760.86 0.00 /timeout 390000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static10 Artillery.Bofors de 248570.33 63036.10 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Bofors de 246702.16 63082.10 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors de 249078.92 63974.50 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Bofors de 248846.61 63647.11 0.00 /timeout 390000/radius_hide 0
+  Static12 Artillery.Bofors de 246973.77 63907.36 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Bofors de 249841.38 64195.64 0.00 /timeout 600/radius_hide 0
+  Static4 Artillery.Bofors de 249486.78 64152.24 0.00 /timeout 390000/radius_hide 0
+  Static0 Artillery.Bofors de 250153.92 64175.12 0.00 /timeout 391000/radius_hide 0/skin materialsDesert1/pax_skin materialsDesert1
+  Static11 Artillery.Bofors de 247132.95 64366.80 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  airdrome0 245871.96 63746.09 0 1000 700 0
+[airdrome0_Runways]
+  245879.14 63737.28 -90.00 1400.00 40.00 0
+[airdrome0_Points]
+  245220.25 63812.49 7 5 3 1
+  245285.87 63678.33 2
+  245426.37 63657.31
+  245297.86 63732.66 4
+  245432.39 63720.67
+  245320.86 63809.72 6
+  245445.99 63796.15
+  245325.36 63865.51 8
+  245449.01 63853.45
+[Trigger]
+[BirthPlace]
+  "Tank Spawn" 2 245862 63727 0 1 1 1 . . . 0
+[BirthPlace0]
+  tobruk:Aircraft.DH82A_Trop

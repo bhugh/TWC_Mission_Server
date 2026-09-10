@@ -1,0 +1,849 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[AirGroups]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BTarget1 TGroundDestroyed 20 222303 221176 300
+  BTarget2 TGroundDestroyed 20 143336 240806 550
+  BTarget3 TGroundDestroyed 18 214639 235604 250
+  BTarget4 TGroundDestroyed 28 247462 259157 250
+  BTarget5 TGroundDestroyed 43 243887 236956 200
+  BTarget6 TGroundDestroyed 50 159687 275015 200
+  BTarget6S TGroundDestroyed 70 154309 273110 100
+  BTarget7S TGroundDestroyed 22 155049 273263 50
+  BTarget8S TGroundDestroyed 12 155833 273218 50
+  BTarget9S TGroundDestroyed 22 157899 273957 50
+  BTarget10S TGroundDestroyed 23 157571 274554 100
+  BTarget11S TGroundDestroyed 45 158190 274856 50
+  BTarget12S TGroundDestroyed 42 157904 275242 50
+  BTarget13S TGroundDestroyed 43 157088 275313 50
+  BTarget14A TGroundDestroyed 29 159762 274952 100
+  BTarget14R TGroundDestroyed 70 244791 262681 150
+  BTarget15R TGroundDestroyed 70 248579 253159 100
+  BTarget16R TGroundDestroyed 70 249454 247913 200
+  BTarget17R TGroundDestroyed 70 246777 235751 250
+  BTarget18R TGroundDestroyed 70 212973 220079 200
+  BTarget19R TGroundDestroyed 70 221278 214167 200
+  BTarget20R TGroundDestroyed 70 178778 197288 200
+  BTarget21R TGroundDestroyed 70 123384 196295 200
+  BTarget22R TGroundDestroyed 70 70423 171706 200
+  BTarget23R TGroundDestroyed 70 15645 170552 200
+  BTarget24 TGroundDestroyed 37 185027 252619 100
+  BTarget25 TGroundDestroyed 38 186057 251745 100
+  BTarget26 TGroundDestroyed 10 189272 249311 50
+  BTarget27 TGroundDestroyed 42 173778 233407 150
+  BTarget28 TGroundDestroyed 61 180207 288435 200
+  BTarget29 TGroundDestroyed 21 35876 236706 150
+  BTarget30 TGroundDestroyed 9 56990 203737 50
+  BTarget31 TGroundDestroyed 27 29968 279722 300
+  BTarget32 TGroundDestroyed 11 84226 267372 100
+  BTarget33 TGroundDestroyed 11 76446 193672 50
+  BTarget34 TGroundDestroyed 9 76476 193844 50
+  BTarget35 TGroundDestroyed 8 76317 193904 50
+  BTarget36 TGroundDestroyed 10 76378 194163 50
+  BTarget37 TGroundDestroyed 8 76720 194082 50
+  BTarget38 TGroundDestroyed 10 76805 193918 50
+  BTarget39 TGroundDestroyed 12 77392 193942 50
+  BTarget40 TGroundDestroyed 9 77381 193953 50
+  BTarget41 TGroundDestroyed 8 76855 194410 50
+  BTarget42 TGroundDestroyed 23 112441 243834 200
+  BTarget43 TGroundDestroyed 26 204654 268378 100
+  BTarget44 TGroundDestroyed 6 204638 265195 50
+  Btarget45 TGroundDestroyed 6 204722 265252 50
+  BTarget46 TGroundDestroyed 7 204570 265131 50
+  BTarget47 TGroundDestroyed 8 204716 265140 50
+  BTargDoverAmmo TGroundDestroyed 5 245465 233496 50
+  BTargDiehlTrainStation TGroundDestroyed 6 251138 245883 50
+  BTargDoverFuel TGroundDestroyed 5 245668 233563 100
+  BTargBroadstairsTrainStation TGroundDestroyed 5 252836 261369 50
+  BTargBrightonMilitaryRecruitment TGroundDestroyed 11 144654 198443 50
+  BTargBrightonFuel TGroundDestroyed 5 144738 198233 50
+  BTargTenterdenChemicalFactory TGroundDestroyed 5 194591 220821 150
+  BTargMinsterCaseOilManufacturing TGroundDestroyed 10 240203 256964 100
+  BTargDoverNavalOffice TGroundDestroyed 5 245567 233499 50
+  BTargBattleCommandoTrainingCenter TGroundDestroyed 4 185093 219403 150
+  BTargShorehamSubmarineBase TGroundDestroyed 5 137054 198034 150
+  BTargShorehamSubmarineBase2Experiment TGroundDestroyed 5 137016 200052 150
+  BTargPortsmouthSmallIndustrialArea TGroundDestroyed 35 75235 193676 350
+  BTargPortsmouthLargeIndustrialArea TGroundDestroyed 27 77048 193985 850
+  BTargPooleNorthIndustrialPortArea TGroundDestroyed 33 14518 184740 400
+  BTargPooleSouthIndustrialPortArea TGroundDestroyed 34 13734 183493 400
+  RTarget0 TGroundDestroyed 57 354623 121058 100
+  RTarget1 TGroundDestroyed 50 299486 220998 50
+  RTarget2 TGroundDestroyed 33 313732 192700 50
+  RTarget3 TGroundDestroyed 19 280187 164411 100
+  RTarget4 TGroundDestroyed 60 265005 190321 100
+  RTarget5 TGroundDestroyed 60 283995 215369 100
+  RTarget6 TGroundDestroyed 60 284867 216414 50
+  RTarget7 TGroundDestroyed 60 285518 217456 100
+  RTarget8 TGroundDestroyed 60 285001 215944 100
+  RTarget9 TGroundDestroyed 60 284831 216887 100
+  RTarget10 TGroundDestroyed 60 285040 217547 100
+  RTarget11 TGroundDestroyed 43 265591 189902 100
+  RTarget12 TGroundDestroyed 50 266651 187088 50
+  RTarget13 TGroundDestroyed 52 266160 189276 50
+  RTarget14 TGroundDestroyed 50 264515 188950 50
+  RTarget15 TGroundDestroyed 50 264984 189378 100
+  RTarget16 TGroundDestroyed 50 350605 142047 100
+  RTarget17 TGroundDestroyed 50 352039 141214 50
+  RTarget18 TGroundDestroyed 50 303445 114053 50
+  RTarget19 TGroundDestroyed 50 285075 121608 50
+  RTarget20 TGroundDestroyed 50 229270 101222 50
+  RTarget21 TGroundDestroyed 50 250463 116096 100
+  RTarget22 TGroundDestroyed 12 293827 84983 150
+  RTarget23 TGroundDestroyed 75 285254 216717 50
+  RTarget24 TGroundDestroyed 10 285547 216579 50
+  RTarget25 TGroundDestroyed 7 285131 216913 50
+  RTarget26 TGroundDestroyed 8 284522 216339 50
+  RTarget27 TGroundDestroyed 10 284898 216552 50
+  RTarget28R TGroundDestroyed 6 294183 219444 50
+  RTarget29R TGroundDestroyed 7 276566 214150 50
+  RTarget30R TGroundDestroyed 6 341864 232723 50
+  RTarget31 TGroundDestroyed 66 351371 141966 100
+  RTarget32 TGroundDestroyed 63 310395 200888 100
+  RTarget33 TGroundDestroyed 53 314794 224432 100
+  RTarget34 TGroundDestroyed 74 315081 224145 100
+  RTarget35 TGroundDestroyed 51 314832 223389 100
+  RTarget36 TGroundDestroyed 53 314482 223882 200
+  RTarget37 TGroundDestroyed 50 313878 223421 100
+  RTarget38 TGroundDestroyed 46 161702 52073 100
+  RTarget39R TGroundDestroyed 75 264882 178115 50
+  RTarget40R TGroundDestroyed 75 263234 153713 50
+  RTarget41R TGroundDestroyed 75 232727 103248 50
+  RTarget42R TGroundDestroyed 75 250599 116531 50
+  RTarget43R TGroundDestroyed 75 260798 131885 50
+  RTarget44R TGroundDestroyed 75 266788 197956 50
+  RTarget45R TGroundDestroyed 75 264494 188674 50
+  RTarget46R TGroundDestroyed 75 265307 171427 50
+  RTarget47R TGroundDestroyed 75 232580 103325 50
+  RTarget48R TGroundDestroyed 75 195165 93441 50
+  RTarget49R TGroundDestroyed 75 157636 60683 50
+  RTarget50R TGroundDestroyed 75 135205 29918 50
+  RTarget51R TGroundDestroyed 75 104279 36659 50
+  RTarget52R TGroundDestroyed 75 65364 43580 50
+  RTarget53R TGroundDestroyed 75 60453 63873 50
+  RTarget54R TGroundDestroyed 75 17036 77666 50
+  RTargMarquiseFuelDump TGroundDestroyed 13 274209 199150 100
+  RTargCalaisUBootRepair TGroundDestroyed 10 284999 216446 100
+  RTargCalaisDocksArea TGroundDestroyed 5 284656 217404 350
+  RTargCalaisJackbootStorage TGroundDestroyed 12 284994 216869 50
+  RTargDunkirkWeaponStoarge TGroundDestroyed 11 315271 224033 100
+  RTargDunkirkRadarManufacturing TGroundDestroyed 10 315295 224146 100
+  RTargDunkirkMilitaryWarehouse TGroundDestroyed 10 315300 224265 100
+  RTargDunkirkExplosivesResearch TGroundDestroyed 9 314884 223318 50
+  RTargDesvresAviationFuel TGroundDestroyed 5 284580 182275 150
+  RTargAireSurLaLysChemicalRefinery TGroundDestroyed 5 323803 181252 100
+  RTargVeumeMilitaryManufacturingArea TGroundDestroyed 8 342180 228344 250
+  RTargEtapleFuelDump TGroundDestroyed 11 267479 166274 100
+  RTargEstreeArmyTraining TGroundDestroyed 4 279617 163616 100
+  RTargEtaplesLandingCraft TGroundDestroyed 7 269447 166097 150
+  RTargBerckLandingCraft TGroundDestroyed 14 269247 147771 150
+  RTargLeCrotoyLandingCraftManufactureAreaBomb TGroundDestroyed 25 271378 132785 1000
+  LehavNaval1 TGroundDestroyed 25 163216 49915 100
+  LehavNaval2 TGroundDestroyed 25 163447 49855 50
+  LehavNaval3 TGroundDestroyed 25 163313 50063 50
+  LehavNaval4 TGroundDestroyed 25 163039 49798 50
+  LehavNaval5 TGroundDestroyed 25 163172 49816 50
+  LehavNaval6 TGroundDestroyed 25 163470 49752 50
+  LehavNaval7 TGroundDestroyed 25 162993 49927 50
+  LehavNavalDiesel TGroundDestroyed 46 162559 50082 100
+  LehavNavalGearOil TGroundDestroyed 41 162668 50240 100
+  LehavNavalBenzine TGroundDestroyed 35 161747 50094 50
+  LehavNavalLOX TGroundDestroyed 41 162099 50034 50
+  LehavTrainStation TGroundDestroyed 37 159918 53120 100
+  9A TGroundDestroyed 63 296130 218469 50
+  8A TGroundDestroyed 75 294090 85100 100
+  7A TGroundDestroyed 66 293279 84884 100
+  1B TGroundDestroyed 45 264252 189991 50
+  2B TGroundDestroyed 47 265063 190506 50
+  3B TGroundDestroyed 51 265251 190259 50
+  4B TGroundDestroyed 62 264692 189709 50
+  5B TGroundDestroyed 54 265643 189603 50
+  6B TGroundDestroyed 77 265932 189324 50
+  7B TGroundDestroyed 53 264849 189190 50
+  Estree_Secret TGroundDestroyed 61 279623 163613 50
+  littlestonehang TGroundDestroyed 66 221988 221642 50
+  F1 TTime 1200
+  F1e TTime 1200
+  F1c TTime 1200
+  F2 TTime 2400
+  F3 TTime 1200
+  F4 TTime 4800
+  F5 TTime 5000
+  F5e TTime 5000
+  F6 TTime 6200
+  F7 TTime 7400
+  F7e TTime 7400
+  F8 TTime 8600
+  F9 TTime 9800
+  F10 TTime 10000
+  F11 TTime 11200
+  F12 TTime 12400
+  F13 TTime 13600
+  F13e TTime 13600
+  F13cc TTime 13600
+  F13c TTime 13600
+  F14 TTime 14800
+  F15 TTime 16000
+  F16 TTime 17200
+  F17 TTime 18400
+  F18 TTime 19600
+  STOmar2 TTime 3600
+  escort2 TTime 7200
+  escort3 TTime 9800
+  BluePatrol1 TTime 1800
+  BluePatrol2 TTime 5400
+  BluePatrol3 TTime 9000
+  BluePatrol4 TTime 12600
+  BluePatrol5 TTime 16200
+  Fatal1 TTime 1850
+  Fatal2 TTime 5450
+  Fatal3 TTime 9050
+  Fatal4 TTime 14450
+  Fatal5 TTime 18050
+  redhurrycover1 TTime 1800
+  redhurrycover2 TTime 7200
+  redspitcover1 TTime 3600
+  redspitcover2 TTime 7200
+  SouthernCover1 TTime 1800
+  SouthernCover2 TTime 5400
+  SouthernCover3 TTime 9000
+  SouthernCover4 TTime 12600
+  SouthernCover5 TTime 16200
+  action4 TTime 1820
+  action4cover TTime 1820
+  action12 TTime 17820
+  action12cover TTime 17820
+  action4_X2 TTime 24820
+  action4cover_X2 TTime 24820
+  action12_X2 TTime 39820
+  action12cover_X2 TTime 39820
+  action4_X3 TTime 50820
+  action4cover_X3 TTime 50820
+  action12_X3 TTime 63820
+  action12cover_X3 TTime 63820
+  action6 TTime 5820
+  action6cover TTime 5820
+  action14 TTime 21820
+  action14cover TTime 21820
+  action6_X2 TTime 31820
+  action6cover_X2 TTime 31820
+  action14_X2 TTime 39820
+  action14cover_X2 TTime 39820
+  action6_X3 TTime 44820
+  action6cover_X3 TTime 44820
+  action14_X3 TTime 51820
+  action14cover_X3 TTime 51820
+  action16 TTime 2120
+  action16cover TTime 2120
+  action16_X2 TTime 30820
+  action16cover_X2 TTime 30820
+  action16_X3 TTime 40820
+  action16cover_X3 TTime 40820
+  Bomb1 TTime 2820
+  BombCover1 TTime 2820
+  Bomb2 TTime 8220
+  BombCover2 TTime 8220
+  Bomb3 TTime 18220
+  BombCover3 TTime 18220
+  RBomb1 TTime 1820
+  RBombCover1 TTime 1820
+  RBomb2 TTime 10220
+  RBombCover2 TTime 10220
+  RBomb3 TTime 17220
+  BombCover3 TTime 17220
+  Bomb1_X2 TTime 24820
+  BombCover1_X2 TTime 24820
+  Bomb2_X2 TTime 31220
+  BombCover2_X2 TTime 31220
+  Bomb3_X2 TTime 40220
+  BombCover3_X2 TTime 40220
+  RBomb1_X2 TTime 23820
+  RBombCover1_X2 TTime 23820
+  RBomb2_X2 TTime 33220
+  RBombCover2_X2 TTime 33220
+  RBomb3_X2 TTime 40220
+  BombCover3_X2 TTime 40220
+  Bomb1_X3 TTime 48820
+  BombCover1_X3 TTime 48820
+  Bomb2_X3 TTime 53220
+  BombCover2_X3 TTime 53220
+  Bomb3_X3 TTime 65220
+  BombCover3_X3 TTime 65220
+  RBomb1_X3 TTime 46820
+  RBombCover1_X3 TTime 46820
+  RBomb2_X3 TTime 55220
+  RBombCover2_X3 TTime 55220
+  RBomb3_X3 TTime 63220
+  BombCover3_X3 TTime 63220
+  109Cover1 TTime 3600
+  109Cover2 TTime 3600
+  109Cover3 TTime 9800
+  109Cover4 TTime 13400
+  110cover1 TTime 3600
+  110cover2 TTime 7200
+  110Cover3 TTime 9800
+  110Cover4 TTime 13400
+  109Cover4 TTime 13400
+  Pegwelldefense1 TTime 1800
+  Pegwelldefense2 TTime 5400
+  Pegwelldefense3 TTime 9000
+  Pegwelldefense4 TTime 14400
+  Pegwelldefense5 TTime 18000
+  Willmingtondefensered TPassThrough 5 2 194322 194623 20750
+  Gladiatorintercept TTime 3600
+  Gladiatorintercept2 TTime 7200
+  Redhilldefensered2 TPassThrough 5 2 175111 227537 25250
+  Newhigh TPassThrough 5 1 283911 216081 13400
+  StOmar TPassThrough 5 1 309195 195986 24850
+  zonedefenseblue1 TPassThrough 5 1 253583 191271 23400
+  zonedefenseblue2 TPassThrough 5 1 284503 224739 18750
+  zonedefenseblue3 TPassThrough 5 1 261083 214375 19700
+  zonedefenseblue4 TPassThrough 5 1 292092 230941 21800
+  Rely1 TTime 600
+  Rely2 TTime 4200
+  Rely3 TTime 7800
+  Rely4 TTime 11400
+  Rely5 TTime 15000
+  Rely6 TTime 18600
+  London1air TPassThrough 5 2 170620 247586 21250
+  London2air TPassThrough 5 2 168092 247434 24050
+  London3air TPassThrough 5 2 157176 268077 24350
+  Jabored TTime 3900
+  Thems1 TPassThrough 5 2 224551 274305 23850
+  Beau1 TPassThrough 5 2 208566 240164 21550
+  MQWest TTime 7806
+  MQWestCover TTime 7806
+  trigger TGroupDestroyed BoB_RAF_F_302_PL_Early.12 36
+  45mincover2 TTime 2710
+  45minraidCover TTime 2700
+  45minraidB TTime 2700
+  2hrraid TTime 7200
+  2hrraidcover TTime 7200
+  4hrraid TTime 14400
+  4hrraidcover2 TTime 14400
+  4hrraidcover TTime 14400
+  testbomber TTime 300
+  testcover1 TTime 300
+  testcover2 TTime 300
+  F1_X2 TTime 22800
+  F1e_X2 TTime 22800
+  F1c_X2 TTime 22800
+  F2_X2 TTime 24000
+  F3_X2 TTime 22800
+  F4_X2 TTime 26400
+  F5_X2 TTime 26600
+  F5e_X2 TTime 26600
+  F6_X2 TTime 27800
+  F7_X2 TTime 29000
+  F7e_X2 TTime 29000
+  F8_X2 TTime 30200
+  F9_X2 TTime 31400
+  F10_X2 TTime 31600
+  F11_X2 TTime 32800
+  F12_X2 TTime 34000
+  F13_X2 TTime 35200
+  F13e_X2 TTime 35200
+  F13cc_X2 TTime 35200
+  F13c_X2 TTime 35200
+  F14_X2 TTime 36400
+  F15_X2 TTime 37600
+  F16_X2 TTime 38800
+  F17_X2 TTime 40000
+  F18_X2 TTime 41200
+  StOmar2_X2 TTime 25200
+  escort2_X2 TTime 28800
+  escort3_X2 TTime 31400
+  BluePatrol1_X2 TTime 23400
+  BluePatrol2_X2 TTime 27000
+  BluePatrol3_X2 TTime 30600
+  BluePatrol4_X2 TTime 34200
+  BluePatrol5_X2 TTime 37800
+  Fatal1_X2 TTime 23450
+  Fatal2_X2 TTime 27050
+  Fatal3_X2 TTime 30650
+  Fatal4_X2 TTime 36050
+  Fatal5_X2 TTime 39650
+  redhurrycover1_X2 TTime 23400
+  redhurrycover2_X2 TTime 28800
+  redspitcover1_X2 TTime 25200
+  redspitcover2_X2 TTime 28800
+  SouthernCover1_X2 TTime 23400
+  SouthernCover2_X2 TTime 27000
+  SouthernCover3_X2 TTime 30600
+  SouthernCover4_X2 TTime 34200
+  SouthernCover5_X2 TTime 37800
+  Bomb1 TTime 23820
+  BombCover1 TTime 23820
+  109Cover1_X2 TTime 25200
+  109Cover2_X2 TTime 25200
+  109Cover3_X2 TTime 31400
+  109Cover4_X2 TTime 35000
+  110cover1_X2 TTime 25200
+  110cover2_X2 TTime 28800
+  110Cover3_X2 TTime 31400
+  110Cover4_X2 TTime 35000
+  109Cover4_X2 TTime 35000
+  Pegwelldefense1_X2 TTime 23400
+  Pegwelldefense2_X2 TTime 27000
+  Pegwelldefense3_X2 TTime 30600
+  Pegwelldefense4_X2 TTime 36000
+  Pegwelldefense5_X2 TTime 39600
+  Gladiatorintercept_X2 TTime 25200
+  Gladiatorintercept2_X2 TTime 28800
+  Rely1_X2 TTime 22200
+  Rely2_X2 TTime 25800
+  Rely3_X2 TTime 29400
+  Rely4_X2 TTime 33000
+  Rely5_X2 TTime 36600
+  Rely6_X2 TTime 40200
+  MQWest_X2 TTime 29406
+  MQWestCover_X2 TTime 29406
+  45mincover2_X2 TTime 24310
+  45minraidCover_X2 TTime 24300
+  45minraidB_X2 TTime 24300
+  2hrraid_X2 TTime 28800
+  2hrraidcover_X2 TTime 28800
+  4hrraid_X2 TTime 36000
+  4hrraidcover_X2 TTime 36000
+  testbomber_X2 TTime 21900
+  testcover1_X2 TTime 21900
+  testcover2_X2 TTime 21900
+  F1_X3 TTime 44400
+  F1e_X3 TTime 44400
+  F1c_X3 TTime 44400
+  F2_X3 TTime 45600
+  F3_X3 TTime 44400
+  F4_X3 TTime 48000
+  F5_X3 TTime 48200
+  F5e_X3 TTime 48200
+  F6_X3 TTime 49400
+  F7_X3 TTime 50600
+  F7e_X3 TTime 50600
+  F8_X3 TTime 51800
+  F9_X3 TTime 53000
+  F10_X3 TTime 53200
+  F11_X3 TTime 54400
+  F12_X3 TTime 55600
+  F13_X3 TTime 56800
+  F13e_X3 TTime 56800
+  F13cc_X3 TTime 56800
+  F13c_X3 TTime 56800
+  F14_X3 TTime 58000
+  F15_X3 TTime 59200
+  F16_X3 TTime 60400
+  F17_X3 TTime 61600
+  F18_X3 TTime 62800
+  StOmar2_X3 TTime 46800
+  escort2_X3 TTime 50400
+  escort3_X3 TTime 53000
+  BluePatrol1_X3 TTime 45000
+  BluePatrol2_X3 TTime 48600
+  BluePatrol3_X3 TTime 52200
+  BluePatrol4_X3 TTime 55800
+  BluePatrol5_X3 TTime 59400
+  Fatal1_X3 TTime 45050
+  Fatal2_X3 TTime 48650
+  Fatal3_X3 TTime 52250
+  Fatal4_X3 TTime 57650
+  Fatal5_X3 TTime 61250
+  redhurrycover1_X3 TTime 45000
+  redhurrycover2_X3 TTime 50400
+  redspitcover1_X3 TTime 46800
+  redspitcover2_X3 TTime 50400
+  SouthernCover1_X3 TTime 45000
+  SouthernCover2_X3 TTime 48600
+  SouthernCover3_X3 TTime 52200
+  SouthernCover4_X3 TTime 55800
+  SouthernCover5_X3 TTime 59400
+  Bomb1 TTime 48820
+  BombCover1 TTime 48820
+  109Cover1_X3 TTime 46800
+  109Cover2_X3 TTime 46800
+  109Cover3_X3 TTime 53000
+  109Cover4_X3 TTime 56600
+  110cover1_X3 TTime 46800
+  110cover2_X3 TTime 50400
+  110Cover3_X3 TTime 53000
+  110Cover4_X3 TTime 56600
+  109Cover4_X3 TTime 56600
+  Pegwelldefense1_X3 TTime 45000
+  Pegwelldefense2_X3 TTime 48600
+  Pegwelldefense3_X3 TTime 52200
+  Pegwelldefense4_X3 TTime 57600
+  Pegwelldefense5_X3 TTime 61200
+  Gladiatorintercept_X3 TTime 46800
+  Gladiatorintercept2_X3 TTime 50400
+  Rely1_X3 TTime 43800
+  Rely2_X3 TTime 47400
+  Rely3_X3 TTime 51000
+  Rely4_X3 TTime 54600
+  Rely5_X3 TTime 58200
+  Rely6_X3 TTime 61800
+  MQWest_X3 TTime 51006
+  MQWestCover_X3 TTime 51006
+  45mincover2_X3 TTime 45910
+  45minraidCover_X3 TTime 45900
+  45minraidB_X3 TTime 45900
+  2hrraid_X3 TTime 50400
+  2hrraidcover_X3 TTime 50400
+  4hrraid_X3 TTime 57600
+  4hrraidcover2_X3 TTime 57600
+  testbomber_X3 TTime 43500
+  testcover1_X3 TTime 43500
+  testcover2_X3 TTime 43500
+[Action]
+  action1 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action1c ASpawnGroup 1 BoB_LW_LG2_I.21
+  action1e ASpawnGroup 1 BoB_LW_LG2_I.16
+  action2 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  action3 ASpawnGroup 1 BoB_LW_StG2_II.07
+  action4 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action4cover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action4_X2 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action4cover_X2 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action4_X3 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action4cover_X3 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action5 ASpawnGroup 1 BoB_LW_JG54_Stab.03
+  action5e ASpawnGroup 1 BoB_LW_JG26_I.31
+  action6 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action6cover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action6_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action6cover_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action6_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.13
+  action6cover_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action7 ASpawnGroup 1 BoB_LW_StG3_I.07
+  action7e ASpawnGroup 1 BoB_LW_LG2_I.04
+  action8 ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action8cover ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action9 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action10 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  action11 ASpawnGroup 1 BoB_LW_StG2_II.07
+  action12 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action12cover ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action12_X2 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action12cover_X2 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action12_X3 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.03
+  action12cover_X3 ASpawnGroup 1 BoB_RAF_F_249Sqn_Late.04
+  action13 ASpawnGroup 1 BoB_LW_StG1_I.07
+  action13e ASpawnGroup 1 BoB_LW_JG51_I.07
+  action13c ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  action13cc ASpawnGroup 1 BoB_LW_LG2_I.11
+  action14 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action14cover ASpawnGroup 1 gb01.12
+  action14_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action14cover_X2 ASpawnGroup 1 gb01.12
+  action14_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.14
+  action14cover_X3 ASpawnGroup 1 gb01.12
+  action15 ASpawnGroup 1 BoB_LW_StG3_I.07
+  action16 ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action16cover ASpawnGroup 1 BoB_RAF_B_35Sqn.04
+  action16_X2 ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action16cover_X2 ASpawnGroup 1 BoB_RAF_B_35Sqn.04
+  action16_X2 ASpawnGroup 1 BoB_RAF_B_35Sqn.03
+  action16cover_X2 ASpawnGroup 1 BoB_RAF_B_35Sqn.04
+  action17 ASpawnGroup 1 BoB_LW_KuFlGr_706.03
+  action18 ASpawnGroup 1 BoB_RAF_B_218Sqn.03
+  StOmar2 ASpawnGroup 1 BoB_LW_LG2_I.34
+  escort2 ASpawnGroup 1 BoB_LW_JG26_I.25
+  escort3 ASpawnGroup 1 BoB_LW_LG2_I.16
+  redspitcover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redspitcover2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redhurrycover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  redhurrycover2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  SouthernCover1 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover4 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover5 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  Bomb1 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1 ASpawnGroup 1 gb01.34
+  RBombCover1 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  Bomb2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb2 ASpawnGroup 1 gb01.34
+  RBombCover2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  Bomb3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb3 ASpawnGroup 1 gb01.34
+  RBombCover3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  109Cover1 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover2 ASpawnGroup 1 BoB_LW_JG2_I.26
+  109Cover3 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover4 ASpawnGroup 1 BoB_LW_JG2_I.26
+  110cover1 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover4 ASpawnGroup 1 BoB_LW_JG51_I.33
+  CalaisAAA1 ASpawnGroup 1 Empty
+  CalaisAAA2 ASpawnGroup 1 Empty
+  CalaisAAA3 ASpawnGroup 1 Empty
+  CalaisPropeller ASpawnGroup 1 Empty
+  CalaisDiesel ASpawnGroup 1 Empty
+  CalaisTorpedo ASpawnGroup 1 Empty
+  CalaisLox ASpawnGroup 1 Empty
+  CalaisMainFuel ASpawnGroup 1 Empty
+  CalaisHydrogen ASpawnGroup 1 Empty
+  CalaisTrainStation ASpawnGroup 1 Empty
+  BluePatrol1 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol2 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol3 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol4 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol5 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol3 ASpawnGroup 1 BoB_LW_JG27_I.01
+  Fatal1 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal4 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal5 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Pegwelldefense1 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  Gladiatorintercept ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar ASpawnGroup 1 BoB_LW_LG2_I.34
+  zonedefenseblue1 ASpawnGroup 1 BoB_LW_JG51_I.33
+  zonedefenseblue2 ASpawnGroup 1 BoB_LW_JG2_I.04
+  zonedefenseblue3 ASpawnGroup 1 BoB_LW_LG2_I.32
+  zonedefenseblue4 ASpawnGroup 1 BoB_LW_LG2_I.31
+  Rely1 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely4 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely5 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely6 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Jabored ASpawnGroup 1 LONDON.02
+  Thems1 ASpawnGroup 1 gb01.23
+  London1air ASpawnGroup 1 gb01.01
+  London2air ASpawnGroup 1 gb01.02
+  London3air ASpawnGroup 1 gb01.11
+  Beau1 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  MQWest ASpawnGroup 1 BoB_RAF_F_FatCat_Late.27
+  MQWestCover ASpawnGroup 1 BoB_RAF_F_FatCat_Late.28
+  loneglad ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraid ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraidcover ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  4hrraidcover ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  StOmar2_X2 ASpawnGroup 1 BoB_LW_LG2_I.34
+  escort2_X2 ASpawnGroup 1 BoB_LW_JG26_I.25
+  escort3_X2 ASpawnGroup 1 BoB_LW_LG2_I.16
+  redspitcover1_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redspitcover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redhurrycover1_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  redhurrycover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  SouthernCover1_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover2_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover3_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover4_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover5_X2 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  Bomb1_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1_X2 ASpawnGroup 1 gb01.34
+  RBombCover1_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  Bomb2_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb2_X2 ASpawnGroup 1 gb01.34
+  RBombCover2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  Bomb3_X2 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3_X2 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb3_X2 ASpawnGroup 1 gb01.34
+  RBombCover3_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  109Cover1_X2 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover2_X2 ASpawnGroup 1 BoB_LW_JG2_I.26
+  109Cover3_X2 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover4_X2 ASpawnGroup 1 BoB_LW_JG2_I.26
+  110cover1_X2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover2_X2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover3_X2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover4_X2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  CalaisAAA1_X2 ASpawnGroup 1 Empty
+  CalaisAAA2_X2 ASpawnGroup 1 Empty
+  CalaisAAA3_X2 ASpawnGroup 1 Empty
+  CalaisPropeller_X2 ASpawnGroup 1 Empty
+  CalaisDiesel_X2 ASpawnGroup 1 Empty
+  CalaisTorpedo_X2 ASpawnGroup 1 Empty
+  CalaisLox_X2 ASpawnGroup 1 Empty
+  CalaisMainFuel_X2 ASpawnGroup 1 Empty
+  CalaisHydrogen_X2 ASpawnGroup 1 Empty
+  CalaisTrainStation_X2 ASpawnGroup 1 Empty
+  BluePatrol1_X2 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol2_X2 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol3_X2 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol4_X2 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol5_X2 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol3_X2 ASpawnGroup 1 BoB_LW_JG27_I.01
+  Fatal1_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal2_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal3_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal4_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal5_X2 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Pegwelldefense1_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  Gladiatorintercept_X2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2_X2 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh_X2 ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar_X2 ASpawnGroup 1 BoB_LW_LG2_I.34
+  zonedefenseblue1_X2 ASpawnGroup 1 BoB_LW_JG51_I.33
+  zonedefenseblue2_X2 ASpawnGroup 1 BoB_LW_JG2_I.04
+  zonedefenseblue3_X2 ASpawnGroup 1 BoB_LW_LG2_I.32
+  zonedefenseblue4_X2 ASpawnGroup 1 BoB_LW_LG2_I.31
+  Rely1_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely2_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely3_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely4_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely5_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely6_X2 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Jabored_X2 ASpawnGroup 1 LONDON.02
+  Thems1_X2 ASpawnGroup 1 gb01.23
+  London1air_X2 ASpawnGroup 1 gb01.01
+  London2air_X2 ASpawnGroup 1 gb01.02
+  London3air_X2 ASpawnGroup 1 gb01.11
+  Beau1_X2 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  MQWest_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.27
+  MQWestCover_X2 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.28
+  loneglad_X2 ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2_X2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover_X2 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB_X2 ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraid_X2 ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraidcover_X2 ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2_X2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  4hrraidcover_X2 ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid_X2 ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber_X2 ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1_X2 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2_X2 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  StOmar2_X3 ASpawnGroup 1 BoB_LW_LG2_I.34
+  escort2_X3 ASpawnGroup 1 BoB_LW_JG26_I.25
+  escort3_X3 ASpawnGroup 1 BoB_LW_LG2_I.16
+  redspitcover1_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redspitcover2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  redhurrycover1_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  redhurrycover2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.23
+  SouthernCover1_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover2_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover3_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover4_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  SouthernCover5_X3 ASpawnGroup 1 BoB_RAF_F_92Sqn_Early.02
+  Bomb1_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover1_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  Bomb2_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover2_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  Bomb3_X3 ASpawnGroup 1 BoB_LW_LG2_I.27
+  BombCover3_X3 ASpawnGroup 1 BoB_LW_LG2_I.28
+  RBomb1_X3 ASpawnGroup 1 gb01.34
+  RBombCover1_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  RBomb2_X3 ASpawnGroup 1 gb01.34
+  RBombCover2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  RBomb3_X3 ASpawnGroup 1 gb01.34
+  RBombCover3_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.08
+  109Cover1_X3 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover2_X3 ASpawnGroup 1 BoB_LW_JG2_I.26
+  109Cover3_X3 ASpawnGroup 1 BoB_LW_JG26_I.36
+  109Cover4_X3 ASpawnGroup 1 BoB_LW_JG2_I.26
+  110cover1_X3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover2_X3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover3_X3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  110cover4_X3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  CalaisAAA1_X3 ASpawnGroup 1 Empty
+  CalaisAAA2_X3 ASpawnGroup 1 Empty
+  CalaisAAA3_X3 ASpawnGroup 1 Empty
+  CalaisPropeller_X3 ASpawnGroup 1 Empty
+  CalaisDiesel_X3 ASpawnGroup 1 Empty
+  CalaisTorpedo_X3 ASpawnGroup 1 Empty
+  CalaisLox_X3 ASpawnGroup 1 Empty
+  CalaisMainFuel_X3 ASpawnGroup 1 Empty
+  CalaisHydrogen_X3 ASpawnGroup 1 Empty
+  CalaisTrainStation_X3 ASpawnGroup 1 Empty
+  BluePatrol1_X3 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol2_X3 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol3_X3 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol4_X3 ASpawnGroup 1 BoB_LW_JG2_I.12
+  BluePatrol5_X3 ASpawnGroup 1 BoB_LW_JG26_I.22
+  BluePatrol3_X3 ASpawnGroup 1 BoB_LW_JG27_I.01
+  Fatal1_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal2_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal3_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal4_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Fatal5_X3 ASpawnGroup 1 BoB_RAF_F_141Sqn_Early.02
+  Pegwelldefense1_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense2_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense3_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense4_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Pegwelldefense5_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.03
+  Willmingtondefensered_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.33
+  Gladiatorintercept_X3 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Gladiatorintercept2_X3 ASpawnGroup 1 BoB_RAF_F_3Sqn_Early.11
+  Redhilldefensered2_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Early.13
+  Newhigh_X3 ASpawnGroup 1 BoB_LW_JG26_I.01
+  StOmar_X3 ASpawnGroup 1 BoB_LW_LG2_I.34
+  zonedefenseblue1_X3 ASpawnGroup 1 BoB_LW_JG51_I.33
+  zonedefenseblue2_X3 ASpawnGroup 1 BoB_LW_JG2_I.04
+  zonedefenseblue3_X3 ASpawnGroup 1 BoB_LW_LG2_I.32
+  zonedefenseblue4_X3 ASpawnGroup 1 BoB_LW_LG2_I.31
+  Rely1_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely2_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely3_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely4_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely5_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Rely6_X3 ASpawnGroup 1 BoB_LW_JG26_I.06
+  Jabored_X3 ASpawnGroup 1 LONDON.02
+  Thems1_X3 ASpawnGroup 1 gb01.23
+  London1air_X3 ASpawnGroup 1 gb01.01
+  London2air_X3 ASpawnGroup 1 gb01.02
+  London3air_X3 ASpawnGroup 1 gb01.11
+  Beau1_X3 ASpawnGroup 1 BoB_RAF_F_1Sqn_Early.12
+  MQWest_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.27
+  MQWestCover_X3 ASpawnGroup 1 BoB_RAF_F_FatCat_Late.28
+  loneglad_X3 ASpawnGroup 1 BoB_RAF_F_302_PL_Early.12
+  45mincover2_X3 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidCover_X3 ASpawnGroup 1 BoB_LW_JG3_Stab.0F
+  45minraidB_X3 ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraid_X3 ASpawnGroup 1 BoB_LW_StG1_I.07
+  2hrraidcover_X3 ASpawnGroup 1 BoB_LW_JG51_I.07
+  4hrraidcover2_X3 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+  4hrraidcover_X3 ASpawnGroup 1 BoB_LW_JG27_I.06
+  4hrraid_X3 ASpawnGroup 1 BoB_LW_StG1_I.17
+  testbomber_X3 ASpawnGroup 1 BoB_LW_KuFlGr_706.04
+  testcover1_X3 ASpawnGroup 1 BoB_RA_56St_20Gruppo_353Sq.01
+  testcover2_X3 ASpawnGroup 1 BoB_LW_JG51_Stab.0F
+[Birthplace]

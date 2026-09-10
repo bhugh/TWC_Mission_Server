@@ -1,0 +1,62 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 312251.06 193815.41 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 de 312258.66 193800.20 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 312282.97 193807.81 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 312276.91 193824.52 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.20_mm_Flak_38 de 312261.63 193836.58 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.20_mm_Flak_38 de 312277.19 193790.63 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.4_cm_Flak_28 de 312247.94 193836.84 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.4_cm_Flak_28 de 312300.19 193800.19 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone de 312284.28 193849.56 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone de 312323.53 193801.09 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 314204.84 192659.69 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 314212.44 192644.50 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 314236.75 192652.09 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 314230.69 192668.81 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.20_mm_Flak_38 de 314215.41 192680.86 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.20_mm_Flak_38 de 314231.00 192634.91 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.4_cm_Flak_28 de 314201.72 192681.14 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.4_cm_Flak_28 de 314253.97 192644.48 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Bofors_StandAlone de 314238.06 192693.86 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Bofors_StandAlone de 314277.31 192645.38 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak37 de 311762.91 192025.30 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Flak37 de 311770.50 192010.09 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.Flak37 de 311794.81 192017.69 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Flak37 de 311788.75 192034.41 0.00 /timeout 0/radius_hide 0
+  Static24 Artillery.20_mm_Flak_38 de 311773.47 192046.45 0.00 /timeout 0/radius_hide 0
+  Static25 Artillery.20_mm_Flak_38 de 311789.03 192000.50 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.4_cm_Flak_28 de 311759.78 192046.73 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.4_cm_Flak_28 de 311812.03 192010.08 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Bofors_StandAlone de 311796.13 192059.45 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Bofors_StandAlone de 311835.38 192010.98 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Flak37 de 313857.69 192084.23 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Flak37 de 313865.28 192069.05 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Flak37 de 313889.59 192076.64 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Flak37 de 313883.50 192093.36 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.20_mm_Flak_38 de 313868.22 192105.41 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.20_mm_Flak_38 de 313883.81 192059.45 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.4_cm_Flak_28 de 313854.56 192105.67 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.4_cm_Flak_28 de 313906.78 192069.03 0.00 /timeout 0/radius_hide 0
+  Static38 Artillery.Bofors_StandAlone de 313890.91 192118.41 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Bofors_StandAlone de 313930.16 192069.92 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

@@ -1,0 +1,91 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[WeatherFront]
+  LocalWeather_0 OVERCAST_GEN 12000 10000 304475 287222 0 0
+  LocalWeather_1 OVERCAST_GEN 10000 12000 196318.97 127554.63 0 0
+  LocalWeather_2 OVERCAST_GEN 12000 10000 226026.42 182271.32 0 0
+  LocalWeather_3 OVERCAST_GEN 12000 8000 72411.72 136413.05 0 0
+[LocalWeather_0]
+  EllipticA 12000
+  EllipticB 10000
+  RotAngle 42
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 900
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 0
+  DropSize 0
+  RainPower 0
+  FrontThickness 500
+  EvenLayers 2
+  TotalLayers 13
+  CloudsDensity 6
+  MidSize 4  
+[LocalWeather_1]
+  EllipticA 10000
+  EllipticB 12000
+  RotAngle 8
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 100
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 0
+  DropSize 0
+  RainPower 0
+  FrontThickness 300
+  EvenLayers 2
+  TotalLayers 13
+  CloudsDensity 6
+  MidSize 4
+[LocalWeather_2]
+  EllipticA 12000
+  EllipticB 10000
+  RotAngle -16
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 1000
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 0
+  DropSize 0
+  RainPower 0
+  FrontThickness 300
+  EvenLayers 3
+  TotalLayers 13
+  CloudsDensity 6
+  MidSize 4  
+[LocalWeather_3]
+  EllipticA 12000
+  EllipticB 8000
+  RotAngle 59
+  ShiftX 0
+  ShiftY 0
+  BaseHeight 300
+  IsRain 0
+  IsDynamicEnabled 0
+  ParticipType 0
+  DropSize 0
+  RainPower 0
+  FrontThickness 300
+  EvenLayers 3
+  TotalLayers 13 
+  CloudsDensity 6
+  MidSize 4

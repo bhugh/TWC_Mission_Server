@@ -1,0 +1,185 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 350000 300000 10000
+  TIME 12.0000002905726
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Ashford_LG116 Stationary.BeaufighterMkIF nn 207033.88 236595.56 -695.00 
+  Ashford_LG118 Stationary.BeaufighterMkIF nn 206995.30 236608.17 -695.00 
+  Ashford_LG117 Stationary.BeaufighterMkIF nn 207042.70 236576.55 -695.00 
+  Ashford_LG115 Stationary.BeaufighterMkIF nn 207016.25 236626.44 -695.00 
+  Ashford_LG6 Stationary.Environment.CamoNetPlaneBig nn 207017.53 236625.95 -335.00 
+  Ashford_LG114 Stationary.BeaufighterMkIF nn 207012.77 236658.73 -720.00 
+  Ashford_LG23 Stationary.Environment.CamoNetPlaneBig nn 206967.52 236707.30 -335.00 
+  Ashford_LG113 Stationary.BeaufighterMkIF nn 206992.81 236724.09 -695.00 
+  Ashford_LG45 Stationary.Environment.JerryCan_GER1_1 nn 206994.33 236705.39 -305.00 
+  Ashford_LG9 Stationary.Environment.CamoNetPlaneBig nn 207226.95 236700.36 -155.00 
+  Ashford_LG322 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207226.61 236705.30 -1235.00 
+  Ashford_LG94 Stationary.BeaufighterMkIF gb 207228.70 236699.56 -505.00 
+  Ashford_LG423 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207205.06 236734.20 -1235.00 
+  Ashford_LG112 Stationary.BeaufighterMkIF nn 206972.63 236709.00 -695.00 
+  Ashford_LG27 Stationary.Environment.CamoNetPlaneBig nn 206944.97 236793.94 -335.00 
+  Ashford_LG323 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 207150.61 236797.73 -1235.00 
+  Ashford_LG8 Stationary.Environment.CamoNetPlaneBig nn 207170.81 236762.91 -155.00 
+  Ashford_LG92 Stationary.BeaufighterMkIF nn 207171.34 236760.72 -505.00 
+  Ashford_LG109 Stationary.BeaufighterMkIF nn 206892.09 236845.30 -695.00 
+  Ashford_LG37 Stationary.Environment.CamoNetPlaneBig nn 206893.06 236844.02 -335.00 
+  Ashford_LG129 Stationary.Environment.TentMedicLarge_UK1 nn 206914.44 236810.44 -1325.00 
+  Ashford_LG110 Stationary.BeaufighterMkIF gb 206947.55 236794.09 -695.00 
+  Ashford_LG89 Stationary.BeaufighterMkIF nn 207100.91 236862.05 -505.00 
+  Ashford_LG29 Stationary.Environment.CamoNetPlaneBig nn 207121.94 236826.59 -155.00 
+  Ashford_LG90 Stationary.BeaufighterMkIF nn 207123.47 236825.73 -505.00 
+  Ashford_LG106 Stationary.BeaufighterMkIF nn 206848.42 236913.75 -695.00 
+  Ashford_LG38 Stationary.Environment.CamoNetPlaneBig nn 206847.78 236914.17 -335.00 
+  Ashford_LG126 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206869.81 236880.02 -1055.00 
+  Ashford_LG30 Stationary.Environment.CamoNetPlaneBig nn 207079.30 236896.19 -155.00 
+  Ashford_LG87 Stationary.BeaufighterMkIF nn 207080.59 236894.02 -505.00 
+  Ashford_LG324 Stationary.Environment.TentMedicLarge_UK1 nn 207072.11 236921.75 -1325.00 
+  Ashford_LG22 Stationary.Environment.Portable_Siren_UK1 gb 206831.69 236956.34 0.00 
+  Ashford_LG105 Stationary.BeaufighterMkIF nn 206812.58 236993.28 -685.00 
+  Ashford_LG31 Stationary.Environment.CamoNetPlaneBig nn 207026.78 236963.89 -155.00 
+  Ashford_LG84 Stationary.BeaufighterMkIF nn 207027.86 236960.13 -505.00 
+  Ashford_LG86 Stationary.BeaufighterMkIF nn 207055.56 236930.55 -505.00 
+  Ashford_LG39 Stationary.Environment.CamoNetPlaneBig nn 206787.78 236991.56 -335.00 
+  Ashford_LG124 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206792.63 236992.72 -1055.00 
+  Ashford_LG104 Stationary.BeaufighterMkIF nn 206822.63 237004.67 -705.00 
+  Ashford_LG20 Stationary.Environment.TentZeltbahnBig_GER1 nn 206808.78 237047.08 -65.00 
+  Ashford_LG28 Stationary.RacingSigns.RacingSign1 nn 206959.72 237010.55 0.00 /hstart -15
+  Ashford_LG25 Stationary.Environment.Polotnische_X_red_1 nn 206959.00 237010.33 0.00 
+  Ashford_LG24 Stationary.Environment.Polotnische_X_red_1 nn 206951.13 237028.84 0.00 
+  Ashford_LG26 Stationary.RacingSigns.RacingSign1 nn 206951.38 237029.36 0.00 /hstart -15
+  Ashford_LG83 Stationary.BeaufighterMkIF nn 206999.92 236998.11 -505.00 
+  Ashford_LG121B Stationary.Environment.TentMedicLarge_UK1 nn 206994.81 237012.59 -1325.00 
+  Ashford_LG32 Stationary.Environment.CamoNetPlaneBig nn 206978.13 237039.39 -155.00 
+  Ashford_LG81 Stationary.BeaufighterMkIF nn 206980.75 237037.52 -520.00 
+  Ashford_LG1 Stationary.Environment.TentBell_UK1 nn 206801.63 237063.95 -65.00 
+  Ashford_LG298 Stationary.Environment.TentZeltbahnBig_GER1 nn 206810.86 237066.83 -65.00 
+  Ashford_LG297 Stationary.Environment.TentZeltbahnBig_GER1 nn 206805.42 237077.83 -65.00 
+  Ashford_LG2 Stationary.Environment.TentZeltbahnBig_GER1 nn 206801.08 237086.78 -65.00 
+  Ashford_LG3 Stationary.Environment.TentZeltbahnBig_GER1 nn 206797.20 237096.00 -65.00 
+  Ashford_LG5 Stationary.Environment.TentZeltbahnBig_GER1 nn 206829.89 237074.38 -65.00 
+  Ashford_LG296 Stationary.Environment.TentZeltbahnBig_GER1 nn 206825.00 237085.66 -65.00 
+  Ashford_LG4 Stationary.Environment.TentZeltbahnBig_GER1 nn 206820.59 237094.98 -65.00 
+  Ashford_LG0 Stationary.Environment.TentZeltbahnBig_GER1 nn 206816.95 237103.44 -65.00 
+  Ashford_LG79 Stationary.BeaufighterMkIF nn 206937.78 237098.19 -520.00 
+  Ashford_LG33 Stationary.Environment.CamoNetPlaneBig nn 206937.50 237099.41 -155.00 
+  Ashford_LG41 Stationary.Environment.CamoNetPlaneBig nn 206732.44 237146.06 -335.00 
+  Ashford_LG101 Stationary.BeaufighterMkIF nn 206773.50 237151.61 -725.00 
+  Ashford_LG103 Stationary.BeaufighterMkIF nn 206798.08 237121.28 -695.00 
+  Ashford_LG333 Stationary.Environment.TentMedicLarge_UK1 nn 206778.80 237130.92 -1325.00 
+  Ashford_LG102 Stationary.BeaufighterMkIF nn 206731.56 237146.50 -695.00 
+  Ashford_LG139 Stationary.Environment.TentMedicLarge_UK1 gb 206923.11 237138.05 -1235.00 
+  Ashford_LG302 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206943.13 237141.25 -1145.00 
+  Ashford_LG301 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206931.61 237163.53 -1145.00 
+  Ashford_LG123 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206702.23 237235.83 -1080.00 
+  Ashford_LG100 Stationary.BeaufighterMkIF nn 206688.33 237261.88 -30.00 
+  Ashford_LG422 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206888.34 237247.72 -1235.00 
+  Ashford_LG300 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206919.22 237190.44 -1145.00 
+  Ashford_LG133 Stationary.Environment.TentMedicLarge_UK1 nn 206734.09 237249.67 -1325.00 
+  Ashford_LG99 Stationary.BeaufighterMkIF nn 206711.59 237282.02 -695.00 
+  Ashford_LG42 Stationary.Environment.CamoNetPlaneBig nn 206710.70 237283.11 -335.00 
+  Ashford_LG321 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206878.41 237281.50 -1235.00 
+  Ashford_LG34 Stationary.Environment.CamoNetPlaneBig nn 206892.63 237291.91 -155.00 
+  Ashford_LG122 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206681.13 237338.33 -1055.00 
+  Ashford_LG43 Stationary.Environment.CamoNetPlaneBig nn 206677.47 237337.78 -335.00 
+  Ashford_LG7 Stationary.Environment.CamoNetPlaneBig nn 206842.00 237337.94 -150.00 
+  Ashford_LG21 tobruk:Stationary.Environment.Windsock_v2 nn 206825.80 237370.11 -65.00 
+  Ashford_LG97 Stationary.BeaufighterMkIF nn 206841.78 237339.59 -505.00 
+  Ashford_LG135 Stationary.Environment.TentMedicLarge_UK1 nn 206644.69 237418.70 -1325.00 
+  Ashford_LG120 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 206663.84 237389.83 -1055.00 
+  Ashford_LG44 Stationary.Environment.CamoNetPlaneBig nn 206659.39 237389.64 -335.00 
+  Ashford_LG421 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206804.94 237419.38 -1235.00 
+  Ashford_LG35 Stationary.Environment.CamoNetPlaneBig nn 206807.38 237421.03 -155.00 
+  Ashford_LG319 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206778.69 237452.11 -1235.00 
+  Ashford_LG10 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop nn 206906.84 237214.33 -1145.00 
+[Buildings]
+[BuildingsLinks]
+[Airdromes]
+  AshfordLG 206937.78 236994.23 0 500 700 1
+[AshfordLG_Runways]
+  206934.76 236997.76 -65.00 650.00 40.00 0
+[AshfordLG_Points]
+  207071.46 236887.15 19 17 15 13 11 9 7 5 3 1
+  206744.63 237378.22 2
+  206730.24 237411.94
+  207102.50 236607.45 4
+  207116.77 236580.51
+  206767.71 237337.14 6
+  206753.61 237362.21
+  207080.44 236645.61 8
+  207093.12 236623.43
+  206790.35 237297.95 10
+  206775.40 237320.65
+  207064.62 236684.77 12
+  207076.55 236657.80
+  206872.38 237015.53 14
+  206851.05 237021.75
+  206880.38 236996.42 16
+  206870.19 236982.62
+  206894.26 236971.02 18
+  206882.26 236957.19
+  206905.86 236947.84 20
+  206896.51 236934.92
+[BirthPlace]
+  "Ashford Landing Ground" 1 206916 237047 0 1 1 1 . . . 1 /Heading 0.0 /Type takeoff
+[BirthPlace0]
+  tobruk:Aircraft.BeaufighterMkIC
+  Aircraft.BeaufighterMkIF
+  tobruk:Aircraft.BeaufighterMkIF_Late
+  Aircraft.BeaufighterMkINF
+  tobruk:Aircraft.BeaufighterMkINF_Late
+  Aircraft.BlenheimMkIV
+  Aircraft.BlenheimMkIV_Late
+  Aircraft.BlenheimMkIVF
+  Aircraft.BlenheimMkIVF_Late
+  Aircraft.BlenheimMkIVNF
+  Aircraft.BlenheimMkIVNF_Late
+  Aircraft.HurricaneMkI
+  Aircraft.HurricaneMkI_100oct
+  Aircraft.HurricaneMkI_100oct-NF
+  Aircraft.HurricaneMkI_dH5-20
+  Aircraft.HurricaneMkI_dH5-20_100oct
+  Aircraft.HurricaneMkI_FB
+  tobruk:Aircraft.HurricaneMkIIa
+  tobruk:Aircraft.HurricaneMkIIb
+  tobruk:Aircraft.HurricaneMkIIb-Late
+  tobruk:Aircraft.HurricaneMkIIc
+  tobruk:Aircraft.HurricaneMkIIc-Late
+  tobruk:Aircraft.HurricaneMkIId
+  tobruk:Aircraft.KittyhawkMkIA
+  tobruk:Aircraft.MartletMkIII
+  Aircraft.SpitfireMkI
+  Aircraft.SpitfireMkI_100oct
+  Aircraft.SpitfireMkIa
+  Aircraft.SpitfireMkIa_100oct
+  Aircraft.SpitfireMkIIa
+  tobruk:Aircraft.SpitfireMkIIb
+  tobruk:Aircraft.SpitfireMkVa
+  tobruk:Aircraft.SpitfireMkVb
+  tobruk:Aircraft.SpitfireMkVb-HF
+  tobruk:Aircraft.SpitfireMkVb-HF-Late
+  tobruk:Aircraft.SpitfireMkVbLate
+  Aircraft.Su-26M
+  tobruk:Aircraft.TomahawkMkII
+  tobruk:Aircraft.TomahawkMkII-Late
+  Aircraft.WellingtonMkIc
+  tobruk:Aircraft.WellingtonMkIc_Late
+  tobruk:Aircraft.WellingtonMkIc_t
+  tobruk:Aircraft.WellingtonMkIc_Torpedo

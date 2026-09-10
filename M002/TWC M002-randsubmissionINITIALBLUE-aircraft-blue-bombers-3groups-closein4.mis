@@ -1,0 +1,90 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_LW_KG2_I.07
+  BoB_LW_KG27_Stab.07
+  BoB_LW_KG51_Stab.07
+[BoB_LW_KG2_I.07]
+  Flight0  1 2
+  Flight1  11 12 13
+  Flight2  21 22
+  Class Aircraft.He-111H-2
+  Formation VIC3
+  CallSign 26
+  Fuel 56
+  Weapons 1 1 1 1 1 1 4
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG2_I.07_Way]
+  NORMFLY 36296.26 156209.98 300.00 300.00
+  NORMFLY 42345.60 179249.48 800.00 300.00
+  GATTACK_POINT 54798.66 204516.89 800.00 300.00
+  NORMFLY 56322.51 207607.77 800.00 300.00
+  NORMFLY 79192.91 193190.86 800.00 300.00
+  NORMFLY 17451.55 131664.42 800.00 300.00
+  LANDING 3864.04 121458.26 4000.00 300.00
+[BoB_LW_KG27_Stab.07]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Flight2  21 22
+  Class Aircraft.FW-200C-1
+  Formation VIC3
+  CallSign 28
+  Fuel 38
+  Weapons 1 1 1 1 2 2 2
+  Belt _Gun00 Gun.MG15 MainBelt 0 0 2 2 5 5
+  Belt _Gun01 Gun.MG15 MainBelt 0 0 2 2 5 5
+  Belt _Gun02 Gun.MG15 MainBelt 0 0 2 2 5 5
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG27_Stab.07_Way]
+  NORMFLY 21381.35 100327.75 700.00 330.00
+  NORMFLY 41930.65 179393.36 900.00 330.00
+  GATTACK_POINT 69230.55 195377.65 900.00 356.00
+  NORMFLY 74878.75 199260.25 900.00 356.00
+  NORMFLY 4971.61 101963.54 900.00 356.00
+[BoB_LW_KG51_Stab.07]
+  Flight0  1 2 3
+  Flight1  11
+  Flight2  21
+  Class Aircraft.Bf-110C-7
+  Formation VIC3
+  CallSign 33
+  Fuel 90
+  Weapons 1 1 1 5
+  Belt  MainBelt 0 0 2 2 5 5
+  Belt  MainBelt 0 0 2 2 5 5
+  Belt  MainBelt 0 0 2 2 5 5
+  Skill0 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+  Skill1 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill2 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill10 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill20 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+[BoB_LW_KG51_Stab.07_Way]
+  NORMFLY 29486.35 130882.32 350.00 400.00
+  NORMFLY 41951.22 178448.51 150.00 400.00
+  RECON 48793.38 196579.60 125.00 400.00
+  GATTACK_POINT 53002.28 205371.44 125.00 400.00
+  NORMFLY 55009.72 210872.13 125.00 400.00
+  NORMFLY 84936.91 184985.62 400.00 400.00
+  NORMFLY 24003.43 143387.69 400.00 400.00
+  LANDING 6454.17 115014.68 300.00 300.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

@@ -1,0 +1,95 @@
+  Flight0  1 2 3 4
+  Flight1  11 12 13
+  Class Aircraft.Ju-87B-2
+  Formation VIC
+  CallSign 4
+  Fuel 79
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_JG54_Stab.03_Way]
+  NORMFLY 293232.66 166353.28 3500.00 270.00
+  NORMFLY 229320.03 217424.85 3500.00 270.00
+  GATTACK_TARG 234526.38 232680.39 3500.00 270.00 Static905 0 /GAttackType DIVE
+  NORMFLY 234522.99 235974.13 3500.00 270.00
+  LANDING 285862.56 171013.93 3500.00 270.00
+
+Blenheim i
+weapons = "1 1 2 0 0"  can't end with 1 1
+
+BlenMKIV & IV_Late
+1 1 5 0 2
+
+BMKIF IVF IVF_Late	
+1 1 1 0 0 0
+
+Welling
+1 1 2
+
+Beaufighter
+AnsonMkI
+1 1
+
+Defiant MkI
+1
+
+Sunderland
+1 1 1 1 2 2
+
+
+Bf-109E-1B
+3b 4b
+1 1 2 (bombs)
+1 1 0  (no bomb)
+
+g50 
+1
+
+E-1, e-3, e-4 (all e-4 types, N, derated, etc)
+1 1
+
+111H 111P
+1 1 1 1 1 1 2
+
+110c2, c6, c4
+1 1 1
+
+c7, c7-late
+1 1 1 0
+
+
+BR-20M 
+1 1 1 4
+OR
+1 1 1 3 (better)
+OR
+1 1 1 1 (OK but not as good)
+OR
+1 1 1 2 (also good)
+
+Do-215B-1
+1 1 1 2
+
+FW-200C-1
+1 1 1 1 2 2 2
+1 1 1 1 1 1 2 (possible but leaves out 2 bombs)
+
+JU87
+1 1 2 1
+
+JU88
+
+"1 1 1 2 2 4"  best
+
+1 1 1 3 2 2 OK, bit fewer bombs
+
+1 1 1 1 2 3  possible but leaves out most bombs
+
+1 1 1 1 2 2
+
+
+
+Do-17Z-2"
+1 1 1 1 1 1 4 2
+
+Do-17Z-1
+1 1 1 1 4 2  4= 10 bombs, 5 = 1 bomb; 2 = 10 bombs; 3 = 1 bom

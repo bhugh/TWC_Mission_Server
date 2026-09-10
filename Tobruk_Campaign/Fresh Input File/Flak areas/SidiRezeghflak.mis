@@ -1,0 +1,102 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 370000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 186558.67 149868.58 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.37mm_PaK_35_36 de 186607.06 149822.61 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak30_Shield de 186576.03 149809.30 0.00 /timeout 0/radius_hide 0
+  Static3 Stationary.Environment.CamoNetHowitizer nn 186562.83 149868.50 0.00 
+  Static4 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186609.30 149819.91 0.00 
+  Static5 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186560.14 149865.77 0.00 
+  Static6 Artillery.Flak37 de 186460.23 149991.63 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak37 de 186370.75 149911.75 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak30_Shield de 186403.09 149993.05 0.00 /timeout 0/radius_hide 0
+  Static9 Stationary.Opel_Blitz_cargo de 186493.89 149873.86 0.00 
+  Static10 Stationary.Opel_Blitz_cargo de 186504.81 149895.23 0.00 
+  Static11 Stationary.Horch_108_Typ_1A_w_MG34 de 186470.73 149899.66 0.00 
+  Static12 Stationary.Opel_Blitz_radio_transport de 186493.64 149880.53 0.00 
+  Static13 Stationary.Environment.CamoNetHowitizer nn 186373.06 149911.02 0.00 
+  Static14 Stationary.Environment.CamoNetHowitizer nn 186462.73 149991.41 0.00 
+  Static15 Stationary.Environment.CamoNetPlaneSmall nn 186492.69 149880.34 0.00 
+  Static16 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186495.33 149885.11 0.00 
+  Static17 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186491.91 149885.22 0.00 
+  Static18 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186487.92 149885.33 0.00 
+  Static19 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186367.17 149908.91 0.00 
+  Static20 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186455.61 149989.36 0.00 
+  Static21 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186405.89 149992.59 0.00 
+  Static22 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186577.88 149806.97 0.00 
+  Static23 Artillery.Flak37 de 186441.34 149791.89 0.00 /timeout 0/radius_hide 0
+  Static24 Stationary.Environment.CamoNetHowitizer nn 186445.23 149792.30 0.00 
+  Static25 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186441.25 149788.19 0.00 
+  Static26 Artillery.Flak37 de 184640.63 148412.45 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.37mm_PaK_35_36 de 184689.02 148366.48 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Flak30_Shield de 184657.98 148353.17 0.00 /timeout 0/radius_hide 0
+  Static29 Stationary.Environment.CamoNetHowitizer nn 184644.78 148412.38 0.00 
+  Static30 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184691.25 148363.77 0.00 
+  Static31 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184642.09 148409.64 0.00 
+  Static32 Artillery.Flak37 de 184542.19 148535.50 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Flak37 de 184452.70 148455.61 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.Flak30_Shield de 184485.05 148536.92 0.00 /timeout 0/radius_hide 0
+  Static35 Stationary.Opel_Blitz_cargo de 184575.84 148417.72 0.00 
+  Static36 Stationary.Opel_Blitz_cargo de 184586.77 148439.09 0.00 
+  Static37 Stationary.Horch_108_Typ_1A_w_MG34 de 184552.69 148443.53 0.00 
+  Static38 Stationary.Opel_Blitz_radio_transport de 184575.59 148424.41 0.00 
+  Static39 Stationary.Environment.CamoNetHowitizer nn 184455.02 148454.89 0.00 
+  Static40 Stationary.Environment.CamoNetHowitizer nn 184544.69 148535.28 0.00 
+  Static41 Stationary.Environment.CamoNetPlaneSmall nn 184574.64 148424.22 0.00 
+  Static42 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184577.28 148428.97 0.00 
+  Static43 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184573.86 148429.08 0.00 
+  Static44 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184569.88 148429.19 0.00 
+  Static45 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184449.13 148452.77 0.00 
+  Static46 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184537.56 148533.23 0.00 
+  Static47 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184487.84 148536.47 0.00 
+  Static48 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184659.83 148350.84 0.00 
+  Static49 Artillery.Flak37 de 184523.30 148335.77 0.00 /timeout 0/radius_hide 0
+  Static50 Stationary.Environment.CamoNetHowitizer nn 184527.19 148336.16 0.00 
+  Static51 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 184523.20 148332.06 0.00 
+  Static52 Artillery.Flak37 de 187067.59 148216.88 0.00 /timeout 0/radius_hide 0
+  Static53 Artillery.37mm_PaK_35_36 de 187116.00 148170.91 0.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Flak30_Shield de 187084.97 148157.59 0.00 /timeout 0/radius_hide 0
+  Static55 Stationary.Environment.CamoNetHowitizer nn 187071.75 148216.80 0.00 
+  Static56 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 187118.23 148168.20 0.00 
+  Static57 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 187069.08 148214.06 0.00 
+  Static58 Artillery.Flak37 de 186969.16 148339.92 0.00 /timeout 0/radius_hide 0
+  Static59 Artillery.Flak37 de 186879.67 148260.05 0.00 /timeout 0/radius_hide 0
+  Static60 Artillery.Flak30_Shield de 186912.02 148341.34 0.00 /timeout 0/radius_hide 0
+  Static61 Stationary.Opel_Blitz_cargo de 187002.81 148222.16 0.00 
+  Static62 Stationary.Opel_Blitz_cargo de 187013.73 148243.53 0.00 
+  Static63 Stationary.Horch_108_Typ_1A_w_MG34 de 186979.67 148247.95 0.00 
+  Static64 Stationary.Opel_Blitz_radio_transport de 187002.56 148228.83 0.00 
+  Static65 Stationary.Environment.CamoNetHowitizer nn 186881.98 148259.31 0.00 
+  Static66 Stationary.Environment.CamoNetHowitizer nn 186971.66 148339.70 0.00 
+  Static67 Stationary.Environment.CamoNetPlaneSmall nn 187001.63 148228.64 0.00 
+  Static68 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 187004.25 148233.41 0.00 
+  Static69 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 187000.83 148233.52 0.00 
+  Static70 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186996.86 148233.61 0.00 
+  Static71 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186876.09 148257.19 0.00 
+  Static72 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186964.53 148337.66 0.00 
+  Static73 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186914.83 148340.89 0.00 
+  Static74 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 187086.81 148155.27 0.00 
+  Static75 Artillery.Flak37 de 186950.27 148140.19 0.00 /timeout 0/radius_hide 0
+  Static76 Stationary.Environment.CamoNetHowitizer nn 186954.17 148140.58 0.00 
+  Static77 Stationary.Krupp_L2H43_Protze_open_CargoAmmo4 de 186950.17 148136.48 0.00 
+[Buildings]
+[BuildingsLinks]

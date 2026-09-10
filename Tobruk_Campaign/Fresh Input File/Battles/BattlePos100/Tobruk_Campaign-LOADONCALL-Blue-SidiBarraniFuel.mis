@@ -1,0 +1,38 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static4 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 346813.66 135096.48 675.00 
+  Static5 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 346833.31 135071.98 675.00 
+  Static9 Stationary.Environment.JerryCan_GER1_2 nn 346837.09 135090.89 675.00 
+  Static3 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 346794.06 135117.75 675.00 
+  Static7 Stationary.Environment.JerryCan_GER1_2 nn 346810.28 135118.45 675.00 
+  Static10 Stationary.Environment.JerryCan_GER1_2 nn 346851.47 135140.64 675.00 
+  Static8 Stationary.Environment.JerryCan_GER1_2 nn 346906.66 135149.36 675.00 
+  Static2 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 346817.06 135165.42 675.00 
+  Static1 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 346835.03 135176.53 675.00 
+  Static0 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 346852.03 135185.92 675.00 
+  Static6 Stationary.Environment.JerryCan_GER1_2 nn 346870.81 135188.06 675.00 
+[Buildings]
+  0_bld tobruk:buildings.House$OilTankBig 1 346867.33 135204.61 675.00
+  1_bld tobruk:buildings.House$OilTankBig 1 346903.88 135174.01 675.00
+  2_bld tobruk:buildings.House$OilTankBig 1 346937.04 135146.81 675.00
+[BuildingsLinks]

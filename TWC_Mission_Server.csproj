@@ -1,0 +1,149 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <!-- target Framework for modern SDK styles using .NET Framework 4.8.2 -->
+    <TargetFramework>net482</TargetFramework>
+    <RootNamespace>TWC_Mission_Server</RootNamespace>
+    <AssemblyName>TWC_Mission_Server</AssemblyName>
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-G1H2-I3J4K5L6M7N8}</ProjectGuid>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+   <PropertyGroup>
+    <!-- We define a reusable variable for the game path to keep things clean -->
+    <CloDInstallPath>C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\</CloDInstallPath>
+  </PropertyGroup>
+
+  <!-- Game and System References -->
+  <ItemGroup>
+    <!-- System references are mostly automatic in SDK style, but explicit overrides are kept for safety -->
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    
+    <!-- Maddox Engine References -->
+    <Reference Include="Strategy">
+      <HintPath>$(CloDInstallPath)Strategy.dll</HintPath>
+    </Reference>
+    <Reference Include="gamePlay">
+      <HintPath>$(CloDInstallPath)gamePlay.dll</HintPath>
+    </Reference>
+    <Reference Include="gamePages">
+      <HintPath>$(CloDInstallPath)gamePages.dll</HintPath>
+    </Reference>
+    <Reference Include="CloDMissionCommunicator">
+      <HintPath>$(CloDInstallPath)CloDMissionCommunicator.dll</HintPath>
+    </Reference>
+    <Reference Include="Maddox">
+      <HintPath>$(CloDInstallPath)maddox.dll</HintPath>
+    </Reference>
+    <Reference Include="part">
+      <HintPath>$(CloDInstallPath)part.dll</HintPath>
+    </Reference>
+    <Reference Include="WSteam">
+      <HintPath>$(CloDInstallPath)WSteam.dll</HintPath>
+    </Reference>
+    <Reference Include="GameWorld">
+      <HintPath>$(CloDInstallPath)GameWorld.dll</HintPath>
+    </Reference>
+    <Reference Include="HostView.dll">
+      <HintPath>$(CloDInstallPath)HostView.dll</HintPath>
+    </Reference>
+    <Reference Include="Campaign.dll">
+      <HintPath>$(CloDInstallPath)Campaign.dll</HintPath>
+    </Reference>
+    <Reference Include="core">
+      <HintPath>$(CloDInstallPath)core.dll</HintPath>
+    </Reference>
+    <Reference Include="libeay32.dll">
+      <HintPath>$(CloDInstallPath)libeay32.dll</HintPath>
+    </Reference>
+    <Reference Include="SimulBase_MD.dll">
+      <HintPath>$(CloDInstallPath)SimulBase_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulClouds_MD.dll">
+      <HintPath>$(CloDInstallPath)SimulClouds_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulCrossPlatform_MD.dll">
+      <HintPath>$(CloDInstallPath)SimulCrossPlatform_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulDirectX11_MD.dll">
+      <HintPath>$(CloDInstallPath)SimulDirectX11_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="ssleay32">
+      <HintPath>$(CloDInstallPath)ssleay32.dll</HintPath>
+    </Reference>    
+    <Reference Include="fmod">
+      <HintPath>$(CloDInstallPath)fmod.dll</HintPath>
+    </Reference>    
+    <Reference Include="fmodstudio">
+      <HintPath>$(CloDInstallPath)fmodstudio.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulGeometry_MD">
+      <HintPath>$(CloDInstallPath)SimulGeometry_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="steam_api">
+      <HintPath>$(CloDInstallPath)steam_api.dll</HintPath>
+    </Reference>    
+    <Reference Include="steam_api64">
+      <HintPath>$(CloDInstallPath)steam_api64.dll</HintPath>
+    </Reference>    
+    <Reference Include="ImportASE">
+      <HintPath>$(CloDInstallPath)ImportASE.dll</HintPath>
+    </Reference>    
+    <Reference Include="fmod_event">
+      <HintPath>$(CloDInstallPath)fmod_event.dll</HintPath>
+    </Reference>    
+    <Reference Include="fmod_event64">
+      <HintPath>$(CloDInstallPath)fmod_event64.dll</HintPath>
+    </Reference>    
+    <Reference Include="fmodex">
+      <HintPath>$(CloDInstallPath)fmodex.dll</HintPath>
+    </Reference>    
+    <Reference Include="d3dcompiler_47">
+      <HintPath>$(CloDInstallPath)d3dcompiler_47.dll</HintPath>
+    </Reference>    
+    <Reference Include="antlr.runtime">
+      <HintPath>$(CloDInstallPath)antlr.runtime.dll</HintPath>
+    </Reference>    
+    <Reference Include="dinput8">
+      <HintPath>$(CloDInstallPath)dinput8.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulMath_MD">
+      <HintPath>$(CloDInstallPath)SimulMath_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulScene_MD">
+      <HintPath>$(CloDInstallPath)SimulScene_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulSky_MD">
+      <HintPath>$(CloDInstallPath)SimulSky_MD.dll</HintPath>
+    </Reference>    
+    <Reference Include="SimulTerrain_MD">
+      <HintPath>$(CloDInstallPath)SimulTerrain_MD.dll</HintPath>
+    </Reference>      
+  </ItemGroup>
+
+</Project>

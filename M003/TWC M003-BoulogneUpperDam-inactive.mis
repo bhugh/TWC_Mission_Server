@@ -1,0 +1,42 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_F_FatCat_Early.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+[CustomChiefs]
+[Stationary]
+  Static409 Smoke.Environment.BuildingFireBig nn 266866.84 188462.83 -75.00 /height 3.29
+  Static410 Smoke.Environment.BuildingFireBig nn 266845.16 188456.25 -75.00 /height 3.29
+  Static411 Smoke.Environment.BuildingFireBig nn 266672.69 188418.28 -75.00 /height 3.29
+  Static412 Smoke.Environment.BuildingFireBig nn 266666.06 188403.00 -75.00 /height 3.29
+  Static413 Smoke.Environment.BuildingFireBig nn 266622.00 188423.39 -75.00 /height 3.29
+  Static414 Smoke.Environment.BuildingFireBig nn 266616.38 188422.36 -75.00 /height 3.29
+  Static415 Smoke.Environment.BuildingFireBig nn 266688.22 188408.09 -75.00 /height 3.29
+  Static416 Smoke.Environment.BuildingFireBig nn 266652.06 188408.86 -75.00 /height 3.29
+  Static417 Smoke.Environment.BuildingFireBig nn 266823.50 188443.52 -75.00 /height 3.29
+  Static418 Smoke.Environment.BuildingFireBig nn 266730.53 188462.88 -75.00 /height 3.29
+  Static419 Smoke.Environment.BuildingFireBig nn 266708.09 188458.80 -75.00 /height 3.29
+  Static537 Smoke.Environment.BuildingFireBig nn 266708.34 188423.39 -75.00 /height 3.29
+  Static538 Smoke.Environment.BuildingFireBig nn 266614.34 188389.75 -75.00 /height 3.29
+  Static539 Smoke.Environment.BuildingFireBig nn 266609.25 188399.69 -75.00 /height 3.29
+  Static540 Smoke.Environment.BuildingFireBig nn 266690.00 188451.16 -75.00 /height 3.29
+  Static541 Smoke.Environment.BuildingFireBig nn 266772.56 188469.75 -75.00 /height 3.29
+  Static542 Smoke.Environment.BuildingFireBig nn 266844.66 188491.16 -75.00 /height 3.29
+  Static543 Smoke.Environment.BuildingFireBig nn 266845.44 188478.92 -75.00 /height 3.29
+[Buildings]
+[BuildingsLinks]

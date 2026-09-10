@@ -1,0 +1,66 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 113605.56 243776.66 110.00 /timeout 0/radius_hide 0
+  Static1 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 113581.60 243788.64 110.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak30_Shield gb 113586.19 243729.20 110.00 /timeout 0/radius_hide 0
+  Static3 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 113619.54 243744.88 110.00 /timeout 0/radius_hide 0
+  Static4 Artillery.3_7_inch_QF_Mk_I gb 113526.71 243747.33 110.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak30_Shield gb 113514.05 243772.70 110.00 /timeout 0/radius_hide 0
+  Static6 Artillery.3_7_inch_QF_Mk_I gb 113543.81 243763.84 110.00 /timeout 0/radius_hide 0
+  Static7 Artillery.3_7_inch_QF_Mk_I gb 113562.73 243767.09 110.00 /timeout 0/radius_hide 0
+  Static8 Artillery.3_7_inch_QF_Mk_I gb 113552.02 243748.20 110.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone gb 113546.02 243721.08 110.00 /timeout 0/radius_hide 0
+  Static10 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 113547.15 243800.63 110.00 /timeout 0/radius_hide 0
+  Static11 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 111906.73 243463.98 110.00 /timeout 0/radius_hide 0
+  Static12 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 111882.77 243475.97 110.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak30_Shield gb 111887.35 243416.52 110.00 /timeout 0/radius_hide 0
+  Static14 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 111920.70 243432.20 110.00 /timeout 0/radius_hide 0
+  Static15 Artillery.3_7_inch_QF_Mk_I gb 111827.88 243434.66 110.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak30_Shield gb 111815.21 243460.03 110.00 /timeout 0/radius_hide 0
+  Static17 Artillery.3_7_inch_QF_Mk_I gb 111844.98 243451.17 110.00 /timeout 0/radius_hide 0
+  Static18 Artillery.3_7_inch_QF_Mk_I gb 111863.90 243454.42 110.00 /timeout 0/radius_hide 0
+  Static19 Artillery.3_7_inch_QF_Mk_I gb 111853.20 243435.53 110.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors_StandAlone gb 111847.20 243408.41 110.00 /timeout 0/radius_hide 0
+  Static21 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 111848.32 243487.95 110.00 /timeout 0/radius_hide 0
+  Static22 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 112675.04 240766.31 110.00 /timeout 0/radius_hide 0
+  Static23 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 112651.08 240778.30 110.00 /timeout 0/radius_hide 0
+  Static24 Artillery.Flak30_Shield gb 112655.66 240718.86 110.00 /timeout 0/radius_hide 0
+  Static25 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 112689.02 240734.53 110.00 /timeout 0/radius_hide 0
+  Static26 Artillery.3_7_inch_QF_Mk_I gb 112596.19 240736.98 110.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Flak30_Shield gb 112583.52 240762.36 110.00 /timeout 0/radius_hide 0
+  Static28 Artillery.3_7_inch_QF_Mk_I gb 112613.30 240753.50 110.00 /timeout 0/radius_hide 0
+  Static29 Artillery.3_7_inch_QF_Mk_I gb 112632.21 240756.75 110.00 /timeout 0/radius_hide 0
+  Static30 Artillery.3_7_inch_QF_Mk_I gb 112621.51 240737.86 110.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Bofors_StandAlone gb 112615.51 240710.73 110.00 /timeout 0/radius_hide 0
+  Static32 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 112616.63 240790.30 110.00 /timeout 0/radius_hide 0
+  Static33 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 114313.82 241074.89 110.00 /timeout 0/radius_hide 0
+  Static34 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 114289.86 241086.88 110.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Flak30_Shield gb 114294.45 241027.44 110.00 /timeout 0/radius_hide 0
+  Static36 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 114327.80 241043.11 110.00 /timeout 0/radius_hide 0
+  Static37 Artillery.3_7_inch_QF_Mk_I gb 114234.97 241045.56 110.00 /timeout 0/radius_hide 0
+  Static38 Artillery.Flak30_Shield gb 114222.30 241070.95 110.00 /timeout 0/radius_hide 0
+  Static39 Artillery.3_7_inch_QF_Mk_I gb 114252.08 241062.08 110.00 /timeout 0/radius_hide 0
+  Static40 Artillery.3_7_inch_QF_Mk_I gb 114270.99 241065.33 110.00 /timeout 0/radius_hide 0
+  Static41 Artillery.3_7_inch_QF_Mk_I gb 114260.29 241046.45 110.00 /timeout 0/radius_hide 0
+  Static42 Artillery.Bofors_StandAlone gb 114254.29 241019.31 110.00 /timeout 0/radius_hide 0
+  Static43 Artillery.3_inch_20_CWT_QF_Mk_I_StandAlone2 gb 114255.41 241098.88 110.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

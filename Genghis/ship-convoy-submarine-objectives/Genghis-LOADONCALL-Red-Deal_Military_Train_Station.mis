@@ -1,0 +1,75 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1100
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Industrial.Huge_Factory.Central nn 250549.45 247166.36 30.00 
+  Static1 Stationary.Industrial.Huge_Factory.Part_A nn 250548.98 247165.45 30.00 
+  Static2 Stationary.Industrial.Huge_Factory.Part_B nn 250548.30 247165.38 30.00 
+  Static3 Stationary.Industrial.Huge_Factory.Part_C nn 250568.19 247175.88 30.00 
+  Static4 Stationary.Industrial.Railroad.SmallFactory nn 250432.41 247125.16 -60.00 
+  Static5 Stationary.Industrial.Railroad.SmallFactory nn 250443.39 247107.66 -60.00 
+  Static6 Stationary.Industrial.Railroad.SmallFactory nn 250434.16 247096.19 -150.00 
+  Static7 Stationary.Industrial.Railroad.SmallFactory nn 250540.38 247075.22 -150.00 
+  Static8 Stationary.Industrial.Railroad.SmallFactory nn 250595.38 247106.84 -150.00 
+  Static9 Stationary.Industrial.Railroad.SmallFactory nn 250653.13 247135.03 -150.00 
+  Static10 Stationary.Industrial.Railroad.SmallFactory nn 250494.31 247076.59 -60.00 
+  Static11 Stationary.Industrial.Railroad.SmallFactory nn 250476.19 247106.70 -60.00 
+  Static12 Stationary.Bedford_MW_tent gb 250548.45 247097.47 -60.00 
+  Static13 Stationary.Bedford_MW_tent gb 250624.23 247143.00 -60.00 
+  Static14 Stationary.Bedford_MW_tent gb 250605.45 247094.61 -105.00 
+  Static15 Stationary.Bedford_MW_tent gb 250543.36 247061.48 -105.00 
+  Static16 Stationary.Bedford_MW_tent gb 250517.27 247083.14 -105.00 
+  Static17 Stationary.Bedford_MW_tent gb 250464.72 247124.53 -105.00 
+  Static18 Stationary.Bedford_MW_tent gb 250466.00 247072.31 -105.00 
+  Static19 Stationary.Bedford_MW_tent gb 250452.95 247092.38 -105.00 
+  Static20 Stationary.Bedford_MW_tent gb 250426.20 247112.44 -105.00 
+  Static21 Stationary.Bedford_MW_tent gb 250420.16 247125.48 -105.00 
+  Static22 Stationary.Bedford_MW_tent gb 250428.44 247104.16 -105.00 
+  Static23 Stationary.FIAT_SPA_TL_37 gb 250563.42 247106.06 -105.00 
+  Static24 Stationary.FIAT_SPA_TL_37 gb 250598.45 247134.41 -105.00 
+  Static25 Stationary.FIAT_SPA_TL_37 gb 250650.98 247097.78 -105.00 
+  Static26 Stationary.FIAT_SPA_TL_37 gb 250660.84 247160.19 -150.00 
+  Static27 tobruk:Stationary.TobrukBuilding.supply1 nn 250568.34 247091.44 -150.00 
+  Static28 tobruk:Stationary.TobrukBuilding.supply1 nn 250622.92 247122.33 -150.00 
+  Static29 Stationary.Weapons_.Destructing_Bomb nn 250533.88 247100.95 -150.00 
+  Static30 Stationary.Weapons_.Destructing_Bomb nn 250614.61 247169.92 -150.00 
+  Static31 Stationary.Weapons_.Destructing_Bomb nn 250581.81 247214.91 -150.00 
+  Static32 Stationary.Weapons_.Destructing_Bomb nn 250663.39 247188.84 -150.00 
+  Static33 Stationary.Weapons_.Destructing_Bomb nn 250464.92 247136.28 -150.00 
+  Static34 Stationary.Weapons_.Destructing_Bomb nn 250496.45 247089.19 -150.00 
+  Static35 Stationary.Environment.JerryCan_GER1_1 nn 250461.55 247112.31 -150.00 
+  Static36 Stationary.Environment.JerryCan_GER1_1 nn 250441.38 247151.00 -150.00 
+  Static37 Stationary.Environment.JerryCan_GER1_1 nn 250506.55 247208.61 -150.00 
+  Static38 Stationary.Environment.JerryCan_GER1_1 nn 250593.17 247240.14 -150.00 
+  Static39 Stationary.Environment.JerryCan_GER1_1 nn 250663.81 247230.05 -150.00 
+  Static40 Stationary.Environment.JerryCan_GER1_1 nn 250615.45 247205.66 -150.00 
+  Static41 Stationary.Environment.JerryCan_GER1_1 nn 250512.02 247156.47 -150.00 
+  Static42 Stationary.Environment.JerryCan_GER1_1 nn 250516.64 247070.27 -150.00 
+  Static43 Stationary.Environment.JerryCan_GER1_1 nn 250587.70 247072.36 -150.00 
+  Static44 Stationary.Environment.JerryCan_GER1_1 nn 250651.61 247117.36 -150.00 
+  Static45 Stationary.Environment.JerryCan_GER1_1 nn 250670.13 247160.25 -150.00 
+  Static46 Stationary.Environment.JerryCan_GER1_1 nn 250496.03 247048.39 -150.00 
+  Static47 Stationary.Environment.JerryCan_GER1_1 nn 250437.58 247089.19 -150.00 
+  Static48 Stationary.Environment.JerryCan_GER1_1 nn 250448.09 247201.03 -150.00 
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  Deal_Military_Train_Station TGroundDestroyed 27 250541 247155 150

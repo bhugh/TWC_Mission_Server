@@ -1,0 +1,2290 @@
+//$reference System.Core.dll
+//$reference parts/core/Strategy.dll
+//$reference parts/core/gamePlay.dll
+//$reference parts/core/gamePages.dll
+//$reference parts/core/CloDMissionCommunicator.dll
+
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Text;
+using System.Linq;
+using maddox.GP;
+using maddox.game;
+using maddox.game.world;
+using maddox.game.play;
+using maddox.game.page;
+using part;
+using System.Runtime.InteropServices;
+
+
+using TWCComms;
+
+/*
+ * X TODO: Radar doesn't turn off when player logs out done
+ * 
+ * *?
+
+/*
+ * 
+ * //Ok, this is promising I think.  Just convert down all the nearby contacts to x/y coordinates & plot like this, then display via the chat window:
+        string chatPip = @"
+        - symbol seems best as far as matching length with a variety of fonts.  
+ *   +++++++++6+++++
+ *   ++7++++++++++++
+ *   +++++++++++++++
+ *   +++++++++++++++
+ *   +++4+++++++++++
+ *   ++++++++++++1++
+ *   ++++0++++++++++
+ * 
+ *   .........6.....
+ *   ..7............
+ *   ...............
+ *   ...............
+ *   ...4...........
+ *   ............1..
+ *   ....0..........
+ *   
+ *   ---------6-----
+ *   --7------------
+ *   ---------------
+ *   ---------------
+ *   ---4-----------
+ *   ------------1--
+ *   ----0----------
+ * 
+ * */
+
+
+public class ASVRadarTarget : IDisposable
+{
+    public static double AIRadarRadius_m = 100000; //historically it was about 40 miles more or less
+    public static double AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+    public AiAircraft aircraft { get; set;}
+    public AiActor actor { get; set;}
+    public Point3d aircraftPos { get; set;}
+    public Player player { get; set;}
+    public AiActor playerPlace { get; set;}
+    public Point3d playerPos { get; set;}
+    public Vector3d playerVwld { get; set; }
+    public double targetRelativeAngle_deg { get; set;} //angle from player to target, relative to the player's current direction   
+    public double targetHeightAngle_deg { get; set;} //angle from player in altitude/height
+    public double targetDistance_m { get; set;} //distance from player to target in km
+
+    public double XDist_m { get; set;} //distance front/back of target from player direction
+    public double YDist_m { get; set; } //distance left/right of target from player direction
+    public double ZDist_m { get; set;} //altitude distance player to target
+
+    public string DirectionPip { get; set;}
+    public string AltitudePip { get; set;}
+    public string DistancePip { get; set;}    
+
+    public bool inRange { get; set;}
+    public bool turnedOn { get; set;}
+
+    private static Vector3d nullV3d;
+
+    ASVRadarMission mission { set; get; }
+
+    public ASVRadarTarget(Player player, AiActor actor, ASVRadarMission mission)
+    {
+        //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+        this.player = player;
+        this.actor = actor;
+        //this.actor = aircraft as AiActor;
+        this.player = player;
+        this.playerPlace = player.Place();        
+        this.mission = mission;
+        this.recalculateAndDisplay();
+
+        nullV3d = new Vector3d(0, 0, 0);
+    }
+
+
+    //start display
+    public void turnOn()
+    {
+        this.turnedOn = true;
+        display_recurs();
+    }
+
+    //end display
+    public void turnOff()
+    {
+        this.turnedOn = false;
+        if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+        this.Dispose();
+    }
+    public virtual void delete()
+    {
+        if (mission.PlayerCurrentAIRadarTargetandACnum.ContainsKey(player)) mission.PlayerCurrentAIRadarTargetandACnum.Remove(player);
+    }
+    public bool getPlayerACData()
+    {
+
+        if (player == null || (
+            player.PersonPrimary() == null && player.PersonSecondary() == null))
+        {
+            playerPlace = null;
+            playerVwld = nullV3d;
+            playerPos = new Point3d(-1, -1, -1);
+            turnOff();
+            delete();
+            return false;
+        }
+        else
+        {
+            if (player.Name()=="Server ") this.playerPlace = player.Place();
+            this.playerPos = playerPlace.Pos();
+        }
+
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = nullV3d;
+        else this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld();
+        return true;
+    }
+
+    //regets arget aircraft position & then recalculates the angles & pips
+    public bool recalculateAndDisplay()
+    {
+        this.aircraftPos = actor.Pos();
+
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld =  nullV3d;
+        else { this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld(); } //player.Place().Group() as AiAirGroup;
+
+        this.targetDistance_m = ASVRadarCalcs.CalculatePointDistance(this.playerPos, this.aircraftPos);
+
+        this.targetRelativeAngle_deg = 180 + ASVRadarCalcs.CalculateDifferenceAngle(playerVwld, this.playerPos, this.aircraftPos);
+        if (targetRelativeAngle_deg > 180) targetRelativeAngle_deg -= 360;
+        if (targetRelativeAngle_deg < -180) targetRelativeAngle_deg += 360;
+        this.XDist_m = targetDistance_m * Math.Cos(ASVRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        this.YDist_m = targetDistance_m * Math.Sin(ASVRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        this.ZDist_m = aircraftPos.z - playerPos.z;
+
+        this.targetHeightAngle_deg = ASVRadarCalcs.CalculatePitchDegree(this.playerPos, aircraftPos);
+        if (targetHeightAngle_deg > 180) targetHeightAngle_deg -= 360;
+        if (targetHeightAngle_deg < -180) targetHeightAngle_deg += 360;
+
+        
+        return this.calculatePips();
+    }
+
+    //Call recacalculateAndDisplay which calls this - NOT this directly
+    private bool calculatePips() {        
+        inRange = true;
+        checkInScope();
+        calcDistancePip();
+        calcDirectionPip();
+        calcAltitudePip();
+        if (!inRange) setOutOfRangePips();
+        return inRange;
+    }
+
+    //Does the target blip lie within the circle of the radar scope?  If not, it's not in Range.
+    //The circle of the radar scope covered a circle of radius approx 4000m, centered at 4000m in front of the aircraft.
+    private void checkInScope()
+    {
+        if (actor == null)
+        {
+            inRange = false;
+            return;
+        }
+
+        if ( Math.Pow(XDist_m - AIRadarRadius_m, 2) + Math.Pow(YDist_m, 2) > AIRadarRadiusSq_m2
+             || Math.Pow(XDist_m - AIRadarRadius_m, 2) + Math.Pow(ZDist_m, 2) > AIRadarRadiusSq_m2
+        )
+        {
+            //Console.WriteLine("air outofrange scope: {0:F0} {1:F0}", XDist_m, YDist_m);
+            inRange = false;
+        }
+    }
+
+    private void calcDistancePip()
+    {
+
+        //max range of the AI was: ~25000ft, OR the altitude the aircraft was flying (ie if flying at 10000ft it couldn't see more than 10000ft forward)
+        //min range was 400 feet - closer than that the image merged with the transmission pulse (ie, the radar aircraft)
+        if (this.targetDistance_m >  2*AIRadarRadius_m || this.targetDistance_m > playerPos.z * 2.5)
+        {
+            inRange = false;
+            //Console.WriteLine("air outofrange DISTANCE: {0:F0} {1:F0}", targetDistance_m, playerPos.z);
+            return;
+        }
+
+        if (Math.Abs(targetDistance_m) <= AIRadarRadius_m / 10)
+        {
+            //DirectionPip = new string(' ', 11) + "=";
+            DistancePip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(targetDistance_m / (AIRadarRadius_m / 100))))) + "=";
+            if (targetDistance_m < 133) DistancePip = "="; //It stops working about 400 feet out, that's when it merges with the source blip
+
+            return;
+        }
+
+        char c = '|';
+        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(targetDistance_m / (AIRadarRadius_m/5.0)))));
+        string pad = "";
+        //if (ret.Length < 12) pad = new string(' ', 12 - ret.Length);
+        DistancePip = pad + ret;
+
+
+    }
+
+    private void calcDirectionPip()
+    {
+
+        if (Math.Abs(YDist_m) <= AIRadarRadius_m/20)
+        {
+            //DirectionPip = new string(' ', 11) + "=";
+            DirectionPip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(YDist_m / (AIRadarRadius_m / 200)))));// + "=";
+
+            if (YDist_m < 0) DirectionPip += "=";  //Put the dots on left or right side depending on which side the target a/c is on
+            else DirectionPip = "=" + DirectionPip;
+
+
+            return;
+        }
+
+        char c = '-';
+        if (YDist_m > 0) c = '+';
+        string ret = new string(c,Convert.ToInt32( Math.Round(Math.Abs(YDist_m/(AIRadarRadius_m/10)))));
+        string pad = "";
+        if (ret.Length<18) pad = new string(' ', 18 - ret.Length);
+        DirectionPip = pad + ret;
+    }
+
+    private void calcAltitudePip()
+    {
+        if (this.aircraftPos.z < 250 )  //less than 1000ft altitude everything got lost in the ground clutter
+        {
+            inRange = false;
+            //Console.WriteLine("air outofrange Altitude: {0:F0}", this.aircraftPos.z);
+            return;
+        }
+
+        if (Math.Abs(ZDist_m) <= AIRadarRadius_m / 20)
+        {
+            //AltitudePip =  "=" + new string(' ', 12);
+            AltitudePip = new string('.', Convert.ToInt32(Math.Round(Math.Abs(ZDist_m / (AIRadarRadius_m / 200.0))))); //add ... for more precise location when quite close
+
+            if (ZDist_m < 0) AltitudePip += "=";  //Put the dots on left or right side depending on which side the target a/c is on
+            else AltitudePip = "=" + AltitudePip;
+
+            return;
+        }
+
+        char c = '-';
+        if (ZDist_m > 0) c = '+';
+        string ret = new string(c, Convert.ToInt32(Math.Round(Math.Abs(ZDist_m / (AIRadarRadius_m/10.0)))));
+        string pad = "";
+        if (ret.Length < 12) pad = new string(' ', 12 - ret.Length);
+        AltitudePip = ret + pad;
+    }
+
+    private void setOutOfRangePips()
+    {
+        DistancePip = new string(' ', 1) + "?" + new string(' ', 1);
+        AltitudePip = new string(' ', 1) + "?" + new string(' ', 1);
+        if (this.targetDistance_m > 2.25 * AIRadarRadius_m || this.aircraftPos.z < 200 )  //So, we're giving them a break and giving the direction to target (only) starting @ 2.25x the radar distance and also front AND back instead of just front
+            DirectionPip = new string(' ', 1) + "?" + new string(' ', 1);
+        else calcDirectionPip();
+    }
+
+
+    public double displayPips()
+    {
+        if (actor == null) return 0;
+        getPlayerACData();
+        recalculateAndDisplay();
+        //Tuple<double, string> distT = new Tuple<double, string>(targetDistance_m, sbyte);
+        string disp = DirectionPip + " " + DistancePip + " " + AltitudePip;
+        //disp += " " + (XDist_m / 1000.0).ToString("F1") + " " + (YDist_m / 1000.0).ToString("F1") + " " + (ZDist_m / 1000.0).ToString("F1") + " " + targetRelativeAngle_deg.ToString("F0"); //FOR TESTING
+        if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, disp);
+
+/* //Ok, this is promising I think.  Just convert down all the nearby contacts to x/y coordinates & plot like this, then display via the chat window:
+        string chatPip = @"
+---------6----------------7---
+--7----------------2----------
+------------------------------
+---------------------5-----3--
+---4--------------------------
+------------1-----------7-----
+----0-------------------3-----";
+
+        mission.GamePlay.gpLogServer(new Player[] { player }, chatPip, null);
+        
+
+        Console.WriteLine(chatPip);
+        */
+        return targetDistance_m;
+    }
+
+    private void display_recurs()
+    {
+        if (!this.turnedOn) return;
+        if (this.player == null || this.player.Place()==null || this.playerPlace == null || Calcs.Point3dEqual(playerPos,nullV3d)) turnOff();
+        double t = 2.1;
+        //double dist = displayPips();        
+        if (targetDistance_m<5000) t = targetDistance_m/10000*5; //we update the display more frequently when the player is near the target aircraft
+        if (t < 0.5) t = 0.5;//Not sure what the frequency of display update was on the real radar units, we'll say 0.5 second refresh at best?
+        mission.Timeout(t, () => display_recurs());
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        displayPips();
+        //Console.WriteLine("air: {0:F1} {1:F1}", t, targetDistance_m);
+        //knickebeins[player] = new KnickebeinTarget(player, 123, 23, this);        
+    }
+
+    // Public implementation of Dispose pattern callable by consumers.
+    //public void Dispose() => Dispose(true);
+    public void Dispose() { Dispose(true); }
+
+    // To detect redundant calls
+    private bool _disposed = false;
+
+    // Protected implementation of Dispose pattern.
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.turnedOn = false;
+            // Dispose managed state (managed objects).            
+        }
+
+        _disposed = true;
+    }
+
+}
+
+
+public class ASVRadarTargetArray : IDisposable
+{
+    public static double AIRadarRadius_m = 100000; //historically it was abt 40 miles for moderate sized ships, and 10-15 miles for surfaced submarines (side-looking radar could do 10 miles out each direction, so they would sweep a 20-mile swath by looking out both sides) in 1940-ish. We're saying as much as 60-70 miles for very large warships. The actual distances for each ship type are cut down in calcActor_AircraftRelativePosition.
+                                                   //And we're actually saying this a "square" rather than "circle" radius here as our display area is a square/rectangle
+    
+    //So ASV radar was side-looking, and could see 2.5X further in the side direction
+    //than towards, the front, which was a different, weaker system.
+    //Bit of a cheat, we're just modeling this as a rectangle 2.5X wider than tall
+    public static double AIRadarRadiusX_m = 100000;
+    public static double AIRadarRadiusY_m = 40000;
+
+    public static double AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+    public static double AIRadarMagnification = 1; //We can zoom in 1, 2, 4, 8 etc X magnification
+
+    //ASV radar side looking ver could see abt 2.5X further towards sides than front
+    //It would have "lobes" where it couldn't quite see direct to front or back
+    //The front was filled in by switching to front-facing radar, which was 2.5X weaker
+    public static int GridHeight = 21; //Height should be ODD as the main a/c will then be in middle
+    public static int GridWidth = 51; //Note that GridWidth should be ODD as that will place the main a/c right in the center column
+    //In this font _ = + # are all roughly same width.  - ^ * are all about half that width
+    public static char GridChar = '_';
+    public static char GridBackChar = '=';
+    public static char GridOriginChar = '#';
+    public static char GridBackIndicatorChar = '+';
+    public static char GridEqualAltCharacter = '=';
+    public static char GridGroundClutterCharacter = '~';
+
+    public double delay_s = 7;
+
+
+    public char[,] Grid = new char[GridWidth, GridHeight + 1];
+        
+    public Player player { get; set; }
+    public AiActor playerPlace { get; set; }
+    public Point3d playerPos { get; set; }
+    public Vector3d playerVwld { get; set; }
+
+    public List<AiActor> shipList { get; set;  }
+
+    public double targetRelativeAngle_deg { get; set; } //angle from player to target, relative to the player's current direction   
+    public double targetHeightAngle_deg { get; set; } //angle from player in altitude/height
+    public double targetDistance_m { get; set; } //distance from player to target in km
+
+    public double XDist_m { get; set; } //distance front/back of target from player direction
+    public double YDist_m { get; set; } //distance left/right of target from player direction
+    public double ZDist_m { get; set; } //altitude distance player to target
+
+    public string DirectionPip { get; set; }
+    public string AltitudePip { get; set; }
+    public string DistancePip { get; set; }
+
+    public bool inRange { get; set; }
+    public bool turnedOn { get; set; }
+
+    public static Vector3d nullV3d;
+
+    public ASVRadarMission mission { set; get; }
+
+    public ASVRadarTargetArray(Player player, ASVRadarMission mission, double delay_s = 7)
+    {
+        //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+        this.player = player;                       
+        this.playerPlace = player.Place();
+        this.mission = mission;
+        this.delay_s = delay_s;
+
+        nullV3d = new Vector3d(0, 0, 0);
+    }
+
+    public ASVRadarTargetArray(bool test, Player player, ASVRadarMission mission, double delay_s = 7)
+    {
+        //AIRadarRadiusSq_m2 = AIRadarRadius_m * AIRadarRadius_m;
+        if (!test) return;
+        this.player = player;
+        AiActor pp = null;
+        List<AiAircraft> allAc = ASVRadarCalcs.AllAircraftInGame(mission);
+        Console.WriteLine("ASVTest: AllAc has {0} entries", allAc.Count());
+        Calcs.Shuffle(allAc);
+        foreach (AiAircraft a in allAc)
+        {
+            if ((a as AiActor).Pos().z > 500) { 
+                pp = (a as AiActor);
+                Console.WriteLine("ASVTest: Chose aircraft {0} as the Place, ({1:n0},{2:n0},{3:n0})", pp.Name(), pp.Pos().x, pp.Pos().y, pp.Pos().z);
+                break; }
+            
+        }
+        this.playerPlace = pp;
+        this.mission = mission;
+        this.delay_s = delay_s;
+
+        nullV3d = new Vector3d(0, 0, 0);
+    }
+
+
+    //start display
+    public void turnOn()
+    {
+        this.turnedOn = true;
+        display_recurs();
+    }
+
+    //end display
+    public void turnOff()
+    {
+        this.turnedOn = false;
+        this.Dispose();
+        //if (mission.GamePlay != null) mission.GamePlay.gpHUDLogCenter(new Player[] { player }, ""); //clear the HUD
+    }
+
+    public virtual void delete()
+    {
+        if (mission.PlayerCurrentAIRadarTargetArray.ContainsKey(player)) mission.PlayerCurrentAIRadarTargetArray.Remove(player);
+    }
+
+    public void getShipList() {
+        this.shipList = mission.AllShipsNearSorted(playerPos, playerVwld, 0, ASVRadarTargetArray.AIRadarRadius_m * 1.414); //get a/c in radius*1.414 centered at player a/c, this makes sure to get the corners of the rectangular/square display area.
+    }
+
+    public virtual void initGrid()
+    {
+        for (int i = 0; i < GridWidth; i++)
+            for (int j = 0; j < GridHeight; j++)
+            {
+                Grid[i, j] = GridChar;
+                if (j==0) Grid[i, j] = GridBackChar; //the brief display of what's behind
+            }
+
+        Grid[(GridWidth - 1) / 2, 1] = GridOriginChar;//The center, where the main a/c is
+    }
+
+    public virtual void displayGrid()
+    {
+        double distanceLimit_m = (playerPos.z * 1.5); //approximating that the radar couldn't see out further than the plane was tall
+        int XLimitPos = Convert.ToInt32(Math.Round(distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2.0)) + 1;
+        int XLimitNeg =  Convert.ToInt32(Math.Round(-distanceLimit_m / AIRadarRadius_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1 )/ 2.0)) - 1 ;
+        int YLimit = Convert.ToInt32(Math.Round((distanceLimit_m * 1.5) / AIRadarRadius_m * ((double)GridHeight))) + 1;
+
+        Console.WriteLine("Grid limits: {0} {1} {2} ", XLimitNeg, XLimitPos, YLimit);
+
+        double delay = 0.0;
+        for (int j = GridHeight -1 ; j >= 0; j--)
+        {
+            if (j > YLimit) continue; //the early radar could only see out about as far as the altitude of the a/c; after that overwhelmed by ground return.  So this approximates that.
+            string line = "";// new string(Grid[, j]);
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; // line += GridGroundClutterCharacter;
+                else line += Grid[i, j];
+            }
+            mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
+            delay += 0.08; //delay was .04 (1/25 second) but that seems to cause stutters ? ? So changing to .08 2021/08
+        }        
+    }
+
+    public virtual void placeItemInGrid(Point3d p, double size = 1)
+    {
+        //int XPos, YPos, Zpos = 0;       //so 0,0,0 is our "ERROR" or too large value, as we can't place an item at 0,0,0.
+                                        //if (Math.Abs(XDist_m)<=AIRadarRadius_m)
+        int XPos = Convert.ToInt32(Math.Round(p.y / AIRadarRadius_m * ((double)GridWidth-1)/2.0 + (double)GridWidth/2.0));
+        int YPos = Convert.ToInt32(Math.Round(p.x / AIRadarRadius_m * ((double)GridHeight)));
+        double origtemp = (p.z / AIRadarRadius_m * 5) + 5.0;
+        double temp = Math.Sign(p.z) * Math.Floor(Math.Sqrt(Math.Abs(p.z / AIRadarRadius_m)) * 5) + 5.0;
+        Console.WriteLine("ZP dbl: {0} {1}", temp, origtemp);
+        int ZPos = 5;
+        try
+        {
+            ZPos = Convert.ToInt32(temp); //Height will always be represented 0-9, so 5 digits in each direction.  Sqrt gives us more resolution near the players altitude and compresses the alt difference at more distant altitudes.
+        } catch (Exception ex) { Console.WriteLine("AIRadar Int conversion error on ZP dbl: {0} ", temp); ZPos = 5; }
+
+
+        if (XPos >= 0 && XPos < GridWidth && ZPos >= -15 & ZPos <= 15)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  //If in front, place # 0-9 in the right place in the grid to indicate the position
+            {
+                char zind = '>';
+                if (ZPos < 0) zind = '<';
+                else if (ZPos < 10)
+                {
+                    zind = Convert.ToChar(ZPos.ToString());
+                    if (Math.Abs(p.z) < 100) zind = GridEqualAltCharacter;
+                }
+
+                if (XPos == (GridWidth - 1) / 2 && YPos == 0 && ZPos < 7 && ZPos > 2) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+                 
+                Grid[XPos, YPos + 1] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            else if (YPos < 0 && YPos >= -GridHeight/4  && ZPos<9 && ZPos >1)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                Grid[XPos, 0] = GridBackIndicatorChar;
+            }
+        }
+    }
+
+    public bool getPlayerACData() {
+
+        if ((player == null || player.Place() == null || (
+            player.PersonPrimary() == null && player.PersonSecondary() == null)) && player.Name() != "Server")
+        {
+            playerPlace = null;
+            playerVwld = nullV3d;
+            playerPos = new Point3d(-1, -1, -1);
+            turnOff();
+            delete();
+            return false;
+        }
+        else
+        {
+            if (player.Name() == "Server")          //server's place is ona random a/c, so don't mess that up     
+            { this.playerPos = playerPlace.Pos(); }
+            else {
+                this.playerPlace = player.Place();
+                this.playerPos = playerPlace.Pos();
+            }
+        }
+
+        if ((playerPlace.Group() as AiAirGroup) == null) playerVwld = nullV3d;
+        else  this.playerVwld = (playerPlace.Group() as AiAirGroup).Vwld();
+        return true;
+   }
+
+    //regets player & target aircraft position & then recalculates the angles & pips
+    public Point3d? calcActor_AircraftRelativePosition(AiActor actor)
+    {
+        if (actor == null) return null;
+        Point3d actorpos = actor.Pos();
+        //if (actorpos.z < 250) return null; // couldn't detect a/c close than about 1000 ft to the ground; ground clutter //However for SHIPS this is  moot!
+
+        double targetDistance_m = ASVRadarCalcs.CalculatePointDistance(this.playerPos, actorpos);
+
+        //Different kinds of ships had different range/visibilities.
+        // - Submarine, 10-15 miles
+        // - medium ship, 40 miles
+        // - Small ship, presumably less, say 30 miles
+        // - Large ship more, say 60 
+        string types = (actor as AiGroundActor).Type().ToString().ToLower() + " " + (actor as AiCart).InternalTypeName().ToString().ToLower();
+
+        if (types.Contains("submarine") && targetDistance_m > 20000) return null;
+        if (types.Contains("small") && targetDistance_m > 30000) return null;
+
+        if ((types.Contains("motorbarge") || types.Contains("tanker_medium")) && targetDistance_m > 45000) return null;
+
+        if (types.Contains("shipunit.merchant") && targetDistance_m > 55000) return null;
+
+        //other ships that aren't really huge military ones are 60km/40miles-ish
+        if (!types.Contains("shipcarrier") && !types.Contains("shipbattleship") && !types.Contains("shipcruiser") && !types.Contains("shipdestroyer") && !types.Contains("warship") && targetDistance_m > 65000) return null;
+
+        //The larger military ships really shone bright on radar = long distance
+        if ((types.Contains("shipcruiser") || types.Contains("shipdestroyer")) && targetDistance_m < 80000) return null;
+
+        if ((types.Contains("shipcarrier") || types.Contains("shipbattleship") || types.Contains("warship")) && targetDistance_m < 110000) return null;
+
+        double targetRelativeAngle_deg = 180 + ASVRadarCalcs.CalculateDifferenceAngle(this.playerVwld, this.playerPos, actorpos);
+        if (targetRelativeAngle_deg > 180) targetRelativeAngle_deg -= 360;
+        if (targetRelativeAngle_deg < -180) targetRelativeAngle_deg += 360;
+        double XDist_m = targetDistance_m * Math.Cos(ASVRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        double YDist_m = targetDistance_m * Math.Sin(ASVRadarCalcs.DegreesToRadians(targetRelativeAngle_deg));
+        double ZDist_m = actorpos.z - playerPos.z;
+
+        //Console.WriteLine("AC at {0:F0} {1:F0} {2:F0} {4:F0} {5:F0} {6:F0} {7:F0} {8:F0} {9:F0} to {3}", XDist_m, YDist_m, ZDist_m, player.Name(), this.playerPos.x,
+        //    this.playerPos.y, this.playerPos.z, this.playerVwld.x, this.playerVwld.y, this.playerVwld.z);
+
+        return new Point3d(XDist_m, YDist_m, ZDist_m);
+
+        
+
+        /*
+        double targetHeightAngle_deg = AIRadarCalcs.CalculatePitchDegree(this.playerPos, aircraftPos);
+        if (targetHeightAngle_deg > 180) targetHeightAngle_deg -= 360;
+        if (targetHeightAngle_deg < -180) targetHeightAngle_deg += 360;
+        */
+
+    }
+
+    //Call recacalculateAndDisplay which calls this - NOT this directly
+    public virtual void calculateGrid()
+    {
+        initGrid();
+        if (!getPlayerACData() || !mission.isPlayerAllowedAIRadar(player) ) turnOff();
+        getShipList();
+        foreach(AiActor actor in shipList)
+        {
+            Point3d? p = calcActor_AircraftRelativePosition(actor as AiActor);
+            if (p.HasValue)
+            {
+                placeItemInGrid(p.Value);
+            }
+        }
+    }
+
+
+    public virtual void display_recurs()
+    {
+        if (!this.turnedOn) return;
+        mission.Timeout(delay_s, () => display_recurs());
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        Task.Run(() =>
+        {
+            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerVwld,nullV3d)) turnOff();            
+            calculateGrid();
+            displayGrid();
+        });     
+    }
+
+    // Public implementation of Dispose pattern callable by consumers.
+    //public void Dispose() => Dispose(true);
+    public void Dispose() { Dispose(true); }
+
+    // To detect redundant calls
+    private bool _disposed = false;
+
+    // Protected implementation of Dispose pattern.
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.turnedOn = false;
+            // Dispose managed state (managed objects).            
+        }
+
+        _disposed = true;
+    }
+}
+
+public class ASVRadarAuthenticArray : ASVRadarTargetArray, IDisposable
+{
+    public char[,] AltGrid = new char[GridWidth, GridHeight];
+    public double AIRadarMagnification = 1; //We can zoom in 1, 2, 4, 8 etc X magnification
+    private double AIRadarMagnification_max = 2; //We can zoom in 1, 2, 4, 8 etc X magnification
+    private double AIRadarMagnification_factor = 2; //We can zoom in 1, 2, 4, 8 etc X magnification
+    private double orig_delay_s = 7;
+
+    public ASVRadarAuthenticArray(Player player, ASVRadarMission mission, double delay_s = 7) : base(player, mission, delay_s)
+    {
+    }
+
+    public ASVRadarAuthenticArray (bool test, Player player, ASVRadarMission mission, double delay_s = 7) : base(test, player, mission, delay_s) { }
+
+    public override void delete()
+    {
+        if (mission.PlayerCurrentAIRadarAuthenticArray.ContainsKey(player)) mission.PlayerCurrentAIRadarAuthenticArray.Remove(player);
+        //this.Dispose();
+    }
+
+    public double initMagnification()
+    {
+        AIRadarMagnification = 1; //We can zoom in 1, 2, 4, 8 etc X magnification
+        orig_delay_s = delay_s;
+        GridOriginChar = '#';
+        return AIRadarMagnification;
+    }
+
+    //Magnify the center of the screen and also, increase the speed of the radar returns
+    //REally fast returns will probably hork up the server, need to put some kind of a limit on it probably
+    public double incrementMagnification()
+    {
+        AIRadarMagnification *= AIRadarMagnification_factor; //We can zoom in 1, 2, 4, 8 etc X magnification
+        delay_s = orig_delay_s / AIRadarMagnification; //speed up time by same factor
+        if (delay_s < 1.9) delay_s = 1.9; //TOO FAST == NOT GOOD
+        if (AIRadarMagnification > AIRadarMagnification_max)
+        {
+            AIRadarMagnification = 0; //meaning, turn the radar off
+            delay_s = orig_delay_s;  //delay back to where it started
+            GridOriginChar = '#';
+        }
+        try
+        {
+            string goc = AIRadarMagnification.ToString("n0");
+            //goc = goc.Substring(goc.Length - 1, 1);
+            GridOriginChar = goc.ToCharArray()[goc.Length - 1];
+        } catch (Exception ex) { GridOriginChar = '#'; }
+        return AIRadarMagnification;
+    }
+
+    public override void initGrid()
+    {
+        for (int i = 0; i < GridWidth; i++)
+            for (int j = 0; j < GridHeight; j++)
+            {
+                double x = (i - (GridWidth - 1) / 2);
+                double y = (j - (GridHeight - 1) / 2 );
+                char c = GridChar;
+                if (y<0 && Math.Abs(x/y) <0.4) c = GridGroundClutterCharacter; //modeling the dead spot @ the back of side-viewing radar
+                if (Math.Round(x) == 0 && Math.Round(y) == 0) c = '@';
+                    Grid[i, j] = c;
+                //if (j == 0) Grid[i, j] = GridBackChar; //the brief display of what's behind
+                
+                AltGrid[i, j] = GridChar;
+                //if (j == 0) AltGrid[i, j] = GridBackChar; //the brief display of what's behind
+            }
+
+        Grid[(GridWidth - 1) / 2, (GridHeight - 1) / 2] = GridOriginChar;//The center, where the main a/c is
+        AltGrid[(GridWidth - 1) / 2, 0] = GridOriginChar;//The center, where the main a/c is
+    }
+
+    public override void displayGrid()
+    {
+        //print blank line first - to separate successive displays cleanly
+        mission.GamePlay.gpLogServer(new Player[] { player }, " ", null);//can't send just ""
+        
+        //This just makes the whole thing bigger, for better resolution
+
+        //below 500m it just shows a 4K square
+        //On initial tests, they could see 'all the ships across the Solent even at 20 feet'
+        //That is about 4-5km
+        double distanceLimit_m = 8 * 500 * AIRadarMagnification_factor; //ASV can see way further out than AI radar but can still see further than that as the altitude grows.
+          //When at low alt, magnifying the radar also makes the screen larger (say 2X larger  for 2X magnification)
+        bool lowAltMode = false;
+
+        if (playerPos.z > 500) {
+            lowAltMode = false;
+            double mult = 20 + (playerPos.z - 500) / 333;
+            distanceLimit_m = (playerPos.z * mult); //ASV can still see further than that as the altitude grows.
+        }
+
+        //We're modeling a side-viewing radar AND front-viewing radar both at once, a bit of a cheat. So it could see out each side about 10 miles (submarines) and even further (larger  ships etc), at altitude
+        //but it was a but more limited in front, about 2.5X less powerful.
+        //It sort of had lobes, too, but maybe we're not modeling those?
+        //And you had to switch from side-facing to front facing to actually attack a target, not
+        //modelling that for now.
+
+        //aspectRatio here is very wide,larger X, smaller Y, because it is SIDEVIEWING with relatively weak
+        //front-facing capability
+        double aspectRatio = AIRadarRadiusX_m / AIRadarRadiusY_m;
+        int XLimitPos = Convert.ToInt32(Math.Round(distanceLimit_m *aspectRatio / AIRadarRadiusX_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2)) + 1;
+        int XLimitNeg = Convert.ToInt32(Math.Round(-distanceLimit_m * aspectRatio / AIRadarRadiusX_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1) / 2)) - 1;
+        int YLimitPos = Convert.ToInt32(Math.Round((distanceLimit_m) / AIRadarRadiusY_m * ((double)GridHeight - 1)/2.0) + ((double)GridHeight -1)/2) + 1;
+        int YLimitNeg = Convert.ToInt32(Math.Round((-distanceLimit_m) / AIRadarRadiusY_m * ((double)GridHeight-1)/2.0) + ((double)GridHeight - 1) / 2)  - 1;
+
+        //Console.WriteLine("Aerial Radar: Grid limits AUTH: {0} {1} {2} ", XLimitNeg, XLimitPos, YLimit);
+
+        double delay = 0.5;
+        for (int j = GridHeight - 1; j >= 0; j--)
+        {
+            if (j > YLimitPos || j < YLimitNeg) continue; //the early radar could only see out about as far as the altitude of the a/c; after that overwhelmed by ground return.  So this approximates that.
+            string line = "";// new string(Grid[, j]);
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; // line += GridGroundClutterCharacter;
+                char c = Grid[i, j];
+                line += c;
+                if (lowAltMode )line += c;
+            }
+            /* - for ships, skipping altitude screen
+            line += " | ";
+
+            for (int i = 0; i < GridWidth; i++)
+            {
+                if (i < XLimitNeg || i > XLimitPos) continue; //line += GridGroundClutterCharacter;
+                else line += AltGrid[i, j];
+            }
+            */
+            mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); });
+            delay += 0.08; //delay was .04 (1/25 second) but that seems to cause stutters ? ? So changing to .08 2021/08
+            if (lowAltMode) mission.Timeout(delay, () => { mission.GamePlay.gpLogServer(new Player[] { player }, line, null); delay += 0.08; });
+            
+
+        }
+    }
+
+    //These chars all have VERY similar width (same as _) in the NON-fixed width
+    //font in CloD.  IN the Fixed with of course they are all the same.
+    //was ·+oO0 but the unicode chars should work better.  Middle dot, esp, was thinner than the others. O & 0 are very different widths in the non-fixed width font on CloD windows.
+    //List<char> zinds = new List<char>() { '·','+', 'o','0','8' };
+    public static List<char> zinds = new List<char>() { '\u25CB', 'o', '\u25CF', '\u25D9', '\u25A0' };
+
+    public override void placeItemInGrid(Point3d p, double size = 1)
+    {
+        //int XPos, YPos, Zpos = 0;       //so 0,0,0 is our "ERROR" or too large value, as we can't place an item at 0,0,0.
+        //if (Math.Abs(XDist_m)<=AIRadarRadius_m)
+
+        if (ASVRadarCalcs.distance(p.x, p.y) < 1000) return; //Units couldn't detect any closer than 1000 meters - it merged with the signal from the transmitter.  See wikipedia article on ASV Mark II Radar
+
+        int XPos = Convert.ToInt32(Math.Round(p.y * AIRadarMagnification / AIRadarRadiusX_m * ((double)GridWidth - 1) / 2.0 + ((double)GridWidth - 1.0) / 2.0));
+        int YPos = Convert.ToInt32(Math.Round(p.x * AIRadarMagnification / AIRadarRadiusY_m * ((double)GridHeight) - 1 / 2.0) + ((double)GridHeight - 1.0) / 2.0 );
+
+        int ZPos = Convert.ToInt32(Math.Round(p.z * AIRadarMagnification / AIRadarRadius_m * ((double)GridWidth) / 2.0 + ((double)GridWidth - 1.0) / 2.0));
+
+        Console.WriteLine("pIIG: {0} {1} {2:n0} {3:n0}", XPos, YPos, p.x, p.y);
+
+        /*
+        double origtemp = (p.z / AIRadarRadius_m * 5) + 5.0;
+        double temp = Math.Sign(p.z) * Math.Floor(Math.Sqrt(Math.Abs(p.z / AIRadarRadius_m)) * 5) + 5.0;
+
+        catch (Exception ex) { Console.WriteLine("AIRadar Int conversion error on ZP dbl: {0} ", temp); ZPos = 5; }
+        */
+
+        //Place the item on the x/y coordinate grid
+        if (XPos >= 0 && XPos < GridWidth)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  
+            {
+                double charSize = size;
+
+                //TODO: Keep a total of sum of all sizes/objects in a given position in a different grid,
+                //then translate that into this ASCII grid when done.
+                //But this will at least partly/slightly duplicate that:
+                if (Grid[XPos, YPos] == zinds[0]) charSize += 0.1; //was ·+oO0 but the unicode chars should work better
+                if (Grid[XPos, YPos] == zinds[1]) charSize += 0.2; 
+                if (Grid[XPos, YPos] == zinds[2]) charSize += 0.5; 
+                if (Grid[XPos, YPos] == zinds[3]) charSize += 0.8; 
+                if (Grid[XPos, YPos] == zinds[4]) charSize += 1.2;
+                //[0] = 0.0 0.3
+                //[1] = 0.4 0.7
+                //[2] = 0.8 1.0
+                //[3] = 1.1 1.4
+                //[4] = 1.5
+
+                char zind = zinds[2];
+                if (charSize < 0.4) zind = zinds[0];
+                else if (charSize <= 0.7) zind = zinds[1];
+                else if (charSize >= 1.5) zind = zinds[4];
+                else if (charSize >= 1.1) zind = zinds[3];
+                //if (p.x < 0 && Math.Abs(p.y / p.x) < 0.5) zind = 'o';// GridGroundClutterCharacter; //the deadzone in back of the a/c, from side-viewing radar
+
+                //if (XPos == (GridWidth - 1) / 2 && YPos == 0) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+
+                if (Grid[XPos, YPos] != GridGroundClutterCharacter) Grid[XPos, YPos] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            /*
+            else if (YPos < 0 && YPos >= -GridHeight / 4)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                Grid[XPos, 0] = GridBackIndicatorChar;
+            }
+            */
+        }
+
+        /*
+        //Place the item on the y/alt coordinate gride
+        if (ZPos >= 0 && ZPos < GridWidth)
+        {
+            if (YPos >= 0 && YPos < GridHeight)  //If in front, place # 0-9 in the right place in the grid to indicate the position
+            {
+                char zind = 'O';
+
+
+                if (ZPos == (GridWidth - 1) / 2 && YPos == 0) zind = GridOriginChar;// Radar targets close in were overpowered by the origin signal and couldn't be seen.
+
+                AltGrid[ZPos, YPos + 1] = zind;
+                //Console.WriteLine("Placing " + zind);
+            }
+            else if (YPos < 0 && YPos >= -GridHeight / 4)  //If in back, place a * in the corresponding position to indicate there is **something** back there somewhere, but only for things quite close in and close in alt
+            {
+                AltGrid[ZPos, 0] = GridBackIndicatorChar;
+            }
+        }
+        */
+
+    }
+
+    //List might need more refinement, but a start.
+    public static List<string> verySmallShips = new List<string>() { "Submarine", "MotorBarge_Small", "U-class_SS", "Type_VIIC_SS" } ;
+    public static List<string> smallShips = new List<string>() { "Schnellboot", "Vosper", "MotorBarge_Large", "Albatros", "Spica", };
+
+    public static List<string> mediumShips = new List<string>() { "Beshtau", "Corvette", "Minensuchtboote", "Albatros", "ShipUnit.Merchant" };
+    public static List<string> mediumLargeShips = new List<string>() { "Tanker_Medium1", "Tanker_Medium2" };
+    public static List<string> largeShips = new List<string>() { "ShipUnit.Rion", "Tribal", "SanGiorgio", "1936_DD", };
+    public static List<string> veryLargeShips = new List<string>() { "Zara", "Leipzig",   "Hospital_Ship", "QueenElizabeth", "Revenge", "Leander", "Tribal",  };
+
+//Call recacalculateAndDisplay which calls this - NOT this directly
+public override void calculateGrid()
+    {
+        if (!this.turnedOn) return;// It's not turning off for some reason?
+        initGrid();
+        if (!getPlayerACData() || !mission.isPlayerAllowedAIRadar(player) ) turnOff();        
+        getShipList();
+        foreach (AiActor actor in shipList)
+        {
+            Point3d? p = calcActor_AircraftRelativePosition(actor as AiActor);
+            if (p.HasValue)
+            {
+                string types = (actor as AiGroundActor).Type().ToString().ToLower() + " " + (actor as AiCart).InternalTypeName().ToString().ToLower();
+                string typesProper = (actor as AiGroundActor).Type().ToString() + " " + (actor as AiCart).InternalTypeName().ToString();
+                double size = 1;
+
+                //generic guesses
+                if (types.Contains("submarine")) size = 0.3;
+                else if (types.Contains("small")) size = 0.6;
+
+                else if ((types.Contains("motorbarge") || types.Contains("tanker_medium"))) size = 0.8;
+
+                else if (types.Contains("shipunit.merchant")) size = 1;
+
+                //The larger military ships really shone bright on radar = long distance
+                else if ((types.Contains("shipcruiser") )) size = 1.3;
+
+                else if (types.Contains("shipdestroyer") || (types.Contains("shipcarrier") || types.Contains("shipbattleship"))) size = 1.8;
+
+                //more specific sizes, if known
+                if (verySmallShips.Any(typesProper.Contains)) size = 0.3;
+                else if (smallShips.Any(typesProper.Contains)) size = 0.6;
+                else if (mediumShips.Any(typesProper.Contains)) size = 0.9;
+                else if (mediumLargeShips.Any(typesProper.Contains)) size = 1.1;
+                else if (largeShips.Any(typesProper.Contains)) size = 1.4;
+                else if (veryLargeShips.Any(typesProper.Contains)) size = 1.8;
+
+                placeItemInGrid(p.Value, size);
+            }
+        }
+    }
+
+    public override void display_recurs()
+    {
+        if (!this.turnedOn) return;
+        mission.Timeout(delay_s, () => display_recurs());
+        //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
+        Task.Run(() =>
+        {
+            //Console.WriteLine("AIR playerplace {0} {1} {2}", (this.playerPlace as AiAircraft).Pos().x, (this.playerPlace as AiAircraft).Pos().y, (this.playerPlace as AiAircraft).Pos().z);
+            calculateGrid();
+            displayGrid();
+        });
+    }
+
+
+    // Public implementation of Dispose pattern callable by consumers.
+    //public void Dispose() => Dispose(true);
+    public void Dispose() { Dispose(true); }
+
+    // To detect redundant calls
+    private bool _disposed = false;
+
+    // Protected implementation of Dispose pattern.
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.turnedOn = false;
+            // Dispose managed state (managed objects).            
+        }
+
+        _disposed = true;
+    }
+
+
+}
+
+
+
+
+public class ASVRadarMission : AMission
+{
+    //public IMainMission TWCMainMission;
+    //public ISupplyMission TWCSupplyMission;
+    public Random ran;
+    public Dictionary<Player, ASVRadarAuthenticArray> PlayerCurrentAIRadarAuthenticArray;
+    public Dictionary<Player, ASVRadarTargetArray> PlayerCurrentAIRadarTargetArray;
+    public Dictionary<Player, Tuple<ASVRadarTarget, int>> PlayerCurrentAIRadarTargetandACnum;
+    public Mission mainmission;
+
+
+
+    public ASVRadarMission(Mission msn)
+    {
+        //TWCMainMission = TWCComms.Communicator.Instance.Main;
+
+        //TWCComms.Communicator.Instance.Knickebein = (IKnickebeinMission)this; //allows -stats.cs to access this instance of Mission                        
+
+        //Timeout(123, () => { checkAirgroupsIntercept_recur(); });
+        ran = new Random();
+        PlayerCurrentAIRadarTargetArray = new Dictionary<Player, ASVRadarTargetArray>();
+        PlayerCurrentAIRadarAuthenticArray = new Dictionary<Player, ASVRadarAuthenticArray>();
+        PlayerCurrentAIRadarTargetandACnum = new Dictionary<Player, Tuple<ASVRadarTarget, int>>();
+        mainmission = msn;
+
+        Console.WriteLine("-AerialInterceptRadar.cs successfully inited");
+    }
+
+
+
+
+    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
+    {
+
+        base.OnPlaceEnter(player, actor, placeIndex);
+        //startKnickebein(player);
+
+    }
+
+    public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+
+
+    }
+
+
+
+    public override void OnMissionLoaded(int missionNumber)
+    {
+        base.OnMissionLoaded(missionNumber);
+
+        //TWCSupplyMission = TWCComms.Communicator.Instance.Supply;
+
+        //Console.WriteLine("-interceptradar.cs OnMissionLoaded {0} {1} ", missionNumber, MissionNumber);
+
+
+        if (missionNumber == MissionNumber)
+        {
+            if (GamePlay != null && GamePlay is GameDef)
+            {
+                //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+                Console.WriteLine("Aerial Radar initializing eventchat.");
+                (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+            }
+
+            //knickeb = new Knickebeinholder(this);
+            //knickeb.KniTest();
+
+            Console.WriteLine("-AerialInterceptRadar.cs - onMissionLoaded");
+
+
+        }
+    }
+
+    public override void OnBattleStoped()
+    {
+        base.OnBattleStoped();
+
+        if (GamePlay != null && GamePlay is GameDef)
+        {
+            //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+            (GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+            //If we don't remove the new EventChat when the battle is stopped
+            //we tend to get several copies of it operating, if we're not careful
+        }
+    }
+
+
+    void Mission_EventChat(Player player, string msg)
+    {
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
+
+        //Player player = from as Player;
+        AiAircraft aircraft = null;
+        if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+
+        string msg_orig = msg;
+        msg = msg.ToLower();
+
+        /*
+        if (msg.StartsWith("<asvn"))
+
+        {
+            handleAIRadarRequest(player);            
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Started. <AStop or <as to stop.", null);
+        }
+        if (msg.StartsWith("<asvs"))
+
+        {
+            handleAIRadarRequest(player, stop: true);
+        }
+
+        if (msg.StartsWith("<asvg")) //array-chat system
+        {
+            string ss = "";
+            if (msg.Length>2) ss = msg.Substring(3);
+            double delay_s = 7;
+            double cdel = 7;
+            try
+            {
+                 cdel = Convert.ToDouble(ss);
+            } catch (Exception ex) { cdel = 7; }
+            if (cdel > 0.5 && cdel < 120) delay_s = cdel;
+            handleAIRadarArrayRequest(player, delay_s);
+        } */
+        if (msg.StartsWith("<asvtest") && mainmission.admin_privilege_level(player) >= 2) //array-chat AUTHENTIC system
+        {
+            double delay_s = 7;
+
+            handleAIRadarAuthenticArrayRequest(player, delay_s, test: true);
+            
+        }
+        else if (msg.StartsWith("<asvlist") && mainmission.admin_privilege_level(player) >= 2) //array-chat AUTHENTIC system
+        {
+
+            AllShipsNearSorted(new Point3d(180000, 155000, 0), new Vector3d(100, 100, 100), 0, 200000, log: true);
+        }
+
+        else if (msg.StartsWith("<asvhelp6") || msg.StartsWith("<asvh6"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION DETAILS (part 6/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Alternative method to start ASV Radar:", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Chat command <asv will turn ASV Radar on. Repeating <asv switches to 2X magnification, then off.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "However, in busy servers, other players appreciate it when you use Tab-4 commands rather than chat commands.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<<<End of ASV RADAR HELP>>>", null);
+        }
+        else if (msg.StartsWith("<asvhelp5") || msg.StartsWith("<asvh5"))
+        {
+            var z = ASVRadarAuthenticArray.zinds;
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION DETAILS (part 5/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "At altitude, ASV Radar shows targets as far as 20miles/32km to your 3 o'clock and 9 o'clock.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "But to your 12 o'clock, it shows only 8 miles/13km.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "For example: On the previous screen, the " + z[1] + " and " + z[2] + " targets look to be about the same distance from your aircraft, 12 o'clock & 3 o'clock.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "But the " + z[2] + " target at 3 o'clock is actually 5X (!!!) more distant.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "That is why you can see a target to your 3 o'clock, but when you turn towards it,", null);
+            GamePlay.gpLogServer(new Player[] { player }, "the target disappears from your screen.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "The target is still there, but possibly as much as 12 miles beyond", null);
+            GamePlay.gpLogServer(new Player[] { player }, "the reach of your forward-facing radar.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Real WW2 pilots using ASV radar faced the same situation - and often lost track of enemy vessels when they turned towards them.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<asvhelp6 for more", null);
+
+        }
+        else if (msg.StartsWith("<asvhelp4") || msg.StartsWith("<asvh4"))
+        {
+            var z = ASVRadarAuthenticArray.zinds;
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION DETAILS (part 4/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "This <asv radar screen shows 5 targets: #1 A large, bright return to the forward left,", null);
+            GamePlay.gpLogServer(new Player[] { player }, "#2 A smaller target directly in front of the aircraft, #3 A medium-sized return on the near right.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "#4 A very dim return to the far left rear.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "#5 A VERY strong return to the far right rear.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "# indicates the player plane.  (Replaced by a '2' if the magnification is set to 2X.)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "~~~ indicates area to the rear of the aircraft with no radar coverage", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"_________________________", null); ;
+            GamePlay.gpLogServer(new Player[] { player }, @"_____" + z[3] +"___________________", null); ;
+            GamePlay.gpLogServer(new Player[] { player }, @"____________" + z[1] + "____________", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"____________#_" + z[2] + "__________", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"____________~____________", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"____________~____________", null);
+            GamePlay.gpLogServer(new Player[] { player }, @"_" + z[0] + "_________~~~________" + z[4] + "__", null);
+            //GamePlay.gpLogServer(new Player[] { player }, @"====+== | ==+====", null);
+            GamePlay.gpLogServer(new Player[] { player }, "IMPORTANT NOTE: This is a side-mounted radar and reaches 2.5X further to the side than to the front.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "However, the display distorts this. Imagine squeezing the display rectangle to half as tall, but the same width.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "That would give a true spatial representation of the radar returns.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<asvhelp5 for more", null);
+        }
+        else if (msg.StartsWith("<asvhelp3") || msg.StartsWith("<asvh3"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION DETAILS (part 3/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "The ASV displays do not have a definite distance scale.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Displays allow you to estimate rough distances forward, and left/right.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Look behind capabilities did not exist in this system.", null);
+            //ASV Mark II radar - Wikipedia
+            GamePlay.gpLogServer(new Player[] { player }, "Read the Wikipedia article \"ASV Mark II radar\" for more details about the system the ASV Radar models.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<asvhelp4 for more.", null);
+        }
+
+        else if (msg.StartsWith("<asvhelp2") || msg.StartsWith("<asvh2"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION DETAILS (part 2/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Historic ASV radar from the Battle of Britain era was rudimentary.  However at times it was quite useful.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Long distance radar required a long antenna, so side-facing radar was used.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Forward-facing radar used a much smaller antenna - and so was much weaker, reaching less than half the distance.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "To the rear was a gap in coverage.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "On your screen, # indicates your position. Coverage area increases as you gain altitude.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Targets are shown as dots - smaller for less reflective returns and larger for strong returns.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Large warships are excellent, strong radar targets. Smaller ships are much dimmer - as are submarines.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "<asvhelp3 for more", null);
+        }
+        else if (msg.StartsWith("<asvhelp") || msg.StartsWith("<asvh"))
+        {
+
+            GamePlay.gpLogServer(new Player[] { player }, ">>>>AIR TO SURFACE VESSEL (ASV) RADAR OPERATION) (part 1/6)", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Use the Tab-4-4 menu, item 5 to turn on the radar", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Tab-4-4-5 turns on Aerial Intercept Radar; repeating '5' cycles through 4 magnifications", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Tap '5' once more to switch to Air-to-Surface-Vessel (ASV) radar.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Tapping '5' yet again will switch ASV Radar to 2X magnification.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Another '5' will turn the radar off.", null);
+
+            GamePlay.gpLogServer(new Player[] { player }, "<asvhelp2 for more . . . ", null);
+        }
+        else if (msg.StartsWith("<asv")) //array-chat AUTHENTIC system
+        {
+            double delay_s = 7;
+
+            handleAIRadarAuthenticArrayRequest(player, delay_s);
+        }
+
+        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
+        {
+            double to = 1.8; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
+            if (!msg.StartsWith("<help")) to = 5.2;
+
+            string msg41 = "Tab-4-4 menu or <asv - Start/stop Air to Surface Vessel (ASV) Radar; <asvhelp ASV Radar help";
+
+            Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
+            //GamePlay.gp(, from);
+        }
+        else if (msg.StartsWith("<admin") && mainmission.admin_privilege_level(player) >= 2)// || msg.StartsWith("<"))
+        {
+            double to = 2.3;
+
+
+            string msg41 = "<asvtest - test ASV radar w/o being in aircraft etc, <asvlist - list all AI ground actors & status ";
+
+            Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
+            //GamePlay.gp(, from);
+        }
+
+    }
+
+    public bool isPlayerAllowedAIRadar(Player player)
+    {
+
+        if (player == null) return false;
+        if (player.Name() == "Server") return true; //testing
+        if (player.Place() == null || player.Place() as AiCart == null) return false;
+        if ((player.Place() as AiCart).Places() < 2) return false; //simply restricting this to planes with 2 or more seats, for now (2021/06)
+        if (mainmission != null && mainmission.objectiverepairmission != null && mainmission.objectiverepairmission.orm_PlayersOnRepairMissionExpiration.ContainsKey(player)) return false; //deny aerial to ppl flying repair missions; their a/c arent equipped with radar, too heavy
+
+        return true;
+    }
+
+    public void handleAIRadarArrayRequest(Player player, double delay_s = 7)
+    {
+        Console.WriteLine("ASV Radar Array command received.");
+
+        //AIRadarTargetArray AIRTA = null;
+
+        if (PlayerCurrentAIRadarTargetArray.ContainsKey(player))
+        {
+            //PlayerCurrentAC[player]++;
+            ASVRadarTargetArray AIRTA = PlayerCurrentAIRadarTargetArray[player];
+
+            if (AIRTA.turnedOn)
+            {
+                AIRTA.turnOff();
+                //AIRTA.Dispose();                
+
+                PlayerCurrentAIRadarTargetArray.Remove(player);
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+                return;
+            } else {
+                AIRTA.turnOn();
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
+            }
+        }
+
+        if (player == null || player.Place() == null)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+            //Here we can restrict this to certain aircraft etc.
+            return;
+        }
+
+        PlayerCurrentAIRadarTargetArray[player] = new ASVRadarTargetArray(player, this, delay_s);
+        PlayerCurrentAIRadarTargetArray[player].turnOn();
+
+    }
+
+    //public ASVRadarAuthenticArray testARAA = null;
+
+    public void handleAIRadarAuthenticArrayRequest(Player player, double delay_s = 7, bool test = false)
+    {
+        Console.WriteLine("Air to Surface Vessel (Authentic) command received.");
+
+        if (test)
+        {
+            Console.WriteLine("Air to Surface Vessel (Authentic) TEST MODE.");
+            try
+            {
+                Console.WriteLine("Player null? {0} Player Name {1}", (player == null), player.Name());
+            }
+            catch { }
+
+        }
+
+        //AIRadarTargetArray AIRTA = null;
+        if ((player == null || player.Place() == null) && !test && !(player!=null && player.Name()=="Server"))
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "ASVRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+            //Here we can restrict this to certain aircraft etc.
+            return;
+        }
+
+        if (!isPlayerAllowedAIRadar(player) && !test)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "ASVRadar: Radar not allowed for your aircraft (must be 2 or more seats; can't be carrying cargo or ferrying).", new object[] { });
+
+            if (PlayerCurrentAIRadarAuthenticArray.ContainsKey(player))
+            {
+                ASVRadarAuthenticArray AIRTA = PlayerCurrentAIRadarAuthenticArray[player];
+                AIRTA.turnOff();
+                AIRTA.Dispose();
+                AIRTA.delete();
+            }
+            return;
+
+        }
+
+        if (PlayerCurrentAIRadarAuthenticArray.ContainsKey(player))
+        {
+            ASVRadarAuthenticArray AIRTA;
+            //PlayerCurrentAC[player]++;
+            AIRTA = PlayerCurrentAIRadarAuthenticArray[player];
+
+            if (AIRTA.turnedOn)
+            {
+                double res = AIRTA.incrementMagnification();
+                Console.WriteLine("Aerial Radar: New Magnification: {0} ", res);
+                if (res == 0)
+                {
+                    AIRTA.turnOff();
+                    PlayerCurrentAIRadarAuthenticArray.Remove(player);
+                    AIRTA.Dispose();
+                    //AIRTA.delete();
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display off", new object[] { });
+                }
+                else
+                {
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display magnification set to " + res.ToString("n0"), new object[] { });
+                }
+                return;
+            }
+            else
+            {
+                AIRTA.delay_s = 7; //.reinitialize that so it doesn't get messed up.
+                AIRTA.initMagnification();
+                AIRTA.turnOn();
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
+                return;
+            }
+        }
+
+        //Player is allowed, and it hasn't been start yet.  So start it.
+        if (player.Name() == "Server") PlayerCurrentAIRadarAuthenticArray[player] = new ASVRadarAuthenticArray(true, player, this, delay_s);
+        else PlayerCurrentAIRadarAuthenticArray[player] = new ASVRadarAuthenticArray(player, this, delay_s);
+        PlayerCurrentAIRadarAuthenticArray[player].initMagnification();
+        PlayerCurrentAIRadarAuthenticArray[player].turnOn();
+
+
+    }
+
+
+    
+
+    public void handleAIRadarRequest(Player player, bool stop = false)
+    {
+        Console.WriteLine("Aerial Radar command received.");
+        try
+        {
+            int acNum = 0;
+            ASVRadarTarget AIRT = null;
+
+            if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player))
+            {
+
+                //PlayerCurrentAC[player]++;
+                var tup = PlayerCurrentAIRadarTargetandACnum[player];
+                AIRT = tup.Item1;
+                if (AIRT.turnedOn)
+                {
+                    acNum = tup.Item2 + 1; //advance to the next ac #
+                    AIRT.turnOff();
+                    PlayerCurrentAIRadarTargetandACnum.Remove(player);
+                    if (stop)
+                    {
+                        GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Stopped", null);
+                        return;
+                    }
+                }
+                else
+                {
+                    acNum = 0; //restart with first item                 
+                    AIRT.turnOn();
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Display on", new object[] { });
+                    return;
+                }
+            }
+           
+            
+
+            if (player == null || player.Place() == null)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Can't help if you're not in an aircraft, sorry.", new object[] { });
+                //Here we can restrict this to certain aircraft etc.
+                return;
+            }
+
+            var playerAirGroup = player.Place().Group() as AiAirGroup;
+
+            if (playerAirGroup == null) return;
+
+
+            var shipList =AllShipsNearSorted (player.Place().Pos(), playerAirGroup.Vwld(), ASVRadarTarget.AIRadarRadius_m/2.0, ASVRadarTarget.AIRadarRadius_m*3.0); //Break to connect to a/c @ 3X the radar radius
+            if (shipList == null || shipList.Count == 0)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No ships nearby to track, sorry.", new object[] { }); //aircraftList.Count
+                return;
+            }
+            else
+            {
+                if (AIRT != null && acNum < shipList.Count && shipList[acNum] == AIRT.actor) acNum++; //we're trying to skip past the current AC, so if we have hit it again, we advance the acNum
+
+                if (acNum >= shipList.Count) //means, turn OFF the AIRadar
+                {
+                    //if (AIRT != null) AIRT.turnOff();                                               
+                    //PlayerCurrentAIRadarTargetandACnum[player] = new Tuple<AIRadarTarget, int>(AIRT, 0);
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: No targets or past last target - radar off", new object[] { });
+                    //if (PlayerCurrentAIRadarTargetandACnum.ContainsKey(player)) PlayerCurrentAIRadarTargetandACnum.Remove(player);
+                    return;
+
+                }
+                else
+                { //means, turn ON the AIRadar on this target #
+                    AIRT = new ASVRadarTarget(player, shipList[acNum], this);
+                    AIRT.turnOn();
+                    PlayerCurrentAIRadarTargetandACnum[player] = new Tuple<ASVRadarTarget, int>(AIRT, acNum);
+                    GamePlay.gpLogServer(new Player[] { player }, "AIRadar: Radar on - changed to next target", new object[] { });
+                }
+
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("AIRadar: " + ex.ToString()); }
+    }
+
+    //AMission covermission/ in this case must be a reference to COVERMISSION, which has the data on groundactors
+    //so this figures all aiactors/ships in a circle of radius_m that is in front of the given position by distance_m. "In front of" defined by
+    //the vector Vwld.  Sorted by DISTANCE from point pos.
+    public List<AiActor> AllShipsNearSorted(Point3d pos, Vector3d Vwld, double distance_m, double radius_m, bool log = false)
+    {
+        double dist = ASVRadarCalcs.distance(Vwld.x, Vwld.y);
+
+        Point3d point2 = pos; //if current velocity = 0.
+
+        if (dist > 0)
+        {
+            //a point in front of the a/c, in the directdion of travel, distance_m from a/c
+            point2 = new Point3d(Vwld.x / dist * distance_m + pos.x, Vwld.y / dist * distance_m + pos.y, pos.z);
+        }
+
+        var alist = AllShipsNear(point2, radius_m);
+        var retdict = new SortedList<double, AiActor>();
+
+        foreach (AiActor a in alist)
+        {
+            string groundType = "";
+            if (a as AiGroundActor != null) groundType = (a as AiGroundActor).Type().ToString();
+            //if (!groundType.ToLower().Contains("ship")) continue;
+            string internaltype = "";
+            if (a as AiCart != null) internaltype = (a as AiCart).InternalTypeName();
+
+            //if (log) Console.WriteLine("ASV: Looking at " + a.Name() + " "  + groundType + " " + internaltype + " " + (a as AiActor).Pos().x.ToString("F0") + " " + (a as AiActor).Pos().y.ToString("F0"));
+
+            if (!groundType.ToLower().Contains("ship") && !internaltype.ToLower().Contains("ship")) continue;
+
+            Point3d actorPos = (a as AiActor).Pos();
+            double d = ASVRadarCalcs.CalculatePointDistance(pos, actorPos);
+            if (log) Console.WriteLine("ASV: FOUND! " +(a as AiActor).Name() + " " + a.Army().ToString() + " " + groundType + " " + internaltype + " " + d.ToString("F0") + " (" + (a as AiActor).Pos().x.ToString("F0") + ", " + (a as AiActor).Pos().y.ToString("F0") + ") " + (a as AiActor).IsAlive().ToString() + (a as AiActor).IsValid().ToString());
+            if (!(a as AiActor).IsAlive() || !(a as AiActor).IsValid()) continue;
+            retdict[d] = a;
+        }
+
+        //var ListOrderedByDistance = retdict.OrderBy(kvp => kvp.Value).ToList();
+        return retdict.Values.ToList();
+    }
+
+    public List<AiActor> AllShipsNear(Point3d pos, double radius_m)
+    {
+
+        if ( mainmission.covermission == null) return new List<AiActor>();
+        return new List<AiActor>(mainmission.covermission.getAllGroundActorsNear_clean(pos, radius_m));
+
+    }
+
+
+
+
+}
+
+
+
+//Various helpful calculations, formulas, etc.
+public static class ASVRadarCalcs
+{
+    //Various public/static methods
+    //http://stackoverflow.com/questions/6499334/best-way-to-change-dictionary-key    
+
+    private static Random clc_random = new Random();
+
+    public static bool changeKey<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey oldKey, TKey newKey)
+    {
+        TValue value;
+        if (!dict.TryGetValue(oldKey, out value))
+            return false;
+
+        dict.Remove(oldKey);  // do not change order
+        dict[newKey] = value;  // or dict.Add(newKey, value) depending on ur comfort
+        return true;
+    }
+
+    //gets LAST occurence of any element of a specified string[] ; CASE INSENSITIVE
+    public static int LastIndexOfAny(string test, string[] values)
+    {
+        int last = -1;
+        test = test.ToLower();
+        foreach (string item in values)
+        {
+            int i = test.IndexOf(item.ToLower());
+            if (i >= 0)
+            {
+                if (last > 0)
+                {
+                    if (i > last)
+                    {
+                        last = i;
+                    }
+                }
+                else
+                {
+                    last = i;
+                }
+            }
+        }
+        return last;
+    }
+
+    public static string escapeColon(string s)
+    {
+        return s.Replace("##", "##*").Replace(":", "##@");
+    }
+
+    public static string unescapeColon(string s)
+    {
+        return s.Replace("##@", ":").Replace("##*", "##");
+    }
+
+    public static string escapeSemicolon(string s)
+    {
+        return s.Replace("%%", "%%*").Replace(";", "%%@");
+    }
+
+    public static string unescapeSemicolon(string s)
+    {
+        return s.Replace("%%@", ";").Replace("%%*", "%%");
+    }
+    //True if EVERY char in s is a digit
+    public static bool isDigit(string s)
+    {
+        foreach (char c in s)
+        {
+            if (!char.IsDigit(c)) return false;
+        }
+        return true;
+    }
+    //Allows digits, . - + 
+    public static bool isDigitOrPlusMinusPoint(string s)
+    {
+        foreach (char c in s)
+        {
+            if (!(char.IsDigit(c) || c == '.' || c == '+' || c == '-')) return false;
+        }
+        return true;
+    }
+
+    public static double distance(double a, double b)
+    {
+
+        return (double)Math.Sqrt(a * a + b * b);
+
+    }
+
+    public static double meters2miles(double a)
+    {
+
+        return (a / 1609.344);
+
+    }
+
+    public static double miles2meters(double a)
+    {
+
+        return (a * 1609.344);
+
+    }
+    public static double meterspsec2milesphour(double a)
+    {
+        return (a * 2.23694);
+    }
+
+    public static double meters2feet(double a)
+    {
+
+        return (a / 1609.344 * 5280);
+
+    }
+
+
+    public static double DegreesToRadians(double degrees)
+    {
+        return degrees * (Math.PI / 180.0);
+    }
+
+    public static double RadiansToDegrees(double radians)
+    {
+        return radians * (180.0 / Math.PI);
+    }
+
+    public static double CalculateGradientAngle(
+                          Point3d startPoint,
+                          Point3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = endPoint.x - startPoint.x;
+        double diffY = endPoint.y - startPoint.y;
+
+        //Calculates the Tan to get the radians (TAN(alpha) = opposite / adjacent)
+        //Math.PI/2 - atan becase we need to change to bearing where North =0, East = 90 vs regular math coordinates where East=0 and North=90.
+        double radAngle = Math.PI / 2 - Math.Atan2(diffY, diffX);
+
+        //Converts the radians in degrees
+        double degAngle = RadiansToDegrees(radAngle);
+
+        if (degAngle < 0)
+        {
+            degAngle = degAngle + 360;
+        }
+
+        return degAngle;
+    }
+
+    //Vwld is the direction an aircraft is going, say from their Vwld
+    //point1 is the location of the aircraft.  Point2 is the location of the target aircraft
+    //return angle is the degrees left/right from the primary a/c current course that a/c must turn to point at the 2nd aircraft point
+    public static double CalculateDifferenceAngle( Vector3d Vwld,
+                      Point3d point1,
+                      Point3d point2)
+    {
+
+        Point3d v1 = new Point3d(Vwld.x, Vwld.y, Vwld.z);
+        Point3d v2 = new Point3d (point2.x-point1.x, point2.y-point1.y, 0);
+        return CalculateDifferenceAngle(v1, v2);
+    }
+    //returns difference angle etween two vectors; vector1 is primary, angle from primary to secondary, 0-360, angle degrees like a compass
+    public static double CalculateDifferenceAngle(
+                          Point3d vector1,
+                          Point3d vector2)
+    {
+
+
+
+
+        double radAngle = Math.Atan2(vector1.x, vector1.y) - Math.Atan2(vector2.x, vector2.y);
+
+        //Converts the radians in degrees
+        double degAngle = RadiansToDegrees(radAngle);
+
+        degAngle = 180 - degAngle; //This seems necessary to align it with compass directions (siwtch from counterclocwise to clockwise, plus the 180 makes the orientation work for v1 vs v2.
+        if (degAngle < 0) degAngle = degAngle + 360;
+        if (degAngle > 360) degAngle = degAngle - 360;
+
+
+        return degAngle;
+    }
+
+    public static int GetDegreesIn10Step(double degrees)
+    {
+        degrees = Math.Round((degrees / 10), MidpointRounding.AwayFromZero) * 10;
+
+        if ((int)degrees == 360)
+            degrees = 0.0;
+
+        return (int)degrees;
+    }
+
+    public static double CalculatePointDistance(
+                        Point3d startPoint,
+                        Point3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Vector3d startPoint,
+                        Vector3d endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(endPoint.x - startPoint.x);
+        double diffY = Math.Abs(endPoint.y - startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Point3d startPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(startPoint.x);
+        double diffY = Math.Abs(startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    public static double CalculatePointDistance(
+                        Vector3d startPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        double diffX = Math.Abs(startPoint.x);
+        double diffY = Math.Abs(startPoint.y);
+
+        return distance(diffX, diffY);
+    }
+    //Given start point, angle, distance calculate endpoint
+    //Gives EndPoint in same units as startPoint & dist were in
+    //(those must both be in the same units)
+    //works only on x&y coordinates, just returns the .z unchanged from startPoint
+    public static Point3d EndPointfromStartPointAngleDist(
+                        Point3d startPoint, double angle_deg, double dist)
+    {
+        Point3d ret = startPoint;
+        ret.x = startPoint.x + Math.Sin(ASVRadarCalcs.DegreesToRadians(angle_deg)) * dist;
+        ret.y = startPoint.y + Math.Cos(ASVRadarCalcs.DegreesToRadians(angle_deg)) * dist;
+        return ret;
+    }
+
+    //distance from a point to a line defined by two other points
+    public static double distancePointToLine(
+                        Point3d startPoint, Point3d endPoint, Point3d distPoint)
+    {
+        double denom = Math.Sqrt((endPoint.y - startPoint.y) * (endPoint.y - startPoint.y) + (endPoint.x - startPoint.x) * (endPoint.x - startPoint.x));
+        if (denom == 0) return (CalculatePointDistance(distPoint, startPoint));  //both line points are same meaning line is undefined but we can give a distance to that single point
+        double numer = Math.Abs((endPoint.y - startPoint.y) * distPoint.x - (endPoint.x - startPoint.x) * distPoint.y + endPoint.x * startPoint.y - endPoint.y * startPoint.x);
+        return numer / denom;
+
+    }
+
+    public static double CalculateBearingDegree(Vector3d vector)
+    {
+        Vector2d matVector = new Vector2d(vector.y, vector.x);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
+
+        double bearing = (matVector.direction()) * 180.0 / Math.PI;
+        return (bearing > 0.0 ? bearing : (360.0 + bearing));
+    }
+
+
+    public static double CalculateBearingDegree(Vector2d vector)
+    {
+        Vector2d newVector = new Vector2d(vector.y, vector.x);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
+        double bearing = (newVector.direction()) * 180.0 / Math.PI;
+        return (bearing > 0.0 ? bearing : (360.0 + bearing));  //we want bearing to be 0-360, generally
+    }
+
+    //Pitch angle, starting from p1 and going to p2
+    public static double CalculatePitchDegree(Point3d p1, Point3d p2)
+    {
+        Vector3d v = new Vector3d(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+        return CalculatePitchDegree(v);
+    }
+
+    public static double CalculatePitchDegree(Vector3d vector)
+    {
+        double d = distance(vector.x, vector.y);  //size of vector in x/y plane
+        Vector2d matVector = new Vector2d(d, vector.z);
+        // the value of direction is in rad so we need *180/Pi to get the value in degrees.  
+
+        double pitch = (matVector.direction()) * 180.0 / Math.PI;
+        return (pitch < 180 ? pitch : (pitch - 360.0)); //we want pitch to be between -180 and 180, generally
+    }
+
+    //Map bearings are 10 degrees off from magnetic headings in 1940s as modelled in CloD.
+    //A compass showing 0 deg will actually be pointing to 350 deg in true degrees/on the map.
+    //So for example of the desired actual heading is 90 the pilot will have to put compass on 100 to achieve that.
+    public static double realBearingDegreetoCompass(double realBearing_deg)
+    {
+        double bearing = realBearing_deg + 10;
+        return (bearing < 360.0 ? bearing : (bearing - 360.0));
+    }
+
+
+    public static int TimeSince2016_sec()
+    {
+        DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
+        DateTime currentDate = DateTime.Now;
+
+        long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
+        int elapsedSeconds = (int)(elapsedTicks / 10000000);
+        return elapsedSeconds;
+    }
+
+    public static long TimeSince2016_ticks()
+    {
+        DateTime epochStart = new DateTime(2016, 1, 1); //we need to fit this into an int; Starting 2016/01/01 it should last longer than CloD does . . . 
+        DateTime currentDate = DateTime.Now;
+
+        long elapsedTicks = currentDate.Ticks - epochStart.Ticks;
+        return elapsedTicks;
+    }
+
+    public static long TimeNow_ticks()
+    {
+        DateTime currentDate = DateTime.Now;
+        return currentDate.Ticks;
+    }
+
+    public static string SecondsToFormattedString(int sec)
+    {
+        try
+        {
+            var timespan = TimeSpan.FromSeconds(sec);
+            if (sec < 10 * 60) return timespan.ToString(@"m\mss\s");
+            if (sec < 60 * 60) return timespan.ToString(@"m\m");
+            if (sec < 24 * 60 * 60) return timespan.ToString(@"hh\hmm\m");
+            else return timespan.ToString(@"d\dhh\hmm\m");
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("Calcs.SecondsToFormatted - Exception: " + ex.ToString());
+            return sec.ToString();
+        }
+    }
+
+    public static string correctedSectorNameDoubleKeypad(ASVRadarMission msn, Point3d p)
+    {
+
+        string s = correctedSectorName(msn, p) + "." + doubleKeypad(p);
+        return s;
+
+    }
+
+    public static string correctedSectorNameKeypad(ASVRadarMission msn, Point3d p)
+    {
+
+        string s = correctedSectorName(msn, p) + "." + singleKeypad(p);
+        return s;
+
+    }
+
+    //OK, so in order for the sector # to match up with the TWC map, and
+    //to work with our "double keypad" routines listed here,
+    //And (most important!) in order to make the sectors match up with EASY SIMPLE
+    //squares of side 10000m in the in-game coordinate system, you must use this battle area
+    //in the .mis file:
+    //
+    //BattleArea 10000 10000 350000 310000 10000
+    //
+    //Key here is the 10000,10000 which makes the origin of the battle area line up with the origin of the 
+    //in-game coordinate system.
+    //
+    //If you wanted to change this & make the battle area smaller or something, you could just increase
+    //the #s in increments of 100000.
+    //The 350000 310000 is important only in that it EXACTLY matches the size of the map available in CLOD 
+    //in FMB etc.  So 0 0 350000 310000 10000 exactly matches the full size of the Channel Map in CloD,
+    //uses the full extent of the map, and makes the sector calculations exactly match in 10,000x10,000 meter 
+    //increments.
+
+    //This is also the way the TWC online radar map works, so if you do it that way the in-game map & offline 
+    //radar map will match.
+
+    public static string correctedSectorName(ASVRadarMission msn, Point3d p)
+    {
+        if (msn.GamePlay == null) return "";
+
+        string sector = msn.GamePlay.gpSectorName(p.x, p.y);
+        sector = sector.Replace(",", ""); // remove the comma
+        return sector;
+
+    }
+
+    public static string doubleKeypad(Point3d p)
+    {
+        int keyp = keypad(p, 10000);
+        int keyp2 = keypad(p, 10000 / 3);
+        return keyp.ToString() + "." + keyp2.ToString();
+    }
+
+    public static string singleKeypad(Point3d p)
+    {
+        int keyp = keypad(p, 10000);
+        //int keyp2 = keypad(latlng, 10000 / 3);
+        return keyp.ToString();
+    }
+
+    //keypad number for area, numbered 1-9 from bottom left to top right
+    //of square size
+    //Called with size = 10000 for normal CloD keypad, size = 10000/3 for mini-keypad
+    //
+    public static int keypad(Point3d p, double size)
+    {
+        int lat_rem = (int)Math.Floor(3 * (p.y % size) / size);
+        int lng_rem = (int)Math.Floor(3 * (p.x % size) / size);
+        return lat_rem * 3 + lng_rem + 1;
+    }
+    //Giant keypad covering the entire map.  Lower left is 1, upper right is 9
+    //
+    public static int giantkeypad(Point3d p)
+    {
+        //These are the max x,y values on the whole map
+        double sizex = 360000;
+        double sizey = 310000; //CLOD
+        //double sizey = 360000; //TOBRUK
+        int lat_rem = (int)Math.Floor(3 * (p.y % sizey) / sizey);
+        int lng_rem = (int)Math.Floor(3 * (p.x % sizex) / sizex);
+        return lat_rem * 3 + lng_rem + 1;
+    }
+
+    //Sectors range AA to BI and represents points 10000 through 360000
+    //this is given our battle area defined in the .mis file and radar map we use, which uses this grid & definition:
+    //
+    //BattleArea 10000 10000 350000 310000 10000
+    //
+    //Key here is the 10000,10000 which makes the origin of the battle area line up with the origin of the 
+    //in-game coordinate system.
+    public static int xSector2Meters(string s)
+    {
+        s = s.Trim().ToUpper();
+        if (s.Length == 0) return 0;
+        //char[] ch = s.ToCharArray();
+        List<char> ch = new List<char>(s.ToCharArray());
+
+        //new list where we are sure each char is a letter
+        //we throw out any chars that are NOT letters
+        List<char> newch = new List<char>();
+        foreach (char c in ch)
+        {
+            if (char.IsLetter(c)) newch.Add(c);
+        }
+        if (newch.Count == 0) return 0;
+        if (newch.Count == 1) { newch.Add(newch[0]); newch[0] = ' '; } //if just one letter, then we shift it to the least significant position (to the rightmost position)
+        if (newch.Count >2) //If  more than 2 letters we only accept the right-most (least significant) two & just ignore the rest
+        {
+            newch[0] = newch[newch.Count - 2];
+            newch[1] = newch[newch.Count - 1];
+        }
+        int total = 10000; //AA represents point 10000 - if map changes we'll have to change this
+        //if (ch[0] == 'A') total += 0;
+        //else if (ch[0] == 'B') total += 260000;
+        int val0 = (int)(newch[0]);
+        total += (val0-65)*260000;
+
+        Console.WriteLine("xSector1: {0} {1} {2}", val0, newch[0], total);
+        //Console.WriteLine("xSector: {0} {1}", ch[0], total);
+        int val = (int)(newch[1]);
+        Console.WriteLine("xSector1.5: {0} {1} {2}", val, newch[1], total);
+        if (val < 65 || val > 90) return 0; //upper case ASCII values range from A = 65 to Z = 90
+
+        total += (val - 65) * 10000;
+        Console.WriteLine("xSector2: {0} {1} {2}", val, newch[1], total);
+        return total;
+    }
+    //In TWC maps under scheme outlined above, battle area ranges 10000 10000 350000 310000 10000
+    //but we could allow these to range 0 to 99 (future growth)
+    public static int ySector2Meters(string s)
+    {
+        s = s.Trim().ToUpper();
+        int i = 0;
+        try { if (s.Length > 0) i = Convert.ToInt32(s); }
+        catch (Exception ex) { }
+        if (i < 0 || i > 99) return 0;
+        int total = i * 10000;
+        return total;
+    }
+    //keypad number for area, numbered 1-9 from bottom left to top right
+    //of square size
+    //Called with size = 10000 for normal CloD keypad, size = 10000/3 for mini-keypad
+    //
+    public static Point3d keypad2meters(int keyp, double size)
+    {
+        keyp -= 1;
+        if (keyp < 0 || keyp > 8) return new Point3d(0, 0, 0);
+        int xK = keyp % 3;
+        int yK = keyp / 3; //integer division, remember
+        return new Point3d((xK * size)/3, (yK * size)/3, 0); //div by 3 because we end up with a number 0-2 and the range (0-3) should be the full size.  If we dont' /3 then we get 3x the range we really want
+    }
+
+    //if returnCenterPoint returns the center point of the requested sector or keypad or doublekeypad area
+    //if returnCenterpoint == false then the lower left corner of the area is returned
+    //Works with Depending on just sector, singlekeypad, or doublekeypad area
+    //Formats like: AA31.3.9 - BA3.1.3 - BD22.3 - AZ19 should all work 
+    //First portion is AA29, CloD map sectors; second is each sector divided into a keypad 1-9, third is each
+    //small keypad divided into a smaller keypad 1-9
+    public static Point3d sectordoublekeypad2point(string s, bool returnCenterpoint = true)
+    {
+        Point3d retpoint = new Point3d(0, 0, 0);
+        s = s.ToUpper();
+        string[] sarr = s.Split('.');
+        string sector = "";
+        string sectorAlpha = "";
+        string sectorDigits = "";
+        string singlekeypad = "";
+        string doublekeypad = "";
+        if (sarr.Length == 0) return retpoint;
+
+        if (sarr.Length > 0)
+        {
+            sector = sarr[0];
+            foreach (char c in sector.ToCharArray())
+            {
+                if (Char.IsDigit(c)) sectorDigits += c.ToString();
+                if (Char.IsLetter(c)) sectorAlpha += c.ToString();
+            }
+            retpoint.x += xSector2Meters(sectorAlpha);
+            retpoint.y += ySector2Meters(sectorDigits);
+
+
+        }
+        if (sarr.Length > 1)
+        {
+            singlekeypad = sarr[1];
+            int skint = 0;
+            try { if (singlekeypad.Length > 0) skint = Convert.ToInt32(singlekeypad); }
+            catch (Exception ex) { }
+            Point3d singlepoint = keypad2meters(skint, 10000);
+            retpoint.x += singlepoint.x;
+            retpoint.y += singlepoint.y;
+        }
+        if (sarr.Length > 2)
+        {
+            doublekeypad = sarr[2];
+            int dkint = 0;
+            try { if (doublekeypad.Length > 0) dkint = Convert.ToInt32(doublekeypad); }
+            catch (Exception ex) { }
+            Point3d doublepoint = keypad2meters(dkint, 10000 / 3);
+            retpoint.x += doublepoint.x;
+            retpoint.y += doublepoint.y;
+        }
+
+        if (returnCenterpoint)
+        {
+            //We make the return point the CENTER of the requested sector rather than the corner
+            if (sarr.Length > 2) { retpoint.x += 10000 / 9 / 2; retpoint.y += 10000 / 9 / 2; }
+            else if (sarr.Length > 1) { retpoint.x += 10000 / 3 / 2; retpoint.y += 10000 / 3 / 2; }
+            else if (sarr.Length > 0) { retpoint.x += 10000 / 2; retpoint.y += 10000 / 2; }
+        }
+        return retpoint;
+    }
+
+
+    //returns index of largest array element which is equal to OR less than the value
+    //assumes a sorted list of in values. 
+    //If less than the 1st element or array empty, returns -1
+    public static Int32 array_find_equalorless(int[] arr, Int32 value)
+    {
+        if (arr == null || arr.GetLength(0) == 0 || value < arr[0]) return -1;
+        int index = Array.BinarySearch(arr, value);
+        if (index < 0)
+        {
+            index = ~index - 1;
+        }
+        if (index < 0) return -1;
+        return index;
+    }
+
+    //Splits a long string into a maxLineLength respecting word boundaries (IF possible)
+    //http://stackoverflow.com/questions/22368434/best-way-to-split-string-into-lines-with-maximum-length-without-breaking-words
+    public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
+    {
+        string[] words = stringToSplit.Split(' ');
+        StringBuilder line = new StringBuilder();
+        foreach (string word in words)
+        {
+            if (word.Length + line.Length <= maxLineLength)
+            {
+                line.Append(word + " ");
+            }
+            else
+            {
+                if (line.Length > 0)
+                {
+                    yield return line.ToString().Trim();
+                    line.Clear();
+                }
+                string overflow = word;
+                while (overflow.Length > maxLineLength)
+                {
+                    yield return overflow.Substring(0, maxLineLength);
+                    overflow = overflow.Substring(maxLineLength);
+                }
+                line.Append(overflow + " ");
+            }
+        }
+        yield return line.ToString().Trim();
+    }
+
+    //Salmo @ http://theairtacticalassaultgroup.com/forum/archive/index.php/t-4785.html
+    public static string GetAircraftType(AiAircraft aircraft)
+    { // returns the type of the specified aircraft
+        string result = null;
+        if (aircraft != null)
+        {
+            string type = aircraft.InternalTypeName(); // eg type = "bob:Aircraft.Bf-109E-3".  FYI this is a property of AiCart inherited by AiAircraft as a descendant class.  So we could do this with any type of AiActor or AiCart
+            string[] part = type.Trim().Split('.');
+            result = part[1]; // get the part after the "." in the type string
+        }
+        return result;
+    }
+
+    //so this figures all aircraft in a circle of radius_m that is in front of the given position by distance_m. "In front of" defined by
+    //the vector Vwld.  Sorted by DISTANCE from point pos.
+    public static List<AiAircraft> AllAircraftNearSorted(AMission msn, Point3d pos, Vector3d Vwld, double distance_m, double radius_m)
+    {
+        double dist = distance(Vwld.x, Vwld.y);
+
+        Point3d point2 = pos; //if current velocity = 0.
+
+        if (dist > 0) {
+
+            point2 = new Point3d(Vwld.x / dist * distance_m + pos.x, Vwld.y / dist * distance_m+ pos.y, pos.z);
+        }
+
+        var alist = AllAircraftNear(msn, point2, radius_m);
+        var retdict = new SortedList<double, AiAircraft>();
+
+        foreach (AiAircraft a in alist)
+        {
+            Point3d actorPos = (a as AiActor).Pos();
+            if (pos.x == actorPos.x && pos.y == actorPos.y && pos.z == actorPos.z) continue; //the player aircraft, don't knoclue it
+            double d = CalculatePointDistance(pos, actorPos);
+            //Console.WriteLine("AIR: Looking at " + GetAircraftType(a) + " " + d.ToString("F0") + " " + (a as AiActor).Pos().x.ToString("F0") + " " + (a as AiActor).Pos().y.ToString("F0"));
+            retdict[d]= a;
+        }
+
+        //var ListOrderedByDistance = retdict.OrderBy(kvp => kvp.Value).ToList();
+        return retdict.Values.ToList();
+    }
+
+    public static List<AiAircraft> AllAircraftNear(AMission msn, Point3d pos, double radius_m)
+    {
+        var ret = new List<AiAircraft>();
+
+        var allAc = ASVRadarCalcs.AllAircraftInGame(msn);
+        foreach (AiAircraft a in allAc)
+        {
+            double d = CalculatePointDistance((a as AiActor).Pos(), pos);
+            if (d <= radius_m ) ret.Add(a);
+            //Console.WriteLine("AIR: Near looking at " + GetAircraftType(a) + " " + d.ToString("F0") );
+        }
+
+        return ret;
+    }
+
+    public static List<AiAircraft> AllAircraftInGame(AMission msn)
+    {
+        var ret = new List<AiAircraft>();
+
+        if (msn.GamePlay!=null && msn.GamePlay.gpArmies() != null && msn.GamePlay.gpArmies().Length > 0)
+        {
+            foreach (int army in msn.GamePlay.gpArmies())
+            {
+                if (msn.GamePlay.gpAirGroups(army) != null && msn.GamePlay.gpAirGroups(army).Length > 0)
+                    foreach (AiAirGroup airGroup in msn.GamePlay.gpAirGroups(army))
+                    {
+                        if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                        {
+                            //if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+                            if (airGroup.GetItems().Length > 0) foreach (AiActor actor in airGroup.GetItems())
+                                {
+                                    if (actor != null && (actor as AiAircraft != null))
+                                    {
+                                        ret.Add(actor as AiAircraft);
+                                    }
+
+                                }
+                        }
+                    }
+            }
+
+        }
+        return ret;
+    }
+    
+    public static string randSTR(string[] strings)
+    {
+        //Random clc_random = new Random();
+        return strings[clc_random.Next(strings.Length)];
+    }
+
+    public static void loadSmokeOrFire(maddox.game.IGamePlay GamePlay, ASVRadarMission mission, double x, double y, double z, string type, double duration_s = 300, string path = "")
+    {
+
+        if (GamePlay == null) return;
+        mission.Timeout(2.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete)", new object[] { }); });
+        //GamePlay.gpLogServer(null, "Setting up to delete stationary smokes in " + duration_s.ToString("0.0") + " seconds.", new object[] { });
+        mission.Timeout(3.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete2)", new object[] { }); });
+        mission.Timeout(4.0, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete3)", new object[] { }); });
+        mission.Timeout(4.5, () => { GamePlay.gpLogServer(null, "Testing the timeout (delete4)", new object[] { }); });
+
+        mission.Timeout(5.0, () =>
+        {
+            GamePlay.gpLogServer(null, "Executing the timeout (delete5)", new object[] { });
+            //Point2d P = new Point2d(x, y);
+            //GamePlay.gpRemoveGroundStationarys(P, 10);
+        });
+
+        //AMission mission = GamePlay as AMission;
+        ISectionFile f = GamePlay.gpCreateSectionFile();
+        string sect = "Stationary";
+        string key = "Static1";
+        string value = "Smoke.Environment." + type + " nn " + x.ToString("0.00") + " " + y.ToString("0.00") + " " + (duration_s / 60).ToString("0.0") + " /height " + z.ToString("0.00");
+        f.add(sect, key, value);
+
+
+        //maybe this part dies silently some times, due to f.save or perhaps section file load?  PRobably needs try/catch
+        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + path + "smoke-ISectionFile.txt", new object[] { }); //testing
+        //f.save(path + "smoke-ISectionFile.txt"); //testing        
+        GamePlay.gpPostMissionLoad(f);
+
+
+        //TODO: This part isn't working; it never finds any of the smokes again.
+        //get rid of it after the specified period
+
+    }
+
+    public static void PrintValues(IEnumerable myList, int myWidth)
+    {
+        int i = myWidth;
+        foreach (Object obj in myList)
+        {
+            if (i <= 0)
+            {
+                i = myWidth;
+                Console.WriteLine();
+            }
+            i--;
+            Console.Write("{0,8}", obj);
+        }
+        Console.WriteLine();
+    }
+
+
+
+}

@@ -1,0 +1,11 @@
+2017-11-03 16:16:26Z - Mission M001 not yet started - waiting for first player to enter.
+
+0 players logged in; 0 active
+
+Blue Objectives: Portsmouth Fuel Dump (AH-20.3) - Cowes Dam (AG19.8) - Hamble Dam (AG21.1) - 50 total Team Kills - 10 more Team Kills than Red
+Red Objectives: Le Havre Harbor Fuel Dump (AQ06.1) - Le Havre Dam (AR05.4) - Ouistreham Dam (AN03.8) - 50 total Team Kills - 10 more Team Kills than Blue
+Blue Objectives complete: - 
+Red Objectives complete: - 
+Blue/Red total score: 0.0/0.0
+
+

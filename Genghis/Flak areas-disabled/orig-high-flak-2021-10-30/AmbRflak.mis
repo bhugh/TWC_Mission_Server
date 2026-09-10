@@ -1,0 +1,34 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static4 Artillery.20_mm_Flak_38 de 266847.03 197876.86 65.00 /timeout 0/radius_hide 0
+  Static3 Artillery.20_mm_Flak_38 de 266886.41 197882.34 65.00 /timeout 0/radius_hide 0
+  Static0 Artillery.20_mm_Flak_38 de 266816.53 197871.36 65.00 /timeout 0/radius_hide 0
+  Static1 Artillery.20_mm_Flak_38 de 266872.19 197842.92 65.00 /timeout 0/radius_hide 0
+  Static2 Artillery.20_mm_Flak_38 de 266906.31 197853.52 65.00 /timeout 0/radius_hide 0
+  Static5 Artillery.20_mm_Flak_38 de 266803.69 197818.31 65.00 /timeout 0/radius_hide 0
+  Static6 Artillery.20_mm_Flak_38 de 266838.81 197830.33 65.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Bofors_StandAlone de 266937.38 197832.55 65.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone de 266885.22 197817.28 65.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone de 266828.88 197798.59 65.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

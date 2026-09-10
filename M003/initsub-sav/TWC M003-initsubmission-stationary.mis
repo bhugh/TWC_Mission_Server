@@ -1,0 +1,125 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 18
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 7
+  GustAngle 34
+[splines]
+[AirGroups]
+  BoB_RAF_F_FatCat_Early.02
+[BoB_RAF_F_FatCat_Early.02]
+  Flight1  11
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 32
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.95 0.95 0.98 0.94 0.99 0.9 0.96 0.98
+[BoB_RAF_F_FatCat_Early.02_Way]
+  NORMFLY 212935.00 84854.53 1500.00 300.00
+[CustomChiefs]
+[Stationary]
+  Static46 Artillery.Bofors_StandAlone gb 304696.16 38037.28 0.00 /timeout 0/radius_hide 0
+  Static47 Artillery.Bofors_StandAlone gb 305127.25 38099.64 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.20_mm_Flak_38 gb 305180.44 38451.75 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.20_mm_Flak_38 gb 304714.16 38548.81 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.20_mm_Flak_38 gb 304949.56 38959.77 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.20_mm_Flak_38 gb 305131.19 38957.81 0.00 /timeout 0/radius_hide 0
+  Static44 Artillery.Bofors_StandAlone gb 235997.22 41082.32 0.00 /timeout 0/radius_hide 0
+  Static43 Artillery.20_mm_Flak_38 gb 235795.33 41265.86 0.00 /timeout 0/radius_hide 0
+  Static42 Artillery.20_mm_Flak_38 gb 237249.80 41623.77 0.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Bofors_StandAlone gb 237112.22 41885.30 0.00 /timeout 0/radius_hide 0
+  Static40 Artillery.20_mm_Flak_38 gb 236153.23 41995.43 0.00 /timeout 0/radius_hide 0
+  Static41 Artillery.20_mm_Flak_38 gb 237043.39 42027.55 0.00 /timeout 0/radius_hide 0
+  Static49 Artillery.Bofors_StandAlone gb 307865.09 49493.01 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.20_mm_Flak_38 gb 307042.78 49658.65 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.20_mm_Flak_38 gb 307034.88 50134.98 0.00 /timeout 0/radius_hide 0
+  Static48 Artillery.Bofors_StandAlone gb 307343.34 50480.81 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.20_mm_Flak_38 gb 307704.59 50649.12 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.20_mm_Flak_38 gb 307976.91 50690.80 0.00 /timeout 0/radius_hide 0
+  Static22 Stationary.Environment.Loudspeaker_GER1 nn 156563.91 57376.75 45.00 
+  Static23 Stationary.Environment.Loudspeaker_GER1 nn 156545.63 57400.53 45.00 
+  Static24 Stationary.Environment.Loudspeaker_GER1 nn 156508.22 57459.75 45.00 /hstart 5
+  Static25 Stationary.Environment.Loudspeaker_GER1 nn 156572.59 57603.36 45.00 /hstart 5
+  Static2 Artillery.20_mm_Flak_38 gb 157755.69 57742.49 0.00 /timeout 0/radius_hide 0
+  Static0 Artillery.20_mm_Flak_38 gb 156633.23 57937.20 0.00 /timeout 0/radius_hide 0
+  Static20 Stationary.Environment.Loudspeaker_GER1 nn 158004.98 58210.04 45.00 /hstart 5
+  Static19 Stationary.Environment.Loudspeaker_GER1 nn 157966.30 58245.46 45.00 /hstart 5
+  Static21 Stationary.Environment.Loudspeaker_GER1 nn 158023.02 58243.79 45.00 /hstart 7
+  Static1 Artillery.20_mm_Flak_38 gb 157114.28 58584.32 0.00 /timeout 0/radius_hide 0
+  Static52 Artillery.Bofors_StandAlone gb 292764.66 64143.85 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.20_mm_Flak_38 gb 292643.88 64785.30 0.00 /timeout 0/radius_hide 0
+  Static50 Artillery.Bofors_StandAlone gb 294137.13 64911.89 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.20_mm_Flak_38 gb 292788.13 65051.58 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.20_mm_Flak_38 gb 293886.50 65129.24 0.00 /timeout 0/radius_hide 0
+  Static51 Artillery.Bofors_StandAlone gb 293214.56 65230.02 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.20_mm_Flak_38 gb 293398.34 65218.00 0.00 /timeout 0/radius_hide 0
+  Static55 Artillery.Bofors_StandAlone gb 286124.38 69499.36 0.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Bofors_StandAlone gb 284585.00 69663.13 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.20_mm_Flak_38 gb 284765.25 70287.66 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.20_mm_Flak_38 gb 286244.41 70499.54 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.20_mm_Flak_38 gb 285415.59 70816.06 0.00 /timeout 0/radius_hide 0
+  Static62 Artillery.Bofors gb 335657.75 72248.53 0.00 /timeout 0/radius_hide 0
+  Static38 Artillery.20_mm_Flak_38 gb 334950.72 72337.12 0.00 /timeout 0/radius_hide 0
+  Static53 Artillery.Bofors_StandAlone gb 290447.78 73167.70 0.00 /timeout 0/radius_hide 0
+  Static60 Artillery.Bofors gb 334913.81 72580.75 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.20_mm_Flak_38 gb 334796.59 72862.33 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.20_mm_Flak_38 gb 290357.94 73554.76 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.20_mm_Flak_38 gb 291823.34 73538.28 0.00 /timeout 0/radius_hide 0
+  Static61 Artillery.Bofors gb 334781.34 73298.16 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.20_mm_Flak_38 gb 334967.88 73456.04 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.20_mm_Flak_38 gb 335367.47 73427.49 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.20_mm_Flak_38 gb 290642.84 74238.44 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.20_mm_Flak_38 gb 291351.25 74271.01 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.20_mm_Flak_38 gb 292629.72 88461.57 0.00 /timeout 0/radius_hide 0
+  Static58 Artillery.Bofors gb 292478.81 88591.70 0.00 /timeout 0/radius_hide 0
+  Static57 Artillery.Bofors gb 292382.13 88720.61 0.00 /timeout 0/radius_hide 0
+  Static56 Artillery.Bofors_StandAlone gb 293346.47 88730.14 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.20_mm_Flak_38 gb 293022.16 88842.16 0.00 /timeout 0/radius_hide 0
+  Static59 Artillery.Bofors gb 292980.69 88989.01 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.20_mm_Flak_38 gb 292251.09 89098.52 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.20_mm_Flak_38 gb 292657.53 89139.98 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.20_mm_Flak_38 gb 228954.34 95761.65 0.00 /timeout 0/radius_hide 0
+  Static91 Artillery.Bofors gb 229609.88 95759.40 0.00 /timeout 0/radius_hide 0
+  Static89 Artillery.Bofors gb 229647.34 96149.36 0.00 /timeout 0/radius_hide 0
+  Static90 Artillery.Bofors gb 228739.64 96484.24 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.20_mm_Flak_38 gb 229493.16 96595.48 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.20_mm_Flak_38 gb 228772.02 96814.69 0.00 /timeout 0/radius_hide 0
+  Static64 Artillery.Bofors de 283193.41 124669.34 0.00 /timeout 0/radius_hide 0
+  Static65 Artillery.Bofors de 284735.00 124678.95 0.00 /timeout 0/radius_hide 0
+  Static63 Artillery.Bofors de 284405.00 125367.21 0.00 /timeout 0/radius_hide 0
+  Static73 Artillery.Bofors de 298200.16 126671.17 0.00 /timeout 0/radius_hide 0
+  Static74 Artillery.Bofors de 299201.38 127210.28 0.00 /timeout 0/radius_hide 0
+  Static72 Artillery.Bofors de 298190.53 128355.89 0.00 /timeout 0/radius_hide 0
+  Static71 Artillery.Bofors de 295639.09 129992.41 0.00 /timeout 0/radius_hide 0
+  Static70 Artillery.Bofors de 294771.47 130329.75 0.00 /timeout 0/radius_hide 0
+  Static77 Artillery.Bofors de 314381.41 130311.76 0.00 /timeout 0/radius_hide 0
+  Static69 Artillery.Bofors de 295629.31 130869.53 0.00 /timeout 0/radius_hide 0
+  Static76 Artillery.Bofors de 315341.94 130746.57 0.00 /timeout 0/radius_hide 0
+  Static75 Artillery.Bofors de 314849.00 131411.14 0.00 /timeout 0/radius_hide 0
+  Static66 Artillery.Bofors de 284499.34 139442.34 0.00 /timeout 0/radius_hide 0
+  Static68 Artillery.Bofors de 285922.47 139645.48 0.00 /timeout 0/radius_hide 0
+  Static67 Artillery.Bofors de 284983.50 140826.98 0.00 /timeout 0/radius_hide 0
+  Static79 Artillery.Bofors de 351944.31 142316.44 0.00 /timeout 0/radius_hide 0
+  Static81 Artillery.Bofors de 351311.25 144254.16 0.00 /timeout 0/radius_hide 0
+  Static80 Artillery.Bofors de 350460.94 144649.59 0.00 /timeout 0/radius_hide 0
+  Static82 Artillery.Bofors de 352365.44 144713.28 0.00 /timeout 0/radius_hide 0
+  Static83 Artillery.Bofors de 350266.81 145647.72 0.00 /timeout 0/radius_hide 0
+  Static87 Artillery.Bofors de 268008.53 166203.33 0.00 /timeout 0/radius_hide 0
+  Static86 Artillery.Bofors de 267564.34 166318.92 0.00 /timeout 0/radius_hide 0
+  Static88 Artillery.Bofors de 268227.06 166568.16 0.00 /timeout 0/radius_hide 0
+  Static85 Artillery.Bofors de 267344.75 167005.83 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

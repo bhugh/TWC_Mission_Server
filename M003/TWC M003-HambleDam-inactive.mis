@@ -1,0 +1,46 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static254 Smoke.Environment.BuildingFireBig nn 63036.54 202091.50 160.00 /height 1.07
+  Static255 Smoke.Environment.BuildingFireBig nn 63053.40 202111.56 160.00 /height 1.28
+  Static239 Smoke.Environment.BuildingFireBig nn 62948.03 202136.16 160.00 /height 0.00
+  Static238 Smoke.Environment.BigSitySmoke_0 nn 62918.75 202171.86 160.00 /height 0.00
+  Static250 Smoke.Environment.BuildingFireSmall nn 62968.37 202150.22 160.00 /height 0.00
+  Static259 Smoke.Environment.Smoke1 nn 62980.81 202143.48 160.00 /height 1.28
+  Static251 Smoke.Environment.BuildingFireSmall nn 62977.09 202153.25 160.00 /height 0.00
+  Static258 Smoke.Environment.BuildingFireBig nn 62999.18 202133.72 160.00 /height 1.28
+  Static252 Smoke.Environment.BuildingFireSmall nn 62998.48 202136.39 160.00 /height 0.00
+  Static260 Smoke.Environment.Smoke2 nn 63006.74 202141.28 160.00 /height 1.28
+  Static253 Smoke.Environment.BuildingFireSmall nn 63017.90 202145.00 160.00 /height 0.00
+  Static257 Smoke.Environment.BuildingFireBig nn 63035.46 202128.72 160.00 /height 1.28
+  Static256 Smoke.Environment.BuildingFireBig nn 63055.64 202118.19 160.00 /height 1.28
+  Static246 Smoke.Environment.BuildingFireBig nn 62818.40 202196.84 160.00 /height 0.00
+  Static249 Smoke.Environment.BuildingFireSmall nn 62827.12 202195.56 160.00 /height 0.00
+  Static247 Smoke.Environment.BuildingFireBig nn 62812.47 202224.05 160.00 /height 0.00
+  Static245 Smoke.Environment.BuildingFireBig nn 62826.88 202212.55 160.00 /height 0.00
+  Static248 Smoke.Environment.BuildingFireSmall nn 62815.49 202233.70 160.00 /height 0.00
+  Static244 Smoke.Environment.BuildingFireBig nn 62841.65 202224.17 160.00 /height 0.00
+  Static243 Smoke.Environment.BuildingFireBig nn 62854.55 202205.69 160.00 /height 0.00
+  Static242 Smoke.Environment.BuildingFireBig nn 62863.16 202207.19 160.00 /height 0.00
+  Static240 Smoke.Environment.BuildingFireBig nn 62893.27 202182.66 160.00 /height 0.00
+  Static261 Smoke.Environment.Smoke2 nn 62881.41 202197.20 160.00 /height 1.28
+  Static241 Smoke.Environment.BuildingFireBig nn 62888.73 202202.42 160.00 /height 0.00
+[Buildings]
+[BuildingsLinks]

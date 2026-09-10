@@ -1,0 +1,94 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static27 Stationary.Vickers_Mk_VIC gb 332904.00 65122.64 675.00 
+  Static22 Stationary.Vickers_Mk_VIB gb 332907.56 65125.54 675.00 
+  Static57 Stationary.Environment.JerryCan_GER1_2 nn 332888.53 65146.52 645.00 
+  Static23 tobruk:Stationary.M3_Stuart gb 332910.84 65128.27 675.00 
+  Static24 Stationary.Matilda_2A gb 332914.25 65130.91 675.00 
+  Static5 Stationary.Valentine_I gb 332916.59 65150.47 675.00 
+  Static0 Stationary.Environment.SandBagWall_Arch nn 332960.81 65122.69 944.10 
+  Static1 Stationary.Environment.SandBagWall_Arch nn 332960.81 65125.58 855.00 
+  Static3 Stationary.Environment.SandBagWall_Arch nn 332963.72 65122.69 675.00 
+  Static2 Artillery.Bofors_StandAlone gb 332962.34 65124.47 675.00 /timeout 0/radius_hide 0
+  Static56 Stationary.Environment.JerryCan_GER1_2 nn 332949.56 65142.40 645.00 
+  Static46 Artillery.Bofors gb 332856.91 65158.48 590.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Bofors gb 332853.41 65161.43 590.00 /timeout 0/radius_hide 0
+  Static43 Stationary.Ford_V8_E917_tent gb 332856.66 65165.12 770.00 
+  Static44 Stationary.Ford_V8_E917_tent gb 332860.16 65162.19 770.00 
+  Static28 Artillery.Zwillingssockel36_GER1 gb 332885.22 65170.72 675.00 /timeout 0/radius_hide 0
+  Static53 Stationary.Environment.JerryCan_GER1_2 nn 332876.75 65185.39 645.00 
+  Static4 Stationary.Valentine_I gb 332912.19 65155.09 675.00 
+  Static41 Stationary.Bedford_MW_tank gb 332901.47 65170.96 675.00 
+  Static6 tobruk:Stationary.Crusader_II gb 332921.22 65157.41 675.00 
+  Static26 tobruk:Stationary.Matilda_2A_CS gb 332906.81 65173.22 675.00 
+  Static58 Stationary.Environment.JerryCan_GER1_2 nn 332914.22 65167.36 645.00 
+  Static7 Stationary.Vickers_Mk_VIC gb 332926.63 65162.97 675.00 
+  Static9 Stationary.Vickers_Mk_VIB gb 332923.16 65166.23 675.00 
+  Static8 Stationary.Vickers_Mk_VIB gb 332912.06 65177.52 675.00 
+  Static11 Stationary.Cruiser_Mk_IV gb 332927.78 65171.77 675.00 
+  Static14 tobruk:Stationary.M3_Grant gb 332921.16 65187.33 675.00 
+  Static17 Stationary.Bedford_MW_tank gb 332924.50 65189.23 675.00 
+  Static10 Stationary.Bedford_MW_tank gb 332917.75 65200.51 675.00 
+  Static13 Stationary.Valentine_I gb 332924.34 65201.01 675.00 
+  Static12 tobruk:Stationary.Crusader_II gb 332932.91 65167.30 675.00 
+  Static15 Stationary.Vickers_Mk_VIB gb 332938.59 65172.93 675.00 
+  Static16 Stationary.Vickers_Mk_VIC gb 332934.03 65176.73 855.00 
+  Static54 Stationary.Environment.JerryCan_GER1_2 nn 332928.75 65195.09 645.00 
+  Static55 Stationary.Environment.JerryCan_GER1_2 nn 332971.69 65159.74 645.00 
+  Static42 Stationary.Bedford_MW_tank gb 332956.69 65198.13 675.00 
+  Static25 Stationary.Ford_V8_E917_tent gb 332959.88 65204.16 675.00 
+  Static19 Stationary.Environment.SandBagWall_Arch nn 332989.38 65189.70 555.00 
+  Static18 Stationary.Environment.SandBagWall_Arch nn 332991.88 65188.22 645.00 
+  Static20 Artillery.20_mm_Flak_38 gb 332991.44 65189.97 465.00 /timeout 0/radius_hide 0
+  Static21 Stationary.Environment.SandBagWall_Arch nn 332990.78 65192.16 465.00 
+[Buildings]
+  0_bld tobruk:buildings.House$CamoNetTank 1 332936.60 65174.32 675.00
+  1_bld tobruk:buildings.House$CamoNetTank 1 332930.92 65169.17 675.00
+  2_bld tobruk:buildings.House$CamoNetTank 1 332925.91 65163.67 675.00
+  3_bld tobruk:buildings.House$CamoNetTank 1 332920.41 65158.17 675.00
+  4_bld tobruk:buildings.House$CamoNetTank 1 332914.06 65153.10 675.00
+  5_bld tobruk:buildings.House$TentBell_UK1 1 332949.12 65205.17 675.00
+  6_bld tobruk:buildings.House$TentBell_UK1 1 332946.58 65196.99 675.00
+  7_bld tobruk:buildings.House$TentBell_UK1 1 332951.80 65189.45 675.00
+  8_bld tobruk:buildings.House$TentRidgeTent_UK1 1 332918.60 65211.88 465.00
+  9_bld tobruk:buildings.House$TentRidgeTent_UK1 1 332910.45 65207.10 675.00
+  10_bld tobruk:buildings.House$TentRidgeTent_UK1 1 332930.37 65209.56 675.00
+  11_bld tobruk:buildings.House$TentRidgeTent_UK1 1 332896.48 65196.08 645.00
+  12_bld tobruk:buildings.House$TentRidgeTent_UK1 1 332908.78 65193.93 645.00
+  13_bld tobruk:buildings.House$TentSmall_UK1 1 332864.21 65160.34 585.00
+  14_bld tobruk:buildings.House$TentSmall_UK1 1 332862.69 65152.01 645.00
+  15_bld tobruk:buildings.House$TentSmall_UK1 1 332860.08 65151.65 645.00
+  16_bld tobruk:buildings.House$TentSmall_UK1 1 332857.25 65151.42 645.00
+  17_bld tobruk:buildings.House$TentSmall_UK1 1 332880.08 65150.01 645.00
+  18_bld tobruk:buildings.House$TentSmall_UK1 1 332888.48 65146.69 645.00
+  19_bld tobruk:buildings.House$TentSmall_UK1 1 332883.90 65148.48 645.00
+  20_bld tobruk:buildings.House$TentSmall_UK1 1 332861.28 65148.46 645.00
+  21_bld tobruk:buildings.House$TentSmall_UK1 1 332865.06 65149.49 645.00
+  22_bld tobruk:buildings.House$TentSmall_UK1 1 332868.36 65149.75 645.00
+  23_bld tobruk:buildings.House$TentSmall_UK1 1 332864.10 65143.11 685.00
+  24_bld tobruk:buildings.House$TentBell_UK1 1 332889.32 65181.81 645.00
+  25_bld tobruk:buildings.House$TentBell_UK1 1 332879.07 65173.79 645.00
+  26_bld tobruk:buildings.House$TentBell_UK1 1 332873.94 65146.05 645.00
+[BuildingsLinks]
+[Trigger]
+  BTargZeroBritishArmorCamp TGroundDestroyed 100 231676 30075 350

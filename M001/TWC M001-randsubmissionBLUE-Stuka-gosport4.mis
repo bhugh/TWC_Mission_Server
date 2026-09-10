@@ -1,0 +1,43 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_LW_KG51_Stab.07
+[BoB_LW_KG51_Stab.07]
+  Flight0  1 2
+  Flight1  11 12
+  Flight2  21 22
+  Class Aircraft.Ju-87B-2
+  Formation VIC3
+  CallSign 33
+  Fuel 100
+  Weapons 1 1 1 1
+  Skill 0.32 0.32 0.053 0 0.11 0.053 0 0.11
+[BoB_LW_KG51_Stab.07_Way]
+  NORMFLY 245183.10 171052.66 175.00 320.00
+  NORMFLY 134988.69 192734.97 175.00 320.00
+  RECON 113067.08 195507.86 175.00 320.00
+  GATTACK_POINT 62967.02 202208.59 175.00 320.00
+  AATTACK_FIGHTERS 62171.83 202378.53 175.00 320.00
+  AATTACK_FIGHTERS 27810.37 147332.18 175.00 320.00
+  AATTACK_FIGHTERS 19418.53 142430.47 175.00 320.00
+  LANDING 5629.04 133113.25 300.00 300.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

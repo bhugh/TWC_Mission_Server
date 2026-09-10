@@ -1,0 +1,272 @@
+2020-02-04 08:42:55Z
+  BTarget14R TGroundDestroyed 39 244791 262681 150
+  BTarget15R TGroundDestroyed 50 248579 253159 200
+  BTarget16R TGroundDestroyed 75 249454 247913 200
+  BTarget17R TGroundDestroyed 75 246777 235751 200
+  BTarget18R TGroundDestroyed 75 212973 220079 200
+  BTarget19R TGroundDestroyed 50 221278 214167 200
+  BTarget20R TGroundDestroyed 75 178778 197288 200
+  BTarget21R TGroundDestroyed 76 123384 196295 200
+  BTarget22R TGroundDestroyed 75 70423 171706 200
+  BTarget28 TGroundDestroyed 61 180207 288435 200
+  BTarget23R TGroundDestroyed 75 15645 170552 200
+  RTarget28R TGroundDestroyed 61 294183 219444 50
+  RTarget29R TGroundDestroyed 63 276566 214150 50
+  RTarget30R TGroundDestroyed 77 341887 232695 100
+  RTarget39R TGroundDestroyed 85 264882 178115 50
+  RTarget40R TGroundDestroyed 86 263234 153713 50
+  RTarget41R TGroundDestroyed 85 232727 103248 50
+  RTarget42R TGroundDestroyed 86 250599 116531 50
+  RTarget43R TGroundDestroyed 86 260798 131885 50
+  RTarget44R TGroundDestroyed 86 266788 197956 50
+  RTarget45R TGroundDestroyed 85 264494 188674 50
+  RTarget46R TGroundDestroyed 66 265307 171427 50
+  RTarget47R TGroundDestroyed 99 232580 103325 50
+  RTarget48R TGroundDestroyed 100 195165 93441 50
+  RTarget49R TGroundDestroyed 100 157636 60683 50
+  RTarget50R TGroundDestroyed 100 135205 29918 50
+  RTarget51R TGroundDestroyed 100 104279 36659 50
+  RTarget52R TGroundDestroyed 100 65364 43580 50
+  RTarget53R TGroundDestroyed 77 60453 63873 50
+  RTarget54R TGroundDestroyed 100 17036 77666 50
+  BTarget1 TGroundDestroyed 20 222303 221176 300
+  BTarget2 TGroundDestroyed 20 143336 240806 550
+  BTarget3 TGroundDestroyed 20 214639 235604 100
+  BTarget4 TGroundDestroyed 75 247462 259157 250
+  BTarget5 TGroundDestroyed 80 243887 236956 200
+  BTarget6 TGroundDestroyed 50 159687 275015 200
+  BTarget6S TGroupDestroyed 70 154299 273105 100
+  BTarget7S TGroundDestroyed 80 155050 273258 50
+  BTarget8S TGroundDestroyed 80 155823 273221 50
+  BTarget9S TGroundDestroyed 80 157899 273957 50
+  BTarget10S TGroundDestroyed 80 157547 274527 100
+  BTarget11S TGroundDestroyed 80 158192 274864 50
+  BTarget12S TGroundDestroyed 63 157899 275256 50
+  BTarget13S TGroundDestroyed 63 160567 275749 10
+  BTarget14A TGroundDestroyed 63 160025 273824 10
+  BTarget24 TGroundDestroyed 75 185027 252619 100
+  BTarget25 TGroundDestroyed 80 186057 251745 100
+  BTarget26 TGroundDestroyed 60 189272 249311 50
+  BTarget27 TGroundDestroyed 85 173778 233407 100
+  BTarget29 TGroundDestroyed 90 35872 236703 200
+  BTarget30 TGroundDestroyed 81 56990 203737 100
+  BTarget31 TGroundDestroyed 75 29968 279722 300
+  BTarget32 TGroundDestroyed 83 84241 267444 300
+  BTarget33 TGroundDestroyed 81 76446 193672 50
+  BTarget34 TGroundDestroyed 75 76476 193844 50
+  BTarget35 TGroundDestroyed 71 76317 193904 50
+  BTarget36 TGroundDestroyed 75 76378 194163 50
+  BTarget37 TGroundDestroyed 83 76720 194082 50
+  BTarget38 TGroundDestroyed 75 76805 193918 50
+  BTarget39 TGroundDestroyed 98 77392 193942 50
+  BTarget40 TGroundDestroyed 95 77317 193860 50
+  BTarget41 TGroundDestroyed 72 76855 194410 50
+  BTarget42 TGroundDestroyed 89 112441 243834 200
+  BTarget43 TGroundDestroyed 63 204654 268378 50
+  BTarget44 TGroundDestroyed 74 204638 265195 50
+  Btarget45 TGroundDestroyed 74 204722 265252 50
+  BTarget46 TGroundDestroyed 74 204570 265131 50
+  BTarget47 TGroundDestroyed 74 204716 265140 50
+  littlestonehang TGroundDestroyed 66 221988 221642 50
+  BTargDoverAmmo TGroundDestroyed 8 245461 233488 50
+  BTargDiehlTrainStation TGroundDestroyed 10 251138 245883 50
+  BTargDoverFuel TGroundDestroyed 11 245695 233573 100
+  BTargBroadstairsTrainStation TGroundDestroyed 10 252836 261369 50
+  BTargBrightonMilitaryRecruitment TGroundDestroyed 11 144654 198443 50
+  BTargBrightonFuel TGroundDestroyed 21 144738 198233 50
+  BTargTenterdenChemicalFactory TGroundDestroyed 12 194591 220821 150
+  BTargMinsterCaseOilManufacturing TGroundDestroyed 10 240203 256964 100
+  BTargDoverNavalOffice TGroundDestroyed 10 245567 233499 50
+  BTargBattleCommandoTrainingCenter TGroundDestroyed 11 185093 219403 50
+  RTarget0 TGroundDestroyed 83 354623 121058 100
+  RTarget1 TGroundDestroyed 50 299486 220998 50
+  RTarget2 TGroundDestroyed 33 313732 192700 50
+  RTarget3 TGroundDestroyed 40 280182 164399 50
+  RTarget4 TGroundDestroyed 60 265005 190321 100
+  RTarget5 TGroundDestroyed 60 283995 215369 100
+  RTarget6 TGroundDestroyed 60 284867 216414 50
+  RTarget7 TGroundDestroyed 60 285518 217456 100
+  RTarget8 TGroundDestroyed 60 285001 215944 100
+  RTarget9 TGroundDestroyed 60 284831 216887 100
+  RTarget10 TGroundDestroyed 60 285040 217547 100
+  RTarget11 TGroundDestroyed 43 265591 189902 100
+  RTarget12 TGroundDestroyed 50 266651 187088 50
+  RTarget13 TGroundDestroyed 52 266160 189276 50
+  RTarget14 TGroundDestroyed 50 264515 188950 50
+  RTarget15 TGroundDestroyed 50 264984 189378 100
+  RTarget16 TGroundDestroyed 50 350605 142047 50
+  RTarget17 TGroundDestroyed 50 352039 141214 50
+  RTarget18 TGroundDestroyed 50 303445 114053 50
+  RTarget19 TGroundDestroyed 50 285075 121608 50
+  RTarget20 TGroundDestroyed 50 229270 101222 50
+  RTarget21 TGroundDestroyed 50 250477 116082 50
+  RTarget22 TGroundDestroyed 50 293827 84983 150
+  RTarget23 TGroundDestroyed 75 285254 216717 50
+  RTarget24 TGroundDestroyed 100 285547 216579 50
+  RTarget25 TGroundDestroyed 75 285131 216913 50
+  RTarget26 TGroundDestroyed 78 284522 216339 50
+  RTarget27 TGroundDestroyed 50 284898 216552 50
+  RTarget31 TGroundDestroyed 75 351371 141966 100
+  RTarget32 TGroundDestroyed 60 310395 200888 100
+  RTarget33 TGroundDestroyed 50 314794 224432 100
+  RTarget34 TGroundDestroyed 75 315081 224145 100
+  RTarget35 TGroundDestroyed 75 314832 223389 100
+  RTarget36 TGroundDestroyed 75 314482 223882 200
+  RTarget37 TGroundDestroyed 75 313878 223421 100
+  RTarget38 TGroundDestroyed 70 161702 52073 100
+  9A TGroundDestroyed 63 296130 218469 50
+  8A TGroundDestroyed 75 294090 85100 100
+  7A TGroundDestroyed 66 293279 84884 100
+  1B TGroundDestroyed 70 264252 189991 50
+  2B TGroundDestroyed 47 265063 190506 50
+  3B TGroundDestroyed 51 265251 190259 50
+  4B TGroundDestroyed 62 264692 189709 50
+  5B TGroundDestroyed 54 265643 189603 50
+  6B TGroundDestroyed 77 265932 189324 50
+  7B TGroundDestroyed 53 264849 189190 50
+  LehavNaval1 TGroundDestroyed 84 163216 49915 50
+  LehavNaval2 TGroundDestroyed 71 163447 49855 50
+  LehavNaval3 TGroundDestroyed 75 163313 50063 50
+  LehavNaval4 TGroundDestroyed 81 163039 49798 50
+  LehavNaval5 TGroundDestroyed 71 163172 49816 50
+  LehavNaval6 TGroundDestroyed 89 163470 49752 50
+  LehavNaval7 TGroundDestroyed 75 162993 49927 50
+  LehavNavalDiesel TGroundDestroyed 46 162559 50082 100
+  LehavNavalGearOil TGroundDestroyed 41 162668 50240 100
+  LehavNavalBenzine TGroundDestroyed 35 161747 50094 50
+  LehavNavalLOX TGroundDestroyed 41 162099 50034 50
+  LehavTrainStation TGroundDestroyed 37 159918 53120 100
+  Estree_Secret TGroundDestroyed 61 279623 163613 50
+  RTargMarquiseFuelDump TGroundDestroyed 13 274209 199150 100
+  RTargCalaisUBootRepair TGroundDestroyed 10 284999 216446 100
+  RTargCalaisDocksArea TGroundDestroyed 5 284656 217404 350
+  RTargCalaisJackbootStorage TGroundDestroyed 12 284994 216869 50
+  RTargDunkirkWeaponStoarge TGroundDestroyed 11 315271 224033 100
+  RTargDunkirkRadarManufacturing TGroundDestroyed 10 315295 224146 100
+  RTargDunkirkMilitaryWarehouse TGroundDestroyed 10 315300 224265 100
+  RTargDunkirkExplosivesResearch TGroundDestroyed 9 314884 223318 50
+  RTargDesvresAviationFuel TGroundDestroyed 9 284580 182275 150
+  RTargAireSurLaLysChemicalRefinery TGroundDestroyed 12 323803 181252 100
+  RTargVeumeMilitaryManufacturingArea TGroundDestroyed 8 342180 228344 250
+  RTargEtapleFuelDump TGroundDestroyed 11 267479 166274 100
+    0 284007.3 124840.5 0
+    0 234930.6 232459 0
+    0 225174.1 228785.4 0
+    0 248248.3 258983.5 0
+    0 104593.5 199293.7 0
+    0 291178.6 216286.5 0
+    0 155403.5 253686.1 0
+    0 117911 18146.35 0
+    0 180346.7 264835.4 0
+    0 321977.8 101320.5 0
+    0 52601.16 39782.83 0
+    0 112848.4 195780 0
+    0 146689.7 251072.4 0
+    0 166766.4 277772.6 0
+    0 311564.3 190353 0
+    0 28778.2 247273.7 0
+    0 335376.2 72793.08 0
+    0 157374.1 57869.54 0
+    0 251184.8 260927 0
+    0 234568.4 248429.5 0
+    0 221950.5 221332.5 0
+    0 212285.5 262830.7 0
+    0 200959.9 282782.8 0
+    0 188229.8 257808.2 0
+    0 181260.7 248833.9 0
+    0 167682.8 198386.3 0
+    0 141685.5 234076.3 0
+    0 143424.1 241162.2 0
+    0 133698.4 198565.6 0
+    0 144258.8 256424.9 0
+    0 120333.3 255377.8 0
+    0 125306.4 265580.8 0
+    0 121346.1 269212 0
+    0 125379.9 271489.6 0
+    0 135473.9 283727.7 0
+    0 123413.2 278194.7 0
+    0 98892.02 272114.5 0
+    0 90946.03 266311.7 0
+    0 100060.2 247376.4 0
+    0 86982.81 242034.3 0
+    0 61265.06 280192.6 0
+    0 37948.03 284823.4 0
+    0 18618.82 264227.1 0
+    0 29865.94 242135 0
+    0 22426.97 238675.5 0
+    0 31456.89 233239.8 0
+    0 27946.91 230224.2 0
+    0 28764.03 226253 0
+    0 46142.3 238991.3 0
+    0 60583.92 228112.5 0
+    0 58765.93 209960.1 0
+    0 61264.09 201022 0
+    0 72435.07 194011.5 0
+    0 69155.01 195373.1 0
+    0 80117.35 196482.1 0
+    0 74252 183309 0
+    0 76324.13 180178.5 0
+    0 71245.69 177136.6 0
+    0 89632.63 196176 0
+    0 350150.1 121130 0
+    0 322075.1 95307.58 0
+    0 351330.7 145343 0
+    0 355623.3 128799.3 0
+    0 272013.6 205320.6 0
+    0 314851.3 130755.8 0
+    0 208122.3 10022.63 0
+    0 307577.7 50024.67 0
+    0 265712.4 156097.1 0
+    0 278725.2 157067 0
+    0 264387 186323.6 0
+    0 321117.6 153653.9 0
+    0 285450.7 70129.75 0
+    0 281868.5 203450.3 0
+    0 287169.3 202045.8 0
+    0 284920.9 193001.9 0
+    0 281202.6 212948 0
+    0 298439.9 127466.1 0
+    0 304944.6 38421.05 0
+    0 111526.8 33307 0
+    0 162575.4 38819.22 0
+    0 285042.3 182696.3 0
+    0 229199.3 96278.02 0
+    0 280257.2 164215 0
+    0 303216.7 48623.19 0
+    0 191769.9 10254.25 0
+    0 331579.8 26699.74 0
+    0 293360.8 64646.63 0
+    0 291085.5 73515.41 0
+    0 284085.8 205076.7 0
+    0 285740.8 199982.7 0
+    0 276190.6 200785.9 0
+    0 267738.8 166723.5 0
+    0 285109.9 139909.1 0
+    0 272460.2 200326.8 0
+    0 340749 178426 0
+    0 325708.3 152724.3 0
+    0 296378.2 217322.9 0
+    0 317533.6 17080.86 0
+    0 275941.6 207456 0
+    0 277055.5 209352.7 0
+    0 278920.1 207297.5 0
+    0 124247.8 28435.88 0
+    0 292756.4 88726.35 0
+    0 296969.9 9149.86 0
+    0 27835.34 72604.56 0
+    0 321400.1 172372 0
+    0 346178.2 87489.65 0
+    0 236496.9 41402.81 0
+    0 353042.6 70057.92 0
+    0 317659.5 190565.5 0
+    0 317864.6 195075.7 0
+    0 43818.77 70627.06 0
+    0 306422.9 160671.5 0
+    0 275846 156103.5 0
+    0 269735 207212 0
+    0 295249.4 130393.3 0
+    0 299432 203047.8 0
+    0 287389.8 163213.7 0
+    0 278083.5 182132.9 0
+    0 162440.1 297791.8 0
+    0 101418.8 199773.2 0

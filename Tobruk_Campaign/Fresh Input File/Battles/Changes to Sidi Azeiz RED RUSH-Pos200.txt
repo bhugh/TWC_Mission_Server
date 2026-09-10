@@ -1,0 +1,48 @@
+This is a helper file to "How-to-write-a-Bumrush-Mission-TWC-Tobruk-Mission-2020-09-29.txt" explaining updates I made to a particular Bumrush .mis file to make it work properly as a bumrush .mis file.
+
+-----
+
+
+1. Moved Blue tanks w/in 3500m of airport center. These can move around a little but their entire path, start to finish, needs to be within the 3500m radius or they don't count as part of the Blue airfield defenses that need to be cleared out.  I usually put these units within 3000m just for safety (tried to cut the 3500m limit a bit too close too many times, only to find it was 3507 meters distance or whatever, which meant they were not registering at all).
+
+2. Added 2 more tanks to this unit. About 6 seems about the right #.
+
+3. Added 2-3 AA in area of tanks (otherwise they're completely undefended)
+
+4. Moved Blue Tank Spawn point so it is within 10km of both the Blue tanks & Blue AA around airfield, AND also on Blue territory
+
+5. Added an airdrome/airdrome points near the Tank Spawn point (note that it is actually the location of the airdrome points that counts, for purposes of the 10km distance for jumping into nearby tanks/AA).  So I was careful to place the airdrome points, where people will actually spawn in, within 10km of the FAR SIDE of the Sidi Azeiz airfield, where we'll place some AA)
+
+6. 3 LIVE Blue AI AA units on the Sidi Azeiz airfield (the last-ditch defense units)
+
+7. 6-9 "timed-out" AA units around the airport for players to jump into.
+
+  - I used "Bofors" for both of these for the reasons explained in the other file.  It is fine if you want to use a different gun for the Blue AA but it needs to be as usable by players & and as effective against both air & ground targets as Bofors, and also visually distinguishable from the Bofors Standalone. Bofors is the only unit that I KNOW meets all these criteria.  (Also FYI the Axis did operate Bofors units in various circumstances throughout the war, so it is at least somewhat historically defensible.)
+  
+8.  Added a Blue armor column that takes a position just on the blue side of the airport and stays in that general area (taking a path that never puts it in contact with any Red ground unit) for the entire t ime. Remember that this is one of the 'failsafes' that keeps the airport from being  taken over by Red "by accident" or only by AI actions.
+
+9. Added a Blue armor column that comes from the west & arrives at the 3500m perimeter about 45 minutes into the battle, then roams around within the 3500m radius in a defensive posture.  This, again, is a failsafe against AI and something that prevents Red from taking over the airport with just one or two pilots in-game.  "We've finally got the area around around the airfield cleared and now we can concentrate on defending our ground units.  Wait! There is ANOTHER blue ground unit coming into range...now we have to go take care of that one, too." 
+
+Generally speaking if there is only one threat for the attacking pilots to worry about just 1-2 pilots can handle. There always have to be multiple simultaneous threats or it is just too easy to claim victory.
+
+9. Move end point of red ground attack units to EXACTLY in center of airport.  within 100m or so.   If they get to 501m and just stop there people are going to be kind of mad.  (Also ensures they are within range of at least one of the 3 AI AA Guns there, another failsafe against cheap victory for the attackers.)
+
+10. Made sure Red Tank Spawn was in Neutral Territory & also within 10km of the red tanks.
+
+11. Added Red Airdrome/Airdrome Points with 4 spawn-in areas, nearby to the Red Tank Spawn (technically it is the AIRDROME POINTS that need to be in friendly/neutral territory and also within 10km of the tanks or AA you want them to be able to transfer to).  The spawn area itself doesn't work unless there are also airdrome points (nearby) to spawn into.
+
+12. Jiggered the arrival times of Red ground groups so that they start about 20 mins after the Bumrush start & arrive about every 10-15 mins thereafter.  But not all in one bunch as that overpowers the AI defenses.  Also making sure some arrive early on is what requires multiple live pilots concentrating on multiple tasks at once.  If you can just concentrate on clearing the area out to 3500m during the first part of the mission, then defending your ground groups (which conveniently arrive in one massed force all around the same time, late in the  mission) that is the type of thing that just one breather can manage. 
+
+But if they have to keep clearing the perimeter early AND late in the mission, and also defending their incoming ground forces early, middle, AND late, that is where it starts to require a team, not just a single pilot or two.
+
+Here is how the timings work out:
+ 
+  (Mission start 10:00)
+  Chief_16 - 10:20
+  Chief_2 - 10:35
+  Chief_1 - 10:45
+  Chief_3 - 11:01
+  Chief_4 - 11:15
+  Chief_5 - 11:23
+
+ 

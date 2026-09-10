@@ -1,0 +1,38 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_F_FatCat_Early.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+[CustomChiefs]
+[Stationary]
+  Static384 Smoke.Environment.BuildingFireBig nn 265225.84 190161.27 -75.00 /height 0.23
+  Static386 Smoke.Environment.BuildingFireBig nn 265742.69 190385.17 -75.00 /height 0.23
+  Static387 Smoke.Environment.BuildingFireBig nn 265534.41 190383.52 -75.00 /height 1.00  
+  Static385 Smoke.Environment.BuildingFireBig nn 265421.78 190250.47 -75.00 /height 0.23
+  Static389 Smoke.Environment.BuildingFireBig nn 265551.78 190424.64 -75.00 /height 0.23
+  Static390 Smoke.Environment.BuildingFireBig nn 265861.03 190462.08 -75.00 /height 0.23
+  Static391 Smoke.Environment.BuildingFireBig nn 265965.31 190485.02 -75.00 /height 3.29
+  Static392 Smoke.Environment.BuildingFireBig nn 265701.31 190389.58 -75.00 /height 3.29
+  Static393 Smoke.Environment.BuildingFireBig nn 265481.25 190278.16 -75.00 /height 3.29
+  Static394 Smoke.Environment.BuildingFireBig nn 265353.75 190216.84 -75.00 /height 3.29
+  Static395 Smoke.Environment.BuildingFireBig nn 265351.75 190197.61 -75.00 /height 3.29
+  Static396 Smoke.Environment.BuildingFireBig nn 265266.94 190185.39 -75.00 /height 3.29
+  Static397 Smoke.Environment.BuildingFireBig nn 265525.78 190336.75 -75.00 /height 3.29
+  Static398 Smoke.Environment.BuildingFireBig nn 265510.63 190409.30 -75.00 /height 3.29
+[Buildings]
+[BuildingsLinks]

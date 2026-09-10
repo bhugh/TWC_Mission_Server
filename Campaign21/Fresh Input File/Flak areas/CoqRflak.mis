@@ -1,0 +1,28 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak30_Shield de 276103.28 214080.95 110.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak30_Shield de 276166.22 214123.61 110.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak30_Shield de 276218.97 214157.88 110.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak30_Shield de 276689.34 214377.92 110.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak30_Shield de 276795.09 214414.61 110.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak30_Shield de 276915.97 214442.67 110.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

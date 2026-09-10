@@ -1,0 +1,207 @@
+﻿Default;CloD internal name;Class;TV Type;TV Name;TV Pilot Name;TV Shape
+*;UndefinedAircraft;Aircraft;Air+FixedWing;Plane;Plane;
+;bob:Aircraft.AnsonMkI;Aircraft;Air+FixedWing;AnsonMkI;Anson MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkIC;Aircraft;Air+FixedWing;BeaufighterMkIC;Beaufighter MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkIC_Trop;Aircraft;Air+FixedWing;BeaufighterMkIC_Trop;Beaufighter MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.BeaufighterMkIF;Aircraft;Air+FixedWing;BeaufighterMkIF;Beaufighter MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkIF_Late;Aircraft;Air+FixedWing;BeaufighterMkIF_Late;Beaufighter MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkIF_Late_Trop;Aircraft;Air+FixedWing;BeaufighterMkIF_Late_Trop;Beaufighter MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.BeaufighterMkINF;Aircraft;Air+FixedWing;BeaufighterMkINF;Beaufighter MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkINF_Late;Aircraft;Air+FixedWing;BeaufighterMkINF_Late;Beaufighter MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BeaufighterMkINF_Late_Trop;Aircraft;Air+FixedWing;BeaufighterMkINF_Late_Trop;Beaufighter MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.Bf-108B-2;Aircraft;Air+FixedWing;Bf-108B-2;Bf108 B2;FixedWing.PC-21.obj
+;tobruk:Aircraft.Bf-108B-2_Trop;Aircraft;Air+FixedWing;Bf-108B-2_Trop;Bf108 B2;FixedWing.PC-21.obj
+;bob:Aircraft.Bf-109E-1;Aircraft;Air+FixedWing;Bf-109E-1;Bf109 E1;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-1B;Aircraft;Air+FixedWing;Bf-109E-1B;Bf109 E1;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-3;Aircraft;Air+FixedWing;Bf-109E-3;Bf109 E3;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-3B;Aircraft;Air+FixedWing;Bf-109E-3B;Bf109 E3;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4;Aircraft;Air+FixedWing;Bf-109E-4;Bf109 E4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4_Late;Aircraft;Air+FixedWing;Bf-109E-4_Late;Bf109 E4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4B;Aircraft;Air+FixedWing;Bf-109E-4B;Bf109 E4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4B_Late;Aircraft;Air+FixedWing;Bf-109E-4B_Late;Bf109 E4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4N;Aircraft;Air+FixedWing;Bf-109E-4N;Bf109 E4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-109E-4N_Late;Aircraft;Air+FixedWing;Bf-109E-4N_Late;Bf109 E4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109E-7;Aircraft;Air+FixedWing;Bf-109E-7;Bf109 E7;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109E-7_Trop;Aircraft;Air+FixedWing;Bf-109E-7_Trop;Bf109 E7;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109E-7N;Aircraft;Air+FixedWing;Bf-109E-7N;Bf109 E7;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109E-7N_Trop;Aircraft;Air+FixedWing;Bf-109E-7N_Trop;Bf109 E7;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109E-7Z;Aircraft;Air+FixedWing;Bf-109E-7Z;Bf109 E7;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-1;Aircraft;Air+FixedWing;Bf-109F-1;Bf109 F1;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-2;Aircraft;Air+FixedWing;Bf-109F-2;Bf109 F2;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-2_Late;Aircraft;Air+FixedWing;Bf-109F-2_Late;Bf109 F2;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-2_Trop;Aircraft;Air+FixedWing;Bf-109F-2_Trop;Bf109 F2;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4;Aircraft;Air+FixedWing;Bf-109F-4;Bf109 F4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4_Derated;Aircraft;Air+FixedWing;Bf-109F-4_Derated;Bf109 F4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4_trop;Aircraft;Air+FixedWing;Bf-109F-4_trop;Bf109 F4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4_trop_Derated;Aircraft;Air+FixedWing;Bf-109F-4_trop_Derated;Bf109 F4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4Z;Aircraft;Air+FixedWing;Bf-109F-4Z;Bf109 F4;FixedWing.Bf 109.obj
+;tobruk:Aircraft.Bf-109F-4Z_trop;Aircraft;Air+FixedWing;Bf-109F-4Z_trop;Bf109 F4;FixedWing.Bf 109.obj
+;bob:Aircraft.Bf-110C-2;Aircraft;Air+FixedWing;Bf-110C-2;Bf110 C2;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-4;Aircraft;Air+FixedWing;Bf-110C-4;Bf110 C4;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-4-NJG;Aircraft;Air+FixedWing;Bf-110C-4-NJG;Bf110 C4;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-4B;Aircraft;Air+FixedWing;Bf-110C-4B;Bf110 C4;FixedWing.Bf 110.obj
+;tobruk:Aircraft.Bf-110C-4B_Trop;Aircraft;Air+FixedWing;Bf-110C-4B_Trop;Bf110 C4;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-4Late;Aircraft;Air+FixedWing;Bf-110C-4Late;Bf110 C4;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-4N;Aircraft;Air+FixedWing;Bf-110C-4N;Bf110 C4;FixedWing.Bf 110.obj
+;tobruk:Aircraft.Bf-110C-4N-NJG_Trop;Aircraft;Air+FixedWing;Bf-110C-4N-NJG_Trop;Bf110 C4;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-6;Aircraft;Air+FixedWing;Bf-110C-6;Bf110 C6;FixedWing.Bf 110.obj
+;tobruk:Aircraft.Bf-110C-6_Trop;Aircraft;Air+FixedWing;Bf-110C-6_Trop;Bf110 C6;FixedWing.Bf 110.obj
+;bob:Aircraft.Bf-110C-7;Aircraft;Air+FixedWing;Bf-110C-7;Bf110 C7;FixedWing.Bf 110.obj
+;tobruk:Aircraft.Bf-110C-7_Trop;Aircraft;Air+FixedWing;Bf-110C-7_Trop;Bf110 C7;FixedWing.Bf 110.obj
+;bob:Aircraft.BlenheimMkI;Aircraft;Air+FixedWing;BlenheimMkI;Bleinheim MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BlenheimMkI_Trop;Aircraft;Air+FixedWing;BlenheimMkI_Trop;Bleinheim MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIF;Aircraft;Air+FixedWing;BlenheimMkIF;Bleinheim MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkINF;Aircraft;Air+FixedWing;BlenheimMkINF;Bleinheim MkI;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIV;Aircraft;Air+FixedWing;BlenheimMkIV;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIV_Late;Aircraft;Air+FixedWing;BlenheimMkIV_Late;Blenheim MkIV;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BlenheimMkIV_Late_Trop;Aircraft;Air+FixedWing;BlenheimMkIV_Late_Trop;Blenheim MkIV;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BlenheimMkIV_Trop;Aircraft;Air+FixedWing;BlenheimMkIV_Trop;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIVF;Aircraft;Air+FixedWing;BlenheimMkIVF;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIVF_Late;Aircraft;Air+FixedWing;BlenheimMkIVF_Late;Blenheim MkIV;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BlenheimMkIVF_Late_Trop;Aircraft;Air+FixedWing;BlenheimMkIVF_Late_Trop;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIVNF;Aircraft;Air+FixedWing;BlenheimMkIVNF;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BlenheimMkIVNF_Late;Aircraft;Air+FixedWing;BlenheimMkIVNF_Late;Blenheim MkIV;FixedWing.Mosquito.obj
+;tobruk:Aircraft.BlenheimMkIVNF_Late_Trop;Aircraft;Air+FixedWing;BlenheimMkIVNF_Late_Trop;Blenheim MkIV;FixedWing.Mosquito.obj
+;bob:Aircraft.BR-20M;Aircraft;Air+FixedWing;BR-20M;BR20M;FixedWing.Bf 110.obj
+;tobruk:Aircraft.BR-20M_Trop;Aircraft;Air+FixedWing;BR-20M_Trop;BR20M;FixedWing.Bf 110.obj
+;bob:Aircraft.CR42;Aircraft;Air+FixedWing;CR42;CR42;FixedWing.CAML.obj
+;tobruk:Aircraft.CR42_Trop;Aircraft;Air+FixedWing;CR42_Trop;CR42;FixedWing.CAML.obj
+;tobruk:Aircraft.D520_Serie1;Aircraft;Air+FixedWing;D520_Serie1;D520;FixedWing.LaGG-3.obj
+;tobruk:Aircraft.D520_Serie1_Trop;Aircraft;Air+FixedWing;D520_Serie1_Trop;D520;FixedWing.LaGG-3.obj
+;bob:Aircraft.DefiantMkI;Aircraft;Air+FixedWing;DefiantMkI;Defiant;FixedWing.Hurricane.obj
+;bob:Aircraft.DH82A;Aircraft;Air+FixedWing;DH82A;DH82;FixedWing.Dolphin.obj
+;bob:Aircraft.DH82A_1940;Aircraft;Air+FixedWing;DH82A_1940;DH82;FixedWing.Dolphin.obj
+;tobruk:Aircraft.DH82A_Trop;Aircraft;Air+FixedWing;DH82A_Trop;DH82;FixedWing.Dolphin.obj
+;bob:Aircraft.DH82A-1;Aircraft;Air+FixedWing;DH82A-1;DH82;FixedWing.Dolphin.obj
+;bob:Aircraft.DH82A-2;Aircraft;Air+FixedWing;DH82A-2;DH82;FixedWing.Dolphin.obj
+;bob:Aircraft.Do-17Z-1;Aircraft;Air+FixedWing;Do-17Z-1;Do17 z2;FixedWing.B-25.obj
+;bob:Aircraft.Do-17Z-2;Aircraft;Air+FixedWing;Do-17Z-2;Do17 z2;FixedWing.B-25.obj
+;bob:Aircraft.Do-215B-1;Aircraft;Air+FixedWing;Do-215B-1;Do215 B1;FixedWing.B-25.obj
+;bob:Aircraft.FW-200C-1;Aircraft;Air+FixedWing;FW-200C-1;FW200 C1;FixedWing.B-17.obj
+;bob:Aircraft.G50;Aircraft;Air+FixedWing;G50;G50;FixedWing.I-16.obj
+;tobruk:Aircraft.G50_Trop;Aircraft;Air+FixedWing;G50_Trop;G50;FixedWing.I-16.obj
+;bob:Aircraft.GladiatorMkII;Aircraft;Air+FixedWing;GladiatorMkII;Gladiator MkII;FixedWing.Eagle II.obj
+;tobruk:Aircraft.GladiatorMkII_trop;Aircraft;Air+FixedWing;GladiatorMkII_trop;Gladiator MkII;FixedWing.Eagle II.obj
+;bob:Aircraft.He-111H-2;Aircraft;Air+FixedWing;He-111H-2;He111 H2;FixedWing.He 111.obj
+;tobruk:Aircraft.He-111H-2_Trop;Aircraft;Air+FixedWing;He-111H-2_Trop;He111 H2;FixedWing.He 111.obj
+;tobruk:Aircraft.He-111H-6;Aircraft;Air+FixedWing;He-111H-6;He111 H2;FixedWing.He 111.obj
+;tobruk:Aircraft.He-111H-6_Trop;Aircraft;Air+FixedWing;He-111H-6_Trop;He111 H2;FixedWing.He 111.obj
+;bob:Aircraft.He-111P-2;Aircraft;Air+FixedWing;He-111P-2;He111 P2;FixedWing.He 111.obj
+;bob:Aircraft.He-115B-2;Aircraft;Air+FixedWing;He-115B-2;He115 B2;FixedWing.He 111.obj
+;bob:Aircraft.HurricaneMkI;Aircraft;Air+FixedWing;HurricaneMkI;Hurricane MkI;FixedWing.Hurricane.obj
+;bob:Aircraft.HurricaneMkI_100oct;Aircraft;Air+FixedWing;HurricaneMkI_100oct;Hurricane MkI;FixedWing.Hurricane.obj
+;bob:Aircraft.HurricaneMkI_100oct-NF;Aircraft;Air+FixedWing;HurricaneMkI_100oct-NF;Hurricane MkI;FixedWing.Hurricane.obj
+;bob:Aircraft.HurricaneMkI_dH5-20;Aircraft;Air+FixedWing;HurricaneMkI_dH5-20;Hurricane MkI;FixedWing.Hurricane.obj
+;bob:Aircraft.HurricaneMkI_dH5-20_100oct;Aircraft;Air+FixedWing;HurricaneMkI_dH5-20_100oct;Hurricane MkI;FixedWing.Hurricane.obj
+;bob:Aircraft.HurricaneMkI_FB;Aircraft;Air+FixedWing;HurricaneMkI_FB;Hurricane MkI;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkI_FB-Trop;Aircraft;Air+FixedWing;HurricaneMkI_FB-Trop;Hurricane MkI;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIa;Aircraft;Air+FixedWing;HurricaneMkIIa;Hurricane MkIIa;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIaTrop;Aircraft;Air+FixedWing;HurricaneMkIIaTrop;Hurricane MkIIa;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIb;Aircraft;Air+FixedWing;HurricaneMkIIb;Hurricane MkIIb;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIb-Late;Aircraft;Air+FixedWing;HurricaneMkIIb-Late;Hurricane MkIIb;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIbTrop;Aircraft;Air+FixedWing;HurricaneMkIIbTrop;Hurricane MkIIb;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIbTrop-Late;Aircraft;Air+FixedWing;HurricaneMkIIbTrop-Late;Hurricane MkIIb;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIc;Aircraft;Air+FixedWing;HurricaneMkIIc;Hurricane MkIIc;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIc-Late;Aircraft;Air+FixedWing;HurricaneMkIIc-Late;Hurricane MkIIc;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIc-Trop;Aircraft;Air+FixedWing;HurricaneMkIIc-Trop;Hurricane MkIIc;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIIc-Trop-Late;Aircraft;Air+FixedWing;HurricaneMkIIc-Trop-Late;Hurricane MkIIc;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIId;Aircraft;Air+FixedWing;HurricaneMkIId;Hurricane MkIId;FixedWing.Hurricane.obj
+;tobruk:Aircraft.HurricaneMkIId-Trop;Aircraft;Air+FixedWing;HurricaneMkIId-Trop;Hurricane MkIId;FixedWing.Hurricane.obj
+;bob:Aircraft.Ju-87B-2;Aircraft;Air+FixedWing;Ju-87B-2;Ju87 B2;FixedWing.Ju 87.obj
+;tobruk:Aircraft.Ju-87B-2_Trop;Aircraft;Air+FixedWing;Ju-87B-2_Trop;Ju87 B2;FixedWing.Ju 87.obj
+;bob:Aircraft.Ju-88A-1;Aircraft;Air+FixedWing;Ju-88A-1;Ju88 A1;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88A-5;Aircraft;Air+FixedWing;Ju-88A-5;Ju88 A5;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88A-5_Trop;Aircraft;Air+FixedWing;Ju-88A-5_Trop;Ju88 A5;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88A-5Late;Aircraft;Air+FixedWing;Ju-88A-5Late;Ju88 A5;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88A-5Late_Trop;Aircraft;Air+FixedWing;Ju-88A-5Late_Trop;Ju88 A5;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-1;Aircraft;Air+FixedWing;Ju-88C-1;Ju88 C1;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-2;Aircraft;Air+FixedWing;Ju-88C-2;Ju88 C2;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-2_Trop;Aircraft;Air+FixedWing;Ju-88C-2_Trop;Ju88 C2;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-4;Aircraft;Air+FixedWing;Ju-88C-4;Ju88 C4;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-4_Trop;Aircraft;Air+FixedWing;Ju-88C-4_Trop;Ju88 C4;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-4Late;Aircraft;Air+FixedWing;Ju-88C-4Late;Ju88 C4;FixedWing.Ju 88.obj
+;tobruk:Aircraft.Ju-88C-4Late_Trop;Aircraft;Air+FixedWing;Ju-88C-4Late_Trop;Ju88 C4;FixedWing.Ju 88.obj
+;tobruk:Aircraft.KittyhawkMkIA;Aircraft;Air+FixedWing;KittyhawkMkIA;Kittyhawk MkIa;FixedWing.P-40.obj
+;tobruk:Aircraft.KittyhawkMkIA-Trop;Aircraft;Air+FixedWing;KittyhawkMkIA-Trop;Kittyhawk MkIa;FixedWing.P-40.obj
+;tobruk:Aircraft.Macchi-C202-SeriesIII;Aircraft;Air+FixedWing;Macchi-C202-SeriesIII;C202 Series III;FixedWing.C.202.obj
+;tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota;Aircraft;Air+FixedWing;Macchi-C202-SeriesIII-AltoQuota;C202 Series III;FixedWing.C.202.obj
+;tobruk:Aircraft.Macchi-C202-SeriesVII;Aircraft;Air+FixedWing;Macchi-C202-SeriesVII;C202 Series VII;FixedWing.C.202.obj
+;tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota;Aircraft;Air+FixedWing;Macchi-C202-SeriesVII-AltoQuota;C202 Series VII;FixedWing.C.202.obj
+;tobruk:Aircraft.MartletMkIII;Aircraft;Air+FixedWing;MartletMkIII;Martlet MkIII;FixedWing.M20.obj
+;tobruk:Aircraft.MartletMkIII_Trop;Aircraft;Air+FixedWing;MartletMkIII_Trop;Martlet MkIII;FixedWing.M20.obj
+;bob:Aircraft.SpitfireMkI;Aircraft;Air+FixedWing;SpitfireMkI;Spitfire MkI;FixedWing.Spitfire.obj
+;bob:Aircraft.SpitfireMkI_100oct;Aircraft;Air+FixedWing;SpitfireMkI_100oct;Spitfire MkI;FixedWing.Spitfire.obj
+;bob:Aircraft.SpitfireMkI_Heartbreaker;Aircraft;Air+FixedWing;SpitfireMkI_Heartbreaker;Spitfire MkI;FixedWing.Spitfire.obj
+;bob:Aircraft.SpitfireMkIa;Aircraft;Air+FixedWing;SpitfireMkIa;Spitfire MkIa;FixedWing.Spitfire.obj
+;bob:Aircraft.SpitfireMkIa_100oct;Aircraft;Air+FixedWing;SpitfireMkIa_100oct;Spitfire MkIa;FixedWing.Spitfire.obj
+;bob:Aircraft.SpitfireMkIIa;Aircraft;Air+FixedWing;SpitfireMkIIa;Spitfire MkIIa;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkIIb;Aircraft;Air+FixedWing;SpitfireMkIIb;Spitfire MkIIb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVa;Aircraft;Air+FixedWing;SpitfireMkVa;Spitfire MkVa;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVb;Aircraft;Air+FixedWing;SpitfireMkVb;Spitfire MkVb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVb-HF;Aircraft;Air+FixedWing;SpitfireMkVb-HF;Spitfire MkVb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVb-HF-Late;Aircraft;Air+FixedWing;SpitfireMkVb-HF-Late;Spitfire MkVb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVb-HF-Trop;Aircraft;Air+FixedWing;SpitfireMkVb-HF-Trop;Spitfire MkVb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVbLate;Aircraft;Air+FixedWing;SpitfireMkVbLate;Spitfire MkVb;FixedWing.Spitfire.obj
+;tobruk:Aircraft.SpitfireMkVbTrop;Aircraft;Air+FixedWing;SpitfireMkVbTrop;Spitfire MkVb;FixedWing.Spitfire.obj
+;bob:Aircraft.Su-26M;Aircraft;Air+FixedWing;Su-26M;Su26 M;FixedWing.Edge 540.obj
+;bob:Aircraft.SunderlandMkI;Aircraft;Air+FixedWing;SunderlandMkI;Sunderland MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.TomahawkMkII;Aircraft;Air+FixedWing;TomahawkMkII;Tomahawk MkII;FixedWing.P-40.obj
+;tobruk:Aircraft.TomahawkMkII-Late;Aircraft;Air+FixedWing;TomahawkMkII-Late;Tomahawk MkII;FixedWing.P-40.obj
+;tobruk:Aircraft.TomahawkMkII-Late-Trop;Aircraft;Air+FixedWing;TomahawkMkII-Late-Trop;Tomahawk MkII;FixedWing.P-40.obj
+;tobruk:Aircraft.TomahawkMkII-Trop;Aircraft;Air+FixedWing;TomahawkMkII-Trop;Tomahawk MkII;FixedWing.P-40.obj
+;bob:Aircraft.WalrusMkI;Aircraft;Air+FixedWing;WalrusMkI;Walrus MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WalrusMkI_Trop;Aircraft;Air+FixedWing;WalrusMkI_Trop;Walrus MkI;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIa_trop;Aircraft;Air+FixedWing;WellingtonMkIa_trop;Wellington MkIa;FixedWing.Mosquito.obj
+;bob:Aircraft.WellingtonMkIc;Aircraft;Air+FixedWing;WellingtonMkIc;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_Late;Aircraft;Air+FixedWing;WellingtonMkIc_Late;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_Late_trop;Aircraft;Air+FixedWing;WellingtonMkIc_Late_trop;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_t;Aircraft;Air+FixedWing;WellingtonMkIc_t;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_Torpedo;Aircraft;Air+FixedWing;WellingtonMkIc_Torpedo;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop;Aircraft;Air+FixedWing;WellingtonMkIc_Torpedo_Trop;Wellington MkIc;FixedWing.Mosquito.obj
+;tobruk:Aircraft.WellingtonMkIc_trop;Aircraft;Air+FixedWing;WellingtonMkIc_trop;Wellington MkIc;FixedWing.Mosquito.obj
+*;Unknown;Ground;Ground+Vehicle;Unknown;Unknown;Core.Pyramid.obj
+;AAGun;Ground;Ground+Vehicle;AAGun;Flak;AntiAircraft.Flak.Flak 18.obj
+;AmmoComposition;Ground;Ground+Vehicle;AmmoComposition;Ammo;Core.Pyramid.obj
+;Amphibian;Ground;Ground+Vehicle;Amphibian;Amphibian;Core.Pyramid.obj
+;ArmoredCar;Ground;Ground+Vehicle;ArmoredCar;Armored Car;Vehicle.Car.UAZ-469.obj
+;Artillery;Ground;Ground+Vehicle;Artillery;Flak;AntiAircraft.Flak.Flak 18.obj
+;Balloon;Ground;Ground+Vehicle;Balloon;Ballon;Core.Sphere.obj
+;Bridge;Ground;Ground+Vehicle;Bridge;Bridge;Core.Container.obj
+;Bus;Ground;Ground+Vehicle;Bus;Bus;Vehicle.Truck.Kamaz.obj
+;Car;Ground;Ground+Vehicle;Car;Car;Vehicle.Car.SUV.obj
+;ContainerLong;Ground;Ground+Vehicle;ContainerLong;Container;Core.Container.obj
+;ContainerShort;Ground;Ground+Vehicle;ContainerShort;Container;Core.Container.obj
+;EngineWagon;Ground;Ground+Vehicle;EngineWagon;Train;Core.Container.obj
+;FreightWagon;Ground;Ground+Vehicle;FreightWagon;Train;Core.Container.obj
+;Generator;Ground;Ground+Vehicle;Generator;Generator;Core.Pyramid.obj
+;GroundCrew;Ground;Ground+Vehicle;GroundCrew;Soldier;Core.Infantry.obj
+;House;Ground;Ground+Vehicle;House;House;Core.Pyramid.obj
+;LightTruck;Ground;Ground+Vehicle;LightTruck;Truck;Vehicle.Truck.Kamaz.obj
+;Listener;Ground;Ground+Vehicle;Listener;Listener;Core.Pyramid.obj
+;Medic;Ground;Ground+Vehicle;Medic;Medic;Core.Pyramid.obj
+;Motorcycle;Ground;Ground+Vehicle;Motorcycle;Motorcycle;Core.Pyramid.obj
+;PassengerWagon;Ground;Ground+Vehicle;PassengerWagon;Train;Core.Container.obj
+;Plane;Ground;Ground+Vehicle;Plane;Aircraft;Core.Pyramid.obj
+;Predictor;Ground;Ground+Vehicle;Predictor;Predictor;Core.Pyramid.obj
+;Radar;Ground;Ground+Vehicle;Radar;Radar;Building.SinglePylon.50m.obj
+;RadioBeacon;Ground;Ground+Vehicle;RadioBeacon;Beacon;Core.Pyramid.obj
+;RadioBeamProjector;Ground;Ground+Vehicle;RadioBeamProjector;Beacon;AntiAircraft.Flak.Searchlight.obj
+;ShipBattleship;Ground;Sea+Watercraft+Warship;ShipBattleship;Battle Ship;Watercraft.Type 054A.obj
+;ShipCarrier;Ground;Sea+Watercraft+Warship;ShipCarrier;Carrier;Watercraft.LHA-1.obj
+;ShipCruiser;Ground;Sea+Watercraft+Warship;ShipCruiser;Cruiser;Watercraft.Krivak.obj
+;ShipDestroyer;Ground;Sea+Watercraft+Warship;ShipDestroyer;Destroyer;Watercraft.Krivak.obj
+;ShipMisc;Ground;Sea+Watercraft+Warship;ShipMisc;Ship;Watercraft.Zodiac.obj
+;ShipSmallWarship;Ground;Sea+Watercraft+Warship;ShipSmallWarship;Ship;Watercraft.Warship.obj
+;ShipSubmarine;Ground;Sea+Watercraft+Warship;ShipSubmarine;Submarine;Watercraft.Type VIIC.obj
+;ShipTransport;Ground;Sea+Watercraft+Warship;ShipTransport;Cargo;Watercraft.Cargo.obj
+;SPG;Ground;Ground+Vehicle;SPG;SPG;Vehicle.Tank.Tiger1.obj
+;Tank;Ground;Ground+Vehicle;Tank;Tank;Vehicle.Tank.Tiger1.obj
+;Tractor;Ground;Ground+Vehicle;Tractor;Tractor;Vehicle.Car.Pickup.obj
+;Trailer;Ground;Ground+Vehicle;Trailer;Trailer;Core.Container.obj
+;Truck;Ground;Ground+Vehicle;Truck;Truck;Vehicle.Truck.Kamaz.obj
+*;Undefined;Misc;;;;Core.Pyramid.obj
+;Player;Misc;;;;Core.Pyramid.obj
+;PlayerAsHuman;Misc;;;;Core.Infantry.obj
+;PlayerParachute;Misc;;;;Other.Parachutist.obj
+;Stationary;Misc;;;;Core.Pyramid.obj
+;Building;Misc;;;;Core.Pyramid.obj

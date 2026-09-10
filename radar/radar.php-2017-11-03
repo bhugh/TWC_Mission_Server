@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>TWC - Mission Overview</title>
+
+	  <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+    <link rel="stylesheet" href="res/leaflet-messagebox.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+    <script src="res/leaflet.rotatedMarker.js"></script>    
+    <script src="res/leaflet.geometryutil.js"></script>    
+    <script src="res/leaflet-messagebox.js"></script>    
+    
+
+<style>
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+    width: 100vw;
+}
+
+.red-div-icon {
+	background: #f44;
+	border: 1px solid #622;
+  font-size: 16px;
+  display: flex;
+  align-items: flex-start;
+
+
+	}
+
+.blue-div-icon {
+	background: #44f;
+	border: 1px solid #226;
+  font-size: 16px;
+  display: flex;
+  align-items: flex-start;
+
+
+	}
+.plain-div-icon {
+	background: #444;
+	border: 1px solid #222;
+  font-size: 16px;
+  display: flex;
+  align-items: flex-start;
+
+
+	} 
+	</style>
+
+	<style>body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }</style>
+	
+
+    <!-- <input style = "hidden:true" type="file" id="fileinput" /> -->
+<script>var urlParams = <?php echo json_encode($_GET, JSON_HEX_TAG);?>;</script>
+<script type="text/javascript">
+/*
+var CSS_COLOR_NAMES = ["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque","Black","BlanchedAlmond","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
+
+var MARKER_COLOR_NAMES = ["Aqua","Black","Blue","Brown","Coral","Crimson","Cyan","Gray","Grey","Green","LightBlue","Lime","Magenta","Olive","Orange","Purple","Red","Tan","Teal","White","YellowGreen"];
+*/
+
+var redBIcon = L.divIcon({
+    className: 'red-div-icon',    
+    iconSize: new L.Point(7, 16),
+    html: '<b>B</b>' 
+    });
+var redFIcon = L.divIcon({
+    className: 'red-div-icon',    
+    iconSize: new L.Point(7, 11),
+    html: '<b>F</b>' 
+    });
+var BlueBIcon = L.divIcon({
+    className: 'blue-div-icon',    
+    iconSize: new L.Point(7, 16),
+    html: '<b>B</b>' 
+    });
+var blueFIcon = L.divIcon({
+    className: 'blue-div-icon',    
+    iconSize: new L.Point(7, 11),
+    html: '<b>F</b>' 
+    });
+var plainIcon = L.divIcon({
+    className: 'plain-div-icon',    
+    iconSize: new L.Point(7, 11),
+    html: '<b>U</b>' 
+    });
+var intcptcount = 0; 
+var intcptlist = [];   
+intcptlist[0] = {pos:new L.LatLng(0,0), vel:new L.LatLng(0,1), spd:1, intcpt_latlng:new L.LatLng(0,0), intcpt_time: 0, intcpt_bearing:0, id:0 };    
+
+//start  = 0 selects interceptor, start = 1 selects target
+function addIntcpt (pos_latlng, spd_mph, hdg_deg, id, start){
+  intcptcount=start;
+  var spd_mps = spd_mph / 2.23694;
+  var vel_latlng = new L.LatLng( Math.cos(toRadians(hdg_deg))* spd_mps, Math.sin(toRadians(hdg_deg))*spd_mps);
+  if (start > 0) {
+     var int_latlng = calculateInterceptionPoint(pos_latlng, vel_latlng, intcptlist[intcptcount-1]['pos'],intcptlist[intcptcount-1]['spd']); 
+     var intcpt_deg = calculateGradientAngle(intcptlist[intcptcount-1]['pos'], int_latlng); 
+  
+     intcptlist[intcptcount]= {pos: pos_latlng, vel: vel_latlng, spd: spd_mps, intcpt_latlng: int_latlng, intcpt_time: int_latlng.alt, intcpt_bearing: intcpt_deg, id:id};
+     
+     msg('Intercept: ' + intcpt_deg.toFixed() + ' deg ' + (int_latlng.alt/60).toFixed() + ' minutes @ ' + (intcptlist[intcptcount-1]['spd'] * 2.23694).toFixed() + " mph");
+     return {intcpt_deg:intcpt_deg.toFixed(), time_min:(int_latlng.alt/60).toFixed()}; 
+
+  } else {
+        intcptlist[intcptcount]= {pos: pos_latlng, vel: vel_latlng, spd: spd_mps, id:id};
+        msg ("Interceptor or start point selected, " + spd_mph.toFixed() + " mph - now select target or end point");
+        return;
+  }  
+  
+  
+}
+
+var markerlist = {color:{}, note:{}}; //list of aircraft that are assigned a special marker.  key = uniqueID, entries are ['color'] and ['note']
+var markercolor = "red";     
+var num_tracks = 10; //number of refresh periods for the tracks to persist
+var ac_size = 10; //relative size of the on-screen representations, 10=normal size
+var refreshinterval_ms = 15000; 
+             
+//var isANumber = isNaN(theValue) === false;
+String.prototype.isNumber = function(){return isNaN(this) === false;}
+var ready = false;
+
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function(){
+  if(xmlhttp.status==200 && xmlhttp.readyState==4){  
+     drawAircraft();
+     ready=true;
+     };
+}
+  function setmarker (color, id){
+   markerlist.color[id]= color;
+  }
+  function setmarkernote (note, id){
+   markerlist.note[id] = note;
+  }
+  function colorbuttons (onclicktext1, onclicktext2){
+        return "<button title='add RED marker' style=\"background-color:red\" onclick=\"" + onclicktext1 + "'red'" + onclicktext2 + "\">&nbsp</button>" + 
+         "<button title='add ORANGE marker' style=\"background-color:darkorange\" onclick=\"" + onclicktext1 + "'darkorange'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add CYAN marker' style=\"background-color:cyan\" onclick=\"" + onclicktext1 + "'cyan'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add MAGENTA marker' style=\"background-color:magenta\" onclick=\"" + onclicktext1 + "'magenta'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add BLUE marker' style=\"background-color:blue\" onclick=\"" + onclicktext1 + "'blue'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add VIOLET marker' style=\"background-color:violet\" onclick=\"" + onclicktext1 + "'violet'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add GREEN marker' style=\"background-color:green\" onclick=\"" + onclicktext1 + "'green'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add YELLOW marker' style=\"background-color:yellow\" onclick=\"" + onclicktext1 + "'yellow'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add TAN marker' style=\"background-color:tan\" onclick=\"" + onclicktext1 + "'tan'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add BROWN marker' style=\"background-color:brown\" onclick=\"" + onclicktext1 + "'brown'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add DARKGRAY marker' style=\"background-color:black\" onclick=\"" + onclicktext1 + "'black'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add WHITE marker' style=\"background-color:white\" onclick=\"" + onclicktext1 + "'white'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add GOLD marker' style=\"background-color:gold\" onclick=\"" + onclicktext1 + "'gold'" + onclicktext2 + "\">&nbsp</button>" +
+         "<button title='add silver marker' style=\"background-color:silver\" onclick=\"" + onclicktext1 + "'silver'" + onclicktext2 + "\">&nbsp</button>";         
+
+  
+  }                  
+  function checkpassword () {
+     if (serverpass.toUpperCase() != pass.toUpperCase()){
+       if (typeof(mymap) !== 'undefined') msg("Password or mission name is incorrect, or the mission hasn't started yet! You can <a href=\"index.php\">return to the radar entry page and re-enter the information</a>");
+       if (document.getElementById("playerlist") != null) document.getElementById("playerlist").innerHTML = "<br><br><table border=1 width=80% align=center><b>Password or mission name is incorrect, or the mission hasn't started yet!</b> You can <a href=\"index.php\">return to the radar entry page and re-enter the information</a></table><br><br>";
+           
+       return false; 
+     }
+     return true;
+  }
+  var serverpass = "twc";
+  function drawAircraft () {   
+    //var lines = xmlhttp.responseText.split('/\r?\n/g');
+    var lines = xmlhttp.responseText.split('\n');
+    lines.forEach(maplines);
+    function maplines (item) {
+
+        var words = item.split(',');
+        //alert(words[0].isNumber());//isNumber(words[1]));
+        //alert(words[1].isNumber());//isNumber(words[1]));        
+        if (words.length == 1 && words[0].charAt(0)=="p" ){
+          serverpass = words[0].trim().substring(1,words[0].length-1); 
+        }
+        
+        
+        if (!checkpassword()) return;
+        
+        
+        if (words.length > 1 && words[0].isNumber() && words[1].isNumber() ) { // && words[1].isNumber) {
+         
+         var aircraft_gamelatlon = new L.LatLng(words[1],words[0]); //in-game coordinates also used in the IL2 base map
+         var aircraft_realworldlatlon = new L.LatLng(words[3],words[2]);  //This is a APPROXIMATE and really not very accurate
+         var army = words[4];
+         var typebrief_aircraft = words[5];         
+         var heading_deg = parseFloat(words[6]);
+         var vel_mph = parseFloat(words[7]).toFixed(0);
+         var alt_angels = words[8];
+         var sector = words[9];         
+         var num_aircraft = words[10];
+         var typedescription_aircraft = words[11];
+         var uniqueID = words[12];
+         var player_name = "";         
+         if (words[13] != null && words[13].length > 0) player_name = " " + words[13];
+         
+         //if (Math.random()>0.9) window.markerlist[uniqueID]['color'] = "orange";
+         
+
+         
+         var ic = plainIcon;
+         /* if (words[2]=='1' && words[3] == 'F') ic = redFIcon;
+         if (words[2]=='1' && words[3] == 'B') ic = redBIcon;
+         if (words[2]=='2' && words[3] == 'F') ic =  blueFIcon;
+         if (words[2]=='2' && words[3] == 'B') ic = blueBIcon; */                  
+         
+         
+         var color = 'plain';
+         if (army=='1') color = 'red';
+         if (army=='2') color = 'blue';
+         //heading_deg =0;
+         
+         //player name (if available)
+         var tshow = typedescription_aircraft;
+         if (tshow.length == 0) tshow = typebrief_aircraft;
+         
+         var pop_hover = num_aircraft + "x" + tshow + player_name + " " + heading_deg + "&#176 " + vel_mph + "mph A" + alt_angels + " " + sector;
+         
+         var v = num_aircraft + typebrief_aircraft;
+       
+         if (markerlist.note[uniqueID] != null) v = markerlist.note[uniqueID];            
+         var ht = '<b>' + v  + '</b>';  
+         if (markerlist.note[uniqueID] != null && markerlist.note[uniqueID].length == 0 ) v = num_aircraft + typebrief_aircraft; // If the note is blank the suggested text will again by the #/type of aircraft 
+         
+         var pop_click = pop_hover + "<br>" 
+           + colorbuttons ("markerlist.color['" + uniqueID + "'] =", ";mymap.closePopup();currentACLayerGroup=clearSubLayer(currentACLayerGroup);readfile();")
+           +  "<button onclick=\"markerlist.color['" + uniqueID + "'] = null;mymap.closePopup();currentACLayerGroup=clearSubLayer(currentACLayerGroup);readfile();\">Remove Air Beacon</button>"
+           + "<input type=text id=popnote value='" + v + "' onchange=\"markerlist.note['" + uniqueID + "'] = this.value;mymap.closePopup();currentACLayerGroup=clearSubLayer(currentACLayerGroup);readfile();\"><br>"
+           +  "<button onclick=\"var res=addIntcpt(new L." + aircraft_gamelatlon + "," + vel_mph + "," + heading_deg + "," + uniqueID + ", 0);mymap.closePopup();\">Select Interceptor</button>"
+           +  "<button onclick=\"var res=addIntcpt(new L." + aircraft_gamelatlon + "," + vel_mph + "," + heading_deg + "," + uniqueID + ",1);mymap.closePopup();\">Calc Intcpt to this Target</button>";
+           
+           //function addIntcpt (pos_latlng, spd_mph, hdg_deg){
+           
+         /*       
+         "<button title='add RED marker' style=\"background-color:red\" onclick=\"markerlist['" + uniqueID + "'] = 'red';mymap.closePopup()\">&nbsp</button>" + 
+         "<button title='add ORANGE marker' style=\"background-color:darkorange\" onclick=\"markerlist['" + uniqueID + "'] = 'darkorange';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add CYAN marker' style=\"background-color:cyan\" onclick=\"markerlist['" + uniqueID + "'] = 'cyan';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add MAGENTA marker' style=\"background-color:magenta\" onclick=\"markerlist['" + uniqueID + "'] = 'magenta';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add BLUE marker' style=\"background-color:blue\" onclick=\"markerlist['" + uniqueID + "'] = 'blue';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add VIOLET marker' style=\"background-color:violet\" onclick=\"markerlist['" + uniqueID + "'] = 'violet';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add GREEN marker' style=\"background-color:green\" onclick=\"markerlist['" + uniqueID + "'] = 'green';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add YELLOW marker' style=\"background-color:yellow\" onclick=\"markerlist['" + uniqueID + "'] = 'yellow';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add TAN marker' style=\"background-color:tan\" onclick=\"markerlist['" + uniqueID + "'] = 'tan';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add BROWN marker' style=\"background-color:brown\" onclick=\"markerlist['" + uniqueID + "'] = 'brown';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add DARKGRAY marker' style=\"background-color:black\" onclick=\"markerlist['" + uniqueID + "'] = 'black';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add WHITE marker' style=\"background-color:white\" onclick=\"markerlist['" + uniqueID + "'] = 'white';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add GOLD marker' style=\"background-color:gold\" onclick=\"markerlist['" + uniqueID + "'] = 'gold';mymap.closePopup()\">&nbsp</button>" +
+         "<button title='add silver marker' style=\"background-color:silver\" onclick=\"markerlist['" + uniqueID + "'] = 'silver';mymap.closePopup()\">&nbsp</button>" +         
+         "<button onclick=\"markerlist['" + uniqueID + "'] = null\">Remove</button>";
+         
+         */
+         //ic = redFIcon;
+         /*
+        	L.marker([words[0], words[1]], {
+               riseOnHover: true,
+               rotationAngle: heading_deg,
+               icon: L.divIcon({
+                  className: color + '-div-icon',    
+                  iconSize: new L.Point(words[5]/20 + 6, words[6] * 1.5 + 1),
+                  html: '<center><b>' + words[3] + '</b></center>' 
+                  })
+          }).addTo(mymap)
+          
+  		      .bindTooltip(words[4] + "&#176 " + parseFloat(words[5]).toFixed(0) + "mph A" + words[6] + " " + words[7] + " " + words[8] + pl);
+          */ 
+          
+           //Add smaller square marker that will persist as part of the tracks       
+         	 var marker1 = L.marker(aircraft_gamelatlon, {
+
+               icon: L.divIcon({
+                  className: color + '-div-icon',    
+                  iconSize: new L.Point(2,2),                                                      
+                  })
+          }).addTo(tracksLayerGroup)
+          .bindTooltip(pop_hover)
+          .bindPopup(pop_click);  
+          
+          setTimeout (function () { marker1.removeFrom(tracksLayerGroup); marker1=null; }, num_tracks * refreshinterval_ms);
+          
+          //Add BEACON to aircraft if this option is requested          
+  
+          //if (uniqueID in markerlist) icS = new L.Point(8,8); 
+          if (markerlist.color[uniqueID] != null ) {
+          
+             var markerCircle = L.circle(aircraft_gamelatlon, {
+               radius: 1000*ac_size/10,
+               color: markerlist.color[uniqueID],
+               fillColor:  markerlist.color[uniqueID], 
+               opacity: 0.6,
+               fillOpacity: 0.6,
+               fill: 1,
+                                
+               
+            }).addTo(ACBeaconsLayerGroup)
+            .bindTooltip(pop_hover)
+            .bindPopup(pop_click);
+            
+            
+            setTimeout (function () { markerCircle.removeFrom(ACBeaconsLayerGroup); markerCircle = null;}, refreshinterval_ms);
+            
+            
+            //add a 2nd smaller circle that will stay as part of the track
+            //and will last 2X longer than most tracks
+            var markerCircle2 = L.circle(aircraft_gamelatlon, {
+               radius: 250*ac_size/10,
+               color: markerlist.color[uniqueID],
+               fillColor:  markerlist.color[uniqueID], 
+               opacity: 0.6,
+               fillOpacity: 0.6,
+               fill: 1,
+                                
+               
+            }).addTo(tracksLayerGroup)       //Perhaps this should be in a yet separate layer?  Todo . . .
+            .bindTooltip(pop_hover)
+            .bindPopup(pop_click);
+                                    
+            
+            setTimeout (function () { markerCircle.removeFrom(ACBeaconsGroup); markerCircle = null;}, num_tracks*2*refreshinterval_ms);
+
+          }
+          
+
+           //Add larger marker that is the main current a/c marker
+           var icS = new L.Point(4,4);
+                       
+         	 var marker2 = L.marker(aircraft_gamelatlon, {
+               riseOnHover: true,
+               //rotationAngle: parseFloat(heading_deg),
+               //rotationAngle: heading,
+               icon: L.divIcon({
+                  className: color + '-div-icon',    
+                  iconSize: icS,
+                  
+                  //html: '<center><b>' + words[8] + words[3] + '</b></center>' 
+                  html: ht,                   
+                  })
+          }).addTo(currentACLayerGroup)
+          .bindTooltip(pop_hover)
+          .bindPopup(pop_click);
+          
+          
+          setTimeout (function () { marker2.removeFrom(currentACLayerGroup); marker2=null; }, refreshinterval_ms);
+          
+     
+          
+          //Add forward line that is part of the main a/c icon & shows direction & velocity                   
+          var p1 = aircraft_gamelatlon; 
+          //var p2 = L.GeometryUtil.destination(p1, parseFloat(words[4]), words[6]*800+1500);
+          var p2 = L.GeometryUtil.project(aircraft_gamelatlon, heading_deg, (vel_mph*7.5+900)*ac_size/10);
+          var pointList = [p1,p2];
+
+          var mypolyline1 = new L.Polyline(pointList, {
+              color: color,
+              weight: 4,
+              opacity: 0.65,
+              smoothFactor: 1
+          })
+          .bindTooltip(pop_hover)
+          .bindPopup(pop_click)
+          .addTo(currentACLayerGroup);
+          
+          
+          
+          setTimeout (function () { mypolyline1.removeFrom(currentACLayerGroup); mypolyline1=null; }, refreshinterval_ms);
+          
+             
+
+          //short line showing velocity & direction for persistent 'chicken tracks' - no popup or hover
+          var p3 = L.GeometryUtil.project(p1, heading_deg+0, (vel_mph*4+180)*ac_size/10);
+          var pointList1a = [p1,p3];
+          var mypolyline1a = new L.Polyline(pointList1a, {
+              color: color,
+              weight: 2,
+              opacity: 0.45,
+              smoothFactor: 1
+          })
+          .addTo(tracksLayerGroup);
+          
+          setTimeout (function () { mypolyline1a.removeFrom(tracksLayerGroup); mypolyline1a = null; }, refreshinterval_ms*10);
+
+          
+          //var p3 = L.GeometryUtil.destination(p1, parseFloat(words[4]) + 90, words[5]*10+500);
+          //var p4 = L.GeometryUtil.destination(p1, parseFloat(words[4]) - 90, words[5]*10+500);
+          var p3 = L.GeometryUtil.project(p1, heading_deg + 90, (alt_angels*150+400)*ac_size/10);
+          var p4 = L.GeometryUtil.project(p1, heading_deg - 90, (alt_angels*150+400)*ac_size/10);
+          
+          
+          //baseline showing altitude
+          pointList = [p3,p4];
+          var basecolor='black';
+          if (player_name.length > 0) basecolor = 'white';
+
+          var mypolyline2 = new L.Polyline(pointList, {
+              color: basecolor,
+              weight: 3,
+              opacity: 1,
+              smoothFactor: 1
+          })
+          .bindTooltip(pop_hover)
+          .bindPopup(pop_click)
+          .addTo(currentACLayerGroup);
+          
+          
+          
+          setTimeout (function () { mypolyline2.removeFrom(currentACLayerGroup); mypolyline2 = null; }, refreshinterval_ms);
+          
+                               /*   
+                               layers are:
+                                        AllRadarLayerGroup - contains all of the following:
+                                            currentACLayerGroup
+                                            tracksLayerGroup
+                                            ACBeaconsLayerGroup
+                                            GroundBeaconsLayerGroup
+                                           */ 
+
+          
+        }
+             
+
+    }
+    //leaflet.js disables input on all input elements, this fixes it by running through
+    //all input elements quickly 
+        var inputTags = document.getElementsByTagName("input")
+        for (var i = 0; i < inputTags.length; i++) {
+            L.DomEvent.disableClickPropagation (inputTags[i]);
+            //inputTags[i].onmouseover = controlEnter(inputTags[i]);
+            //inputTags[i].onmouseout = controlLeave(inputTags[i]);
+            //L.DomEvent.disableClickPropagation (inputTags[i]);
+            
+        }   
+        //window.alert ("doing it");
+    
+  }
+  
+//Functions to either disable (onmouseover) or enable (onmouseout) the map's dragging
+//This allows us to use input text fiels & temporarily take over the mouse click from that
+function controlEnter(e) {
+    mymap.dragging.disable();
+    //disableClickPropagation (e);
+}
+function controlLeave(e) {
+    mymap.dragging.enable();
+}  
+
+
+var xmlhttp2 = new XMLHttpRequest();
+xmlhttp2.onreadystatechange = function(){
+  if(xmlhttp2.status==200 && xmlhttp2.readyState==4){  
+     loadPlayerList();     
+     };
+}
+
+function loadPlayerList () {        
+
+        if (checkpassword())  document.getElementById("playerlist").innerHTML = "<pre> " + xmlhttp2.responseText + "</pre>";
+        
+
+}     
+
+var server;
+var side;
+var pass;     
+
+function readfile () {
+         server = urlParams['server'];
+         if (server== "Other" && urlParams['serveroth'] != null && urlParams['serveroth'].length>0) server = urlParams['serveroth'];
+         side = urlParams['side'];
+         if (side== "Other" && urlParams['sideoth'] != null && urlParams['serveroth'].length>0) side = urlParams['sideoth'];
+         pass = urlParams['pass'] 
+         if (server != null && side && pass != null) { //todo - read password from file passed from server
+            
+            
+            xmlhttp.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_radar.txt",true);
+            xmlhttp.send();
+            xmlhttp2.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_players.txt",true);
+            xmlhttp2.send();
+         }
+        checkpassword());                                    
+}
+
+
+readfile();
+setInterval(readfile, refreshinterval_ms);
+</script>
+	
+</head>
+<body>
+<a name="top" href="#inf">Jump to Mission Info</a>  
+<button onclick ="mymap.fitBounds(bounds);">Reset View</button>
+<button onclick ="mymap.panTo(portsmouth);">Portsmouth</button> 
+<button onclick ="mymap.panTo(hawkinge);">Hawkinge</button> 
+<button onclick ="mymap.panTo(boulogne);">Boulogne</button>
+<button onclick ="mymap.panTo(abbeville);">Abbeville</button>
+<button onclick ="mymap.panTo(lehavre);">Le Havre</button> 
+<button onclick ="mymap.panTo(center);">Center</button>
+
+<br>
+
+<div id="mapid" style="width: 100%; height: 800px;"></div>
+
+
+<a href="#top" name="inf">Jump to Top</a>
+<button onclick ="mymap.fitBounds(bounds);">Reset View</button>
+<button onclick ="mymap.panTo(portsmouth);">Portsmouth</button> 
+<button onclick ="mymap.panTo(hawkinge);">Hawkinge</button> 
+<button onclick ="mymap.panTo(boulogne);">Boulogne</button>
+<button onclick ="mymap.panTo(abbeville);">Abbeville</button>
+<button onclick ="mymap.panTo(lehavre);">Le Havre</button> 
+<button onclick ="mymap.panTo(center);">Center</button><br>
+
+<button onclick ="ac_size=ac_size*.75;msg ('Icon size at ' + parseFloat(ac_size*10).toFixed(0) + '%');redrawCurrentAC();">Smaller</button>
+<button onclick ="ac_size=10;msg ('Icon size at ' + parseFloat(ac_size*10).toFixed(0) + '%');redrawCurrentAC ()"><- Default icon size -></button>
+<button onclick ="ac_size=ac_size*1.333333333;msg ('Icon size at ' + parseFloat(ac_size*10).toFixed(0) + '%');redrawCurrentAC()">Larger</button> <br>
+
+<button onclick ="num_tracks=num_tracks*.666;msg ('Number of tracks at ' + parseFloat(num_tracks*10).toFixed(0) + '%');">Fewer</button>
+<button onclick ="num_tracks=10;msg ('Number of tracks at ' + parseFloat(num_tracks*10).toFixed(0) + '%');"><- Default # of history tracks -></button>
+<button onclick ="num_tracks=num_tracks*1.5;msg ('Number of tracks at ' + parseFloat(num_tracks*10).toFixed(0) + '%');">More</button><br> 
+
+<button onclick ="clearMap();readfile();">Clear tracks & ground beacons</button>
+<button onclick ="tracksLayerGroup=clearSubLayer(tracksLayerGroup);">Clear all tracks</button>    <br>
+
+<button onclick ="tempHideLayer (tracksLayerGroup, refreshinterval_ms/2)">Temp Hide Tracks</button>
+<button onclick ="tempHideLayer (ACBeaconsLayerGroup, refreshinterval_ms/2);">Temp Hide AC Beacons</button>
+<!-- <button onclick ="saveGBLG= GroundBeaconsLayerGroup; GroundBeaconsLayerGroup=clearSubLayer(GroundBeaconsLayerGroup);setTimeout(function () { saveGBLG.addTo(GroundBeaconsLayerGroup);},10000)">Temp Hide Ground Beacons</button> -->
+
+<button onclick ="tempHideLayer (GroundBeaconsLayerGroup, refreshinterval_ms/2)">Temp Hide Ground Beacons</button>
+
+<button onclick ="tempHideLayer (currentACLayerGroup, refreshinterval_ms/2);tempHideLayer (tracksLayerGroup, refreshinterval_ms/2)">Temp Hide All EXCEPT Beacons</button>
+
+
+<br>
+
+
+<script>
+/*
+
+                                        intcpt = Calcs.calculateInterceptionPoint(a.Pos(), VwldP, p.Pos(), player_vel_mps);
+                                        intcpt_heading = (Calcs.CalculateGradientAngle(p.Pos(), intcpt));
+                                        intcpt_time_min = intcpt.z / 60;
+*/
+
+   /**
+	 * Calculates the point of interception for one object starting at point
+	 * <code>a</code> with speed vector <code>v</code> and another object
+	 * starting at point <code>b</code> with a speed of <code>s</code>.
+	 * 
+	 * @see <a
+	 *      href="http://jaran.de/goodbits/2011/07/17/calculating-an-intercept-course-to-a-target-with-constant-direction-and-velocity-in-a-2-dimensional-plane/">Calculating
+	 *      an intercept course to a target with constant direction and velocity
+	 *      (in a 2-dimensional plane)</a>
+	 * 
+	 * @param a
+	 *            start vector of the object to be intercepted      (latlng)
+	 * @param v
+	 *            speed vector of the object to be intercepted      (latlng)
+	 * @param b
+	 *            start vector of the intercepting object           (latlng)
+	 * @param s
+	 *            speed of the intercepting object
+	 * @return latlng where lng,lat is vvector of interception & alt is time; or <code>null</code> if object cannot be
+	 *         intercepted or calculation fails
+	 * 
+	 * @author Jens Seiler
+	 * http://jaran.de/goodbits/2011/07/17/calculating-an-intercept-course-to-a-target-with-constant-direction-and-velocity-in-a-2-dimensional-plane/   
+	 */
+	function calculateInterceptionPoint(a, v, b, s) {
+
+  	ox = a.lng - b.lng;
+		oy = a.lat - b.lat;
+ 
+		h1 = v.lng * v.lng + v.lat * v.lat - s * s;
+		h2 = ox * v.lng + oy * v.lat;
+		
+		if (h1 == 0) { // problem collapses into a simple linear equation 
+			t = -(ox * ox + oy * oy) / (2*h2);
+		} else { // solve the quadratic equation
+			minusPHalf = -h2 / h1;
+ 
+			discriminant = minusPHalf * minusPHalf - (ox * ox + oy * oy) / h1; // term in brackets is h3
+			if (discriminant < 0) { // no (real) solution then...
+				return new L.LatLng(0,0,0);
+			}
+ 
+			root = Math.sqrt(discriminant);
+ 
+			t1 = minusPHalf + root;
+			t2 = minusPHalf - root;
+ 
+			tMin = Math.min(t1, t2);
+			tMax = Math.max(t1, t2);
+ 
+			t = tMin > 0 ? tMin : tMax; // get the smaller of the two times, unless it's negative
+			if (t < 0) { // we don't want a solution in the past
+				return new L.LatLng(0,0,0);
+			}
+		}
+ 
+		// calculate the point of interception using the found intercept time and return it
+
+    //return new L.LatLng (a.lon,t,v.lon);
+		return new L.LatLng(a.lat + t * v.lat,a.lng + t * v.lng, t);
+	}    
+
+    function calculateGradientAngle(startPoint, endPoint)
+    {
+        //Calculate the length of the adjacent and opposite
+        diffX = endPoint.lng - startPoint.lng;
+        diffY = endPoint.lat - startPoint.lat;
+
+        //Calculates the Tan to get the radians (TAN(alpha) = opposite / adjacent)
+        //Math.PI/2 - atan becase we need to change to bearing where North =0, East = 90 vs regular math coordinates where East=0 and North=90.
+        radAngle = Math.PI/2 - Math.atan2(diffY, diffX);
+
+        //Converts the radians in degrees
+        degAngle = toDegrees(radAngle);
+        
+         if (degAngle < 0) {
+            degAngle = degAngle + 360; 
+         }
+
+        return degAngle;
+    }
+    
+    /**
+     * converts degree to radians
+     * @param degree
+     * @returns {number}
+     */
+    var toRadians = function (degree) {
+        return degree * (Math.PI / 180);
+    };
+    
+    /**
+     * Converts radian to degree
+     * @param radians
+     * @returns {number}
+     */
+    var toDegrees = function (radians) {
+        return radians * (180 / Math.PI);
+    }    
+    
+    //alert ("hi " + calculateGradientAngle(new L.LatLng(-1,0),new L.LatLng(-1,-1)).toString());
+    //alert ( "a: " + calculateInterceptionPoint(new L.LatLng(0,0),new L.LatLng(0,1), new L.LatLng(5,5), 1).toString());
+    
+    //keypad number for area, numbered 1-9 from bottom left to top right
+    //of square size
+    function keypad (latlng, size){
+        var lat_rem = Math.floor(3 * (latlng.lat%size)/size);
+        var lng_rem = Math.floor(3 * (latlng.lng%size)/size);
+        return lat_rem * 3 + lng_rem + 1;
+    }
+
+    //Figure out ClOD sector name for given lat/long
+    function latlng2sector (latlng) {
+        var num = (Math.floor(latlng.lat/10000)+1).toFixed(0).toString();
+        if (num<10 && num>=0) num = '0' + num;
+        else if (num>-10 && num<0) num = '-0' + -num;
+        
+        var num2 = (Math.floor(latlng.lng/10000)+1).toFixed(0).toString();
+        if (num2<10 && num2>=0) num2 = '0' + num2;
+        else if (num2>-10 && num2<0) num2 = '-0' + -num2;
+        
+        
+        var keyp = keypad(latlng, 10000);
+        var keyp2 = keypad(latlng, 10000/3);
+        
+                
+        var firstlet = (num2-1)%26; //have to subtract 1 because 0=A through 25=Z etc
+        var secondlet = Math.floor((num2-1)/26);
+        
+        
+        //return res + "" + num + "  -  " + num2 + ":" + num + "   -   " + secondlet + " " + firstlet;
+        if (firstlet>=0 && secondlet>=0 && firstlet<26 && secondlet <26) {
+           var res = String.fromCharCode(65+secondlet) + String.fromCharCode(65+firstlet);
+           return res + "" + num + "." + keyp + "." + keyp2;
+        } else return num2 + ":" + num + "." + keyp + "." + keyp2; 
+    }
+    function msg (mes){
+     /* popup.setLatLng(center).setContent(mes).openOn(mymap);
+     setTimeout (function () { mymap.closePopup() }, 7000);
+     */
+     mymap.messagebox.options.position = "bottomleft";
+     mymap.messagebox.options.timeout = 10000;
+     mymap.messagebox.show (mes);
+    }
+    
+    function clearMap(){
+     AllRadarLayerGroup.eachLayer(function (layer) {
+       AllRadarLayerGroup.removeLayer(layer);
+     });
+     createSubLayers();
+    }
+    function createSubLayers() {
+     currentACLayerGroup = L.layerGroup().addTo(AllRadarLayerGroup);
+     tracksLayerGroup = L.layerGroup().addTo(AllRadarLayerGroup);
+     ACBeaconsLayerGroup = L.layerGroup().addTo(AllRadarLayerGroup);
+     GroundBeaconsLayerGroup = L.layerGroup().addTo(AllRadarLayerGroup);
+    }
+    function clearSubLayer(sl) {
+     sl.removeFrom(AllRadarLayerGroup);
+     return L.layerGroup().addTo(AllRadarLayerGroup);     
+    }
+    function redrawCurrentAC () {
+     currentACLayerGroup = clearSubLayer(currentACLayerGroup);
+     ACBeaconsLayerGroup = clearSubLayer(ACBeaconsLayerGroup);
+     readfile();
+    }   
+    function tempHideLayer (sl, time_ms) {
+      /*saveGBLG= sl; 
+      sl=clearSubLayer(GroundBeaconsLayerGroup);
+      setTimeout(function () { saveGBLG.addTo(sl);},time_ms);
+      return sl;
+      */
+      
+      sl.removeFrom(AllRadarLayerGroup);
+      setTimeout(function () { sl.addTo(AllRadarLayerGroup);},time_ms);
+    }
+    //Create & remove ground beacons by clicking on the map/the beacon
+    var groundBeacons = [];
+    function groundBeacon (latlng,color){
+          
+          
+          //radius: 2000*ac_size/10,
+          var gBounds = [[latlng.lat-1000*ac_size/10,latlng.lng-1000*ac_size/10],[latlng.lat+1000*ac_size/10,latlng.lng+1000*ac_size/10]]; 
+          //var bounds = [[54.559322, -5.767822], [56.1210604, -3.021240]]; 
+             var groundBeacon = L.rectangle(gBounds, {               
+               color: color,
+               fillColor:  color, 
+               opacity: 0.6,
+               fillOpacity: 0.6,
+               fill: 1,
+               title: "HI!",               
+                                               
+            }).addTo(GroundBeaconsLayerGroup)
+            groundBeacons[groundBeacon._leaflet_id] = groundBeacon;          
+            groundBeacon.bindPopup(  
+              '<button onclick="groundBeacons[' + groundBeacon._leaflet_id + '].remove();">Remove Ground Beacon</button'
+            );                        
+          }
+
+  
+  //This defines how the map image file relates to the coordinate system
+  //If positions shown are slightly off from actual in-game positions this could
+  //be tweaked slightly to fix the issue  
+  var bounds = [[8800,8550], [311040,360959]];              //x,y: 8550,8800  to 360959,311040
+  var center = [(bounds[0][0] + bounds [1][0])/2, (bounds[0][1] + bounds[1][1])/2];
+  var portsmouth =  new L.LatLng(196211.72002, 80731.66828);
+  var hawkinge = new L.LatLng(232689.2875, 235520.79556);
+  var boulogne = new L.LatLng(186171.65506, 265352.7555);
+  var abbeville = new L.LatLng(121653.72137, 283353.05675);
+  var lehavre = new L.LatLng(57721.27699, 157771.49044);
+  
+  //This will be used to set a border to the viewable map; making it a bit 
+  //bigger than the actual map so as to stop people from scrolling way off the 
+  //reservation & not being able to find the main part of the map again
+  //However it is carefully set so that you can move ANY POINT ON THE MAP to
+  //ANY POINT ON THE MAP VIEW PORT, but no further.  
+  //So you can get the map off the screen in any direction except for a narrow
+  //border along the edge.  This allows maximum flexibility in moving the map
+  //how you like but keeps people from getting lost by moving the map way offscreen & then not being able to find it again.
+  var mapviewbounds = [[-290040,-438959], [610080,808820]]; 
+
+	//var mymap = L.map('mapid').setView([50.185, 0.94], 8);
+  var mymap = L.map('mapid', {
+    crs: L.CRS.Simple,
+    minZoom: -8.58,
+    maxZoom: -1,
+    center: center,
+    zoomSnap: 0.09, //default 1
+    zoomDelta: 0.36, //default 1
+    maxBounds: mapviewbounds,
+    wheelDebounceTime: 80, //default 40
+    wheelPxPerZoomLevel: 360, //default 60
+    messagebox:true,
+
+    id: 'IL2_TWC', 
+    });
+
+  var image = L.imageOverlay('res/CLOD_map_BIG.jpg', bounds, {
+      attribution: '<a href="http://store.steampowered.com/app/63950/IL2_Sturmovik_Cliffs_of_Dover/">IL2 Cliffs of Dover</a> game map, <a href="http://TWCClan.com">TWCClan mission</a>, Base Map by <a href="http://www.pumaszallas.hu/blog/vo101_tom.html">VO101_Tom</a>',
+  
+  }).addTo(mymap);
+  //var image = L.imageOverlay('res/ClodMap.jpg', bounds).addTo(mymap);
+  mymap.fitBounds(bounds);
+
+  var AllRadarLayerGroup = L.layerGroup().addTo(mymap);
+  var currentACLayerGroup;
+  var tracksLayerGroup;
+  var ACBeaconsLayerGroup;
+  var GroundBeaconsLayerGroup;
+  
+  createSubLayers();
+
+	// L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYmh1Z2giLCJhIjoiY2o5ZW56OHJxMjRsMzJ4cGFzbHhrZXpxYyJ9.hXyrqZeJGVw32ngUb3ZIiQ', {
+	//	maxZoom: 18,
+		
+	//		'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+	//		'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+	//	id: 'mapbox.streets'
+//	}).addTo(mymap); */
+
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent( latlng2sector(e.latlng) +  " (" +e.latlng.lat.toFixed(0).toString() + ", " + e.latlng.lng.toFixed(0).toString(0) + ")" + "<br>"  
+         //'<button onclick = "groundBeacon ( new L.' + e.latlng.toString() + ',\'orange\')">Set Ground Beacon</button>'
+         + colorbuttons ('groundBeacon ( new L.' + e.latlng.toString() + ',', ");mymap.closePopup()") + "<br>" 
+         +  "<button onclick=\"var res=addIntcpt(new L." + e.latlng + ", 250,0,0,0);mymap.closePopup();\">Select Start Point</button>"
+           +  "<button onclick=\"var res=addIntcpt(new L." + e.latlng + ",0,0,0,1);mymap.closePopup();\">Select End Point</button>"
+         )
+			.openOn(mymap);
+	}
+
+	mymap.on('click', onMapClick);
+
+</script>
+
+<div id="playerlist">
+<pre>
+<? 
+
+if ($_GET['pass'] == "twc" && $_GET['mission'] !==null ) {
+   //echo $_GET['pass'] . $_GET['mission'] . "_players.txt";
+
+   include ($_GET['mission'] . "_players.txt");
+}
+?>
+
+</pre>
+</div>
+
+</body>
+</html>

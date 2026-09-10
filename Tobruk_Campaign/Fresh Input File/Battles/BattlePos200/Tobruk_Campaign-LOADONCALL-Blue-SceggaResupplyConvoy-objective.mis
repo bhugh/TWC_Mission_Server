@@ -1,0 +1,123 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 1.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[CustomChiefs]
+  Vehicle.vehicleRushBritish $core/icons/tank.mma
+  Vehicle.VehicleRush2 $core/icons/tank.mma
+  Vehicle.SidiAzeizRush3 $core/icons/tank.mma
+  Vehicle.VehicleRush4 $core/icons/tank.mma
+  Vehicle.VehicleRush5 $core/icons/tank.mma
+[Vehicle.vehicleRushBritish]
+  Tank.Beaverette_III
+  Tank.Vickers_Mk_VIC
+  Tank.Cruiser_Mk_IV
+  Tank.Krupp_L2H43_Protze_Flak30
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Cruiser_Mk_IVA
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+[Vehicle.VehicleRush2]
+  Tank.Krupp_L2H43_Protze_Flak38
+  Tank.Krupp_L2H43_Protze_Flak30
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.M11_39
+  tobruk:Tank.Bedford_MW_AA
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M3_Grant
+[Vehicle.SidiAzeizRush3]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  Car.Guy_Lizard
+  Car.Guy_Quad-Ant
+  tobruk:Tank.M3_Grant
+  Tank.Krupp_L2H43_Protze_Flak38
+  tobruk:Tank.M13_40
+  tobruk:Tank.M13_40
+[Vehicle.VehicleRush4]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.M3_Grant
+[Vehicle.VehicleRush5]
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.M3_Stuart
+  tobruk:Tank.Matilda_2A_Late
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.Bedford_MW_AA
+  tobruk:Tank.M3_Grant
+[Chiefs]
+  2011_Chief Vehicle.VehicleRush4 gb 
+[2011_Chief_Road]
+  330157.09 24385.05 38.40  0 18 1.00
+  S 224 0 0.23 20.00 P 330149.47 24197.62
+  S 224 0 0.09 20.00 P 331228.91 23936.03
+  331360.00 24096.00 38.40
+  S 180 48 0.46 20.00 P 331417.81 24166.68
+  S 180 43 0.21 20.00 P 333189.88 62911.64
+  S 180 34 0.75 20.00 P 312009.47 81919.66
+  S 805 2 0.35 20.00 P 311995.41 81982.92
+  S 804 3 0.00 20.00 P 311914.00 82030.00
+  S 804 3 0.84 20.00 P 311871.84 82028.56
+  S 337 0 0.24 20.00 P 311765.03 82042.57
+  S 337 1 0.99 20.00 P 306687.00 84862.14
+  306591.38 84914.73 20.00
+  S 200 19 0.94 20.00 P 306592.34 84913.55
+  S 337 2 0.01 20.00 P 306559.34 84928.26
+  S 337 4 0.38 20.00 P 293694.97 86749.24
+  S 337 5 0.76 20.00 P 285345.41 92736.24
+  285336.66 93119.72 38.40  0 13 2.08
+  S 337 5 0.84 20.00 P 285130.19 92992.58
+  S 337 5 0.85 20.00 P 285091.47 93039.69
+  285024.00 93024.00 38.40
+  S 242 14 0.03 20.00 P 284930.97 93055.52
+  S 242 17 0.89 20.00 P 273343.91 72961.10
+  273248.00 72928.00 38.40
+  S 224 6 0.57 20.00 P 272904.56 72896.27
+  S 224 6 0.98 20.00 P 267764.03 76856.45
+  S 218 18 0.86 20.00 P 267648.75 76809.74
+  S 218 18 0.49 20.00 P 267265.16 76890.53
+  S 218 18 0.31 20.00 P 267072.59 77000.78
+  267084.22 77099.11 38.40  0 15 1.94
+  S 218 18 0.18 20.00 P 266944.31 77094.19
+  S 218 14 0.08 20.00 P 259122.44 92566.13
+  S 245 39 0.97 20.00 P 259122.42 92659.22
+  S 221 0 0.12 20.00 P 259071.53 92680.22
+  S 221 0 0.27 20.00 P 258898.06 92731.13
+  S 218 13 0.70 20.00 P 258816.83 92670.28
+  S 218 10 1.00 20.00 P 253769.00 92646.00
+  S 471 0 0.04 20.00 P 253759.86 92644.62
+  S 471 4 0.89 20.00 P 247112.70 94281.69
+  S 335 38 0.83 20.00 P 247040.20 94342.91
+  S 335 38 0.57 20.00 P 246263.95 98424.98
+  S 371 50 0.86 20.00 P 246144.64 98490.38
+  S 371 50 0.09 20.00 P 244020.67 98572.16
+  243915.91 98590.45 38.40
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  BSceggaResupplyConvoy TGroupDestroyed 2011_Chief 100

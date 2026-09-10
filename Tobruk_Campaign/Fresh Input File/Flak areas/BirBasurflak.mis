@@ -1,0 +1,134 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 370000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Bedford_OY_CargoAmmo1 gb 352894.03 24733.97 0.00 
+  Static1 Artillery.Flak30_Shield gb 353450.97 24623.85 0.00 /timeout 0/radius_hide 0
+  Static2 Stationary.Bedford_MW_open gb 353466.97 24616.14 0.00 
+  Static3 Stationary.Bedford_OY_CargoAmmo1 gb 353460.84 24616.95 0.00 
+  Static4 Artillery.3_7_inch_QF_Mk_I gb 353245.66 24800.27 0.00 /timeout 0/radius_hide 0
+  Static5 Stationary.Bedford_MW_open gb 353260.22 24795.91 0.00 
+  Static6 Stationary.Ford_G917 gb 353130.97 24663.74 0.00 
+  Static7 Stationary.Bedford_OY_CargoAmmo1 gb 353134.69 24659.15 0.00 
+  Static8 Stationary.Bedford_OY_CargoAmmo1 gb 353143.06 24659.15 0.00 
+  Static9 Stationary.Bedford_OY_CargoAmmo1 gb 353129.69 24653.01 0.00 
+  Static10 Stationary.Bedford_OY_CargoAmmo1 gb 353134.69 24654.13 0.00 
+  Static11 Stationary.Bedford_OY_CargoAmmo1 gb 353128.56 24659.15 0.00 
+  Static12 Stationary.Bedford_OY_CargoAmmo1 gb 353143.06 24653.01 0.00 
+  Static13 Stationary.Bedford_OY_CargoAmmo1 gb 353249.13 24797.63 0.00 
+  Static14 Stationary.Environment.TentRidgeTent_UK1 gb 353119.31 24667.40 0.00 
+  Static15 Stationary.Environment.RRH_GER1 gb 353129.38 24672.44 0.00 
+  Static16 Stationary.Environment.Em_4m_R(H)34_GER1 gb 353121.53 24674.11 0.00 
+  Static17 Stationary.Environment.HeightFinder_UK1 gb 353121.53 24661.83 0.00 
+  Static18 Artillery.Flak30_Shield gb 353029.91 24829.58 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.3_7_inch_QF_Mk_I gb 352892.72 24746.28 0.00 /timeout 0/radius_hide 0
+  Static20 Stationary.Environment.CamoNetHowitizer nn 352895.31 24747.18 0.00 
+  Static21 Stationary.Bedford_MW_open gb 352903.31 24733.34 0.00 
+  Static22 Stationary.Bedford_MW_open gb 353045.94 24816.38 0.00 
+  Static23 Stationary.Bedford_OY_CargoAmmo1 gb 353033.69 24825.56 0.00 
+  Static24 Stationary.Environment.CamoNetHowitizer nn 353355.25 24530.02 0.00 
+  Static25 Stationary.Bedford_OY_CargoAmmo1 gb 353365.91 24535.86 0.00 
+  Static26 Artillery.3_7_inch_QF_Mk_I gb 353353.19 24530.79 0.00 /timeout 0/radius_hide 0
+  Static27 Stationary.Bedford_MW_open gb 353347.38 24540.50 0.00 
+  Static28 Artillery.3_7_inch_QF_Mk_I gb 353005.34 24457.35 0.00 /timeout 0/radius_hide 0
+  Static29 Stationary.Environment.CamoNetHowitizer nn 353004.59 24455.13 0.00 
+  Static30 Stationary.Bedford_MW_open gb 352999.59 24473.14 0.00 
+  Static31 Stationary.Bedford_OY_CargoAmmo1 gb 352998.72 24470.73 0.00 
+  Static32 Artillery.Flak30_Shield gb 352819.22 24560.19 0.00 /timeout 0/radius_hide 0
+  Static33 Stationary.Environment.CamoNetHowitizer nn 352818.50 24558.09 0.00 
+  Static34 Stationary.Bedford_MW_open gb 352832.81 24549.38 0.00 
+  Static35 Stationary.Bedford_OY_CargoAmmo1 gb 352832.34 24554.61 0.00 
+  Static36 Stationary.Bedford_OY_CargoAmmo1 gb 353357.91 22470.27 0.00 
+  Static37 Artillery.Flak30_Shield gb 353914.84 22360.14 0.00 /timeout 0/radius_hide 0
+  Static38 Stationary.Bedford_MW_open gb 353930.84 22352.43 0.00 
+  Static39 Stationary.Bedford_OY_CargoAmmo1 gb 353924.72 22353.25 0.00 
+  Static40 Artillery.3_7_inch_QF_Mk_I gb 353709.53 22536.56 0.00 /timeout 0/radius_hide 0
+  Static41 Stationary.Bedford_MW_open gb 353724.06 22532.20 0.00 
+  Static42 Stationary.Ford_G917 gb 353594.84 22400.04 0.00 
+  Static43 Stationary.Bedford_OY_CargoAmmo1 gb 353598.56 22395.45 0.00 
+  Static44 Stationary.Bedford_OY_CargoAmmo1 gb 353606.94 22395.45 0.00 
+  Static45 Stationary.Bedford_OY_CargoAmmo1 gb 353593.53 22389.31 0.00 
+  Static46 Stationary.Bedford_OY_CargoAmmo1 gb 353598.56 22390.42 0.00 
+  Static47 Stationary.Bedford_OY_CargoAmmo1 gb 353592.41 22395.45 0.00 
+  Static48 Stationary.Bedford_OY_CargoAmmo1 gb 353606.94 22389.31 0.00 
+  Static49 Stationary.Bedford_OY_CargoAmmo1 gb 353712.97 22533.92 0.00 
+  Static50 Stationary.Environment.TentRidgeTent_UK1 gb 353583.16 22403.70 0.00 
+  Static51 Stationary.Environment.RRH_GER1 gb 353593.22 22408.74 0.00 
+  Static52 Stationary.Environment.Em_4m_R(H)34_GER1 gb 353585.41 22410.41 0.00 
+  Static53 Stationary.Environment.HeightFinder_UK1 gb 353585.41 22398.13 0.00 
+  Static54 Artillery.Flak30_Shield gb 353493.78 22565.87 0.00 /timeout 0/radius_hide 0
+  Static55 Artillery.3_7_inch_QF_Mk_I gb 353356.56 22482.57 0.00 /timeout 0/radius_hide 0
+  Static56 Stationary.Environment.CamoNetHowitizer nn 353359.19 22483.48 0.00 
+  Static57 Stationary.Bedford_MW_open gb 353367.19 22469.64 0.00 
+  Static58 Stationary.Bedford_MW_open gb 353509.78 22552.68 0.00 
+  Static59 Stationary.Bedford_OY_CargoAmmo1 gb 353497.56 22561.86 0.00 
+  Static60 Stationary.Environment.CamoNetHowitizer nn 353819.09 22266.31 0.00 
+  Static61 Stationary.Bedford_OY_CargoAmmo1 gb 353829.75 22272.15 0.00 
+  Static62 Artillery.3_7_inch_QF_Mk_I gb 353817.03 22267.09 0.00 /timeout 0/radius_hide 0
+  Static63 Stationary.Bedford_MW_open gb 353811.22 22276.79 0.00 
+  Static64 Artillery.3_7_inch_QF_Mk_I gb 353469.19 22193.64 0.00 /timeout 0/radius_hide 0
+  Static65 Stationary.Environment.CamoNetHowitizer nn 353468.44 22191.42 0.00 
+  Static66 Stationary.Bedford_MW_open gb 353463.47 22209.44 0.00 
+  Static67 Stationary.Bedford_OY_CargoAmmo1 gb 353462.56 22207.03 0.00 
+  Static68 Artillery.Flak30_Shield gb 353283.06 22296.49 0.00 /timeout 0/radius_hide 0
+  Static69 Stationary.Environment.CamoNetHowitizer nn 353282.38 22294.39 0.00 
+  Static70 Stationary.Bedford_MW_open gb 353296.66 22285.68 0.00 
+  Static71 Stationary.Bedford_OY_CargoAmmo1 gb 353296.19 22290.90 0.00 
+  Static72 Artillery.Bofors_StandAlone gb 357048.84 22893.04 0.00 /timeout 0/radius_hide 0
+  Static73 Artillery.Bofors_StandAlone gb 357229.00 23093.20 0.00 /timeout 0/radius_hide 0
+  Static74 Stationary.Bedford_OY_CargoAmmo1 gb 355931.00 24795.43 0.00 
+  Static75 Artillery.Flak30_Shield gb 356487.94 24685.31 0.00 /timeout 0/radius_hide 0
+  Static76 Stationary.Bedford_MW_open gb 356503.94 24677.60 0.00 
+  Static77 Stationary.Bedford_OY_CargoAmmo1 gb 356497.81 24678.41 0.00 
+  Static78 Artillery.3_7_inch_QF_Mk_I gb 356282.63 24861.73 0.00 /timeout 0/radius_hide 0
+  Static79 Stationary.Bedford_MW_open gb 356297.16 24857.37 0.00 
+  Static80 Stationary.Ford_G917 gb 356167.94 24725.21 0.00 
+  Static81 Stationary.Bedford_OY_CargoAmmo1 gb 356171.66 24720.61 0.00 
+  Static82 Stationary.Bedford_OY_CargoAmmo1 gb 356180.03 24720.61 0.00 
+  Static83 Stationary.Bedford_OY_CargoAmmo1 gb 356166.63 24714.47 0.00 
+  Static84 Stationary.Bedford_OY_CargoAmmo1 gb 356171.66 24715.59 0.00 
+  Static85 Stationary.Bedford_OY_CargoAmmo1 gb 356165.53 24720.61 0.00 
+  Static86 Stationary.Bedford_OY_CargoAmmo1 gb 356180.03 24714.47 0.00 
+  Static87 Stationary.Bedford_OY_CargoAmmo1 gb 356286.09 24859.09 0.00 
+  Static88 Stationary.Environment.TentRidgeTent_UK1 gb 356156.28 24728.87 0.00 
+  Static89 Stationary.Environment.RRH_GER1 gb 356166.31 24733.90 0.00 
+  Static90 Stationary.Environment.Em_4m_R(H)34_GER1 gb 356158.50 24735.58 0.00 
+  Static91 Stationary.Environment.HeightFinder_UK1 gb 356158.50 24723.29 0.00 
+  Static92 Artillery.Flak30_Shield gb 356066.88 24891.04 0.00 /timeout 0/radius_hide 0
+  Static93 Artillery.3_7_inch_QF_Mk_I gb 355929.66 24807.74 0.00 /timeout 0/radius_hide 0
+  Static94 Stationary.Environment.CamoNetHowitizer nn 355932.28 24808.64 0.00 
+  Static95 Stationary.Bedford_MW_open gb 355940.28 24794.80 0.00 
+  Static96 Stationary.Bedford_MW_open gb 356082.91 24877.84 0.00 
+  Static97 Stationary.Bedford_OY_CargoAmmo1 gb 356070.66 24887.02 0.00 
+  Static98 Stationary.Environment.CamoNetHowitizer nn 356392.19 24591.48 0.00 
+  Static99 Stationary.Bedford_OY_CargoAmmo1 gb 356402.88 24597.32 0.00 
+  Static100 Artillery.3_7_inch_QF_Mk_I gb 356390.13 24592.25 0.00 /timeout 0/radius_hide 0
+  Static101 Stationary.Bedford_MW_open gb 356384.31 24601.96 0.00 
+  Static102 Artillery.3_7_inch_QF_Mk_I gb 356042.31 24518.81 0.00 /timeout 0/radius_hide 0
+  Static103 Stationary.Environment.CamoNetHowitizer nn 356041.53 24516.59 0.00 
+  Static104 Stationary.Bedford_MW_open gb 356036.56 24534.61 0.00 
+  Static105 Stationary.Bedford_OY_CargoAmmo1 gb 356035.69 24532.20 0.00 
+  Static106 Artillery.Flak30_Shield gb 355856.19 24621.65 0.00 /timeout 0/radius_hide 0
+  Static107 Stationary.Environment.CamoNetHowitizer nn 355855.47 24619.55 0.00 
+  Static108 Stationary.Bedford_MW_open gb 355869.78 24610.85 0.00 
+  Static109 Stationary.Bedford_OY_CargoAmmo1 gb 355869.31 24616.07 0.00 
+[Buildings]
+[BuildingsLinks]

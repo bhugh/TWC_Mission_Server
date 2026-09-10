@@ -1,0 +1,641 @@
+#define DEBUG  
+#define TRACE  
+//$reference System.Core.dll
+//$reference parts/core/Strategy.dll
+//$reference parts/core/gamePlay.dll
+//$reference parts/core/gamePages.dll
+///// $ reference parts/core/CloDMissionCommunicator.dll
+
+//$reference parts/core/TacviewRecorder.dll 
+using TacviewRecorder;
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Text;
+using maddox.GP;
+using maddox.game;
+using maddox.game.world;
+using maddox.game.play;
+using maddox.game.page;
+using part;
+using System.Text.RegularExpressions;
+
+//using TWCComms;
+using System.Media;
+
+/***************************************************************************
+/***************************************************************************
+/ TACVIEW RECORDER CLASS
+/
+/ * Tacview files are created here by TacviewRecorder.dll
+/ * Processed in various ways using script process-tacview.ps1, called via processOldTacviewFiles() below about a minute after each mission start
+/ * Uploaded via FTP in -stats.cs, public void StbSr_UploadSituationMapFilesLowFilter()
+/
+/ TacviewRecorder.dll is an early version with many bugs:
+/   * Must start @ beginning of mission with no delay (0) or many objects have no ID, crashing Tacview on playback
+/   * Removing all lines starting with "," will fix this problem to at least make files viewable, but much data lost
+/   * Thus we get many small files with no actual data when mission starts & then restarts immediately
+/   * We want to filter out for a "fog of war" effect which is done using tacview-filter.exe
+/   * However it can only filter for Color= or Coalition=, and TacviewRecorder.dll only sets pilots to Color=Green and no Coalition=
+/	* It uses Group=Player but tacview-filter.exe can't use that...
+/   * process-tacview.ps1 fixes this by adding the "Coalition=Allies" to all pilot IDs.
+/	* plus it renames files, adds them to the "tacview/processed" subdirectory and originals to "tacview/originals"
+/	* Then -stats uploads everyting in /processed to the FTP directory /twc/tacview and moves the file to "tacview/uploaded"
+/	* A php script in https://xxxxx.com/twc/tacview displays all tacview files in that directory and allows for downloads
+***************************************************************************/
+
+
+//CoverMission covermission = new CoverMission();
+public class TacviewImplMission : TacviewMission
+//public class TacviewImplMission : AMission
+{
+
+    public Mission mainmission;
+	public SupplyMission supplymission;    
+    public Random ran;
+
+	
+    static public List<string> ArmiesL = new List<string>() { "None", "Red", "Blue" };
+    //public enum ArmiesE { None, Red, Blue };
+	
+	static public List<string> ArmiesSection = new List<string>() { "nn", "gb", "de" }; //armies as needed in section files ie for ground stationaries	
+	
+	//to match :TacviewMission's constructor, hopefully...
+	public TacviewImplMission()
+    {}
+
+    public TacviewImplMission(Mission msn)
+    {
+        try
+        {
+
+            Console.WriteLine("-TacviewImpl.cs starting . . . ");
+            mainmission = msn; 
+            ran = new Random();
+
+            MissionNumberListener = -1;
+			
+			//DestinationFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+			
+			//TypeOfMission.BigMission = Aircraft + ground units + static objects. 
+			//TypeOfMission.DogFight = Aircraft only.   )Note DogFight w/ F rather than f, different from documentation.
+			//TypeOfMission.Normal = Aircraft + ground units. 
+			//The default mission type is BigMission 
+			//MissionType = TypeOfMission.DogFight;
+			
+			//ShowPlayer = true; 
+			//ShowPlayerAsHuman = false; 
+			
+			//Value = 0 : recorder starts immediately 
+			//Value > 0: starts x second(s) after the mission is loaded.  
+			//Value = -1: the recorder does not start automatically and must be started using the 
+			//StartRecorder() function. 
+			//The timer can be cancelled by calling the StartRecorder() function, which cancels the 
+			//timed start and starts the recorder immediately.  
+			//The StopRecorder() method cancels the timed start and permanently stops the recorder.  
+			//The PauseRecorder() method has no effect on the timed start.
+			//DisableRecorder() Prevents the recorder from starting up.  
+			//Allows you to run a mission without taking the recorder into account 
+			//and without having to change the mission's base class.
+			//StartDelay = 300; // Start in 300 seconds 
+			//ZipFinalFile = true; // compress the file 
+				
+            
+			//base.~();
+			//base.TacviewMission();
+            Console.WriteLine("-TacviewImplMission.cs successfully constructed");
+        }
+        catch (Exception ex) { Console.WriteLine("TacviewImpl Mission() ERROR: " + ex.ToString()); }
+    }
+
+/*
+    public override void Init(ABattle b, int missionNumber)
+    {
+        try
+        {  
+			Console.WriteLine("-TacviewImplMission.cs starting init()...");
+
+            //MissionNumberListener = -1;
+			//supplymission = mainmission.supplymission; //if supplymission is initialized a bit after statsmission, and we do this in the class initializer, then this would be null, so we wait and do it here instead.
+			
+			
+			//This all should be put in INITED not INIT...
+			
+			//DestinationFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+			
+			//TypeOfMission.BigMission = Aircraft + ground units + static objects. 
+			//TypeOfMission.DogFight = Aircraft only.   )Note DogFight w/ F rather than f, different from documentation.
+			//TypeOfMission.Normal = Aircraft + ground units. 
+			//The default mission type is BigMission 
+			//MissionType = TypeOfMission.DogFight;
+			
+			//ShowPlayer = true; 
+			//ShowPlayerAsHuman = false; 
+			
+			//Value = 0 : recorder starts immediately 
+			//Value > 0: starts x second(s) after the mission is loaded.  
+			//Value = -1: the recorder does not start automatically and must be started using the 
+			//StartRecorder() function. 
+			//The timer can be cancelled by calling the StartRecorder() function, which cancels the 
+			//timed start and starts the recorder immediately.  
+			//The StopRecorder() method cancels the timed start and permanently stops the recorder.  
+			//The PauseRecorder() method has no effect on the timed start.
+			//DisableRecorder() Prevents the recorder from starting up.  
+			//Allows you to run a mission without taking the recorder into account 
+			//and without having to change the mission's base class.
+			//StartDelay = 0; // Start in 300 seconds 
+			//ZipFinalFile = true; // compress the file 
+			
+			//AddWaypoint(name, x, y, z, army= 0) 
+			//RemoveWaypoint(name)
+			
+			//AddBookmark(message)  //don't use AddBookemark in inited but throughout the  mission
+			
+			
+			
+            Console.WriteLine("-TacviewImplMission.cs successfully ran init()");
+
+        }
+        catch (Exception ex) { Console.WriteLine("TacviewImpl Mission(): " + ex.ToString()); }
+		base.Init(b, missionNumber);
+    }
+	
+	*/
+	
+	public override void Inited()
+    {		
+        try
+        {
+			Console.WriteLine("TacviewImpl starting Inited . . .");
+			DestinationFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+			
+			//TypeOfMission.BigMission = Aircraft + ground units + static objects. 
+			//TypeOfMission.DogFight = Aircraft only.   )Note DogFight w/ F rather than f, different from documentation.
+			//TypeOfMission.Normal = Aircraft + ground units. 
+			//The default mission type is BigMission 
+			//MissionType = TypeOfMission.DogFight;
+			MissionType = TypeOfMission.BigMission;
+			//MissionType = TacviewMission.TypeOfMission.DogFight; //Doesn't work unfortunatley - always does BigMission
+			//this.oTacViewCore.MissionType = TacviewMission.TypeOfMission.DogFight;
+			
+			ShowPlayer = true; 
+			ShowPlayerAsHuman = true; 
+			
+			//Value = 0 : recorder starts immediately 
+			//Value > 0: starts x second(s) after the mission is loaded.  
+			//Value = -1: the recorder does not start automatically and must be started using the 
+			//StartRecorder() function. 
+			//The timer can be cancelled by calling the StartRecorder() function, which cancels the 
+			//timed start and starts the recorder immediately.  
+			//The StopRecorder() method cancels the timed start and permanently stops the recorder.  
+			//The PauseRecorder() method has no effect on the timed start.
+			//DisableRecorder() Prevents the recorder from starting up.  
+			//Allows you to run a mission without taking the recorder into account 
+			//and without having to change the mission's base class.
+			
+			//So if startDelay > 0 then it seems to result in many lines in the file starting with "," - meaning
+			//the object ID was missing or blank somehow.  It must be a bug in the .dll.  So, just start 0.
+			//StartDelay = 8; // Wait just long enough to skip starting a Tacview file when e.g. we restart to reset time or weather
+			
+			
+			ZipFinalFile = true; // compress the file 
+			
+			//AddWaypoint(name, x, y, z, army= 0) 
+			//RemoveWaypoint(name)
+			
+			//AddBookmark(message)  //don't use AddBookemark in inited but throughout the  mission
+			
+			//Wait about a minute to upload the old .acmi file - enough to skip over any server restarts
+			//but still early in processing of the mission.
+			//This will put old .acmi file in ../tacview/originals and processed file in ../tacview/processed
+			//Another process in -stats.cs regular runs the FTP uploads for radar and also the .acmi files
+			//if any exist in /processed
+			Timeout(63.52, () => { processOldTacviewFiles(); });
+			
+			Console.WriteLine("TacviewImpl Inited . . .");
+			
+
+        }
+        catch (Exception ex) { Console.WriteLine("TacviewImpl Inited ERROR: " + ex.Message); };
+		base.Inited();
+    }
+	/*
+	
+	public virtual void OnBattleInit()
+    {
+      try
+      {
+		Console.WriteLine("TacviewImpl OnBattleInit() starting . . .");
+
+			//DestinationFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+			
+			//TypeOfMission.BigMission = Aircraft + ground units + static objects. 
+			//TypeOfMission.DogFight = Aircraft only.   )Note DogFight w/ F rather than f, different from documentation.
+			//TypeOfMission.Normal = Aircraft + ground units. 
+			//The default mission type is BigMission 
+			//MissionType = TypeOfMission.DogFight;
+			
+			//ShowPlayer = true; 
+			//ShowPlayerAsHuman = false; 
+			
+			//Value = 0 : recorder starts immediately 
+			//Value > 0: starts x second(s) after the mission is loaded.  
+			//Value = -1: the recorder does not start automatically and must be started using the 
+			//StartRecorder() function. 
+			//The timer can be cancelled by calling the StartRecorder() function, which cancels the 
+			//timed start and starts the recorder immediately.  
+			//The StopRecorder() method cancels the timed start and permanently stops the recorder.  
+			//The PauseRecorder() method has no effect on the timed start.
+			//DisableRecorder() Prevents the recorder from starting up.  
+			//Allows you to run a mission without taking the recorder into account 
+			//and without having to change the mission's base class.
+			//StartDelay = 300; // Start in 300 seconds 
+			//ZipFinalFile = true; // compress the file 
+			
+			//AddWaypoint(name, x, y, z, army= 0) 
+			//RemoveWaypoint(name)
+			
+			//AddBookmark(message)  //don't use AddBookemark in inited but throughout the  mission
+			
+			Console.WriteLine("TacviewImpl OnBattleInit() complete . . .");
+        base.OnBattleInit();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("TacviewImpl OnBattleInit() ERROR: " + ex.ToString()); 
+      }
+    }
+	*/
+	
+	
+	
+	
+	public void AddTacviewBookmark (string message = "") {
+		AddBookmark(message);		
+	}
+
+/*
+
+    public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
+    {
+
+        base.OnPlaceEnter(player, actor, placeIndex);
+   
+    }
+*/
+    public override void OnBattleStarted()
+    {
+        base.OnBattleStarted();
+		
+		 Console.WriteLine("-TacviewImplMission OnBattleStarted - EventChat initialized ");
+
+		if (GamePlay != null && GamePlay is GameDef)
+		{
+			//Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+			(GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+		}
+		
+		Console.WriteLine("TacviewImpl OnBattleStarted . . .");
+    }
+/*
+    int stb_lastMissionLoaded = -1;
+	//MissionNumberListener = MissionNumber;
+	
+	/*
+
+    public override void OnMissionLoaded(int missionNumber)
+    {
+        
+
+        try
+        {
+			MissionNumberListener = MissionNumber;
+
+
+
+            stb_lastMissionLoaded = missionNumber;
+			
+			//Console.WriteLine("-TacviewImplMission OnMissionLoaded() {0} {1} ", missionNumber, MissionNumber);
+
+
+            if (missionNumber == MissionNumber)
+
+            {
+                Console.WriteLine("-TacviewImplMission OnMissionLoaded() {0} {1} ", missionNumber, MissionNumber);
+
+                if (GamePlay != null && GamePlay is GameDef)
+                {
+                    //Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+                    (GamePlay as GameDef).EventChat += new GameDef.Chat(Mission_EventChat);
+                }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("TacfiewImpl OnMissionLoaded() ERROR: " + ex.ToString()); }
+		
+		base.OnMissionLoaded(missionNumber);
+    }
+	
+	*/
+
+    public override void OnBattleStoped()
+    {
+		base.OnBattleStoped();
+		try {
+
+			if (GamePlay != null && GamePlay is GameDef)
+			{
+				//Console.WriteLine ( (GamePlay as GameDef).EventChat.ToString());
+				(GamePlay as GameDef).EventChat -= new GameDef.Chat(Mission_EventChat);
+				//If we don't remove the new EventChat when the battle is stopped
+				//we tend to get several copies of it operating, if we're not careful
+			}
+			Console.WriteLine("TacviewImpl OnBattleStoped, EventChat disconnected . . .");
+			
+			//This seems to stop/save the file
+			//Otherwise it only automatically does so if the console is closed.  It seems.
+			StopRecorder();
+		
+		}
+        catch (Exception ex) { Console.WriteLine("TacviewImpl Mission() ERROR: " + ex.ToString()); }
+
+
+    }
+	
+	/*
+    
+    public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
+    {
+        
+        //if (actor as AiAircraft != null) 
+		base.OnActorDamaged(missionNumber, shortName, actor, initiator, damageType);
+
+        
+    }
+	
+	public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
+    {
+        //if (actor as AiAircraft != null) 
+		base.OnActorDead(missionNumber, shortName, actor, damages);
+
+       
+    }
+	
+	public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
+    {
+        //if (actor as AiAircraft != null) 
+		base.OnActorDestroyed(missionNumber, shortName, actor);
+
+         
+    }
+	
+	public override void OnActorCreated(int missionNumber, string shortName, AiActor actor)
+    {
+        //if (actor as AiAircraft != null) 
+		base.OnActorCreated(missionNumber, shortName, actor);
+
+       
+    }
+
+    public override void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
+    {
+       base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt); 
+    }
+    
+
+    public override void OnBombExplosion(string title, double mass_kg, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
+    {
+
+        base.OnBombExplosion(title, mass_kg, pos, initiator, eventArgInt);
+            
+    }
+
+
+
+    public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftLanded(missionNumber, shortName, aircraft);
+
+       
+    }
+
+    public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+        
+    }
+    public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
+    {
+        base.OnAircraftKilled(missionNumber, shortName, aircraft);
+        
+    }
+	
+	*/
+	
+	//Process any old, completed Tacview files from previous session(s)
+	//Mostly should just be one from the previous session.
+	//But proc.bat processes any *.zip.acmi files found in the tacview directory,
+	//putting the processed file ("fog of war" in a bubble around each player only) in subdir "processed"
+	//and moving the original file to subdirectory "originals"
+	public void processOldTacviewFiles()
+	{
+		// Run powershell script to process tacview files on a separate thread pool thread
+		Task.Run(() =>
+		{
+			try
+			{
+				string destFolder = mainmission.CLOD_PATH + mainmission.FILE_PATH + "/tacview";
+				string scriptPath = Path.Combine(destFolder, "process-tacview.ps1");
+
+				// 1. Point to the powershell executable, not the script file
+				//ProcessStartInfo startInfo = new ProcessStartInfo("powershell.exe")
+				ProcessStartInfo startInfo = new ProcessStartInfo("pwsh.exe")
+				{
+					// 2. Pass execution policy bypass and the script path as arguments
+					Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -File \"{0}\"",scriptPath),
+					UseShellExecute = false,
+					CreateNoWindow = true,
+					RedirectStandardOutput = true,
+					RedirectStandardError = true
+				};
+
+				using (Process process = Process.Start(startInfo))
+				{
+					// 3. Read output to prevent the process from hanging
+					string output = process.StandardOutput.ReadToEnd();
+					string error = process.StandardError.ReadToEnd();
+
+					process.WaitForExit();
+
+					int exitCode = process.ExitCode;
+					
+					// 4. Fixed string interpolation (added '$')
+					Console.WriteLine("TACVIEW: Script to process Tacview files finished successfully with exit code: {0}", exitCode);
+					
+					if (exitCode != 0)
+					{
+						Console.WriteLine("TACVIEW ERROR: Script to process Tacview files finished with exit code: {0}", exitCode);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				
+				Console.WriteLine("TacviewImpl Run Powershell Script - Error running script: {0}", ex.Message);
+			}
+		});
+}
+
+    
+
+
+    /****************************************************************
+     * 
+     * ADMIN PRIVILEGE
+     * 
+     * Determine if player is an admin, and what level
+     * 
+     ****************************************************************/
+    public string[] admins_basic = new String[] { "TWC_", "Rostic" };
+    public string[] admins_full = new String[] { "TWC_Flug", "TWC_Fatal_Error", "EvilUg", "Server" };
+
+    public int admin_privilege_level(Player player)
+    {
+        if (player == null || player.Name() == null) return 0;
+        string name = player.Name();
+        //name = "TWC_muggle"; //for testing
+        if (admins_full.Contains(name)) return 2; //full admin - must be exact character match (CASE SENSITIVE) to the name in admins_full
+        if (admins_basic.Any(name.Contains)) return 1; //basic admin - player's name must INCLUDE the exact (CASE SENSITIVE) stub listed in admins_basic somewhere--beginning, end, middle, doesn't matter
+        return 0;
+
+    }
+	int tacRecorderMax = 6;
+	int tacRecorderCount = 0;
+	bool tacRecorderOn = false;
+
+    void Mission_EventChat(Player from, string msg)
+    {
+		
+        if (!msg.StartsWith("<")) return; //trying to stop parser from being such a CPU hog . . . 
+
+        Player player = from as Player;
+		string playername = "";
+		if (player != null) playername = player.Name() + ": ";
+		
+		//log all chat msgs to TacviewRecorder
+		AddBookmark(playername + msg);
+		
+        AiAircraft aircraft = null;
+        if (player.Place() as AiAircraft != null) aircraft = player.Place() as AiAircraft;
+        AiActor actor = aircraft as AiActor;
+
+        string msg_orig = msg;
+        msg = msg.ToLower();
+        //Stb_Message(null, "Stats msg recvd.", null);
+
+        /*
+        if (msg.StartsWith("<!deban") && (admin_privilege_level(player) < 2))
+        {
+
+
+        }
+        
+        if (msg.StartsWith("<tmes"))
+        {
+            Console.WriteLine("Adding message to Tacview...");
+			mainmission.twcLogServer(new Player[] { player }, "Adding your message to Tacview...");            
+
+            
+			string ms = msg.Substring(5).Trim();
+			AddBookmark(ms);
+
+ 
+        }
+		
+		if (msg.StartsWith("<tac") && !msg.StartsWith("<tach"))
+        {
+			if (tacRecorderOn ) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Already recording - no action taken.");            
+				return;
+			}
+			if (tacRecorderCount >= tacRecorderMax) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. The maximum number of recordings have been taken this session, sorry!");            
+				return;
+			}
+			double Mission_Time_hrs =(GamePlay.gpTimeofDay() - mainmission.START_MISSION_TIME_HRS);
+			if (Mission_Time_hrs <= 0.25 ) {
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Not recording. can't record during the first 15 minutes of a new mission, sorry!");            
+				mainmission.twcLogServer(new Player[] { player }, ">>>Tacview: Try again in a little while.");
+				return;
+			}
+				
+            Console.WriteLine("Will record action via Tacview for the next 5 minutes...");
+			tacRecorderCount ++;
+			mainmission.twcLogServer(new Player[] { player }, string.Format(">>>Tacview: Will record action via Tacview for the next 5 minutes. Request {0} of {1} allowed per session.", tacRecorderCount, tacRecorderMax));            
+			mainmission.twcLogServer(null, string.Format(">>>Tacview: Recording started - for next 5 minutes!"));            
+            
+			string ms = "Recording started at request of " + player.Name();
+			AddBookmark(ms);
+			StartRecorder();
+			
+			Timeout(300, () => {
+				StopRecorder();
+				tacRecorderOn = false;
+				Console.WriteLine("Tacview stopped...");
+			mainmission.twcLogServer(null, ">>>Tacview: Recording stopped.");            
+				
+				});
+
+ 
+        }
+		*/
+				
+
+  
+        if (msg.StartsWith("<tachelp"))
+        {
+            string msg42 = "TACVIEW RECORDER HELP";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = ">>>Tacview Recorder is installed, experimentally.  It records the whole session, including Chat messages.";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = string.Format(">>>After the session finishes, we can filter the file to show the immediate area of each pilot while they were flying.", tacRecorderCount, tacRecorderMax);
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = string.Format(">>>We can then make that Tacview file available for download.", tacRecorderCount, tacRecorderMax);			
+			msg42 = string.Format(">>>Right now the filtering/uploading happens manually so will only be occasionally or upon special request.", tacRecorderCount, tacRecorderMax);
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			/*
+			msg42 = ">>> Chat command <tmes saves a message to that recorder at the current time stamp.";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Example: <tmes Spirit 42 just got a kill!";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Within Tacview, you can search for messages to find a specific time or event.";
+			*/
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+			msg42 = ">>>Thanks to FlyBy for creating the Tacview Recorder for CLOD!";
+			GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            
+        }
+
+        else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))
+        {
+            double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
+            if (!msg.StartsWith("<help")) to = 7.2;
+
+            string msg41 = "<tachelp - info about Tacview recording of this mission";
+
+            Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
+            //GamePlay.gp(, from);
+        }
+    }
+
+   
+
+} //end class
+
+

@@ -1,0 +1,134 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static416 Artillery.Flak30 gb 62320.00 195446.56 -80.00 /timeout 0/radius_hide 0
+  Static415 Artillery.Flak30 gb 60446.41 196082.81 -80.00 /timeout 0/radius_hide 0
+  Static451 Artillery.Flak30 gb 65947.52 196276.28 -80.00 /timeout 0/radius_hide 0
+  Static405 Artillery.Flak30 gb 58426.89 198231.58 -80.00 /timeout 0/radius_hide 0
+  Static403 Artillery.Flak30 gb 56997.75 199399.30 -80.00 /timeout 0/radius_hide 0
+  Static324 Artillery.Flak30 gb 55881.12 200994.38 -80.00 /timeout 0/radius_hide 0
+  Static409 Artillery.Flak30 gb 59102.74 201627.00 -80.00 /timeout 0/radius_hide 0
+  Static466 Artillery.Flak30 gb 54313.33 201977.33 -80.00 /timeout 0/radius_hide 0
+  Static325 Artillery.Flak30 gb 56228.26 202577.66 -80.00 /timeout 0/radius_hide 0
+  Static339 Stationary.Environment.JerryCan_GER1_1 nn 56259.32 202988.52 -80.00 /hstart -2
+  Static338 Stationary.Environment.JerryCan_GER1_1 nn 56279.79 202985.95 -80.00 /hstart -2
+  Static340 Stationary.Environment.JerryCan_GER1_1 nn 56263.77 203007.69 -80.00 /hstart -2
+  Static323 Artillery.Flak30 gb 56273.70 202998.50 -80.00 /timeout 0/radius_hide 0/hstart 16
+  Static337 Stationary.Environment.JerryCan_GER1_1 nn 56309.98 202988.52 -80.00 /hstart -2
+  Static336 Stationary.Environment.JerryCan_GER1_1 nn 56349.64 202994.14 -80.00 /hstart -2
+  Static335 Stationary.Environment.JerryCan_GER1_1 nn 56381.88 203000.55 -80.00 /hstart -2
+  Static334 Stationary.Environment.JerryCan_GER1_1 nn 56415.40 203006.17 -80.00 /hstart -2
+  Static298 Stationary.Environment.JerryCan_GER1_1 nn 56687.19 202965.02 -80.00 /hstart -2
+  Static302 Stationary.Environment.TelegaBallon_UK1 gb 56702.91 202980.88 -80.00 /hstart -2
+  Static301 Stationary.Environment.JerryCan_GER1_1 nn 56683.12 203000.20 -100.00 /hstart -2
+  Static318 Stationary.Environment.JerryCan_GER1_1 nn 56743.64 202974.52 -80.00 /hstart -2
+  Static411 Artillery.Flak30 gb 57698.17 202997.69 -80.00 /timeout 0/radius_hide 0
+  Static341 Stationary.Environment.JerryCan_GER1_1 nn 56281.84 203011.80 -80.00 /hstart -2
+  Static342 Stationary.Environment.JerryCan_GER1_1 nn 56306.40 203014.11 -80.00 /hstart -2
+  Static343 Stationary.Environment.JerryCan_GER1_1 nn 56340.18 203021.27 -80.00 /hstart -2
+  Static344 Stationary.Environment.JerryCan_GER1_1 nn 56380.60 203029.20 -80.00 /hstart -2
+  Static345 Stationary.Environment.JerryCan_GER1_1 nn 56414.63 203035.34 -80.00 /hstart -2
+  Static333 Stationary.Environment.JerryCan_GER1_1 nn 56439.96 203012.31 -80.00 /hstart -2
+  Static346 Stationary.Environment.JerryCan_GER1_1 nn 56443.29 203039.69 -80.00 /hstart -2
+  Static332 Stationary.Environment.JerryCan_GER1_1 nn 56467.59 203014.88 -80.00 /hstart -2
+  Static347 Stationary.Environment.JerryCan_GER1_1 nn 56473.99 203044.30 -80.00 /hstart -2
+  Static331 Stationary.Environment.JerryCan_GER1_1 nn 56500.60 203021.27 -80.00 /hstart -2
+  Static348 Stationary.Environment.JerryCan_GER1_1 nn 56504.70 203049.92 -80.00 /hstart -2
+  Static330 Stationary.Environment.JerryCan_GER1_1 nn 56532.59 203027.92 -80.00 /hstart -2
+  Static326 Artillery.Flak30 gb 56518.16 203042.47 -80.00 /timeout 0/radius_hide 0/hstart 19
+  Static349 Stationary.Environment.JerryCan_GER1_1 nn 56536.17 203056.06 -80.00 /hstart -2
+  Static329 Stationary.Environment.JerryCan_GER1_1 nn 56573.01 203033.55 -80.00 /hstart -2
+  Static350 Stationary.Environment.JerryCan_GER1_1 nn 56570.71 203062.97 -80.00 /hstart -2
+  Static300 Stationary.Environment.TelegaBallon_UK1 gb 56588.93 203033.23 -80.00 /hstart -2
+  Static328 Stationary.Environment.JerryCan_GER1_1 nn 56610.11 203039.95 -80.00 /hstart -2
+  Static351 Stationary.Environment.JerryCan_GER1_1 nn 56602.18 203067.33 -80.00 /hstart -2
+  Static289 Stationary.Environment.JerryCan_GER1_1 nn 56631.31 203043.19 -80.00 /hstart -2
+  Static352 Stationary.Environment.JerryCan_GER1_1 nn 56627.25 203069.88 -80.00 /hstart -2
+  Static317 Stationary.Environment.TelegaBallon_UK1 gb 56649.21 203048.64 -80.00 /hstart -2
+  Static305 Stationary.Environment.JerryCan_GER1_1 nn 56680.12 203028.66 -80.00 /hstart -2
+  Static316 Stationary.Environment.TelegaBallon_UK1 gb 56653.19 203056.84 -80.00 /hstart -2
+  Static315 Stationary.Environment.JerryCan_GER1_1 nn 56654.32 203060.69 -80.00 /hstart -2
+  Static321 Stationary.Environment.TelegaBallon_UK1 gb 56661.94 203057.11 -80.00 /hstart -2
+  Static319 Stationary.Environment.JerryCan_GER1_1 nn 56662.18 203063.09 -80.00 /hstart -2
+  Static320 Stationary.Environment.JerryCan_GER1_1 nn 56666.10 203064.31 -80.00 /hstart -2
+  Static292 Stationary.Environment.TelegaBallon_UK1 gb 56675.02 203059.16 -80.00 /hstart -2
+  Static322 Stationary.Environment.JerryCan_GER1_1 nn 56670.23 203065.83 -80.00 /hstart -2
+  Static290 Stationary.Environment.JerryCan_GER1_1 nn 56677.68 203067.64 -80.00 /hstart -2
+  Static297 Stationary.Environment.TelegaBallon_UK1 gb 56686.69 203061.98 -80.00 /hstart -2
+  Static291 Stationary.Environment.TelegaBallon_UK1 gb 56680.65 203071.27 -80.00 /hstart -2
+  Static294 Stationary.Environment.JerryCan_GER1_1 nn 56687.18 203071.80 -80.00 /hstart -2
+  Static293 Stationary.Environment.JerryCan_GER1_1 nn 56734.62 203016.16 -80.00 /hstart -2
+  Static295 Stationary.Environment.JerryCan_GER1_1 nn 56715.09 203052.67 -80.00 /hstart -2
+  Static304 Stationary.Environment.TelegaBallon_UK1 gb 56705.82 203063.56 -80.00 /hstart -2
+  Static306 Stationary.Environment.TelegaBallon_UK1 gb 56725.90 203045.22 -80.00 /hstart -2
+  Static308 Stationary.Environment.TelegaBallon_UK1 gb 56726.41 203068.48 -80.00 /hstart -2
+  Static311 Stationary.Environment.TelegaBallon_UK1 gb 56736.04 203069.67 -80.00 /hstart -2
+  Static312 Stationary.Environment.TelegaBallon_UK1 gb 56743.91 203066.13 -80.00 /hstart -2
+  Static313 Stationary.Environment.TelegaBallon_UK1 gb 56754.71 203066.48 -80.00 /hstart -2
+  Static380 Stationary.Environment.JerryCan_GER1_1 nn 56772.10 203070.00 -80.00 /hstart -2
+  Static296 Stationary.Environment.TelegaBallon_UK1 gb 56791.54 203071.28 -80.00 /hstart -2
+  Static353 Stationary.Environment.JerryCan_GER1_1 nn 56652.07 203075.25 -80.00 /hstart -2
+  Static299 Stationary.Environment.JerryCan_GER1_1 nn 56700.37 203072.42 -80.00 /hstart -2
+  Static303 Stationary.Environment.JerryCan_GER1_1 nn 56708.53 203073.08 -80.00 /hstart -2
+  Static314 Stationary.Environment.TelegaBallon_UK1 gb 56719.29 203076.66 -80.00 /hstart -2
+  Static355 Stationary.Environment.JerryCan_GER1_1 nn 56740.60 203091.89 -80.00 /hstart -2
+  Static356 Stationary.Environment.JerryCan_GER1_1 nn 56769.52 203095.47 -80.00 /hstart -2
+  Static327 Artillery.Flak30 gb 56797.74 203092.22 -80.00 /timeout 0/radius_hide 0/hstart 19
+  Static354 Stationary.Environment.JerryCan_GER1_1 nn 56793.57 203099.05 -80.00 /hstart -2
+  Static379 Stationary.Environment.JerryCan_GER1_1 nn 56821.36 203078.69 -80.00 /hstart -2
+  Static357 Stationary.Environment.JerryCan_GER1_1 nn 56818.64 203102.13 -80.00 /hstart -2
+  Static378 Stationary.Environment.JerryCan_GER1_1 nn 56856.66 203084.83 -80.00 /hstart -2
+  Static358 Stationary.Environment.JerryCan_GER1_1 nn 56849.34 203107.50 -80.00 /hstart -2
+  Static377 Stationary.Environment.JerryCan_GER1_1 nn 56889.41 203091.48 -80.00 /hstart -2
+  Static359 Stationary.Environment.JerryCan_GER1_1 nn 56877.23 203113.38 -80.00 /hstart -2
+  Static376 Stationary.Environment.JerryCan_GER1_1 nn 56911.11 203093.86 -80.00 /hstart -2
+  Static360 Stationary.Environment.JerryCan_GER1_1 nn 56909.64 203118.97 -80.00 /hstart -2
+  Static375 Stationary.Environment.JerryCan_GER1_1 nn 56946.91 203104.16 -80.00 /hstart -2
+  Static361 Stationary.Environment.JerryCan_GER1_1 nn 56941.15 203124.06 -80.00 /hstart -2
+  Static374 Stationary.Environment.JerryCan_GER1_1 nn 56981.05 203108.98 -80.00 /hstart -2
+  Static362 Stationary.Environment.JerryCan_GER1_1 nn 56970.89 203130.08 -80.00 /hstart -2
+  Static363 Stationary.Environment.JerryCan_GER1_1 nn 56998.18 203135.59 -80.00 /hstart -2
+  Static373 Stationary.Environment.JerryCan_GER1_1 nn 57023.20 203115.05 -80.00 /hstart -2
+  Static372 Stationary.Environment.JerryCan_GER1_1 nn 57061.63 203122.77 -80.00 /hstart -2
+  Static371 Stationary.Environment.JerryCan_GER1_1 nn 57092.21 203128.09 -80.00 /hstart -2
+  Static370 Stationary.Environment.JerryCan_GER1_1 nn 57116.62 203134.73 -80.00 /hstart -2
+  Static364 Stationary.Environment.JerryCan_GER1_1 nn 57029.45 203140.11 -80.00 /hstart -2
+  Static365 Stationary.Environment.JerryCan_GER1_1 nn 57062.01 203146.06 -80.00 /hstart -2
+  Static366 Stationary.Environment.JerryCan_GER1_1 nn 57089.07 203150.52 -80.00 /hstart -2
+  Static288 Artillery.Flak30 gb 57112.49 203143.81 -80.00 /timeout 0/radius_hide 0/hstart 16
+  Static367 Stationary.Environment.JerryCan_GER1_1 nn 57097.52 203167.00 -80.00 /hstart -2
+  Static369 Stationary.Environment.JerryCan_GER1_1 nn 57125.29 203147.45 -80.00 /hstart -2
+  Static368 Stationary.Environment.JerryCan_GER1_1 nn 57117.23 203161.69 -80.00 /hstart -2
+  Static412 Artillery.Flak30 gb 59798.61 203313.83 -80.00 /timeout 0/radius_hide 0
+  Static468 Artillery.Flak30 gb 54074.28 203650.67 -80.00 /timeout 0/radius_hide 0
+  Static419 Artillery.Flak30 gb 55876.60 203754.22 -80.00 /timeout 0/radius_hide 0
+  Static381 Artillery.Flak30 gb 57365.55 203718.33 -80.00 /timeout 0/radius_hide 0
+  Static462 Artillery.Flak30 gb 52321.26 204492.31 -80.00 /timeout 0/radius_hide 0
+  Static413 Artillery.Flak30 gb 57200.91 204753.89 -80.00 /timeout 0/radius_hide 0
+  Static452 Artillery.Flak30 gb 59020.83 204859.78 -80.00 /timeout 0/radius_hide 0
+  Static460 Artillery.Flak30 gb 53980.57 205218.73 -80.00 /timeout 0/radius_hide 0
+  Static455 Artillery.Flak30 gb 55600.56 205517.88 -80.00 /timeout 0/radius_hide 0
+  Static457 Artillery.Flak30 gb 59815.47 205712.38 -80.00 /timeout 0/radius_hide 0
+  Static464 Artillery.Flak30 gb 51843.16 206071.03 -80.00 /timeout 0/radius_hide 0
+  Static453 Artillery.Flak30 gb 57968.77 206084.08 -80.00 /timeout 0/radius_hide 0
+  Static459 Artillery.Flak30 gb 56373.40 206562.33 -80.00 /timeout 0/radius_hide 0
+  Static458 Artillery.Flak30 gb 58492.61 206786.22 -80.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

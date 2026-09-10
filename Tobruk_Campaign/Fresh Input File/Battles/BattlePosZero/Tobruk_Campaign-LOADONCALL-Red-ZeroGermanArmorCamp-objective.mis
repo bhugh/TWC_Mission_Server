@@ -1,0 +1,103 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 1000 380000 380000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static27 Stationary.Pz_35t de 197343.41 60310.10 675.00 
+  Static22 Stationary.Pz_35t de 197346.97 60313.89 675.00 
+  Static57 Stationary.Environment.JerryCan_GER1_2 nn 197327.94 60334.87 645.00 
+  Static23 Stationary.Pz_35t de 197350.22 60316.62 675.00 
+  Static24 Stationary.Pz_35t de 197353.66 60319.27 675.00 
+  Static5 Stationary.Pz_35t de 197355.75 60339.54 675.00 
+  Static4 Stationary.Pz_35t de 197351.58 60343.45 675.00 
+  Static6 Stationary.Pz_35t de 197360.61 60345.77 675.00 
+  Static7 Stationary.Pz_35t de 197366.02 60351.32 675.00 
+  Static0 Stationary.Environment.SandBagWall_Arch nn 197400.22 60311.04 944.10 
+  Static1 Stationary.Environment.SandBagWall_Arch nn 197400.19 60313.93 855.00 
+  Static2 Artillery.Zwillingssockel36_GER1 de 197401.73 60312.82 675.00 /timeout 0/radius_hide 0
+  Static3 Stationary.Environment.SandBagWall_Arch nn 197403.11 60311.04 675.00 
+  Static56 Stationary.Environment.JerryCan_GER1_2 nn 197388.97 60330.75 645.00 
+  Static55 Stationary.Environment.JerryCan_GER1_2 nn 197411.08 60348.09 645.00 
+  Static28 Artillery.Zwillingssockel36_GER1 de 197324.61 60359.07 675.00 /timeout 0/radius_hide 0
+  Static53 Stationary.Environment.JerryCan_GER1_2 nn 197316.16 60373.75 645.00 
+  Static26 Stationary.Pz_35t de 197346.19 60361.57 675.00 
+  Static58 Stationary.Environment.JerryCan_GER1_2 nn 197353.61 60355.71 645.00 
+  Static9 Stationary.Pz_35t de 197362.55 60354.59 675.00 
+  Static8 Stationary.Pz_35t de 197351.44 60365.87 675.00 
+  Static12 Stationary.Pz_35t de 197370.91 60356.62 675.00 
+  Static11 Stationary.Pz_35t de 197367.16 60360.12 675.00 
+  Static13 Stationary.Pz_35t de 197357.44 60373.05 675.00 
+  Static14 Stationary.Pz_35t de 197360.55 60375.68 675.00 
+  Static16 Stationary.Pz_35t de 197373.44 60365.09 855.00 
+  Static17 Stationary.Pz_35t de 197363.88 60377.59 675.00 
+  Static54 Stationary.Environment.JerryCan_GER1_2 nn 197368.16 60383.45 645.00 
+  Static15 Stationary.Pz_35t de 197376.83 60361.91 675.00 
+  Static25 Stationary.Pz_35t de 197399.27 60392.52 675.00 
+  Static19 Stationary.Environment.SandBagWall_Arch nn 197428.75 60378.05 555.00 
+  Static18 Stationary.Environment.SandBagWall_Arch nn 197431.27 60376.57 645.00 
+  Static20 Artillery.20_mm_Flak_38 de 197430.83 60378.32 465.00 /timeout 0/radius_hide 0
+  Static21 Stationary.Environment.SandBagWall_Arch nn 197430.19 60380.52 465.00 
+  Static40 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 154169.94 164967.56 675.00 
+  Static37 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 154234.77 164961.89 675.00 
+  Static38 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 154479.52 164941.23 675.00 
+  Static39 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 154450.09 165031.89 675.00 
+  Static36 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 154190.61 165096.77 675.00 
+  Static33 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 154431.55 165078.23 675.00 
+  Static34 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 154287.30 165265.42 675.00 
+  Static29 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 154328.39 165291.45 675.00 
+  Static35 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 154445.41 165263.59 675.00 
+  Static31 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 154447.44 165291.48 675.00 
+  Static30 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 154321.05 165315.63 675.00 
+  Static32 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 154429.03 165315.67 675.00 
+  Static79 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 153094.77 168942.14 675.00 
+  Static81 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 152785.19 168968.47 675.00 
+  Static78 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 152850.02 168962.81 675.00 
+  Static80 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 153065.34 169032.80 675.00 
+  Static74 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 153046.80 169079.14 675.00 
+  Static77 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 152805.86 169097.67 675.00 
+  Static75 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 152902.55 169266.34 675.00 
+  Static76 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 153060.66 169264.52 675.00 
+  Static70 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 152943.64 169292.38 675.00 
+  Static71 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 152936.30 169316.53 675.00 
+  Static72 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 153062.69 169292.39 675.00 
+  Static73 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 153044.28 169316.58 675.00 
+[Buildings]
+  0_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197348.66 60397.02 465.00
+  1_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197357.08 60400.00 465.00
+  2_bld tobruk:buildings.House$TentZeltbahn_GER1 1 197388.52 60393.52 675.00
+  3_bld tobruk:buildings.House$TentZeltbahn_GER1 1 197389.66 60389.71 675.00
+  4_bld tobruk:buildings.House$TentZeltbahn_GER1 1 197388.52 60385.90 675.00
+  5_bld tobruk:buildings.House$TentZeltbahn_GER1 1 197388.88 60381.60 675.00
+  6_bld tobruk:buildings.House$CamoNetTank 1 197376.00 60362.67 675.00
+  7_bld tobruk:buildings.House$CamoNetTank 1 197370.32 60357.52 675.00
+  8_bld tobruk:buildings.House$CamoNetTank 1 197365.31 60352.02 675.00
+  9_bld tobruk:buildings.House$CamoNetTank 1 197359.81 60346.52 675.00
+  10_bld tobruk:buildings.House$CamoNetTank 1 197353.46 60341.45 675.00
+  11_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197333.05 60392.32 465.00
+  12_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197341.23 60394.55 465.00
+  13_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197302.19 60344.28 585.00
+  14_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197309.40 60338.56 585.00
+  15_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197317.11 60332.10 585.00
+  16_bld tobruk:buildings.House$TentTroopLarge_GER1 1 197324.57 60326.13 585.00
+  17_bld tobruk:buildings.House$TentZeltbahnBig_GER1 1 197301.68 60370.68 675.00
+  18_bld tobruk:buildings.House$TentZeltbahnBig_GER1 1 197308.76 60376.45 675.00
+[BuildingsLinks]
+[Trigger]
+  GerArmorCamp TGroundDestroyed 74 197355 60348 200

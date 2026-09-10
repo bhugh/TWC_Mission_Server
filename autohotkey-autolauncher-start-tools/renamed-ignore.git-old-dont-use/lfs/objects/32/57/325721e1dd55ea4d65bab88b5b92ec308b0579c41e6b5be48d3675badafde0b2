@@ -1,0 +1,170 @@
+[33mcommit 4abed7aaf7e035204b4419447d4686bc33e5abfd[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Mon Oct 16 20:12:33 2017 -0500
+
+    Updated initialblue-chiefs (shipping)
+
+[33mcommit 083f88340f0da6a6606649f366e342eeca4888d8[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Mon Oct 16 20:10:55 2017 -0500
+
+    Updated briefings for M001, M002, M003
+
+[33mcommit c37cb887b18496abe1c242d52b573617ac7042d0[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Mon Oct 16 19:09:11 2017 -0500
+
+    Tweaking airport, ground area, civilian area bombing
+
+[33mcommit c719b08a1cd2a3df9dfe11a3c6e7ad3c2d3a6979[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Mon Oct 16 00:35:58 2017 -0500
+
+    Major updates to stats & missions
+    
+     - Area bombing (industrial/military areas)
+     - Penalties for bombing civilian areas
+     - Airport bombing/disablement
+     - Team scoring
+     - Mission objectives, turn the map
+
+[33mcommit 8a4f33d63b1ee35ceb86256bb14609c56cdb3725[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat Sep 9 16:50:13 2017 -0500
+
+    Readme created.
+
+[33mcommit a4a4663ff1d0b8bb9ebffc1661a7ef7b05fcf6db[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat Sep 9 16:33:11 2017 -0500
+
+    More changes for ver 1.18 and inclusion of M002 and M003. Moving M001 to separate directory.
+
+[33mcommit a831029468ee1a21ea2d1a8bbd999fa16adeaf65[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat Sep 9 15:07:23 2017 -0500
+
+    Adding resources needed for stats html files
+
+[33mcommit 8deee00225b67c19bcd9fd66e6ad63b3de3cd83f[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat Sep 9 14:11:59 2017 -0500
+
+    Mission server & -stats package numerous updates & refinements through 09 September 2017
+
+[33mcommit e5ac1cf9dd388876da873ff0aa6db05b21bed910[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Fri Feb 3 02:36:07 2017 -0600
+
+    Updated comments - TODOS - recent change summaries
+
+[33mcommit 5a29031d43ff69c7c8220418714399b69485849a[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Fri Feb 3 02:22:34 2017 -0600
+
+    Updated/current version of the stats submission
+    
+    This is the 2/2017 version of the -stats.cs.  Placed here for backup/reference.
+
+[33mcommit 310ed04b9b431806767565e95e14b33af29b2008[m
+Merge: 3c89bcc c76e2f1
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:33:09 2016 -0500
+
+    Merge pull request #4 from bhugh/Local_2016-05-26B
+    
+    Local 2016 05 26 b
+
+[33mcommit c76e2f1acbd37f05e84f3841fc16f655e7a0f3c3[m
+Merge: 106123a 3c89bcc
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:32:05 2016 -0500
+
+    Merge branch 'master' of https://github.com/bhugh/TWC_Mission_Server into Local_2016-05-26B
+
+[33mcommit 106123a7b39e2689259844e123a3d44257a1edb2[m
+Merge: 4935c6b 66d71c9
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:31:57 2016 -0500
+
+    Merge branch 'Local_2016-05-26B' of https://github.com/bhugh/TWC_Mission_Server into Local_2016-05-26B
+
+[33mcommit 4935c6bbdce4e0e62964c27dfb5b3860cfaf5d38[m
+Merge: e4c9e78 fc3717c
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:31:47 2016 -0500
+
+    Merge branch '2016-05-26' of https://github.com/bhugh/TWC_Mission_Server into Local_2016-05-26B
+
+[33mcommit e4c9e78f1e1c2c939daf0454be3714339c60378b[m
+Merge: 79028ab 274330a
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:29:15 2016 -0500
+
+    Merge branch 'master-local' into Local_2016-05-26B
+
+[33mcommit 79028abe08bb895c8e1c1a9bc3c910b00e51cd1d[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:27:23 2016 -0500
+
+    Updated stats.cs.
+    
+    Removed some unecessary duplicate files
+
+[33mcommit 3c89bcc37fe7d76182e7015eecc6c8a9435d0a8e[m
+Merge: 274330a fc3717c
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:23:12 2016 -0500
+
+    Merge pull request #3 from bhugh/2016-05-26
+    
+    Merge pull request #1 from bhugh/master
+
+[33mcommit 66d71c907ce7c1799255ad3e78bdc6b54df56da1[m
+Merge: cfa6719 fc3717c
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Sat May 28 02:22:29 2016 -0500
+
+    Merge pull request #2 from bhugh/2016-05-26
+    
+    2016 05 26
+
+[33mcommit fc3717c26755ad37a09876f108874d90c3d1a935[m
+Merge: cfa6719 274330a
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 05:06:51 2016 -0500
+
+    Merge pull request #1 from bhugh/master
+    
+    Initial creation of master
+
+[33mcommit 274330af64f1567c0f1e823efcf81f2652bc6bf4[m
+Merge: f5e20bd 9cb0e1a
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 05:05:31 2016 -0500
+
+    Merge branch 'master' of https://github.com/bhugh/TWC_Mission_Server
+
+[33mcommit f5e20bd316ea03b9bfebee0fcb48dda5430576b6[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 04:27:46 2016 -0500
+
+    Initial commit
+
+[33mcommit cfa67193c82f92f6becb5c30da935d17f7984a5c[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 04:44:32 2016 -0500
+
+    Added first files
+
+[33mcommit 752a054b0de398af1d6cfc37afc06fba30f33a4c[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 04:30:56 2016 -0500
+
+    First commit
+
+[33mcommit 9cb0e1a8bbd969be9f47bd16eb50b6ad187bde09[m
+Author: Brent Hugh <brent@brenthugh.com>
+Date:   Thu May 26 04:27:46 2016 -0500
+
+    Initial commit

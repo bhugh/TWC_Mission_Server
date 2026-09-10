@@ -1,0 +1,79 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_F_FatCat_Early.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_RAF_F_FatCat_Early.01
+[BoB_RAF_F_FatCat_Early.01]
+  Flight0  1
+  Class Aircraft.SpitfireMkIIa
+  Formation VIC3
+  CallSign 26
+  Fuel 100
+  Weapons 1
+  Skill 1 1 1 1 1 1 1 1
+[BoB_RAF_F_FatCat_Early.01_Way]
+  GATTACK_POINT 243843.34 22803.98 500.00 300.00
+  GATTACK_POINT 245009.44 23072.58 500.00 300.00
+[CustomChiefs]
+[Stationary]
+ 
+  Static1505 Artillery.20_mm_Flak_38 gb 276786.25 101106.39 815.00 /timeout 0/radius_hide 0
+  Static1506 Artillery.20_mm_Flak_38 gb 276139.41 101049.54 815.00 /timeout 0/radius_hide 0
+  Static1796 Stationary.Environment.JerryCan_GER1_1 nn 229283.48 101288.23 -75.00 
+  Static1797 Stationary.Environment.JerryCan_GER1_1 nn 229270.77 101281.54 -75.00 
+  Static1798 Stationary.Environment.JerryCan_GER1_1 nn 229267.42 101250.76 -75.00 
+  Static1799 Stationary.Environment.JerryCan_GER1_1 nn 229255.38 101244.74 -75.00 
+  Static1800 Stationary.Environment.JerryCan_GER1_1 nn 229260.06 101205.27 -75.00 
+  Static1801 Stationary.Environment.JerryCan_GER1_1 nn 229250.02 101200.58 -75.00 
+  Static1802 Stationary.Environment.JerryCan_GER1_1 nn 229284.81 101173.14 -75.00 
+  Static1803 Stationary.Environment.JerryCan_GER1_1 nn 229271.44 101165.12 -75.00 
+  Static1804 Stationary.Environment.JerryCan_GER1_1 nn 229282.81 101119.62 -75.00 
+  Static1805 Stationary.Environment.JerryCan_GER1_1 nn 229262.73 101117.61 -75.00 
+  Static1806 Stationary.Environment.JerryCan_GER1_1 nn 229211.88 101139.69 -75.00 
+  Static1807 Stationary.Environment.JerryCan_GER1_1 nn 229208.53 101125.64 -75.00 
+  Static1808 Stationary.Environment.JerryCan_GER1_1 nn 229241.33 101111.59 -75.00 
+  Static1809 Stationary.Environment.JerryCan_GER1_1 nn 229227.27 101136.34 -75.00 
+  Static1810 Stationary.Environment.JerryCan_GER1_1 nn 229233.30 101155.08 -75.00 
+  Static1811 Stationary.Environment.JerryCan_GER1_1 nn 229238.64 101183.85 -75.00 
+  Static1812 Stationary.Environment.JerryCan_GER1_1 nn 229213.22 101226.01 -75.00 
+  Static1813 Stationary.Environment.JerryCan_GER1_1 nn 229199.84 101213.29 -75.00 
+  Static1814 Stationary.Environment.JerryCan_GER1_1 nn 229226.61 101259.46 -75.00 
+  Static1815 Stationary.Environment.JerryCan_GER1_1 nn 229214.56 101259.46 -75.00 
+  Static1816 Stationary.Environment.JerryCan_GER1_1 nn 229237.31 101288.23 -75.00 
+  Static1817 Stationary.Environment.JerryCan_GER1_1 nn 229221.25 101294.92 -75.00 
+  Static1818 Stationary.Environment.JerryCan_GER1_1 nn 229203.19 101294.92 -75.00 
+  Static1819 Stationary.Environment.JerryCan_GER1_1 nn 229251.89 101213.36 -75.00 
+  Static1820 Stationary.Environment.JerryCan_GER1_1 nn 229235.52 101149.45 -75.00 
+  Static1821 Stationary.Environment.JerryCan_GER1_1 nn 229203.39 101167.83 -75.00 
+  Static1822 Stationary.Environment.JerryCan_GER1_1 nn 229204.45 101179.45 -75.00 
+  Static1823 Stationary.Environment.JerryCan_GER1_1 nn 229213.11 101181.46 -75.00 
+  Static1824 Stationary.Environment.JerryCan_GER1_1 nn 229196.27 101221.78 -75.00 
+  Static1825 Stationary.Environment.JerryCan_GER1_1 nn 229261.61 101256.16 -75.00 
+  Static1826 Stationary.Environment.JerryCan_GER1_1 nn 229225.56 101266.13 -75.00 
+  Static1827 Stationary.Environment.JerryCan_GER1_1 nn 229277.38 101289.37 -75.00 
+  Static1828 Stationary.Environment.JerryCan_GER1_1 nn 229235.28 101294.82 -75.00 
+  Static1829 Stationary.Environment.JerryCan_GER1_1 nn 229208.25 101298.38 -75.00 
+  Static1830 Stationary.Environment.JerryCan_GER1_1 nn 229285.98 101161.05 -75.00 
+  Static1831 Stationary.Environment.JerryCan_GER1_1 nn 229269.75 101146.18 -75.00 
+  Static1897 Artillery.20_mm_Flak_38 gb 228732.00 101265.48 815.00 /timeout 0/radius_hide 0
+  Static1898 Artillery.20_mm_Flak_38 gb 228987.14 101622.18 815.00 /timeout 0/radius_hide 0
+  Static1899 Artillery.20_mm_Flak_38 gb 229860.83 101867.77 815.00 /timeout 0/radius_hide 0
+  Static1900 Artillery.20_mm_Flak_38 gb 229717.39 101237.16 815.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

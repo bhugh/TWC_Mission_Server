@@ -1,0 +1,64 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.3_7_inch_QF_Mk_I de 330175.06 27094.55 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.3_7_inch_QF_Mk_I de 330159.81 27156.59 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.3_7_inch_QF_Mk_I de 330136.66 27210.88 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.3_7_inch_QF_Mk_I de 330108.53 27304.13 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.3_7_inch_QF_Mk_I de 330042.53 27273.30 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.3_7_inch_QF_Mk_I de 330051.78 27156.60 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.3_7_inch_QF_Mk_I de 324576.75 25226.03 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.3_7_inch_QF_Mk_I de 324638.75 25272.52 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.3_7_inch_QF_Mk_I de 324700.81 25319.07 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.3_7_inch_QF_Mk_I de 324754.97 25349.100 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.3_7_inch_QF_Mk_I de 324801.44 25388.71 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.3_7_inch_QF_Mk_I de 324863.38 25435.13 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.3_7_inch_QF_Mk_I de 324633.28 27799.28 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.3_7_inch_QF_Mk_I de 324593.56 27869.36 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.3_7_inch_QF_Mk_I de 324562.00 27908.33 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.3_7_inch_QF_Mk_I de 324530.22 27970.66 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.3_7_inch_QF_Mk_I de 324506.66 28025.06 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.3_7_inch_QF_Mk_I de 324506.66 28056.08 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.3_7_inch_QF_Mk_I de 326755.34 27985.85 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.3_7_inch_QF_Mk_I de 326708.81 27900.34 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.3_7_inch_QF_Mk_I de 326608.09 27861.50 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.3_7_inch_QF_Mk_I de 326522.94 27884.44 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.3_7_inch_QF_Mk_I de 326468.75 27992.65 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.3_7_inch_QF_Mk_I de 326430.03 28046.88 0.00 /timeout 0/radius_hide 0
+  Static24 Artillery.Bofors_StandAlone de 331090.78 25941.56 0.00 /timeout 0/radius_hide 0
+  Static25 Artillery.Bofors_StandAlone de 331077.84 26012.65 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.Bofors_StandAlone de 327056.66 27000.52 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Bofors_StandAlone de 327115.78 27079.04 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Bofors_StandAlone de 324946.47 25873.71 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Bofors_StandAlone de 324920.50 25964.40 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Bofors_StandAlone de 324628.06 27539.34 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Bofors_StandAlone de 324699.22 27610.70 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Bofors_StandAlone de 326094.16 28114.59 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Bofors_StandAlone de 326178.47 28198.27 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.Bofors_StandAlone de 326139.16 26641.25 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Bofors_StandAlone de 326076.81 26617.80 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.Bofors_StandAlone de 326880.81 26283.88 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.Bofors_StandAlone de 326911.97 26265.71 0.00 /timeout 0/radius_hide 0
+  Static38 Artillery.Bofors_StandAlone de 327628.09 27599.31 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Bofors_StandAlone de 327659.00 27586.43 0.00 /timeout 0/radius_hide 0
+  Static40 Artillery.Bofors_StandAlone de 328283.59 28184.08 0.00 /timeout 0/radius_hide 0
+  Static41 Artillery.Bofors_StandAlone de 328289.28 28220.74 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

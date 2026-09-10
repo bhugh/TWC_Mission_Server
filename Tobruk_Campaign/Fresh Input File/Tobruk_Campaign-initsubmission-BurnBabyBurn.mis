@@ -1,0 +1,36 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940_Autumn
+  BattleArea 250000 150000 100000 80000 5000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+  player BoB_LW_LG2_I.000
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_LW_LG2_I.01
+[BoB_LW_LG2_I.01]
+  Flight0  1
+  Class Aircraft.Bf-110C-2
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 52
+  Weapons 1
+  SetOnPark 1
+  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+[BoB_LW_LG2_I.01_Way]
+  TAKEOFF 296300.62 217385.50 0 0
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

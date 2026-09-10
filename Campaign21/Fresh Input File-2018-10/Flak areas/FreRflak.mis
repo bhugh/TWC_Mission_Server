@@ -1,0 +1,42 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Flak37 de 196562.56 93648.19 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Flak37 de 196570.17 93632.99 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 196594.48 93640.59 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 196588.41 93657.30 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.20_mm_Flak_38 de 196573.13 93669.36 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.20_mm_Flak_38 de 196588.70 93623.41 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.4_cm_Flak_28 de 196559.44 93669.63 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.4_cm_Flak_28 de 196611.69 93632.98 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone de 196595.80 93682.35 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Bofors_StandAlone de 196635.03 93633.88 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 195245.48 93437.20 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 195253.09 93422.00 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 195277.41 93429.59 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 195271.33 93446.31 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.20_mm_Flak_38 de 195256.05 93458.36 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.20_mm_Flak_38 de 195271.63 93412.41 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.4_cm_Flak_28 de 195242.36 93458.63 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.4_cm_Flak_28 de 195294.61 93421.98 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Bofors_StandAlone de 195278.72 93471.36 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Bofors_StandAlone de 195317.95 93422.88 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

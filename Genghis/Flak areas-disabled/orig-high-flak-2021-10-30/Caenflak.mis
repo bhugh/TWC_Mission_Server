@@ -1,0 +1,135 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 10000 350000 400000 10000
+  TIME 8.0000001937151
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Bofors_StandAlone de 126702.32 16602.03 0.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Bofors_StandAlone de 129070.05 16648.37 0.00 /timeout 0/radius_hide 0
+  Static58 Artillery.Bofors_StandAlone de 128383.84 20885.10 0.00 /timeout 0/radius_hide 0
+  Static49 Artillery.Bofors_StandAlone de 129646.73 21868.48 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Bofors_StandAlone de 127426.57 22391.81 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Bofors_StandAlone de 124356.12 22994.82 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Bofors_StandAlone de 124126.61 17490.50 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Bofors_StandAlone de 124088.82 17520.97 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Bofors_StandAlone de 124120.52 17286.91 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Bofors_StandAlone de 124334.88 17434.39 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak37 de 126878.07 16597.72 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Flak37 de 126896.43 16553.57 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Flak37 de 127009.55 16582.46 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak37 de 126912.82 16497.36 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak37 de 127032.26 16542.64 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak37 de 126924.53 16460.67 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak37 de 127028.35 16490.34 0.00 /timeout 0/radius_hide 0
+  Static9 Artillery.Flak37 de 126927.66 16413.83 0.00 /timeout 0/radius_hide 0
+  Static10 Artillery.Flak37 de 127047.09 16450.52 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak37 de 129209.66 16646.25 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak37 de 129164.20 16862.34 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Flak37 de 129176.53 16841.63 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Flak37 de 129184.47 16821.79 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak37 de 129191.96 16799.31 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Flak37 de 129202.54 16778.15 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Flak37 de 129212.23 16756.12 0.00 /timeout 0/radius_hide 0
+  Static19 Artillery.Flak37 de 129218.41 16734.96 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak37 de 129196.84 16603.41 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Flak37 de 129171.67 16581.32 0.00 /timeout 0/radius_hide 0
+  Static22 Artillery.Flak37 de 129138.55 16560.12 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Flak37 de 126329.66 18341.36 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.Flak37 de 126372.99 18332.97 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Flak37 de 126432.41 18324.48 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.Flak37 de 126488.20 18312.35 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.Flak37 de 126562.16 18301.44 0.00 /timeout 0/radius_hide 0
+  Static38 Artillery.Flak37 de 126631.29 18285.67 0.00 /timeout 0/radius_hide 0
+  Static40 Artillery.Flak37 de 126676.19 18277.18 0.00 /timeout 0/radius_hide 0
+  Static41 Artillery.Flak37 de 124349.26 19347.13 0.00 /timeout 0/radius_hide 0
+  Static42 Artillery.Flak37 de 124363.83 19327.72 0.00 /timeout 0/radius_hide 0
+  Static43 Artillery.Flak37 de 124378.39 19304.66 0.00 /timeout 0/radius_hide 0
+  Static44 Artillery.Flak37 de 124396.50 19282.84 0.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Flak37 de 124413.34 19256.17 0.00 /timeout 0/radius_hide 0
+  Static46 Artillery.Flak37 de 124447.13 19229.48 0.00 /timeout 0/radius_hide 0
+  Static47 Artillery.Flak37 de 124466.57 19202.74 0.00 /timeout 0/radius_hide 0
+  Static48 Artillery.Flak37 de 125976.38 19951.59 0.00 /timeout 0/radius_hide 0
+  Static50 Artillery.Flak37 de 126029.19 19918.47 0.00 /timeout 0/radius_hide 0
+  Static51 Artillery.Flak37 de 126053.26 19885.24 0.00 /timeout 0/radius_hide 0
+  Static52 Artillery.Flak37 de 126052.10 20046.55 0.00 /timeout 0/radius_hide 0
+  Static53 Artillery.Flak37 de 126080.93 20022.90 0.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Flak37 de 126148.27 19970.86 0.00 /timeout 0/radius_hide 0
+  Static55 Artillery.Flak37 de 128301.71 20838.76 0.00 /timeout 0/radius_hide 0
+  Static56 Artillery.Flak37 de 128330.81 20786.75 0.00 /timeout 0/radius_hide 0
+  Static57 Artillery.Flak37 de 128324.75 20855.88 0.00 /timeout 0/radius_hide 0
+  Static59 Artillery.Flak37 de 128364.76 20814.68 0.00 /timeout 0/radius_hide 0
+  Static60 Artillery.Flak37 de 128353.85 20878.92 0.00 /timeout 0/radius_hide 0
+  Static61 Artillery.Flak37 de 128402.30 20829.41 0.00 /timeout 0/radius_hide 0
+  Static62 Artillery.Flak37 de 128390.22 20914.13 0.00 /timeout 0/radius_hide 0
+  Static63 Artillery.Flak37 de 129543.79 21937.43 0.00 /timeout 0/radius_hide 0
+  Static64 Artillery.Flak37 de 129550.45 21919.78 0.00 /timeout 0/radius_hide 0
+  Static65 Artillery.Flak37 de 129552.58 21912.09 0.00 /timeout 0/radius_hide 0
+  Static66 Artillery.Flak37 de 129555.55 21901.73 0.00 /timeout 0/radius_hide 0
+  Static67 Artillery.Flak37 de 129558.95 21891.38 0.00 /timeout 0/radius_hide 0
+  Static68 Artillery.Flak37 de 129562.34 21881.05 0.00 /timeout 0/radius_hide 0
+  Static69 Artillery.Flak37 de 129565.73 21872.04 0.00 /timeout 0/radius_hide 0
+  Static70 Artillery.Flak37 de 129567.83 21859.65 0.00 /timeout 0/radius_hide 0
+  Static71 Artillery.Flak37 de 129572.05 21844.36 0.00 /timeout 0/radius_hide 0
+  Static72 Artillery.Flak37 de 129575.44 21833.77 0.00 /timeout 0/radius_hide 0
+  Static73 Artillery.Flak37 de 129578.39 21825.71 0.00 /timeout 0/radius_hide 0
+  Static74 Artillery.Flak37 de 127381.67 22295.85 0.00 /timeout 0/radius_hide 0
+  Static75 Artillery.Flak37 de 127406.09 22305.01 0.00 /timeout 0/radius_hide 0
+  Static76 Artillery.Flak37 de 127427.47 22311.12 0.00 /timeout 0/radius_hide 0
+  Static77 Artillery.Flak37 de 127454.98 22317.24 0.00 /timeout 0/radius_hide 0
+  Static78 Artillery.Flak37 de 127470.28 22326.41 0.00 /timeout 0/radius_hide 0
+  Static79 Artillery.Flak37 de 127488.64 22326.41 0.00 /timeout 0/radius_hide 0
+  Static80 Artillery.Flak37 de 127510.07 22332.54 0.00 /timeout 0/radius_hide 0
+  Static81 Artillery.Flak37 de 127522.32 22338.66 0.00 /timeout 0/radius_hide 0
+  Static82 Artillery.Flak37 de 127528.45 22344.79 0.00 /timeout 0/radius_hide 0
+  Static83 Artillery.Flak37 de 127568.29 22353.98 0.00 /timeout 0/radius_hide 0
+  Static84 Artillery.Flak37 de 124427.99 23077.92 0.00 /timeout 0/radius_hide 0
+  Static85 Artillery.Flak37 de 124241.77 22906.01 0.00 /timeout 0/radius_hide 0
+  Static86 Artillery.Flak37 de 124252.02 22894.05 0.00 /timeout 0/radius_hide 0
+  Static87 Artillery.Flak37 de 124258.85 22873.52 0.00 /timeout 0/radius_hide 0
+  Static88 Artillery.Flak37 de 124255.54 22832.75 0.00 /timeout 0/radius_hide 0
+  Static89 Artillery.Flak37 de 124267.59 22792.01 0.00 /timeout 0/radius_hide 0
+  Static90 Artillery.Flak37 de 124282.88 22810.56 0.00 /timeout 0/radius_hide 0
+  Static91 Artillery.Flak37 de 124306.71 22846.15 0.00 /timeout 0/radius_hide 0
+  Static92 Artillery.Flak37 de 124315.23 22863.15 0.00 /timeout 0/radius_hide 0
+  Static93 Artillery.Flak37 de 124339.13 22893.77 0.00 /timeout 0/radius_hide 0
+  Static94 Artillery.Flak37 de 124369.88 22915.83 0.00 /timeout 0/radius_hide 0
+  Static95 Artillery.Flak37 de 124846.85 23978.91 0.00 /timeout 0/radius_hide 0
+  Static96 Artillery.Flak37 de 124893.20 23992.64 0.00 /timeout 0/radius_hide 0
+  Static97 Artillery.Flak37 de 124917.24 23992.64 0.00 /timeout 0/radius_hide 0
+  Static98 Artillery.Flak37 de 124951.58 23992.64 0.00 /timeout 0/radius_hide 0
+  Static99 Artillery.Flak37 de 124979.05 23989.21 0.00 /timeout 0/radius_hide 0
+  Static100 Artillery.Flak37 de 125017.11 23979.25 0.00 /timeout 0/radius_hide 0
+  Static101 Artillery.Flak37 de 125027.41 23963.79 0.00 /timeout 0/radius_hide 0
+  Static102 Artillery.Bofors_StandAlone de 124958.45 23963.46 0.00 /timeout 0/radius_hide 0
+  Static104 Artillery.Bofors_StandAlone de 122044.98 20675.07 0.00 /timeout 0/radius_hide 0
+  Static105 Artillery.Bofors_StandAlone de 122074.16 20713.98 0.00 /timeout 0/radius_hide 0
+  Static106 Artillery.Bofors_StandAlone de 122108.20 20756.13 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Bofors_StandAlone de 122054.70 20606.97 0.00 /timeout 0/radius_hide 0
+  Static24 Artillery.Bofors_StandAlone de 121286.16 20394.77 0.00 /timeout 0/radius_hide 0
+  Static25 Artillery.Bofors_StandAlone de 121214.86 20401.23 0.00 /timeout 0/radius_hide 0
+  Static26 Artillery.Bofors_StandAlone de 121177.55 20419.21 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Bofors_StandAlone de 121125.70 20433.79 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Bofors_StandAlone de 117859.22 18916.15 0.00 /timeout 0/radius_hide 0
+  Static103 Artillery.Bofors_StandAlone de 117917.06 18907.24 0.00 /timeout 0/radius_hide 0
+  Static107 Artillery.Bofors_StandAlone de 118083.72 18791.49 0.00 /timeout 0/radius_hide 0
+  Static108 Artillery.Bofors_StandAlone de 118150.48 18775.91 0.00 /timeout 0/radius_hide 0
+  Static109 Artillery.Bofors_StandAlone de 118680.16 18528.87 0.00 /timeout 0/radius_hide 0
+  Static110 Artillery.Bofors_StandAlone de 118764.73 18484.36 0.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]

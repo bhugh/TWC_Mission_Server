@@ -1,0 +1,56 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Environment.JerryCan_GER1_2 nn 177129.72 83191.92 65.00 
+  Static1 Stationary.Environment.JerryCan_GER1_2 nn 177108.33 83057.23 65.00 
+  Static2 Stationary.Environment.JerryCan_GER1_2 nn 177047.91 83001.84 65.00 
+  Static3 Stationary.Environment.JerryCan_GER1_1 nn 177190.14 82957.78 65.00 
+  Static4 Stationary.Environment.JerryCan_GER1_1 nn 177259.66 82911.25 65.00 
+  Static5 Stationary.Environment.JerryCan_GER1_1 nn 177351.27 82878.48 65.00 
+  Static6 Stationary.Environment.JerryCan_GER1_1 nn 177463.30 82823.09 65.00 
+  Static7 Stationary.Environment.JerryCan_GER1_1 nn 177668.50 82780.34 65.00 
+  Static8 Stationary.Environment.JerryCan_GER1_1 nn 177732.84 82722.45 65.00 
+  Static9 Stationary.Environment.JerryCan_GER1_1 nn 177438.13 83000.59 65.00 
+  Static10 Stationary.Environment.JerryCan_GER1_1 nn 177531.28 82950.23 65.00 
+  Static11 Stationary.Environment.JerryCan_GER1_1 nn 177653.38 82906.17 65.00 
+  Static12 Stationary.Environment.JerryCan_GER1_1 nn 177744.02 82860.86 65.00 
+  Static13 Stationary.Environment.JerryCan_GER1_1 nn 177845.84 82848.33 65.00 
+  Static14 Stationary.Environment.JerryCan_GER1_1 nn 177828.98 82761.63 65.00 
+  Static15 Stationary.Environment.JerryCan_GER1_1 nn 178018.30 82787.91 65.00 
+  Static16 Stationary.Environment.JerryCan_GER1_1 nn 178057.31 82771.54 65.00 
+  Static17 Stationary.Environment.JerryCan_GER1_1 nn 178098.86 82774.05 65.00 
+  Static18 Stationary.Environment.JerryCan_GER1_1 nn 178124.03 82777.84 65.00 
+  Static19 Stationary.Environment.JerryCan_GER1_1 nn 178121.52 82763.98 65.00 
+  Static20 Stationary.Environment.JerryCan_GER1_1 nn 177930.31 82789.19 65.00 
+  Static21 Stationary.Environment.JerryCan_GER1_1 nn 178259.83 82745.14 65.00 
+  Static22 Stationary.Environment.JerryCan_GER1_1 nn 178493.97 82660.80 65.00 
+  Static23 Stationary.Environment.JerryCan_GER1_1 nn 178428.50 82758.98 65.00 
+  Static24 Stationary.Environment.JerryCan_GER1_1 nn 178374.38 82806.82 65.00 
+  Static25 Stationary.Environment.JerryCan_GER1_1 nn 178427.25 82825.70 65.00 
+  Static26 Stationary.Environment.JerryCan_GER1_1 nn 178414.66 82688.49 65.00 
+  Static27 Stationary.Environment.JerryCan_GER1_1 nn 178448.64 82624.30 65.00 
+  Static28 Stationary.Environment.JerryCan_GER1_1 nn 178507.81 82766.54 65.00 
+  Static29 Stationary.Environment.JerryCan_GER1_1 nn 178578.33 82688.51 65.00 
+  Static30 Stationary.Environment.JerryCan_GER1_1 nn 178344.48 82701.84 65.00 
+  Static31 Stationary.Environment.JerryCan_GER1_1 nn 178061.30 82703.52 65.00 
+  Static32 Stationary.Environment.JerryCan_GER1_1 nn 177995.03 82701.06 65.00 
+  Static33 Stationary.Environment.JerryCan_GER1_1 nn 177895.17 82691.09 65.00 
+[Buildings]
+[BuildingsLinks]

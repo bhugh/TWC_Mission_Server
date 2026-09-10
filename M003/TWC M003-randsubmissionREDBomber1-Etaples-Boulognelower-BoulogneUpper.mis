@@ -1,0 +1,98 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 150000 100000 100000 150000 1000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_RAF_B_37Sqn.13
+  BoB_RAF_B_75Sqn.07
+  BoB_RAF_B_107Sqn.13
+  BoB_RAF_B_107Sqn.1C
+  BoB_RAF_B_107Sqn.21
+[BoB_RAF_B_37Sqn.13]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class Aircraft.WellingtonMkIc
+  Formation ECHELONLEFT
+  CallSign 29
+  Fuel 38
+  Weapons 1 1 2
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+[BoB_RAF_B_37Sqn.13_Way]
+  NORMFLY 312309.46 31681.09 5000.00 370.00
+  GATTACK_POINT 269424.61 165990.98 5000.00 370.00
+  NORMFLY 266012.01 174598.62 5000.00 370.00
+  GATTACK_POINT 321317.56 172570.77 5000.00 370.00
+  NORMFLY 364890.17 144264.74 5000.00 370.00
+[BoB_RAF_B_75Sqn.07]
+  Flight0  1 2
+  Flight1  11 12
+  Flight2  21 22
+  Class Aircraft.BlenheimMkIV
+  Formation VIC
+  CallSign 26
+  Fuel 32
+  Weapons 1 1 2 1 1
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+[BoB_RAF_B_75Sqn.07_Way]
+  NORMFLY 228565.42 101536.67 3000.00 340.00
+  GATTACK_POINT 265706.23 190454.50 3000.00 340.00
+  NORMFLY 268978.88 197949.41 3000.00 340.00
+  GATTACK_POINT 306331.81 160953.20 4000.00 350.00
+  NORMFLY 363842.32 98999.24 3000.00 340.00
+[BoB_RAF_B_107Sqn.13]
+  Flight0  1 2
+  Flight1  11
+  Class Aircraft.WellingtonMkIc
+  Formation VIC
+  CallSign 14
+  Fuel 50
+  Weapons 1 1 2
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+[BoB_RAF_B_107Sqn.13_Way]
+  NORMFLY 136572.34 41473.07 2000.00 380.00
+  GATTACK_POINT 266756.24 188434.47 2000.00 380.00
+  GATTACK_POINT 311627.13 190369.87 2000.00 380.00
+  NORMFLY 365281.32 193178.03 2000.00 380.00
+[BoB_RAF_B_107Sqn.1C]
+  Flight2  21
+  Flight3  31
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation LINEABREAST
+  CallSign 33
+  Fuel 100
+  Weapons 1
+  Skill 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7
+[BoB_RAF_B_107Sqn.1C_Way]
+  ESCORT 136668.55 41098.93 2760.00 380.00 BoB_RAF_B_107Sqn.13 0
+  ESCORT 266754.27 188430.29 2760.00 380.00 BoB_RAF_B_107Sqn.13 1
+  ESCORT 365259.16 193423.17 2760.00 380.00 BoB_RAF_B_37Sqn.13 1
+[BoB_RAF_B_107Sqn.21]
+  Flight0  1
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation LINEABREAST
+  CallSign 16
+  Fuel 100
+  Weapons 1
+  Skill 0.95 0.79 0.95 0.95 0.95 0.95 0.84 0.74
+[BoB_RAF_B_107Sqn.21_Way]
+  ESCORT 136593.93 40157.55 3260.00 380.00 BoB_RAF_B_107Sqn.1C 0
+  ESCORT 266762.81 188428.93 3260.00 380.00 BoB_RAF_B_107Sqn.1C 1
+  ESCORT 365380.76 192999.81 3260.00 380.00 BoB_RAF_B_107Sqn.1C 2
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

@@ -1,0 +1,1 @@
+robocopy ./genghis/ "\\Mbf-twc-server4\mbf_twc_server4_c\Users\twc_server3\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\Multi\Fatal\Genghis\Fresh Input File" /L /MON:1

@@ -1,0 +1,55 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 12
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_F_FatCat_Early.000
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+[CustomChiefs]
+[Stationary]
+  Static804 Smoke.Environment.Smoke2 nn 268615.59 149565.59 160.00 /height 8.69
+  Static805 Smoke.Environment.Smoke2 nn 268404.69 149369.42 160.00 /height 8.69
+  Static806 Smoke.Environment.Smoke2 nn 268289.69 149304.58 160.00 /height 8.69
+  Static807 Smoke.Environment.Smoke2 nn 268214.41 149157.03 160.00 /height 8.69
+  Static808 Smoke.Environment.Smoke2 nn 268050.69 149008.06 160.00 /height 8.69
+  Static809 Smoke.Environment.BuildingFireBig nn 268128.88 149077.39 160.00 /height 8.69
+  Static810 Smoke.Environment.BuildingFireBig nn 268103.78 149059.69 160.00 /height 8.69
+  Static811 Smoke.Environment.BuildingFireBig nn 268189.34 149137.86 160.00 /height 8.69
+  Static812 Smoke.Environment.BuildingFireBig nn 268270.50 149239.64 160.00 /height 8.69
+  Static813 Smoke.Environment.BuildingFireBig nn 268459.25 149387.13 160.00 /height 8.69
+  Static814 Smoke.Environment.BuildingFireBig nn 268534.47 149493.31 160.00 /height 8.69
+  Static815 Smoke.Environment.BuildingFireBig nn 268297.06 149359.20 160.00 /height 8.69
+  Static816 Smoke.Environment.BuildingFireBig nn 268263.13 149350.34 160.00 /height 8.69
+  Static817 Smoke.Environment.BuildingFireBig nn 268310.34 149306.06 160.00 /height 8.69
+  Static818 Smoke.Environment.BuildingFireSmall nn 268605.28 149565.59 160.00 /height 8.69
+  Static819 Smoke.Environment.BuildingFireSmall nn 268061.03 149008.06 160.00 /height 8.69
+  Static820 Smoke.Environment.BuildingFireSmall nn 268205.56 149185.05 160.00 /height 8.69
+  Static821 Smoke.Environment.BuildingFireSmall nn 268332.50 149275.06 160.00 /height 8.69
+  Static822 Smoke.Environment.BuildingFireSmall nn 268304.44 149241.11 160.00 /height 8.69
+  Static823 Smoke.Environment.BuildingFireSmall nn 268437.13 149404.81 160.00 /height 8.69
+  Static824 Smoke.Environment.BuildingFireSmall nn 268513.81 149463.81 160.00 /height 8.69
+  Static825 Smoke.Environment.BuildingFireSmall nn 268594.94 149536.09 160.00 /height 8.69
+  Static826 Smoke.Environment.BigSitySmoke_0 nn 268463.69 149434.31 160.00 /height 8.69
+  Static827 Smoke.Environment.BigSitySmoke_0 nn 268300.03 149291.30 160.00 /height 8.69
+  Static828 Smoke.Environment.Smoke1 nn 268310.34 149348.86 160.00 /height 8.69
+  Static829 Smoke.Environment.Smoke1 nn 268122.97 149070.02 160.00 /height 8.69
+  Static830 Smoke.Environment.Smoke1 nn 268266.06 149224.88 160.00 /height 8.69
+  Static831 Smoke.Environment.Smoke1 nn 268329.53 149335.58 160.00 /height 8.69
+  Static832 Smoke.Environment.Smoke1 nn 268474.00 149403.34 160.00 /height 8.69
+  Static833 Smoke.Environment.Smoke1 nn 268497.59 149446.13 160.00 /height 8.69
+
+[Buildings]
+[BuildingsLinks]

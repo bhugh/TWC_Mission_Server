@@ -1,0 +1,84 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+  player BoB_RAF_B_218Sqn.100
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_RAF_B_218Sqn.1F
+  BoB_RAF_B_218Sqn.2F
+[BoB_RAF_B_218Sqn.1F]
+  Flight0  1 2 3 4 5
+  Flight1  11 12 13 14 15
+  Flight2  21 22 23 24 25
+  Flight3  31 32 33 34 35
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 15
+  Fuel 35
+  Weapons 1 1 5 1 2
+  Belt _Gun00 Gun.Browning303MkII MainBelt 11 9 2
+  Belt _Gun01 Gun.Browning303MkII-B1-TwinTurret MainBelt 11 9 2
+  Belt _Gun06 Gun.Browning303MkII-B1-TwinTurret MainBelt 11 9 2
+  Detonator Bomb.Bomb_GP_40lb_MkIII 3 0 1
+  Detonator Bomb.Bomb_GP_250lb_MkIV 3 0 1
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 1
+  Skill 1 1 1 1 1 1 1 1
+  Aging 0
+[BoB_RAF_B_218Sqn.1F_Way]
+  NORMFLY 152396.05 232669.32 1500.00 390.00
+  GATTACK_TARG 165184.93 229732.01 1500.00 390.00 0_Chief 5
+  NORMFLY 172125.55 217609.36 1500.00 390.00
+  NORMFLY 185183.86 206580.95 1500.00 390.00
+[BoB_RAF_B_218Sqn.2F]
+  Flight0  1 2 3 4 5 6 7
+  Flight1  11 12 13 14 15 16
+  Flight2  21 22 23 24 25 26
+  Flight3  31 32 33 34 35 36
+  Class Aircraft.BlenheimMkIV_Late
+  Formation VIC
+  CallSign 17
+  Fuel 42
+  Weapons 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Aging 0
+[BoB_RAF_B_218Sqn.2F_Way]
+  NORMFLY 162596.47 225918.92 1800.00 390.00
+  NORMFLY 170994.27 193034.39 1800.00 390.00
+  NORMFLY 170574.90 177817.42 1800.00 390.00
+  NORMFLY 173330.73 193094.30 1800.00 390.00
+  NORMFLY 172851.46 178057.05 1800.00 390.00
+[CustomChiefs]
+[Chiefs]
+  0_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1/tow00_00 0_Static
+[Stationary]
+  0_Static Artillery.Flak30 de 0.00 0.00 0.00 
+[0_Chief_Road]
+  158220.80 231616.00 38.40  0 2 5.83
+  172859.73 214570.67 38.40  0 2 2.92
+  188701.86 200733.86 38.40  0 2 2.92
+  193113.59 192512.00 38.40  0 2 2.92
+  192110.94 183889.06 38.40  0 2 2.92
+  179076.27 183688.53 38.40  0 2 2.92
+  165239.47 185693.86 38.40
+[Buildings]
+[BuildingsLinks]
+[Trigger]
+  TobrukTanker TGroupDestroyed 0_Chief 100
+[Action]
+  TobrukTanker ASpawnGroup 1 BoB_RAF_B_218Sqn.2F

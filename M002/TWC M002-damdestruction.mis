@@ -1,0 +1,30 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 320000 10000
+  TIME 7
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+[splines]
+[AirGroups]
+[CustomChiefs]
+[Stationary]
+  Static61 Smoke.Environment.BigSitySmoke_1 nn 172043.98 46849.65 0.00 /height 1.00
+  Static43 Smoke.Environment.BigSitySmoke_0 nn 172041.98 46731.47 0.00 /height 1.00
+  Static44 Smoke.Environment.BigSitySmoke_0 nn 172038.30 46520.97 0.00 /height 1.00
+  Static65 Smoke.Environment.BigSitySmoke_1 nn 172050.38 46417.56 0.00 /height 1.00
+  Static46 Smoke.Environment.BigSitySmoke_0 nn 172049.38 46321.54 0.00 /height 1.00
+  Static67 Smoke.Environment.BigSitySmoke_1 nn 172047.67 46214.45 0.00 /height 1.00
+  Static48 Smoke.Environment.BigSitySmoke_0 nn 172053.06 46151.66 0.00 /height 1.00
+  Static69 Smoke.Environment.BigSitySmoke_1 nn 172036.59 47078.62 0.00 /height 1.00
+  Static50 Smoke.Environment.BigSitySmoke_0 nn 172038.30 46635.45 0.00 /height 1.00
+  Static71 Smoke.Environment.BigSitySmoke_1 nn 172030.42 46592.69 0.00 /height 1.00
+  Static52 Smoke.Environment.BigSitySmoke_0 nn 172049.38 46679.77 0.00 /height 1.00
+  Static73 Smoke.Environment.BigSitySmoke_1 nn 172052.06 46949.36 0.00 /height 1.00
+[Buildings]
+[BuildingsLinks]

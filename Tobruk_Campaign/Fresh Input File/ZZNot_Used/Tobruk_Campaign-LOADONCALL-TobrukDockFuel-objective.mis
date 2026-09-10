@@ -1,0 +1,46 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP tobruk:Land$Tobruk
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Artillery.Bofors_StandAlone de 129998.65 213607.81 -45.00 /timeout 0/radius_hide 0
+  Static1 Artillery.Bofors_StandAlone de 129865.24 213738.00 -45.00 /timeout 0/radius_hide 0
+  Static2 Stationary.Opel_Blitz_cargo de 129794.36 213594.34 675.00 
+  Static3 Stationary.Opel_Blitz_cargo de 129750.21 213691.17 675.00 
+  Static4 Artillery.Bofors_StandAlone de 129541.86 213691.67 -45.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Bofors_StandAlone de 129558.74 213779.19 -45.00 /timeout 0/radius_hide 0
+  Static6 Stationary.Morris_CS8 de 129703.50 213654.64 675.00 
+  Static36 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 96890.77 224509.09 675.00 
+  Static37 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 96883.44 224533.25 675.00 
+  Static38 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 97009.83 224509.11 675.00 
+  Static39 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 96991.41 224533.31 675.00 
+  Static40 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 96993.94 224295.86 675.00 
+  Static41 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 96849.68 224483.06 675.00 
+  Static42 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 97007.79 224481.23 675.00 
+  Static43 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 96753.00 224314.39 675.00 
+  Static44 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E de 96797.15 224179.53 675.00 
+  Static45 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 97041.90 224158.86 675.00 
+  Static46 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker4E nn 97012.48 224249.53 675.00 
+  Static47 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 96732.32 224185.19 675.00 
+  Static8 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 160431.25 186580.56 525.00 
+  Static9 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 160562.19 186554.58 675.00 
+  Static13 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 160431.42 186580.02 535.00 /hstart -9
+  Static7 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 160319.42 186498.67 535.00 /hstart -9
+  Static10 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 160557.78 186463.84 535.00 /hstart -9
+  Static11 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 160562.19 186555.56 535.00 /hstart -9
+  Static12 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 160319.42 186499.64 525.00 
+  Static14 tobruk:Stationary.TobrukBuilding.Generic.FuelBunker3E nn 160557.28 186464.34 525.00 
+  Static16 tobruk:Stationary.TobrukBuilding.Generic.OilTankBig nn 159659.50 186479.28 535.00 /hstart -9
+[Buildings]
+[BuildingsLinks]

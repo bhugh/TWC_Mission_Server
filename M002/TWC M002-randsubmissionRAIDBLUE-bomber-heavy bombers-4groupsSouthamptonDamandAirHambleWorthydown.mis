@@ -1,0 +1,93 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 0 0 350000 300000 10000
+  TIME 12
+  WeatherIndex 2
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  BoB_LW_KG3_Stab.03
+  BoB_LW_KG30_Stab.03
+  BoB_LW_KG51_Stab.03
+  BoB_LW_KG54_Stab.03
+[BoB_LW_KG3_Stab.03]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class Aircraft.Do-17Z-2
+  Formation VIC3
+  CallSign 20
+  Fuel 100
+  Weapons 1 1 1 1 1 1 5 3
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG3_Stab.03_Way]
+  NORMFLY 230862.97 221329.81 4200.00 310.00
+  NORMFLY 120656.59 224527.10 4200.00 310.00
+  GATTACK_POINT 60557.10 227821.24 4200.00 310.00
+  NORMFLY 48240.20 169849.64 4200.00 310.00
+  NORMFLY 8905.25 111140.63 4200.00 310.00
+  LANDING 4494.54 104963.54 4200.00 310.00
+[BoB_LW_KG30_Stab.03]
+  Flight0  1 2
+  Flight1  11 12
+  Class Aircraft.Do-17Z-2
+  Formation VIC3
+  CallSign 7
+  Fuel 100
+  Weapons 1 1 1 1 1 1 5 3
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG30_Stab.03_Way]
+  NORMFLY 286347.92 122659.62 3500.00 300.00
+  NORMFLY 114108.12 183631.91 3500.00 300.00
+  GATTACK_POINT 62928.56 202178.54 3500.00 300.00
+  NORMFLY 54016.04 206291.92 3500.00 300.00
+  NORMFLY 5281.90 130794.74 3500.00 300.00
+[BoB_LW_KG51_Stab.03]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class Aircraft.Ju-87B-2
+  Formation VIC3
+  CallSign 33
+  Fuel 100
+  Weapons 1 1 1 1
+  Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG51_Stab.03_Way]
+  NORMFLY 252805.34 159790.10 300.00 330.00
+  GATTACK_POINT 58870.03 209928.11 300.00 330.00
+  NORMFLY 47378.40 215336.89 300.00 330.00
+  NORMFLY 36930.40 146078.07 300.00 330.00
+  LANDING 4147.24 110457.89 300.00 330.00
+[BoB_LW_KG54_Stab.03]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class Aircraft.FW-200C-1
+  Formation VIC3
+  CallSign 16
+  Fuel 100
+  Weapons 1 1 1 1 2 2 2
+  Skill0 1 1 1 1 1 1 1 1
+  Skill1 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill2 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill10 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill11 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Skill12 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+[BoB_LW_KG54_Stab.03_Way]
+  NORMFLY 206154.63 190873.48 5000.00 310.00
+  GATTACK_POINT 56608.39 203462.42 5000.00 310.00
+  NORMFLY 42614.07 206319.28 5000.00 310.00
+  NORMFLY 34383.03 151430.94 5000.00 310.00
+  NORMFLY 4555.10 128016.79 5000.00 310.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

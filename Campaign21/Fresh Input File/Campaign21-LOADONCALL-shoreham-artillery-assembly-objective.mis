@@ -1,0 +1,32 @@
+[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  BattleArea 10000 10000 350000 310000 10000
+  TIME 12.0000002905726
+  WeatherIndex 1
+  CloudsHeight 1500
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Industrial.Medium_Factory.Part_A gb 137046.44 200058.30 815.00 
+  Static1 Stationary.Industrial.Medium_Factory.Central gb 137049.05 200026.64 815.00 
+  Static2 Stationary.Airfield.Fuel_Storage nn 137020.55 200030.97 815.00 
+  Static3 Stationary.Environment.TelegaBallon_UK1 nn 137016.44 200052.97 815.00 
+  Static4 Stationary.Environment.JerryCan_GER1_1 gb 137015.64 200040.89 815.00 
+  Static5 Stationary.Environment.JerryCan_GER1_1 nn 137094.61 200036.86 815.00 
+  Static6 Stationary.Environment.TelegaBallon_UK1 nn 137055.92 200028.00 815.00 
+  Static7 Stationary.Environment.JerryCan_GER1_1 gb 137027.72 200019.13 815.00 
+[Buildings]  
+[BuildingsLinks]
+[Trigger]  
+[Action]

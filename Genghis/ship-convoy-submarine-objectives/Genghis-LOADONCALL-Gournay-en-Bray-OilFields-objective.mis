@@ -1,0 +1,128 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 12.1500002942048
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static84 Artillery.Bofors de 277826.69 60355.57 120.00 /timeout 0/radius_hide 0
+  Static82 Artillery.Bofors de 278463.16 60516.44 120.00 /timeout 0/radius_hide 0
+  Static101 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277417.34 60641.63 -250.00 
+  Static100 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277264.44 60716.69 -250.00 
+  Static79 Stationary.Industrial.Huge_Factory.Central nn 277482.09 60700.79 -250.00 
+  Static23 Stationary.Environment.TentStaffBig_GER1 nn 277673.25 60698.72 215.00 
+  Static24 Stationary.Kubelwagen nn 277670.25 60703.13 35.00 
+  Static38 Stationary.Kubelwagen nn 277683.94 60683.72 35.00 
+  Static21 Stationary.Environment.TentStaffBig_GER1 nn 277678.25 60691.35 215.00 
+  Static20 Stationary.Environment.TentStaffBig_GER1 nn 277680.75 60687.88 215.00 
+  Static22 Stationary.Environment.TentStaffBig_GER1 nn 277675.94 60695.13 215.00 
+  Static99 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277720.19 60713.82 -250.00 
+  Static28 Stationary.Ford_G917 nn 277736.78 60717.76 30.00 
+  Static39 Stationary.Industrial.Oxygen_Facility nn 277793.16 60684.54 120.00 
+  Static90 tobruk:Stationary.TobrukBuilding.WaterTowerone de 277777.88 60710.51 -250.00 
+  Static18 Stationary.Kubelwagen de 277799.34 60697.54 130.00 
+  Static19 Stationary.Kubelwagen de 277801.13 60698.97 130.00 
+  Static58 Stationary.Kubelwagen nn 277802.94 60700.57 130.00 
+  Static55 Stationary.Environment.CamoNetPlane nn 277804.53 60700.63 85.00 
+  Static56 Stationary.Kubelwagen nn 277804.84 60702.13 130.00 
+  Static57 Stationary.Kubelwagen nn 277806.56 60703.60 130.00 
+  Static54 Stationary.Kubelwagen nn 277808.38 60705.26 130.00 
+  Static73 Stationary.Industrial.Oxygen_Facility nn 277846.38 60702.97 120.00 
+  Static74 Stationary.Industrial.Oxygen_Facility nn 277893.75 60711.76 120.00 
+  Static83 Artillery.Bofors nn 276917.38 60719.04 120.00 /timeout 0/radius_hide 0
+  Static27 Stationary.Industrial.Huge_Factory.Central nn 277341.44 60747.57 110.00 
+  Static78 Stationary.Industrial.Huge_Factory.Central nn 277438.25 60734.19 -160.00 
+  Static92 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277616.88 60727.19 -250.00 
+  Static25 Stationary.Environment.TentZeltbahnBig_GER1 de 277666.41 60747.85 35.00 
+  Static26 Stationary.Opel_Blitz_cargo_med nn 277661.78 60755.35 35.00 
+  Static98 tobruk:Stationary.TobrukBuilding.WaterTowerone de 277705.84 60732.97 -250.00 
+  Static30 Stationary.Environment.CamoNetPlane nn 277733.06 60721.97 30.00 
+  Static29 Stationary.Ford_G917 nn 277734.88 60721.01 30.00 
+  Static31 Stationary.Ford_G917 nn 277733.03 60724.10 30.00 
+  Static32 Stationary.Ford_G917 nn 277731.13 60727.19 30.00 
+  Static33 Stationary.Ford_G917 nn 277725.41 60736.60 30.00 
+  Static35 Stationary.Environment.CamoNetPlane nn 277722.13 60740.76 30.00 
+  Static34 Stationary.Ford_G917 de 277723.56 60739.72 30.00 
+  Static36 Stationary.Ford_G917 nn 277721.81 60742.76 30.00 
+  Static37 Stationary.Ford_G917 nn 277720.00 60745.69 60.00 
+  Static89 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277828.72 60732.60 -250.00 
+  Static88 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277877.94 60746.51 -250.00 
+  Static87 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277917.84 60753.79 -250.00 
+  Static75 Stationary.Industrial.Oxygen_Facility nn 277932.84 60723.94 120.00 
+  Static76 Stationary.Industrial.Oxygen_Facility nn 277985.97 60741.91 120.00 
+  Static86 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277974.84 60767.47 -250.00 
+  Static77 Stationary.Industrial.Huge_Factory.Central nn 277425.69 60824.01 20.00 
+  Static91 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277542.75 60827.63 -250.00 
+  Static17 Artillery.20_mm_Flak_38 de 277719.75 60839.32 -90.00 /timeout 0/radius_hide 0
+  Static69 Stationary.Environment.TentStaffSmall_GER1 nn 277926.75 60809.88 305.00 
+  Static68 Stationary.Environment.TentTroopLarge_GER1 nn 277933.44 60814.97 305.00 
+  Static72 Stationary.Environment.TentTroopLarge_GER1 de 277940.50 60819.97 305.00 
+  Static71 Stationary.Environment.TentTroopLarge_GER1 nn 277947.44 60824.85 305.00 
+  Static70 Stationary.Environment.TentTroopLarge_GER1 de 277954.13 60829.66 305.00 
+  Static66 Stationary.Environment.TentTroopLarge_GER1 nn 277961.00 60834.57 305.00 
+  Static64 Stationary.Environment.TentZeltbahn_GER1 nn 277967.94 60839.38 305.00 
+  Static95 tobruk:Stationary.TobrukBuilding.wh4 nn 278030.53 60812.26 -250.00 
+  Static102 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277358.06 60873.29 -250.00 
+  Static15 Artillery.Flak37 de 277789.13 60852.79 -90.00 /timeout 0/radius_hide 0/hstart -1
+  Static14 Artillery.Flak37 de 277739.50 60903.16 -180.00 /timeout 0/radius_hide 0/hstart -1
+  Static16 Artillery.RRH_GER1 de 277788.88 60888.38 -5.00 /timeout 0/radius_hide 0/hstart -1
+  Static11 Stationary.Environment.Kdo_Hi_Ger35_GER1 nn 277776.75 60902.79 270.00 /hstart -1
+  Static41 Artillery.Flak37 de 277839.41 60903.04 0.00 /timeout 0/radius_hide 0/hstart -1
+  Static67 Stationary.Radar.Wotan_II_ADD1 de 277992.03 60869.29 35.00 
+  Static62 Stationary.Environment.Maschinensatz_8_KW_GER1 nn 277994.06 60865.10 125.00 
+  Static59 Stationary.Environment.CamoNetCrates nn 277995.75 60864.54 125.00 
+  Static63 Stationary.Environment.Anlasswagen_(starter)_GER1 nn 277995.75 60866.35 125.00 
+  Static61 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 277999.88 60869.35 115.00 
+  Static60 Stationary.Environment.TentZeltbahnBig_GER1 nn 278000.00 60869.29 123.60 
+  Static65 Stationary.Opel_Blitz_radio_transport nn 278003.44 60877.41 35.00 
+  Static13 Stationary.Environment.Portable_Siren_GER1 nn 277785.00 60915.35 270.00 /hstart -1
+  Static12 Stationary.Environment.Em_4m_R(H)34_GER1 nn 277789.00 60917.66 180.00 /hstart -1
+  Static0 Artillery.Flak37 de 277789.34 60953.32 90.00 /timeout 0/radius_hide 0/hstart -1
+  Static9 Stationary.Opel_Blitz_tent nn 277640.94 61016.51 310.00 
+  Static7 Stationary.Opel_Blitz_tent nn 277643.34 61018.82 310.00 
+  Static10 Stationary.Environment.CamoNetPlane nn 277643.31 61021.35 310.00 
+  Static8 Stationary.Opel_Blitz_tent nn 277645.69 61020.97 310.00 
+  Static94 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277655.41 61012.82 -250.00 
+  Static6 Stationary.Opel_Blitz_tent nn 277648.38 61023.26 310.00 
+  Static93 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277693.41 61033.19 -250.00 
+  Static97 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277933.13 61000.26 -250.00 
+  Static49 Stationary.Kubelwagen nn 277949.75 61000.01 200.00 
+  Static50 Stationary.Ammo_Vehicles.CargoCrate_Composition2 nn 277951.38 61003.79 110.00 
+  Static51 Stationary.Environment.CamoNetPlane nn 277951.03 61006.10 200.00 
+  Static47 Stationary.Environment.FuelDrum_GER1_9 nn 277956.31 61002.04 110.00 
+  Static53 Stationary.Environment.Gulaschkanone_GER1 de 277948.03 61010.54 200.00 
+  Static48 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 277955.53 61005.41 200.00 
+  Static52 Stationary.Ammo_Vehicles.CargoCrate_Composition3 nn 277954.19 61008.79 200.00 
+  Static3 Stationary.Opel_Blitz_tent nn 277676.44 61042.60 305.00 
+  Static4 Stationary.Opel_Blitz_tent nn 277679.03 61044.63 305.00 
+  Static5 Stationary.Environment.CamoNetPlane nn 277679.31 61047.51 305.00 
+  Static2 Stationary.Opel_Blitz_tent nn 277681.69 61046.54 305.00 
+  Static1 Stationary.Opel_Blitz_tent nn 277684.38 61048.82 305.00 
+  Static96 tobruk:Stationary.TobrukBuilding.WaterTowerone nn 277834.63 61054.60 -250.00 
+  Static42 Stationary.Opel_Blitz_tent nn 277830.03 61074.16 270.00 
+  Static45 Stationary.Opel_Blitz_tent nn 277834.25 61074.41 270.00 
+  Static46 Stationary.Environment.CamoNetPlane nn 277834.69 61076.04 270.00 
+  Static44 Stationary.Ford_G917 nn 277837.69 61074.76 -90.00 
+  Static43 Stationary.Ford_G917 nn 277840.38 61074.72 -90.00 
+  Static85 Artillery.Bofors de 278526.13 61069.82 120.00 /timeout 0/radius_hide 0
+  Static81 Artillery.Bofors de 278526.13 61086.76 120.00 /timeout 0/radius_hide 0
+  Static40 Artillery.20_mm_Flak_38 de 277832.38 61137.94 120.00 /timeout 0/radius_hide 0
+  Static80 Artillery.Bofors de 277562.31 61223.38 120.00 /timeout 0/radius_hide 0
+[Buildings]
+[BuildingsLinks]
+

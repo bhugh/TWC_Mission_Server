@@ -1,6 +1,0 @@
-0000000000000000000000000000000000000000 c7ed9c411961d672171510d7b8d05a6420f657ed Brent Hugh <brent@brenthugh.com> 1788582042 -0500	clone: from https://github.com/bhugh/TWC_Mission_Server
-c7ed9c411961d672171510d7b8d05a6420f657ed 3fb423894d428a5bde041717b4034f78ad8038f1 Brent Hugh <brent@brenthugh.com> 1788584031 -0500	pull --tags origin master: Fast-forward
-3fb423894d428a5bde041717b4034f78ad8038f1 f7c4d8a92207be710572ae6657865500c37b49b0 Brent Hugh <brent@brenthugh.com> 1788589429 -0500	commit: Radar password handling upgrade; now kept in separate stats.ini file
-f7c4d8a92207be710572ae6657865500c37b49b0 25077ff11fc15db18e4e86230837374033b9aaae Brent Hugh <brent@brenthugh.com> 1788591371 -0500	commit: Update stats.ini sample w/radar password section & instructions
-25077ff11fc15db18e4e86230837374033b9aaae 024a1112de4849158695f2c61491f8de7eb924d8 Brent Hugh <brent@brenthugh.com> 1788764722 -0500	commit: Added TempFlakSite - new object lists; retooled MO_HandleMobileObjectivePlacement to handle placing thing groups not actual OBJs
-024a1112de4849158695f2c61491f8de7eb924d8 67caffbd494ad043a9eec47dd0382eaeef63f526 Brent Hugh <brent@brenthugh.com> 1788853912 -0500	commit: Working to add killable Flak Positions + Flak objectives

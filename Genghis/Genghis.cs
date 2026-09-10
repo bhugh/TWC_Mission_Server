@@ -22558,21 +22558,30 @@ added Rouen Flak
 
                 if (dbug) Console.WriteLine("MASL 7");
 
+                bool bad = false;
+
                 //try to chose the flak installations at roughly equal angles 
                 //around the circumference
                 foreach (double ang in chosenAngles){
                     double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
-                    if (i< tries/3.0 && diffAng_deg < 360/no_to_find) continue;
-                    else if (i< 8.0 *tries/10.0 && diffAng_deg < 360/no_to_find * i/tries) continue;
+                    if (i< tries/3.0 && diffAng_deg < 360/no_to_find) {bad = true; break;}
+                    else if (i< 8.0 *tries/10.0 && diffAng_deg < 360/no_to_find * i/tries) {bad = true; break;}
+                    if (ON_TESTSERVER) Console.WriteLine("Found loc: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(ang), diffAng_deg, i, tries);
                 }
+
+                if (bad) continue;
+                bad = false;
 
                 //try to make sure points are not too close together
                 foreach (Point3d pt in chosenPoints){
                     double dt = Calcs.CalculatePointDistance(newPos, pt);
-                    if (i<tries/3.0 && dt < radius + 100) continue;
-                    if (i< 8.0*tries/10.0 && dt < radius + 100 - (radius * i / tries)) continue;
-                    if (i< .88 * tries  && dt<25) continue;
+                    if (i<tries/3.0 && dt < radius + 100) {bad = true; break;}
+                    if (i< 8.0*tries/10.0 && dt < radius + 100 - (radius * i / tries)) {bad = true; break;}
+                    if (i< .88 * tries  && dt<25) {bad = true; break;}
+                    if (ON_TESTSERVER) Console.WriteLine("Found loc: dt: {0:N0} radius {1:N0} i: {2:N0} tries: {3:N0}", dt, radius, i, tries);
                 }
+
+                if (bad) continue;
 
 
                 if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
@@ -28555,7 +28564,7 @@ public static class Calcs
     public static double CalculateDegreeDifferenceInputDeg_deg (double ang1_deg, double ang2_deg){
         decimal diffAng_deg = ( (decimal)(ang1_deg) - (decimal)(ang2_deg)) % 360; //using decimals instead of double eliminates rounding errors & such.  
         //if (diffAng_deg<0) diffAng_deg += 360;
-        if (diffAng_deg > 180) diffAng_deg = Math.Abs(360 - diffAng_deg);
+        if (diffAng_deg > 180) diffAng_deg = Math.Abs(diffAng_deg - 360);
         return (double)diffAng_deg;
     }
 

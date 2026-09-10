@@ -21441,7 +21441,7 @@ added Rouen Flak
 
 
             string moId = (mo != null) ? mo.ID : ("TempFlakSite_" + random.Next(10000));
-            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + Calcs.GetSafeFileName(moId)); //testing)
+            f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + Calcs.GetSafeFileName(moId)); //testing)
         } catch (Exception ex)
         {
             Console.WriteLine("placeTheThings: " + ex.ToString());                        

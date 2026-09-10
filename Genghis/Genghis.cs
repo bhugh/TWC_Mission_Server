@@ -14056,9 +14056,9 @@ public class Mission : AMission, IMainMission
             {
                 
                 Thread.Sleep(2075);
-                Console.WriteLine("STOPPING TO CHANGE TIME/DATE/WEATHER and ON_TESTSERVER");
+                Console.WriteLine("'STOPPING' TO CHANGE TIME/DATE/WEATHER and ON_TESTSERVER (ie, not stopping just faking it)");
                 //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-                (GamePlay as GameDef).gameInterface.BattleStop();
+                //(GamePlay as GameDef).gameInterface.BattleStop();
             }
         }
         catch (Exception ex) { Console.WriteLine("MO_Move MIS main ERROR: " + ex.ToString()); }
@@ -21673,12 +21673,13 @@ added Rouen Flak
 
             //update mobile ocnvoy position & associated autoflak positions occasionally; low priority
             tempflakcounter++;
-            if (tempflakcounter % 60 == 0)
+            if (tempflakcounter % 120 == 0)
             {
                 //Thread thr = Thread.CurrentThread;
                 thr.Priority = ThreadPriority.Lowest;
                 updateMobileConvoyPositionList();
                 foreach (MissionObjective mo in MissionObjectivesList.Values.ToList())
+                    if (!mo.IsMobile()) continue;
                     MO_AutoFlak_selectLocations(mo, refresh: true);
                 thr.Priority = ThreadPriority.BelowNormal;
             }
@@ -22448,6 +22449,8 @@ added Rouen Flak
     public Dictionary<string, List<Point3d>> AutoFlak_locations = new Dictionary<string, List<Point3d>>() { };
     public object AutoFlak_locations_lock = new object();
 
+    //refresh=true is intended ONLY for mobile objectives/ mo.IsMobile() == true
+    //Because they are moving.  But most mobile objectives don't even need AA cover.
     public bool MO_AutoFlak_selectLocations(MissionObjective mo, int no_to_find = 4, bool refresh = false)
     {
         try
@@ -22516,6 +22519,8 @@ added Rouen Flak
 
             if (dbug) Console.WriteLine("MASL 4");
 
+            List<double> chosenAngles = new  List<double>();
+
             for (int i = 0; i < tries; i++)
             {
                 radius_hide = 3000;
@@ -22527,7 +22532,7 @@ added Rouen Flak
 
                 double angle = random.NextDouble() * 2.0 * Math.PI;
                 double radius = random.Next(10) + batteryRadius + i * distmult;  //try ever-greater distances if it's not working well
-                                                                                 //Last resort, last 10% of tries, go inside the radius
+                //Last resort, last 10% of tries, go inside the radius
                 if (i > 0.9 * tries) radius = random.Next(10) + batteryRadius - (tries - i) * distmult;
 
                 newPos.x = Math.Round(mo.Pos.x + Math.Cos(angle) * radius);
@@ -22550,16 +22555,37 @@ added Rouen Flak
 
                 if (dbug) Console.WriteLine("MASL 7");
 
+                //try to chose the flak installations at roughly equal angles 
+                //around the circumference
+                foreach (double ang in chosenAngles){
+                    double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
+                    if (i< tries/3 && diffAng_deg < 360/no_to_find) continue;
+                    else if (i< 8.0 *tries/10.0 && diffAng_deg < 360/no_to_find * i/tries) continue;
+
+
+                }
+
+
                 if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
                 {
                     if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
                     newPos.z = radius_hide;
                     MO_AutoFlak_locations.Add(newPos);
                     Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
+                    Console.WriteLine("AutoFlak choose locations: {0:N0} {1:N0} {2:N0} {3:N0}", angle /2/Math.PI*360, radius, mo.Pos.x, mo.Pos.y);
                     var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                    placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
+
+
+                    //for testing - disabling all the extra autoflak objects
+                    
+                    //Place a FEW objects around the flak battery position
+                    //so it looks like something players can shoot
+                    //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
+                    //AND it will leave oodles of stationaries scattered about
+                    //if(!mo.IsMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
                     
                     no_found++;
+                    chosenAngles.Add(angle);
                     //if (ON_TESTSERVER) Console.WriteLine("AutoFlak_selectLocation: Found autoflak location ({0:n0},{1:n0}) for {2} pos=({3:n0},{4:n0})", newPos.x, newPos.y, mo.ID, mo.Pos.x, mo.Pos.y);
                     if (no_found >= no_to_find) break;
                 }
@@ -28508,6 +28534,23 @@ public static class Calcs
 
         return degAngle;
     }
+
+    //takes to angles IN RADIANS but  returns the diference IN DEGREES
+    public static double CalculateDegreeDifferenceInputRad_deg (double ang1_rad, double ang2_rad){
+        return CalculateDegreeDifferenceInputDeg_deg(RadiansToDegrees(ang1_rad), RadiansToDegrees(ang2_rad));
+    }
+
+    //takes to angles IN DEGREES and returns the diference IN DEGREES
+    //Note DECIMALs are used in the calculation to avoid weird rounding errors
+    //So some precision is lost from the original DOUBLE
+    public static double CalculateDegreeDifferenceInputDeg_deg (double ang1_deg, double ang2_deg){
+        decimal diffAng_deg = ( (decimal)(ang1_deg) - (decimal)(ang2_deg)) % 360; //using decimals instead of double eliminates rounding errors & such.  
+        //if (diffAng_deg<0) diffAng_deg += 360;
+        if (diffAng_deg > 180) diffAng_deg = Math.Abs(360 - diffAng_deg);
+        return (double)diffAng_deg;
+    }
+
+
 
     //Equal in x & y, ignoring z
     public static bool Point3dEqualXY(

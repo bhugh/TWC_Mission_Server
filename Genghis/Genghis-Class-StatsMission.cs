@@ -14950,9 +14950,8 @@ private FtpWebRequest CreateFtpRequest(string ftpServer, string method, string u
         return null;
 
     FtpWebRequest request = (FtpWebRequest)WebRequest.Create(serverUri);
-    
-    // CRITICAL FIX: If this is an SSL upload method, EnableSsl should be true
-    request.EnableSsl = true; 
+        
+    request.EnableSsl = false; 
     
     request.UsePassive = true;
     request.KeepAlive = false; // Kept false as per your 2023-03-01 patch for "not logged in" errors

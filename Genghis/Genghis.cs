@@ -19772,7 +19772,7 @@ added Rouen Flak
         "Stationary.Humans.Soldier_10_5_cm_LeFH_18_Gunner_1", "Stationary.Humans.Soldier_10_5_cm_LeFH_18_Gunner_2", "Stationary.Humans.RRH_Gunner_1","Stationary.Humans.RRH_Gunner_2",
         "Stationary.Humans.Soldier_40mm_2pdr_AT_Gun_Passenger_1","Stationary.Humans.Soldier_Beaverette_III_Gunner_1",
         //"Stationary.Humans.Soldier_AEC_Regent_III_Passenger_2",  //this one is broken f or some reason "spawn failed"
-        "Stationary.Humans.Soldier_AEC_Regent_III_Passenger_1", //trying to see if this works instead
+        //"Stationary.Humans.Soldier_AEC_Regent_III_Passenger_1", //trying to see if this works instead annnnd, nope
 
         "Stationary.Humans.150_cm_Flakscheinwerfer_gunner1","Stationary.Humans.150_cm_Flakscheinwerfer_gunner2","Stationary.Humans.Em_4m_R(H)34_Gunner_1","Stationary.Humans.Em_4m_R(H)34_Gunner_2",
         "Stationary.Humans.Em_4m_R(H)34_Gunner_3", "Stationary.Humans.Gulaschkanone_passenger_1","Stationary.Humans.Gulaschkanone_passenger_2","Stationary.Humans.Gulaschkanone_passenger_3",

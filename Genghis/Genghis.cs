@@ -21678,9 +21678,10 @@ added Rouen Flak
                 //Thread thr = Thread.CurrentThread;
                 thr.Priority = ThreadPriority.Lowest;
                 updateMobileConvoyPositionList();
-                foreach (MissionObjective mo in MissionObjectivesList.Values.ToList())
-                    if (!mo.IsMobile()) continue;
+                foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()) {
+                    if (!mo.isMobile()) continue;
                     MO_AutoFlak_selectLocations(mo, refresh: true);
+                }
                 thr.Priority = ThreadPriority.BelowNormal;
             }
             
@@ -22491,8 +22492,8 @@ added Rouen Flak
 
 
             //try to find a place that is not water,  outwards at least mo.radius + adder_m from the center of the objective
-            int tries = 2000;
-            double distmult = 2.5;
+            int tries = 3000;
+            double distmult = 1.5;
 
             if (dbug) Console.WriteLine("MASL 3");
             if (refresh)
@@ -22520,6 +22521,8 @@ added Rouen Flak
             if (dbug) Console.WriteLine("MASL 4");
 
             List<double> chosenAngles = new  List<double>();
+
+            List<Point3d> chosenPoints = new List<Point3d>();
 
             for (int i = 0; i < tries; i++)
             {
@@ -22559,10 +22562,16 @@ added Rouen Flak
                 //around the circumference
                 foreach (double ang in chosenAngles){
                     double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
-                    if (i< tries/3 && diffAng_deg < 360/no_to_find) continue;
+                    if (i< tries/3.0 && diffAng_deg < 360/no_to_find) continue;
                     else if (i< 8.0 *tries/10.0 && diffAng_deg < 360/no_to_find * i/tries) continue;
+                }
 
-
+                //try to make sure points are not too close together
+                foreach (Point3d pt in chosenPoints){
+                    double dt = Calcs.CalculatePointDistance(newPos, pt);
+                    if (i<tries/3.0 && dt < radius + 100) continue;
+                    if (i< 8.0*tries/10.0 && dt < radius + 100 - (radius * i / tries)) continue;
+                    if (i< .88 * tries  && dt<25) continue;
                 }
 
 
@@ -22582,7 +22591,7 @@ added Rouen Flak
                     //so it looks like something players can shoot
                     //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
                     //AND it will leave oodles of stationaries scattered about
-                    //if(!mo.IsMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
+                    //if(!mo.isMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
                     
                     no_found++;
                     chosenAngles.Add(angle);

@@ -16047,7 +16047,7 @@ public class Mission : AMission, IMainMission
 
         //msn.AutoFlak_locations is a separate structure so we can lock it & keep 
         //it 'threadsafe'.  We hope.
-        public AutoFlak_location? getNext_AutoFlak_location()
+        public AutoFlak_location getNext_AutoFlak_location()
         {
             try {
                 //var ret = new AutoFlak_location();
@@ -16071,14 +16071,14 @@ public class Mission : AMission, IMainMission
                
                 lock (msn.AutoFlak_locations_lock)
                 {
-                    if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return new List<Point3d>();
+                    if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return new List<AutoFlak_location>();
                     return msn.AutoFlak_locations[ID];
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("get_AutoFlak_locations ERROR: " + ex.Message);
-                return new List<Point3d>();
+                return new List<AutoFlak_location>();
             }
         }
         public void fixDestructionValues()
@@ -21311,6 +21311,8 @@ added Rouen Flak
 
     public int placeTheThings(Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>  things, Point3d newPos, MissionObjective mo = null, int def_army =0, string def_prefix = "")
     {
+        int thingsPlaced = 0;
+
         try {
             int army = (mo != null) ? mo.OwnerArmy : def_army;
             string prefix = (mo != null) ? mo.ChiefName : def_prefix;
@@ -21328,7 +21330,7 @@ added Rouen Flak
             //Now actually PLACE mobile objective.
             ISectionFile f = GamePlay.gpCreateSectionFile();
             bool resetCount = true;
-            int thingsPlaced = 0;
+            
 
             foreach (MO_MobileObjectiveThings t in things.Keys)
             {
@@ -22181,7 +22183,7 @@ added Rouen Flak
             //Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy);
             Point3d newPos = mo.Pos;
             newPos.z = Math.Round(newPos.z);
-            int numItemsPlaced = 0
+            int numItemsPlaced = 0;
 			
 
             //Console.WriteLine("Auto/TempFlak Radiushide: {0:n0} Distenemy: {1:n0} Dist Neutral {2:n0}", radiusHide, distanceToEnemyFront, distanceToNeutralFront);
@@ -22321,16 +22323,16 @@ added Rouen Flak
                  *     if (nfb * nib < 2 && batteryRadius > 75) batteryRadius = 75; //experimental, if just a couple of flak try placing it right amid the actual target
 
                 */
-                AutoFlak_location? temp = mo.getNext_AutoFlak_location();
-                if (!temp.HasValue) {
+                AutoFlak_location temp = mo.getNext_AutoFlak_location();
+                if (temp == null) {
                     Console.WriteLine("AutoFlak: No AutoFlak location for {0} - exiting ({1})", mo.ID, mo.Name);
                     return GamePlay.gpCreateSectionFile();
                 }
 
-                newPos = temp.Value.pos;
-                numItemsPlaced = temp.Value.numItems;
+                newPos = temp.pos;
+                numItemsPlaced = temp.numItems;
 
-                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 18, matchName: "mo.ID + "_AutoFlak_pos_");
+                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 18, matchName: mo.ID + "_AutoFlak_pos_");
 
                 int realNIB = nib * numItemsNow / numItemsPlaced;
                 if (realNIB <= 0) continue;
@@ -22665,7 +22667,7 @@ added Rouen Flak
                         //AND it will leave oodles of stationaries scattered about
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            howManyPlaced == placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
+                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
                         }
 
                         MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced));

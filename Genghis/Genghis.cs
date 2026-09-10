@@ -19596,7 +19596,9 @@ added Rouen Flak
 
 
 
-    public static List<string> MO_Trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Matilda_2A", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Fordson_Sussex_w_ballon", "Stationary.Panzerbefehlswagen_I", "Stationary.Environment.CamoNetTank", "Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER", "Stationary.Ford_G917", "Stationary.Ford_V8_E917_tent", "Stationary.Unic_P107", "Stationary.Fordson_Sussex_w_o_ballon", "Stationary.Guy_Quad-Ant", "Stationary.Horch_108_Typ_1A", "Stationary.Guy_Lizard", "Stationary.GER_Fuel_Column", "Stationary.Kubelwagen", "Stationary.Krupp_L2H43_Protze_Kfz69", "Stationary.Horch_108_Typ_1A_open", "Stationary.Opel_Blitz_radio", "Stationary.SdKfz_9_Crane", "Stationary.FIAT_OCI_708", "Stationary.Truck_Renault_UE", "Stationary.Opel_Blitz_radio", };
+    public static List<string> MO_Trucks = new List<string> { "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Matilda_2A", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Morris_CS8", "Stationary.Morris_CS8_tent", "Stationary.Bedford_MW_tent", "Stationary.Albion_AM463", "Stationary.Fordson_Sussex_w_ballon", "Stationary.Panzerbefehlswagen_I", "Stationary.Environment.CamoNetTank", "Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition3_GER", "Stationary.Ford_G917", "Stationary.Ford_V8_E917_tent", "Stationary.Unic_P107", "Stationary.Fordson_Sussex_w_o_ballon", "Stationary.Guy_Quad-Ant", "Stationary.Horch_108_Typ_1A", "Stationary.Guy_Lizard", 
+    //"Stationary.GER_Fuel_Column",  //doesn't really exist?  I think
+    "Stationary.Kubelwagen", "Stationary.Krupp_L2H43_Protze_Kfz69", "Stationary.Horch_108_Typ_1A_open", "Stationary.Opel_Blitz_radio", "Stationary.SdKfz_9_Crane", "Stationary.FIAT_OCI_708", "Stationary.Truck_Renault_UE", "Stationary.Opel_Blitz_radio", };
 
 
     public static List<string> MO_Armor_Tanks = new List<string> { "Stationary.SdKfz_10_1", "Stationary.SdKfz_231_6Rad", "Stationary.SdKfz_263_6Rad", "Stationary.SdKfz_263_6Rad", "Stationary.SdKfz_7", "Stationary.SdKfz_9", "Stationary.Thorneycroft_Bison", "Stationary.Bataille_B1_Bis", "Stationary.Breen_Carrier_Mk_I", "Stationary.Cruiser_Mk_IV", "Stationary.Pz_IIIF", "Stationary.Renault_Ft17", "Stationary.Somua_S35", "Stationary.Panzerbefehlswagen_I", "Stationary.SdKfz_232_8Rad", "Stationary.StuG_IIIA", "Stationary.Valentine_I", "Stationary.Vickers_Mk_VIB", "Stationary.Vickers_Mk_VIC", };
@@ -19677,7 +19679,7 @@ added Rouen Flak
     public static List<string> MO_Military_Ships_Submarine_DE = new List<string> {
 		//As of 2026/08/04, the Type VIIC is just too hard to kill for some reason. U-class is OK.
         //"tobruk:ShipUnit.Type_VIIC_SS",
-		"Ship.tobruk:U-class_SS",
+		"tobruk:ShipUnit.U-class_SS",
          };
 		 
 	public static List<string> MO_Military_Ships_Submarine_VeryHard_GB = new List<string> {
@@ -19768,7 +19770,10 @@ added Rouen Flak
     public static List<string> MO_Humans = new List<string> { "Stationary.Humans.150_cm_SearchLight_Gunner_1", "Stationary.Humans.Soldier_Flak38_Gunner", "Stationary.Humans.RRH_Gunner_1",
                     "Stationary.Humans.Em_4m_R(H)34_Gunner_3", "Stationary.Humans.Soldier_Horch_108_open_Gunner", "Stationary.Humans.Soldier_PaK_35_36_Gunner_1", "Stationary.Humans.Soldier_PaK_35_36_Gunner_2",
         "Stationary.Humans.Soldier_10_5_cm_LeFH_18_Gunner_1", "Stationary.Humans.Soldier_10_5_cm_LeFH_18_Gunner_2", "Stationary.Humans.RRH_Gunner_1","Stationary.Humans.RRH_Gunner_2",
-        "Stationary.Humans.Soldier_40mm_2pdr_AT_Gun_Passenger_1","Stationary.Humans.Soldier_Beaverette_III_Gunner_1","Stationary.Humans.Soldier_AEC_Regent_III_Passenger_2",
+        "Stationary.Humans.Soldier_40mm_2pdr_AT_Gun_Passenger_1","Stationary.Humans.Soldier_Beaverette_III_Gunner_1",
+        //"Stationary.Humans.Soldier_AEC_Regent_III_Passenger_2",  //this one is broken f or some reason "spawn failed"
+        "Stationary.Humans.Soldier_AEC_Regent_III_Passenger_1", //trying to see if this works instead
+
         "Stationary.Humans.150_cm_Flakscheinwerfer_gunner1","Stationary.Humans.150_cm_Flakscheinwerfer_gunner2","Stationary.Humans.Em_4m_R(H)34_Gunner_1","Stationary.Humans.Em_4m_R(H)34_Gunner_2",
         "Stationary.Humans.Em_4m_R(H)34_Gunner_3", "Stationary.Humans.Gulaschkanone_passenger_1","Stationary.Humans.Gulaschkanone_passenger_2","Stationary.Humans.Gulaschkanone_passenger_3",
         "Stationary.Humans.Gulaschkanone_passenger_4","Stationary.Humans.Gulaschkanone_passenger_5","Stationary.Humans.Gulaschkanone_passenger_6","Stationary.Humans.Kdo_Hi_Ger35_passenger_1",
@@ -19900,7 +19905,7 @@ added Rouen Flak
         "Stationary.Ammo_Vehicles.40mm_Bofors_composition1_UK1",
         "Stationary.Ammo_Vehicles.40mm_Bofors_composition2_UK1",
         "Stationary.Ammo_Vehicles.40mm_Bofors_composition3_UK1",
-        "Stationary.Ammo_Vehicles.8_8cm_Flak18_composition2_GER",
+        "Stationary.Ammo_Vehicles.8_8cm_Flak18_composition2_GER1",
         "Stationary.Ammo_Vehicles.BoxWithMGLenta",
         "Stationary.Ammo_Vehicles.Zwillingssockel_Composition1",
         "Stationary.Ford_G917_CargoAmmo2",
@@ -20371,7 +20376,7 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
                     { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 6, 5,prob: .25, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .15, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .5, randomizeHowMany: false  )},
                     { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 13, 10, prob: .5 , randomizeHowMany: false )},
                     
 
@@ -22335,6 +22340,9 @@ added Rouen Flak
                 int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 18, matchName: mo.ID + "_AutoFlak_pos_");
 
                 int realNIB = nib * numItemsNow / numItemsPlaced;
+
+                Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, numItemsNow, nib, realNIB);
+
                 if (realNIB <= 0) continue;
 
                 //slightly randomize the position
@@ -22435,7 +22443,7 @@ added Rouen Flak
                     double head = Math.Round(hdg + random.Next(15));
 
                     //Radius_Hide 6000 means (I ASSUME) that the flak gun won't look away further than 6000.  Or ???.
-                    if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5})", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side);
+                    if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
                     //Update - I THINK radius_hide is how far away the object is VISIBLE.
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
                     resetCount = false;
@@ -29549,15 +29557,44 @@ public static class Calcs
 
 		return name;
 	}
-	
+	//This is a bit of a kludge; not sure how else to do it though, for now
 	private static HashSet<string> tobrukTitles = new HashSet<string>()
 	{
 		"Stationary.Airfield.BritishWatchTower",
 		"Stationary.Environment.Misc.FuelDrum_GER1WR_9",
 		"Stationary.WellingtonMkIc_t",
+        "Stationary.WellingtonMkIc_Late",
+        "Stationary.WellingtonMkIc",
 		"Stationary.Ju-88C-4Late",
 		"Stationary.SpitfireMkVb",
-		"Stationary.BeaufighterMkIC"
+		"Stationary.BeaufighterMkIC",
+        "Aircraft.HurricaneMkII",   
+        "Aircraft.SpitfireMkV", 
+        "Aircraft.BeaufighterMkIF",
+        "Aircraft.He-111H-6",
+        "Aircraft.Ju-88A-5",
+        "Stationary.TobrukBuilding",
+        "ShipUnit.Type_VIIC_SS",
+        "ShipUnit.U-class_SS",
+        "Stationary.Environment.Windsock_v2",
+        "ShipUnit.Rion",
+        "ShipUnit.Leipzig_CL",
+        "ShipUnit.Beshtau",
+        "ShipUnit.Merchant",
+        "ShipUnit.Albatros",
+        "ShipUnit.Vosper",
+        "ShipUnit.Schnellboot",
+        "ShipUnit.Spica_TB",
+        "ShipUnit.Tribal_DD",
+        "ShipUnit.SanGiorgio_ACR", //140m
+        "ShipUnit.1936_DD",
+        "ShipUnit.Leander_CL", //170m
+        "ShipUnit.QueenElizabeth_BB", //195m
+        "ShipUnit.Revenge_BB", //190m
+        "ShipUnit.Zara_CA", //182m
+        "Stationary.Airfield.LawsHangerGravesend",
+
+
 	};
 
 	
@@ -29570,12 +29607,17 @@ public static class Calcs
 						.Replace("..", ".")
 						//Stationary.Environment, .RadioBeacon, and a few more survive
 						//But .Aircraft, .Car and the others below are not in Stationary. names FOR SOME REASON
-						.Replace(".Aircraft","")
-						.Replace(".Car","")
+						.Replace(".Aircraft.",".")
+						.Replace(".Car.",".")
 						.Replace(".ArmoredCar","")
-						.Replace(".Tank","")
-						.Replace(".Truck","")
+						.Replace(".Tank.",".")
+						.Replace(".Truck.",".")
+                        .Replace(".Flak.",".")
 						//not sure about .Building...
+                        .Replace(".buildings.",".")  //indeed, itseems to keep this when not needed
+                        .Replace(".Buildings.",".")
+                        .Replace(".cargo.",".")  //I don't understand this one at all...
+                        .Replace(".CargoPreset.",".")
 						.Trim();
 		if (tobrukTitles.Contains(title)) title = "tobruk:"+title;
 		return title;

@@ -20369,10 +20369,10 @@ added Rouen Flak
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 10, 8 )},
-                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 10, 8 )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 30, 10 )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 10, 8, prob: .15 )},
+                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18,prob: .25 )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 30, 10,prob: .15 )},
+                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 20, 18, prob: .5 )},
                     
 
                 }
@@ -22524,90 +22524,118 @@ added Rouen Flak
 
             List<Point3d> chosenPoints = new List<Point3d>();
 
-            for (int i = 0; i < tries; i++)
-            {
-                radius_hide = 3000;
-                if (i * distmult > 1000) min_nmc_dist_m = 2500;
-                if (i * distmult > 2000) min_nmc_dist_m = 2000;
-                if (i > 0.85 * tries) min_nmc_dist_m = 1500;
-
-                if (dbug) Console.WriteLine("MASL 5");
-
-                double angle = random.NextDouble() * 2.0 * Math.PI;
-                double radius = random.Next(10) + batteryRadius + i * distmult;  //try ever-greater distances if it's not working well
-                //Last resort, last 10% of tries, go inside the radius
-                if (i > 0.9 * tries) radius = random.Next(10) + batteryRadius - (tries - i) * distmult;
-
-                newPos.x = Math.Round(mo.Pos.x + Math.Cos(angle) * radius);
-                newPos.y = Math.Round(mo.Pos.y + Math.Sin(angle) * radius);
-
-                maddox.game.LandTypes landType = GamePlay.gpLandType(newPos.x, newPos.y);
-
-                if (dbug) Console.WriteLine("MASL 6");
-                double nmcDist_m = distanceToNearestMobileConvoy_m(newPos);
-
-                double dist = 1000;
-                double apRadius = 1000;
-                try
+            for (int k = 0; k < no_to_find; k++) {
+                for (int i = 0; i < tries; i++)
                 {
-                    AiAirport ap = Calcs.nearestAirport(GamePlay, newPos);
-                    dist = Calcs.CalculatePointDistance(ap.Pos(), newPos);
-                    apRadius = ap.FieldR();
-                }
-                catch (Exception ex) { Console.WriteLine("ERROR FLAKPLACE! " + ex.ToString()); }
+                    radius_hide = 3000;
+                    if (i * distmult > 1000) min_nmc_dist_m = 2500;
+                    if (i * distmult > 2000) min_nmc_dist_m = 2000;
+                    if (i > 0.85 * tries) min_nmc_dist_m = 1500;
 
-                if (dbug) Console.WriteLine("MASL 7");
+                    if (dbug) Console.WriteLine("MASL 5");
 
-                bool bad = false;
+                    double angle = random.NextDouble() * 2.0 * Math.PI;
+                    double radius = random.Next(10) + batteryRadius + i * distmult;  //try ever-greater distances if it's not working well
+                    //Last resort, last 10% of tries, go inside the radius
+                    if (i > 0.9 * tries) radius = random.Next(10) + batteryRadius - (tries - i) * distmult;
 
-                //try to chose the flak installations at roughly equal angles 
-                //around the circumference
-                foreach (double ang in chosenAngles){
-                    double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
-                    if (i< tries/3.0 && diffAng_deg < 360/no_to_find) {bad = true; break;}
-                    else if (i< 8.0 *tries/10.0 && diffAng_deg < 360/no_to_find * i/tries) {bad = true; break;}
-                    if (ON_TESTSERVER) Console.WriteLine("Found loc: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(ang), diffAng_deg, i, tries);
-                }
-
-                if (bad) continue;
-                bad = false;
-
-                //try to make sure points are not too close together
-                foreach (Point3d pt in chosenPoints){
-                    double dt = Calcs.CalculatePointDistance(newPos, pt);
-                    if (i<tries/3.0 && dt < radius + 100) {bad = true; break;}
-                    if (i< 8.0*tries/10.0 && dt < radius + 100 - (radius * i / tries)) {bad = true; break;}
-                    if (i< .88 * tries  && dt<25) {bad = true; break;}
-                    if (ON_TESTSERVER) Console.WriteLine("Found loc: dt: {0:N0} radius {1:N0} i: {2:N0} tries: {3:N0}", dt, radius, i, tries);
-                }
-
-                if (bad) continue;
+                    newPos.x = Math.Round(mo.Pos.x + Math.Cos(angle) * radius);
+                    newPos.y = Math.Round(mo.Pos.y + Math.Sin(angle) * radius);
 
 
-                if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
-                {
-                    if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
-                    newPos.z = radius_hide;
-                    MO_AutoFlak_locations.Add(newPos);
-                    Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
-                    Console.WriteLine("AutoFlak choose locations: {0:N0} {1:N0} {2:N0} {3:N0}", angle /2/Math.PI*360, radius, mo.Pos.x, mo.Pos.y);
-                    var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
+                    bool bad = false;
+
+                    double saveAng = 0;
+                    double saveDiffAng = 0;
+                    //try to chose the flak installations at roughly equal angles 
+                    //around the circumference
+                    foreach (double ang in chosenAngles){
+                        double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
+                        saveAng = ang;
+                        saveDiffAng = diffAng_deg;
+                        if (i< tries/3.0 && diffAng_deg < 360.0/no_to_find) {bad = true; break;}
+                        else if (i< 8.0 *tries/10.0 && diffAng_deg < 360.0/no_to_find * (1 - i/tries)) {bad = true; break;}
+                        
+                    }
+
+                    if (bad && ON_TESTSERVER) Console.WriteLine("Rejected ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, no_to_find, 360.0/no_to_find, 360.0/no_to_find * (1 - i/tries) );
+
+                    if (bad) continue;
+
+                    if (ON_TESTSERVER) Console.WriteLine("FOUND ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, no_to_find, 360.0/no_to_find, 360.0/no_to_find * (1 - i/tries) );   
+
+                    bad = false;
+
+                    //try to make sure points are not too close together
+                    double saveDT = 0;
+                    double saveDiv = 0;
+                    foreach (Point3d pt in chosenPoints){
+
+                        double dt = Calcs.CalculatePointDistance(newPos, pt);
+                        double div= ((double) no_to_find).Clamp (4,100);
+
+                        saveDT=dt;
+                        saveDiv = div;
 
 
-                    //for testing - disabling all the extra autoflak objects
+                        if (i<tries/3.0 && dt < (batteryRadius * 2.0 * Math.PI/ div * 0.6 )) {bad = true; break;}
+                        if (i< 8.0*tries/10.0 && dt < batteryRadius * 2.0 * Math.PI/ div * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0))) {bad = true; break;}
+                        if (i< .88 * tries  && dt<25) {bad = true; break;}        
+                    }
+
+                    if ( bad && ON_TESTSERVER) Console.WriteLine("Rejected loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0)) );
+
+
+                    if (bad) continue;
+
+                    if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0)) );
+
                     
-                    //Place a FEW objects around the flak battery position
-                    //so it looks like something players can shoot
-                    //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
-                    //AND it will leave oodles of stationaries scattered about
-                    //if(!mo.isMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
-                    
-                    no_found++;
-                    chosenAngles.Add(angle);
-                    //if (ON_TESTSERVER) Console.WriteLine("AutoFlak_selectLocation: Found autoflak location ({0:n0},{1:n0}) for {2} pos=({3:n0},{4:n0})", newPos.x, newPos.y, mo.ID, mo.Pos.x, mo.Pos.y);
-                    if (no_found >= no_to_find) break;
-                }
+                    maddox.game.LandTypes landType = GamePlay.gpLandType(newPos.x, newPos.y);
 
+                    if (dbug) Console.WriteLine("MASL 6");
+                    double nmcDist_m = distanceToNearestMobileConvoy_m(newPos);
+
+                    double dist = 1000;
+                    double apRadius = 1000;
+                    try
+                    {
+                        AiAirport ap = Calcs.nearestAirport(GamePlay, newPos);
+                        dist = Calcs.CalculatePointDistance(ap.Pos(), newPos);
+                        apRadius = ap.FieldR();
+                    }
+                    catch (Exception ex) { Console.WriteLine("ERROR FLAKPLACE! " + ex.ToString()); }
+
+                    if (dbug) Console.WriteLine("MASL 7");
+
+
+                    if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
+                    {
+                        if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
+                        newPos.z = radius_hide;
+                        MO_AutoFlak_locations.Add(newPos);
+                        Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
+                        Console.WriteLine("AutoFlak choose locations: {0:N0} {1:N0} {2:N0} {3:N0}", angle /2/Math.PI*360, radius, mo.Pos.x, mo.Pos.y);
+                        var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
+
+
+                        //for testing - disabling all the extra autoflak objects
+                        
+                        //Place a FEW objects around the flak battery position
+                        //so it looks like something players can shoot
+                        //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
+                        //AND it will leave oodles of stationaries scattered about
+                        //if(!mo.isMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
+                        
+                        no_found++;
+                        chosenAngles.Add(angle);
+                        chosenPoints.Add(newPos);
+                        //if (ON_TESTSERVER) Console.WriteLine("AutoFlak_selectLocation: Found autoflak location ({0:n0},{1:n0}) for {2} pos=({3:n0},{4:n0})", newPos.x, newPos.y, mo.ID, mo.Pos.x, mo.Pos.y);
+                        //if (no_found >= no_to_find) break;
+                        break;
+                    }
+
+                }
             }
 
             if (dbug) Console.WriteLine("MASL 8");
@@ -28562,10 +28590,10 @@ public static class Calcs
     //Note DECIMALs are used in the calculation to avoid weird rounding errors
     //So some precision is lost from the original DOUBLE
     public static double CalculateDegreeDifferenceInputDeg_deg (double ang1_deg, double ang2_deg){
-        decimal diffAng_deg = ( (decimal)(ang1_deg) - (decimal)(ang2_deg)) % 360; //using decimals instead of double eliminates rounding errors & such.  
-        //if (diffAng_deg<0) diffAng_deg += 360;
+        double diffAng_deg = ((ang1_deg) - (ang2_deg)); 
+        if (diffAng_deg < 0) diffAng_deg += 360;
         if (diffAng_deg > 180) diffAng_deg = Math.Abs(diffAng_deg - 360);
-        return (double)diffAng_deg;
+        return diffAng_deg;
     }
 
 

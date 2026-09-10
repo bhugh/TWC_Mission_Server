@@ -16047,10 +16047,10 @@ public class Mission : AMission, IMainMission
 
         //msn.AutoFlak_locations is a separate structure so we can lock it & keep 
         //it 'threadsafe'.  We hope.
-        public Point3d? getNext_AutoFlak_location()
+        public AutoFlak_location? getNext_AutoFlak_location()
         {
             try {
-                var ret = new Point3d();
+                //var ret = new AutoFlak_location();
                 int i = getAndAdvance_AutoFlak_location_pointer();
                 lock (msn.AutoFlak_locations_lock)
                 {
@@ -16064,7 +16064,7 @@ public class Mission : AMission, IMainMission
                 return null;
             }
         }
-        public List<Point3d> get_AutoFlak_locations()
+        public List<AutoFlak_location> get_AutoFlak_locations()
         {
             try
             {
@@ -21306,7 +21306,10 @@ added Rouen Flak
 
     }
 
-    public void placeTheThings(Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>  things, Point3d newPos, MissionObjective mo = null, int def_army =0, string def_prefix = "")
+    //returns no. of  things placed
+    //not if randomize is set for the object list of things, the returned number will be APPROXIMATE
+
+    public int placeTheThings(Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>  things, Point3d newPos, MissionObjective mo = null, int def_army =0, string def_prefix = "")
     {
         try {
             int army = (mo != null) ? mo.OwnerArmy : def_army;
@@ -21325,6 +21328,7 @@ added Rouen Flak
             //Now actually PLACE mobile objective.
             ISectionFile f = GamePlay.gpCreateSectionFile();
             bool resetCount = true;
+            int thingsPlaced = 0;
 
             foreach (MO_MobileObjectiveThings t in things.Keys)
             {
@@ -21428,6 +21432,8 @@ added Rouen Flak
                 if (howmany > 32) percentSide = 6;
                 if (mobileShipObjective) percentSide = 100;
 
+                thingsPlaced += howmany;
+
 
                 f = PlaceObjectsInCircles(f, mttnr.things, newPos, mttnr.radius_m, mttnr.range_m, howmany, army, subHeading_deg: subHeading, percentSide: percentSide, stretcherType: stretchType, stretcherAmt: stretchPercent * mttnr.radius_m, avoidWater: !mobileShipObjective, resetCount: resetCount, addString: addString, randomizeHowmany: randomizeHowmany, staticprefix: prefix, shape: shp, orientationAngle_deg: masterHeading);
                 //Console.WriteLine("mobile obj: {0} {1} ", mo.ID, resetCount);
@@ -21442,9 +21448,12 @@ added Rouen Flak
 
             string moId = (mo != null) ? mo.ID : ("TempFlakSite_" + random.Next(10000));
             f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + Calcs.GetSafeFileName(moId)); //testing)
+
+            return thingsPlaced;
         } catch (Exception ex)
         {
-            Console.WriteLine("placeTheThings: " + ex.ToString());                        
+            Console.WriteLine("placeTheThings ERROR: " + ex.ToString());                
+            return thingsPlaced;        
         }
     }
 
@@ -22172,6 +22181,7 @@ added Rouen Flak
             //Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy);
             Point3d newPos = mo.Pos;
             newPos.z = Math.Round(newPos.z);
+            int numItemsPlaced = 0
 			
 
             //Console.WriteLine("Auto/TempFlak Radiushide: {0:n0} Distenemy: {1:n0} Dist Neutral {2:n0}", radiusHide, distanceToEnemyFront, distanceToNeutralFront);
@@ -22311,13 +22321,19 @@ added Rouen Flak
                  *     if (nfb * nib < 2 && batteryRadius > 75) batteryRadius = 75; //experimental, if just a couple of flak try placing it right amid the actual target
 
                 */
-                Point3d? temp = mo.getNext_AutoFlak_location();
+                AutoFlak_location? temp = mo.getNext_AutoFlak_location();
                 if (!temp.HasValue) {
                     Console.WriteLine("AutoFlak: No AutoFlak location for {0} - exiting ({1})", mo.ID, mo.Name);
                     return GamePlay.gpCreateSectionFile();
                 }
 
-                newPos = temp.Value;
+                newPos = temp.Value.pos;
+                numItemsPlaced = temp.Value.numItems;
+
+                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 18, matchName: "mo.ID + "_AutoFlak_pos_");
+
+                int realNIB = nib * numItemsNow / numItemsPlaced;
+                if (realNIB <= 0) continue;
 
                 //slightly randomize the position
                 newPos.x += random.Next(12) - 6;
@@ -22394,22 +22410,22 @@ added Rouen Flak
                 //formation = 1;
                 int orientation = random.Next(360);
 
-                for (int i = 0; i < nib; i++)
+                for (int i = 0; i < realNIB; i++)
                 {
-                    double radius2 = 10 + 2 * nib;
+                    double radius2 = 10 + 2 * realNIB;
                     if (formation == 0)
                     {
-                        newPoint = Calcs.pointsOnACircle(newPos, radius2, nib, i, 1 / (2.0 * nib), 1);
+                        newPoint = Calcs.pointsOnACircle(newPos, radius2, realNIB, i, 1 / (2.0 * realNIB), 1);
                     } else if (formation == 1)
                     {
-                        newPoint = Calcs.pointsOnALine(newPos, 10 + 7 * nib, orientation, nib, i, 1);
+                        newPoint = Calcs.pointsOnALine(newPos, 10 + 7 * realNIB, orientation, realNIB, i, 1);
                     }
                     else if (formation == 2)
                     {
-                        newPoint = Calcs.pointsOnADoubleLine(newPos, 5 + 3.5 * nib, 8, orientation, nib, i, 1);
+                        newPoint = Calcs.pointsOnADoubleLine(newPos, 5 + 3.5 * realNIB, 8, orientation, realNIB, i, 1);
                     } else
                     {
-                        newPoint = Calcs.pointsOnARectangle(newPos, 5 + 3.5 * nib, 7 + 4.5 * nib, orientation, nib, i, 1);
+                        newPoint = Calcs.pointsOnARectangle(newPos, 5 + 3.5 * realNIB, 7 + 4.5 * realNIB, orientation, realNIB, i, 1);
                     }
 
                     string side = owner;
@@ -22427,10 +22443,13 @@ added Rouen Flak
                     flakType++; //so we're just going to alternate between the two types of effective flak and that way if you have at least 2 flaks at each location you'll have one of each type.
                     if (flakType >= flak.Count) flakType = 0;
                     //});
+
+                    //if (!tempFlak) autoFlakTotal += nib * nfb;            
+                    if (!tempFlak) autoFlakTotal ++;
                 }
 
             }
-            if (!tempFlak) autoFlakTotal += nib * nfb;            
+            
 
 
 
@@ -22447,7 +22466,18 @@ added Rouen Flak
         }
     }
 
-    public Dictionary<string, List<Point3d>> AutoFlak_locations = new Dictionary<string, List<Point3d>>() { };
+    Public Class AutoFlak_location {
+        
+        public numItems {get; set;}
+
+        public AutoFlak_location (Point3d pos, int numPlaced = 0){
+            this.pos = pos;
+            this.numItems = numPlaced;
+        }
+
+    }
+
+    public Dictionary<string, List<AutoFlak_location>> AutoFlak_locations = new Dictionary<string, List<AutoFlak_location>>() { };
     public object AutoFlak_locations_lock = new object();
 
     //refresh=true is intended ONLY for mobile objectives/ mo.IsMobile() == true
@@ -22480,7 +22510,7 @@ added Rouen Flak
             if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2) batteryRadius += 65;  //For Blue radars, the exact location of flak can help locate the radar position, which we don't want. So we spread the batteries out a fair bit more.
 
             if (dbug) Console.WriteLine("MASL 2");
-            List <Point3d> MO_AutoFlak_locations = mo.get_AutoFlak_locations();
+            List <AutoFlak_location> MO_AutoFlak_locations = mo.get_AutoFlak_locations();
 
             if (dbug) Console.WriteLine("MASL 2a");
             double nmc_to_Obj_Dist_m = distanceToNearestMobileConvoy_m(mo.Pos);
@@ -22615,7 +22645,9 @@ added Rouen Flak
                         if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
                         newPos.z = radius_hide;
 
-                        MO_AutoFlak_locations.Add(newPos);
+                        int howManyPlaced = 0;
+
+
 
                         if (ON_TESTSERVER) Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
                         Console.WriteLine("AutoFlak choose locations: {0:N0} {1:N0} {2:N0} {3:N0}", angle /2/Math.PI*360, radius, mo.Pos.x, mo.Pos.y);
@@ -22632,8 +22664,12 @@ added Rouen Flak
                         //AND it will leave oodles of stationaries scattered about
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos" + k.ToString() + "_" + mo.ID+"_");
+                            howManyPlaced == placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
                         }
+
+                        MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced));
+
+                        //need to do something with **howManyPlaced** so we can keep track of how destroyed that AA position is
                         
                         no_found++;
                         chosenAngles.Add(angle);

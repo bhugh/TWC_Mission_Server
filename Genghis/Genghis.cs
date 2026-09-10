@@ -19938,12 +19938,12 @@ added Rouen Flak
 
 
         //For a specified # of things
-        public MO_ThingsTypeNumberRadius(List<string> t, int hm = 7, double rm = 25, double rn = 25, double prob = 1, List<shapeType> shps = null, double orient_angle_deg = -1) 
+        public MO_ThingsTypeNumberRadius(List<string> t, int hm = 7, double rm = 25, double rn = 25, double prob = 1, List<shapeType> shps = null, double orient_angle_deg = -1, bool randomizeHowMany = true) 
         {
             things = t;
             howmany = hm;
             howmany_min = hm;
-            use_howmany_min = false;
+            use_howmany_min = ! randomizeHowMany;
             radius_m = rm;
             range_m = rn;
             probability = prob;
@@ -20368,11 +20368,11 @@ added Rouen Flak
             { MO_MobileObjectiveType.TempFlakSite,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     
-                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 10, 8 )},
-                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 10, 8, prob: .15 )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18,prob: .25 )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 30, 10,prob: .15 )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 20, 18, prob: .5 )},
+                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
+                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 6, 5,prob: .25, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .15, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 13, 10, prob: .5 , randomizeHowMany: false )},
                     
 
                 }
@@ -22547,28 +22547,29 @@ added Rouen Flak
 
                     double saveAng = 0;
                     double saveDiffAng = 0;
+                    double aDiv = (no_to_find + 1).Clamp(3,25);
                     //try to chose the flak installations at roughly equal angles 
                     //around the circumference
                     foreach (double ang in chosenAngles){
                         double diffAng_deg = Calcs.CalculateDegreeDifferenceInputRad_deg(angle,ang);
                         saveAng = ang;
                         saveDiffAng = diffAng_deg;
-                        if (i< tries/3.0 && diffAng_deg < 360.0/no_to_find) {bad = true; break;}
-                        else if (i< 8.0 *tries/10.0 && diffAng_deg < 360.0/no_to_find * (1 - i/tries)) {bad = true; break;}
+                        if (i< tries/5.0 && diffAng_deg < 360.0/aDiv) {bad = true; break;}
+                        else if (i< 8.0 *tries/10.0 && diffAng_deg < 360.0/aDiv * (1 - (double)i/(double)tries)) {bad = true; break;}
                         
                     }
 
-                    if (bad && ON_TESTSERVER) Console.WriteLine("Rejected ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, no_to_find, 360.0/no_to_find, 360.0/no_to_find * (1 - i/tries) );
+                    //if (bad && ON_TESTSERVER) Console.WriteLine("Rejected ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, aDiv, 360.0/aDiv, 360.0/aDiv * (1 - (double)i/(double)tries)) ;
 
                     if (bad) continue;
 
-                    if (ON_TESTSERVER) Console.WriteLine("FOUND ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, no_to_find, 360.0/no_to_find, 360.0/no_to_find * (1 - i/tries) );   
+                    //if (ON_TESTSERVER) Console.WriteLine("FOUND ang: a1 {0:N0} a2 {1:N0} diff {2:N0} i: {3:N0} tries: {4:N0} notofind: {5} {6:N2} {7:N2}", Calcs.RadiansToDegrees(angle), Calcs.RadiansToDegrees(saveAng), saveDiffAng, i, tries, aDiv, 360.0/aDiv, 360.0/aDiv * (1 - (double)i/(double)tries));   
 
                     bad = false;
 
                     //try to make sure points are not too close together
                     double saveDT = 0;
-                    double saveDiv = 0;
+                    double saveDiv = 1;
                     foreach (Point3d pt in chosenPoints){
 
                         double dt = Calcs.CalculatePointDistance(newPos, pt);
@@ -22579,16 +22580,16 @@ added Rouen Flak
 
 
                         if (i<tries/3.0 && dt < (batteryRadius * 2.0 * Math.PI/ div * 0.6 )) {bad = true; break;}
-                        if (i< 8.0*tries/10.0 && dt < batteryRadius * 2.0 * Math.PI/ div * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0))) {bad = true; break;}
+                        if (i< 8.0*(double)tries/10.0 && dt < batteryRadius * 2.0 * Math.PI/ div * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0))) {bad = true; break;}
                         if (i< .88 * tries  && dt<25) {bad = true; break;}        
                     }
 
-                    if ( bad && ON_TESTSERVER) Console.WriteLine("Rejected loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0)) );
+                    //if ( bad && ON_TESTSERVER) Console.WriteLine("Rejected loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0)) );
 
 
                     if (bad) continue;
 
-                    if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - tries/3.0)/(2.0*tries/3.0)) );
+                    //if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0)) );
 
                     
                     maddox.game.LandTypes landType = GamePlay.gpLandType(newPos.x, newPos.y);
@@ -22613,10 +22614,14 @@ added Rouen Flak
                     {
                         if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
                         newPos.z = radius_hide;
+
                         MO_AutoFlak_locations.Add(newPos);
-                        Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
+
+                        if (ON_TESTSERVER) Console.WriteLine("AutoFlak choose locations: Placing TempFlakSite for {0} at {1:N0} {2:N0} {3:N0}", mo.ID, newPos.x, newPos.y, newPos.z);
                         Console.WriteLine("AutoFlak choose locations: {0:N0} {1:N0} {2:N0} {3:N0}", angle /2/Math.PI*360, radius, mo.Pos.x, mo.Pos.y);
-                        var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
+                       
+
+                        if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0)) );
 
 
                         //for testing - disabling all the extra autoflak objects
@@ -22625,7 +22630,10 @@ added Rouen Flak
                         //so it looks like something players can shoot
                         //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
                         //AND it will leave oodles of stationaries scattered about
-                        //if(!mo.isMobile()) placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos"+mo.ID);
+                        if(!mo.isMobile()) {
+                            var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
+                            placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: "AutoFlak_pos" + k.ToString() + "_" + mo.ID+"_");
+                        }
                         
                         no_found++;
                         chosenAngles.Add(angle);
@@ -24318,7 +24326,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 			searchRadius_m = 5;
 			variance_m = 3;
 			things = MO_Jerrycan1410;
-		}
+		} 
 		
 		
 
@@ -24327,7 +24335,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 				ISectionFile f = GamePlay.gpCreateSectionFile();
 
 				if (numi <= 0) 
-					numi = (Convert.ToInt32(searchRadius_m * 2 * Math.PI / 150.0)).Clamp (20,1000);					
+					numi = (Convert.ToInt32(searchRadius_m * 2 * Math.PI / 150.0)).Clamp (1,3);					//just a few, all we need, maybe not even this because these are *oibjectives* after all
 			
 
 				//toDO: This should be a rectangular array instead.
@@ -24527,8 +24535,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 						{
 						
 							//List<string> things = MO_ExplodeyThings.Concat(MO_Tables).Concat(MO_Cars).Concat(MO_ExplodeyThings).Concat(MO_ExplodeyThings);
-							var things = MO_ExplodeyThings.Concat(MO_Tables).Concat(MO_Cars).Concat(MO_ExplodeyThings).Concat(MO_ExplodeyThings).ToList();
-							MO_PlaceSomeJerrycans(mo, things, numi: 15 + random.Next(0,15), searchRadius_m: mo.radius * 0.6, variance_m: mo.radius* 0.5, stretchA: .8 * random.NextDouble() * 0.4, wait: 400, staticprefix: "MO_PlaceExtraObjects" );
+							var things = MO_ExplodeyThings.Concat(MO_Cars).ToList();
+							MO_PlaceSomeJerrycans(mo, things, numi: 6 + random.Next(0,6), searchRadius_m: mo.radius * 0.6, variance_m: mo.radius* 0.5, stretchA: .8 * random.NextDouble() * 0.4, wait: 400, staticprefix: "MO_PlaceExtraObjects" );
 						}
 					}                
 

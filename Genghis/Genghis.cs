@@ -22466,9 +22466,10 @@ added Rouen Flak
         }
     }
 
-    Public Class AutoFlak_location {
+    public class AutoFlak_location {
         
-        public numItems {get; set;}
+        public Point3d pos {get; set;}
+        public int numItems {get; set;}
 
         public AutoFlak_location (Point3d pos, int numPlaced = 0){
             this.pos = pos;

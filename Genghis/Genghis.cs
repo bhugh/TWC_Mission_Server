@@ -16090,7 +16090,7 @@ public class Mission : AMission, IMainMission
         
         }
 
-        public int tallyTempFlakScore(){
+        public int tallyTempFlakScore(){            
                 
             int newlyKilled = 0;
 
@@ -16100,7 +16100,7 @@ public class Mission : AMission, IMainMission
 
                 //int numItemsNow = Calcs.CountMatchingGroundObjects (msn.GamePlay, location: Pos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
 
-                double checkRadius_m = (radius * 10).Clamp(10000,50000);
+                double checkRadius_m = (radius * 10).Clamp(10000,50000);            
                 
 
                 List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
@@ -16109,8 +16109,11 @@ public class Mission : AMission, IMainMission
                 {
                     if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return 0;
                     foreach (AutoFlak_location afl in msn.AutoFlak_locations[ID]) {
-                        if (afl.numItemsRemaining <= afl.numItems) continue;
+                        if (afl.numItemsRemaining >= afl.numItems) continue;
                         int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix);
+                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} index is num {2} remaining {3} newremaining {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining);
+
+                        
                         if (newNumItemsRemaining < afl.numItemsRemaining )
                         { 
                             afl.numItemsRemaining = newNumItemsRemaining;
@@ -16120,6 +16123,7 @@ public class Mission : AMission, IMainMission
                                 afl.dead = true;
                                 newlyKilled++;
                             }                        
+                            if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
                         }
 
                     }
@@ -20428,7 +20432,7 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
                     { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 6, 5,prob: .25, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .5, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .85, randomizeHowMany: false  )},
                     { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 13, 10, prob: .5 , randomizeHowMany: false )},
                     
 
@@ -21366,7 +21370,7 @@ added Rouen Flak
     //returns no. of  things placed
     //not if randomize is set for the object list of things, the returned number will be APPROXIMATE
 
-    public int placeTheThings(Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>  things, Point3d newPos, MissionObjective mo = null, int def_army =0, string def_prefix = "")
+    public int placeTheThings(Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>  things, Point3d newPos, MissionObjective mo = null, int def_army =0, string def_prefix = "", int percentSide = -1)
     {
         int thingsPlaced = 0;
 
@@ -21486,10 +21490,12 @@ added Rouen Flak
                     }
                 }
 
-                int percentSide = 28; //2022-12 - was 33%, now making it to 28% just to cut visibility of black dots a little.  2023-01, now 22%
-                if (howmany > 14) percentSide = 14;
-                if (howmany > 32) percentSide = 6;
-                if (mobileShipObjective) percentSide = 100;
+                if (percentSide == -1) {
+                    percentSide = 28; //2022-12 - was 33%, now making it to 28% just to cut visibility of black dots a little.  2023-01, now 22%
+                    if (howmany > 14) percentSide = 14;
+                    if (howmany > 32) percentSide = 6;
+                    if (mobileShipObjective) percentSide = 100;
+                }
 
                 thingsPlaced += howmany;
 
@@ -21765,12 +21771,15 @@ added Rouen Flak
     }
 
     void tallyTempFlakScore(){
+        try {
 
-            List<int> totalScore  = new List<int>(){0,0};
+            List<int> totalScore  = new List<int>(){0,0,0};
             
 
             foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()){
                 int score = mo.tallyTempFlakScore();
+                if (ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} is {1}", mo.ID, score);
+                
                 if (score > 0)
                 {
                     MissionObjectiveScore[(ArmiesE)mo.AttackingArmy] += score;
@@ -21785,6 +21794,10 @@ added Rouen Flak
                     
                 });
             }
+        } catch (Exception ex)
+        {
+            Console.WriteLine("tallyTempFlakScore ERROR: " + ex.Message);
+        }
     }
 
     //tempflak only lives for 2 minutes or so
@@ -22424,7 +22437,7 @@ added Rouen Flak
 
                  int numItemsNow4 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 40000, matchName: mo.ID + "_AutoFlak_pos_"); 
 
-                int realNIB = nib * numItemsNow / numItemsPlaced;
+                int realNIB = numItemsPlaced !=0 ? nib * numItemsNow / numItemsPlaced : 0;
 
                 Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Numitems: {8} {9} {10}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, numItemsNow, nib, realNIB, numItemsNow2, numItemsNow3, numItemsNow4);
 
@@ -22772,7 +22785,7 @@ added Rouen Flak
                         string pref =  mo.ID + "_AutoFlak_pos_" + k.ToString() + "_";
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: pref);
+                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
                         }
 
                         MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced, pref));

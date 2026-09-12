@@ -14,6 +14,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
+  </PropertyGroup>
+
+
   <!-- Build configurations -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -64,30 +69,61 @@
     <Reference Include="CloDMissionCommunicator">
       <HintPath>$(CloDInstallPath)CloDMissionCommunicator.dll</HintPath>
     </Reference>
-    <Reference Include="Maddox">
-      <HintPath>$(CloDInstallPath)maddox.dll</HintPath>
-    </Reference>
-    <Reference Include="part">
-      <HintPath>$(CloDInstallPath)part.dll</HintPath>
-    </Reference>
+
+
     <Reference Include="WSteam">
       <HintPath>$(CloDInstallPath)WSteam.dll</HintPath>
     </Reference>
-    <Reference Include="GameWorld">
-      <HintPath>$(CloDInstallPath)GameWorld.dll</HintPath>
-    </Reference>
-    <Reference Include="HostView">
-      <HintPath>$(CloDInstallPath)HostView.dll</HintPath>
-    </Reference>
-    <Reference Include="Campaign">
-      <HintPath>$(CloDInstallPath)Campaign.dll</HintPath>
-    </Reference>
-    <Reference Include="core">
-      <HintPath>$(CloDInstallPath)core.dll</HintPath>
-    </Reference>
+
+
+  
+
     <Reference Include="antlr.runtime">
       <HintPath>$(CloDInstallPath)antlr.runtime.dll</HintPath>
     </Reference>
+
+    <Reference Include="Maddox">
+  <HintPath>$(CloDInstallPath)maddox.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
+<Reference Include="part">
+  <HintPath>$(CloDInstallPath)part.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
+<Reference Include="GameWorld">
+  <HintPath>$(CloDInstallPath)GameWorld.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
+<Reference Include="HostView">
+  <HintPath>$(CloDInstallPath)HostView.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
+<Reference Include="Campaign">
+  <HintPath>$(CloDInstallPath)Campaign.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
+<Reference Include="core">
+  <HintPath>$(CloDInstallPath)core.dll</HintPath>
+  <Private>false</Private>
+  <SpecificVersion>false</SpecificVersion>
+  <ReferenceAssembly>false</ReferenceAssembly>
+</Reference>
+
   </ItemGroup>
 
   <!-- Native DLLs (must NOT be <Reference> or Roslyn will crash) -->

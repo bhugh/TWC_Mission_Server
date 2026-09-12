@@ -1,0 +1,13 @@
+{
+  "RoslynExtensionsOptions": {
+    "EnableAnalyzersSupport": false,
+    "EnableImportCompletion": true
+  },
+  "FormattingOptions": {
+    "OrganizeImports": false
+  },
+  "MsBuild": {
+    "UseLegacySdkResolver": true,
+    "LoadProjectsOnDemand": true
+  }
+}

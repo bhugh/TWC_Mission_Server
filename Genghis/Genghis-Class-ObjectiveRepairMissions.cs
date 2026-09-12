@@ -344,7 +344,7 @@ public class ObjectiveRepairMission : AMission
             GamePlay.gpLogServer(new Player[] { player }, ">>>>ASSET REPAIR & FERRY MISSIONS HELP 4/5", null);
             GamePlay.gpLogServer(new Player[] { player }, "You must initiate <pickup, <pdefense, and <ferry starting at airports in the *far* corner of the map", null);
             GamePlay.gpLogServer(new Player[] { player }, "Even if a particular aircraft supply is zero, you can still pick up an aircraft of that type for yourself and your <cover aircraft, in the <ferry area ONLY.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "If you <deliver the aircraft successfully to a front-line airport, these aircraft will then be added supply.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "If you <deliver the aircraft successfully to a front-line airport, these aircraft will then be added to supply.", null);
             GamePlay.gpLogServer(new Player[] { player }, string.Format("To count for Repair Load or Ferry Aircraft actually delivered, Cover Aircraft must be within {0:n0}km of you at moment of <delivery", orm_maxDistanceForCoverToCount_m / 1000), null);
             GamePlay.gpLogServer(new Player[] { player }, "Repair Airports: Your target airport is damaged, so landing is tricky.  Land anywhere nearby & survive, as you are able.", null);
             GamePlay.gpLogServer(new Player[] { player }, "Repair radar & other objectives, or deliver Defense Units: Fly over the target, right at 900m/3000ft AGL, straight, level, and slow - 200kph/120mph. <deliver above your target - or within 1km distance at most", null);        
@@ -1707,7 +1707,7 @@ public class ObjectiveRepairMission : AMission
             }
             Timeout(12, () =>
             {
-                GamePlay.gpLogServer(new Player[] { player }, ">>>You can now ALSO complete a FERRY of your delivery aircraft - just land at a front line airfield a use command <de", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, ">>>You can now ALSO complete a FERRY of your delivery aircraft - just land at a front line airfield and use command <de", new object[] { });
                 GamePlay.gpLogServer(new Player[] { player }, ">>>If you DON'T want to deliver the ferry aircraft, release them with command <abandon (<ab).", new object[] { });
             });
 

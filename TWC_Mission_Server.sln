@@ -1,0 +1,2 @@
+dotnet new sln -n TWC_Mission_Server
+dotnet sln add TWC_Mission_Server.csproj

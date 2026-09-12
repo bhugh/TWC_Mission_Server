@@ -437,6 +437,7 @@ public class aAiAirport : AiAirport
         this.name = name;
         this.army = army;
         this.pos = pos;
+        
     }
 
     /*
@@ -1598,7 +1599,7 @@ public class Mission : AMission, IMainMission
                 string ap2Name = AirfieldTargets[apID].Item2;
                 string apKey = ap2Name + "_airfield";
                 Point3d apPos = AirfieldTargets[apID].Item7;
-                double apRadius = AirfieldTargets[apID].Item6;
+                double apRadius = AirfieldTargets[apID].Item6;                
 
                 if (Calcs.CalculatePointDistance(apPos, pos) <= apRadius)
                 {
@@ -1613,6 +1614,7 @@ public class Mission : AMission, IMainMission
             //We'll get the NAME of the airport and ARMY from the birthplace/spawn point declare in a .mis file, if it exists
             int army_perfront = GamePlay.gpFrontArmy(pos.x, pos.y);
             int owner_army = army_perfront;
+
 
             string apName = ap.Name();
             foreach (AiBirthPlace bp in GamePlay.gpBirthPlaces())
@@ -9210,6 +9212,8 @@ public class Mission : AMission, IMainMission
                                 string key = line.Substring(0, equalsIdx).Trim();
                                 string val = line.Substring(equalsIdx + 1).Trim();
 
+                                Console.WriteLine("Reading radar passwords from stats.ini, {3}: {0} {1}", key, val, radPassSection);
+
                                 if (key.Equals("Red", StringComparison.OrdinalIgnoreCase))
                                     pwRed = val;
                                 else if (key.Equals("Blue", StringComparison.OrdinalIgnoreCase))
@@ -9227,6 +9231,8 @@ public class Mission : AMission, IMainMission
                     Console.WriteLine("Error reading radar passwords from stats.ini: " + ex.Message);
                 }
             }
+
+            Console.WriteLine("Reading radar passwords from stats.ini, results: {0} {1} {2} {3}", pwRed, pwBlue, pwAdmin, pwAdminGrouped);
 
             radarpasswords = new Dictionary<int, string>
             {
@@ -12533,7 +12539,7 @@ public class Mission : AMission, IMainMission
             if (player.Place() != null) pos = player.Place().Pos();
             Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "BuildingFireBig", duration_s: 6 * 3600);
             Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "BuildingFireSmall", duration_s: 6 * 3600);
-            Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "Smoke1", duration_s: 6 * 3600);
+            Calcs.loadSmokeOrFire(GamePlay, this, pos.x + random.Next(100) + 10, pos.y + random.Next(100) + 10, 0, "Smoke1", duration_s: 6 * 3600);            
         }
         else if (msg.StartsWith("<apdest") && admin_privilege_level(player) >= 2)
         {
@@ -15899,6 +15905,7 @@ public class Mission : AMission, IMainMission
             double z = Calcs.LandElevation_m(Pos); //saving altitude/elevation of the objective.
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
+            
 
             if (AttackingArmy != 0)
             {
@@ -16080,7 +16087,52 @@ public class Mission : AMission, IMainMission
                 Console.WriteLine("get_AutoFlak_locations ERROR: " + ex.Message);
                 return new List<AutoFlak_location>();
             }
+        
         }
+
+        public int tallyTempFlakScore(){
+                
+            int newlyKilled = 0;
+
+            try
+            {
+                
+
+                //int numItemsNow = Calcs.CountMatchingGroundObjects (msn.GamePlay, location: Pos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
+
+                double checkRadius_m = (radius * 10).Clamp(10000,50000);
+                
+
+                List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
+               
+                lock (msn.AutoFlak_locations_lock)
+                {
+                    if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return 0;
+                    foreach (AutoFlak_location afl in msn.AutoFlak_locations[ID]) {
+                        if (afl.numItemsRemaining <= afl.numItems) continue;
+                        int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix);
+                        if (newNumItemsRemaining < afl.numItemsRemaining )
+                        { 
+                            afl.numItemsRemaining = newNumItemsRemaining;
+                            afl.percentRemaining = (double)afl.numItemsRemaining/(double)afl.numItems;
+                            if (!afl.dead &&  (afl.percentRemaining <= 0.25 || afl.numItemsRemaining <= 1) )
+                            {
+                                afl.dead = true;
+                                newlyKilled++;
+                            }                        
+                        }
+
+                    }
+                }
+                return newlyKilled;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("get_AutoFlak_locations ERROR: " + ex.Message);
+                return newlyKilled;
+            }
+        }
+
         public void fixDestructionValues()
         {
             if (Double.IsNaN(DestroyedPercent)) DestroyedPercent = 0;
@@ -21568,12 +21620,16 @@ added Rouen Flak
 
     private int tempflakcounter = 0;
     private int tempflakcalledcounter = 0;
+    private int tallyTempFlakcounter = 0;
     private int[] sinceLastTempFlakCalledCount = { 1000, 1000, 1000 }; //keep track of how many runs since tempflak was last placed, for each army.  We start with a high # so it starts to work on 1st round. (helps testing.)
 
     public void tempFlak(object o)
     {
         try
         {
+            if (tallyTempFlakcounter % 4 == 0) tallyTempFlakScore();
+            tallyTempFlakcounter++;
+
             if (panic()) return;
             if (threadloadmission.recentCPUPercent > 95 || threadloadmission.rollingAverageCPUPercent > 98) return; //prevents again both (adding to) a sudden surge of CPU but also if the long term CPU is getting high, preventively just stop adding more tempflak
             if (threadloadmission.rollingAverageCPUPercent > 93 && random.NextDouble() > 0.5) return; //start culling
@@ -21706,6 +21762,29 @@ added Rouen Flak
         {
             Console.WriteLine("tempFlak main ERROR: " + ex.Message);
         }
+    }
+
+    void tallyTempFlakScore(){
+
+            List<int> totalScore  = new List<int>(){0,0};
+            
+
+            foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()){
+                int score = mo.tallyTempFlakScore();
+                if (score > 0)
+                {
+                    MissionObjectiveScore[(ArmiesE)mo.AttackingArmy] += score;
+                    totalScore[mo.AttackingArmy] += score;                                        
+                }
+            }
+            for (int i = 1; i<3; i++) {
+                if (totalScore[i] > 0) Timeout(5 * i, ()=>
+                {
+                    string s  = (totalScore[i] == 0) ? "" : "s";
+                    twcLogServer(null, ArmiesL[i] + " has destroyed {0} flak nest{1} (+{0} point{1})", new object[] { totalScore[i], s  });
+                    
+                });
+            }
     }
 
     //tempflak only lives for 2 minutes or so
@@ -22123,7 +22202,7 @@ added Rouen Flak
 
 
 				//was Substring(1), not sure why. 2026/08
-                autoFlakF = MO_AutoFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.IDtoCleanChiefName().Substring(0) + "_");
+                autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.IDtoCleanChiefName().Substring(0) + "_");
 
                 reset_count = false;
 
@@ -22176,7 +22255,7 @@ added Rouen Flak
     int autoFlakChiefNum = 0;
     int autoFlakRun = 0;
 
-    public ISectionFile MO_AutoFlakPlacement(MissionObjective mo, ISectionFile f = null, bool resetCount = false, bool tempFlak = false, int nfb_temp = 1, int nib_temp = 8, int total_flak_temp = 8, string prefix_replace = null)
+    public ISectionFile MO_AutoOrTempFlakPlacement(MissionObjective mo, ISectionFile f = null, bool resetCount = false, bool tempFlak = false, int nfb_temp = 1, int nib_temp = 8, int total_flak_temp = 8, string prefix_replace = null)
     {
         try
         {
@@ -22337,11 +22416,17 @@ added Rouen Flak
                 newPos = temp.pos;
                 numItemsPlaced = temp.numItems;
 
-                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 18, matchName: mo.ID + "_AutoFlak_pos_");
+                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
+
+                 int numItemsNow2 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 250, matchName: mo.ID + "_AutoFlak_pos_");
+
+                 int numItemsNow3 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 2500, matchName: mo.ID + "_AutoFlak_pos_");
+
+                 int numItemsNow4 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 40000, matchName: mo.ID + "_AutoFlak_pos_"); 
 
                 int realNIB = nib * numItemsNow / numItemsPlaced;
 
-                Console.WriteLine("Handling autoFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, numItemsNow, nib, realNIB);
+                Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Numitems: {8} {9} {10}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, numItemsNow, nib, realNIB, numItemsNow2, numItemsNow3, numItemsNow4);
 
                 if (realNIB <= 0) continue;
 
@@ -22479,11 +22564,21 @@ added Rouen Flak
     public class AutoFlak_location {
         
         public Point3d pos {get; set;}
-        public int numItems {get; set;}
+        public int numItems {get; set;}  
+        public int numItemsRemaining {get; set;}
+        public double percentRemaining {get; set; }
+        public string stationaryPrefix {get; set; }
 
-        public AutoFlak_location (Point3d pos, int numPlaced = 0){
+        public bool dead {get; set;}
+
+        public AutoFlak_location (Point3d pos, int numPlaced = 0, string stationaryPrefix=""){
             this.pos = pos;
             this.numItems = numPlaced;
+            this.numItemsRemaining = numPlaced;
+            this.percentRemaining = 1;
+
+            this. dead = false;
+            this.stationaryPrefix = stationaryPrefix;
         }
 
     }
@@ -22504,6 +22599,7 @@ added Rouen Flak
             else if (mo.radius <= 100) no_to_find = 2;
             else if (mo.radius <= 200 ) no_to_find = 3;
             else if (mo.radius >=1000) no_to_find = 5;
+            else if (mo.radius >=2000) no_to_find = 6;
 
             //var MO_AutoFlak_locations = new List<Point3d>();
             if (ON_TESTSERVER) Console.WriteLine("AutoFlak_selectLocation: Finding autoflak location for {0} pos=({1:n0},{2:n0})", mo.ID, mo.Pos.x, mo.Pos.y);
@@ -22673,12 +22769,13 @@ added Rouen Flak
                         //so it looks like something players can shoot
                         //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
                         //AND it will leave oodles of stationaries scattered about
+                        string pref =  mo.ID + "_AutoFlak_pos_" + k.ToString() + "_";
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
+                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: pref);
                         }
 
-                        MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced));
+                        MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced, pref));
 
                         //need to do something with **howManyPlaced** so we can keep track of how destroyed that AA position is
                         
@@ -24679,7 +24776,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         foreach (MissionObjective mo in MissionObjectivesList.Values)
         {          
             if (!mo.IsEnabled) continue;
-            if ((mo.AutoFlak || (mo.AutoFlakIfPrimary && mo.IsPrimaryTarget) || mo.numDefenseUnits()>4) && !mo.Destroyed) autoFlakF = MO_AutoFlakPlacement(mo, autoFlakF, flResetCount);
+            if ((mo.AutoFlak || (mo.AutoFlakIfPrimary && mo.IsPrimaryTarget) || mo.numDefenseUnits()>4) && !mo.Destroyed) autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, flResetCount);
             flResetCount = false;
         }
 
@@ -29427,6 +29524,7 @@ public static class Calcs
 
     #endregion
 
+/*
     public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
     {
         if (stringToSplit.Length <= maxLineLength) { yield return stringToSplit; yield break; }
@@ -29456,6 +29554,48 @@ public static class Calcs
         }
         yield return line.ToString().Trim();
     }
+    */
+    public static IEnumerable<string> SplitToLines(string stringToSplit, int maxLineLength)
+    {
+        if (stringToSplit.Length <= maxLineLength) { yield return stringToSplit; yield break; }
+
+        string[] words = stringToSplit.Split(' ');
+        StringBuilder line = new StringBuilder();
+
+        foreach (string word in words)
+        {
+            if (word.Length + line.Length <= maxLineLength)
+            {
+                line.Append(word);
+            }
+            else
+            {
+                if (line.Length > 0)
+                {
+                    yield return line.ToString().Trim();
+                    line.Clear();
+                }
+
+                string overflow = word;
+                while (overflow.Length > maxLineLength)
+                {
+                    yield return overflow.Substring(0, maxLineLength);
+                    overflow = overflow.Substring(maxLineLength);
+                }
+
+                line.Append(overflow + " ");
+            }
+        }
+
+        // Trim the final line if it is not empty
+        if (!string.IsNullOrWhiteSpace(line.ToString()))
+        {
+            yield return line.ToString().Trim();
+        }
+    }
+
+
+
 
     public static string GetAircraftType(AiActor actor)
     {
@@ -30111,6 +30251,21 @@ public static class Calcs
             if (g.Type == AiGroundActorType.AAGun || g.Type == AiGroundActorType.Artillery) count++;
         }
         return count;
+    }
+
+    public static int CountMatchingGroundObjectsIn(List<GroundStationary> gs, string matchName = null )
+    {
+        //List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+        int count = 0;
+        foreach (GroundStationary g in gs)
+        {
+
+            if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
+            count ++;
+        }
+
+        return count;
+
     }
 
     //Returns # matching ALL the given criteria ++++ OR NONE of the given criteria if anti-match=true

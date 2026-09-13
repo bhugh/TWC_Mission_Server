@@ -2039,7 +2039,7 @@ public class Mission : AMission, IMainMission
                         if (radius < 200) radius = 1000; //<200 not sensible
                     }
 
-                    int existingWS = Calcs.CountMatchingGroundObjects(GamePlay, pos, radius + 200, matchTitle: "Windsock", matchAlive: true);
+                    int existingWS = Calcs.CountMatchingGroundObjects(GamePlay, pos, radius + 200, matchTitle: "Windsock", matchAliveState: true);
                     //if (ON_TESTSERVER) Console.WriteLine("Place Windsocks: Found {0} windsocks at {1} - {2}", existingWS, bp.Name(), ap.Name());
                     if (existingWS > 0) continue;
                     
@@ -2504,7 +2504,7 @@ public class Mission : AMission, IMainMission
                     //this counts craters = bad
                     //numNearbyObjects += GamePlay.gpGroundStationarys(pos.x, pos.y, destruction_radius_m).Length;
                     //this SHOULD skip craters 2023-01
-                    numNearbyObjects += Calcs.CountMatchingGroundObjects(GamePlay, pos, destruction_radius_m, matchTitle: "crater", matchName: "crater", matcharmy: 0, matchAlive: false, antiMatch: true);
+                    numNearbyObjects += Calcs.CountMatchingGroundObjects(GamePlay, pos, destruction_radius_m, matchTitle: "crater", matchName: "crater", matcharmy: 0, matchAliveState: false, antiMatch: true);
                     double numNearbyObjects_mult = Math.Pow(Math.Abs(numNearbyObjects) + 1, 0.2); //+ 1 because if ZERO objects are found we want mult 1^.2 =1, but if ONE is found we want 2&0.2 = 1.15 and so one upwards
                     if (ON_TESTSERVER) Console.WriteLine("BombExpl: num nearby ground objects: {0}, multiplier: {1:f3}", numNearbyObjects, numNearbyObjects_mult);
 
@@ -15170,7 +15170,7 @@ public class Mission : AMission, IMainMission
 
     public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround };
 
-    public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
+    public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, ObservationDeck, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // a shortage of those items. Similarly if a StorageFacility is destroyed it will cause an immediate loss of some of the existing supply of (say) aircraft of that type.  NOT IMPLEMENTED YET!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
 
@@ -16100,17 +16100,22 @@ public class Mission : AMission, IMainMission
 
                 //int numItemsNow = Calcs.CountMatchingGroundObjects (msn.GamePlay, location: Pos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
 
-                double checkRadius_m = (radius * 10).Clamp(10000,50000);            
+                double checkRadius_m = (radius * 10).Clamp(10000,50000); 
+                if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS1: checkR {0}", checkRadius_m);           
                 
 
                 List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
+                
+                if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS2: gs# {0}", gs.Count);           
                
                 lock (msn.AutoFlak_locations_lock)
                 {
                     if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return 0;
                     foreach (AutoFlak_location afl in msn.AutoFlak_locations[ID]) {
-                        if (afl.numItemsRemaining >= afl.numItems) continue;
-                        int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix);
+                        if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS3: afl {0} {1} {2}", afl.stationaryPrefix,afl.numItems, afl.numItemsRemaining
+                        );           
+                        if (afl.numItemsRemaining <= 0) continue;
+                        int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true); //get only LIVE remaining objs
                         if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} index is num {2} remaining {3} newremaining {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining);
 
                         
@@ -17491,7 +17496,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "Military Brass Smelter Dunkirk", "Dunk", "", "", 2, 3, "RTarget35", "TGroundDestroyed", 51, 314832, 223389, 100, false, 100, 222, "", add);  //g
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Diesel Storage Dunkirk", "Dunk", "", "", 2, 3, "RTarget36", "TGroundDestroyed", 53, 314482, 223882, 200, false, 120, 222, "", add);  //g
             addTrigger(MO_ObjectiveType.AmmunitionStorage, "Rüstungslager Dunkirk", "Dunk", "", "", 2, 3, "RTarget37", "TGroundDestroyed", 50, 313878, 223421, 100, false, 120, 222, "", add);  //g
-            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Low Smoke Diesel Le Havre", "Havr", "", "", 2, 3, "RTarget38", "TGroundDestroyed", 46, 161702, 52073, 100, false, 5, 320, "", add);  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
+           
                                                                                                                                                                                                    //addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "Ethanolfabrik Calais", "Cala", "", "",  2, 3, "9A", "TGroundDestroyed", 63, 296130, 218469, 50, false, 125, 500, "", add);//nothing in .mis file here, mistake?
 
             //I think the locations of the AAA batteries are off? Ok, checking with the .mis file, the order was just reversed and the wrong name with the wrong battery. 1A..9A vs 9A..1A.  Now fixed to match .mis file 9/19/2018
@@ -17501,6 +17506,7 @@ public class Mission : AMission, IMainMission
 			///*****************
 			///LE HAVRE
 			/// 2026/08 - added 1 point to all obj just because it is a l-o-n-g trip, thus harder
+            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Low Smoke Diesel Le Havre", "Havr", "", "", 2, 3, "RTarget38", "TGroundDestroyed", 46, 161702, 52073, 100, false, 5, 320, "", add);  //This is in Le Havre, fuel tanks area. I added 3-4 jerry cans to the area in the .mis so it is a valid target now //g
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Le Havre Kriegsmarine Main Facility", "Havr", "", "", 2, 5, "LehavNaval1", "TGroundDestroyed", 25, 163216, 49915, 100, false, 2, 410, "", add);    //added to targets list in mission and here in CS  fatal 9/22
             addTrigger(MO_ObjectiveType.Military_Building, "Le Havre Kriegsmarine Officer Mess", "Havr", "", "", 2, 5, "LehavNaval2", "TGroundDestroyed", 25, 163447, 49855, 50, false, 2, 320, "", add);
@@ -17517,7 +17523,10 @@ public class Mission : AMission, IMainMission
 			
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "S-Boot-Basis Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-S-Boot-Basis.mis", 2, 25, "BTargLeHavreSBootBasis", 160005, 51130, 175, 150, 10000, 80, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);			
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Widerstandsnest Torpedo Storage Le Havre", "Havr", "Genghis-LOADONCALL-LeHavre-Widerstandsnest.mis", 2, 14, "BTargLeHavreWiderstandsnest", 160246, 51060, 75, 50, 2000, 20, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);	
-			
+
+            //Genghis-LOADONCALL-Havre-Castle.mis
+
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 12, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", add, canBeDisabled: false);			
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -20432,8 +20441,8 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
                     { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 6, 5,prob: .25, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 13, 10,prob: .85, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 13, 10, prob: .5 , randomizeHowMany: false )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3,prob: .85, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 8, 3, prob: .5 , randomizeHowMany: false )},
                     
 
                 }
@@ -21778,7 +21787,7 @@ added Rouen Flak
 
             foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()){
                 int score = mo.tallyTempFlakScore();
-                if (ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} is {1}", mo.ID, score);
+                if (ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} is {1} {2}", mo.ID, score, score>1?"FLAKWASHIT":"");
                 
                 if (score > 0)
                 {
@@ -22640,6 +22649,8 @@ added Rouen Flak
 
             //bool resetCount = true;
 
+            if (batteryRadius < 200 )batteryRadius = 200;
+
 
             //try to find a place that is not water,  outwards at least mo.radius + adder_m from the center of the objective
             int tries = 3000;
@@ -22652,7 +22663,7 @@ added Rouen Flak
                 distmult = 60;
             }
 
-            double radius_hide = 3000; //I ASSUME this means the radar looks out only to 6000m ???
+            double radius_hide = 3000; //I ASSUME this means the radar looks out only to that many meters ???
                                        //or, more likely, the item is VISIBLE to players at 6000m out. Er, whatever
                                        //2026 update: It means the AA holds fire until enemy is this far from them
 
@@ -22763,6 +22774,13 @@ added Rouen Flak
                     if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
                     {
                         if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
+
+                        double frontDist = GamePlay.gpFrontDistance(mo.OwnerArmy, newPos.x, newPos.y);
+
+                        if (radius_hide > frontDist) radius_hide = frontDist;
+
+                        if (radius_hide < 150) radius_hide = 150;
+
                         newPos.z = radius_hide;
 
                         int howManyPlaced = 0;
@@ -22775,6 +22793,8 @@ added Rouen Flak
 
                         if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0)) );
 
+                        Point3d thingsPos = new Point3d (newPos.x + Calcs.randomHole (6,10), newPos.y + Calcs.randomHole (6,10), newPos.z); 
+
 
                         //for testing - disabling all the extra autoflak objects
                         
@@ -22785,7 +22805,7 @@ added Rouen Flak
                         string pref =  mo.ID + "_AutoFlak_pos_" + k.ToString() + "_";
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            howManyPlaced = placeTheThings(things, newPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
+                            howManyPlaced = placeTheThings(things, thingsPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
                         }
 
                         MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced, pref));
@@ -24701,7 +24721,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 					else if (mo.DestroyedPercent > 0) Timeout(125 + random.NextDouble()*120 + 125, () => { MO_RemoveObjective(mo, immediate: false, percent: mo.DestroyedPercent, addX: false); });
 
 					bool isMobile = false;
-					if ((mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None)) isMobile = true;
+					if (mo.MOMobileObjectiveType != null && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) isMobile = true;
 
 					Console.WriteLine("Objective status: {0} ORTGG {1:N0} num required: {2:N0})", mo.Name, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num);
 
@@ -29080,6 +29100,14 @@ public static class Calcs
 
         return (int)distanceMiles;
     }
+
+    //returns a number between small and large, but
+    //equal chance of being + or -
+    public static double randomHole (double small, double large){
+        double diff = large - small;
+        return (clc_random.NextDouble()>0.5?-1:1)*(clc_random.NextDouble()*diff + small); 
+    }
+
     /*
      * angle1 = i * 2.0 / howmany * Math.PI + random.NextDouble() / howmany * Math.PI * 2.0 / 3.0;
                 double radius1 = radius_m + (circleStretcher(angle1, stretcherAmt, stretcherType));
@@ -30266,12 +30294,15 @@ public static class Calcs
         return count;
     }
 
-    public static int CountMatchingGroundObjectsIn(List<GroundStationary> gs, string matchName = null )
+    //matchAliveState matches things that have that state - ie, true matches  things that are alive while false matches things that are dead (IsAlive==false)
+    //If matchAliveState==null then it will match both alive & dead
+    public static int CountMatchingGroundObjectsIn(List<GroundStationary> gs, string matchName = null, bool? matchAliveState = true )
     {
         //List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
         int count = 0;
         foreach (GroundStationary g in gs)
         {
+            if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
 
             if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
             count ++;
@@ -30283,7 +30314,10 @@ public static class Calcs
 
     //Returns # matching ALL the given criteria ++++ OR NONE of the given criteria if anti-match=true
     //string matching is NON case-sensitive and will match any substring
-    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType matchType = AiGroundActorType.Unknown, string matchName = null, int matcharmy = 0, bool? matchAlive = true, bool antiMatch = false)
+    //matchAliveState matches things that have that state - ie, true matches  things that are alive while false matches things that are dead (IsAlive==false)
+    //If matchAliveState==null then it will match both alive & dead
+    //If antiMatch then it does the opposite, of course
+    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType matchType = AiGroundActorType.Unknown, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
     {
         try
         {
@@ -30297,7 +30331,7 @@ public static class Calcs
                 //Console.WriteLine("Groundstat " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
 
                 if (matcharmy > 0 && g.country != matchstring) continue;
-                if (matchAlive.HasValue && matchAlive.Value != g.IsAlive) continue;
+                if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
 
                 if (antiMatch)
                 {

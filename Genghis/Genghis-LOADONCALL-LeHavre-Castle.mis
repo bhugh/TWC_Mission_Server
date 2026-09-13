@@ -1,0 +1,55 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 10.0000002421439
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_RAF_B_218Sqn.100
+[splines]
+[AirGroups]
+[CustomChiefs]
+[Stationary]
+  LeHavreCastleObsDeck_44 Stationary.Environment.JP3_Generator_15_KW_UK1 de 161288.33 56590.98 -90.00 /hstart 25
+  LeHavreCastleObsDeck_279 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.8
+  LeHavreCastleObsDeck_278 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.7
+  LeHavreCastleObsDeck_277 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.6
+  LeHavreCastleObsDeck_276 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.5
+  LeHavreCastleObsDeck_275 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.4
+  LeHavreCastleObsDeck_274 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.3
+  LeHavreCastleObsDeck_273 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.2
+  LeHavreCastleObsDeck_272 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.1
+  LeHavreCastleObsDeck_271 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18
+  LeHavreCastleObsDeck_181 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 19
+  LeHavreCastleObsDeck_180 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.9
+  LeHavreCastleObsDeck_179 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.8
+  LeHavreCastleObsDeck_280 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.9
+  LeHavreCastleObsDeck_178 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.7
+  LeHavreCastleObsDeck_176 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.5
+  LeHavreCastleObsDeck_175 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.4
+  LeHavreCastleObsDeck_174 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.3
+  LeHavreCastleObsDeck_173 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.2
+  LeHavreCastleObsDeck_172 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.1
+  LeHavreCastleObsDeck_171 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18
+  LeHavreCastleObsDeck_46 Stationary.Environment.HeightFinder_UK1 de 161289.80 56591.68 40.00 /hstart 25
+  LeHavreCastleObsDeck_177 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.6
+  LeHavreCastleObsDeck_281 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 19
+  LeHavreCastleObsDeck_47 Stationary.Environment.HeightFinder_UK1 de 161291.53 56590.21 -320.00 /hstart 25
+  LeHavreCastleObsDeck_45 Stationary.Environment.JP3_Generator_15_KW_UK1 de 161293.33 56589.98 -61.100 /hstart 25
+  LeHavreCastleObsDeck_51 Stationary.Environment.Predictor de 161290.30 56592.62 0.00 /hstart 25
+  LeHavreCastleObsDeck_52 Stationary.Environment.Predictor de 161291.98 56592.59 0.00 /hstart 25
+  LeHavreCastleObsDeck_43 Stationary.Environment.HeightFinder_UK1 de 161292.95 56591.98 -245.00 /hstart 25
+  LeHavreCastleObsDeck_0 Stationary.AEC_Regent_II nn 161295.59 56594.20 -90.00 
+  LeHavreCastleObsDeck_1 Stationary.AEC_Regent_II nn 161049.83 56661.90 -90.00 
+  LeHavreCastleObsDeck_2 Stationary.AEC_Regent_II nn 161052.48 56464.78 -90.00 
+  LeHavreCastleObsDeck_3 Stationary.AEC_Regent_II nn 161250.44 56455.69 -90.00 
+[Buildings]
+  0_bld buildings.House$Tower_Castle 1 161161.72 56552.89 -275.00
+[BuildingsLinks]

@@ -1,0 +1,64 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 10.0000002421439
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static1 Stationary.AEC_Regent_II nn 229417.67 251556.75 -90.00 
+  Static2 Stationary.AEC_Regent_II nn 229477.02 251527.59 -90.00 
+  Static10 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229547.59 251539.47 80.00 /hstart 66
+  Static11 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229546.45 251542.86 196.00 /hstart 66
+  Static7 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229552.11 251541.36 10.00 /hstart 63
+  Static278 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.7
+  Static178 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.7
+  Static176 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.5
+  Static279 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.8
+  Static177 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.6
+  Static179 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.8
+  Static277 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  Static272 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.1
+  Static171 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
+  Static172 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.1
+  Static173 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
+  Static174 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.3
+  Static276 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.5
+  Static180 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.9
+  Static271 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  Static12 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 gb 229554.47 251538.28 125.00 /hstart 66
+  Static275 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.4
+  Static280 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.9
+  Static274 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.3
+  Static175 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.4
+  Static273 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.2
+  Static8 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  Static6 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229546.47 251548.31 140.00 /hstart 62
+  Static13 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229550.25 251547.34 130.00 /hstart 66
+  Static4 Stationary.Environment.Fire_pump_UK1_DMG1 nn 229549.95 251551.13 110.00 /hstart 66
+  Static5 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229554.45 251550.92 300.00 /hstart 66
+  Static9 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229547.95 251539.56 60.00 /hstart 61
+  Static3 Stationary.AEC_Regent_II nn 229477.47 251612.69 -90.00 
+  Static0 Stationary.AEC_Regent_II nn 229561.50 251604.44 -90.00 
+  Static14 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229546.39 251552.41 190.00 /hstart 66
+  Static15 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229545.27 251538.83 196.00 /hstart 66
+  Static16 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229555.00 251541.13 190.00 /hstart 66
+  Static17 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229547.28 251540.75 155.00 /hstart 66
+  Static18 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229553.95 251548.25 65.00 /hstart 66
+[Buildings]
+[BuildingsLinks]

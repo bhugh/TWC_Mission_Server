@@ -1,0 +1,63 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 10.0000002421439
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  LeHavreCastleObsDeck_2 Stationary.AEC_Regent_II nn 161052.48 56464.78 -90.00 
+  LeHavreCastleObsDeck_3 Stationary.AEC_Regent_II nn 161250.44 56455.69 -90.00 
+  LeHavreCastleObsDeck_45 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 de 161289.70 56586.35 -61.10 /hstart 24
+  Static0 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161288.02 56590.19 130.00 /hstart 24
+  LeHavreCastleObsDeck_176 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.5
+  LeHavreCastleObsDeck_178 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.7
+  LeHavreCastleObsDeck_276 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.5
+  LeHavreCastleObsDeck_275 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.4
+  LeHavreCastleObsDeck_274 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.3
+  LeHavreCastleObsDeck_273 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.2
+  LeHavreCastleObsDeck_272 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.1
+  LeHavreCastleObsDeck_271 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18
+  LeHavreCastleObsDeck_180 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.9
+  LeHavreCastleObsDeck_280 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.9
+  LeHavreCastleObsDeck_179 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.8
+  LeHavreCastleObsDeck_177 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.6
+  LeHavreCastleObsDeck_279 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.8
+  LeHavreCastleObsDeck_175 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.4
+  LeHavreCastleObsDeck_278 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.7
+  LeHavreCastleObsDeck_173 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.2
+  LeHavreCastleObsDeck_172 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.1
+  LeHavreCastleObsDeck_171 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18
+  LeHavreCastleObsDeck_46 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 161289.80 56591.68 40.00 /hstart 24
+  LeHavreCastleObsDeck_174 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 -20.00 /hstart 18.3
+  LeHavreCastleObsDeck_281 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 19
+  LeHavreCastleObsDeck_277 Stationary.Environment.CamoNetPlane nn 161290.64 56590.56 160.00 /hstart 18.6
+  LeHavreCastleObsDeck_47 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 161291.53 56590.21 -320.00 /hstart 24
+  LeHavreCastleObsDeck_43 Stationary.Environment.GuardTower_UK-GER_1_DMG1 de 161290.02 56595.19 -245.00 /hstart 20
+  LeHavreCastleObsDeck_33 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161290.02 56595.19 130.00 /hstart 24
+  LeHavreCastleObsDeck_44 Stationary.Environment.Fire_pump_UK1_DMG1 nn 161295.45 56590.98 -90.00 /hstart 23.5
+  LeHavreCastleObsDeck_0 Stationary.AEC_Regent_II nn 161295.59 56594.20 -90.00 
+  LeHavreCastleObsDeck_1 Stationary.AEC_Regent_II nn 161049.83 56661.90 -90.00 
+  Static1 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161294.31 56591.41 130.00 /hstart 24
+  Static2 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161293.13 56585.62 130.00 /hstart 24
+  Static3 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161287.34 56585.76 130.00 /hstart 24
+  Static4 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161285.11 56588.79 175.00 /hstart 24
+  Static5 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 161295.11 56594.30 205.00 /hstart 24
+[Buildings]
+  0_bld buildings.House$Tower_Castle 1 161161.72 56552.89 -275.00
+[BuildingsLinks]

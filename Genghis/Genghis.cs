@@ -15248,7 +15248,8 @@ public class Mission : AMission, IMainMission
         [DataMember] public int OwnerArmy { get; set; } // Army that owns this object (ie, is harmed if it is destroyed)
         [DataMember] public int OriginalOwnerArmy { get; set; } // Army that owned this object when first placed - so we know which side it was designed for in case it flips due to territory loss
         [DataMember] public string FlakID { get; set; } //Flak area associated with this objective.  Flak area codes & associated .mis files are identified in FlakMissions dictionary defined below
-        [DataMember] public string InitSubmissionName { get; set; } //Flak area associated with this objective.  Flak area codes & associated .mis files are identified in FlakMissions dictionary defined below
+        [DataMember] public string InitSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
+        [DataMember] public string DestroyedSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
         [DataMember] public string ChiefName { get; set; } //(optional) Name of the "Chief" associated with this objective, like 1009_Chief. If provided it allows the detection of the actual location of the _Chief on recon flights.  So when reconned, it will tell the actual location of the ship or convoy at the time of recon, not just the starting point of the _Chief's route.
         [DataMember] public bool AutoFlakIfPrimary { get; set; } //Automatically place flak batteries near this objective, but only if it is chosen as a primary
         [DataMember] public bool AutoFlak { get; set; } //Automatically place flak batteries near this objective
@@ -15358,7 +15359,7 @@ public class Mission : AMission, IMainMission
             msn = m;
         }
         //RADAR TRIGGER initiator ; does EITHER trigger OR PointArea, depending on parameters/trigger type given
-        public MissionObjective(Mission m, string objectiveKey, string objectiveName, string flak, int ownerarmy, double pts, double repairdays, string mission_trigger_type, double trigger_percent, double x, double y, double trigger_destroy_radius, double radar_effective_radius, bool is_primary_target, double primary_target_weight, string comment, MO_ObjectiveType MObjType = MO_ObjectiveType.Radar, MO_TriggerType MOTrigType = MO_TriggerType.Trigger, string init_submission_filename = "", double orttkg = 100, double orttn = 2, double arttn = 0, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "")
+        public MissionObjective(Mission m, string objectiveKey, string objectiveName, string flak, int ownerarmy, double pts, double repairdays, string mission_trigger_type, double trigger_percent, double x, double y, double trigger_destroy_radius, double radar_effective_radius, bool is_primary_target, double primary_target_weight, string comment, MO_ObjectiveType MObjType = MO_ObjectiveType.Radar, MO_TriggerType MOTrigType = MO_TriggerType.Trigger, string init_submission_filename = "", double orttkg = 100, double orttn = 2, double arttn = 0, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", string destroyed_submission_name = "")
         {
 
             msn = m;
@@ -15375,6 +15376,8 @@ public class Mission : AMission, IMainMission
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
             FlakID = flak;
             InitSubmissionName = init_submission_filename;
+            DestroyedSubmissionName = destroyed_submission_name;
+            
             AutoFlakIfPrimary = true;
             AutoFlak = true;
             NumFlakBatteries = 3;
@@ -15652,7 +15655,7 @@ public class Mission : AMission, IMainMission
 
 
         //TRIGGER initiator (for all trigger types, the kind that use the built-in CLoD triggers, except RADAR & AIRFIELD & POINTAREA)
-        public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, string flak, string init_submission_filename, string chief_name, int ownerarmy, double pts, string trigger_type, double percentageToTrigger, double x, double y, double trigger_destroy_radius, bool pt, double ptp, double ttr_hr, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, int numHitsToTrigger= 0, int numObjectsInRadius= 0)
+        public MissionObjective(Mission m, MO_ObjectiveType mot, string tn, string n, string flak, string init_submission_filename, string chief_name, int ownerarmy, double pts, string trigger_type, double percentageToTrigger, double x, double y, double trigger_destroy_radius, bool pt, double ptp, double ttr_hr, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, int numHitsToTrigger= 0, int numObjectsInRadius= 0, string destroyed_submission_name = "")
         {
 
             Console.WriteLine("Initiating Trigger objective " + tn + " submission file: " + init_submission_filename);
@@ -15667,6 +15670,7 @@ public class Mission : AMission, IMainMission
             Name = n;
             FlakID = flak;
             InitSubmissionName = init_submission_filename;
+            DestroyedSubmissionName = destroyed_submission_name;            
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
             AutoFlakIfPrimary = true;
             AutoFlak = false;
@@ -15758,7 +15762,7 @@ public class Mission : AMission, IMainMission
         //You can designate EITHER kg tonnage of ordnance dropped in that area to destroy it, AND/OR a certain number of objects (static objects, actors, buildings, etc) that must be killed within that radius (the buildings part working depends on TF getting the onbuildingdestroyed routine working again), AND/OR a certain number of ACTORS that must be killed - they don't need to be within the certain RADIUS but they must match the CHIEF NAME given.
         //Chief name is for moving objectives like submarines, trains, vehicle convoys, ship actors, and looks like 2004_Chief (you must set up your .mis file for this so that the chiefs for different objectives have a unique number like this).  Then each individual vehicle/ship/sub/etc within that Chief will be named 2004_Chief1, 2004_Chief2, 2004_Chief3, etc. 
         //OR you can choose 2 of them and in that case the players will have, ie, to drop the certain tonnage on the area AND kill the certain number of objects, OR all three.
-        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true)
+        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true, string destroyed_submission_name = "")
         {
 
             Console.WriteLine("Initiating PointArea objective " + objective_ID);
@@ -15773,6 +15777,7 @@ public class Mission : AMission, IMainMission
             Name = objective_name;
             FlakID = flak;
             InitSubmissionName = init_submission_filename;
+            DestroyedSubmissionName = destroyed_submission_name;
             AutoFlakIfPrimary = auto_flak_ifprimary;
             AutoFlak = auto_flak;
             //These are big wide open easy bombing targets, but they are heavily defended, must come in high.  Is the idea.
@@ -15890,6 +15895,7 @@ public class Mission : AMission, IMainMission
             Name = objective_name;
             FlakID = flak;
             InitSubmissionName = null; //can't really figure out how an initsubmission file would be helpful for these mobile objectives?
+            DestroyedSubmissionName = null;
             AutoFlakIfPrimary = auto_flak_ifprimary;
             AutoFlak = auto_flak;
             //These are big wide open easy bombing targets, but thye are heavily defended, must come in high.  Is the idea.
@@ -16018,7 +16024,46 @@ public class Mission : AMission, IMainMission
                 //
             }
 
-            if (Destroyed) Console.WriteLine(Name + ": " + InitSubmissionName + " initsubmission NOT loaded because this objective is destroyed.");
+            if (Destroyed || !IsEnabled)
+            {
+                
+             Console.WriteLine(Name + ": " + InitSubmissionName + " initsubmission NOT loaded because this objective is destroyed or disabled (trying DestroyedSubmission instead).");
+             loadDestroyedSubmission();
+            }
+
+            return false;
+        }
+
+        public bool loadDestroyedSubmission()
+        {
+            //load submission if requested
+            if (DestroyedSubmissionName != null && DestroyedSubmissionName.Length > 0 && (Destroyed || !IsEnabled))
+            {
+                //TODO: Could do other things here like remove any stationaries in the area...
+
+                string s = msn.CLOD_PATH + msn.FILE_PATH + "/" + DestroyedSubmissionName;
+                try
+                {
+
+                    msn.Timeout(5, () =>
+                    {
+                        //ISectionFile printSectionFile(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, int army)
+                        ISectionFile f = msn.GamePlay.gpLoadSectionFile(s);
+                        f = Calcs.changeArmy_Waypoints_SectionFile(f, msn.GamePlay, msn, changeToArmy: OwnerArmy, maxWaypoints_remove: 15, maxPercentWaypoints_remove: 30);
+                        if (msn.ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Objective Destroyed submission ");
+                        msn.GamePlay.gpPostMissionLoad(f);
+                        f.save(msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles/" + "printSectionFile-" + ID + ".mis"); //testing
+                        //msn.GamePlay.gpPostMissionLoad(s);
+                        Console.WriteLine(s.Replace(msn.CLOD_PATH + msn.FILE_PATH, "") + " destroyed submission file loaded for " + ID + " " + Name);
+                    });
+                    return true;
+                }
+                catch (Exception ex) { Console.WriteLine("loadDestroyedSubmission ERROR DestroyedSubmission for Objective NOT loaded: {0} \n\n {1}", s, ex.ToString()); return false; }
+
+                //
+            }
+
+            if (!Destroyed || !IsEnabled) Console.WriteLine(Name + ": " + InitSubmissionName + " initsubmission NOT loaded because this objective is not destroyed AND enabled.");
 
             return false;
         }
@@ -16919,7 +16964,7 @@ public class Mission : AMission, IMainMission
             }
         }
 
-        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "")
+        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "", string destroyedSub = "")
         {
             //Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
 
@@ -16930,7 +16975,7 @@ public class Mission : AMission, IMainMission
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
-                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled));
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled, destroyed_submission_name: destroyedSub));
             }
         }
 
@@ -17563,7 +17608,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 12, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", add, canBeDisabled: false);			
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 12, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", add: true, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis");		
+
+            //229550.25 251544.72	
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 12, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g

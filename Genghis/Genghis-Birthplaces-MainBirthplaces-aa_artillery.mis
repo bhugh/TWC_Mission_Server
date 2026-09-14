@@ -1,0 +1,40 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 9.15000022156164
+  WeatherIndex 1
+  CloudsHeight 1147
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 5000.00
+  GustPower 1
+  GustAngle 0
+[splines]
+[CustomChiefs]
+[Stationary]
+  MainBirth_Decorations_00010 Artillery.Bofors_StandAlone de 303844.47 221997.00 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_00008 Artillery.Bofors_StandAlone de 303894.31 222022.84 145.00 /timeout 180/radius_hide 600
+  MainBirth_Decorations_00009 Artillery.Bofors_StandAlone de 305404.16 222819.41 145.00 /timeout 180/radius_hide 600
+  MainBirth_Decorations_00603 Artillery.Bofors_StandAlone gb 167482.06 197902.59 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_00016 Artillery.Bofors_StandAlone gb 168012.56 199112.94 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04016 Artillery.Bofors_StandAlone gb 180123.34 265419.75 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04603 Artillery.Bofors_StandAlone gb 180194.44 264235.19 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04017 Artillery.Bofors_StandAlone gb 181162.47 249515.84 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04602 Artillery.Bofors_StandAlone gb 181711.06 248149.67 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04018 Artillery.Bofors_StandAlone gb 188099.02 257310.39 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_04601 Artillery.Bofors_StandAlone gb 188463.69 258433.80 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_00018 Artillery.Bofors_StandAlone gb 219753.77 209940.94 145.00 /timeout 180/radius_hide 600
+  MainBirth_Decorations_04019 Artillery.Bofors_StandAlone gb 222034.38 209727.19 145.00 /timeout 180/radius_hide 600
+  MainBirth_Decorations_04600 Artillery.Bofors_StandAlone gb 270313.63 207450.83 145.00 /timeout 180/radius_hide 500
+  MainBirth_Decorations_00085 Artillery.Flak37 de 295848.22 216950.25 0.00 /timeout 180/radius_hide 600 
+[Buildings]
+[BuildingsLinks]

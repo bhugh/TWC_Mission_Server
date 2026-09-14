@@ -8725,6 +8725,20 @@ public class Mission : AMission, IMainMission
 				int terr1 = GamePlay.gpFrontArmy(221000, 210000);
 				
 				Console.WriteLine("After Timeout15: Terr of Lydd is: {0}", terr1);
+
+                /************************************************************
+				*
+				* REMAINDER OF MAIN mission .mis files
+				* By waiting until after the timeout they will load after the frontfiles
+				* Note the wait is not 15 seconds at all, less than a second.
+                *
+                * We separated out all the stationaries from the main mission file & load them here, so the front can be handled properly
+                * Also the aa_artillery is separate now, can be loaded separately OR (better) not loaded at all to depend on AutoFlak/TempFlak
+				*
+				**************************************************************/
+
+                ReadInitialSubmissions(fileName: MISSION_ID + "-MAIN-stationaries.mis",  timespread: 0, wait: 0, subdir: "");
+                //ReadInitialSubmissions(fileName: MISSION_ID + "-MAIN-aa_artillery.mis",  timespread: 0, wait: 0, subdir: "");
 				
 				/************************************************************
 				*
@@ -8736,8 +8750,9 @@ public class Mission : AMission, IMainMission
 						//by reading here, things get switched gb <-> de according to the frontlines
 				//this is a better/more efficient/accurate way to do it than loading first & changing later
 				//We don't do the birthplaces only here bec it can mess up airfields/runways and 
-				//it doesn't have any actual objects
+				//it doesn't have any actual objects                
 				ReadInitialSubmissions(fileName: MISSION_ID + "-Birthplaces-MainBirthplaces-decorations.mis",  timespread: 0, wait: 0, subdir: "");
+                //ReadInitialSubmissions(fileName: MISSION_ID + "-Birthplaces-MainBirthplaces-aa_artillery.mis",  timespread: 0, wait: 0, subdir: "");
 				ReadInitialSubmissions(fileName: MISSION_ID + "-Birthplaces-Ashford-LandingGround.mis",  timespread: 0, wait: 0, subdir: "");
 				ReadInitialSubmissions(fileName: MISSION_ID + "-Birthplaces-Hastings-LandingGround.mis",  timespread: 0, wait: 0, subdir: "");
 				ReadInitialSubmissions(fileName: MISSION_ID + "-Birthplaces-Rye-LandingGround.mis",  timespread: 0, wait: 0, subdir: "");
@@ -16112,11 +16127,10 @@ public class Mission : AMission, IMainMission
                 {
                     if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return 0;
                     foreach (AutoFlak_location afl in msn.AutoFlak_locations[ID]) {
-                        if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS3: afl {0} {1} {2}", afl.stationaryPrefix,afl.numItems, afl.numItemsRemaining
-                        );           
+                        if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS3: for {0} flakpos {1} index is num {2} remaining {3} pctrmain {5} dead: {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining);
                         if (afl.numItemsRemaining <= 0) continue;
                         int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true); //get only LIVE remaining objs
-                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} index is num {2} remaining {3} newremaining {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining);
+                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
 
                         
                         if (newNumItemsRemaining < afl.numItemsRemaining )
@@ -21598,15 +21612,25 @@ added Rouen Flak
     //int tempflaktoAllocatePerRound = 80; //number to hand out each time tempFlakPlacement runs.
     //We were doing 80.  But due to error, 3/4 of them were lost.  And it still seemed adequate?
     //So trying maybe not 1/4 but say 1/3.
-    int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05
-    int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05
+
+    //2026-09-13 - we removed ALL aa/artillery from main mission & birthplaces, giving us 250 more artillery to 
+    //work with here.
+    //max deployed is roughly 8 X tempflaktoAllocatePerRound = 180 (for 22 allocated)
+    //So in theory would easily do 50 instead of 22
+    //int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05
+    int tempflaktoAllocatePerRound = 50; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09
+    //int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05
+    int minTempflaktoAllocatePerRound = 30; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
     double maxACAltitudeforTempflak = 2500;
     double minRatingForFlak = 25;
     int maxSectionFiles = 16;
 
     int numpToStartReducing = 8;
-    int numpForMaxReduction = 16;
-    int numpForCompleteElimination = 50;
+    int numpForMaxReduction = 35; //was 16/prior to 2026-09
+    //int numpForCompleteElimination = 50;
+
+    int numpToStartCompleteElimination = 65; //was 50/prior to 2026-09, but now removed ALL flak from .mis files    
+    int numpForCompleteElimination = 110; //was 50/prior to 2026-09, but now removed ALL flak from .mis files
 
     int testTempFlakNumPilots = 0;
     List<int> leftoverTempflak = new List<int>() { 0, 0, 0 }; //We keep track if any of the 80 is left over, if so the other army can use it in the next round
@@ -21745,7 +21769,18 @@ added Rouen Flak
                 if (numer < 0) numer = 0;
                 // numToDistribute = (numToDistribute/4) + numToDistribute * 3 * numer /( (numpForMaxReduction - numpToStartReducing) * 4); //1/4 of numtodistribute is min & 3/4 is reduced, depending on what nump online
 
+
+                //Here we phase down from max to "normal" flak as # of players increases.
                 numToDistribute = variableNumToDistribute * numer / ((numpForMaxReduction - numpToStartReducing)) + minDistribution;
+
+  
+                //if above this # REALLY start to phase out the aa, down to zero at the max players, just to try to save the server. 
+                //ALL are gone by reaching the max # here.
+                if (nump > numpToStartCompleteElimination)
+                {
+                    numToDistribute = numToDistribute  * (nump - numpToStartCompleteElimination)/(numpForCompleteElimination - numpToStartCompleteElimination);                    
+                }
+
 
                 //if (numToDistribute == 0 && (numpForCompleteElimination - nump > random.Next(200))) numToDistribute = 4;
 
@@ -22605,6 +22640,15 @@ added Rouen Flak
 
     }
 
+    List<maddox.game.LandTypes> landTypesToAvoid = new List <maddox.game.LandTypes> () {
+        maddox.game.LandTypes.WATER,
+        maddox.game.LandTypes.RAIL,
+        maddox.game.LandTypes.ROAD,
+        maddox.game.LandTypes.ROAD_MASK,
+        maddox.game.LandTypes.OBJECTS_MASK,
+        maddox.game.LandTypes.HIGHWAY,                            
+    };
+
     public Dictionary<string, List<AutoFlak_location>> AutoFlak_locations = new Dictionary<string, List<AutoFlak_location>>() { };
     public object AutoFlak_locations_lock = new object();
 
@@ -22637,6 +22681,8 @@ added Rouen Flak
 			//For AA/artillery these are concentrated at the center rather than being out beyond the perimeter
 			if (mo.MOObjectiveType == MO_ObjectiveType.Artillery_and_AA) batteryRadius = 3;
             if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2) batteryRadius += 65;  //For Blue radars, the exact location of flak can help locate the radar position, which we don't want. So we spread the batteries out a fair bit more.
+            if (airfieldTypes.Contains(mo.MOObjectiveType) )  batteryRadius = (mo.radius * .6666).Clamp(600,2000); //for airfields, trying to keep it in a bit closer, yet still off runway etc
+                
 
             if (dbug) Console.WriteLine("MASL 2");
             List <AutoFlak_location> MO_AutoFlak_locations = mo.get_AutoFlak_locations();
@@ -22752,26 +22798,28 @@ added Rouen Flak
 
                     //if (ON_TESTSERVER) Console.WriteLine("FOUND loc: dt: {0:N0} batteryRadius {1:N0} i: {2:N0} tries: {3:N0} div {4:N0} calc1: {5:N0} calc2: {6:N0}", saveDT, batteryRadius, i, tries, saveDiv, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.6, batteryRadius * 2.0 * Math.PI/ saveDiv * 0.8 * (1 - (i - (double)tries/3.0)/(2.0*(double)tries/3.0)) );
 
-                    
+
                     maddox.game.LandTypes landType = GamePlay.gpLandType(newPos.x, newPos.y);
 
                     if (dbug) Console.WriteLine("MASL 6");
-                    double nmcDist_m = distanceToNearestMobileConvoy_m(newPos);
+                    double nmcDist_m = distanceToNearestMobileConvoy_m(newPos);                    
 
-                    double dist = 1000;
+                    double dist = 1000;                   
                     double apRadius = 1000;
                     try
                     {
                         AiAirport ap = Calcs.nearestAirport(GamePlay, newPos);
                         dist = Calcs.CalculatePointDistance(ap.Pos(), newPos);
-                        apRadius = ap.FieldR();
+                        apRadius = ap.FieldR() * 0.6666;
                     }
                     catch (Exception ex) { Console.WriteLine("ERROR FLAKPLACE! " + ex.ToString()); }
 
                     if (dbug) Console.WriteLine("MASL 7");
 
 
-                    if (landType != maddox.game.LandTypes.WATER && dist > 999 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
+                    //if (landType != maddox.game.LandTypes.WATER && dist > 666 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
+                    if (!landTypesToAvoid.Contains(landType) && dist > 666 && dist > apRadius && nmcDist_m >= min_nmc_dist_m)
+                    
                     {
                         if (nmcDist_m < radius_hide - 1000) radius_hide = nmcDist_m - 1000;
 
@@ -22802,7 +22850,7 @@ added Rouen Flak
                         //so it looks like something players can shoot
                         //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
                         //AND it will leave oodles of stationaries scattered about
-                        string pref =  mo.ID + "_AutoFlak_pos_" + k.ToString() + "_";
+                        string pref = Calcs.cleanStaticPrefix( mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
                         if(!mo.isMobile()) {
                             var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
                             howManyPlaced = placeTheThings(things, thingsPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
@@ -31751,7 +31799,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //Whatever REPLACEMENTS we make here in the staticprefixname must be MIRRORED EXACTLY if
         //for example we use the static prefix to identify the CHIEF.
         //It might be best to RETURN the updated static prefix somehow.
-        string newstaticprefix = staticprefix.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
+        string newstaticprefix = cleanStaticPrefix(staticprefix);
         if (staticprefix.Length > 0) key = "Static_TWC" + runCount.ToString() + "_" + newstaticprefix + staticCount.Value().ToString("F0");
         //For the prefix, replace any spaces with _ - there might be other illegal characters in static
         //names we should avoid, but that one for sure
@@ -31801,6 +31849,10 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
         return f;
 
+    }
+
+    public static string cleanStaticPrefix (string prefix = "") {
+        return prefix.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
     }
 
     public static ISectionFile makeAIChief(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, double radius, double chiefNum = 0, double heading = 0, bool resetCount = false, string chiefprefix = "")

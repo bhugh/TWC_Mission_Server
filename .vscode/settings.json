@@ -5,4 +5,6 @@
       "strictMode": true
     }
   }
+  "problems.maxNumber": 10000,
+  "problems.decorations.enabled": true
 }

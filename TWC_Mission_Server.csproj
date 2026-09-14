@@ -53,7 +53,30 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.DataSetExtensions" />
+    
+    <!-- Essential .NET Framework references -->
+    
+    <Reference Include="System.Threading" />
+    <Reference Include="System.Collections.Generic" />
+    <Reference Include="System.Linq" />
+    <Reference Include="System.Text" />
+    <Reference Include="System.Diagnostics" />
+    <Reference Include="System.IO" />            
+    <Reference Include="System.Drawing" />
+
+    <!-- Optional but often needed -->
+    <Reference Include="System.Management.Automation" />
+    <Reference Include="System.Management" />
+    
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.runtime.serialization" />
+    <Reference Include="System.Text.Json" />
+    <Reference Include="WPF/PresentationFramework" />
+    <Reference Include="WPF/PresentationCore" />
+    <Reference Include="WPF/WindowsBase" />    
+  
   </ItemGroup>
+  
 
   <!-- Managed engine assemblies ONLY -->
   <ItemGroup>
@@ -152,3 +175,9 @@
   </ItemGroup>
 
 </Project>
+
+
+<!-- Target Framework (must be .NET Framework, not .NET Core) -->
+<TargetFrameworkVersion>v4.0.30319</TargetFrameworkVersion>
+
+

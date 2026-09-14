@@ -16033,7 +16033,8 @@ public class Mission : AMission, IMainMission
         public string IDtoCleanChiefName(string i = "")
         {
             if (i == "") i = ID;
-            return i.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
+            //return i.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
+            return Calcs.cleanStaticPrefix(i);
         }
         //moving is like a train, submarine, convoy, ship that is underway, a "chief"
         //So now that we have actual "chiefs" on nonmoving objectives we have to differentiate
@@ -16045,18 +16046,29 @@ public class Mission : AMission, IMainMission
             if (ChiefName.ToLower().Contains("chief")) return true;
             return false;
         }
+
+        //returns next AutoFlak location ****that is still alive*** or NULL if none
         public int getAndAdvance_AutoFlak_location_pointer()
         {
             try
             {
                 if (AutoFlak_locations_pointer < 0) AutoFlak_locations_pointer = 0;
+                int first = AutoFlak_locations_pointer;
                 AutoFlak_locations_pointer++;
+                
+
                 lock (msn.AutoFlak_locations_lock)
                 {
+                    
+                    for (int i = 0; i < 50; i++) {
 
-                    if (msn.AutoFlak_locations == null  || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null)
-                        AutoFlak_locations_pointer = 0;
-                    else if (AutoFlak_locations_pointer >= msn.AutoFlak_locations[ID].Count) AutoFlak_locations_pointer = 0;
+                        if (msn.AutoFlak_locations == null  || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null)
+                            AutoFlak_locations_pointer = 0;
+                        else if (AutoFlak_locations_pointer >= msn.AutoFlak_locations[ID].Count) AutoFlak_locations_pointer = 0;
+                        if ( !msn.AutoFlak_locations[ID][AutoFlak_locations_pointer].dead) break; 
+                        AutoFlak_locations_pointer++;
+                        if (AutoFlak_locations_pointer == first) break;
+                    }
                 }
                 return AutoFlak_locations_pointer;
             }
@@ -16069,14 +16081,17 @@ public class Mission : AMission, IMainMission
 
         //msn.AutoFlak_locations is a separate structure so we can lock it & keep 
         //it 'threadsafe'.  We hope.
+        //Gets next AFL that is not  "dead", or null
         public AutoFlak_location getNext_AutoFlak_location()
         {
             try {
                 //var ret = new AutoFlak_location();
+                //int saveALP = AutoFlak_locations_pointer;
                 int i = getAndAdvance_AutoFlak_location_pointer();
                 lock (msn.AutoFlak_locations_lock)
                 {
                     if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return null;
+                    if (msn.AutoFlak_locations[ID][i].dead) return null;
                     return msn.AutoFlak_locations[ID][i];
                 }
             }
@@ -16105,9 +16120,12 @@ public class Mission : AMission, IMainMission
         
         }
 
-        public int tallyTempFlakScore(){            
+        //returns either NEWLY killed templak positions, OR
+        //the grand total of all killed tempflak positions
+        public int tallyTempFlakScore(bool total = false){            
                 
             int newlyKilled = 0;
+            int grandTotal = 0;
 
             try
             {
@@ -16116,18 +16134,22 @@ public class Mission : AMission, IMainMission
                 //int numItemsNow = Calcs.CountMatchingGroundObjects (msn.GamePlay, location: Pos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
 
                 double checkRadius_m = (radius * 10).Clamp(10000,50000); 
-                if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS1: checkR {0}", checkRadius_m);           
+                //if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS1: checkR {0}", checkRadius_m);           
                 
 
                 List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
                 
-                if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS2: gs# {0}", gs.Count);           
+                //if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS2: gs# {0}", gs.Count);           
                
                 lock (msn.AutoFlak_locations_lock)
                 {
                     if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return 0;
                     foreach (AutoFlak_location afl in msn.AutoFlak_locations[ID]) {
-                        if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS3: for {0} flakpos {1} index is num {2} remaining {3} pctrmain {5} dead: {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining);
+
+                        //if (msn.ON_TESTSERVER) Console.WriteLine ("tTFS3: for {0} flakpos {1} index is num {2} remaining {3} pct remain {5:N0} dead: {4}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining*100);
+                        
+                        if (afl.dead) grandTotal ++;
+                        
                         if (afl.numItemsRemaining <= 0) continue;
                         int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true); //get only LIVE remaining objs
                         if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
@@ -16142,11 +16164,12 @@ public class Mission : AMission, IMainMission
                                 afl.dead = true;
                                 newlyKilled++;
                             }                        
-                            if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                            //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
                         }
 
                     }
                 }
+                if (total) return grandTotal;
                 return newlyKilled;
             }
             catch (Exception ex)
@@ -21644,7 +21667,7 @@ added Rouen Flak
             new TimerCallback(tempFlak),
             null,
             dueTime: 300000, //wait time @ startup
-            period: 14342); //periodically call the callback at this interval, every 20 seconds say (it alternates armies, so 40 seconds for each army).  That puts up to 4*80 = 320*2 = 640 pieces in play FOR EACH ARMY.  Hmmmmm.... 
+            period: 9342); //periodically call the callback at this interval, every 20 seconds say (it alternates armies, so 40 seconds for each army).  That puts up to 4*80 = 320*2 = 640 pieces in play FOR EACH ARMY.  Hmmmmm.... 
            //2023-02-01 - doubled frequency/halved period here BUT also halved everything else below
            //starting at 5 players online.
 
@@ -21668,6 +21691,8 @@ added Rouen Flak
         {
             if (tallyTempFlakcounter % 4 == 0) tallyTempFlakScore();
             tallyTempFlakcounter++;
+
+            if (ON_TESTSERVER) Console.WriteLine("TempFlak: Starting run...");
 
             if (panic()) return;
             if (threadloadmission.recentCPUPercent > 95 || threadloadmission.rollingAverageCPUPercent > 98) return; //prevents again both (adding to) a sudden surge of CPU but also if the long term CPU is getting high, preventively just stop adding more tempflak
@@ -21826,17 +21851,23 @@ added Rouen Flak
                 
                 if (score > 0)
                 {
-                    MissionObjectiveScore[(ArmiesE)mo.AttackingArmy] += score;
-                    totalScore[mo.AttackingArmy] += score;                                        
+                    MissionObjectiveScore[(ArmiesE)mo.AttackingArmy] += 2*score;
+                    totalScore[mo.AttackingArmy] += 2*score;
                 }
             }
             for (int i = 1; i<3; i++) {
-                if (totalScore[i] > 0) Timeout(5 * i, ()=>
-                {
-                    string s  = (totalScore[i] == 0) ? "" : "s";
-                    twcLogServer(null, ArmiesL[i] + " has destroyed {0} flak nest{1} (+{0} point{1})", new object[] { totalScore[i], s  });
-                    
-                });
+                
+                if (totalScore[i] > 0) {
+                    int reportScore = totalScore[i];
+                    int ar = i;
+                    Console.WriteLine(ArmiesL[ar] + " has destroyed {0} flak nest (+{1} point)", totalScore[i]/2, totalScore[i]);
+                    Timeout(8 * i, ()=>
+                    {
+                        string s  = (reportScore == 0) ? "" : "s";
+                        twcLogServer(null,">>>>" + ArmiesL[ar] + " has destroyed {0} flak nest{2} (+{1} point{2})", new object[] { reportScore/2, reportScore, s  });
+                        
+                    });
+                }
             }
         } catch (Exception ex)
         {
@@ -22039,11 +22070,15 @@ added Rouen Flak
 				//gets very weak if destroyed
 				//and proportionally weaker if partially destroyed, 
 				//sqrts mean most decrease comes 0-100%, a little more 100-200%
-                if (mo.Destroyed) rating *= 0.1;
-				else if (mo.DestroyedPercent> 0.05) {
+                //if (mo.Destroyed) rating *= 0.1;
+                //2026-09: With new TEMPFLAK destroyable system, the main way 
+                //to weaken defenses is to ATTAKC AND DESTROY THEM.  They are 
+                //slightly weakened by just attacking the OBJ on its own.
+				if (mo.DestroyedPercent> 0.05) {
 					//double desFact = Math.Sqrt(Math.Sqrt( (2.0-mo.DestroyedPercent).Clamp (0,2) / 2.0));
 					//2026-08-31 - OK, trying to keep defenses a little more active even as objectives are destroyed
-					double desFact = Math.Sqrt( (2.0-mo.DestroyedPercent).Clamp (0,2) / 2.0);
+					//double desFact = Math.Sqrt( (2.0-mo.DestroyedPercent).Clamp (0,2) / 2.0);
+                    double desFact = (1.0-mo.DestroyedPercent/5).Clamp (0.1,1);
 					rating *= desFact;
 				}
 
@@ -22346,8 +22381,8 @@ added Rouen Flak
             //2022-12 - very small # of primaries now, so can increase the flak some.  Went from 1,2 to 2,4.
             if (ON_TESTSERVER)
             {
-                nfb = 0;
-                nib = 0;
+                nfb = 1;
+                nib = 1;
             }
 
             //2021-06 - WAS 2 X 5, MEANING 10 FLAK added for each primary obj.
@@ -22406,8 +22441,8 @@ added Rouen Flak
 
                     if (ON_TESTSERVER)
                     {
-                        nfb = 0;
-                        nib = 0;
+                        nfb = 1;
+                        nib = 1;
                         if (random.NextDouble() > 0.98)
                         {
                             nfb = 1;
@@ -22458,6 +22493,8 @@ added Rouen Flak
             int flakType = 0;
             int totalFlakPlaced = 0;
 
+            AutoFlak_location firstAFL = null;
+
             for (int j = 0; j < nfb; j++)
             {
                 /*
@@ -22470,20 +22507,25 @@ added Rouen Flak
                     return GamePlay.gpCreateSectionFile();
                 }
 
+                //If 
+                if (firstAFL == null) firstAFL = temp;
+                else if (firstAFL == temp) return GamePlay.gpCreateSectionFile();
+                
+
                 newPos = temp.pos;
                 numItemsPlaced = temp.numItems;
 
-                int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
+                /*int numItemsNow = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 25, matchName: mo.ID + "_AutoFlak_pos_");
 
                  int numItemsNow2 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 250, matchName: mo.ID + "_AutoFlak_pos_");
 
                  int numItemsNow3 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 2500, matchName: mo.ID + "_AutoFlak_pos_");
 
-                 int numItemsNow4 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 40000, matchName: mo.ID + "_AutoFlak_pos_"); 
+                 int numItemsNow4 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 40000, matchName: mo.ID + "_AutoFlak_pos_");  */
 
-                int realNIB = numItemsPlaced !=0 ? nib * numItemsNow / numItemsPlaced : 0;
+                int realNIB = Convert.ToInt32(nib * temp.percentRemaining);
 
-                Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Numitems: {8} {9} {10}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, numItemsNow, nib, realNIB, numItemsNow2, numItemsNow3, numItemsNow4);
+                Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Pct Remaining: {8:N0}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, temp.numItemsRemaining, nib, realNIB, temp.percentRemaining*100);
 
                 if (realNIB <= 0) continue;
 
@@ -22503,7 +22545,7 @@ added Rouen Flak
 				if (radiusHide > 1000 && distanceToNeutralFront < 4000) {
 					radiusHide = distanceToNeutralFront * 0.6; //we pretty much need to do this to avoid killing any enemy objectives in the neutral zone
 				}
-				if (terr == 0 && radiusHide > 250 ) radiusHide = 250; //It's neutral ground, perhaps there should be NO flak at all... 2026/08 - see below.
+				if (terr == 0 && radiusHide > 100 ) radiusHide = 100; //It's neutral ground, perhaps there should be NO flak at all... 2026/08 - see below.  But say 100m max range, should be pretty safe?
 				
 				if(ON_TESTSERVER) Console.WriteLine("Autoflak/tempflak placement: {0} {1:N0} {2:N0} {3:N0}", Calcs.correctedSectorNameDoubleKeypad(this,newPos), radiusHide, newPos.x, newPos.y  );
 
@@ -22515,8 +22557,8 @@ added Rouen Flak
 					Console.WriteLine("Autoflak Placement ARMY ERROR for {0} objective - Owner Army was not 1 or 2", new object[] { mo.Name });					
 				}
 				
-				if (owner == "nn" || terr == 0) {
-					Console.WriteLine("Autoflak Placement - no army for OBJ OR flak location in NEUTRAL ZONE.  Not placing any flak here.", new object[] { mo.Name });					
+				if (owner == "nn") {
+					Console.WriteLine("Autoflak Placement - no army for OBJ/OBJ owned by NEUTRAL ZONE.  Not placing any flak here.", new object[] { mo.Name });					
 					return GamePlay.gpCreateSectionFile();
 				}
 
@@ -22586,7 +22628,7 @@ added Rouen Flak
 
                     //Radius_Hide 6000 means (I ASSUME) that the flak gun won't look away further than 6000.  Or ???.
                     if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
-                    //Update - I THINK radius_hide is how far away the object is VISIBLE.
+                    //Update - radius_hide how far out the AA looks, so it won't fire until the enemy is closer than this distance
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
                     resetCount = false;
                     if (tempFlak) tempFlakTotal++;
@@ -25863,6 +25905,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             }
 
             if (OldObj.DestroyedPercent < 1) OldObj.DestroyedPercent = 1;  //should always be at least 100% destroyed - it has just been destroyed after all 2021/07
+
+            double tempFlakPositionsKilled = OldObj.tallyTempFlakScore(total: true);            
 			
 			string isPrim = "";
 			if (OldObj.IsPrimaryTarget) {isPrim="*";}
@@ -25872,6 +25916,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             {
                 //If the OBJ is already destroyed, add reduced points for further destruction
                 double add_points = OldObj.Points;
+
+                add_points += tempFlakPositionsKilled * 2;
 
                 if (alreadyDestroyed)
                 {
@@ -25938,9 +25984,9 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 					//2026-06: Was 25% of point if it had already been added to the Objective List Completed
 					//but now making it 95% if it was repaired & then actually just destroyed again
                     if (percentSpecified)
-                        MissionObjectiveScore[(ArmiesE)OldObj.AttackingArmy] += OldObj.Points * percCount * 0.95; //scaled by the percentage killed 
+                        MissionObjectiveScore[(ArmiesE)OldObj.AttackingArmy] += (OldObj.Points + tempFlakPositionsKilled*2) * percCount * 0.95; //scaled by the percentage killed 
                     else
-                        MissionObjectiveScore[(ArmiesE)OldObj.AttackingArmy] += OldObj.Points * 0.95;
+                        MissionObjectiveScore[(ArmiesE)OldObj.AttackingArmy] += ( OldObj.Points + tempFlakPositionsKilled*2 )* 0.95;
                 }
                 else
                 {
@@ -25957,7 +26003,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     
                     if (percCount > 1) percCount = 1; //Increase it by max equivalent to 100% additional destruction
                     if (percentSpecified) pointsToAdd = OldObj.Points * percCount / scale_fact; //scaled by the percentage killed 
-                    else pointsToAdd = OldObj.Points / scale_fact;
+                    else pointsToAdd = (OldObj.Points + tempFlakPositionsKilled*2)/ scale_fact;
                     if (pointsToAdd < 0.3) pointsToAdd = 0.3; //always give at least a little bit
                     MissionObjectiveScore[(ArmiesE)OldObj.AttackingArmy] += pointsToAdd;
                 }
@@ -25971,6 +26017,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             if (( alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes = ArmiesL[OldObj.AttackingArmy] + " damaged " + OldObj.Name;
 
+         
+
             Timeout(messageDelay_sec, () =>
             {
                 GamePlay.gpHUDLogCenter(mes);
@@ -25979,6 +26027,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             string mes1 = "";
             if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) mes1 = OldObj.LOGMessage;
             if ((alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes1 = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name;
+
+            if (tempFlakPositionsKilled > 0) mes1 += string.Format(" and {0} flak positions", tempFlakPositionsKilled);
 
             Timeout(messageDelay_sec, () =>
             {
@@ -31852,7 +31902,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     }
 
     public static string cleanStaticPrefix (string prefix = "") {
-        return prefix.Replace(' ', '_').Replace('.', '_').Replace('\\', '_');
+        return prefix.Replace(' ', '_').Replace('.', '_').Replace('\\', '_').Replace('/', '_');
     }
 
     public static ISectionFile makeAIChief(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, double x, double y, double z, double radius, double chiefNum = 0, double heading = 0, bool resetCount = false, string chiefprefix = "")

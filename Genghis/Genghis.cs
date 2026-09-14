@@ -16039,7 +16039,7 @@ public class Mission : AMission, IMainMission
             //load submission if requested
             if (DestroyedSubmissionName != null && DestroyedSubmissionName.Length > 0 && (Destroyed || !IsEnabled))
             {
-                //TODO: Could do other things here like remove any stationaries in the area...
+                //TODO: Could do other things here like remove any stationaries in the area... however, MO_DestroyObjective already does this, so...
 
                 string s = msn.CLOD_PATH + msn.FILE_PATH + "/" + DestroyedSubmissionName;
                 try
@@ -17608,10 +17608,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 12, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", add: true, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 15, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis");		
 
             //229550.25 251544.72	
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 12, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 15, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -20909,7 +20909,13 @@ added Rouen Flak
 				
 				
                 if ((percent >= 1.5 && mo.MOMobileObjectiveType == MO_MobileObjectiveType.None) 	||	(airfieldTypes.Contains(mo.MOObjectiveType) && percent >= 2.5))
-					MO_PlaceDetritusInObjectArea(mo, searchRadius_m: searchRadius_m, minimum: true); //only smoke &  jerrycan
+			
+            	MO_PlaceDetritusInObjectArea(mo, searchRadius_m: searchRadius_m, minimum: true); //only smoke &  jerrycan
+                
+                Timeout(40, () =>
+                    {
+                        mo.loadDestroyedSubmission();
+                    });
             });
 
             //}
@@ -24923,7 +24929,11 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
 
 					}
-				} 
+				} else { //no .enabled
+                    MO_loadInitSubmission(mo); //stil "load submission" because it will load the "destroyed" submission instead if it exists
+                    //having SOMETHING in place (either main submission or destroyed) is
+                    //quite important for some OBJs
+                } 
                 
             } catch (Exception ex) { Console.WriteLine("MO_InitSubmission - ERROR: {0}", ex.ToString());}
         }
@@ -26115,6 +26125,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             //Put a fire the center to indicate it's destroyed - sometimes this is the only thing left
             MO_RemoveObjective(OldObj, addX:true);
+            
             string smoke = "BuildingFireSmall";
             Calcs.loadSmokeOrFire(GamePlay, this, OldObj.Pos.x, OldObj.Pos.y, 0, smoke, duration_s: 6 * 3600);
             //MO_PlaceDetritusInObjectArea(OldObj); //Done by MO_RemoiveObjective() now

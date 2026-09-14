@@ -16159,7 +16159,7 @@ public class Mission : AMission, IMainMission
                         { 
                             afl.numItemsRemaining = newNumItemsRemaining;
                             afl.percentRemaining = (double)afl.numItemsRemaining/(double)afl.numItems;
-                            if (!afl.dead &&  (afl.percentRemaining <= 0.25 || afl.numItemsRemaining <= 1) )
+                            if (!afl.dead &&  (afl.percentRemaining <= 0.5 || afl.numItemsRemaining <= 1) )
                             {
                                 afl.dead = true;
                                 newlyKilled++;
@@ -17069,7 +17069,7 @@ public class Mission : AMission, IMainMission
             //addPointArea(MO_ObjectiveType.Building, "Dover Naval HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 120, 48, true, true, 4, 7, "", add);
             //NOTE: renaming the radar targets as "RPA in stead of just "R" so they no longer match the .mis file trigger names (which WILL still trigger if they are still in the file).
             //public void addRadarPointArea(string objectiveName, string flak, int ownerarmy, double points, double repair_days, string targetKey, string initSub, double orttkg, int orttn, double x, double y, double siteRadius_m, double RadarEffectiveRadius_m, bool isPrimaryTarget, double primaryTargetWeight = 100, string comment = "", bool addNewOnly = false)
-            addRadarPointArea("Westgate Radar", "WesR", 1, 5, 2, "WestgateRadar", "", 5000, 13, 0, 244791, 262681, 150, 25000, false, 30, "", add);
+            addRadarPointArea("Westgate Radar", "WesR", 1, 5, 2, "WestgateRadar", "", 5000, 13, 0, 244791, 262681, 200, 25000, false, 30, "", add);
             addRadarPointArea("Eastbourne Radar", "EasR", 1, 5, 2, "EastbourneRadar", "", 5000, 13, 0, 178778, 197444, 200, 25000, false, 10, "", add);
             addRadarPointArea("Littlehampton Radar", "LitR", 1, 5, 2, "LittleHamptonRadar", "", 5000, 13, 0, 123384, 196295, 200, 35000, false, 10, "", add);
             addRadarPointArea("Ventnor Radar", "VenR", 1, 5, 2, "VentorRadar", "", 5000, 13, 0, 70423, 171706, 200, 35000, false, 10, "", add);
@@ -22524,6 +22524,8 @@ added Rouen Flak
                  int numItemsNow4 = Calcs.CountMatchingGroundObjects (GamePlay, location: newPos, radius_m: 40000, matchName: mo.ID + "_AutoFlak_pos_");  */
 
                 int realNIB = Convert.ToInt32(nib * temp.percentRemaining);
+                //So just hitting it cuts #of flak by 50% right off the bat
+                if (nib>=2 && realNIB > nib/2.0) realNIB = Convert.ToInt32(nib/2.0);
 
                 Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Pct Remaining: {8:N0}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, temp.numItemsRemaining, nib, realNIB, temp.percentRemaining*100);
 
@@ -26024,17 +26026,19 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 GamePlay.gpHUDLogCenter(mes);
             });
 
-            string mes1 = "";
+            string mes1 = ">>>";
             if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) mes1 = OldObj.LOGMessage;
             if ((alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes1 = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name;
 
-            if (tempFlakPositionsKilled > 0) mes1 += string.Format(" and {0} flak positions", tempFlakPositionsKilled);
+            if (tempFlakPositionsKilled > 0) mes1 += string.Format(" (+{0} flak positions destroyed)", tempFlakPositionsKilled);
 
             Timeout(messageDelay_sec, () =>
             {
                 twcLogServer(null, mes1, new object[] { });
+                string flakAdd = "";
+                if (tempFlakPositionsKilled > 0) flakAdd = string.Format(" (+{0} points for flak positions)", tempFlakPositionsKilled * 2);
 				if (tacviewimplmission != null) tacviewimplmission.AddBookmark(mes1);
-                twcLogServer(null, pom + "All involved have received commendations and promotions.", new object[] { });
+                twcLogServer(null, ">>>" + pom + "All involved have received commendations and promotions" + flakAdd +".", new object[] { });
                 //MissionObjectivesList[ID] = OldObj;
             });
 

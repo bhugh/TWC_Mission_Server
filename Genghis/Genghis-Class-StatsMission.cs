@@ -6269,7 +6269,7 @@ struct
     //These negative kill points will have a bad effect on the player's rank, ace level, and also on the entire army's 
     //point level as recorded by <obj.  Kill point totals can actually go negative for bad infractions.
     //Also every 8 infractions the player is kicked out of the plane (usually results in player death/loss of career)
-    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg)
+    public void ot_HandleCivilianBombings(Player player, Point3d pos, AiDamageInitiator initiator, double mass_kg, bool isNoBombObj = false)
     {
         if (player == null) return;
 
@@ -6289,8 +6289,9 @@ struct
 
 
         //GamePlay.gpLogServer(null, "Infraction/penalties for " + playername + ": " + infractions.ToString(), new object[] { });
-        if (infractions == 1) //First infraction
+        if (infractions == 1 && isNoBombObj) //First infraction
         {
+            
             if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
                 GamePlay.gpLogServer(null, "A civilian area has been bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + "! Penalties to you & your army.", new object[] { player });
@@ -6298,9 +6299,27 @@ struct
                 stb_RecordStatsOnActorDead(initiator, 4, -.8, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
                 GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian area: " + (-1 * score).ToString("0.0") + " point penalty", new object[] { });
             }
+        
+        } else  if (infractions == 1 && !isNoBombObj) {
+            if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
+            {
+                GamePlay.gpLogServer(null, "A civilian or cultural area has been bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + " in direct contradiction of general orders! Penalties to you & your army.", new object[] { player });
+                GamePlay.gpHUDLogCenter("Civilian/Cultural area bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + "! Severe repercussions!!");
+                stb_RecordStatsOnActorDead(initiator, 4, -2*score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
+                GamePlay.gpLogServer(new Player[] { player }, "Bombed civilian/cultural area: " + (-2 * score).ToString("0.0") + " point penalty", new object[] { });
+
+                //Add points to enemy/subtract from ally army
+                mainmission.MissionObjectiveScore[(ArmiesE)army] -= 50;
+                mainmission.MissionObjectiveScore[(ArmiesE)(3-army)] += 25;
+                mainmission.MissionObjectivesCompletedString[(ArmiesE)army]  += " - PENALTY: Civilian/Cultural Area Bombing";
+
+            }
+
         }
         else if (infractions > 0 && infractions > 8) //This statement will be called for 4, 8, 12, 16, etc infractions.  So you can add additional penalties at each 4 infractions. 
         {
+            
+
             if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
                 GamePlay.gpLogServer(null, "A civilian area has been bombed repeatedly by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + " despite sever warnings and penalties! You and your army have incurred very serious penalties.", new object[] { });
@@ -6352,11 +6371,12 @@ struct
             });
         }
         //After every EIGHT infractions we will kick them out of the plane
-        if (prev_infractions != infractions && infractions > 0 && infractions % 8 == 0)
+        if (prev_infractions != infractions && (infractions > 0 || isNoBombObj) && infractions % 8 == 0)
         {
+            string rpted = infractions == 0 ? "" : "repeated ";
             Timeout(2, () =>
             {
-                GamePlay.gpLogServer(null, "Because of repeated bombing of civilian areas, and insubordination in disobeying orders to cease such bombing, " + stb_StatRecorder.StbSr_MassagePlayername(playername)
+                GamePlay.gpLogServer(null, "Because of " + rpted +" bombing of civilian/cultural areas and insubordination in disobeying orders to refrain from such bombing, " + stb_StatRecorder.StbSr_MassagePlayername(playername)
                     + "'s co-pilot has ejected " + playername + " from the aircraft and assumed command.", new object[] { });
 
                 string peHud_message = "Removed from command - repeated bombing of civilian areas & insubordination";
@@ -7104,7 +7124,9 @@ struct
              * Handle bombing civilian areas AND area bombing generally
              * 
              ***************************/
-            //Give penalties to players if they bomb civilian areas
+            //Give penalties to players if they bomb civilian areas or within/near a NOBOMB objective
+            if (!ai && !groundActorsFound && mainmission.MO_PointNearNoBombObjective(pos, 500)) { ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg, isNoBombObj: true ); return; }
+
             if (!ai & !groundActorsFound) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
                 {
                     if (sta == null) continue;
@@ -7134,6 +7156,8 @@ struct
                     //Regent II Bus (static vehicle) defines a circle of 500 meters radius that is "civilian territory".  Note that the 500m radius is implicit in the GamePlay.gpGroundStationarys(pos.x, pos.y, 500) above, we've added && sta.pos.distance(ref pos) <= 500 so that we can change the radius above if necessary.
                     //Maddox Games TA Sports Car (static vehicle)  defines a circle of 250 meters radius that is "civilian territory"
                     //If they manage to hit a ROAD HIGHWAY or RAILROAD within a civilian area then they don't get negative points
+                    //If there is a JERRYCAN found (above) we never get to this point, so not counted
+                    //as civilian area
                     if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)
                     {
                         if (sta.Title.Contains("AEC_Regent_II") && dis_m <= 500) ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg);

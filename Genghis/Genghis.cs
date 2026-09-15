@@ -15067,13 +15067,13 @@ public class Mission : AMission, IMainMission
     */
 
     //was InitialBlueObjectiveCount
-    Dictionary<ArmiesE, double> MissionObjectiveScore = new Dictionary<ArmiesE, double>()
+    public Dictionary<ArmiesE, double> MissionObjectiveScore = new Dictionary<ArmiesE, double>()
     {    {ArmiesE.Red, 0 },
          {ArmiesE.Blue, 0 }
     };  //reference as MissionObjectiveScore[ArmiesE.Red] MissionObjectiveScore[ArmiesE.Blue]
 
     //was Objective_Total_Blue
-    Dictionary<ArmiesE, string> MissionObjectivesCompletedString = new Dictionary<ArmiesE, string>()
+    public Dictionary<ArmiesE, string> MissionObjectivesCompletedString = new Dictionary<ArmiesE, string>()
     {    {ArmiesE.Red, "" },
          {ArmiesE.Blue, "" }
     };
@@ -15183,7 +15183,7 @@ public class Mission : AMission, IMainMission
         {ArmiesE.Blue, new Dictionary<string,DateTime>() }
     };
 
-    public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround };
+    public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround, NoBombs };
 
     public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, ObservationDeck, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // a shortage of those items. Similarly if a StorageFacility is destroyed it will cause an immediate loss of some of the existing supply of (say) aircraft of that type.  NOT IMPLEMENTED YET!!!
@@ -15306,7 +15306,7 @@ public class Mission : AMission, IMainMission
         [DataMember] public string HUDMessage { get; set; }
         [DataMember] public string LOGMessage { get; set; }
         [DataMember] public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
-        [DataMember] public double RadarEffectiveRadius { get; set; }
+        [DataMember] public double RadarEffectiveRadius { get; set; }        
 
         [DataMember] public string TriggerName { get; set; }
         [DataMember] public string TriggerType { get; set; }
@@ -15762,7 +15762,7 @@ public class Mission : AMission, IMainMission
         //You can designate EITHER kg tonnage of ordnance dropped in that area to destroy it, AND/OR a certain number of objects (static objects, actors, buildings, etc) that must be killed within that radius (the buildings part working depends on TF getting the onbuildingdestroyed routine working again), AND/OR a certain number of ACTORS that must be killed - they don't need to be within the certain RADIUS but they must match the CHIEF NAME given.
         //Chief name is for moving objectives like submarines, trains, vehicle convoys, ship actors, and looks like 2004_Chief (you must set up your .mis file for this so that the chiefs for different objectives have a unique number like this).  Then each individual vehicle/ship/sub/etc within that Chief will be named 2004_Chief1, 2004_Chief2, 2004_Chief3, etc. 
         //OR you can choose 2 of them and in that case the players will have, ie, to drop the certain tonnage on the area AND kill the certain number of objects, OR all three.
-        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true, string destroyed_submission_name = "")
+        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true, string destroyed_submission_name = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea)
         {
 
             Console.WriteLine("Initiating PointArea objective " + objective_ID);
@@ -15771,7 +15771,7 @@ public class Mission : AMission, IMainMission
 
             MOObjectiveType = objective_type;
             MOProducerOrStorageType = MOProdStorType;
-            MOTriggerType = MO_TriggerType.PointArea;
+            MOTriggerType = mo_trigger_type;
             TriggerName = objective_ID;
             ID = objective_ID;
             Name = objective_name;
@@ -16165,6 +16165,7 @@ public class Mission : AMission, IMainMission
         
         }
 
+        /*
         //returns either NEWLY killed templak positions, OR
         //the grand total of all killed tempflak positions
         public int tallyTempFlakScore(bool total = false){            
@@ -16197,7 +16198,7 @@ public class Mission : AMission, IMainMission
                         
                         if (afl.numItemsRemaining <= 0) continue;
                         int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true); //get only LIVE remaining objs
-                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
+                        //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
 
                         
                         if (newNumItemsRemaining < afl.numItemsRemaining )
@@ -16220,6 +16221,73 @@ public class Mission : AMission, IMainMission
             catch (Exception ex)
             {
                 Console.WriteLine("get_AutoFlak_locations ERROR: " + ex.Message);
+                return newlyKilled;
+            }
+        }
+
+        */
+
+        public int tallyTempFlakScore(bool total = false)
+        {
+            int newlyKilled = 0;
+            int grandTotal = 0;
+
+            try
+            {
+                double checkRadius_m = (radius * 10).Clamp(10000, 50000);
+
+                // 1️⃣ Fetch ground stationaries OUTSIDE the lock
+                List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
+
+                // 2️⃣ Brief lock just to get the flak‑location list reference
+                List<AutoFlak_location> flakLocations;
+                lock (msn.AutoFlak_locations_lock)
+                {
+                    if (msn.AutoFlak_locations == null ||
+                        !msn.AutoFlak_locations.Keys.Contains(ID) ||
+                        msn.AutoFlak_locations[ID] == null)
+                        return 0;
+
+                    flakLocations = msn.AutoFlak_locations[ID]; // snapshot
+                }
+
+                // 3️⃣ Process each flak position WITHOUT holding the lock
+                foreach (var afl in flakLocations)
+                {
+                    if (afl.dead) grandTotal ++;
+                    //if (afl.numItemsRemaining <= 0) continue;
+                    
+
+                    // Expensive operation – no lock held
+                    int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true);  //get only LIVE remaining objs
+                        //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
+
+                    if (newNumItemsRemaining >= afl.numItemsRemaining) continue;
+
+                    // 4️⃣ Minimal lock only for the state update
+                    lock (msn.AutoFlak_locations_lock)
+                    {
+                        // Re‑check inside the lock in case another thread already updated this entry
+                        if (!msn.AutoFlak_locations[ID].Contains(afl) || afl.dead) continue;
+
+                        afl.numItemsRemaining = newNumItemsRemaining;
+                        afl.percentRemaining = (double)afl.numItemsRemaining / (double)afl.numItems;
+
+                        if (!afl.dead &&  (afl.percentRemaining <= 0.5 || afl.numItemsRemaining <= 1) )
+                        {
+                            afl.dead = true;
+                            newlyKilled++;
+                        }
+                         //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                    }
+                }
+
+                if (total) return grandTotal;
+                return newlyKilled;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("tallyTempFlakScore ERROR: " + ex.Message);
                 return newlyKilled;
             }
         }
@@ -16964,7 +17032,7 @@ public class Mission : AMission, IMainMission
             }
         }
 
-        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "", string destroyedSub = "")
+        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "", string destroyedSub = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea)
         {
             //Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
 
@@ -16975,7 +17043,7 @@ public class Mission : AMission, IMainMission
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
-                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled, destroyed_submission_name: destroyedSub));
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled, destroyed_submission_name: destroyedSub, mo_trigger_type: mo_trigger_type));
             }
         }
 
@@ -17608,10 +17676,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 15, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 15, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 
             //229550.25 251544.72	
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -19175,6 +19243,22 @@ added Rouen Flak
             if (d_m <= dist_m) total++;
         }
         return total;
+    }
+
+    //If dist_m_orig is given, the point is that OR the OBJ radius, whichever is LARGER
+    public bool MO_PointNearNoBombObjective(Point3d p, double dist_m_orig = 0)
+    {
+        int total = 0;
+        List<string> keys = new List<string>(MissionObjectivesList.Keys);
+        foreach (var key in keys)
+        {
+            MissionObjective mo = MissionObjectivesList[key];
+            if (mo.MOTriggerType != MO_TriggerType.NoBombs) continue;
+            double dist_m = dist_m_orig < mo.radius ? mo.radius : dist_m_orig;
+            double d_m = Calcs.CalculatePointDistance(mo.Pos, p);
+            if (d_m <= dist_m) return  true;
+        }
+        return false;
     }
 
     //2021-11 Jubilee: The turn map requirements can vary, sometimes just a few, sometimes many points required to turn the map
@@ -21901,7 +21985,7 @@ added Rouen Flak
 
             foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()){
                 int score = mo.tallyTempFlakScore();
-                if (ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} is {1} {2}", mo.ID, score, score>1?"FLAKWASHIT":"");
+                if (ON_TESTSERVER && score > 0) Console.WriteLine ("tempFlakTally for {0}, new hits: {1} {2}", mo.ID, score, score>0?"FLAK WAS HIT":"");
                 
                 if (score > 0)
                 {
@@ -21914,7 +21998,7 @@ added Rouen Flak
                 if (totalScore[i] > 0) {
                     int reportScore = totalScore[i];
                     int ar = i;
-                    Console.WriteLine(ArmiesL[ar] + " has destroyed {0} flak nest (+{1} point)", totalScore[i]/2, totalScore[i]);
+                    //Console.WriteLine(ArmiesL[ar] + " has destroyed {0} flak nest (+{1} point)", totalScore[i]/2, totalScore[i]);
                     Timeout(8 * i, ()=>
                     {
                         string s  = (reportScore == 0) ? "" : "s";

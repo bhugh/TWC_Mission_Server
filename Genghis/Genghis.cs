@@ -16287,7 +16287,7 @@ public class Mission : AMission, IMainMission
             }
             catch (Exception ex)
             {
-                Console.WriteLine("tallyTempFlakScore ERROR: " + ex.Message);
+                Console.WriteLine("MO - tallyTempFLAKScore ERROR: " + ex.Message);
                 return newlyKilled;
             }
         }
@@ -19255,7 +19255,9 @@ added Rouen Flak
             MissionObjective mo = MissionObjectivesList[key];
             if (mo.MOTriggerType != MO_TriggerType.NoBombs) continue;
             double dist_m = dist_m_orig < mo.radius ? mo.radius : dist_m_orig;
+            
             double d_m = Calcs.CalculatePointDistance(mo.Pos, p);
+            if (ON_TESTSERVER) Console.WriteLine("Near NoBomb: {0} {1:n0} {2:n0}", mo.ID, dist_m, d_m);
             if (d_m <= dist_m) return  true;
         }
         return false;
@@ -21793,7 +21795,7 @@ added Rouen Flak
     int numpToStartCompleteElimination = 65; //was 50/prior to 2026-09, but now removed ALL flak from .mis files    
     int numpForCompleteElimination = 110; //was 50/prior to 2026-09, but now removed ALL flak from .mis files
 
-    int testTempFlakNumPilots = 0;
+    int testTempFlakNumPilots = 0; 
     List<int> leftoverTempflak = new List<int>() { 0, 0, 0 }; //We keep track if any of the 80 is left over, if so the other army can use it in the next round
     public System.Threading.Timer tempFlakTimer;
 
@@ -21848,7 +21850,9 @@ added Rouen Flak
 
             int nump = Calcs.gpNumberOfPlayers(GamePlay);
             if (testTempFlakNumPilots > 0 && testTempFlakNumPilots > nump) nump = testTempFlakNumPilots;
-            if (nump > 50) return;
+            //if (nump > 50) return;
+
+            if (ON_TESTSERVER) nump = 90;//FOR TESTING
 
             tempFlak_Lifetime_s = 95; //default/starting situation
             double sectionFileDelay_s = 2.42324;
@@ -21985,7 +21989,7 @@ added Rouen Flak
 
             foreach (MissionObjective mo in MissionObjectivesList.Values.ToList()){
                 int score = mo.tallyTempFlakScore();
-                if (ON_TESTSERVER && score > 0) Console.WriteLine ("tempFlakTally for {0}, new hits: {1} {2}", mo.ID, score, score>0?"FLAK WAS HIT":"");
+                if (ON_TESTSERVER && score > 0) Console.WriteLine ("tempFlakTally for {0}, new hits: {1} {2}", mo.ID, score, "FLAK WAS HIT");
                 
                 if (score > 0)
                 {
@@ -22001,15 +22005,16 @@ added Rouen Flak
                     //Console.WriteLine(ArmiesL[ar] + " has destroyed {0} flak nest (+{1} point)", totalScore[i]/2, totalScore[i]);
                     Timeout(8 * i, ()=>
                     {
-                        string s  = (reportScore == 0) ? "" : "s";
-                        twcLogServer(null,">>>>" + ArmiesL[ar] + " has destroyed {0} flak nest{2} (+{1} point{2})", new object[] { reportScore/2, reportScore, s  });
+                        string s1  = (reportScore/2 == 1) ? "" : "s";
+                        string s2  = (reportScore == 1) ? "" : "s";
+                        twcLogServer(null,">>>>" + ArmiesL[ar] + " has destroyed {0} flak nest{2} (+{1} point{3})", new object[] { reportScore/2, reportScore, s1, s2  });
                         
                     });
                 }
             }
         } catch (Exception ex)
         {
-            Console.WriteLine("tallyTempFlakScore ERROR: " + ex.Message);
+            Console.WriteLine("TEMPFLAK - tallyTempFlakScore ERROR: " + ex.Message);
         }
     }
 

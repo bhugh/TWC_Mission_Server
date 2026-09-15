@@ -2217,8 +2217,34 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
 
         }
+        
         */
-        if (msg.StartsWith("<lactors") && (admin_privilege_level(player) > 1))
+
+        if (msg.StartsWith("<lactorsall") && (admin_privilege_level(player) > 1))
+        {
+            Console.WriteLine("FULL actor list - starting...");
+			mainmission.twcLogServer(new Player[] { player }, "FULL actor list - starting (to CONSOLE only) ...");
+            Point3d p = new Point3d(284703, 125257, 0);
+            double r = 9000;
+
+            if (player != null && player.Place() != null) p = player.Place().Pos();
+
+            string[] words = msg_orig.Split(' ');
+
+            List<AiActor> closeStaticActors = new List<AiActor>();
+            //Calcs.listStatics(GamePlay, new List<string>() { "smoke", "fire", "crater", "jerry" });
+            lock (allStaticActors_lock)
+            {
+                closeStaticActors = allStaticActors.ToList(); 
+            }
+            //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
+            foreach (AiActor act in closeStaticActors) {
+				Console.WriteLine(string.Format("Actor: {0} {1} {5} {2:N0} {3:N0} army: {4}", act.Name(), (act as AiCart).InternalTypeName(), act.Pos().x, act.Pos().y, act.Army() , Calcs.correctedSectorNameDoubleKeypad(mainmission, act.Pos())));
+				
+			}
+
+        }
+		else if (msg.StartsWith("<lactors") && (admin_privilege_level(player) > 1))
         {
             Console.WriteLine("Actor list - starting...");
 			mainmission.twcLogServer(new Player[] { player }, "Actor list - starting...");
@@ -8751,12 +8777,33 @@ public static class CoverCalcs
         return result.ToArray();
     }
 
-    public static void listAllGroundActors(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1)
+    public static void listAllGroundActors(CoverMission msn, IGamePlay gp, Player[] to = null, int missionNumber = -1, string message = "")
     {
 		try {
+
+            // --- STEP 1: SNAPSHOT EVERYTHING ON THE MAIN THREAD ---
+			List<string> linesToSave = new List<string>();
+			string playername = "";
+            Point3d pos = new Point3d (200000,200000, 0);
+			if (to != null && to.Length >  0 && to[0] != null){
+                             playername = to[0].Name();
+                             if (to[0].Place() != null) pos = to[0].Place().Pos();
+            }
+			
+			string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+			
+			string msg = string.Format("{0} Player: {1}",currentDateTime, playername);
+			linesToSave.Add(msg);
+			msg = string.Format("({0} {1} {2})", pos.x, pos.y, pos.z);
+			linesToSave.Add(msg);
+			if (message.Length > 0 ) linesToSave.Add(message);
+			linesToSave.Add("");
+			linesToSave.Add("==========================================================================================");
+			linesToSave.Add("");
+			
 			//TODO: Make it list only the actors in that mission by prefixing "XX:" if missionNumber is included.
 			if (gp == null) return;
-			gp.gpLogServer(null, "Listing all ground actors:", new object[] { });
+			gp.gpLogServer(null, "Listing all ground actors (and to file sectionfiles/AllActors....txt):", new object[] { });
 
 			int group_count = 0;
 			if (gp.gpArmies() != null && gp.gpArmies().Length > 0)
@@ -8794,6 +8841,33 @@ public static class CoverCalcs
 					}
 				}
 			}
+
+            // Determine paths safely before leaving the thread
+			string tempFile = "sectionfiles/AllActors" + currentDateTime +".txt";
+			string fullPath = msn.mainmission.CLOD_PATH + msn.mainmission.FILE_PATH + tempFile;
+
+			// --- STEP 2: OFF-LOAD ONLY DISK I/O TO THE BACKGROUND THREAD ---
+			// We only pass the strings, which are immutable and 100% thread-safe.
+			//Task.Run(() => {
+				try 
+				{
+					using (StreamWriter writer = new StreamWriter(fullPath))
+					{
+						foreach (string line in linesToSave)
+						{
+							writer.WriteLine(line);
+						}
+					}
+					// Note: gp.gpLogServer might fail inside Task.Run if it requires main-thread context. 
+					// If it causes glitches, move it outside or use a game-provided tick/timeout callback.
+					Console.WriteLine("Ground stationary export complete to disk.");
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Error writing ground stationary file: " + ex.Message);
+				}
+
+            
 		} catch (Exception ex){ Console.WriteLine("Cover/List All Ground Actors, ERROR: {0}", ex); }
 
     }

@@ -9190,76 +9190,77 @@ public class Mission : AMission, IMainMission
 
     }
 
-    private void initRadarPasswords()
-    {
-        string iniPath = System.IO.Path.Combine(STATSCS_FULL_PATH, "stats.ini");
-        string pwRed = "twc";
-        string pwBlue = "twc";
-        string pwAdmin = "twc";
-        string pwAdminGrouped = "twc";
+    private void initRadarPasswords(){
 
-        string radPassSection = "RadarPasswords_Genghis";
-        if (ON_JUBILEE) radPassSection = "RadarPasswords_Jubilee";
-        if (ON_TESTSERVER) radPassSection = "RadarPasswords_TestServer";
+            string iniPath = System.IO.Path.Combine(STATSCS_FULL_PATH, "stats.ini");
+            string pwRed = "twc";
+            string pwBlue = "twc";
+            string pwAdmin = "twc";
+            string pwAdminGrouped = "twc";
 
-        if (System.IO.File.Exists(iniPath))
-        {
-            try
+            string radPassSection = "RadarPasswords_Genghis";
+            if (ON_JUBILEE) radPassSection = "RadarPasswords_Jubilee";
+            if (ON_TESTSERVER) radPassSection = "RadarPasswords_TestServer";
+
+            if (System.IO.File.Exists(iniPath))
             {
-                string currentSection = string.Empty;
-                foreach (string rawLine in System.IO.File.ReadAllLines(iniPath))
+                try
                 {
-                    string line = rawLine.Trim();                     // <‑‑ trim the whole line
-                    if (string.IsNullOrEmpty(line) || line.StartsWith("#") || line.StartsWith(";"))
-                        continue;
-
-                    // Detect a section header – also trim the brackets
-                    if (line.StartsWith("[") && line.EndsWith("]"))
+                    string currentSection = "";
+                    foreach (string rawLine in System.IO.File.ReadAllLines(iniPath))
                     {
-                        // Remove the brackets and any surrounding spaces
-                        currentSection = line.Trim('[', ']').Trim();
-                        continue;
-                    }
+                        string line = rawLine.Trim();
+                        if (string.IsNullOrEmpty(line) || line.StartsWith("#") || line.StartsWith(";"))
+                            continue;
 
-                    if (currentSection.Equals(radPassSection, StringComparison.OrdinalIgnoreCase))
-                    {
-                        int equalsIdx = line.IndexOf('=');
-                        if (equalsIdx > 0)
+                        if (line.StartsWith("[") && line.EndsWith("]"))
                         {
-                            string key = line.Substring(0, equalsIdx).Trim();
-                            string val = line.Substring(equalsIdx + 1).Trim();
+                            currentSection = line.Substring(1, line.Length - 2).Trim();
+                            continue;
+                        }
 
-                            Console.WriteLine("Reading radar passwords from stats.ini, {0}: {1} {2}", radPassSection, key, val);
+                        if (currentSection.Equals(radPassSection, StringComparison.OrdinalIgnoreCase))
+                        {
+                            int equalsIdx = line.IndexOf('=');
+                            if (equalsIdx > 0)
+                            {
+                                string key = line.Substring(0, equalsIdx).Trim();
+                                string val = line.Substring(equalsIdx + 1).Trim();
 
-                            if (key.Equals("Red", StringComparison.OrdinalIgnoreCase))
-                                pwRed = val;
-                            else if (key.Equals("Blue", StringComparison.OrdinalIgnoreCase))
-                                pwBlue = val;
-                            else if (key.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-                                pwAdmin = val;
-                            else if (key.Equals("AdminGrouped", StringComparison.OrdinalIgnoreCase))
-                                pwAdminGrouped = val;
+                                Console.WriteLine("Reading radar passwords from stats.ini, {3}: {0} {1}", key, val, radPassSection);
+
+                                if (key.Equals("Red", StringComparison.OrdinalIgnoreCase))
+                                    pwRed = val;
+                                else if (key.Equals("Blue", StringComparison.OrdinalIgnoreCase))
+                                    pwBlue = val;
+                                else if (key.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                                    pwAdmin = val;
+                                else if (key.Equals("AdminGrouped", StringComparison.OrdinalIgnoreCase))
+                                    pwAdminGrouped = val;
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error reading radar passwords from stats.ini: " + ex.Message);
+                }
             }
-            catch (Exception ex)
+
+            Console.WriteLine("Reading radar passwords from stats.ini, results: {0} {1} {2} {3}", pwRed, pwBlue, pwAdmin, pwAdminGrouped);
+
+            radarpasswords = new Dictionary<int, string>
             {
-                Console.WriteLine("Error reading radar passwords from stats.ini: " + ex.Message);
-            }
-        }
+                { -1, pwRed},          //Red army #1
+                { -2, pwBlue},         //Blue, army #2
+                { -3, pwAdmin},        //admin
+                { -4, pwAdminGrouped}, //admingrouped
+            };
 
-        Console.WriteLine("Reading radar passwords from stats.ini, results: {0} {1} {2} {3}", pwRed, pwBlue, pwAdmin, pwAdminGrouped);
+            Console.WriteLine("Radar passwords read from from stats.ini, section {0}: {1} {2} {3} {4}", radPassSection, pwRed, pwBlue, pwAdmin, pwAdminGrouped);
 
-        radarpasswords = new Dictionary<int, string>
-        {
-            { -1, pwRed },          // Red army #1
-            { -2, pwBlue },         // Blue army #2
-            { -3, pwAdmin },        // admin
-            { -4, pwAdminGrouped }  // admingrouped
-        };
+            
 
-        Console.WriteLine("Radar passwords read from from stats.ini, section {0}: {1} {2} {3} {4}", radPassSection, pwRed, pwBlue, pwAdmin, pwAdminGrouped);
     }
 
     /*	

@@ -1730,8 +1730,9 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("LATD2: " + mo.ID);
             double PointsTaken = mo.AirfieldDamagePoints;
             bool disabled = mo.Destroyed;
+            bool hasDefenseUnits = (mo.DefenseUnits != null);
 
-            if (!all && PointsTaken == 0 && !disabled) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
+            if (!all && PointsTaken == 0 && !disabled && !hasDefenseUnits && !mo.LastHitTime_UTC.HasValue) continue; //we'll list only airports damaged or disabled, skipping those with no damage at all, unless called with all=true
             //Console.WriteLine("LATD: {0} {1} " + mo.ID, PointsTaken, disabled);
             if (army != -1 & army != mo.OwnerArmy) continue; //List only the army requested, skipping the others.  army = -1 means list both/all armies
             //Console.WriteLine("LATD: {0} {1} " + mo.ID, army, mo.OwnerArmy);

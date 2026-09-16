@@ -1096,8 +1096,8 @@ public class Mission : AMission, IMainMission
 		if ((tickSinceStarted) == 1500  && tickSinceStarted > 0) //ca. 2 minutes
         {
 			//1st run, after giving previous removegroundactors (OnBattleStarted) etc time to settle
-			Console.WriteLine("removeAndChangeBirthPlacesInEnemyTerritory(fast:true) - 1st run: {0}",tickSinceStarted);
-			removeAndChangeBirthPlacesInEnemyTerritory(fast:true);//remove any birthplaces that have fallen behind enemy lines
+			//Console.WriteLine("removeAndChangeBirthPlacesInEnemyTerritory(fast:true) - 1st run: {0}",tickSinceStarted);
+			//removeAndChangeBirthPlacesInEnemyTerritory(fast:true);//remove any birthplaces that have fallen behind enemy lines
 		}
 		if ((tickSinceStarted) == 3000  && tickSinceStarted > 0) //ca. 2 minutes
         { 
@@ -1621,17 +1621,18 @@ public class Mission : AMission, IMainMission
             {
                 if (bp != null & bp.Pos().distance(ref pos) <= ap.FieldR())
                 {
+                    Console.WriteLine("BP found, Name: {0}", bp.Name());
                     if (bp.Name() != null && !(bp.Name().ToUpper().Contains("BIRTHPLACE")))
                     {
                         //Console.WriteLine("SetAirfields: Using Birthplace name for {1} (was {0})", apName, bp.Name());
                         apName = bp.Name();  //We will use the spawn point/birthplace name UNLESS it is just "BirthPlace0" or whatever
                         owner_army = bp.Army();
                     }
-                    break;
+                    //break;
                 }
             }
 			
-			Console.WriteLine("AP Name: " + apName + " ap.Name(): " + ap.Name());
+			Console.WriteLine("AP Name: " + apName + " ap.Name(): " + ap.Name() + " perfront: {0} final: {1} ", army_perfront, owner_army);
 
 
 
@@ -8719,6 +8720,15 @@ public class Mission : AMission, IMainMission
 			//    The ID for creating army is like Landing_Ground_XXXXX whereas for attacking side Landing_Ground_XXXXX_airfield
             //#7. Load radar & regular objective triggers (which gets the OBJ info from the objective info from this .cs file)
             //#7. Transfer old (from disk) missionobjectives list to new/regular objectives list
+
+            //******************************************************************************/
+            //PURPOSE OF NESTED TIMEOUTS HERE:
+            //So in OnBattleStarted, the Timeouts don't wait the 15 seconds or any other definite length of time
+            //But the DO put all the commands in it into a stack that isn't executed until e.g. any
+            //postmission loads from the base code are complete.  So nesting each succeeding item
+            //in a "Timeout" lets all of its gpPostMissionLoads happen, and then processing that
+            //depends on those is within the next nested Timeout.
+            //*****************************************************************************/
             Timeout(15, () =>
             {
 				Console.WriteLine("OnBattleStarted: 15s - after frontlines . . . ");
@@ -8781,41 +8791,53 @@ public class Mission : AMission, IMainMission
 					{
 						Console.WriteLine("removeGroundActorsAndStationariesInEnemyTerritory(fast:true); - FIRST run: {0}",Time.tickCounter());
 						removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
+                        Timeout(1, () =>
+                            {
+
+                                Console.WriteLine("removeAndChangeBirthPlacesInEnemyTerritory(fast:true) - 1st run: {0}",Time.tickCounter());
+                                removeAndChangeBirthPlacesInEnemyTerritory(fast:true);//remove any birthplaces that have fallen behind enemy 
+
+                                Timeout(1, ()=> {
+
+                                    //So spawnpoints are an init submission now, so we need ot wait until all those are loaded before running
+                                    //SetAirfieldTargets.  And then waitmore ntil running mission_objectives etc.
+                                    //moved this to MissionObjectives initializer, so we can get the timing/sequence of things right
+                                    //SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
+
+                                    if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
+
+                                    mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
+
+                                    if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
+                                    
+
+
+
+                                    //LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
+
+                                    //LoadRandomSubmission("weather",@"Weather"); // weather to load initially
+                                    //Loading weather as a submission doesn't seem to work, so we're doing this by directly editing the .mis file, as with triggers, airgroups, time, etc.
+
+
+                                    //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
+                                    EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
+
+
+                                    //ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
+                                    //ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
+
+                                    SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
+
+
+                                });
+                            });
 						//Follow up "inenemyterritory" type things are in OnTickGame() due
 						//to Timeout() acting weird in OnBattleStarted. 
 						//Timeout()seems to not wait X seconds, but does just wait until immediately after any previous code has run.  Or whatever, something.
 					});
 
 
-                    //So spawnpoints are an init submission now, so we need ot wait until all those are loaded before running
-                    //SetAirfieldTargets.  And then waitmore ntil running mission_objectives etc.
-                    //moved this to MissionObjectives initializer, so we can get the timing/sequence of things right
-                    //SetAirfieldTargets(); //but since we're not doing that now, we can load it immediately.  Airfields MUST be loaded before mission_objectives bec. the airfield list is used to create mission_objectives
-
-                    if (mission_objectives == null) Console.WriteLine("#00.4  Mission Objectives doesn't exist yet!");
-
-                    mission_objectives = new MissionObjectives(this, GamePlay); //this must be done AFTER GetMapSuffix as that reads results of previous mission & that is needed for setting up mission objectives
-
-                    if (mission_objectives == null) Console.WriteLine("#00.5  Mission Objectives doesn't exist still!");
-					
-
-
-
-                    //LoadRandomSubmission(MISSION_ID + "-" + "initairports" + CampaignMapSuffix); // choose which of the airport & front files to load initially
-
-                    //LoadRandomSubmission("weather",@"Weather"); // weather to load initially
-                    //Loading weather as a submission doesn't seem to work, so we're doing this by directly editing the .mis file, as with triggers, airgroups, time, etc.
-
-
-                    //Turning EndMissionIfPlayersInactive(); off for TF 4.5 testing.
-                    EndMissionIfPlayersInactive(); //start routine to check if no players in game & stop the mission if so
-
-
-                    //ReadInitialSubmissions(MISSION_ID + "-stats", 0, 0.1);
-                    //ReadInitialSubmissions(MISSION_ID + "-supply", 0, 0.2);
-
-                    SaveCampaignStateIntermediate(); //save campaign state/score every 10 minutes so that it isn't lost of we end unexpectedly or crash etc
-
+                    
                     /// CONFIGURE REARM/REFUEL
                     /// Duration in seconds for full rearm
                     // RearmRefuelConfig.REARM_DURATION = 150;
@@ -9192,15 +9214,16 @@ public class Mission : AMission, IMainMission
 
     private void initRadarPasswords()
     {
-        string iniPath = System.IO.Path.Combine(STATSCS_FULL_PATH, "stats.ini");
+        //string iniPath = System.IO.Path.Combine(STATSCS_FULL_PATH, "stats.ini");
+        string iniPath = statsmission.stb_FullPath_Name_ini;
         string pwRed = "twc";
         string pwBlue = "twc";
         string pwAdmin = "twc";
         string pwAdminGrouped = "twc";
 
-        string radPassSection = "RadarPasswords_Genghis";
-        if (ON_JUBILEE) radPassSection = "RadarPasswords_Jubilee";
-        if (ON_TESTSERVER) radPassSection = "RadarPasswords_TestServer";
+        string radPassSection = "RADARPASSWORDS_GENGHIS";
+        if (ON_JUBILEE) radPassSection = "RADARPASSWORDS_JUBILEE";
+        if (ON_TESTSERVER) radPassSection = "RADARPASSWORDS_TESTSERVER";
 
         if (System.IO.File.Exists(iniPath))
         {
@@ -9218,6 +9241,7 @@ public class Mission : AMission, IMainMission
                     {
                         // Remove the brackets and any surrounding spaces
                         currentSection = line.Trim('[', ']').Trim();
+                        Console.WriteLine("Reading radar passwords 0 from stats.ini, results: {4} {0} {1} {2} '{3}' '{5}'", pwRed, pwBlue, pwAdmin, pwAdminGrouped, currentSection, radPassSection);
                         continue;
                     }
 
@@ -9229,7 +9253,7 @@ public class Mission : AMission, IMainMission
                             string key = line.Substring(0, equalsIdx).Trim();
                             string val = line.Substring(equalsIdx + 1).Trim();
 
-                            Console.WriteLine("Reading radar passwords from stats.ini, {0}: {1} {2}", radPassSection, key, val);
+                            Console.WriteLine("Reading radar passwords from stats.ini, '{0}': {1} {2}", radPassSection, key, val);
 
                             if (key.Equals("Red", StringComparison.OrdinalIgnoreCase))
                                 pwRed = val;
@@ -9239,6 +9263,8 @@ public class Mission : AMission, IMainMission
                                 pwAdmin = val;
                             else if (key.Equals("AdminGrouped", StringComparison.OrdinalIgnoreCase))
                                 pwAdminGrouped = val;
+
+                            Console.WriteLine("Reading radar passwords 1 from stats.ini, results: {0} {1} {2} {3}", pwRed, pwBlue, pwAdmin, pwAdminGrouped);
                         }
                     }
                 }
@@ -9259,7 +9285,7 @@ public class Mission : AMission, IMainMission
             { -4, pwAdminGrouped }  // admingrouped
         };
 
-        Console.WriteLine("Radar passwords read from from stats.ini, section {0}: {1} {2} {3} {4}", radPassSection, pwRed, pwBlue, pwAdmin, pwAdminGrouped);
+        Console.WriteLine("Radar passwords read from from stats.ini, section '{0}': {1} {2} {3} {4}", radPassSection, radarpasswords[-1], radarpasswords[-2], radarpasswords[-3], radarpasswords[-4]);
     }
 
     /*	
@@ -13949,7 +13975,7 @@ public class Mission : AMission, IMainMission
             double currTime = GamePlay.gpTimeofDay();
             double desiredStartTime_hrs = EARLIEST_MISSION_START_TIME_HRS;
             Console.WriteLine("MIS 2");
-            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
+            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time (before): {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
             //if the last saved mission time is a long ways from the current mission time, AND there is still more than 5 hrs
             //left before the preferred end mission time, 
             //AND the last save mission time is later than the earliest allowed mission start time,
@@ -13958,7 +13984,7 @@ public class Mission : AMission, IMainMission
             if (ret && Math.Abs(lastMissionCurrentTime_hr - currTime) < 30 && END_MISSION_TIME_HRS - lastMissionCurrentTime_hr > 5
                 && lastMissionCurrentTime_hr >= EARLIEST_MISSION_START_TIME_HRS)
                 desiredStartTime_hrs = lastMissionCurrentTime_hr;
-            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
+            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time (after): {0:F3} {1:F3} diff: {2:F3} ", currTime, desiredStartTime_hrs, Math.Abs(desiredStartTime_hrs - currTime)));
             Console.WriteLine("MIS 3");
             //So once in a while we restart the mission simply to change the weather, aircraft, etc.  This will change cloudsheight & weatherindex, AI aircraft types.
             bool restartToChangeWeather = false;
@@ -13973,16 +13999,20 @@ public class Mission : AMission, IMainMission
 			//if (ON_TESTSERVER) restartToChangeTime = true;
 
             Console.WriteLine("MIS 4, restartToChangeTime: {0}", restartToChangeTime);
+
+            string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
+
+            twcLogServer(null, String.Format("CheckStartTime, deciding: curr/desired start time: {0:F3} {1:F3}; Changing to {2} - {3}. Restart to change weather? {4} restart to change map {5}", currTime, desiredStartTime_hrs, desiredString, map_value, restartToChangeWeather, restartToChangeMap));
             //DECISION POINT - change things & restart or not
             //rem out the following line to make it: testing, do it always
             //TESTSERVER restarts to change map per season, but NOT startime or weather
             if ( !restartToChangeTime && !restartToChangeWeather && !restartToChangeMap) return; //0.5 == 30 minutes, 1/2 hour
 
-            string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
+            
 
             Console.WriteLine("MIS 5");
 
-            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time: {0:F3} {1:F3}; Changing to {2} - {3}. Restart to change weather? {4} restart to change map {5}", currTime, desiredStartTime_hrs, desiredString, map_value, restartToChangeWeather, restartToChangeMap));
+            
             Console.WriteLine("MIS 4");
             string filepath_mis = stb_FullPath + @"/" + MISSION_ID + ".mis";
             string filepath_mis_save = stb_FullPath + @"/" + MISSION_ID + ".mis_save";

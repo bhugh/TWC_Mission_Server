@@ -176,6 +176,10 @@ public class StatsMission : AMission, IStatsMission
     //public string stb_LocalMissionIniDirectory = @"missions\Multi\Fatal\"; //Local directory (ie, on the same hard drive as the CloD Server) where your stats.ini file will be located. This is in relation to the directory where Launcher.exe /server is found.    
     public string stb_StatsINIFilename = "stats.ini";  //If this stats.ini exists in the directory indicated, then all values in that file will be read in & replace the DEFAULT values in the section below
 
+    public string stb_FullPath_ini {get; set;}
+
+    public string stb_FullPath_Name_ini {get;set;}
+
     //NOTE: Values below are DEFAULTS and will be OVERWRITTEN by the values in the stats.ini file
     //Check under method "public Mission ()" to see how all these strings are combined to create the actual complete directories, filenames, etc 
 
@@ -418,8 +422,10 @@ public class StatsMission : AMission, IStatsMission
         //TWCIniFile = TWCComms.Communicator.Instance.Ini;
 
         string s = stb_AppPath.Remove(stb_AppPath.Length - 5, 5);
-        string stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
-        stb_loadINI(stb_FullPath_ini + stb_StatsINIFilename);
+        stb_FullPath_ini = s + stb_LocalMissionIniDirectory; // something like @"missions\Multi\Fatal\"
+        stb_FullPath_Name_ini = stb_FullPath_ini + stb_StatsINIFilename; 
+
+        stb_loadINI(stb_FullPath_Name_ini);
         //stb_LogStatsUploadAddressLow = "ftp://ftp.brenthugh.com/brenthugh.com/twc/" + stb_LogStatsUploadBasenameLow;        
         stb_LogStatsUploadAddressLow = stb_LogStatsUploadFtpBaseDirectory + stb_LogStatsUploadBasenameLow;
         stb_LogStatsUploadAddressExtLow = ".htm";

@@ -15215,7 +15215,7 @@ public class Mission : AMission, IMainMission
 
     public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround, NoBombs };
 
-    public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, ObservationDeck, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
+    public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, ObservationDeck, MilitaryTunnel, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // a shortage of those items. Similarly if a StorageFacility is destroyed it will cause an immediate loss of some of the existing supply of (say) aircraft of that type.  NOT IMPLEMENTED YET!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
 
@@ -15240,7 +15240,7 @@ public class Mission : AMission, IMainMission
         new Dictionary<MO_MilitaryStrengthType, List<MO_ObjectiveType>> {
         {MO_MilitaryStrengthType.Military, new List<MO_ObjectiveType> { MO_ObjectiveType.Radar, MO_ObjectiveType.RadioCommunications, MO_ObjectiveType.Communications, MO_ObjectiveType.KnickebeinHQ, MO_ObjectiveType.Artillery_and_AA,MO_ObjectiveType.Ship, MO_ObjectiveType.Naval_Ship, MO_ObjectiveType.Freighter_Ship, MO_ObjectiveType.Tanker_Ship, MO_ObjectiveType.Submarine, MO_ObjectiveType.Naval_Convoy,MO_ObjectiveType.Naval_Freighter_Convoy,MO_ObjectiveType.Naval_Tanker_Convoy,
     MO_ObjectiveType.Military_Building,MO_ObjectiveType.Military_Airfield,MO_ObjectiveType.Ground_Aircraft,
-            MO_ObjectiveType.Military_Vehicles, MO_ObjectiveType.Military_Armored_Vehicles,MO_ObjectiveType.Military_Convoy, MO_ObjectiveType.Military_Train,  MO_ObjectiveType.Naval_Dock_Area, MO_ObjectiveType.Airfield_Complex, MO_ObjectiveType.ArmyBase,MO_ObjectiveType.MilitaryArea, MO_ObjectiveType.MilitaryHeadquarters, MO_ObjectiveType.MilitaryRepairFacility, MO_ObjectiveType.WeaponsStorage,MO_ObjectiveType.AmmunitionStorage }
+            MO_ObjectiveType.Military_Vehicles, MO_ObjectiveType.Military_Armored_Vehicles,MO_ObjectiveType.Military_Convoy, MO_ObjectiveType.Military_Train,  MO_ObjectiveType.Naval_Dock_Area, MO_ObjectiveType.Airfield_Complex, MO_ObjectiveType.ArmyBase,MO_ObjectiveType.MilitaryArea,MO_ObjectiveType.MilitaryTunnel, MO_ObjectiveType.MilitaryHeadquarters, MO_ObjectiveType.MilitaryRepairFacility, MO_ObjectiveType.WeaponsStorage,MO_ObjectiveType.AmmunitionStorage }
             },
 
      { MO_MilitaryStrengthType.Military_Leadership,
@@ -15249,7 +15249,7 @@ public class Mission : AMission, IMainMission
 
      {    MO_MilitaryStrengthType.Military_Fuel_Supply, new List<MO_ObjectiveType> {MO_ObjectiveType.MilitaryFuelStorage, MO_ObjectiveType.MilitaryFuelProduction, MO_ObjectiveType.Tanker_Ship, MO_ObjectiveType.Naval_Tanker_Convoy, }
     },
-     { MO_MilitaryStrengthType.General_Production_And_Supply,  new List<MO_ObjectiveType> { MO_ObjectiveType.Military_Convoy, MO_ObjectiveType.Military_Train, MO_ObjectiveType.Freighter_Ship, MO_ObjectiveType.Ship, MO_ObjectiveType.Tanker_Ship, MO_ObjectiveType.Naval_Freighter_Convoy, MO_ObjectiveType.Naval_Tanker_Convoy, MO_ObjectiveType.Bridge, MO_ObjectiveType.Dam, MO_ObjectiveType.Naval_Dock_Area, MO_ObjectiveType.Railroad_Yard, MO_ObjectiveType.Railroad, MO_ObjectiveType.Railroad_Bridge, MO_ObjectiveType.Road, MO_ObjectiveType.Factory_Complex, MO_ObjectiveType.MilitaryProductionArea, MO_ObjectiveType.MilitaryHeadquarters, MO_ObjectiveType.ProductionFacility, MO_ObjectiveType.MilitaryProductionFacility, MO_ObjectiveType.CivilianStorageFacility, MO_ObjectiveType.MilitaryStorageFacility, MO_ObjectiveType.CivilianFuelStorage, MO_ObjectiveType.Civilian_Building, MO_ObjectiveType.Civilian_Vehicles, MO_ObjectiveType.MilitaryFuelStorage, MO_ObjectiveType.MilitaryFuelProduction, MO_ObjectiveType.MilitaryRepairFacility, MO_ObjectiveType.WeaponsStorage, MO_ObjectiveType.AmmunitionStorage }
+     { MO_MilitaryStrengthType.General_Production_And_Supply,  new List<MO_ObjectiveType> { MO_ObjectiveType.Military_Convoy, MO_ObjectiveType.Military_Train, MO_ObjectiveType.Freighter_Ship, MO_ObjectiveType.Ship, MO_ObjectiveType.Tanker_Ship, MO_ObjectiveType.Naval_Freighter_Convoy, MO_ObjectiveType.Naval_Tanker_Convoy, MO_ObjectiveType.Bridge, MO_ObjectiveType.Dam, MO_ObjectiveType.Naval_Dock_Area, MO_ObjectiveType.Railroad_Yard, MO_ObjectiveType.Railroad, MO_ObjectiveType.Railroad_Bridge, MO_ObjectiveType.Road, MO_ObjectiveType.Factory_Complex, MO_ObjectiveType.MilitaryProductionArea, MO_ObjectiveType.MilitaryHeadquarters, MO_ObjectiveType.ProductionFacility, MO_ObjectiveType.MilitaryProductionFacility, MO_ObjectiveType.CivilianStorageFacility, MO_ObjectiveType.MilitaryStorageFacility, MO_ObjectiveType.CivilianFuelStorage, MO_ObjectiveType.Civilian_Building, MO_ObjectiveType.Civilian_Vehicles, MO_ObjectiveType.MilitaryFuelStorage, MO_ObjectiveType.MilitaryFuelProduction, MO_ObjectiveType.MilitaryRepairFacility, MO_ObjectiveType.WeaponsStorage, MO_ObjectiveType.AmmunitionStorage,MO_ObjectiveType.MilitaryTunnel }
     }
 
    };
@@ -17538,7 +17538,9 @@ public class Mission : AMission, IMainMission
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelProduction, "Ditton Fuel Refinery", "Ditt", "", "", 1, 4, "BTarget24", "TGroundDestroyed", 70, 185027, 252619, 100, false, 15, 520, "", add);// fixed triggers missing
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Ditton Fuel Dump", "Ditt", "", "", 1, 4, "BTarget25", "TGroundDestroyed", 38, 186057, 251745, 100, false, 15, 270, "", add);
-            addTrigger(MO_ObjectiveType.MilitaryRepairFacility, "Maidstone Train Repair Station ", "Ditt", "", "", 1, 3, "BTarget26", "TGroundDestroyed", 10, 189272, 249311, 50, false, 100, 210, "", add);
+            addTrigger(MO_ObjectiveType.MilitaryRepairFacility, "Maidstone Military Train Fabrication", "Ditt", "", "", 1, 3, "BTarget26", "TGroundDestroyed", 10, 189272, 249311, 50, false, 100, 210, "", add);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Maidstone Military Train Station", "", "", 1, 4, "MaidstoneTrainStation", 189255,  248712, 60, 60, 5000, 10, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
             
             addTrigger(MO_ObjectiveType.Military_Armored_Vehicles, "Tunbridge Wells Armoury", "Tunb", "", "", 1, 5, "BTarget27", "TGroundDestroyed", 42, 173778, 233407, 150, false, 15, 290, "", add); //This target was left out of the .cs and .mis files until now, but I'm pretty sure it was what is intended for Tunbridge Wells Armory.  So I added it to the .mis and .cs files right now. Flug 2018/10/08
             addTrigger(MO_ObjectiveType.Military_Building, "Bulford Army Facility", "Bult", "", "", 1, 7, "BTarget29", "TGroundDestroyed", 21, 35872, 236703, 150, false, 10, 230, "", add);
@@ -17563,14 +17565,47 @@ public class Mission : AMission, IMainMission
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Guildford High Octane Plant", "Guil", "", "", 1, 5, "BTarget42", "TGroundDestroyed", 23, 112441, 243834, 200, false, 2, 800, "", add); //Guildford Target added 9/20
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Sheerness Diesel Fuel Storage", "Quee", "", "", 1, 4, "BTarget43", "TGroundDestroyed", 26, 204654, 268378, 100, false, 100, 204, "", add);//Sheerness Diesel Fuel Storage
+
+            addPointArea(MO_ObjectiveType.MilitaryRepairFacility, "Sheerness Naval Equipment Repair Station", "", "", 1, 6, "SheernessNavalRepair", 204881, 268447, 350, 400, 15000, 25, 0, 125, 360, false, true, 1, 2, "", add, canBeDisabled:false);
+
             addTrigger(MO_ObjectiveType.Military_Building, "Queensborough Navigational jamming facilities", "Quee", "", "", 1, 4, "BTarget44", "TGroundDestroyed", 6, 204638, 265195, 50, false, 100, 310, "", add); // "Queensborough Navigational Jamming Facilities"
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Queensborough Radio communications center", "Quee", "", "", 1, 4, "Btarget45", "TGroundDestroyed", 6, 204722, 265252, 50, false, 100, 350, "", add);  // "Queensborough Radio Communications center"
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Queensborough Radio Transmission Booster", "Quee", "", "", 1, 4, "BTarget46", "TGroundDestroyed", 7, 204570, 265131, 50, false, 100, 360, "", add); //  "Queensborough radio Transmission booster"
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Queensborough Electrical Research Facility", "Quee", "", "", 1, 4, "BTarget47", "TGroundDestroyed", 8, 204716, 265140, 50, false, 100, 410, "", add); //  "Queensborough Electrical Research Facility"
             //addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "", "", 1, 4, "littlestonehang", "TGroundDestroyed", 66, 221988, 221642, 90, false, 100, 210, "", add); //  "Littlestone research facility"
 
+            addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Queensborough Military Train Station", "", "", 1, 4, "QueensboroughTrainStation", 204965, 265205, 60, 65, 4500, 15, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
 
-            addTrigger(MO_ObjectiveType.MilitaryArea, "Broadstairs Train Station Military Complex", "Mans", "", "", 1, 3, "BTargBroadstairsTrainStation", "TGroundDestroyed", 5, 252836, 261369, 50, false, 120, 216, "", add);
+            addPointArea(MO_ObjectiveType.MilitaryProductionArea, "Queensborough Aircraft Assembly Plant", "", "", 1, 6, "QueensboroughAircraftAssembly", 204954, 264583, 210, 230, 9500, 20, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Gillingham Military Train Station", "", "", 1, 4, "GillinghamTrainStation", 191082, 261539, 60, 60, 5000, 10, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            
+
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Ramsgate Military Train Station", "Mans", "", 1, 4, "RamsgateTrainStation", 251133, 259045, 175, 175, 5500, 15, 0, 125, 240, false, true, 2, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Ramsgate Naval Docks", "Mans", "", 1, 15, "RamsgateNavalDocks", 251622, 258457, 420, 420, 35000, 100, 0, 165, 360, false, true, 3, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Fervent Naval Station & Fortified Cave Complex", "Mans", "", 1, 15, "RamsgateHMSFervent", 252233, 257951, 80, 80, 30000, 40, 0, 145, 240, false, true, 2, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Broadstairs Train Station Military Complex", "Mans", "", 1, 4, "BTargBroadstairsTrainStation", 252836, 261369, 75, 75, 8000, 12, 0, 110, 140, false, true, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Westgate Military Train Station", "Mans", "", 1, 5, "WestgateTrainStation", 243556, 262704, 50, 50, 5500, 13, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Whitstable Military Train Station", "", "", 1, 5, "WhitstableTrainStation", 225010, 259673, 50, 50, 5500, 13, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Faversham Military Train Station", "", "", 1, 6, "FavershamTrainStation", 215015, 254178, 100, 110, 7500, 18, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Sittingbourne Carburetor Manufacture", "", "", 1, 6, "SittingbourneCarburetorManufacture", 204317, 257269, 110, 115, 9500, 18, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Sittingbourne Small Fuel Dump", "", "", 1, 4, "SittingbourneSmallFuelDump", 204357, 257430, 50, 55, 3500, 10, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Sittingbourne Large Military Fuel Dump", "", "", 1, 6, "SittingbourneLargeFuelDump", 204294, 257757, 60, 65, 5500, 12, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
+
+
+            //addTrigger(MO_ObjectiveType.MilitaryArea, "Broadstairs Train Station Military Complex", "Mans", "", "", 1, 3, "BTargBroadstairsTrainStation", "TGroundDestroyed", 5, 252836, 261369, 50, false, 120, 216, "", add);
+
             addTrigger(MO_ObjectiveType.Military_Building, "Brighton Army Recruitment Station", "Shor", "", "", 1, 4, "BTargBrightonMilitaryRecruitment", "TGroundDestroyed", 11, 144654, 198443, 50, false, 120, 236, "", add);
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Brighton Gasoline Storage", "Shor", "", "", 1, 4, "BTargBrightonFuel", "TGroundDestroyed", 5, 144738, 198233, 50, false, 120, 334, "", add);
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "Tenterden Chemical Manufacture", "Litt", "", "", 1, 3, "BTargTenterdenChemicalFactory", "TGroundDestroyed", 5, 194591, 220821, 150, false, 120, 196, "", add);
@@ -17597,7 +17632,7 @@ public class Mission : AMission, IMainMission
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Motorpool near Grand-Fort Philippe", "MPGP", "", "", 2, 4, "RTarget1", "TGroundDestroyed", 50, 299486, 220998, 50, false, 125, 250, "", add);  //g
             addTrigger(MO_ObjectiveType.MilitaryProductionFacility, "St. Omer Ball Bearing Factory", "Omar", "", "", 2, 4, "RTarget2", "TGroundDestroyed", 33, 313732, 192700, 50, false, 110, 250, "", add);  //g
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Estree Fuel Depot", "Estr", "", "", 2, 4, "RTarget3", "TGroundDestroyed", 40, 280182, 164399, 100, false, 100, 210, "", add);  //g
-            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Boulogne Synthetic Fuel", "Boul", "", "", 2, 3, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 110, 200, "", add);  //g
+            
             //addTrigger(MO_ObjectiveType.RRYard, "Caen Barge Assembly Area", "Caen", 2, 4, "RTargetCaenBargeAssemblyArea", "TGroundDestroyed", 73, 125601, 18384, 150, false, 100, 24, "", add);  //g
             addPointArea(MO_ObjectiveType.MilitaryArea, "Caen Barge Assembly Area", "Caen", "", 2, 5, "RTargetCaenBargeAssemblyArea", 125584, 18893, 150, 200, 5000, 1, 0, 5, 300, false, true, 1, 2, "", add);
             //addTrigger(MO_ObjectiveType.RRYard, "Caen Flamethrower Fuel Storage", "Caen", 2, 4, "RTargetCaenFlameThrowerFuelStorage", "TGroundDestroyed", 100, 125865, 18291, 1, false, 100, 24, "", add);  //g
@@ -17616,6 +17651,8 @@ public class Mission : AMission, IMainMission
 			
 			///*****************
 			///Boulogne
+            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Boulogne Synthetic Fuel", "Boul", "", "", 2, 3, "RTarget4", "TGroundDestroyed", 60, 265005, 190321, 100, false, 110, 200, "", add);  //g
+            
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Boulogne Flugbenzin", "Boul", "", "", 2, 3, "RTarget11", "TGroundDestroyed", 43, 265591, 189902, 100, false, 120, 222, "", add);   //g 
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Boulogne Diesel", "Boul", "", "", 2, 3, "RTarget12", "TGroundDestroyed", 50, 266651, 187088, 50, false, 120, 222, "", add);  //g
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Boulogne Benzin", "Boul", "", "", 2, 3, "RTarget13", "TGroundDestroyed", 52, 266160, 189276, 50, false, 120, 222, "", add);  //g
@@ -17645,6 +17682,9 @@ public class Mission : AMission, IMainMission
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area West", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-WEST.mis", 2, 8, "BTargBoulogneNavyDocksW", 265133, 189969, 350, 325, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 			
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
+
+
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Luftwaffe Hauptbenzinlager Arras", "Arra", "", "", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 100, false, 2, 600, "", add);  //g
@@ -17708,8 +17748,8 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 15, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 
-            //229550.25 251544.72	
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 2, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -17760,6 +17800,11 @@ public class Mission : AMission, IMainMission
             //Note that the number of batteries & guns per battery is only used if the objective is a current primary target. Otherwise just a much smaller amount of flak is put in place.
             //That's because too many flak installations seems to bring the server to its knees.
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double largearearadius = 100, double smallercentertargettrigrad=80, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af, bool afip, int fb, int fnib, string comment = "", bool addNewOnly = false)
+            addPointArea(MO_ObjectiveType.MilitaryTunnel, "Dover Train Tunnel", "Dove", "", 1, 4, "DoverTunnel", 244695, 235377, 20, 20, 2500, 8, 0, 125, 200, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Dover Naval Barracks", "Dove", "", 1, 5, "DoverBarracks", 244437, 235483, 200, 200, 8500, 20, 0, 125, 240, false, true, 2, 2, "", add, canBeDisabled:false);
+
+            
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Dover Navy HQ", "Dove", "", 1, 3, "BTargDoverNavalOffice", 245567, 233499, 50, 50, 800, 4, 0, 125, 200, true, true, 3, 7, "", add);
             addPointArea(MO_ObjectiveType.AmmunitionStorage, "Dover Ammo Dump", "Dove", "", 1, 3, "BTargDoverAmmo", 245461, 233488, 50, 50, 800, 4, 0, 125, 200, true, true, 3, 5, "", add);
             addPointArea(MO_ObjectiveType.MilitaryFuelStorage, "Dover Navy Operations Fuel", "Dove", "", 1, 3, "BTargDoverFuel", 245695, 233573, 75, 75, 800, 4, 0, 125, 222, true, true, 3, 6, "", add);
@@ -17773,7 +17818,11 @@ public class Mission : AMission, IMainMission
             //addTrigger(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", "", 1, 3, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, 196, "", add);
             addPointArea(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", 1, 4, "BTarget4", 247462, 259157, 320, 320, 4500, 25, 0, 100, 196, true, true, 1, 3, "", add, false);
             //addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "", "", 1, 4, "littlestonehang", "TGroundDestroyed", 66, 221988, 221642, 90, false, 100, 210, "", add); //  "Littlestone research facility"
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Littlestone Military Train Station", "", "", 1, 4, "LittlestoneTrainStation", 235837, 229414, 60, 60, 5000, 12, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
+
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Littlestone Research Facility", "Litt", "ship-convoy-submarine-objectives/Genghis-LOADONCALL-Littlestone-Research.mis", 1, 2, "littlestonehang", 223570, 224582, 270, 270, 4000, 10, 0, 80, 96, true, true, 2, 4, "", add, false); //  "Littlestone research facility"
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Folkestone Navy Docks Area", "Folk", "Genghis-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 7, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Southhampton Navy Docks Area", "Sout", "", 1, 8, "BTargSouthhamptonDocks", 56298, 203668, 400, 400, 8000, 0, 0, 5, 200, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryProductionFacility, "Shoreham Artillery Assembly Factory", "", "Genghis-LOADONCALL-shoreham-artillery-assembly-objective.mis", 1, 6, "BTargShorehamArtilleryFactory", 137046, 200038, 150, 90, 3000, 5, 0, 70, 300, true, true, 2, 8, "", add);
             addPointArea(MO_ObjectiveType.MilitaryArea, "Shoreham Navy Submarine Base", "", "", 1, 6, "BTargShorehamSubmarineBase", 137054, 198034, 150, 90, 3000, 3, 0, 70, 310, true, true, 3, 8, "", add); //One end of the BrightonNavalDocks .mis file
@@ -17783,8 +17832,12 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole North Navy Port Area", "Pool", "", 1, 10, "BTargPooleNorthIndustrialPortArea", 14518, 184740, 550, 400, 10000, 9, 0, 15, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Crowborough Air High Command Bunker", "", "Genghis-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 0, 120, 210, true, true, 2, 10, "", add);
+
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            
             addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Genghis-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 0, 120, 222, true, true, 2, 8, "", add);
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Folkestone Navy Docks Area", "Folk", "Genghis-LOADONCALL-folkestone-naval-docks-objective4.mis", 1, 7, "BTargFolkestoneNavyDocks", 237398, 228979, 700, 600, 7000, 40, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false); //Because it's  a dock most bombs hit on "water", thus they don't count.  So it's hard to get a lot of ordnance KG on it.  Rely mostly on static kills for that reason.  NO SHIPS, must reduce count
+
+            
             //public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 80, double orttkg = 8000, double ortt = 0, double ptp = 100, double ttr_hours = 24, bool af = true, bool afip = true, int fb = 7, int fnib = 8, string comment = "", bool addNewOnly = false)
 
             
@@ -17888,6 +17941,12 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryArea, "Hastings Mobile Army Camp", "", 1, 9, "BHastingsMobileArmyCamp", 179965, 204219, 250, 200, 7000, 15, 0, 150, 240, true, true, 1, 8, MO_MobileObjectiveType.ArmyEncampment, 48, 154251, 205709, 210342, 242209, 2, 7, MO_ProducerOrStorageType.None, "", add);
 
             addMobile(MO_ObjectiveType.MilitaryArea, "Ashford Mobile Army Group", "", 1, 9, "BAshfordMobileArmyGroup", 205965, 240219, 250, 200, 7000, 15, 0, 150, 240, true, true, 1, 8, MO_MobileObjectiveType.ArmyEncampment, 48, 200000, 230000, 213342, 250209, 2, 7, MO_ProducerOrStorageType.None, "", add);
+
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Sellindge Military Train Station", "", "", 1, 4, "SellindgeTrainStation", 224249, 230904, 60, 60, 5000, 10, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
+
+            addPointArea(MO_ObjectiveType.RadioCommunications, "Hythe Radio Mast", "", "", 1, 4, "HytheRadioMast", 230000, 228421, 33, 33, 4000, 8, 0, 125, 260, false, true, 1, 2, "", add, canBeDisabled:false);
+            
+            
 
             addMobile(MO_ObjectiveType.MilitaryArea, "Willmington Mobile Royal Army Encampment", "", 1, 9, "BWillmingtonMobileArmyCamp", 207965, 229219, 250, 200, 7000, 15, 0, 140, 240, true, true, 1, 8, MO_MobileObjectiveType.ArmyEncampment, 48, 206634, 227611, 233619, 249690, 1, 5, MO_ProducerOrStorageType.None, "", add);
 

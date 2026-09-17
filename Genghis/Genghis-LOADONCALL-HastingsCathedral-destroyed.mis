@@ -1,0 +1,67 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 10.0000002421439
+  WeatherIndex 2
+  CloudsHeight 1300
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static8 Stationary.AEC_Regent_II nn 196528.88 202409.61 -25.00 
+  Static1 Stationary.AEC_Regent_II nn 196266.63 202486.89 4.10 
+  Static3 Stationary.AEC_Regent_II nn 196327.30 202474.05 -25.00 
+  Static277 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
+  Static171 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
+  Static278 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.7
+  Static172 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.1
+  Static273 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.2
+  Static279 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.8
+  Static176 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.5
+  Static175 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.4
+  Static173 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
+  Static177 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.6
+  Static275 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.4
+  Static178 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.7
+  Static272 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.1
+  Static174 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.3
+  Static181 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 63
+  Static280 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.9
+  Static274 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.3
+  Static276 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.5
+  Static179 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.8
+  Static271 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
+  Static180 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.9
+  Static0 Stationary.AEC_Regent_II nn 196387.42 202567.17 -25.00 
+  Static2 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.2
+  Static6 Stationary.AEC_Regent_II nn 196391.36 202513.66 -25.00 
+  Static4 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196369.80 202526.33 15.00 /hstart 68 
+  Static5 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196381.33 202527.44 -75.00 /hstart 68 
+  Static7 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196391.17 202527.61 -15.00 /hstart 68 
+  Static9 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196395.09 202515.97 20.00 /hstart 68 
+  Static10 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196390.50 202503.22 -70.00 /hstart 68 
+  Static11 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196374.72 202513.30 -10.00 /hstart 68 
+  Static12 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 nn 196378.88 202500.41 5.00 /hstart 68 
+  Static13 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 196372.39 202521.20 5.00 /hstart 68 
+  Static14 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 196392.36 202517.23 20.00 /hstart 68 
+  Static15 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 196384.20 202508.86 110.00 /hstart 68 
+  Static16 Stationary.Environment.Em_4m_R(H)34_GER1_DMG1 nn 196385.98 202524.27 110.00 /hstart 68 
+  Static17 Stationary.Environment.Em_4m_R(H)34_GER1_DMG1 nn 196380.20 202510.48 65.00 /hstart 68 
+  Static18 Stationary.Environment.Em_4m_R(H)34_GER1_DMG1 nn 196376.14 202521.00 70.00 /hstart 68 
+  Static19 Stationary.Environment.Em_4m_R(H)34_GER1_DMG1 nn 196394.06 202508.05 20.00 /hstart 68 
+[Buildings]
+  0_bld buildings.House$EnglandAbbey_Westminster 1 196339.27 202506.60 15.00
+[BuildingsLinks]

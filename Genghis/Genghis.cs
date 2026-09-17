@@ -17589,7 +17589,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Fervent Naval Station & Fortified Cave Complex", "Mans", "", 1, 15, "RamsgateHMSFervent", 252233, 257951, 80, 80, 30000, 40, 0, 145, 240, false, true, 2, 2, "", add, canBeDisabled:false);
 
-            addPointArea(MO_ObjectiveType.MilitaryArea, "Broadstairs Train Station Military Complex", "Mans", "", 1, 4, "BTargBroadstairsTrainStation", 252836, 261369, 75, 75, 8000, 12, 0, 110, 140, false, true, "", add, canBeDisabled:false);
+            addPointArea(MO_ObjectiveType.MilitaryArea, "Broadstairs Train Station Military Complex", "Mans", "", 1, 4, "BTargBroadstairsTrainStation", 252836, 261369, 75, 75, 8000, 12, 0, 110, 140, false, true, 1, 1, "", add, canBeDisabled:false);
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Westgate Military Train Station", "Mans", "", 1, 5, "WestgateTrainStation", 243556, 262704, 50, 50, 5500, 13, 0, 125, 240, false, true, 1, 2, "", add, canBeDisabled:false);
 

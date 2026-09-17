@@ -1357,6 +1357,7 @@ struct
 
             //Console.WriteLine("Writing DIFF {0}", player.Name());
             StbSis_AddToMissionStat(player, 835, (int)(Math.Round((CurrStats.kills - OldStats.kills) * 100)));
+            //StbSis_AddToMissionStat(player, 835, (CurrStats.kills - OldStats.kills) * 100);
             StbSis_AddToMissionStat(player, 836, (int)(Math.Round((CurrStats.fkills - OldStats.fkills) * 100)));
             StbSis_AddToMissionStat(player, 837, CurrStats.bulletsFire - OldStats.bulletsFire);
             StbSis_AddToMissionStat(player, 838, CurrStats.bulletsHit - OldStats.bulletsHit);
@@ -9097,131 +9098,133 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
     
     public void stb_RecordStatsOnActorDead(AiDamageInitiator initiator, int killtype, double score, double totalscore, AiDamageToolType toolType, AiAircraft aiAircraft = null, AiActor deadActor = null, GroundStationary deadStationary = null)
     {
-        //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-        //killtype 1 = aerial, 2 = aa/artillery/tank, 3=ship, 4=other ground
+        try {
+            //stb_StatRecorder.StbSr_WriteLine("Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            //killtype 1 = aerial, 2 = aa/artillery/tank, 3=ship, 4=other ground
 
-        //return; //TESTING
+            //return; //TESTING
 
-        Player player = null;
-        string playerName = "";
-        AiActor playerPlaceActor = null;
-        if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) {
-            player = initiator.Player;
-            playerName = initiator.Player.Name();
-        }
-        else return; //not much to do if we don't have player
+            Player player = null;
+            string playerName = "";
+            AiActor playerPlaceActor = null;
+            if (initiator != null && initiator.Player != null && initiator.Player.Name() != null) {
+                player = initiator.Player;
+                playerName = initiator.Player.Name();
+            }
+            else return; //not much to do if we don't have player
 
-        if (initiator.Player.Place() != null && initiator.Player.Place() as AiActor != null) playerPlaceActor = initiator.Player.Place() as AiActor;
-
-
-        //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
-        int percent_score = (int)Math.Round(score / totalscore * 100.0);
-        if (Math.Abs(totalscore) < 0.01) percent_score = 0; //if totalscore==0 we set it to 0.00001 instead, but really just meaningless
-        if (percent_score < -3000) percent_score = -3000; //limit negative/removed points possible.  Just for sanity.
-        int percent_score_norm = (int)Math.Round((double)percent_score / (double)100.0);  //normed to 1=1 victory (rather than 100% = one victory)
-
-        int percent_score_fordead = 1;
-        if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
-
-        Console.WriteLine("Recording Damage %: {0} {1}", percent_score, percent_score_fordead);
-
-        //Give player a report of the kill & type
-        if (player != null)
-        {
-            Timeout(stb_random.Next(4, 20), () =>
-             {
-                 int percentToReport = percent_score;
-                 if (percent_score > 100) percentToReport = 100;
-
-                 string killTypeName = "a target";
-                 try
-                 {
-                     killTypeName = killtypeNames[killtype - 1];
-                 } catch (Exception ex) { killTypeName = "a target"; }
-                 if (deadActor == null && (deadStationary as AiActor) != null) deadActor = deadStationary as AiActor;
-                 else if (deadStationary != null)
-                     killTypeName += " - " + Calcs.CleanStationaryName(deadStationary.Title);
-                 else if (deadActor != null)
-                 {
-                     /*
-                     string addName = (actor as AiCart).InternalTypeName().Replace('_', ' ');
-                     if (deadActor as AiGroundActor) != null addName = (actor as AiGroundActor).Type();
-                     killTypeName += " " + addName; 
-                     */
-                     killTypeName += " - " + Calcs.GetActorType(deadActor);
-                 }
-                 GamePlay.gpLogServer(new Player[] { player }, player.Name() + " destroyed " + killTypeName + " (" + percentToReport.ToString() + "%)" , new object[] { });
-
-             });
-     
-        }
+            if (initiator.Player.Place() != null && initiator.Player.Place() as AiActor != null) playerPlaceActor = initiator.Player.Place() as AiActor;
 
 
-        StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
-        stb_StatRecorder.StbSr_EnqueueTask(sst);
+            //Save the percentage credit towards the kill (all kill types lumped together into one grand total)
+            int percent_score = (int)Math.Round(score / totalscore * 100.0);
+            if (Math.Abs(totalscore) < 0.01) percent_score = 0; //if totalscore==0 we set it to 0.00001 instead, but really just meaningless
+            if (percent_score < -3000) percent_score = -3000; //limit negative/removed points possible.  Just for sanity.
+            int percent_score_norm = (int)Math.Round((double)percent_score / (double)100.0);  //normed to 1=1 victory (rather than 100% = one victory)
 
-        //Save penalty points, if that is what these are (negative points)
-        if (percent_score_norm < 0)
-        {
-            StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 847, percent_score_norm }, playerPlaceActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst0);
-            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 847, percent_score);//Also save this for current session stats
-        }
+            int percent_score_fordead = 1;
+            if (percent_score_norm < 0) percent_score_fordead = percent_score_norm; //allowing us to deduct points now.
 
-        StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798, percent_score },playerPlaceActor);
-        stb_StatRecorder.StbSr_EnqueueTask(sst1);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798, percent_score);//Also save this for current session stats
+            Console.WriteLine("Recording Damage %: {0} {1}", percent_score, percent_score_fordead);
 
-        //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-        StbStatTask sst2 = new StbStatTask();
-        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
-        if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 }, playerPlaceActor);
-        else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 }, playerPlaceActor);
-        else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 }, playerPlaceActor);
-        //allowing for removal of victories for bombing/damaging civilian areas
-        //Note that the -3000 puts a limit on the # of victories that can be removed using this system.
-        else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799, percent_score_norm }, playerPlaceActor);
+            //Give player a report of the kill & type
+            if (player != null)
+            {
+                Timeout(stb_random.Next(4, 20), () =>
+                {
+                    int percentToReport = percent_score;
+                    if (percent_score > 100) percentToReport = 100;
 
-        if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst2);
+                    string killTypeName = "a target";
+                    try
+                    {
+                        killTypeName = killtypeNames[killtype - 1];
+                    } catch (Exception ex) { killTypeName = "a target"; }
+                    if (deadActor == null && deadStationary != null && (deadStationary as AiActor) != null) deadActor = deadStationary as AiActor;
+                    else if (deadStationary != null)
+                        killTypeName += " - " + Calcs.CleanStationaryName(deadStationary.Title);
+                    else if (deadActor != null)
+                    {
+                        /*
+                        string addName = (actor as AiCart).InternalTypeName().Replace('_', ' ');
+                        if (deadActor as AiGroundActor) != null addName = (actor as AiGroundActor).Type();
+                        killTypeName += " " + addName; 
+                        */
+                        killTypeName += " - " + Calcs.GetActorType(deadActor);
+                    }
+                    GamePlay.gpLogServer(new Player[] { player }, player.Name() + " destroyed " + killTypeName + " (" + percentToReport.ToString() + "%)" , new object[] { });
 
-        //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-        //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-        StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798 + killtype * 4, percent_score }, playerPlaceActor);
-        stb_StatRecorder.StbSr_EnqueueTask(sst4);
+                });
+        
+            }
 
-        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798 + killtype * 4, percent_score);//Also save this for current session stats
 
-        StbStatTask sst3 = new StbStatTask();
-        //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
-        if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4 }, playerPlaceActor);
-        else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 + killtype * 4 }, playerPlaceActor);
-        else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 + killtype * 4 }, playerPlaceActor);
-        //allowing for removal of victories for bombing/damaging civilian areas
-        else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4, percent_score_norm }, playerPlaceActor);
-        if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst3);
+            StbStatTask sst = new StbStatTask(StbStatCommands.Dead, playerName, new int[] { killtype, percent_score_fordead }, playerPlaceActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst);
 
-        //stb_StatRecorder.StbSr_WriteLine("3Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-        //Save the raw damage points towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
-        int rawscore = (int)Math.Round(score * 1000); //some raw scores are like .003843828
-        StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818, rawscore }, playerPlaceActor);
-        stb_StatRecorder.StbSr_EnqueueTask(sst5);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818, rawscore);//Also save this for current session stats
-        StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818 + killtype, rawscore }, playerPlaceActor);
-        stb_StatRecorder.StbSr_EnqueueTask(sst6);
-        stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818 + killtype, rawscore);//Also save this for current session stats
+            //Save penalty points, if that is what these are (negative points)
+            if (percent_score_norm < 0)
+            {
+                StbStatTask sst0 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 847, percent_score_norm }, playerPlaceActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst0);
+                stb_SaveIPlayerStat.StbSis_AddSessStat(player, 847, percent_score);//Also save this for current session stats
+            }
 
-        //stb_StatRecorder.StbSr_WriteLine("4Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
-        //if (toolType.Equals(AiDamageToolType.Ordance)) stb_StatRecorder.StbSr_WriteLine("1. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
-        //Save the raw damage points specifically for BOMBS towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
-        if ((int)toolType == 2 || toolType.Equals(AiDamageToolType.Ordance))
-        {            //not sure if toolType == AiDamageToolType.Ordance or similar works? But something like (int)toolType==2 definitely does
-            StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830, rawscore }, playerPlaceActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst7);
-            StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830 + killtype, rawscore }, playerPlaceActor);
-            stb_StatRecorder.StbSr_EnqueueTask(sst8);
+            StbStatTask sst1 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798, percent_score },playerPlaceActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst1);
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798, percent_score);//Also save this for current session stats
 
-            //stb_StatRecorder.StbSr_WriteLine("2. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
-        }
+            //stb_StatRecorder.StbSr_WriteLine("1 Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            StbStatTask sst2 = new StbStatTask();
+            //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (all kill types lumped together into one grand total)
+            if (percent_score >= 75) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 }, playerPlaceActor);
+            else if (percent_score >= 40) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 }, playerPlaceActor);
+            else if (percent_score > 0) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 }, playerPlaceActor);
+            //allowing for removal of victories for bombing/damaging civilian areas
+            //Note that the -3000 puts a limit on the # of victories that can be removed using this system.
+            else if (percent_score <= -75 && percent_score >= -3000) sst2 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799, percent_score_norm }, playerPlaceActor);
+
+            if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst2);
+
+            //stb_StatRecorder.StbSr_WriteLine("2Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            //Save the percentage credit towards the kill (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+            StbStatTask sst4 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 798 + killtype * 4, percent_score }, playerPlaceActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst4);
+
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 798 + killtype * 4, percent_score);//Also save this for current session stats
+
+            StbStatTask sst3 = new StbStatTask();
+            //Award Total Victory, Shared Victory, or Assist (>=75%, 40%-75%, >0 <40% respectively) (separating out each individual kill type - air, AA/Tank, Naval, Ground)
+            if (percent_score >= 75) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4 }, playerPlaceActor);
+            else if (percent_score >= 40) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 800 + killtype * 4 }, playerPlaceActor);
+            else if (percent_score > 0) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 801 + killtype * 4 }, playerPlaceActor);
+            //allowing for removal of victories for bombing/damaging civilian areas
+            else if (percent_score <= -75 && percent_score >= -3000) sst3 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 799 + killtype * 4, percent_score_norm }, playerPlaceActor);
+            if (percent_score > 0 || (percent_score <= -75 && percent_score >= -3000)) stb_StatRecorder.StbSr_EnqueueTask(sst3);
+
+            //stb_StatRecorder.StbSr_WriteLine("3Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            //Save the raw damage points towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
+            int rawscore = (int)Math.Round(score * 1000); //some raw scores are like .003843828
+            StbStatTask sst5 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818, rawscore }, playerPlaceActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst5);
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818, rawscore);//Also save this for current session stats
+            StbStatTask sst6 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 818 + killtype, rawscore }, playerPlaceActor);
+            stb_StatRecorder.StbSr_EnqueueTask(sst6);
+            stb_SaveIPlayerStat.StbSis_AddSessStat(player, 818 + killtype, rawscore);//Also save this for current session stats
+
+            //stb_StatRecorder.StbSr_WriteLine("4Recording Damage: {0} {1} {2} {3}", score, totalscore, killtype, toolType);
+            //if (toolType.Equals(AiDamageToolType.Ordance)) stb_StatRecorder.StbSr_WriteLine("1. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
+            //Save the raw damage points specifically for BOMBS towards the kill (all kill types lumped together into one grand total as well as separated air/AA/naval/otherground)
+            if ((int)toolType == 2 || toolType.Equals(AiDamageToolType.Ordance))
+            {            //not sure if toolType == AiDamageToolType.Ordance or similar works? But something like (int)toolType==2 definitely does
+                StbStatTask sst7 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830, rawscore }, playerPlaceActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst7);
+                StbStatTask sst8 = new StbStatTask(StbStatCommands.Mission, playerName, new int[] { 830 + killtype, rawscore }, playerPlaceActor);
+                stb_StatRecorder.StbSr_EnqueueTask(sst8);
+
+                //stb_StatRecorder.StbSr_WriteLine("2. Recording BOMB Damage: {0} {1} {2} ", rawscore, killtype, toolType);
+            }
+        } catch (Exception ex) { Console.WriteLine("stb_RecordStatsOnActorDead ERROR: {0}", ex); }
     }
 
     public void stb_RecordNearbyPlayerStatsOnActorDead(Player player, double dist_m =0, double raw_score = 0, int killtype = 1)
@@ -10041,9 +10044,13 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         //public virtual void OnStationaryKilled(int missionNumber, maddox.game.world.GroundStationary _stationary, maddox.game.world.AiDamageInitiator initiator, int eventArgInt)
         //GroundStationary: string .Name .pos string .Title AiGroundActorType .Type .IsAlive string .country string .Category
 
+        aGroundStationary fakeStationary = new aGroundStationary(stationary); //In case the stationary is .Destroy()ed before we get to processing it, this has all the necessary info
+
         double wait = stb_random.NextDouble() * 45;
+        if (stationary.Title.Contains("CamoNet")) wait = stb_random.NextDouble() * 0.04999;; //In -MAIN we delete camonets when they are shot/killed, but with minimum Timeout of 0.05;
+        //If we comeback here after it is .destroyed we'll get an NULL error
         Timeout(wait, () =>
-            OnStationaryKilled_DoWork(missionNumber, stationary, initiator, eventArgInt)
+            OnStationaryKilled_DoWork(missionNumber, fakeStationary, initiator, eventArgInt)
         );
         #endregion
     }
@@ -10054,6 +10061,10 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         //base.OnStationaryKilled(missionNumber, stationary, initiator, eventArgInt);
         try
         {
+            if (stationary == null ) {
+                Console.WriteLine("stats - OnStationaryKilled_DoWork ERROR: Stationary was NULL. Just assuming it is 'enemy'...");
+                
+            }
             //stb_KilledActors.Add(actor, damages); // save 
             //System.Console.WriteLine("Actor dead: Army " + actor.Army() );
             string msg = "";
@@ -10077,7 +10088,9 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 if (initiator.Player != null)
                 {
                     //Console.WriteLine("OSK_dw 2");
-                    int statArmy = GamePlay.gpFrontArmy(stationary.pos.x, stationary.pos.y);
+                    int statArmy = 3-initiator.Player.Army();
+                    if (stationary != null)  GamePlay.gpFrontArmy(stationary.pos.x, stationary.pos.y);
+
                     msg += initiator.Player.Name() + " army: " + initiator.Player.Army().ToString() + " statarmy: " + statArmy.ToString();
 
                     //Ok, this is not really working as it should.  What we should do is use the stationary.pos() info 
@@ -10131,21 +10144,24 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
             int score = 1;
 
-            if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
-			
-			List<string> higherScores = new List<string>() { "ship", "truck", "tank", "spg", "car", "plane", "balloon", "ammo", "fuel", "aircraft" };
-			
-			string types = (stationary.Title + stationary.Type).ToLower();
-			
-			foreach (string s in higherScores)
-                        {
-                            if (types.Contains(s.ToLower()))
+            if (stationary != null) {
+
+                if (stationary.Title.Contains("JerryCan_GER1") || stationary.Title.Contains("TelegaBallon_UK")) score = 4;
+                
+                List<string> higherScores = new List<string>() { "ship", "truck", "tank", "spg", "car", "plane", "balloon", "ammo", "fuel", "aircraft" };
+                
+                string types = (stationary.Title + stationary.Type).ToLower();
+                
+                foreach (string s in higherScores)
                             {
-                                score = 2;
-                                break;
+                                if (types.Contains(s.ToLower()))
+                                {
+                                    score = 2;
+                                    break;
+                                }
                             }
-                        }
-			if (types.Contains("artillery")) score = 6;
+                if (types.Contains("artillery")) score = 6;
+            }
 			
 			
 			

@@ -471,6 +471,48 @@ public class aAiAirport : AiAirport
     */
 }
 
+public class aGroundStationary : maddox.game.world.GroundStationary
+{
+    public string Title { get; set;}
+    public string Name  { get; set;}
+    //public string Type  { get; set;}
+    public string Category { get; set;}
+
+    public Point3d pos { get; set; }
+
+    public bool IsAlive { get; set; }
+
+    public string country { get; set; }
+
+    public AiGroundActorType Type { get; set; }
+
+    // Copy from the live engine object BEFORE it gets destroyed
+    public aGroundStationary(maddox.game.world.GroundStationary src)
+    {
+        if (src == null)
+        {
+            Title = Name = Category = country = "NULL";
+            pos = new Point3d (0,0,0);
+            Type = AiGroundActorType.Unknown;
+            return;
+        }
+        Title = src.Title;
+        Name  = src.Name;
+        Type  = src.Type;
+        Category = src.Category;
+        pos = src.pos;
+        IsAlive = src.IsAlive;
+        country = src.country;
+
+    }
+
+    public void Destroy(){
+        IsAlive = false;
+        //Title = Name = Category = country = null;
+        //pos = new Point3d(0, 0, 0);
+    }   
+}
+
 
 
 //public class Mission : AMission, IMainMission
@@ -2111,28 +2153,42 @@ public class Mission : AMission, IMainMission
             //Console.WriteLine("Stationary");
             //Task.Run(() =>
             //{ //AHA  - task.running things has blown up the threads before
+
+            double wait = stb_random.NextDouble() * 45;
+            if (Time.tickCounter() < 600000) wait = 0;
+
+            Point3d pos = stationary.pos;
+            string title = stationary.Title;
+            string category = stationary.Category;
+            string name = stationary.Name;
+            AiGroundActorType type = stationary.Type;
+
+            aGroundStationary fakeStationary = new aGroundStationary(stationary); //In case the stationary is .Destroy()ed before we get to processing it, this has all the necessary info
+
+
 			
 			//So camo netting, even if "destroyed" still somehow shields the items
 			//under it from bullets & cannon fire.  So we'll just remove the dead camo 
 			//rather quickly
-			if (stationary.Title.Contains("CamoNet")) {
-				double wait2 = stb_random.NextDouble() * 3;
+			if (title.Contains("CamoNet")) {
+                wait = stb_random.NextDouble() * 0.04999;
+				double wait2 = stb_random.NextDouble() * 3 + 0.05;
 				Timeout(wait2, () => {stationary.Destroy();});
-				if (ON_TESTSERVER) Console.WriteLine("StationaryKilled - removing .Camo, Title: {0}", stationary.Title);
+				if (ON_TESTSERVER) Console.WriteLine("StationaryKilled - removing .Camo, Title: {0}", title);
 			}
 
             if (initiator == null)
             {
-                if (stationary != null) Console.WriteLine("main_PointArea_stationary " + stationary.Name + " killed but no initiator, probably just script killing an objective, not counting, returning.");
+                if (stationary != null) Console.WriteLine("main_PointArea_stationary " + name + " killed but no initiator, probably just script killing an objective, not counting, returning.");
                 return;
             }
 
-            double wait = stb_random.NextDouble() * 45;
-			if (Time.tickCounter() < 600000) wait = 0;
+
+			
             Timeout(wait, () =>
             {
-				Point3d pos = new Point3d(-1, -1, -1);
-				if (stationary != null) pos = stationary.pos;
+				//Point3d pos = new Point3d(-1, -1, -1);
+				//if (stationary != null) pos = stapos;
 				
 				bool destroyedByCannon = false; 
 				string initiatorName = "unknown";
@@ -2143,7 +2199,7 @@ public class Mission : AMission, IMainMission
 					AiDamageTool tool = initiator.Tool;
 					tName = tool.Name;
 					AiDamageToolType tType = tool.Type;
-				if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {1} title: {2} name: {3} type: {4} Category: {5}", tName, tType, stationary.Title, stationary.Name, stationary.Type, stationary.Category);
+				    if (ON_TESTSERVER) Console.WriteLine("Stationary killed, Tool: {0} {1} title: {2} name: {3} type: {4} Category: {5}", tName, tType, title, name, type, category);
 					if (tType == AiDamageToolType.Cannon) destroyedByCannon = true;
 					if (ON_TESTSERVER) Console.WriteLine("Stationary killed by {3} Tool: {0} {1} destroyedByCannon: {2}", tName, tType, destroyedByCannon, initiatorName);
 				}
@@ -2164,12 +2220,12 @@ public class Mission : AMission, IMainMission
 				}
 				
 				if (destroyedByCannon) {
-					string tl = stationary.Title.ToLower();
+					string tl = title.ToLower();
 					int ml = 1;
-					if (stationary.Category == "Aircraft" || tl.Contains("aircraft")) ml = 2;
-					else if (stationary.Category == "Car") ml = 1;
-					else if (stationary.Category == "ArmoredCar") ml = 2;
-					else if (stationary.Category == "Tank") ml = 2;
+					if (category == "Aircraft" || tl.Contains("aircraft")) ml = 2;
+					else if (category == "Car") ml = 1;
+					else if (category == "ArmoredCar") ml = 2;
+					else if (category == "Tank") ml = 2;
 					else if (tl.Contains("tent")) ml = 1;
 					else if (tl.Contains("camonet")) ml = 1;
 					else if (tl.Contains("hangar")) ml = 3;
@@ -2200,8 +2256,8 @@ public class Mission : AMission, IMainMission
 					}
 				}
 					
-				MO_HandlePointAreaObjectives(stationary, initiator, destroyedByCannon: destroyedByCannon);
-				MO_makeAllObjectivesScoutedAndLaunchDefenseFromPos(stationary.pos, initiator.Player);
+				MO_HandlePointAreaObjectives(fakeStationary, initiator, destroyedByCannon: destroyedByCannon);
+				MO_makeAllObjectivesScoutedAndLaunchDefenseFromPos(pos, initiator.Player);
 				
 			});
             //stb_KilledActors.Add(actor, damages); // save 
@@ -16137,15 +16193,19 @@ public class Mission : AMission, IMainMission
                     
                     for (int i = 0; i < 50; i++) {
 
-                        if (msn.AutoFlak_locations == null  || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null)
+                // {{ fix: guard against empty collection to prevent IndexOutOfRangeException }}
+                if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null || msn.AutoFlak_locations[ID].Count == 0) {
                             AutoFlak_locations_pointer = 0;
-                        else if (AutoFlak_locations_pointer >= msn.AutoFlak_locations[ID].Count) AutoFlak_locations_pointer = 0;
-                        if ( !msn.AutoFlak_locations[ID][AutoFlak_locations_pointer].dead) break; 
-                        AutoFlak_locations_pointer++;
-                        if (AutoFlak_locations_pointer == first) break;
-                    }
+                    break;
                 }
-                return AutoFlak_locations_pointer;
+                // {{ end fix }}
+                else if (AutoFlak_locations_pointer >= msn.AutoFlak_locations[ID].Count) AutoFlak_locations_pointer = 0;
+                if ( !msn.AutoFlak_locations[ID][AutoFlak_locations_pointer].dead) break;
+                AutoFlak_locations_pointer++;
+                if (AutoFlak_locations_pointer == first) break;
+                }
+                }
+            return AutoFlak_locations_pointer;
             }
             catch (Exception ex)
             {
@@ -16154,7 +16214,7 @@ public class Mission : AMission, IMainMission
             }
         }
 
-        //msn.AutoFlak_locations is a separate structure so we can lock it & keep 
+        //msn.AutoFlak_locations is a separate structure so we can lock it & keep
         //it 'threadsafe'.  We hope.
         //Gets next AFL that is not  "dead", or null
         public AutoFlak_location getNext_AutoFlak_location()
@@ -16165,7 +16225,10 @@ public class Mission : AMission, IMainMission
                 int i = getAndAdvance_AutoFlak_location_pointer();
                 lock (msn.AutoFlak_locations_lock)
                 {
-                    if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null) return null;
+                    if (msn.AutoFlak_locations == null || !msn.AutoFlak_locations.Keys.Contains(ID) || msn.AutoFlak_locations[ID] == null || msn.AutoFlak_locations[ID].Count == 0) return null;
+                    // {{ fix: guard against null/empty and validate index bounds before access }}
+                    if (i < 0 || i >= msn.AutoFlak_locations[ID].Count) return null;
+                    // {{ end fix }}
                     if (msn.AutoFlak_locations[ID][i].dead) return null;
                     return msn.AutoFlak_locations[ID][i];
                 }
@@ -30639,12 +30702,17 @@ public static class Calcs
     {
         //List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
         int count = 0;
-        foreach (GroundStationary g in gs)
-        {
-            if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
+        try {
+            foreach (GroundStationary g in gs)
+            {
+                if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
 
-            if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
-            count ++;
+                if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
+                count ++;
+            }
+        } catch (Exception e)
+        {
+            Console.WriteLine("Error in Calcs.CountMatchingGroundObjectsIn: " + e.Message);
         }
 
         return count;

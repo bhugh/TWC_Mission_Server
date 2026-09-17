@@ -21,46 +21,46 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static4 Stationary.Environment.GuardTower_UK-GER_1 gb 267828.25 190631.45 130.00 /hstart 66
-  Static7 Stationary.Environment.GuardTower_UK-GER_1 gb 267822.69 190638.30 130.00 /hstart 66
-  Static51 Stationary.Environment.Predictor gb 267829.25 190637.48 150.00 /hstart 66
-  Static46 Stationary.Environment.HeightFinder_UK1 gb 267829.97 190637.39 190.00 /hstart 66
-  Static179 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.8
-  Static177 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.6
-  Static278 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.7
-  Static277 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.6
-  Static171 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 18
-  Static281 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 61
-  Static172 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.1
-  Static173 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.2
-  Static279 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.8
-  Static176 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.5
-  Static273 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.2
-  Static275 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.4
-  Static175 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.4
-  Static174 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.3
-  Static272 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.1
-  Static180 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.9
-  Static271 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.6
-  Static178 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.7
-  Static181 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 61
-  Static274 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.3
-  Static280 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.9
-  Static276 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.5
-  Static47 Stationary.Environment.HeightFinder_UK1 gb 267829.50 190639.77 -170.00 /hstart 66
-  Static52 Stationary.Environment.Predictor gb 267830.59 190639.69 150.00 /hstart 66
-  Static44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 267832.59 190638.58 60.00 /hstart 66
-  Static45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 267829.28 190641.89 88.90 /hstart 66
-  Static43 Stationary.Environment.HeightFinder_UK1 gb 267831.88 190640.95 -95.00 /hstart 66
-  Static5 Stationary.Environment.GuardTower_UK-GER_1 gb 267837.09 190638.97 130.00 /hstart 66
-  Static6 Stationary.Environment.GuardTower_UK-GER_1 gb 267831.47 190645.69 130.00 /hstart 66
-  Static2 Stationary.AEC_Regent_II nn 267833.00 190645.88 -90.00 
-  Static3 Stationary.AEC_Regent_II nn 267772.19 190685.47 -90.00 
-  Static0 Stationary.AEC_Regent_II nn 267882.00 190670.34 -90.00 
-  Static1 Stationary.AEC_Regent_II nn 267829.59 190741.48 -90.00 
-  Static8 Stationary.Opel_Blitz_radio_transport nn 267835.13 190625.48 -90.00 
-  Static9 Stationary.Opel_Blitz_radio_transport de 267841.16 190629.84 -90.00 
-  Static10 Stationary.Opel_Blitz_radio_transport nn 267846.38 190633.97 -90.00 
+  BoulogneCathedral_4 Stationary.Environment.GuardTower_UK-GER_1 gb 267828.25 190631.45 130.00 /hstart 66
+  BoulogneCathedral_7 Stationary.Environment.GuardTower_UK-GER_1 gb 267822.69 190638.30 130.00 /hstart 66
+  BoulogneCathedral_51 Stationary.Environment.Predictor gb 267829.25 190637.48 150.00 /hstart 66
+  BoulogneCathedral_46 Stationary.Environment.HeightFinder_UK1 gb 267829.97 190637.39 190.00 /hstart 66
+  BoulogneCathedral_179 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.8
+  BoulogneCathedral_177 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.6
+  BoulogneCathedral_278 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.7
+  BoulogneCathedral_277 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.6
+  BoulogneCathedral_171 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 18
+  BoulogneCathedral_281 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 61
+  BoulogneCathedral_172 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.1
+  BoulogneCathedral_173 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.2
+  BoulogneCathedral_279 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.8
+  BoulogneCathedral_176 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.5
+  BoulogneCathedral_273 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.2
+  BoulogneCathedral_275 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.4
+  BoulogneCathedral_175 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.4
+  BoulogneCathedral_174 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.3
+  BoulogneCathedral_272 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.1
+  BoulogneCathedral_180 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.9
+  BoulogneCathedral_271 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.6
+  BoulogneCathedral_178 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 60.7
+  BoulogneCathedral_181 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 130.00 /hstart 61
+  BoulogneCathedral_274 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.3
+  BoulogneCathedral_280 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.9
+  BoulogneCathedral_276 Stationary.Environment.CamoNetPlane nn 267829.81 190638.78 310.00 /hstart 60.5
+  BoulogneCathedral_47 Stationary.Environment.HeightFinder_UK1 gb 267829.50 190639.77 -170.00 /hstart 66
+  BoulogneCathedral_52 Stationary.Environment.Predictor gb 267830.59 190639.69 150.00 /hstart 66
+  BoulogneCathedral_44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 267832.59 190638.58 60.00 /hstart 66
+  BoulogneCathedral_45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 267829.28 190641.89 88.90 /hstart 66
+  BoulogneCathedral_43 Stationary.Environment.HeightFinder_UK1 gb 267831.88 190640.95 -95.00 /hstart 66
+  BoulogneCathedral_5 Stationary.Environment.GuardTower_UK-GER_1 gb 267837.09 190638.97 130.00 /hstart 66
+  BoulogneCathedral_6 Stationary.Environment.GuardTower_UK-GER_1 gb 267831.47 190645.69 130.00 /hstart 66
+  BoulogneCathedral_2 Stationary.AEC_Regent_II nn 267833.00 190645.88 -90.00 
+  BoulogneCathedral_3 Stationary.AEC_Regent_II nn 267772.19 190685.47 -90.00 
+  BoulogneCathedral_0 Stationary.AEC_Regent_II nn 267882.00 190670.34 -90.00 
+  BoulogneCathedral_1 Stationary.AEC_Regent_II nn 267829.59 190741.48 -90.00 
+  BoulogneCathedral_8 Stationary.Opel_Blitz_radio_transport nn 267835.13 190625.48 -90.00 
+  BoulogneCathedral_9 Stationary.Opel_Blitz_radio_transport de 267841.16 190629.84 -90.00 
+  BoulogneCathedral_10 Stationary.Opel_Blitz_radio_transport nn 267846.38 190633.97 -90.00 
 [Buildings]
   0_bld buildings.House$EnglandAbbey_Westminster 1 267806.76 190688.38 -50.00
 [BuildingsLinks]

@@ -21,44 +21,44 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static1 Stationary.AEC_Regent_II nn 229417.67 251556.75 -90.00 
-  Static2 Stationary.AEC_Regent_II nn 229477.02 251527.59 -90.00 
-  Static10 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229547.59 251539.47 80.00 /hstart 66
-  Static11 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229546.45 251542.86 196.00 /hstart 66
-  Static7 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229552.11 251541.36 10.00 /hstart 63
-  Static278 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.7
-  Static178 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.7
-  Static176 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.5
-  Static279 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.8
-  Static177 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.6
-  Static179 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.8
-  Static277 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
-  Static272 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.1
-  Static171 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
-  Static172 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.1
-  Static173 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
-  Static174 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.3
-  Static276 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.5
-  Static180 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.9
-  Static271 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
-  Static12 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 gb 229554.47 251538.28 125.00 /hstart 66
-  Static275 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.4
-  Static280 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.9
-  Static274 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.3
-  Static175 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.4
-  Static273 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.2
-  Static8 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
-  Static6 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229546.47 251548.31 140.00 /hstart 62
-  Static13 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229550.25 251547.34 130.00 /hstart 66
-  Static4 Stationary.Environment.Fire_pump_UK1_DMG1 nn 229549.95 251551.13 110.00 /hstart 66
-  Static5 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229554.45 251550.92 300.00 /hstart 66
-  Static9 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229547.95 251539.56 60.00 /hstart 61
-  Static3 Stationary.AEC_Regent_II nn 229477.47 251612.69 -90.00 
-  Static0 Stationary.AEC_Regent_II nn 229561.50 251604.44 -90.00 
-  Static14 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229546.39 251552.41 190.00 /hstart 66
-  Static15 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229545.27 251538.83 196.00 /hstart 66
-  Static16 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229555.00 251541.13 190.00 /hstart 66
-  Static17 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229547.28 251540.75 155.00 /hstart 66
-  Static18 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229553.95 251548.25 65.00 /hstart 66
+  CanterburyCathedral_destroy_0 Stationary.AEC_Regent_II nn 229561.50 251604.44 -90.00 
+  CanterburyCathedral_destroy_1 Stationary.AEC_Regent_II nn 229417.67 251556.75 -90.00 
+  CanterburyCathedral_destroy_10 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229547.59 251539.47 80.00 /hstart 66
+  CanterburyCathedral_destroy_11 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229546.45 251542.86 196.00 /hstart 66
+  CanterburyCathedral_destroy_12 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 gb 229554.47 251538.28 125.00 /hstart 66
+  CanterburyCathedral_destroy_13 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229550.25 251547.34 130.00 /hstart 66
+  CanterburyCathedral_destroy_14 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229546.39 251552.41 190.00 /hstart 66
+  CanterburyCathedral_destroy_15 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229545.27 251538.83 196.00 /hstart 66
+  CanterburyCathedral_destroy_16 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229555.00 251541.13 190.00 /hstart 66
+  CanterburyCathedral_destroy_17 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229547.28 251540.75 155.00 /hstart 66
+  CanterburyCathedral_destroy_171 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
+  CanterburyCathedral_destroy_172 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.1
+  CanterburyCathedral_destroy_173 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
+  CanterburyCathedral_destroy_174 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.3
+  CanterburyCathedral_destroy_175 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.4
+  CanterburyCathedral_destroy_176 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.5
+  CanterburyCathedral_destroy_177 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.6
+  CanterburyCathedral_destroy_178 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.7
+  CanterburyCathedral_destroy_179 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.8
+  CanterburyCathedral_destroy_18 Stationary.Environment.TentZeltbahnBig_GER1_DMG1 gb 229553.95 251548.25 65.00 /hstart 66
+  CanterburyCathedral_destroy_180 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.9
+  CanterburyCathedral_destroy_2 Stationary.AEC_Regent_II nn 229477.02 251527.59 -90.00 
+  CanterburyCathedral_destroy_271 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  CanterburyCathedral_destroy_272 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.1
+  CanterburyCathedral_destroy_273 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.2
+  CanterburyCathedral_destroy_274 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.3
+  CanterburyCathedral_destroy_275 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.4
+  CanterburyCathedral_destroy_276 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.5
+  CanterburyCathedral_destroy_277 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  CanterburyCathedral_destroy_278 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.7
+  CanterburyCathedral_destroy_279 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.8
+  CanterburyCathedral_destroy_280 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.9
+  CanterburyCathedral_destroy_3 Stationary.AEC_Regent_II nn 229477.47 251612.69 -90.00 
+  CanterburyCathedral_destroy_4 Stationary.Environment.Fire_pump_UK1_DMG1 nn 229549.95 251551.13 110.00 /hstart 66
+  CanterburyCathedral_destroy_5 Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1 nn 229554.45 251550.92 300.00 /hstart 66
+  CanterburyCathedral_destroy_6 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229546.47 251548.31 140.00 /hstart 62
+  CanterburyCathedral_destroy_7 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229552.11 251541.36 10.00 /hstart 63
+  CanterburyCathedral_destroy_8 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  CanterburyCathedral_destroy_9 Stationary.Environment.GuardTower_UK-GER_1_DMG1 nn 229547.95 251539.56 60.00 /hstart 61
 [Buildings]
 [BuildingsLinks]

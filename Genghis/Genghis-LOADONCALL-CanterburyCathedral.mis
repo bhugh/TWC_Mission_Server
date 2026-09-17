@@ -21,42 +21,42 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static1 Stationary.AEC_Regent_II nn 229417.67 251556.75 -90.00 
-  Static2 Stationary.AEC_Regent_II nn 229477.02 251527.59 -90.00 
-  Static5 Stationary.Environment.GuardTower_UK-GER_1 gb 229545.72 251539.02 0.00 /hstart 66
-  Static44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 229548.31 251542.73 -70.00 /hstart 66
-  Static43 Stationary.Environment.HeightFinder_UK1 gb 229550.58 251541.73 -225.00 /hstart 66
-  Static6 Stationary.Environment.GuardTower_UK-GER_1 gb 229554.48 251539.00 0.00 /hstart 66
-  Static52 Stationary.Environment.Predictor gb 229550.44 251543.53 20.00 /hstart 66
-  Static173 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
-  Static172 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.1
-  Static171 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 18
-  Static46 Stationary.Environment.HeightFinder_UK1 gb 229549.08 251545.48 60.00 /hstart 66
-  Static281 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 61
-  Static179 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.8
-  Static277 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
-  Static278 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.7
-  Static51 Stationary.Environment.Predictor gb 229549.61 251545.98 20.00 /hstart 66
-  Static177 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.6
-  Static279 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.8
-  Static176 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.5
-  Static178 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.7
-  Static175 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.4
-  Static272 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.1
-  Static180 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.9
-  Static271 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
-  Static276 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.5
-  Static181 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 61
-  Static275 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.4
-  Static280 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.9
-  Static274 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.3
-  Static174 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.3
-  Static273 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.2
-  Static47 Stationary.Environment.HeightFinder_UK1 gb 229551.22 251544.33 -300.00 /hstart 66
-  Static45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 229552.98 251543.13 -41.10 /hstart 66
-  Static4 Stationary.Environment.GuardTower_UK-GER_1 gb 229545.64 251550.61 0.00 /hstart 66
-  Static7 Stationary.Environment.GuardTower_UK-GER_1 gb 229554.45 251550.48 0.00 /hstart 66
-  Static3 Stationary.AEC_Regent_II nn 229477.47 251612.69 -90.00 
-  Static0 Stationary.AEC_Regent_II nn 229561.50 251604.44 -90.00 
+  CanterburyCathedral_1 Stationary.AEC_Regent_II nn 229417.67 251556.75 -90.00 
+  CanterburyCathedral_2 Stationary.AEC_Regent_II nn 229477.02 251527.59 -90.00 
+  CanterburyCathedral_5 Stationary.Environment.GuardTower_UK-GER_1 gb 229545.72 251539.02 0.00 /hstart 66
+  CanterburyCathedral_44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 229548.31 251542.73 -70.00 /hstart 66
+  CanterburyCathedral_43 Stationary.Environment.HeightFinder_UK1 gb 229550.58 251541.73 -225.00 /hstart 66
+  CanterburyCathedral_6 Stationary.Environment.GuardTower_UK-GER_1 gb 229554.48 251539.00 0.00 /hstart 66
+  CanterburyCathedral_52 Stationary.Environment.Predictor gb 229550.44 251543.53 20.00 /hstart 66
+  CanterburyCathedral_173 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.2
+  CanterburyCathedral_172 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.1
+  CanterburyCathedral_171 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 18
+  CanterburyCathedral_46 Stationary.Environment.HeightFinder_UK1 gb 229549.08 251545.48 60.00 /hstart 66
+  CanterburyCathedral_281 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 61
+  CanterburyCathedral_179 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.8
+  CanterburyCathedral_277 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  CanterburyCathedral_278 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.7
+  CanterburyCathedral_51 Stationary.Environment.Predictor gb 229549.61 251545.98 20.00 /hstart 66
+  CanterburyCathedral_177 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.6
+  CanterburyCathedral_279 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.8
+  CanterburyCathedral_176 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.5
+  CanterburyCathedral_178 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.7
+  CanterburyCathedral_175 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.4
+  CanterburyCathedral_272 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.1
+  CanterburyCathedral_180 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.9
+  CanterburyCathedral_271 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.6
+  CanterburyCathedral_276 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.5
+  CanterburyCathedral_181 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 61
+  CanterburyCathedral_275 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.4
+  CanterburyCathedral_280 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.9
+  CanterburyCathedral_274 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.3
+  CanterburyCathedral_174 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 0.00 /hstart 60.3
+  CanterburyCathedral_273 Stationary.Environment.CamoNetPlane nn 229550.25 251544.72 180.00 /hstart 60.2
+  CanterburyCathedral_47 Stationary.Environment.HeightFinder_UK1 gb 229551.22 251544.33 -300.00 /hstart 66
+  CanterburyCathedral_45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 229552.98 251543.13 -41.10 /hstart 66
+  CanterburyCathedral_4 Stationary.Environment.GuardTower_UK-GER_1 gb 229545.64 251550.61 0.00 /hstart 66
+  CanterburyCathedral_7 Stationary.Environment.GuardTower_UK-GER_1 gb 229554.45 251550.48 0.00 /hstart 66
+  CanterburyCathedral_3 Stationary.AEC_Regent_II nn 229477.47 251612.69 -90.00 
+  CanterburyCathedral_0 Stationary.AEC_Regent_II nn 229561.50 251604.44 -90.00 
 [Buildings]
 [BuildingsLinks]

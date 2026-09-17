@@ -21,44 +21,44 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static8 Stationary.AEC_Regent_II nn 196528.88 202409.61 -25.00 
-  Static1 Stationary.AEC_Regent_II nn 196266.63 202486.89 4.10 
-  Static3 Stationary.AEC_Regent_II nn 196327.30 202474.05 -25.00 
-  Static7 Stationary.Environment.GuardTower_UK-GER_1 gb 196390.88 202499.73 195.00 /hstart 68
-  Static45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 196390.63 202507.30 153.90 /hstart 68
-  Static47 Stationary.Environment.HeightFinder_UK1 gb 196393.75 202503.92 -105.00 /hstart 68
-  Static51 Stationary.Environment.Predictor gb 196394.09 202504.95 215.00 /hstart 68
-  Static6 Stationary.Environment.GuardTower_UK-GER_1 gb 196388.11 202510.88 195.00 /hstart 68
-  Static180 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.9
-  Static271 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
-  Static178 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.7
-  Static276 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.5
-  Static274 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.3
-  Static280 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.9
-  Static52 Stationary.Environment.Predictor gb 196393.17 202507.55 215.00 /hstart 68
-  Static181 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 63
-  Static174 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.3
-  Static272 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.1
-  Static275 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.4
-  Static179 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.8
-  Static177 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.6
-  Static175 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.4
-  Static277 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
-  Static171 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
-  Static278 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.7
-  Static172 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.1
-  Static173 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
-  Static279 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.8
-  Static176 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.5
-  Static273 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.2
-  Static281 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 63
-  Static43 Stationary.Environment.HeightFinder_UK1 gb 196392.58 202509.25 -30.00 /hstart 68
-  Static46 Stationary.Environment.HeightFinder_UK1 gb 196395.81 202505.64 255.00 /hstart 68
-  Static4 Stationary.Environment.GuardTower_UK-GER_1 gb 196399.66 202501.95 195.00 /hstart 68
-  Static44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 196395.03 202508.89 125.00 /hstart 68
-  Static2 Stationary.AEC_Regent_II nn 196393.44 202514.25 -25.00 
-  Static5 Stationary.Environment.GuardTower_UK-GER_1 gb 196396.80 202513.14 195.00 /hstart 68
-  Static0 Stationary.AEC_Regent_II nn 196387.42 202567.17 -25.00 
+  HastingsCathedral_8 Stationary.AEC_Regent_II nn 196528.88 202409.61 -25.00 
+  HastingsCathedral_1 Stationary.AEC_Regent_II nn 196266.63 202486.89 4.10 
+  HastingsCathedral_3 Stationary.AEC_Regent_II nn 196327.30 202474.05 -25.00 
+  HastingsCathedral_7 Stationary.Environment.GuardTower_UK-GER_1 gb 196390.88 202499.73 195.00 /hstart 68
+  HastingsCathedral_45 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 196390.63 202507.30 153.90 /hstart 68
+  HastingsCathedral_47 Stationary.Environment.HeightFinder_UK1 gb 196393.75 202503.92 -105.00 /hstart 68
+  HastingsCathedral_51 Stationary.Environment.Predictor gb 196394.09 202504.95 215.00 /hstart 68
+  HastingsCathedral_6 Stationary.Environment.GuardTower_UK-GER_1 gb 196388.11 202510.88 195.00 /hstart 68
+  HastingsCathedral_180 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.9
+  HastingsCathedral_271 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
+  HastingsCathedral_178 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.7
+  HastingsCathedral_276 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.5
+  HastingsCathedral_274 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.3
+  HastingsCathedral_280 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.9
+  HastingsCathedral_52 Stationary.Environment.Predictor gb 196393.17 202507.55 215.00 /hstart 68
+  HastingsCathedral_181 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 63
+  HastingsCathedral_174 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.3
+  HastingsCathedral_272 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.1
+  HastingsCathedral_275 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.4
+  HastingsCathedral_179 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.8
+  HastingsCathedral_177 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.6
+  HastingsCathedral_175 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.4
+  HastingsCathedral_277 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.6
+  HastingsCathedral_171 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
+  HastingsCathedral_278 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.7
+  HastingsCathedral_172 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.1
+  HastingsCathedral_173 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.2
+  HastingsCathedral_279 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.8
+  HastingsCathedral_176 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 195.00 /hstart 62.5
+  HastingsCathedral_273 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 62.2
+  HastingsCathedral_281 Stationary.Environment.CamoNetPlane nn 196393.67 202506.45 15.00 /hstart 63
+  HastingsCathedral_43 Stationary.Environment.HeightFinder_UK1 gb 196392.58 202509.25 -30.00 /hstart 68
+  HastingsCathedral_46 Stationary.Environment.HeightFinder_UK1 gb 196395.81 202505.64 255.00 /hstart 68
+  HastingsCathedral_4 Stationary.Environment.GuardTower_UK-GER_1 gb 196399.66 202501.95 195.00 /hstart 68
+  HastingsCathedral_44 Stationary.Environment.JP3_Generator_15_KW_UK1 gb 196395.03 202508.89 125.00 /hstart 68
+  HastingsCathedral_2 Stationary.AEC_Regent_II nn 196393.44 202514.25 -25.00 
+  HastingsCathedral_5 Stationary.Environment.GuardTower_UK-GER_1 gb 196396.80 202513.14 195.00 /hstart 68
+  HastingsCathedral_0 Stationary.AEC_Regent_II nn 196387.42 202567.17 -25.00 
 [Buildings]
   0_bld buildings.House$EnglandAbbey_Westminster 1 196339.27 202506.60 15.00
 [BuildingsLinks]

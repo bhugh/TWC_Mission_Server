@@ -471,14 +471,14 @@ public class ObjectiveRepairMission : AMission
             GamePlay.gpLogServer(new Player[] { player }, ">>>Sorry, you must be on friendly territory {0}to {1}.", new object[] { coverExpl, taskName });
             return false;
         }
-        if (Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) > 2)
+        if (!coverPickup && Calcs.CalculatePointDistance((player.Place() as AiAircraft).AirGroup().Vwld()) > 2)
         {
             GamePlay.gpLogServer(new Player[] { player }, ">>>Sorry, you must be stopped at an airport {0}to {1} (you are moving).", new object[] { coverExpl, taskName });
             return false;
         }
         if (Calcs.distanceToNearestAirport(GamePlay, aircraft as AiActor) > 2200)
         {
-            GamePlay.gpLogServer(new Player[] { player }, ">>>Sorry, you must be stopped at a friendly airport {0}to {1} (you too far from an airport).", new object[] { coverExpl, taskName });
+            GamePlay.gpLogServer(new Player[] { player }, ">>>Sorry, you must be at a friendly airport {0}to {1} (you too far from an airport).", new object[] { coverExpl, taskName });
             return false;
         }
         double altAGL_m = 0;

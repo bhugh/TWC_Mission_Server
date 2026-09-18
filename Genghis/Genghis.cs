@@ -2163,6 +2163,8 @@ public class Mission : AMission, IMainMission
             string name = stationary.Name;
             AiGroundActorType type = stationary.Type;
 
+            if (ON_TESTSERVER) Console.WriteLine("Stationary killed (before), {4:N0} {5:N0} {6:N0} title: {0} name: {1} type: {2} Category: {3}", name, type, title, category, pos.x, pos.y, pos.z);
+
             aGroundStationary fakeStationary = new aGroundStationary(stationary); //In case the stationary is .Destroy()ed before we get to processing it, this has all the necessary info
 
 
@@ -2500,8 +2502,9 @@ public class Mission : AMission, IMainMission
                 double radius = mo.radius;
                 Point3d APPos = mo.Pos;
 
-                double distFromCenter = 1000000000;
-                distFromCenter = APPos.distance(ref pos);
+                //double distFromCenter = 1000000000;
+                //distFromCenter = APPos.distance(ref pos);
+                double distFromCenter = Calcs.CalculatePointDistance(APPos, pos); //this is 2D point distance, usually what we want for this purpose
 
                /* if (distFromCenter > radius * 1.25 && (distFromCenter <= radius * 2.5) )
                 {
@@ -2682,7 +2685,9 @@ public class Mission : AMission, IMainMission
                     mo.AirfieldDamagePoints = PointsTaken;
                     bool disabled = mo.Destroyed;
 
-                    if (ON_TESTSERVER) Console.WriteLine("BombExpl: score {0:F4}, total AF damage pts {1:F2}, final damage percent {2:f3}, points reduction factor {3:f3}, prev_percent {4:f3}, individualscore {5:f4}, pointstoknockout {6:f1}", score, PointsTaken, percent, points_reduction_factor, prev_percent, individualscore, PointsToKnockOut);
+                    if (ON_TESTSERVER) Console.WriteLine("BombExpl, airfield1: score {0:F4}, total AF damage pts {1:F2}, final damage percent {2:f3}, points reduction factor {3:f3}, prev_percent {4:f3}, individualscore {5:f4}, pointstoknockout {6:f1}", score, PointsTaken, percent, points_reduction_factor, prev_percent, individualscore, PointsToKnockOut);
+
+                    if (ON_TESTSERVER) Console.WriteLine("BombExpl, airfield2: {0:N0} {1:N0} {2:N0} radius: {4:N0} distance: {5:N0}", pos.x, pos.y, pos.z, radius, distFromCenter);
 
                     DateTime lastBombHit = DateTime.UtcNow;
                     if (mo.LastHitTime_UTC.HasValue) lastBombHit = mo.LastHitTime_UTC.Value;
@@ -2704,7 +2709,7 @@ public class Mission : AMission, IMainMission
                     }
                     double PointsTakenReduction = 0;
 
-                    //So haveing any active defense units will speed up repairs - 10 units makes
+                    //So having any active defense units will speed up repairs - 10 units makes
                     //repair 2x as fast, 20 units = 3X as fast ,etc.  0 units = no speedup
                     double defenseUnits_speedup = mo.defenseUnitsHelpFactor();
 
@@ -2747,7 +2752,7 @@ public class Mission : AMission, IMainMission
                     if (!ai)
                         Timeout(timeout, () =>
                         {
-                            twcLogServer(new Player[] { initiator.Player }, "Airport hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timeToFixFromNow_sec / 3600).ToString("n1") + " hr to repair ", new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
+                            twcLogServer(new Player[] { initiator.Player }, apName + " hit: " + (percent * 100).ToString("n0") + "% destroyed " + mass_kg.ToString("n0") + "kg " + individualscore.ToString("n1") + " pts " + (timeToFixFromNow_sec / 3600).ToString("n1") + " hr to repair ", new object[] { }); //+ (timereduction / 3600).ToString("n1") + " hr spent on repairs since last bomb drop"
                         });
 
                     //loadSmokeOrFire(pos.x, pos.y, pos.z, firetype, timetofix, stb_FullPath, cratertype);
@@ -5156,7 +5161,7 @@ public class Mission : AMission, IMainMission
 
         //try
         {
-            //Console.WriteLine("BUILDING:" + title + " at " + pos.x.ToString("F0") + ", " + pos.y.ToString("F0"));
+            if (ON_TESTSERVER) Console.WriteLine("BUILDING:" + title + " at " + pos.x.ToString("F0") + ", " + pos.y.ToString("F0"));
 
             //Task.Run(() => //AHA, DON'T task.run here as it blows up the threads massively
 
@@ -5217,7 +5222,7 @@ public class Mission : AMission, IMainMission
             if (initiator != null && initiator.Player != null) killerName = initiator.Player.Name();
             else if (initiator != null && initiator.Actor != null) killerName = initiator.Actor.Name();
 
-            //Console.WriteLine("BUILDING:" + BuildingName + " in " + BuildingArmy + " was destroyed in sector " + sectorName + " by " + killerName + " from the " + PlayerArmy + ".");
+            if (ON_TESTSERVER) Console.WriteLine("BUILDING:" + BuildingName + " in " + BuildingArmy + " was destroyed in sector " + sectorName + " by " + killerName + " from the " + PlayerArmy + ".");
         }
         //catch (Exception ex) { Console.WriteLine("Main OnBuildingKilled ERROR: " + ex.ToString()); };
 
@@ -12104,6 +12109,7 @@ public class Mission : AMission, IMainMission
             {
                 twcLogServer(new Player[] { player }, "Creating an airspawn above the objective {1} (input: {0}) ", new object[] { sub, MissionObjectivesList[sub].Name });
                 ISectionFile f2 = GamePlay.gpCreateSectionFile();
+                
                 MissionObjective mo = MissionObjectivesList[sub];
                 int maxLen = 5;
                 if (mo.ID.Length < 5) maxLen = mo.ID.Length;
@@ -12113,7 +12119,8 @@ public class Mission : AMission, IMainMission
 
                 Point3d pos = mo.returnCurrentPosWithChief();
                 twcLogServer(new Player[] { player }, "Creating airspawn 2800m NE of the target" + bname, new object[] { });
-                f2 = Calcs.CreateBirthPlace(this, f2, bname, pos.x + 2000, pos.y + 2000, 1000, ar, planeset_num: 5);
+                f2.add("Main", "Fileversion", "2"); // for heading & airspawn, must be ver. 2
+                f2 = Calcs.CreateBirthPlace(this, f2, bname, pos.x + 2000, pos.y + 2000, 1000, ar, planeset_num: 5, _heading: 225, _type: "airspawn");
                 GamePlay.gpPostMissionLoad(f2);
                 f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + bname);
             }
@@ -15271,6 +15278,8 @@ public class Mission : AMission, IMainMission
 
     public enum MO_TriggerType { Trigger, Static, Airfield, PointArea, TemporaryLandingGround, NoBombs };
 
+    public List<MO_TriggerType> PointArea_types = new List<MO_TriggerType>() {MO_TriggerType.PointArea, MO_TriggerType.NoBombs};
+
     public enum MO_ObjectiveType { Radar,RadioCommunications,Communications, KnickebeinHQ, Artillery_and_AA, Ship, Submarine, Naval_Ship, Naval_Convoy, Freighter_Ship, Tanker_Ship, Naval_Freighter_Convoy, Naval_Tanker_Convoy, Civilian_Building, Military_Building, Military_Airfield, Civilian_Airfield, Ground_Aircraft, Inflight_Aircraft, Military_Vehicles, Civilian_Vehicles, Military_Armored_Vehicles, Military_Convoy, Military_Train, Bridge, Dam, Naval_Dock_Area, Railroad_Yard, Railroad, Railroad_Bridge, Road, Airfield_Complex, Factory_Complex, ArmyBase, MilitaryProductionArea, MilitaryArea, MilitaryHeadquarters, ProductionFacility, MilitaryProductionFacility, CivilianStorageFacility, MilitaryStorageFacility, CivilianFuelStorage, MilitaryFuelStorage, MilitaryFuelProduction, MilitaryRepairFacility, WeaponsStorage, AmmunitionStorage, AttackColumn, TemporaryLandingGround, ObservationDeck, MilitaryTunnel, none }; //Production facility is the type of thing that produces something needed for the war that will affect players, such as planes, gas, ammo, etc.  If destroyed it will cause
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // a shortage of those items. Similarly if a StorageFacility is destroyed it will cause an immediate loss of some of the existing supply of (say) aircraft of that type.  NOT IMPLEMENTED YET!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //type Airfield is the auto-entered list of airfield objectives (every active airport in the game) whereas AirfieldComplex could be an additional specific target on or near an airfield
@@ -17627,9 +17636,9 @@ public class Mission : AMission, IMainMission
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Guildford High Octane Plant", "Guil", "", "", 1, 5, "BTarget42", "TGroundDestroyed", 23, 112441, 243834, 200, false, 2, 800, "", add); //Guildford Target added 9/20
-            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Sheerness Diesel Fuel Storage", "Quee", "", "", 1, 4, "BTarget43", "TGroundDestroyed", 26, 204654, 268378, 100, false, 100, 204, "", add);//Sheerness Diesel Fuel Storage
-
-            addPointArea(MO_ObjectiveType.MilitaryRepairFacility, "Sheerness Naval Equipment Repair Station", "", "", 1, 6, "SheernessNavalRepair", 204881, 268447, 350, 400, 15000, 25, 0, 125, 360, false, true, 1, 2, "", add, canBeDisabled:false);
+            addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Sheerness Diesel Fuel Storage", "Shee", "", "", 1, 4, "BTarget43", "TGroundDestroyed", 26, 204654, 268378, 100, false, 100, 204, "", add);//Sheerness Diesel Fuel Storage
+            //Sheerness diesel fuel is actgually WITHIN the Naval Equip. Station.  Still works OK I guess.
+            addPointArea(MO_ObjectiveType.MilitaryRepairFacility, "Sheerness Naval Equipment Repair Station", "Shee", "", 1, 6, "SheernessNavalRepair", 204881, 268447, 350, 400, 15000, 25, 0, 125, 360, false, true, 1, 2, "", add, canBeDisabled:false);
 
             addTrigger(MO_ObjectiveType.Military_Building, "Queensborough Navigational jamming facilities", "Quee", "", "", 1, 4, "BTarget44", "TGroundDestroyed", 6, 204638, 265195, 50, false, 100, 310, "", add); // "Queensborough Navigational Jamming Facilities"
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Queensborough Radio communications center", "Quee", "", "", 1, 4, "Btarget45", "TGroundDestroyed", 6, 204722, 265252, 50, false, 100, 350, "", add);  // "Queensborough Radio Communications center"
@@ -17747,7 +17756,7 @@ public class Mission : AMission, IMainMission
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Luftwaffe Hauptbenzinlager Arras", "Arra", "", "", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 100, false, 2, 600, "", add);  //g
@@ -17809,10 +17818,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 15, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 40, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 
             
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 50, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -17896,7 +17905,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Crowborough Air High Command Bunker", "", "Genghis-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 0, 120, 210, true, true, 2, 10, "", add);
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 19, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
             
             addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Genghis-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 0, 120, 222, true, true, 2, 8, "", add);
 
@@ -19409,7 +19418,7 @@ added Rouen Flak
             double dist_m = dist_m_orig < mo.radius ? mo.radius : dist_m_orig;
             
             double d_m = Calcs.CalculatePointDistance(mo.Pos, p);
-            if (ON_TESTSERVER) Console.WriteLine("Near NoBomb: {0} {1:n0} {2:n0}", mo.ID, dist_m, d_m);
+            if (ON_TESTSERVER && dist_m < 10000 ) Console.WriteLine("Near NoBomb: {0} {1:n0} {2:n0}", mo.ID, dist_m, d_m);
             if (d_m <= dist_m) return  true;
         }
         return false;
@@ -25085,7 +25094,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 					bool landTypeWater = false;
 					if (landType == maddox.game.LandTypes.WATER) landTypeWater = true;
 
-					if (mo.MOTriggerType == MO_TriggerType.PointArea && !landTypeWater)
+					if (PointArea_types.Contains(mo.MOTriggerType) && !landTypeWater)
 					{
 						MO_PlaceAppropriateJerrycan(mo);
 					}
@@ -25396,7 +25405,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         int npo = MO_NumberPrimaryObjectives(army);
         if (npo == 0) return 0;
         double x = MO_NumberPrimaryObjectivesComplete(army);
-        return (x / (double)npo * (double)100.0);
+        return ((double)x / (double)npo * (double)100.0);
     }
     public double MO_PrimaryObjectivesRemaining(int army)
     {
@@ -27334,7 +27343,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 {
                     MissionObjective mo = MissionObjectivesList[ID];
                     if (actor.Army() != mo.OwnerArmy) continue;
-                    if (mo.MOTriggerType != MO_TriggerType.PointArea || !mo.IsEnabled || mo.Destroyed || !mo.hasChief()) continue;
+                    if (!PointArea_types.Contains(mo.MOTriggerType) || !mo.IsEnabled || mo.Destroyed || !mo.hasChief()) continue;
                     if (!(shortName.ToLower()).Contains(mo.ChiefName.ToLower())) continue;
                     if (mo.chiefIsAlive()) continue;
                     DateTime currTime_dt = DateTime.UtcNow;
@@ -27391,7 +27400,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 {
                     MissionObjective mo = MissionObjectivesList[ID];
                     if (actor.Army() != mo.OwnerArmy) continue;
-                    if ((mo.MOTriggerType != MO_TriggerType.PointArea &&
+                    if ((!PointArea_types.Contains(mo.MOTriggerType) &&
                         mo.MOTriggerType != MO_TriggerType.Trigger)
                         || !mo.IsEnabled) continue;
 
@@ -27528,7 +27537,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             foreach (string ID in MissionObjectivesList.Keys.ToList())
             {
                 MissionObjective mo = MissionObjectivesList[ID];
-                if ( ( mo.MOTriggerType != MO_TriggerType.PointArea &&
+                if ( ( !PointArea_types.Contains(mo.MOTriggerType) &&
                     mo.MOTriggerType != MO_TriggerType.Trigger)
                     || !mo.IsEnabled) continue;
 
@@ -27579,7 +27588,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 						damageCount *= 3; //triple credit for strafing damage of ground objects
 					}
 					
-                    if (mo.MOTriggerType == MO_TriggerType.PointArea)
+                    if (PointArea_types.Contains(mo.MOTriggerType))
                         mo.ObjectsDestroyed_num += damageCount;
                     else if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         mo.ObjectsDestroyed_num ++;
@@ -27598,7 +27607,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     if (mo.MOTriggerType == MO_TriggerType.Trigger)
                         MO_CalculateAndRecordTriggerObjectivesDamagePercent(mo);
                     //double oldDestroyedPercent = mo.DestroyedPercent;
-                    else if (mo.MOTriggerType == MO_TriggerType.PointArea) MO_CalculateAndRecordPointareaObjectivesDamagePercent(mo);
+                    else if (PointArea_types.Contains(mo.MOTriggerType)) MO_CalculateAndRecordPointareaObjectivesDamagePercent(mo);
 					
 
                     //Console.WriteLine("BSD: 6");
@@ -27660,7 +27669,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             foreach (string ID in MissionObjectivesList.Keys.ToList()) //avoiding 'change collection while looping through it' error vo .ToList() 2021-01
             {
                 MissionObjective mo = MissionObjectivesList[ID];
-                if (mo.MOTriggerType != MO_TriggerType.PointArea || !mo.IsEnabled) continue;
+                if (!mo.IsEnabled || !PointArea_types.Contains(mo.MOTriggerType)) continue;
                 //if (mo.OrdnanceRequiredToTrigger_kg == 0) continue; //0 means, don't use ordinance KG to determine destruction [nevermind, we can still track it even though not actively using it.  If 0
 
                 if (Calcs.IsNaN(pos)) continue; 
@@ -29232,6 +29241,8 @@ public static class Calcs
 
     }
 
+    //NOTE: *****2D***** POINT DISTANCE, the z component is ignored. 
+    // Most often this is what we want on the map
     public static double CalculatePointDistance(
                               Point2d startPoint,
                               Point3d endPoint)
@@ -32951,7 +32962,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 	//planeset_num goes 0 (most basic) to 5 (full) to 6  (also including _trop variants)
 	//planetype_num, 1 =
     //
-    public static ISectionFile CreateBirthPlace(Mission msn, ISectionFile f, string name,double x, double y, double z, int army, int maxplanes = 1, bool setonpark = true, bool isparachute = true, string _country = "", string _hierarchy = "", string _regiment = "", bool _warmed = false, int planeset_num=0, int[] planetype_num = null )
+    public static ISectionFile CreateBirthPlace(Mission msn, ISectionFile f, string name,double x, double y, double z, int army, int maxplanes = 1, bool setonpark = true, bool isparachute = true, string _country = "", string _hierarchy = "", string _regiment = "", bool _warmed = false, int planeset_num=0, int[] planetype_num = null, double _heading = -1, string _type = "" )  //_type can be "takeoff" or "airspawn"
     {
         try
         {
@@ -33019,6 +33030,14 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
             if (_warmed)
                 warmed = 1;
+
+            //These last two will probably only with with [Main] fileversion=2 .mis files    
+
+            string heading = "";
+            if (_heading != -1) heading = string.Format(" /heading {0:N0}", _heading);
+
+            string type ="";
+            if (_type != "") type = " /Type " + _type;             
 
 
             //And so apparently the x,y,z coordinates here cannot have any decimal points. 

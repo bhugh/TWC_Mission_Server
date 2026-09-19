@@ -9020,7 +9020,7 @@ public class Mission : AMission, IMainMission
 
     public override void OnBattleStoped()
     {
-        base.OnBattleStoped();
+        base.OnBattleStoped();         
 
         Console.WriteLine("Battle Stopping -- saving map state & current supply status");
 
@@ -9052,7 +9052,9 @@ public class Mission : AMission, IMainMission
         try {
             CheckAndChangeStartTimeAndWeather(GamePlay.gpTimeofDay(), current_map: MISSION_MAP, doExit:false); //write out new .mis file with new planes, weather, time of day, etc etc etc etc etc
         }
-        catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped4! " + ex.ToString()); }    
+        catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped4! " + ex.ToString()); }  
+
+          
 
         if (GamePlay is GameDef)
         {

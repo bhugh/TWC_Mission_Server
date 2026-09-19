@@ -394,7 +394,7 @@ public class ThreadLoadMission : AMission
 	public DateTime lastCrash = DateTime.Now;
 	public DateTime lastFileSave = DateTime.Now.AddHours(-1);
 	
-	//Returns true of we've had a crash (which includes Steam disconnection) within past 60 seconds
+	//Returns true if we've had a crash (which includes Steam disconnection) within past 60 seconds
 	public bool SoftExit (){
 		double timeSinceLastCrash_s = DateTime.Now.Subtract(lastCrash).TotalSeconds;
 		if (timeSinceLastCrash_s < 60) return true;

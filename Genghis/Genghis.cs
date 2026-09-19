@@ -581,6 +581,8 @@ public class Mission : AMission, IMainMission
     public int MO_Objective_Percent_To_Disable = 3; //How many of the mission objectives on the list to randomly disable on a given day.
     //public int MO_Objective_Percent_To_Disable = 0; //for testing
     public int START_MISSION_TICK = -1;
+
+    public string MISSION_MAP = "summer"; //the default - actually set below by CheckAndChangeStartTimeAndWeather etc.
     public double START_MISSION_TIME_HRS = 0;
     //(SUMMER) So 20:15/8:15 pm is about the latest you can run a mission and still have any light.
     //5:00AM IS GOOD FOR START, 4:45AM IS GOOD ENOUGH & NICE LOOKING.  4:30AM IS REALLY NICe looking, esp once in air, but probably too dark to taxi reasonably.   The sun is just up at 4:30am.
@@ -8601,53 +8603,13 @@ public class Mission : AMission, IMainMission
 			
 			Console.WriteLine("OnBattleStarted: Starting . . . ");
 
+            setMissionLengthStartTimesMap ();
+
 
             
 
 
-            string map = "summer";
-            //SUMMER values
-            MISSION_LENGTH_HRS = 8.0;
-            END_MISSION_TIME_HRS = 20.05;
-            EARLIEST_MISSION_START_TIME_HRS = 4.15;
-
-            try
-            {
-                string filepath_mis = stb_FullPath + @"/" + MISSION_ID + ".mis";               
-                Console.WriteLine("Mission file name: " + MISSION_FILE_FULL_PATH + " : " + this.PathMyself + " : " + this.sPathMyself);
-
-                var main_mis = GamePlay.gpLoadSectionFile(filepath_mis);
-                if (main_mis.exist("MAIN", "MAP"))
-                {
-                    string map_name = main_mis.get("MAIN", "MAP");
-                    Console.WriteLine("Mission map: " + map_name);
-                    if (map_name.ToLower().Contains("autumn")) map = "autumn";
-                    else if (map_name.ToLower().Contains("winter")) map = "winter";
-                }
-
-                //AUTUMN values
-                if (map == "autumn")
-                {
-                    Console.WriteLine("START TIME: Using AUTUMN map & start/end times.");
-                    MISSION_LENGTH_HRS = 6.0;
-                    END_MISSION_TIME_HRS = 17.25;
-                    EARLIEST_MISSION_START_TIME_HRS = 6.15;
-                }
-                else if (map == "winter")
-                {
-                    Console.WriteLine("START TIME: Using WINTER map & start/end times.");
-
-                    //These are guesses - not yet tested. 2023/01
-                    MISSION_LENGTH_HRS = 8.5;
-                    END_MISSION_TIME_HRS = 16.08;
-                    EARLIEST_MISSION_START_TIME_HRS = 7.75;
-                }
-                else Console.WriteLine("START TIME: Using SUMMER map & start/end times.");
-            } catch (Exception ex) { Console.WriteLine ("START TIME: ERROR reading .mis file - Using default SUMMER map & start / end times. Error: " + ex.ToString()); }
-
-
-            CheckAndChangeStartTimeAndWeather(map); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
-			//Also changes plane types for those that can be smoothly exchanged
+           
             //HOW TO ADD TRIGGERS FROM A SUBMISSION TO THE MAIN MISSION
             //by  ATAG_Oskar
             //2020-08-24
@@ -9086,6 +9048,11 @@ public class Mission : AMission, IMainMission
             if (!final_MO_WriteMissionObjects_completed) MO_WriteMissionObjects(wait: true);
         }
         catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped3! " + ex.ToString()); }
+
+        try {
+            CheckAndChangeStartTimeAndWeather(GamePlay.gpTimeofDay(), current_map: MISSION_MAP, doExit:false); //write out new .mis file with new planes, weather, time of day, etc etc etc etc etc
+        }
+        catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped4! " + ex.ToString()); }    
 
         if (GamePlay is GameDef)
         {
@@ -13958,26 +13925,91 @@ public class Mission : AMission, IMainMission
         if (doy >= 342 && random.Next(100) > 63) return false; //4/10 chance of snow in Dec
         return true;
     }
+    public void setMissionLengthStartTimesMap (){
+     string map = "summer";
+            //SUMMER values
+            MISSION_LENGTH_HRS = 8.0;
+            END_MISSION_TIME_HRS = 20.05;
+            EARLIEST_MISSION_START_TIME_HRS = 4.15;
+
+            try
+            {
+                string filepath_mis = stb_FullPath + @"/" + MISSION_ID + ".mis";               
+                Console.WriteLine("Mission file name: " + MISSION_FILE_FULL_PATH + " : " + this.PathMyself + " : " + this.sPathMyself);
+
+                var main_mis = GamePlay.gpLoadSectionFile(filepath_mis);
+                if (main_mis.exist("MAIN", "MAP"))
+                {
+                    string map_name = main_mis.get("MAIN", "MAP");
+                    Console.WriteLine("Mission map: " + map_name);
+                    if (map_name.ToLower().Contains("autumn")) map = "autumn";
+                    else if (map_name.ToLower().Contains("winter")) map = "winter";
+                }
+
+                //AUTUMN values
+                if (map == "autumn")
+                {
+                    Console.WriteLine("START TIME: Using AUTUMN map & start/end times.");
+                    MISSION_LENGTH_HRS = 6.0;
+                    END_MISSION_TIME_HRS = 17.25;
+                    EARLIEST_MISSION_START_TIME_HRS = 6.15;
+                }
+                else if (map == "winter")
+                {
+                    Console.WriteLine("START TIME: Using WINTER map & start/end times.");
+
+                    //These are guesses - not yet tested. 2023/01
+                    MISSION_LENGTH_HRS = 8.5;
+                    END_MISSION_TIME_HRS = 16.08;
+                    EARLIEST_MISSION_START_TIME_HRS = 7.75;
+                }
+                else Console.WriteLine("START TIME: Using SUMMER map & start/end times.");
+            } catch (Exception ex) { Console.WriteLine ("START TIME: ERROR reading .mis file - Using default SUMMER map & start / end times. Error: " + ex.ToString()); }
+
+            MISSION_MAP = map;
+
+            if (START_MISSION_TIME_HRS == 0 ) START_MISSION_TIME_HRS = GamePlay.gpTimeofDay();
+
+            var stl = showTimeLeft(null, showMessage: false, inGameTimeOnly: true);
+            var inGameTime_dt = stl.Item2;
+
+            //testing
+            //inGameTime_dt = new DateTime(1942, 12, 25, 12, 01, 0);            
+            //inGameTime_dt = new DateTime(1980, 4, 25, 01, 01, 0);
+            //inGameTime_dt = new DateTime(1950, 2, 2, 01, 01, 0);
+            //inGameTime_dt = new DateTime(1921, 9, 11, 01, 01, 0);
+            //inGameTime_dt = new DateTime(1931, 7, 25, 01, 01, 0);            
+            //inGameTime_dt = new DateTime(1940, 10, 25, 01, 01, 0);
+
+            Console.WriteLine("Day of year: {0} - {1}", inGameTime_dt.DayOfYear, new DateTime(1940, 12, 24, 01, 01, 0).DayOfYear);
+            //showTimeLeft(null);
+            Console.WriteLine("Current time: "+ showTimeLeft(null, showMessage: false, inGameTimeOnly: false).Item1);
+
+
+            //if (alsoChangeMISFile) CheckAndChangeStartTimeAndWeather(map); //will check desired start time vs actual in-game time & rewrite the .mis file, restart the mission if needed to get the time at the right place
+			//Also changes plane types for those that can be smoothly exchanged
+    }
 
 
     //changes start time of mission
     //Also changes cloud deck height (500-1500m) and WeatherIndex (cloud type) - mostly light but occasionally medium or clear on 1/3 restarts
     //TODO . . . we could probably used built-in maddox.game.ISectionFile functions to edit & update the sectionfile.  get, set, delete, save, etc
-    public void CheckAndChangeStartTimeAndWeather(string current_map = "")
+    public void CheckAndChangeStartTimeAndWeather(double lastMissionCurrentTime_hr, string current_map = "", bool doExit = false)
     {
         try
         {
             //generateWindLayers();
             //rem out the following line to make it: testing, don't skip
             //if (ON_TESTSERVER && !DISABLE_TESTING_MODS) return; //if running on test server, just keep time unchanged
-            bool ret = true;
-            double lastMissionCurrentTime_hr = 0;
+            //bool ret = true;
+            //double lastMissionCurrentTime_hr = 0;
             //MO_WriteMissionObject(GamePlay.gpTimeofDay(), "MissionCurrentTime", wait);
-            object mo = MO_ReadMissionObject(lastMissionCurrentTime_hr, "MissionCurrentTime");
-            if (mo != null) Console.WriteLine("Read " + mo.GetType().ToString());
-            else Console.WriteLine("No read of " + "MissionCurrentTime");
-            if (mo != null) ret = double.TryParse(mo.ToString(), out lastMissionCurrentTime_hr); //var d = double.TryParse(o.ToString(), out d); 
-            else ret = false;
+            //object mo = MO_ReadMissionObject(lastMissionCurrentTime_hr, "MissionCurrentTime");
+            //if (mo != null) Console.WriteLine("Read " + mo.GetType().ToString());
+            //else Console.WriteLine("No read of " + "MissionCurrentTime");
+
+            //if (mo != null) ret = double.TryParse(mo.ToString(), out lastMissionCurrentTime_hr); //var d = double.TryParse(o.ToString(), out d); 
+            //else ret = false;
 
             //Change to Autumn (or even Winter) map according to the in-game DATE
             var stl = showTimeLeft(null, showMessage: false, inGameTimeOnly: true);
@@ -13992,6 +14024,8 @@ public class Mission : AMission, IMainMission
             //inGameTime_dt = new DateTime(1940, 10, 25, 01, 01, 0);
 
             Console.WriteLine("Day of year: {0} - {1}", inGameTime_dt.DayOfYear, new DateTime(1940, 12, 24, 01, 01, 0).DayOfYear);
+
+            Console.WriteLine("Current time: "+ showTimeLeft(null, showMessage: false, inGameTimeOnly: false).Item1);
 
 
 
@@ -14039,38 +14073,49 @@ public class Mission : AMission, IMainMission
             double currTime = GamePlay.gpTimeofDay();
             double desiredStartTime_hrs = EARLIEST_MISSION_START_TIME_HRS;
             Console.WriteLine("MIS 2");
-            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time (before): {0:F3} {1:F3} ", currTime, desiredStartTime_hrs));
+            Console.WriteLine("CheckStartTime: curr/desired start time (before): {0:F3} {1:F3} ", currTime, desiredStartTime_hrs);
             //if the last saved mission time is a long ways from the current mission time, AND there is still more than 5 hrs
             //left before the preferred end mission time, 
             //AND the last save mission time is later than the earliest allowed mission start time,
             //THEN we'll restart the mission at/near our last desired start time
             //Otherwise stick with EARLIEST_MISSION_START_TIME
-            if (ret && Math.Abs(lastMissionCurrentTime_hr - currTime) < 30 && END_MISSION_TIME_HRS - lastMissionCurrentTime_hr > 5
+            if (Math.Abs(lastMissionCurrentTime_hr - currTime) < 0.5 && END_MISSION_TIME_HRS - lastMissionCurrentTime_hr > 5
                 && lastMissionCurrentTime_hr >= EARLIEST_MISSION_START_TIME_HRS)
                 desiredStartTime_hrs = lastMissionCurrentTime_hr;
-            twcLogServer(null, String.Format("CheckStartTime: curr/desired start time (after): {0:F3} {1:F3} diff: {2:F3} ", currTime, desiredStartTime_hrs, Math.Abs(desiredStartTime_hrs - currTime)));
+
+            //If the last mission time was in the afternoon but a bit smaller than the required 5
+            //hrs, we'll just do a little bump to make it the full 5 hrs & proceed
+            //rather than always starting the next morning in this situation    
+            else if (lastMissionCurrentTime_hr>11 && END_MISSION_TIME_HRS - lastMissionCurrentTime_hr <=5 && END_MISSION_TIME_HRS - lastMissionCurrentTime_hr > 2.5) desiredStartTime_hrs = END_MISSION_TIME_HRS - 5;
+
+            Console.WriteLine("CheckStartTime: curr/desired start time (after): currTime: {0:F3} desiredStartTime_hr: {1:F3} diff: {2:F3} lastMissionCurrentTime_hr {3:F3} Earliest_MisisonStartTime: {4:F3} last v. curr: {5:F3}, EndM v lastM: {6:F3}", currTime, desiredStartTime_hrs, Math.Abs(desiredStartTime_hrs - currTime), lastMissionCurrentTime_hr, EARLIEST_MISSION_START_TIME_HRS, Math.Abs(lastMissionCurrentTime_hr - currTime), END_MISSION_TIME_HRS - lastMissionCurrentTime_hr );
             Console.WriteLine("MIS 3");
             //So once in a while we restart the mission simply to change the weather, aircraft, etc.  This will change cloudsheight & weatherindex, AI aircraft types.
+
+            //TODO: Now that we are just re-writing the .mis file every time upon exit, we can just
+            //eliminate a bunch of this restart/no-restart logic
             bool restartToChangeWeather = false;
-            if (random.NextDouble() < 0.12 && !ON_TESTSERVER) restartToChangeWeather = true;
+            if (random.NextDouble() < 0.05 && !ON_TESTSERVER) restartToChangeWeather = true;
 			//else if (random.NextDouble() < 0.5) restartToChangeWeather = true;
 
             bool restartToChangeTime = true;
-            if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 || ON_TESTSERVER) restartToChangeTime = false;
+            if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 ||
+                (currTime>desiredStartTime_hrs && currTime<13)  //restarting too often when switching ie autumn to winter, because teh desired/earliest start time changes w/ map.  So as long as time is morning and LATER than the desired, let it ride
+                || ON_TESTSERVER) restartToChangeTime = false;
 			//if (Math.Abs(desiredStartTime_hrs - currTime) < 0.5 ) restartToChangeTime = false;
 			
 			//FOR TESTING< always change 2026-08
 			//if (ON_TESTSERVER) restartToChangeTime = true;
 
-            Console.WriteLine("MIS 4, restartToChangeTime: {0}", restartToChangeTime);
+            Console.WriteLine("MIS 4, restartToChangeTime: {0}, desired:{1:F3}, current: {2:f3}, difference: {3:F3}", restartToChangeTime, desiredStartTime_hrs, currTime, Math.Abs(desiredStartTime_hrs - currTime) );
 
             string desiredString = "  TIME " + desiredStartTime_hrs.ToString("F5");
 
-            twcLogServer(null, String.Format("CheckStartTime, deciding: curr/desired start time: {0:F3} {1:F3}; Changing to {2} - {3}. Restart to change weather? {4} restart to change map {5}", currTime, desiredStartTime_hrs, desiredString, map_value, restartToChangeWeather, restartToChangeMap));
+            Console.WriteLine("CheckStartTime, deciding: curr/desired start time: {0:F3} {1:F3}; Changing to {2} - {3}. Restart to change weather? {4} restart to change map {5}", currTime, desiredStartTime_hrs, desiredString, map_value, restartToChangeWeather, restartToChangeMap);
             //DECISION POINT - change things & restart or not
             //rem out the following line to make it: testing, do it always
             //TESTSERVER restarts to change map per season, but NOT startime or weather
-            if ( !restartToChangeTime && !restartToChangeWeather && !restartToChangeMap) return; //0.5 == 30 minutes, 1/2 hour
+            //if ( !restartToChangeTime && !restartToChangeWeather && !restartToChangeMap) return; //0.5 == 30 minutes, 1/2 hour
 
             
 
@@ -14141,38 +14186,42 @@ public class Mission : AMission, IMainMission
             //OK, new .mis file with new time is in place, now restart & run it!
 
 
+            if (doExit) {
+                //We are NOT saving any mission state here, we MUST only run this routine at the very beginning of the mission, before anything has happened.
+                twcLogServer(null, "Restarting Mission to change start time of day . . . ", new object[] { });
+                GamePlay.gpHUDLogCenter("Restarting Mission to change start time of day . . . ");
+                DebugAndLog("Restarting Mission to change start time of day to " + desiredString);
+                Console.WriteLine("Restarting Mission to change start time of day to " + desiredString);
 
-            //We are NOT saving any mission state here, we MUST only run this routine at the very beginning of the mission, before anything has happened.
-            twcLogServer(null, "Restarting Mission to change start time of day . . . ", new object[] { });
-            GamePlay.gpHUDLogCenter("Restarting Mission to change start time of day . . . ");
-            DebugAndLog("Restarting Mission to change start time of day to " + desiredString);
-            Console.WriteLine("Restarting Mission to change start time of day to " + desiredString);
+                //OK, trying this for smoother exit (save stats etc)
+                //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
+                //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
+                //Here we DON"T want a smooth exit saving everything.  Saving everything messes everything up. Just quit.
+                /*if (GamePlay is GameDef)
+                {
+                    (GamePlay as GameDef).gameInterface.CmdExec("exit");
+                }*/
+                Console.WriteLine("MIS 7");
+                if (!ON_TESTSERVER)
+                {
+                    Console.WriteLine("CheckStartTime: STOPPING TO CHANGE TIME/DATE/WEATHER and NOT ON_TESTSERVER");
+                    //Process.GetCurrentProcess().Kill();
+                    Thread.Sleep(2075); //allow messages to show up/be logged?
+                                        //Environment.Exit(0);
+                    Process.GetCurrentProcess().Kill();
+                    System.Environment.Exit(1);
+                }
+                else
+                {
+                    
+                    Thread.Sleep(2075);
+                    Console.WriteLine("CheckStartTime: 'STOPPING' TO CHANGE TIME/DATE/WEATHER and ON_TESTSERVER (ie, not stopping just faking it)");
+                    //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
+                    //(GamePlay as GameDef).gameInterface.BattleStop();
+                }
+            } else {
+                Console.WriteLine("CheckStartTime: Not actually 'restarting' because running @ end of mission to set new .mis file for following mission...");
 
-            //OK, trying this for smoother exit (save stats etc)
-            //(TWCStatsMission as AMission).OnBattleStoped();//This really horchs things up, basically things won't run after this.  So save until v-e-r-y last.
-            //OK, we don't need to do the OnBattleStoped because it is called when you do CmdExec("exit") below.  And, if you run it 2X it actually causes problems the 2nd time.
-            //Here we DON"T want a smooth exit saving everything.  Saving everything messes everything up. Just quit.
-            /*if (GamePlay is GameDef)
-            {
-                (GamePlay as GameDef).gameInterface.CmdExec("exit");
-            }*/
-            Console.WriteLine("MIS 7");
-            if (!ON_TESTSERVER)
-            {
-                Console.WriteLine("STOPPING TO CHANGE TIME/DATE/WEATHER and NOT ON_TESTSERVER");
-                //Process.GetCurrentProcess().Kill();
-                Thread.Sleep(2075); //allow messages to show up/be logged?
-                                    //Environment.Exit(0);
-                Process.GetCurrentProcess().Kill();
-                System.Environment.Exit(1);
-            }
-            else
-            {
-                
-                Thread.Sleep(2075);
-                Console.WriteLine("'STOPPING' TO CHANGE TIME/DATE/WEATHER and ON_TESTSERVER (ie, not stopping just faking it)");
-                //(GamePlay as GameDef).gameInterface.CmdExec("battle stop");
-                //(GamePlay as GameDef).gameInterface.BattleStop();
             }
         }
         catch (Exception ex) { Console.WriteLine("MO_Move MIS main ERROR: " + ex.ToString()); }

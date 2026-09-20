@@ -6314,15 +6314,15 @@ struct
             if (prev_infractions != infractions) //only display the message for each new 'salvo' that was dropped
             {
                 if (mainmission.ON_TESTSERVER) Console.WriteLine("Infraction/penalties 1B for  " + playername + ": infr: {0} prevInfr: {1} NoBombObj: {2} ", infractions, prev_infractions, isNoBombObj);
-                GamePlay.gpLogServer(null, ">>>>A civilian or cultural area has been bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + " in direct contradiction of general orders! Penalties to you & your army.", new object[] { player });
-                GamePlay.gpHUDLogCenter(">>Civilian/Cultural area bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + "! Severe repercussions!!<<");
+                GamePlay.gpLogServer(null, ">>>>A civilian, cultural, or forbidden area has been bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + " in direct contradiction of general orders! Penalties to you & your army.", new object[] { player });
+                GamePlay.gpHUDLogCenter(">>Civilian/Cultural/Forbidden area bombed by " + stb_StatRecorder.StbSr_MassagePlayername(playername) + "! Severe repercussions!!<<");
                 stb_RecordStatsOnActorDead(initiator, 4, -2*score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -1 kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
-                GamePlay.gpLogServer(new Player[] { player }, ">>>Bombed civilian/cultural area: " + (-2 * score).ToString("0.0") + " point penalty + severe ARMY penalties", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Bombed civilian/cultural/forbidden area: " + (-2 * score).ToString("0.0") + " point penalty + severe ARMY penalties", new object[] { });
 
                 //Add points to enemy/subtract from ally army
                 mainmission.MissionObjectiveScore[(ArmiesE)army] -= 50;
                 mainmission.MissionObjectiveScore[(ArmiesE)(3-army)] += 25;
-                mainmission.MissionObjectivesCompletedString[(ArmiesE)army]  += " - PENALTY: Civilian/Cultural Area Bombing";
+                mainmission.MissionObjectivesCompletedString[(ArmiesE)army]  += " - PENALTY: Civilian/Cultural/Forbidden Area Bombing";
 
             }
 
@@ -6340,7 +6340,7 @@ struct
             //? Nothing here yet, needs to be added ?
             stb_RecordStatsOnActorDead(initiator, 4, -4 * score, 1, AiDamageToolType.Ordance);//each bomb dropped on a civi area gives -4 (!) kill points, -100% in TWC kill points, type 4 (ground kill), ordinance type 2 = bombs
             GamePlay.gpLogServer(new Player[] { player }, ">>>>Bombed civilian area: " + (-4 * score).ToString("0.0") + " point penalty + ARMY penalties", new object[] { });
-            Timeout(7.0, () => { GamePlay.gpLogServer(null, ">>>{0} bombed civilian/cultural area: Severe ARMY penalties applied.", new object[] { player.Name()});});
+            Timeout(7.0, () => { GamePlay.gpLogServer(null, ">>>{0} bombed civilian/cultural/forbidden area: Severe ARMY penalties applied.", new object[] { player.Name()});});
 
             mainmission.MissionObjectiveScore[(ArmiesE)army] -= 5;
             mainmission.MissionObjectiveScore[(ArmiesE)(3-army)] += 3;
@@ -6394,7 +6394,7 @@ struct
             string rpted = infractions == 0 ? "" : "repeated ";
             Timeout(2, () =>
             {
-                GamePlay.gpLogServer(null, ">>>>Because of " + rpted +" bombing of civilian/cultural areas and insubordination in disobeying orders to refrain from such bombing, " + stb_StatRecorder.StbSr_MassagePlayername(playername)
+                GamePlay.gpLogServer(null, ">>>>Because of " + rpted +" bombing of civilian/cultural/forbidden areas and insubordination in disobeying orders to refrain from such bombing, " + stb_StatRecorder.StbSr_MassagePlayername(playername)
                     + "'s co-pilot has ejected " + playername + " from the aircraft and assumed command.", new object[] { });
 
                 string peHud_message = ">>Removed from command - repeated bombing of civilian areas & insubordination<<";
@@ -6406,9 +6406,9 @@ struct
                 //Add points to enemy/subtract from ally army
                 mainmission.MissionObjectiveScore[(ArmiesE)army] -= 75;
                 mainmission.MissionObjectiveScore[(ArmiesE)(3-army)] += 40;
-                mainmission.MissionObjectivesCompletedString[(ArmiesE)army]  += " - PENALTY: Civilian/Cultural Area Bombing";
+                mainmission.MissionObjectivesCompletedString[(ArmiesE)army]  += " - PENALTY: Civilian/Cultural/Forbidden Area Bombing";
 
-                Timeout(15.0, () => { GamePlay.gpLogServer( null, ">>>{0} bombed civilian/cultural area: Severe ARMY penalties applied.", new object[] { player.Name()});});
+                Timeout(15.0, () => { GamePlay.gpLogServer( null, ">>>{0} bombed civilian/cultural/forbidden area: Severe ARMY penalties applied.", new object[] { player.Name()});});
 
             });
         }

@@ -11459,6 +11459,8 @@ public class Mission : AMission, IMainMission
 				setMainMenu(player);
 
 				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
+                showTimeLeft(player: player);
+
 				//twcLogServer(null, "Mission loaded.", new object[] { });
 
 				DateTime utcDate = DateTime.UtcNow;
@@ -15397,6 +15399,11 @@ public class Mission : AMission, IMainMission
         [DataMember] public string InitSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
         [DataMember] public string DestroyedSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
         [DataMember] public string ChiefName { get; set; } //(optional) Name of the "Chief" associated with this objective, like 1009_Chief. If provided it allows the detection of the actual location of the _Chief on recon flights.  So when reconned, it will tell the actual location of the ship or convoy at the time of recon, not just the starting point of the _Chief's route.
+
+        [DataMember] public Dictionary <string, int> ThingsToSave { get; set; } //list of things (ie, stationaries, match by "contains"), and the number required, to BE SAVED AND NOT KILLED in order to achieve the OBJ
+
+        [DataMember] public bool ThingsToSave_stillAlive {get; set;}
+
         [DataMember] public bool AutoFlakIfPrimary { get; set; } //Automatically place flak batteries near this objective, but only if it is chosen as a primary
         [DataMember] public bool AutoFlak { get; set; } //Automatically place flak batteries near this objective
         [DataMember] public int NumFlakBatteries { get; set; }
@@ -15451,6 +15458,10 @@ public class Mission : AMission, IMainMission
         [DataMember] public string bigSector { get; set; } //a block of several sectors, somewhat randomly selected, and the target is somewhere within it
         [DataMember] public string HUDMessage { get; set; }
         [DataMember] public string LOGMessage { get; set; }
+        [DataMember] public string Explanation { get; set; }
+
+        [DataMember] public string ThingsToSave_destroyed_message { get; set; }
+
         [DataMember] public string SuccessSubmissionName { get; set; } //submission to launch when objective reached; if blank nothing launched
         [DataMember] public double RadarEffectiveRadius { get; set; }        
 
@@ -15505,7 +15516,8 @@ public class Mission : AMission, IMainMission
             msn = m;
         }
         //RADAR TRIGGER initiator ; does EITHER trigger OR PointArea, depending on parameters/trigger type given
-        public MissionObjective(Mission m, string objectiveKey, string objectiveName, string flak, int ownerarmy, double pts, double repairdays, string mission_trigger_type, double trigger_percent, double x, double y, double trigger_destroy_radius, double radar_effective_radius, bool is_primary_target, double primary_target_weight, string comment, MO_ObjectiveType MObjType = MO_ObjectiveType.Radar, MO_TriggerType MOTrigType = MO_TriggerType.Trigger, string init_submission_filename = "", double orttkg = 100, double orttn = 2, double arttn = 0, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", string destroyed_submission_name = "")
+        public MissionObjective(Mission m, string objectiveKey, string objectiveName, string flak, int ownerarmy, double pts, double repairdays, string mission_trigger_type, double trigger_percent, double x, double y, double trigger_destroy_radius, double radar_effective_radius, bool is_primary_target, double primary_target_weight, string comment, MO_ObjectiveType MObjType = MO_ObjectiveType.Radar, MO_TriggerType MOTrigType = MO_TriggerType.Trigger, string init_submission_filename = "", double orttkg = 100, double orttn = 2, double arttn = 0, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", string destroyed_submission_name = ""
+        )
         {
 
             msn = m;
@@ -15523,6 +15535,7 @@ public class Mission : AMission, IMainMission
             FlakID = flak;
             InitSubmissionName = init_submission_filename;
             DestroyedSubmissionName = destroyed_submission_name;
+            ThingsToSave_stillAlive = true;
             
             AutoFlakIfPrimary = true;
             AutoFlak = true;
@@ -15636,6 +15649,8 @@ public class Mission : AMission, IMainMission
             AiAirport aiairport = airport; //CloD internal airport object.  Can't save as [DataMember] due to it being in an external assembly etc
             AirfieldName = tup.Item2;//The ID is generally set to "internal airfieldname_airfield" and name is ""internal airfieldname Airfield".  This saves the actual/original/exact airfield name incase we need to find it again.
 
+            ThingsToSave_stillAlive = true;
+
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
             FlakID = ""; //no flak files for airports . . . yet
             AutoFlakIfPrimary = true;
@@ -15728,6 +15743,8 @@ public class Mission : AMission, IMainMission
             else Console.WriteLine("Landingground: Making MissionObjective, planeset was NULL!!!");
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in the mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
 
+            ThingsToSave_stillAlive = true;
+
             FlakID = flak_file; //no flak files for airports . . . yet
             AutoFlakIfPrimary = true;
             AutoFlak = true;
@@ -15818,6 +15835,9 @@ public class Mission : AMission, IMainMission
             InitSubmissionName = init_submission_filename;
             DestroyedSubmissionName = destroyed_submission_name;            
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+
+            ThingsToSave_stillAlive = true;
+
             AutoFlakIfPrimary = true;
             AutoFlak = false;
             //NumFlakBatteries = 4;
@@ -15908,7 +15928,13 @@ public class Mission : AMission, IMainMission
         //You can designate EITHER kg tonnage of ordnance dropped in that area to destroy it, AND/OR a certain number of objects (static objects, actors, buildings, etc) that must be killed within that radius (the buildings part working depends on TF getting the onbuildingdestroyed routine working again), AND/OR a certain number of ACTORS that must be killed - they don't need to be within the certain RADIUS but they must match the CHIEF NAME given.
         //Chief name is for moving objectives like submarines, trains, vehicle convoys, ship actors, and looks like 2004_Chief (you must set up your .mis file for this so that the chiefs for different objectives have a unique number like this).  Then each individual vehicle/ship/sub/etc within that Chief will be named 2004_Chief1, 2004_Chief2, 2004_Chief3, etc. 
         //OR you can choose 2 of them and in that case the players will have, ie, to drop the certain tonnage on the area AND kill the certain number of objects, OR all three.
-        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true, string destroyed_submission_name = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea)
+        public MissionObjective(Mission m, MO_ObjectiveType objective_type, string objective_ID, string objective_name, string flak, string init_submission_filename, int ownerarmy, double points, double x, double y, double rad, double trigrad, double orttkg, double orttn, double arttn, double primary_target_weight, double ttr_hr, bool auto_flak, bool auto_flak_ifprimary, int num_flakbatteries, int num_in_eachbattery, string comment, MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None, string chief_name = "", bool canBeDisabled = true, string destroyed_submission_name = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea, 
+            Dictionary<string,int> things_to_save = null,
+            string hud_message = "",
+            string log_message = "",
+            string thingstosave_destroyed_message = "",
+            string explanation = ""
+            )
         {
 
             Console.WriteLine("Initiating PointArea objective " + objective_ID);
@@ -15930,6 +15956,8 @@ public class Mission : AMission, IMainMission
             NumFlakBatteries = num_flakbatteries;
             NumInFlakBattery = num_in_eachbattery;
             ChiefName = IDtoCleanChiefName(chief_name);
+            ThingsToSave = things_to_save;
+            ThingsToSave_stillAlive = true;
 
             //for testing
             //NumFlakBatteries = 1;
@@ -15956,6 +15984,8 @@ public class Mission : AMission, IMainMission
             if (AttackingArmy == 1) z = Calcs.meters2feet(z); //(in feet for Red army)
             Pos = new Point3d(Pos.x, Pos.y, z);
 
+            
+
             if (AttackingArmy != 0)
             {
                 HUDMessage = ArmiesL[AttackingArmy] + " destroyed " + Name;
@@ -15966,6 +15996,13 @@ public class Mission : AMission, IMainMission
                 HUDMessage = Name + " was destroyed";
                 LOGMessage = Name + " was destroyed";
             }
+
+            if (hud_message != "") HUDMessage = hud_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            if (log_message != "") LOGMessage = log_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            ThingsToSave_destroyed_message = thingstosave_destroyed_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            Explanation = explanation;
+
+
 
             Points = points;
             TriggerType = ""; //used for CLoD internal triggers, which have a name like TGroundtarget
@@ -16025,7 +16062,14 @@ public class Mission : AMission, IMainMission
             double max_move_dist_km,
             MO_ProducerOrStorageType MOProdStorType = MO_ProducerOrStorageType.None,
             string comment = "", double radar_effective_radius_m = 20000,
-            string chief_name = "", bool canbedisabled = true)
+            string chief_name = "", bool canbedisabled = true,
+            MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea,
+            Dictionary<string,int> things_to_save = null,
+            string hud_message = "",
+            string log_message = "",
+            string thingstosave_destroyed_message = "",
+            string explanation = ""
+        )
 
         {
 
@@ -16035,7 +16079,7 @@ public class Mission : AMission, IMainMission
 
             MOObjectiveType = objective_type;
             MOProducerOrStorageType = MOProdStorType;
-            MOTriggerType = MO_TriggerType.PointArea;
+            MOTriggerType = mo_trigger_type;
             TriggerName = objective_ID;
             ID = objective_ID;
             Name = objective_name;
@@ -16049,6 +16093,10 @@ public class Mission : AMission, IMainMission
             NumInFlakBattery = num_in_eachbattery;
 
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+
+            ThingsToSave = things_to_save;
+            ThingsToSave_stillAlive = true;
+
             //for testing
             //NumFlakBatteries = 1;
             //NumInFlakBattery = 10;
@@ -16084,6 +16132,11 @@ public class Mission : AMission, IMainMission
                 HUDMessage = Name + " was destroyed";
                 LOGMessage = Name + " was destroyed";
             }
+
+            if (hud_message != "") HUDMessage = hud_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            if (log_message != "") LOGMessage = log_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            if (thingstosave_destroyed_message != "") ThingsToSave_destroyed_message = thingstosave_destroyed_message.Replace("{army}", ArmiesL[AttackingArmy]);
+            Explanation = explanation;
 
             Points = points;
             TriggerType = ""; //used for CLoD internal triggers, which have a name like TGroundtarget
@@ -16237,6 +16290,44 @@ public class Mission : AMission, IMainMission
             if (ChiefName.ToLower().Contains("chief")) return true;
             return false;
         }
+
+        public class numThingsResult
+        {
+            public bool stillAlive {get; set;}
+            public int numNeeded  {get; set;}
+            public int numFound  {get; set;}
+
+            public numThingsResult (bool s, int nn, int nf)
+            {
+                stillAlive = s;
+                numNeeded = nn;
+                numFound = nf;
+            }
+        }
+
+        public numThingsResult areThingsToSave_stillInPlace()
+        {
+            //CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType matchType = AiGroundActorType.Unknown, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
+
+            var ret = new numThingsResult (true, 0, 0) ;
+
+            if (ThingsToSave == null) return ret;
+                        
+            foreach (string thing in ThingsToSave.Keys) {
+
+                int numFound = Calcs.CountMatchingGroundObjects(msn.GamePlay, this.Pos, this.radius, matchTitle: thing);
+                ret.stillAlive = ret.stillAlive && (numFound >= ThingsToSave[thing]);
+                ret.numNeeded += ThingsToSave[thing];
+                ret.numFound += numFound;
+                
+            }
+
+            ThingsToSave_stillAlive = ret.stillAlive;
+            return ret;
+            
+        }
+
+
 
         //returns next AutoFlak location ****that is still alive*** or NULL if none
         public int getAndAdvance_AutoFlak_location_pointer()
@@ -17185,7 +17276,12 @@ public class Mission : AMission, IMainMission
             }
         }
 
-        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "", string destroyedSub = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea)
+        public void addPointArea(MO_ObjectiveType mot, string n, string flak, string initSub, int ownerarmy, double pts, string tn, double x = 0, double y = 0, double rad = 100, double trigrad = 300, double orttkg = 8000, double ortt = 0, double artt = 0, double ptp = 100, double ttr_hours = 24, bool auto_flak = true, bool auto_flak_ifprimary = true, int flak_numbatteries = 7, int flak_numbinbattery = 8, string comment = "", bool addNewOnly = false, bool canBeDisabled = true, string chief = "", string destroyedSub = "", MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea,
+        Dictionary<string,int> things_to_save = null,
+        string hud_message = "",
+        string log_message = "",
+        string thingstosave_destroyed_message = "",
+        string explanation = "")
         {
             //Console.WriteLine("Adding Trigger pre " + tn + n + " " + pts.ToString());
 
@@ -17196,7 +17292,13 @@ public class Mission : AMission, IMainMission
             {
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 //Console.WriteLine("Adding Trigger post2 " + tn + n + " " + pts.ToString());
-                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled, destroyed_submission_name: destroyedSub, mo_trigger_type: mo_trigger_type));
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numbinbattery, comment, chief_name: chief, canBeDisabled: canBeDisabled, destroyed_submission_name: destroyedSub, mo_trigger_type: mo_trigger_type,
+                things_to_save: things_to_save,
+                hud_message: hud_message,
+                log_message: log_message,
+                thingstosave_destroyed_message: thingstosave_destroyed_message,
+                explanation: explanation
+                ));
             }
         }
 
@@ -17241,7 +17343,14 @@ public class Mission : AMission, IMainMission
             double max_move_dist_km = 5,
             MO_ProducerOrStorageType ProdStorType = MO_ProducerOrStorageType.None,
             string comment = "", bool addNewOnly = false, double radar_effective_radius_m = 20000,
-            bool canbedisabled = false)
+            bool canbedisabled = false,
+            MO_TriggerType mo_trigger_type = MO_TriggerType.PointArea,
+            Dictionary<string,int> things_to_save = null,
+            string hud_message = "",
+            string log_message = "",
+            string thingstosave_destroyed_message = "",
+            string explanation = ""
+            )
         {
             //Console.WriteLine("Adding Mobile pre " + tn + n + " " + pts.ToString());
 
@@ -17253,7 +17362,13 @@ public class Mission : AMission, IMainMission
                 if (!MO_SanityChecks(tn, n, MO_TriggerType.PointArea)) return; //sanity checks - we're skipping many items with the IF statement, so no need for sanity check before this point
                 Console.WriteLine("Adding Mobile post2 " + tn + n + " " + pts.ToString());
                 //msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, initSub, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, comment));
-                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, MobObjType, mob_hrsbetweenMoves, new Point3d(x_sw, y_sw, 0), new Point3d(x_ne, y_ne, 0), min_move_dist_km, max_move_dist_km, ProdStorType, comment, radar_effective_radius_m: radar_effective_radius_m, canbedisabled: canbedisabled));
+                msn.MissionObjectivesList.Add(tn, new MissionObjective(msn, mot, tn, n, flak, ownerarmy, pts, x, y, rad, trigrad, orttkg, ortt, artt, ptp, ttr_hours, auto_flak, auto_flak_ifprimary, flak_numbatteries, flak_numberinbattery, MobObjType, mob_hrsbetweenMoves, new Point3d(x_sw, y_sw, 0), new Point3d(x_ne, y_ne, 0), min_move_dist_km, max_move_dist_km, ProdStorType, comment, radar_effective_radius_m: radar_effective_radius_m, canbedisabled: canbedisabled, mo_trigger_type: mo_trigger_type, 
+                things_to_save: things_to_save,
+                hud_message: hud_message,
+                log_message: log_message,
+                thingstosave_destroyed_message: thingstosave_destroyed_message,
+                explanation: explanation
+                ));
             }
         }
 
@@ -17821,7 +17936,7 @@ public class Mission : AMission, IMainMission
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument - NO BOMBS! Pinpoint accuracy with strafing!");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Luftwaffe Hauptbenzinlager Arras", "Arra", "", "", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 100, false, 2, 600, "", add);  //g
@@ -17883,10 +17998,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 40, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 40, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
 
             
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 50, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 50, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -17974,7 +18089,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Crowborough Air High Command Bunker", "", "Genghis-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 0, 120, 210, true, true, 2, 10, "", add);
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs);		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
             
             addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Genghis-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 0, 120, 222, true, true, 2, 8, "", add);
 
@@ -18157,9 +18272,11 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 20, 0, 170, 330, false, true, 1, 4, MO_MobileObjectiveType.HighCommandPost, 80, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 1}, {"humans", 4}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 20, 0, 170, 330, false, true, 1, 4, MO_MobileObjectiveType.HighCommandPost, 80, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 1}, {"humans", 4}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
+
+       
 
 
             //if KG requirement is <1000KG then it becomes a target you CAN'T kill by just dumping tons of bombs on it
@@ -20295,6 +20412,8 @@ added Rouen Flak
 
     public static List<string> MO_Camo = new List<string> { "Stationary.Environment.CamoNetCrates", "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetPlane", "Stationary.Environment.CamoNetPlaneBig", "Stationary.Environment.CamoNetTank" };
 
+    public static List<string> MO_Camo_small = new List<string> { "Stationary.Environment.CamoNetCrates", "Stationary.Environment.CamoNetAT", "Stationary.Environment.CamoNetPlane", "Stationary.Environment.CamoNetTank" };
+
     //taking out medic tent for now even though it's one of our best tents.  Maybe it has another skin.  But no war criminals for us . . . .
     public static List<string> MO_Tents = new List<string> { "Stationary.Environment.TentTroopLarge_GER1", "Stationary.Environment.TentRidgeTent_UK1", /*"Stationary.Environment.TentMedicLarge_UK1", */ "Stationary.Environment.FieldKitchen_UK1", "Stationary.Environment.TentBell_UK1", "Stationary.Environment.TentBell_UK1", "Stationary.Environment.TentSmall_UK1", "Stationary.Environment.TentStaffBig_GER1", "Stationary.Environment.TentStaffSmall_GER1", "Stationary.Environment.TentTroopLarge_GER1", "Stationary.Environment.TentZeltbahn_GER1", "Stationary.Environment.TentZeltbahnBig_GER1", };
 
@@ -20630,14 +20749,14 @@ added Rouen Flak
             { MO_MobileObjectiveType.HighCommandPost,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 3, 3, 2) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 4, 3, 2, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 1, 3, 2,shps: tentShapes, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.HQCars, new MO_ThingsTypeNumberRadius(MO_HQCars, 1, 3, 3, randomizeHowMany: false ) },
-                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 30, 5) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 30, 5) },
-                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 40, 5) },
-                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 12, 35, 3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 39, 1) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 8, 19, 5) },
+                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 30, 5) },
+                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 23, 5) },
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 8, 18, 3) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 22.5, 1) },
                 }
             },
             { MO_MobileObjectiveType.MobileRadar1,
@@ -22924,8 +23043,9 @@ added Rouen Flak
                 int realNIB = Convert.ToInt32(nib * temp.percentRemaining);
                 //So just hitting it cuts #of flak by 50% right off the bat
                 if (nib>=2 && realNIB > nib/2.0) realNIB = Convert.ToInt32(nib/2.0);
+                if (temp.dead) realNIB = 0;
 
-                Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Pct Remaining: {8:N0}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, temp.numItemsRemaining, nib, realNIB, temp.percentRemaining*100);
+                Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Pct Remaining: {8:N0} AFL dead? {9}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, temp.numItemsRemaining, nib, realNIB, temp.percentRemaining*100, temp.dead);
 
                 if (realNIB <= 0) continue;
 
@@ -23293,14 +23413,13 @@ added Rouen Flak
                         //But DON'T DO THIS IF THE OBJ IS  MOBILE, no point in it
                         //AND it will leave oodles of stationaries scattered about
                         string pref = Calcs.cleanStaticPrefix( mo.ID + "_AutoFlak_pos_" + k.ToString() + "_");
-                        if(!mo.isMobile()) {
-                            var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
-                            howManyPlaced = placeTheThings(things, thingsPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
-                        }
+                        
+                        var things = mo_mobileobjectivethings[MO_MobileObjectiveType.TempFlakSite];
+                        
+                        howManyPlaced = placeTheThings(things, thingsPos, def_army: mo.OwnerArmy, def_prefix: pref, percentSide: 75);
+                        
 
-                        MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced, pref));
-
-                        //need to do something with **howManyPlaced** so we can keep track of how destroyed that AA position is
+                        MO_AutoFlak_locations.Add(new AutoFlak_location(newPos, howManyPlaced, pref));                        
                         
                         no_found++;
                         chosenAngles.Add(angle);
@@ -24000,6 +24119,8 @@ added Rouen Flak
                 if (ndf > 0) ndfmsg = String.Format(" ({0} DUs, {1:f1}X)", ndf, mo.defenseUnitsHelpFactor());
 
                 msg6 += rd + dl + pc + ndfmsg;
+
+                if (mo.Explanation.Length > 0) msg6 += " **Special Orders: " + mo.Explanation;
 
                 retmsg += msg6 + Environment.NewLine;
                 numDisplayed++;
@@ -27401,11 +27522,21 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             Console.WriteLine("MO_CalculateAndRecordPointareaObjectivesDamagePercent: {0:F0}% objects, {1:F0}% KG, {9:F0}% actors => {2:F0}% Tot, {3:F0} KG KGreq: {4:F0} Numreq: {5:F0} ActReq: {7:F0} ActDest: {8:F0} Name: {6} ", dst_pc_obj * 100, dst_pc_ord * 100, mo.DestroyedPercent * 100, mo.OrdnanceOnTarget_kg, mo.OrdnanceRequiredToTrigger_kg, mo.ObjectsRequiredToTrigger_num, mo.Name, mo.ActorsRequiredToTrigger_num, mo.ActorsDestroyed_num, dst_pc_act * 100);
 
+            bool saveStillAlive = mo.ThingsToSave_stillAlive;
+
+            var ntr = mo.areThingsToSave_stillInPlace();
+
+            if ( mo.ThingsToSave_stillAlive  != saveStillAlive) //just killed the General, or whatever...
+            {
+                twcLogServer(null, mo.ThingsToSave_destroyed_message );                
+                twcLogServer(null,">>>You'll have to try {0} again another day, after it has been reactivated with new troops, supplies, and equipment.");
+            }
+
 
             //if (mo.ObjectsDestroyed_num > mo.ObjectsRequiredToTrigger_num)
-            if ((!mo.Destroyed || !mo.ObjectiveAchievedForPoints) && mo.DestroyedPercent >= 1)
+            if (ntr.stillAlive && (!mo.Destroyed || !mo.ObjectiveAchievedForPoints) && mo.DestroyedPercent >= 1)
                 MO_DestroyObjective(mo.ID, true, percentdestroyed: mo.DestroyedPercent, timetofixFromNow_sec: mo.TimetoRepairIfDestroyed_hr * 3600 / repairSpeedupFactor); // 1 because, we always get 1 object here. //hnMO_DestroyObjective(ID, true, percentdestroyed: mo.DestroyedPercent, timetofix_s: mo.TimetoRepairIfDestroyed_hr * 3600); //Note - MUST use >= here as it covers the case where ordnanceKG and/or object_numrequired = 0
-            else if (mo.DestroyedPercent > 1)
+            else if (ntr.stillAlive && mo.DestroyedPercent > 1)
             {
                 double additionalTimeToFix_hr = (mo.TimetoRepairIfDestroyed_hr * addedPercent / repairSpeedupFactor);
                 if (mo.TimeToUndestroy_UTC.HasValue) mo.TimeToUndestroy_UTC.Value.AddHours(additionalTimeToFix_hr);  //just add time proportional to how many objects required to kill it 100%.  But divided by 4 since we are discounting the destruction
@@ -27414,7 +27545,10 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             }
             else if (Math.Floor(oldDestroyedPercent * 100.0 / 10.0) % 2 != Math.Floor(mo.DestroyedPercent * 100.0 / 10.0) % 2) //if crossing threshold @ 10, 20, 30, etc, 50, 100% give a message with status update of objective
             {
-                twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged, {4} enemies killed, {3} kg on target", new object[] { mo.Name, (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.OrdnanceOnTarget_kg.ToString("F0"), mo.ActorsDestroyed_num.ToString("F0") });
+                if (ntr.stillAlive) 
+                    twcLogServer(null, "{0} damaged: {1}% destroyed, {2} items damaged, {4} enemies killed, {3} kg on target", new object[] { mo.Name, (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0"), mo.ObjectsDestroyed_num.ToString("F0"), mo.OrdnanceOnTarget_kg.ToString("F0"), mo.ActorsDestroyed_num.ToString("F0") });
+                else 
+                    twcLogServer(null, "{0} damaged - but {2}", new object[] { mo.Name, mo.ThingsToSave_destroyed_message });
             }
         }
         catch (Exception ex) { Console.WriteLine("PointArea Calculation ERROR: " + ex.ToString()); }

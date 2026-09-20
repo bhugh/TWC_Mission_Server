@@ -26569,7 +26569,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             string mes1 = ">>>";
             if (OldObj.LOGMessage != null && OldObj.LOGMessage.Length > 0) mes1 = OldObj.LOGMessage;
-            if ((alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes1 = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name;
+            if ((alreadyCounted || alreadyDestroyed) && OldObj.MOTriggerType != MO_TriggerType.TemporaryLandingGround) mes1 = ArmiesL[OldObj.AttackingArmy] + " has further damaged " + OldObj.Name + ". " + mo.LOGMessage;
 
             if (tempFlakPositionsKilled > 0) mes1 += string.Format(" (+{0} flak positions destroyed)", tempFlakPositionsKilled);
 

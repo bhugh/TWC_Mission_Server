@@ -26795,10 +26795,11 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                     mo.OrdnanceOnTarget_kg = 0;
                     mo.ActorsDestroyed_num = 0;
                     mo.AirfieldDamagePoints = 0;
+                    mo.ThingsToSave_stillAlive = true;
                     double addTime_s = 0;
                     if (!MO_ObjectiveUndestroy_recurs_firstrun) addTime_s = 11.2341 + numUndestroyed * 40 + random.Next(20);
                     //spread repairs out over time, except when first starting up
-                    Timeout(addTime_s, () =>
+                    Timeout(addTime_s + 40, () =>
                     {
                         if (mo.MOObjectiveType == MO_ObjectiveType.Military_Airfield) restoreAirfield(mo);
                         if (mo.MOObjectiveType == MO_ObjectiveType.Radar || mo.MOObjectiveType == MO_ObjectiveType.KnickebeinHQ) restoreRadar(mo);

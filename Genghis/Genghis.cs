@@ -21366,7 +21366,7 @@ added Rouen Flak
                             //Or if percent<1 then remove that percentage
                             double dist_m = Calcs.CalculatePointDistance(mo.Pos, (ga as AiActor).Pos());
                             if (dist_m < searchRadius_m || ga.Type() == AiGroundActorType.AAGun || ga.Type() == AiGroundActorType.Artillery)
-                               f2 = MO_HandleGroundThingRemoval(mo, ga.Type(), groundActor: ga, immediate: immediate, percent: pctToRemove, destroyObjects: destroyObjects, sectFile:f2, delay_s);
+                               f2 = MO_HandleGroundThingRemoval(mo, ga.Type(), groundActor: ga, immediate: immediate, percent: pctToRemove, destroyObjects: destroyObjects, sectFile:f2, delay_s: delay_s);
                         }
                     }
                     if (!MO_Naval_Vessel_ObjectiveTypes.Contains(mo.MOObjectiveType))
@@ -27559,7 +27559,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 mo.ActorsDestroyed_num = 0;
                 mo.AirfieldDamagePoints = 0;
                 mo.IsEnabled = false; //set to disabled for the rest of this session
-                MO_RemoveObjective(mo, percent: .25, addX: true, delay_s = 900 );
+                MO_RemoveObjective(mo, percent: .25, addX: true, delay_s: 900 );
 
                 return;
             }
